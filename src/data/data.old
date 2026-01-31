@@ -1,0 +1,984 @@
+// src/data/data.js
+// Version: 2.0
+// Description: Fichier consolidé de toutes les données du jeu (fées, compétences, profils)
+// Dernière modification: 2025-01-30
+
+// ============================================================================
+// TYPES DE FÉES ET ANCIENNETÉ
+// ============================================================================
+
+export const fairyTypesByAge = {
+  anciennes: [
+    'Ange', 'Bastet', 'Elfe', 'Farfadet', 'Gnome', 'Gobelin', 'Korrigan',
+    'Léporide', 'Loup-Garou', 'Ogre', 'Ondine', 'Orc', 'Phénix',
+    'Succube/Incube', 'Sylve', 'Troll', 'Vampyr'
+  ],
+  modernes: [
+    'Fée électricité', 'Fleur de métal', 'Fouinard', 'Gargouille',
+    'Golem', 'Gremelin', 'Protys', 'Smog'
+  ]
+};
+
+export const fairyTypes = [...fairyTypesByAge.anciennes, ...fairyTypesByAge.modernes];
+
+export const getFairyAge = (typeFee) => {
+  if (fairyTypesByAge.anciennes.includes(typeFee)) return 'ancienne';
+  if (fairyTypesByAge.modernes.includes(typeFee)) return 'moderne';
+  return null;
+};
+
+// ============================================================================
+// DONNÉES DES FÉES
+// ============================================================================
+
+export const fairyData = {
+  'Ange': {
+    anciennete: 'ancienne',
+    description: 'Les Anges sont des êtres célestes dotés de grandes ailes blanches. Ils incarnent la pureté et la lumière dans le Paris de la Belle Époque.',
+    caracteristiques: {
+      agilite: { min: 1, max: 4 },
+      constitution: { min: 2, max: 5 },
+      force: { min: 1, max: 3 },
+      precision: { min: 2, max: 4 },
+      esprit: { min: 3, max: 6 },
+      perception: { min: 2, max: 5 },
+      prestance: { min: 3, max: 6 },
+      sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [
+      { nom: 'Éloquence', specialite: null },
+      { nom: 'Médecine', specialite: 'Premiers soins' },
+      { nom: 'Culture générale', specialite: null }
+    ],
+    competencesFutilesPredilection: ['Chant', 'Poésie'],
+    capacites: {
+      fixe1: { nom: 'Vol', description: 'Capacité à voler grâce à leurs ailes majestueuses.' },
+      fixe2: { nom: 'Aura de Lumière', description: 'Émet une douce lumière apaisante dans l\'obscurité.' },
+      choix: [
+        { nom: 'Guérison mineure', description: 'Peut soigner les blessures légères par imposition des mains.' },
+        { nom: 'Vision divine', description: 'Perception accrue des intentions et de la vérité.' },
+        { nom: 'Résistance sacrée', description: 'Résistance naturelle aux énergies négatives et malédictions.' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Bénédiction', description: 'Accorde un bonus temporaire de chance à une personne.' },
+      { nom: 'Bouclier de Foi', description: 'Crée une protection magique contre les attaques.' },
+      { nom: 'Chant Céleste', description: 'Un chant qui apaise les esprits et calme les conflits.' },
+      { nom: 'Purification', description: 'Nettoie un lieu ou un objet des influences négatives.' },
+      { nom: 'Inspiration Divine', description: 'Accorde sagesse et clarté d\'esprit temporairement.' }
+    ]
+  },
+
+  'Bastet': {
+    anciennete: 'ancienne',
+    description: 'Les Bastet sont des créatures félines gracieuses et mystérieuses, héritières des anciens dieux égyptiens.',
+    caracteristiques: {
+      agilite: { min: 3, max: 6 },
+      constitution: { min: 2, max: 4 },
+      force: { min: 2, max: 4 },
+      precision: { min: 3, max: 5 },
+      esprit: { min: 2, max: 4 },
+      perception: { min: 3, max: 6 },
+      prestance: { min: 2, max: 5 },
+      sangFroid: { min: 2, max: 4 }
+    },
+    competencesPredilection: [
+      { nom: 'Discrétion', specialite: 'Déplacement silencieux' },
+      { nom: 'Athlétisme', specialite: null },
+      { nom: 'Escalade', specialite: null }
+    ],
+    competencesFutilesPredilection: ['Danses de salon', 'Mode'],
+    capacites: {
+      fixe1: { nom: 'Agilité féline', description: 'Réflexes et souplesse surhumains.' },
+      fixe2: { nom: 'Vision nocturne', description: 'Voit parfaitement dans l\'obscurité totale.' },
+      choix: [
+        { nom: 'Griffes rétractiles', description: 'Griffes acérées utilisables au combat.' },
+        { nom: 'Atterrissage parfait', description: 'Retombe toujours sur ses pattes sans dommage.' },
+        { nom: 'Sens du danger', description: 'Intuition aiguisée face aux menaces imminentes.' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Marche silencieuse', description: 'Se déplace sans faire le moindre bruit.' },
+      { nom: 'Charme félin', description: 'Influence subtilement les émotions des autres.' },
+      { nom: 'Bond prodigieux', description: 'Saute sur de grandes distances avec précision.' },
+      { nom: 'Communication animale', description: 'Communique avec les félins et autres animaux.' },
+      { nom: 'Grâce de Bastet', description: 'Mouvement fluide qui rend difficile à toucher.' }
+    ]
+  },
+
+  'Elfe': {
+    anciennete: 'ancienne',
+    description: 'Les Elfes sont réputés pour leur beauté éthérée et leur lien profond avec la nature.',
+    caracteristiques: {
+      agilite: { min: 3, max: 5 },
+      constitution: { min: 1, max: 3 },
+      force: { min: 1, max: 3 },
+      precision: { min: 3, max: 6 },
+      esprit: { min: 2, max: 5 },
+      perception: { min: 3, max: 6 },
+      prestance: { min: 2, max: 5 },
+      sangFroid: { min: 2, max: 4 }
+    },
+    competencesPredilection: [
+      { nom: 'Armes à distance', specialite: 'Arc' },
+      { nom: 'Exploration', specialite: 'Orientation' },
+      { nom: 'Survie', specialite: 'Forêt' }
+    ],
+    competencesFutilesPredilection: ['Musique (instrument)', 'Jardinage'],
+    capacites: {
+      fixe1: { nom: 'Longévité', description: 'Vieillit très lentement et peut vivre plusieurs siècles.' },
+      fixe2: { nom: 'Sens aiguisés', description: 'Ouïe et vue exceptionnellement développées.' },
+      choix: [
+        { nom: 'Affinité végétale', description: 'Communique et influence la croissance des plantes.' },
+        { nom: 'Résistance au sommeil', description: 'N\'a besoin que de quelques heures de méditation.' },
+        { nom: 'Maîtrise de l\'arc', description: 'Précision naturelle exceptionnelle au tir.' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Marche forestière', description: 'Se déplace sans laisser de trace dans la nature.' },
+      { nom: 'Langue sylvestre', description: 'Comprend et parle avec les créatures de la forêt.' },
+      { nom: 'Camouflage naturel', description: 'Se fond dans les environnements naturels.' },
+      { nom: 'Enchantement mineur', description: 'Peut enchanter temporairement de petits objets.' },
+      { nom: 'Harmonie avec la nature', description: 'Ressent les perturbations dans l\'environnement naturel.' }
+    ]
+  },
+
+  // Autres fées anciennes (templates à compléter)
+  'Farfadet': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 1, max: 4 }, force: { min: 1, max: 3 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 2, max: 4 }, sangFroid: { min: 1, max: 4 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Gnome': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 4 }, constitution: { min: 3, max: 6 }, force: { min: 2, max: 5 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 1, max: 3 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Gobelin': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 4 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 1, max: 3 }, sangFroid: { min: 2, max: 4 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Korrigan': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 1, max: 4 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Léporide': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 3, max: 6 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 3 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 4 }, perception: { min: 3, max: 6 },
+      prestance: { min: 2, max: 4 }, sangFroid: { min: 1, max: 3 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Loup-Garou': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 3, max: 6 }, force: { min: 3, max: 6 },
+      precision: { min: 2, max: 4 }, esprit: { min: 1, max: 4 }, perception: { min: 3, max: 6 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Ogre': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 1, max: 3 }, constitution: { min: 4, max: 6 }, force: { min: 4, max: 6 },
+      precision: { min: 1, max: 3 }, esprit: { min: 1, max: 3 }, perception: { min: 2, max: 4 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Ondine': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 1, max: 4 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 2, max: 5 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Orc': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 4 }, constitution: { min: 3, max: 6 }, force: { min: 3, max: 6 },
+      precision: { min: 2, max: 4 }, esprit: { min: 1, max: 4 }, perception: { min: 2, max: 4 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Phénix': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 1, max: 4 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 3, max: 6 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Succube/Incube': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 4 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 3, max: 6 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Sylve': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 1, max: 4 }, force: { min: 1, max: 3 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 2, max: 5 }, sangFroid: { min: 2, max: 4 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Troll': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 1, max: 3 }, constitution: { min: 3, max: 6 }, force: { min: 3, max: 6 },
+      precision: { min: 1, max: 4 }, esprit: { min: 1, max: 4 }, perception: { min: 2, max: 4 },
+      prestance: { min: 1, max: 3 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Vampyr': {
+    anciennete: 'ancienne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 2, max: 5 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 2, max: 6 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  // Fées modernes
+  'Fée électricité': {
+    anciennete: 'moderne',
+    description: 'Nées avec l\'avènement de l\'électricité, ces fées maîtrisent les courants et l\'énergie électrique.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 4 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 6 }, perception: { min: 2, max: 5 },
+      prestance: { min: 2, max: 5 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Fleur de métal': {
+    anciennete: 'moderne',
+    description: 'Fées nées de l\'industrialisation, elles sont liées au métal et aux machines.',
+    caracteristiques: {
+      agilite: { min: 2, max: 4 }, constitution: { min: 2, max: 5 }, force: { min: 2, max: 5 },
+      precision: { min: 2, max: 6 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Fouinard': {
+    anciennete: 'moderne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 4 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 6 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Gargouille': {
+    anciennete: 'moderne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 4 }, constitution: { min: 3, max: 6 }, force: { min: 3, max: 6 },
+      precision: { min: 2, max: 4 }, esprit: { min: 1, max: 4 }, perception: { min: 2, max: 5 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Golem': {
+    anciennete: 'moderne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 1, max: 3 }, constitution: { min: 4, max: 6 }, force: { min: 4, max: 6 },
+      precision: { min: 1, max: 4 }, esprit: { min: 1, max: 4 }, perception: { min: 2, max: 4 },
+      prestance: { min: 1, max: 3 }, sangFroid: { min: 2, max: 6 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Gremelin': {
+    anciennete: 'moderne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 6 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 3 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Protys': {
+    anciennete: 'moderne',
+    description: 'À compléter.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 2, max: 5 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 2, max: 5 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  },
+
+  'Smog': {
+    anciennete: 'moderne',
+    description: 'Nées de la pollution industrielle du Paris moderne.',
+    caracteristiques: {
+      agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 1, max: 4 },
+      precision: { min: 2, max: 5 }, esprit: { min: 2, max: 5 }, perception: { min: 2, max: 5 },
+      prestance: { min: 1, max: 4 }, sangFroid: { min: 2, max: 5 }
+    },
+    competencesPredilection: [],
+    competencesFutilesPredilection: [],
+    capacites: {
+      fixe1: { nom: 'Capacité fixe 1', description: 'À compléter' },
+      fixe2: { nom: 'Capacité fixe 2', description: 'À compléter' },
+      choix: [
+        { nom: 'Option A', description: 'À compléter' },
+        { nom: 'Option B', description: 'À compléter' },
+        { nom: 'Option C', description: 'À compléter' }
+      ]
+    },
+    pouvoirs: [
+      { nom: 'Pouvoir 1', description: 'À compléter' },
+      { nom: 'Pouvoir 2', description: 'À compléter' },
+      { nom: 'Pouvoir 3', description: 'À compléter' }
+    ]
+  }
+};
+
+// ============================================================================
+// COMPÉTENCES
+// ============================================================================
+
+export const competences = {
+  'Athlétisme': {
+    categorie: 'Physique',
+    description: 'Course, saut, natation, efforts physiques',
+    specialites: ['Course', 'Saut', 'Natation', 'Endurance']
+  },
+  'Escalade': {
+    categorie: 'Physique',
+    description: 'Grimper, se déplacer en hauteur',
+    specialites: ['Murs', 'Arbres', 'Descente en rappel']
+  },
+  'Corps à corps': {
+    categorie: 'Combat',
+    description: 'Combat au contact, mains nues ou armes de mêlée',
+    specialites: ['Lutte', 'Boxe', 'Épée', 'Bâton']
+  },
+  'Armes à distance': {
+    categorie: 'Combat',
+    description: 'Tir à l\'arc, armes à feu, lancer',
+    specialites: ['Arc', 'Pistolet', 'Fusil', 'Lancer']
+  },
+  'Histoire': {
+    categorie: 'Mental',
+    description: 'Connaissance du passé et des événements historiques',
+    specialites: ['Antiquité', 'Moyen Âge', 'Histoire moderne', 'Histoire locale']
+  },
+  'Littérature': {
+    categorie: 'Mental',
+    description: 'Connaissance des œuvres littéraires',
+    specialites: ['Poésie', 'Romans', 'Théâtre', 'Essais']
+  },
+  'Sciences': {
+    categorie: 'Mental',
+    description: 'Physique, chimie, biologie',
+    specialites: ['Physique', 'Chimie', 'Biologie', 'Astronomie']
+  },
+  'Médecine': {
+    categorie: 'Mental',
+    description: 'Soins, diagnostic, anatomie',
+    specialites: ['Premiers soins', 'Chirurgie', 'Diagnostic', 'Pharmacologie']
+  },
+  'Étiquette': {
+    categorie: 'Social',
+    description: 'Protocole, bonnes manières, savoir-vivre',
+    specialites: ['Haute société', 'Protocole royal', 'Dîners mondains']
+  },
+  'Éloquence': {
+    categorie: 'Social',
+    description: 'Art oratoire, persuasion, rhétorique',
+    specialites: ['Discours', 'Débat', 'Négociation', 'Séduction']
+  },
+  'Intimidation': {
+    categorie: 'Social',
+    description: 'Impressionner, menacer, faire peur',
+    specialites: ['Menaces', 'Présence imposante', 'Interrogatoire']
+  },
+  'Relations mondaines': {
+    categorie: 'Social',
+    description: 'Réseau social, contacts, réputation',
+    specialites: ['Haute société', 'Milieu artistique', 'Politique']
+  },
+  'Discrétion': {
+    categorie: 'Technique',
+    description: 'Se cacher, se déplacer silencieusement',
+    specialites: ['Camouflage', 'Filature', 'Déplacement silencieux']
+  },
+  'Crochetage': {
+    categorie: 'Technique',
+    description: 'Ouvrir les serrures, crocheter',
+    specialites: ['Serrures simples', 'Serrures complexes', 'Coffres-forts']
+  },
+  'Escamotage': {
+    categorie: 'Technique',
+    description: 'Pickpocket, tours de passe-passe',
+    specialites: ['Vol à la tire', 'Tours de magie', 'Dissimulation']
+  },
+  'Ingénierie': {
+    categorie: 'Technique',
+    description: 'Mécanique, construction, réparation',
+    specialites: ['Mécanique', 'Électricité', 'Horlogerie', 'Architecture']
+  },
+  'Exploration': {
+    categorie: 'Perception',
+    description: 'Orientation, recherche, repérage',
+    specialites: ['Orientation', 'Pistage', 'Cartographie']
+  },
+  'Survie': {
+    categorie: 'Perception',
+    description: 'Subsister en milieu naturel ou hostile',
+    specialites: ['Forêt', 'Montagne', 'Urbain', 'Chasse']
+  },
+  'Danse': {
+    categorie: 'Artistique',
+    description: 'Danses de salon, chorégraphie',
+    specialites: ['Valse', 'Tango', 'Ballet', 'Danses folkloriques']
+  },
+  'Tactique': {
+    categorie: 'Combat',
+    description: 'Stratégie militaire, planification',
+    specialites: ['Combat de groupe', 'Embuscades', 'Défense']
+  },
+  'Tromperie': {
+    categorie: 'Social',
+    description: 'Mensonge, déguisement, bluff',
+    specialites: ['Mensonge', 'Déguisement', 'Contrefaçon', 'Bluff']
+  },
+  'Langues': {
+    categorie: 'Mental',
+    description: 'Maîtrise des langues étrangères',
+    specialites: ['Anglais', 'Allemand', 'Italien', 'Espagnol', 'Latin', 'Grec']
+  },
+  'Culture générale': {
+    categorie: 'Mental',
+    description: 'Connaissances diverses et variées',
+    specialites: ['Arts', 'Géographie', 'Actualités', 'Folklore']
+  },
+  'Alchimie': {
+    categorie: 'Mental',
+    description: 'Préparation de potions, élixirs, substances',
+    specialites: ['Potions', 'Poisons', 'Explosifs', 'Philtre']
+  }
+};
+
+export const competenceNames = Object.keys(competences);
+
+export const getCompetencesByCategorie = () => {
+  const categories = {};
+  Object.entries(competences).forEach(([nom, data]) => {
+    if (!categories[data.categorie]) {
+      categories[data.categorie] = [];
+    }
+    categories[data.categorie].push(nom);
+  });
+  return categories;
+};
+
+export const calculateCompetenceScore = (competenceName, character, fairyData) => {
+  let score = 0;
+  const feeData = fairyData[character.typeFee];
+  if (feeData?.competencesPredilection?.includes(competenceName)) {
+    score += 2;
+  }
+  if (character.profils?.majeur?.competences?.includes(competenceName)) {
+    score += 2;
+  }
+  if (character.profils?.mineur?.competences?.includes(competenceName)) {
+    score += 1;
+  }
+  return score;
+};
+
+// ============================================================================
+// COMPÉTENCES FUTILES
+// ============================================================================
+
+export const competencesFutilesBase = [
+  { nom: 'Jeux de cartes', description: 'Poker, bridge, whist et autres jeux de cartes' },
+  { nom: 'Échecs', description: 'Maîtrise du jeu d\'échecs' },
+  { nom: 'Dames', description: 'Jeu de dames et variantes' },
+  { nom: 'Billard', description: 'Billard français, américain, snooker' },
+  { nom: 'Cuisine', description: 'Art culinaire et gastronomie' },
+  { nom: 'Pâtisserie', description: 'Confection de desserts et viennoiseries' },
+  { nom: 'Couture', description: 'Confection et réparation de vêtements' },
+  { nom: 'Broderie', description: 'Art de la broderie et des travaux d\'aiguille' },
+  { nom: 'Jardinage', description: 'Entretien de jardins et plantes d\'ornement' },
+  { nom: 'Peinture', description: 'Arts plastiques, aquarelle, huile' },
+  { nom: 'Sculpture', description: 'Modelage et sculpture' },
+  { nom: 'Dessin', description: 'Dessin artistique et croquis' },
+  { nom: 'Musique (instrument)', description: 'Maîtrise d\'un instrument de musique' },
+  { nom: 'Chant', description: 'Art vocal et chant lyrique' },
+  { nom: 'Poésie', description: 'Composition et récitation poétique' },
+  { nom: 'Calligraphie', description: 'Art de la belle écriture' },
+  { nom: 'Théâtre', description: 'Art dramatique et comédie' },
+  { nom: 'Photographie', description: 'Art photographique et développement' },
+  { nom: 'Équitation', description: 'Monte à cheval et dressage' },
+  { nom: 'Escrime', description: 'Art de l\'escrime sportive' },
+  { nom: 'Cyclisme', description: 'Pratique de la bicyclette' },
+  { nom: 'Natation', description: 'Art de la nage' },
+  { nom: 'Tennis', description: 'Pratique du tennis' },
+  { nom: 'Golf', description: 'Pratique du golf' },
+  { nom: 'Danses de salon', description: 'Valse, polka, quadrille' },
+  { nom: 'Jonglerie', description: 'Art du jonglage et acrobaties légères' },
+  { nom: 'Prestidigitation', description: 'Tours de magie et illusions' },
+  { nom: 'Œnologie', description: 'Connaissance des vins' },
+  { nom: 'Dégustation', description: 'Art de la dégustation gastronomique' },
+  { nom: 'Mode', description: 'Connaissance de la mode et des tendances' },
+  { nom: 'Commérages', description: 'Art de connaître et répandre les potins mondains' },
+  { nom: 'Ragots', description: 'Collecte et diffusion de rumeurs' },
+  { nom: 'Herboristerie', description: 'Connaissance des plantes médicinales' },
+  { nom: 'Astrologie', description: 'Lecture et interprétation des astres' },
+  { nom: 'Cartomancie', description: 'Art de lire les cartes' },
+  { nom: 'Spiritisme', description: 'Communication avec l\'au-delà' },
+  { nom: 'Collection (préciser)', description: 'Collection de timbres, monnaies, etc.' },
+  { nom: 'Animaux de compagnie', description: 'Soins et dressage d\'animaux domestiques' },
+  { nom: 'Origami', description: 'Art du pliage de papier' },
+  { nom: 'Philatélie', description: 'Collection de timbres' },
+  { nom: 'Numismatique', description: 'Collection de pièces de monnaie' }
+];
+
+export const competenceFutileExists = (nom, customList = []) => {
+  const allCompetences = [...competencesFutilesBase, ...customList];
+  return allCompetences.some(c => c.nom.toLowerCase() === nom.toLowerCase());
+};
+
+export const getAllCompetencesFutiles = (customList = []) => {
+  return [...competencesFutilesBase, ...customList];
+};
+
+// ============================================================================
+// PROFILS
+// ============================================================================
+
+export const profils = {
+  'Aventurier / Aventurière': {
+    competences: ['Athlétisme', 'Escalade', 'Exploration', 'Survie'],
+    traits: ['Audacieux', 'Téméraire', 'Curieux', 'Intrépide', 'Courageux', 'Imprudent'],
+    description: 'L\'aventurier brave les dangers et explore l\'inconnu avec passion.',
+    icon: '🗺️'
+  },
+  'Combattant / Combattante': {
+    competences: ['Corps à corps', 'Armes à distance', 'Tactique', 'Intimidation'],
+    traits: ['Discipliné', 'Agressif', 'Protecteur', 'Honorable', 'Brutal', 'Stratège'],
+    description: 'Le combattant maîtrise l\'art de la guerre et du combat.',
+    icon: '⚔️'
+  },
+  'Érudit / Érudite': {
+    competences: ['Histoire', 'Littérature', 'Langues', 'Culture générale'],
+    traits: ['Cultivé', 'Pédant', 'Studieux', 'Sage', 'Distrait', 'Méticuleux'],
+    description: 'L\'érudit possède une vaste culture et une soif de connaissances.',
+    icon: '📚'
+  },
+  'Gentleman / Lady': {
+    competences: ['Étiquette', 'Éloquence', 'Danse', 'Relations mondaines'],
+    traits: ['Raffiné', 'Snob', 'Charismatique', 'Diplomate', 'Superficiel', 'Élégant'],
+    description: 'Le gentleman ou la lady maîtrise les codes de la haute société.',
+    icon: '🎩'
+  },
+  'Roublard / Roublarde': {
+    competences: ['Discrétion', 'Crochetage', 'Escamotage', 'Tromperie'],
+    traits: ['Rusé', 'Fourbe', 'Opportuniste', 'Débrouillard', 'Malhonnête', 'Malin'],
+    description: 'Le roublard use de ruse et de discrétion pour parvenir à ses fins.',
+    icon: '🎭'
+  },
+  'Savant / Savante': {
+    competences: ['Sciences', 'Médecine', 'Ingénierie', 'Alchimie'],
+    traits: ['Rationnel', 'Obsessionnel', 'Inventif', 'Méthodique', 'Excentrique', 'Brillant'],
+    description: 'Le savant explore les mystères de la science et de la technique.',
+    icon: '🔬'
+  }
+};
+
+export const profilNames = Object.keys(profils);
+
+export const getProfilCompetences = (profilName) => {
+  return profils[profilName]?.competences || [];
+};
+
+export const getProfilTraits = (profilName) => {
+  return profils[profilName]?.traits || [];
+};
