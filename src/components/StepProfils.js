@@ -1,5 +1,5 @@
 // src/components/StepProfils.js
-import React, { useState } from 'react';
+import React from 'react';
 import { Info, Star, Award } from 'lucide-react';
 import { profils, profilNames } from "../data/data";
 
