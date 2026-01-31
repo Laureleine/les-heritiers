@@ -1,11 +1,11 @@
 // src/config/supabase.js
-// Version: 2.0
+// Version: 2.1
 // Description: Configuration Supabase
-// Dernière modification: 2025-01-30
+// Dernière modification: 2026-01-30
 
 import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://uvckugcixiugysnsbekb.supabase.co';
-const supabaseAnonKey = 'sb_publishable_B_Jd-7oDWrRQkt4EW6Ikgw_9EFseDRb';
-
+  
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+   
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
