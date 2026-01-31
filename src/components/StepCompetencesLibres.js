@@ -1,14 +1,10 @@
 // src/components/StepCompetencesLibres.js
-// Version: 2.0
-// Description: Étape 4 (Step 4 dans la séquence) - Compétences libres (15 points)
-// Dernière modification: 2025-01-30
-
 import React, { useState } from 'react';
 import { Plus, Minus, Star, Info } from 'lucide-react';
-import { competences, competenceNames, profils } from '../data/data';
+import { competences, competenceNames } from "../data/data";
+// import { profils } from '../data/profilsData';
 
 const POINTS_TOTAUX = 15;
-
 export default function StepCompetencesLibres({ character, onCompetencesLibresChange, fairyData }) {
   const [showInfo, setShowInfo] = useState(null);
   const feeData = fairyData[character.typeFee];

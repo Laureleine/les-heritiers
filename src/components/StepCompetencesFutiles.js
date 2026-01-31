@@ -8,8 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle } from 'lucide-react';
 import { 
   competencesFutilesBase, 
-  parseCompetencesFutilesPredilection,
-  isCompetenceFutileChoix 
+  parseCompetencesFutilesPredilection
 } from '../data/data';
 
 const POINTS_TOTAUX = 10;

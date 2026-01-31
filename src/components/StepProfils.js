@@ -1,14 +1,10 @@
 // src/components/StepProfils.js
-// Version: 2.0
-// Description: Étape 3 (Step 3 dans la séquence) - Choix des profils majeur et mineur
-// Dernière modification: 2025-01-30
-
 import React, { useState } from 'react';
 import { Info, Star, Award } from 'lucide-react';
-import { profils, profilNames } from '../data/data';
+import { profils, profilNames } from "../data/data";
 
 export default function StepProfils({ character, onProfilsChange }) {
-  const [showInfo, setShowInfo] = useState(null);
+  // State pour info bulle (non utilisé actuellement)
 
   const handleProfilMajeurChange = (profil) => {
     onProfilsChange({

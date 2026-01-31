@@ -1,8 +1,4 @@
 // src/components/Auth.js
-// Version: 2.0
-// Description: Composant d'authentification (connexion/inscription)
-// Dernière modification: 2025-01-30
-
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
 import { Mail, Lock, User as UserIcon } from 'lucide-react';
@@ -22,7 +18,7 @@ export default function Auth() {
     try {
       if (isSignUp) {
         // Inscription
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
         });
@@ -32,7 +28,7 @@ export default function Auth() {
         alert('Inscription réussie ! Vérifiez votre email pour confirmer votre compte.');
       } else {
         // Connexion
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });

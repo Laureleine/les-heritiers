@@ -3,7 +3,7 @@
 // Dernière modification: 2025-01-30
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Save, List, FileText, LogOut } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, List, FileText } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { fairyData, getFairyAge } from '../data/data';
 import Step1 from './Step1';
@@ -203,7 +203,7 @@ function CharacterCreator() {
   
   const canProceedStep6 = character.capaciteChoisie;
   const canProceedStep7 = character.pouvoirs.length === 3;
-  const canProceedStep8 = true; // Récapitulatif toujours accessible
+  // Step 8 (Récapitulatif) toujours accessible
 
   // Afficher l'écran de chargement
   if (loading) {
