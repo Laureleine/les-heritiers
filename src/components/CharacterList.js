@@ -1,25 +1,17 @@
 // src/components/CharacterList.js
-// Version: 2.0
-// Description: Liste des personnages (mes personnages + publics)
-// Dernière modification: 2025-01-30
-
+// Version: 2.3.1
+// Build: 2026-01-31 19:20
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe } from 'lucide-react';
-import { 
-  getUserCharacters, 
-  getPublicCharacters, 
-  deleteCharacterFromSupabase, 
-  toggleCharacterVisibility,
-  exportCharacter, 
-  importCharacter,
-  exportToPDF 
-} from '../utils/utils';
+import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe, Database } from 'lucide-react';
+import { getUserCharacters, getPublicCharacters, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/utils';
+import { exportCharacter, importCharacter } from '../utils/utils';
+import { exportToPDF } from '../utils/utils';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onDataEditor }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [activeTab, setActiveTab] = useState('my'); // 'my' ou 'public'
+  const [activeTab, setActiveTab] = useState('my');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,7 +61,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       const character = await importCharacter(file);
       onSelectCharacter(character);
     } catch (error) {
-      alert('Erreur lors de l\'importation : ' + error.message);
+      alert('Erreur lors de l\'import : ' + error.message);
     }
   };
 
@@ -149,7 +141,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
           <>
             <button
               onClick={() => exportCharacter(char)}
-              className="px-3 py-2 bg-amber-100 text-amber-900 rounded hover:bg-amber-200 transition-all border border-amber-300"
+              className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-all border border-gray-300"
               title="Export JSON"
             >
               <Download size={16} />
@@ -157,7 +149,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
             <button
               onClick={() => setShowDeleteConfirm(char.id)}
-              className="px-3 py-2 bg-red-50 text-red-600 rounded hover:bg-red-100 transition-all border border-red-300"
+              className="px-3 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-all border border-red-300"
               title="Supprimer"
             >
               <Trash2 size={16} />
@@ -252,6 +244,15 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               )}
 
               <button
+                onClick={onDataEditor}
+                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif"
+                title="Éditer les données du jeu"
+              >
+                <Database size={20} />
+                <span>Données</span>
+              </button>
+
+              <button
                 onClick={onSignOut}
                 className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-serif"
                 title="Déconnexion"
@@ -274,14 +275,14 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                 </p>
                 <button
                   onClick={onNewCharacter}
-                  className="px-8 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all font-serif"
+                  className="px-8 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all font-serif text-lg"
                 >
-                  Créer votre premier personnage
+                  Créer mon premier personnage
                 </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {myCharacters.map((char) => renderCharacter(char, true))}
+                {myCharacters.map(char => renderCharacter(char, true))}
               </div>
             )
           ) : (
@@ -289,12 +290,12 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               <div className="text-center py-16">
                 <Globe size={64} className="mx-auto text-amber-300 mb-4" />
                 <p className="text-amber-800 text-lg font-serif">
-                  Aucun personnage public pour le moment
+                  Aucun personnage public disponible
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {publicCharacters.map((char) => renderCharacter(char, false))}
+                {publicCharacters.map(char => renderCharacter(char, false))}
               </div>
             )
           )}

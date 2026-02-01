@@ -231,6 +231,7 @@ function CharacterCreator() {
         onSelectCharacter={handleSelectCharacter}
         onNewCharacter={handleNewCharacter}
         onSignOut={handleSignOut}
+        onDataEditor={() => setView('data-editor')}
       />
     );
   }
@@ -262,10 +263,22 @@ function CharacterCreator() {
             </div>
             
             <div className="space-y-6">
+              <div className="border-l-4 border-green-600 pl-4">
+                <div className="flex items-baseline gap-3 mb-2">
+                  <span className="text-lg font-bold text-green-900">v2.3.0</span>
+                  <span className="text-sm text-green-600">2026-01-31 19:15</span>
+                </div>
+                <ul className="text-green-800 space-y-1 text-sm">
+                  <li>• Éditeur de données collaboratif avec validation admin</li>
+                  <li>• Système de demandes de modification</li>
+                  <li>• Nouvel onglet "Données" dans l'interface</li>
+                </ul>
+              </div>
+            
               <div className="border-l-4 border-purple-600 pl-4">
                 <div className="flex items-baseline gap-3 mb-2">
                   <span className="text-lg font-bold text-purple-900">v2.2.0</span>
-                  <span className="text-sm text-purple-600">2025-01-31 18:45</span>
+                  <span className="text-sm text-purple-600">2026-01-31 18:45</span>
                 </div>
                 <ul className="text-purple-800 space-y-1 text-sm">
                   <li>• Regroupement des compétences par profil</li>
@@ -278,7 +291,7 @@ function CharacterCreator() {
               <div className="border-l-4 border-blue-600 pl-4">
                 <div className="flex items-baseline gap-3 mb-2">
                   <span className="text-lg font-bold text-blue-900">v2.1.0</span>
-                  <span className="text-sm text-blue-600">2025-01-31 17:30</span>
+                  <span className="text-sm text-blue-600">2026-01-31 17:30</span>
                 </div>
                 <ul className="text-blue-800 space-y-1 text-sm">
                   <li>• Support des choix entre compétences futiles</li>
@@ -286,12 +299,12 @@ function CharacterCreator() {
                 </ul>
               </div>
               
-              <div className="border-l-4 border-green-600 pl-4">
+              <div className="border-l-4 border-amber-600 pl-4">
                 <div className="flex items-baseline gap-3 mb-2">
-                  <span className="text-lg font-bold text-green-900">v2.0.0</span>
-                  <span className="text-sm text-green-600">2025-01-30</span>
+                  <span className="text-lg font-bold text-amber-900">v2.0.0</span>
+                  <span className="text-sm text-amber-600">2026-01-30</span>
                 </div>
-                <ul className="text-green-800 space-y-1 text-sm">
+                <ul className="text-amber-800 space-y-1 text-sm">
                   <li>• Consolidation 19 fichiers → 6 fichiers (-68%)</li>
                   <li>• Scripts SQL complets</li>
                   <li>• 44 compétences futiles officielles</li>
