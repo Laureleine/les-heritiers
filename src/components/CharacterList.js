@@ -2,13 +2,13 @@
 // Version: 2.5.0
 // Build: 2026-01-31 19:40
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe, Database, Settings } from 'lucide-react';
+import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe, Database, Settings, AlertTriangle } from 'lucide-react';
 import { getUserCharacters, getPublicCharacters, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/utils';
 import { exportCharacter, importCharacter } from '../utils/utils';
 import { exportToPDF } from '../utils/utils';
 import NotificationPreferences from './NotificationPreferences';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onDataEditor, session }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onDataEditor, session, setView, isAdmin, pendingCount }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -25,7 +25,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     try {
       const [myChars, publicChars] = await Promise.all([
         getUserCharacters(),
-        getPublicCharacters()
+        getPublicCharacters(isAdmin) // Passer isAdmin pour voir tous les persos
       ]);
       setMyCharacters(myChars);
       setPublicCharacters(publicChars);
@@ -217,7 +217,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                 }`}
               >
                 <Globe size={18} className="inline mr-2" />
-                Publics ({publicCharacters.length})
+                {isAdmin ? 'Tous' : 'Publics'} ({publicCharacters.length})
               </button>
             </div>
             
@@ -253,6 +253,22 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                 <Database size={20} />
                 <span>Données</span>
               </button>
+
+              {isAdmin && (
+                <button
+                  onClick={() => setView('validations')}
+                  className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all font-serif relative"
+                  title="Validations en attente"
+                >
+                  <AlertTriangle size={20} />
+                  <span>Validations</span>
+                  {pendingCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      {pendingCount}
+                    </span>
+                  )}
+                </button>
+              )}
 
               <button
                 onClick={() => setShowNotifPrefs(!showNotifPrefs)}
@@ -306,12 +322,24 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               <div className="text-center py-16">
                 <Globe size={64} className="mx-auto text-amber-300 mb-4" />
                 <p className="text-amber-800 text-lg font-serif">
-                  Aucun personnage public disponible
+                  {isAdmin ? 'Aucun personnage' : 'Aucun personnage public disponible'}
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {publicCharacters.map(char => renderCharacter(char, false))}
+                {publicCharacters.map(char => {
+                  const isPrivate = isAdmin && !char.isPublic;
+                  return (
+                    <div key={char.id} className="relative">
+                      {isPrivate && (
+                        <div className="absolute -top-2 -right-2 z-10 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                          🔒 PRIVÉ
+                        </div>
+                      )}
+                      {renderCharacter(char, false)}
+                    </div>
+                  );
+                })}
               </div>
             )
           )}

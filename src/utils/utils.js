@@ -163,12 +163,18 @@ export const getUserCharacters = async () => {
   }));
 };
 
-export const getPublicCharacters = async () => {
-  const { data, error } = await supabase
+export const getPublicCharacters = async (isAdmin = false) => {
+  let query = supabase
     .from('characters')
     .select('*')
-    .eq('is_public', true)
     .order('updated_at', { ascending: false });
+  
+  // Si pas admin, filtrer uniquement les publics
+  if (!isAdmin) {
+    query = query.eq('is_public', true);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw error;
 

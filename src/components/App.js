@@ -1,14 +1,13 @@
-// Version: 2.9.3
-// Build: 2026-01-31 20:50
+// Version: 2.10.0
+// Build: 2026-01-31 21:00
 // Description: Composant principal de l'application Les Héritiers
 // Dernière modification: 2026-01-31
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database, AlertTriangle } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { fairyData } from '../data/data';
-import { getFairyAge } from '../data/dataHelpers';
-import { APP_VERSION, BUILD_DATE } from '../version';
+import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from '../version';
 import Step1 from './Step1';
 import StepCaracteristiques from './StepCaracteristiques';
 import StepProfils from './StepProfils';
@@ -20,6 +19,7 @@ import StepRecapitulatif from './StepRecapitulatif';
 import CharacterList from './CharacterList';
 import Auth from './Auth';
 import DataEditor from './DataEditor';
+import ValidationsPendantes from './ValidationsPendantes';
 import InAppNotification from './InAppNotification';
 import { saveCharacterToSupabase } from '../utils/utils';
 import { exportToPDF } from '../utils/utils';
@@ -30,12 +30,33 @@ function CharacterCreator() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('list');
   const [step, setStep] = useState(1);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  
+  const ADMIN_EMAIL = 'votre-email@example.com'; // À remplacer
   
   useEffect(() => {
     // Initialiser Service Worker et vérifier updates
     registerServiceWorker();
     checkForUpdates(APP_VERSION);
-  }, []);
+    
+    // Vérifier admin
+    if (session?.user?.email === ADMIN_EMAIL) {
+      setIsAdmin(true);
+      checkPendingChanges();
+      // Polling toutes les 30s
+      const interval = setInterval(checkPendingChanges, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [session]);
+
+  const checkPendingChanges = async () => {
+    const { count } = await supabase
+      .from('data_change_requests')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'pending');
+    setPendingCount(count || 0);
+  };
   const [character, setCharacter] = useState({
     id: null,
     nom: '',
@@ -240,6 +261,9 @@ function CharacterCreator() {
         onSignOut={handleSignOut}
         onDataEditor={() => setView('data-editor')}
         session={session}
+        setView={setView}
+        isAdmin={isAdmin}
+        pendingCount={pendingCount}
       />
     );
   }
@@ -250,6 +274,17 @@ function CharacterCreator() {
       <DataEditor
         session={session}
         onBack={() => setView('creation')}
+      />
+    );
+  }
+  
+  // Validations pendantes
+  if (view === 'validations') {
+    return (
+      <ValidationsPendantes
+        session={session}
+        onBack={() => setView('list')}
+        isAdmin={isAdmin}
       />
     );
   }
@@ -271,48 +306,32 @@ function CharacterCreator() {
             </div>
             
             <div className="space-y-6">
-              <div className="border-l-4 border-green-600 pl-4">
-                <div className="flex items-baseline gap-3 mb-2">
-                  <span className="text-lg font-bold text-green-900">v2.3.0</span>
-                  <span className="text-sm text-green-600">2026-01-31 19:15</span>
-                </div>
-                <ul className="text-green-800 space-y-1 text-sm">
-                  <li>• Éditeur de données collaboratif avec validation admin</li>
-                  <li>• Système de demandes de modification</li>
-                  <li>• Nouvel onglet "Données" dans l'interface</li>
-                </ul>
-              </div>
-            
-              <div className="border-l-4 border-purple-600 pl-4">
-                <div className="flex items-baseline gap-3 mb-2">
-                  <span className="text-lg font-bold text-purple-900">v2.2.0</span>
-                  <span className="text-sm text-purple-600">2026-01-31 18:45</span>
-                </div>
-                <ul className="text-purple-800 space-y-1 text-sm">
-                  <li>• Regroupement des compétences par profil</li>
-                  <li>• Affichage compact des compétences</li>
-                  <li>• Version et date du build dans l'en-tête</li>
-                  <li>• Ajout onglet Changements</li>
-                </ul>
-              </div>
-              
-              <div className="border-l-4 border-blue-600 pl-4">
-                <div className="flex items-baseline gap-3 mb-2">
-                  <span className="text-lg font-bold text-blue-900">v2.1.0</span>
-                  <span className="text-sm text-blue-600">2026-01-31 17:30</span>
-                </div>
-                <ul className="text-blue-800 space-y-1 text-sm">
-                  <li>• Support des choix entre compétences futiles</li>
-                  <li>• Fonctions utilitaires pour gérer les choix</li>
-                </ul>
-              </div>
-              
-              <div className="border-l-4 border-amber-600 pl-4">
-                <div className="flex items-baseline gap-3 mb-2">
-                  <span className="text-lg font-bold text-amber-900">v2.0.0</span>
-                  <span className="text-sm text-amber-600">2026-01-30</span>
-                </div>
-                <ul className="text-amber-800 space-y-1 text-sm">
+              {VERSION_HISTORY.map((version, idx) => {
+                const colors = {
+                  major: { border: 'border-red-600', text: 'text-red-900', subtext: 'text-red-600', bg: 'text-red-800' },
+                  minor: { border: 'border-purple-600', text: 'text-purple-900', subtext: 'text-purple-600', bg: 'text-purple-800' },
+                  patch: { border: 'border-blue-600', text: 'text-blue-900', subtext: 'text-blue-600', bg: 'text-blue-800' }
+                };
+                const color = colors[version.type] || colors.patch;
+                
+                return (
+                  <div key={idx} className={`border-l-4 ${color.border} pl-4`}>
+                    <div className="flex items-baseline gap-3 mb-2">
+                      <span className={`text-lg font-bold ${color.text}`}>v{version.version}</span>
+                      <span className={`text-sm ${color.subtext}`}>{version.date}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded ${color.subtext} bg-opacity-20 bg-current`}>
+                        {version.type}
+                      </span>
+                    </div>
+                    <ul className={`${color.bg} space-y-1 text-sm`}>
+                      {version.changes.map((change, changeIdx) => (
+                        <li key={changeIdx}>• {change}</li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
                   <li>• Consolidation 19 fichiers → 6 fichiers (-68%)</li>
                   <li>• Scripts SQL complets</li>
                   <li>• 44 compétences futiles officielles</li>
