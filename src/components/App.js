@@ -4,7 +4,7 @@
 // Dernière modification: 2026-01-31
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database, AlertTriangle } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { fairyData } from '../data/data';
 import { getFairyAge } from '../data/dataHelpers';

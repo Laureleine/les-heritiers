@@ -18,6 +18,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
   useEffect(() => {
     loadCharacters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadCharacters = async () => {
