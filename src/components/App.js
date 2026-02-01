@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { fairyData } from '../data/data';
+import { getFairyAge } from '../data/dataHelpers';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import Step1 from './Step1';
 import StepCaracteristiques from './StepCaracteristiques';
