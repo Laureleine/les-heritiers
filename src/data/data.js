@@ -786,9 +786,6 @@ export const competences = {
  'Rhétorique': {    description: 'L’art de convaincre, de trouver les bons mots et arguments.',
     specialites: ['Conversation', 'Diplomatie', 'Droit*', 'Orateur', 'Pédagogie', 'Persuader']
   },
- 'Exploration': {    description: 'Orientation, recherche, repérage',
-    specialites: ['Orientation', 'Pistage', 'Cartographie']
-  },
   'Classe': {    description: 'Cette Compétence évalue l’élégance, le savoir-vivre, l’urbanité mais aussi les prérogatives de la classe supérieure.',
     specialites: ['Aplomb', 'Argent', 'Élégance', 'Étiquette', 'Flegme']
   },
