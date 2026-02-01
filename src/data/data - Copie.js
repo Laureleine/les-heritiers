@@ -9,21 +9,16 @@
 
 export const fairyTypesByAge = {
   anciennes: [
-    'Ange', 'Bastet', 'Elfe', 'Farfadet', 'Gnome', 'Gobelin', 'Korrigan',
-    'Léporide', 'Loup-Garou', 'Ogre', 'Ondine', 'Orc', 'Phénix',
-    'Succube/Incube', 'Sylve', 'Troll', 'Vampyr'
+    'Ange', 'Bastet', 'Elfe', 'Farfadet', 'Gnome', 'Gobelin', 'Korrigan', 'Léporide', 'Loup-Garou', 'Ogre', 'Ondine', 'Orc', 'Phénix', 'Succube/Incube', 'Sylve', 'Troll', 'Vampyr'
   ],
-  modernes: [
-    'Fée électricité', 'Fleur de métal', 'Fouinard', 'Gargouille',
-    'Golem', 'Gremelin', 'Protys', 'Smog'
-  ]
+  modernes: ['Fée électricité', 'Fleur de métal', 'Fouinard', 'Gargouille', 'Golem', 'Gremelin', 'Protys', 'Smog'  ]
 };
 
 export const fairyTypes = [...fairyTypesByAge.anciennes, ...fairyTypesByAge.modernes];
 
 export const getFairyAge = (typeFee) => {
   if (fairyTypesByAge.anciennes.includes(typeFee)) return 'ancienne';
-  if (fairyTypesByAge.modernes.includes(typeFee)) return 'moderne';
+  if (fairyTypesByAge.modernes.includes(typeFee))  return 'moderne';
   return null;
 };
 
@@ -71,38 +66,70 @@ export const fairyData = {
 
   'Bastet': {
     anciennete: 'ancienne',
-    description: 'Les Bastet sont des créatures félines gracieuses et mystérieuses, héritières des anciens dieux égyptiens.',
+    description: 'Homme-chat rusé, joueur et séducteur, il est aussi capable de prouesses acrobatiques. Le bastet est une créature gracieuse de forme humanoïde mais à tête de chat : il a des oreilles pointues, des moustaches et des yeux de félin. Sa queue est longue et son pelage soyeux. Le bastet est foncièrement joueur et paresseux, incorrigiblement séducteur et indépendant. Traits fréquents : charmeur, joueur, malicieux, paresseux.',
     caracteristiques: {
-      agilite: { min: 3, max: 6 },
-      constitution: { min: 2, max: 4 },
-      force: { min: 2, max: 4 },
-      precision: { min: 3, max: 5 },
-      esprit: { min: 2, max: 4 },
-      perception: { min: 3, max: 6 },
-      prestance: { min: 2, max: 5 },
-      sangFroid: { min: 2, max: 4 }
+      agilite: { min: 3, max: 7 },
+      constitution: { min: 1, max: 5 },
+      force: { min: 1, max: 5 },
+      precision: { min: 2, max: 6 },
+      esprit: { min: 2, max: 6 },
+      perception: { min: 3, max: 7 },
+      prestance: { min: 3, max: 7 },
+      sangFroid: { min: 1, max: 5 }
     },
     competencesPredilection: [
-      { nom: 'Discrétion', specialite: 'Déplacement silencieux' },
-      { nom: 'Athlétisme', specialite: null },
-      { nom: 'Escalade', specialite: null }
+      { nom: 'Classe', specialite: 'Élégance' },
+      { nom: 'Habiletés', specialite: 'Ingéniosité' },
+      { nom: 'Larcin', specialite: null },
+      { nom: 'Séduction', specialite: null },
+      { nom: 'Survie', specialite: 'Chasse' }
     ],
-    competencesFutilesPredilection: ['Danses de salon', 'Mode'],
+    competencesFutilesPredilection: [
+      'Jeux',
+      { choix: ['Danse', 'Potins mondains'] }
+    ],
     capacites: {
-      fixe1: { nom: 'Agilité féline', description: 'Réflexes et souplesse surhumains.' },
-      fixe2: { nom: 'Vision nocturne', description: 'Voit parfaitement dans l\'obscurité totale.' },
+      fixe1: { 
+        nom: 'Pattes de velours', 
+        description: 'Grâce et discrétion naturelles. Belle mine : bonus de +2 aux tentatives de séduction. Contorsionniste : peut passer à travers n\'importe quel orifice de la taille de sa tête.' 
+      },
+      fixe2: { 
+        nom: 'Vision nocturne', 
+        description: 'Voit parfaitement dans l\'obscurité totale.' 
+      },
       choix: [
-        { nom: 'Griffes rétractiles', description: 'Griffes acérées utilisables au combat.' },
-        { nom: 'Atterrissage parfait', description: 'Retombe toujours sur ses pattes sans dommage.' },
-        { nom: 'Sens du danger', description: 'Intuition aiguisée face aux menaces imminentes.' }
+        { nom: 'Crochets d\'escalade', description: 'Griffes rétractiles permettant escalade facilitée et utilisation au combat.' },
+        { nom: 'Agilité accrue', description: 'Réflexes surhumains et prouesses acrobatiques exceptionnelles.' },
+        { nom: 'Précision accrue', description: 'Coordination œil-main et dextérité améliorées.' }
       ]
     },
     pouvoirs: [
-      { nom: 'Marche silencieuse', description: 'Se déplace sans faire le moindre bruit.' },
-      { nom: 'Charme félin', description: 'Influence subtilement les émotions des autres.' },
-      { nom: 'Bond prodigieux', description: 'Saute sur de grandes distances avec précision.' },
-      { nom: 'Communication animale', description: 'Communique avec les félins et autres animaux.' },
-      { nom: 'Grâce de Bastet', description: 'Mouvement fluide qui rend difficile à toucher.' }
+      { nom: 'Charme', description: '(Masqué) Influence subtilement les émotions, séduction naturelle.' },
+      { nom: 'Chute indolore', description: '(Masqué) Retombe toujours sur ses pattes sans dommages de chute.' },
+      { nom: 'Équilibre du funambule', description: '(Masqué) Marche sur surfaces étroites avec aisance parfaite.' },
+      { nom: 'Prédation', description: '(Démasqué) Instincts de chasseur, bonus traque et combat.' },
+      { nom: 'Réflexe surhumain', description: '(Démasqué) Réactions instantanées, bonus d\'initiative.' },
+      { nom: 'Métamorphose en chat', description: '(Démasqué) Transformation en chat domestique de taille normale.' }
+    ],
+    avantages: [
+      {
+        nom: 'Belle mine',
+        description: 'Séducteur-né. Bonus de +2 aux tentatives de séduction, quel que soit le sexe ciblé.'
+      },
+      {
+        nom: 'Contorsionniste',
+        description: 'Peut passer à travers tout orifice de la taille de sa tête, masqué ou non.'
+      }
+    ],
+    desavantages: [
+      {
+        nom: 'Joueur',
+        description: 'Incorrigiblement joueur. Cherche l\'amusement même si c\'est dangereux ou inutile. Test Fortitude+Sang-froid requis pour résister.'
+      },
+      {
+        nom: 'Paresseux',
+        description: 'Refuse activités salissantes/humiliantes/fatigantes sauf urgence. Si résigné, malus de -1.'
+      }
     ]
   },
 
@@ -723,140 +750,82 @@ export const fairyData = {
 // ============================================================================
 
 export const competences = {
-  'Athlétisme': {
-    categorie: 'Physique',
-    description: 'Course, saut, natation, efforts physiques',
-    specialites: ['Course', 'Saut', 'Natation', 'Endurance']
+  'Conduite': {    description: 'Cette compétence mesure la capacité à conduire des véhicules ou monter à cheval.',
+    specialites: ['Équitation*', 'Conduite d’attelage*', 'Conduite d’automobile*', 'Navigation*', 'Pilotage d’aéronefs*']
   },
-  'Escalade': {
-    categorie: 'Physique',
-    description: 'Grimper, se déplacer en hauteur',
-    specialites: ['Murs', 'Arbres', 'Descente en rappel']
+  'Ressort': {    description: 'C’est l’aptitude à surmonter des épreuves physiques mais aussi à affronter la peur.',
+    specialites: ['Courage', 'Endurer', 'Épreuves de force', 'Escalader', 'Lancer']
   },
-  'Corps à corps': {
-    categorie: 'Combat',
-    description: 'Combat au contact, mains nues ou armes de mêlée',
-    specialites: ['Lutte', 'Boxe', 'Épée', 'Bâton']
+  'Mouvement': {    description: 'Le score dans cette Compétence évalue l’aisance à réaliser tous types de mouvements rapides, à sauter et à esquiver les coups.',
+    specialites: ['Acrobatie*', 'Course', 'Esquive', 'Nage*', 'Vol']
   },
-  'Armes à distance': {
-    categorie: 'Combat',
-    description: 'Tir à l\'arc, armes à feu, lancer',
-    specialites: ['Arc', 'Pistolet', 'Fusil', 'Lancer']
+  'Survie': {    description: 'Cette Compétence mesure l’instinct du danger et la capacité à se débrouiller dans la nature. Elle intervient dans certains tests relatifs à la perception.',
+    specialites: ['Chasse', 'Vigilance', 'Faune et flore', 'Orientation', 'Premiers soins']
   },
-  'Histoire': {
-    categorie: 'Mental',
-    description: 'Connaissance du passé et des événements historiques',
-    specialites: ['Antiquité', 'Moyen Âge', 'Histoire moderne', 'Histoire locale']
+  'Art de la guerre': {    description: 'Cette Compétence mesure la faculté à obtenir l’avantage lors d’un conflit armé mais aussi politique ou stratégique. C’est également la Compétence utilisée pour déterminer l’Initiative.',
+    specialites: ['Embuscade', 'Évaluer forces et faiblesses', 'Initiative', 'Stratégie']
   },
-  'Littérature': {
-    categorie: 'Mental',
-    description: 'Connaissance des œuvres littéraires',
-    specialites: ['Poésie', 'Romans', 'Théâtre', 'Essais']
+  'Autorité': {    description: 'C’est la faculté à imposer sa volonté et ainsi obtenir ce qu’on veut (information, autorisation, éviter un combat, etc.).',
+    specialites: ['Commander', 'Hiérarchie', 'Intimider']
   },
-  'Sciences': {
-    categorie: 'Mental',
-    description: 'Physique, chimie, biologie',
-    specialites: ['Physique', 'Chimie', 'Biologie', 'Astronomie']
+  'Mêlée': {    description: 'Cette Compétence évalue l’aptitude à savoir se battre en combat rapproché.',
+    specialites: ['Armes blanches légères', 'Armes blanches lourdes*', 'Armes naturelles', 'Fouet', 'Mauvaise main*']
   },
-  'Médecine': {
-    categorie: 'Mental',
-    description: 'Soins, diagnostic, anatomie',
-    specialites: ['Premiers soins', 'Chirurgie', 'Diagnostic', 'Pharmacologie']
+  'Tir': {    description: 'On utilise Tir pour se servir des armes de tir à distance.',
+    specialites: ['Armes d’épaule', 'Armes de poing', 'Armes à feu lourdes*', 'Armes de trait*', 'Mauvaise main*']
   },
-  'Étiquette': {
-    categorie: 'Social',
-    description: 'Protocole, bonnes manières, savoir-vivre',
-    specialites: ['Haute société', 'Protocole royal', 'Dîners mondains']
+  'Culture': {    description: 'À cette Compétence correspond la culture d’un individu (générale ou plus spécialisée), ainsi que les langues parlées',
+    specialites: ['Archéologie', 'Connaissance d’Avalon*', 'Folklore féérique', 'Culture générale', 'Langues']
   },
-  'Éloquence': {
-    categorie: 'Social',
-    description: 'Art oratoire, persuasion, rhétorique',
-    specialites: ['Discours', 'Débat', 'Négociation', 'Séduction']
+  'Fortitude': {    description: 'La Fortitude est la force d’âme du moine ou du sage stoïcien. Cette Compétence mesure également la résistance à la magie et aux manipulations mentales.',
+    specialites: ['Concentration', 'Contrer la magie', 'Maîtrise de soi ', 'Résistance psychique']
+  },  
+  'Occultisme': {    description: 'L’Occultisme est la connaissance des pratiques religieuses ou profanes occultes.',
+    specialites: ['Connaissance des magies', 'Sciences occultes', 'Sixième sens', 'Spiritisme*']  
   },
-  'Intimidation': {
-    categorie: 'Social',
-    description: 'Impressionner, menacer, faire peur',
-    specialites: ['Menaces', 'Présence imposante', 'Interrogatoire']
+  'Rhétorique': {    description: 'L’art de convaincre, de trouver les bons mots et arguments.',
+    specialites: ['Conversation', 'Diplomatie', 'Droit*', 'Orateur', 'Pédagogie', 'Persuader']  
   },
-  'Relations mondaines': {
-    categorie: 'Social',
-    description: 'Réseau social, contacts, réputation',
-    specialites: ['Haute société', 'Milieu artistique', 'Politique']
+  'Classe': {    description: 'Cette Compétence évalue l’élégance, le savoir-vivre, l’urbanité mais aussi les prérogatives de la classe supérieure.',
+    specialites: ['Aplomb', 'Argent', 'Élégance', 'Étiquette', 'Flegme']
   },
-  'Discrétion': {
-    categorie: 'Technique',
-    description: 'Se cacher, se déplacer silencieusement',
-    specialites: ['Camouflage', 'Filature', 'Déplacement silencieux']
+  'Entregent': {    description: 'C’est la capacité à se forger un réseau de contacts dans des milieux variés. Cette Compétence mesure également la connaissance de la réputation des gens notables',
+    specialites: ['Beau monde', 'Bourgeoisie', 'Prolétariat', 'Campagne', 'Ville', 'Crédit', 'Politique']  
   },
-  'Crochetage': {
-    categorie: 'Technique',
-    description: 'Ouvrir les serrures, crocheter',
-    specialites: ['Serrures simples', 'Serrures complexes', 'Coffres-forts']
+  'Séduction': {    description: 'L’art de charmer autrui, d’apparaître amical et de capter l’attention.',
+    specialites: ['Charmer', 'Appâts', 'Sympathie']
   },
-  'Escamotage': {
-    categorie: 'Technique',
-    description: 'Pickpocket, tours de passe-passe',
-    specialites: ['Vol à la tire', 'Tours de magie', 'Dissimulation']
+  'Sensibilité': {    description: 'Cette Compétence mesure la capacité à sentir le véritable état d’esprit d’autrui, mais aussi à évaluer la beauté, ce que dégage une personne, un lieu ou un objet',
+    specialites: ['Intuition', 'Inspiration', 'Psychologie']
   },
-  'Ingénierie': {
-    categorie: 'Technique',
-    description: 'Mécanique, construction, réparation',
-    specialites: ['Mécanique', 'Électricité', 'Horlogerie', 'Architecture']
-  },
-  'Exploration': {
-    categorie: 'Perception',
-    description: 'Orientation, recherche, repérage',
-    specialites: ['Orientation', 'Pistage', 'Cartographie']
-  },
-  'Survie': {
-    categorie: 'Perception',
-    description: 'Subsister en milieu naturel ou hostile',
-    specialites: ['Forêt', 'Montagne', 'Urbain', 'Chasse']
-  },
-  'Danse': {
-    categorie: 'Artistique',
-    description: 'Danses de salon, chorégraphie',
-    specialites: ['Valse', 'Tango', 'Ballet', 'Danses folkloriques']
-  },
-  'Tactique': {
-    categorie: 'Combat',
-    description: 'Stratégie militaire, planification',
-    specialites: ['Combat de groupe', 'Embuscades', 'Défense']
-  },
-  'Tromperie': {
-    categorie: 'Social',
-    description: 'Mensonge, déguisement, bluff',
-    specialites: ['Mensonge', 'Déguisement', 'Contrefaçon', 'Bluff']
-  },
-  'Langues': {
-    categorie: 'Mental',
-    description: 'Maîtrise des langues étrangères',
-    specialites: ['Anglais', 'Allemand', 'Italien', 'Espagnol', 'Latin', 'Grec']
-  },
-  'Culture générale': {
-    categorie: 'Mental',
-    description: 'Connaissances diverses et variées',
-    specialites: ['Arts', 'Géographie', 'Actualités', 'Folklore']
-  },
-  'Alchimie': {
-    categorie: 'Mental',
-    description: 'Préparation de potions, élixirs, substances',
-    specialites: ['Potions', 'Poisons', 'Explosifs', 'Philtre']
+  'Comédie': {    description: 'C’est la capacité à abuser autrui par ses paroles et ses manières.',
+    specialites: ['Déguisement', 'Jouer un rôle', 'Marchandage', 'Mentir']
+  },  
+  'Discrétion': {    description: 'C’est l’aptitude à passer inaperçu dans tous les sens du terme.',
+    specialites: ['Anonymat', 'Camouflage', 'Déplacement silencieux', 'Dissimulation d’objets et d’armes sur soi', 'Furtivité']
+  },  
+  'Larcin': {    description: 'Cette Compétence évalue la faculté à s’approprier les biens d’autrui par divers talents.',
+    specialites: ['Crochetage', 'Trouver ce qui est caché ', 'Pièges*', 'Pickpocket', 'Triche']  
+  },  
+  'Monde du crime': {    description: 'Cette Compétence correspond au niveau de familiarité avec les milieux et activités interlopes.',
+    specialites: ['Assassinat*', 'Connaissance de la pègre', 'Corruption', 'Faussaire*']
+  },  
+  'Habiletés': {    description: 'À travers cette Compétence est évaluée la capacité à trouver des moyens astucieux pour parvenir à des solutions pratiques en tous genres ainsi que la capacité à fabriquer des objets.',
+    specialites: ['Artisanat*', 'Ingéniosité', 'Explosifs*', 'Mécanique', 'Moyen improvisé']
+  },  
+  'Médecine': {    description: 'Cette Compétence mesure les connaissances et savoir-faire liés à la santé.',
+    specialites: ['Autopsie*', 'Chirurgie*', 'Pharmacopée*', 'Premiers soins']
+  },  
+  'Observation': {    description: 'Capacité à analyser l’environnement et à repérer des éléments sortant de l’ordinaire.',
+    specialites: ['Examen', 'Investigation', 'Sociologie']
+  },    
+  'Sciences': {    description: 'Cette Compétence recouvre la compréhension, les connaissances et savoir-faire scientifiques, biologiques et technologiques (elle est plus théorique que pratique).',
+    specialites: ['Analyse et déduction', 'Biologie', 'Faëologie', 'Finance*', 'Invention*', 'Physique-chimie']
   }
 };
 
 export const competenceNames = Object.keys(competences);
 
-export const getCompetencesByCategorie = () => {
-  const categories = {};
-  Object.entries(competences).forEach(([nom, data]) => {
-    if (!categories[data.categorie]) {
-      categories[data.categorie] = [];
-    }
-    categories[data.categorie].push(nom);
-  });
-  return categories;
-};
 
 export const calculateCompetenceScore = (competenceName, character, fairyData) => {
   let score = 0;
@@ -878,47 +847,50 @@ export const calculateCompetenceScore = (competenceName, character, fairyData) =
 // ============================================================================
 
 export const competencesFutilesBase = [
-  { nom: 'Jeux de cartes', description: 'Poker, bridge, whist et autres jeux de cartes' },
-  { nom: 'Échecs', description: 'Maîtrise du jeu d\'échecs' },
-  { nom: 'Dames', description: 'Jeu de dames et variantes' },
-  { nom: 'Billard', description: 'Billard français, américain, snooker' },
-  { nom: 'Cuisine', description: 'Art culinaire et gastronomie' },
-  { nom: 'Pâtisserie', description: 'Confection de desserts et viennoiseries' },
-  { nom: 'Couture', description: 'Confection et réparation de vêtements' },
-  { nom: 'Broderie', description: 'Art de la broderie et des travaux d\'aiguille' },
-  { nom: 'Jardinage', description: 'Entretien de jardins et plantes d\'ornement' },
-  { nom: 'Peinture', description: 'Arts plastiques, aquarelle, huile' },
-  { nom: 'Sculpture', description: 'Modelage et sculpture' },
-  { nom: 'Dessin', description: 'Dessin artistique et croquis' },
-  { nom: 'Musique (instrument)', description: 'Maîtrise d\'un instrument de musique' },
-  { nom: 'Chant', description: 'Art vocal et chant lyrique' },
-  { nom: 'Poésie', description: 'Composition et récitation poétique' },
-  { nom: 'Calligraphie', description: 'Art de la belle écriture' },
-  { nom: 'Théâtre', description: 'Art dramatique et comédie' },
-  { nom: 'Photographie', description: 'Art photographique et développement' },
-  { nom: 'Équitation', description: 'Monte à cheval et dressage' },
-  { nom: 'Escrime', description: 'Art de l\'escrime sportive' },
-  { nom: 'Cyclisme', description: 'Pratique de la bicyclette' },
-  { nom: 'Natation', description: 'Art de la nage' },
-  { nom: 'Tennis', description: 'Pratique du tennis' },
+  { nom: 'Agriculture', description: 'Connaissance des cultures, élevage et travaux agricoles' },
+  { nom: 'Architecture', description: 'Connaissance des styles architecturaux et de la construction' },
+  { nom: 'Arts plastiques', description: 'Connaissance et pratique des arts visuels' },
+  { nom: 'Astronomie', description: 'Connaissance des astres, constellations et phénomènes célestes' },
+  { nom: 'Aviation', description: 'Connaissance des aéronefs et des principes du vol' },
+  { nom: 'Botanique', description: 'Connaissance des plantes, fleurs et végétaux' },
+  { nom: 'Chant', description: 'Art vocal, chant lyrique et technique vocale' },
+  { nom: 'Chasse à courre', description: 'Pratique de la chasse traditionnelle à cheval avec meute' },
+  { nom: 'Cinématographe', description: 'Connaissance du cinéma naissant et des techniques filmiques' },
+  { nom: 'Cirque', description: 'Arts du cirque, acrobaties et numéros de spectacle' },
+  { nom: 'Croquet', description: 'Pratique du jeu de croquet' },
+  { nom: 'Cuisine', description: 'Art culinaire, gastronomie et préparation de mets' },
+  { nom: 'Cyclisme', description: 'Pratique de la bicyclette et connaissance du cyclisme' },
+  { nom: 'Danse', description: 'Danses de salon : valse, polka, quadrille, tango' },
+  { nom: 'Divination', description: 'Arts divinatoires : tarots, chiromancie, astrologie' },
+  { nom: 'Fauconnerie', description: 'Art de dresser et chasser avec des rapaces' },
+  { nom: 'Géologie', description: 'Connaissance des roches, minéraux et formations géologiques' },
   { nom: 'Golf', description: 'Pratique du golf' },
-  { nom: 'Danses de salon', description: 'Valse, polka, quadrille' },
-  { nom: 'Jonglerie', description: 'Art du jonglage et acrobaties légères' },
-  { nom: 'Prestidigitation', description: 'Tours de magie et illusions' },
-  { nom: 'Œnologie', description: 'Connaissance des vins' },
-  { nom: 'Dégustation', description: 'Art de la dégustation gastronomique' },
-  { nom: 'Mode', description: 'Connaissance de la mode et des tendances' },
-  { nom: 'Commérages', description: 'Art de connaître et répandre les potins mondains' },
-  { nom: 'Ragots', description: 'Collecte et diffusion de rumeurs' },
-  { nom: 'Herboristerie', description: 'Connaissance des plantes médicinales' },
-  { nom: 'Astrologie', description: 'Lecture et interprétation des astres' },
-  { nom: 'Cartomancie', description: 'Art de lire les cartes' },
-  { nom: 'Spiritisme', description: 'Communication avec l\'au-delà' },
-  { nom: 'Collection (préciser)', description: 'Collection de timbres, monnaies, etc.' },
-  { nom: 'Animaux de compagnie', description: 'Soins et dressage d\'animaux domestiques' },
-  { nom: 'Origami', description: 'Art du pliage de papier' },
-  { nom: 'Philatélie', description: 'Collection de timbres' },
-  { nom: 'Numismatique', description: 'Collection de pièces de monnaie' }
+  { nom: 'Gourmet', description: 'Appréciation fine de la gastronomie et des mets raffinés' },
+  { nom: 'Héraldique', description: 'Connaissance des blasons, armoiries et symboles nobiliaires' },
+  { nom: 'Jeux', description: 'Jeux de hasard, jeux de société, paris et stratégie ludique' },
+  { nom: 'Joaillerie', description: 'Connaissance des pierres précieuses et bijoux' },
+  { nom: 'Kama sutra', description: 'Connaissance de l\'art amoureux et des pratiques sensuelles' },
+  { nom: 'Littérature', description: 'Connaissance des œuvres littéraires et des auteurs' },
+  { nom: 'Météorologie', description: 'Connaissance du climat, temps et prévisions météorologiques' },
+  { nom: 'Mode', description: 'Connaissance de la mode, des tendances et de l\'élégance vestimentaire' },
+  { nom: 'Modélisme', description: 'Construction de modèles réduits et maquettes' },
+  { nom: 'Musique', description: 'Maîtrise d\'un ou plusieurs instruments de musique' },
+  { nom: 'Œnologie', description: 'Connaissance des vins, cépages et art de la dégustation' },
+  { nom: 'Opéra', description: 'Connaissance de l\'opéra, des compositeurs et des représentations' },
+  { nom: 'Orfèvrerie', description: 'Connaissance du travail des métaux précieux et objets d\'art' },
+  { nom: 'Paris sportif', description: 'Pratique des paris sur les courses et événements sportifs' },
+  { nom: 'Peinture (et dessin)', description: 'Pratique de la peinture et du dessin artistique' },
+  { nom: 'Photographie', description: 'Art photographique et techniques de développement' },
+  { nom: 'Poésie', description: 'Composition et récitation poétique' },
+  { nom: 'Potins mondains', description: 'Collecte et diffusion de ragots, commérages de la haute société' },
+  { nom: 'Prestidigitation', description: 'Tours de magie, illusions et escamotage' },
+  { nom: 'Psychanalyse', description: 'Connaissance des théories psychanalytiques et de l\'inconscient' },
+  { nom: 'Puériculture', description: 'Soins et éducation des jeunes enfants' },
+  { nom: 'Sculpture', description: 'Modelage et sculpture de différents matériaux' },
+  { nom: 'Spéléologie', description: 'Exploration et connaissance des grottes et cavités souterraines' },
+  { nom: 'Tennis', description: 'Pratique du tennis' },
+  { nom: 'Théâtre', description: 'Art dramatique, comédie et jeu d\'acteur' },
+  { nom: 'Zoologie', description: 'Connaissance des animaux, de leur comportement et classification' }
 ];
 
 export const competenceFutileExists = (nom, customList = []) => {
@@ -936,38 +908,38 @@ export const getAllCompetencesFutiles = (customList = []) => {
 
 export const profils = {
   'Aventurier / Aventurière': {
-    competences: ['Athlétisme', 'Escalade', 'Exploration', 'Survie'],
-    traits: ['Audacieux', 'Téméraire', 'Curieux', 'Intrépide', 'Courageux', 'Imprudent'],
+    competences: ['Conduite', 'Ressort', 'Mouvement', 'Survie'],
+    traits: ['Audacieux', 'Curieux', 'Intrépide', 'Rebelle', 'Tenace'],
     description: 'L\'aventurier brave les dangers et explore l\'inconnu avec passion.',
     icon: '🗺️'
   },
   'Combattant / Combattante': {
-    competences: ['Corps à corps', 'Armes à distance', 'Tactique', 'Intimidation'],
-    traits: ['Discipliné', 'Agressif', 'Protecteur', 'Honorable', 'Brutal', 'Stratège'],
+    competences: ['Art militaire', 'Autorité', 'Mêlée', 'Tir'],
+    traits: ['Combatif', 'Endurci', 'Martial', 'Protecteur', 'Sanguin'],
     description: 'Le combattant maîtrise l\'art de la guerre et du combat.',
     icon: '⚔️'
   },
   'Érudit / Érudite': {
-    competences: ['Histoire', 'Littérature', 'Langues', 'Culture générale'],
-    traits: ['Cultivé', 'Pédant', 'Studieux', 'Sage', 'Distrait', 'Méticuleux'],
+    competences: ['Culture', 'Fortitude', 'Occultisme', 'Rhétorique'],
+    traits: ['Austère', 'Inspiré', 'Libre-penseur', 'Spirituel', 'Traditionaliste'],
     description: 'L\'érudit possède une vaste culture et une soif de connaissances.',
     icon: '📚'
   },
   'Gentleman / Lady': {
-    competences: ['Étiquette', 'Éloquence', 'Danse', 'Relations mondaines'],
-    traits: ['Raffiné', 'Snob', 'Charismatique', 'Diplomate', 'Superficiel', 'Élégant'],
+    competences: ['Classe', 'Entregent', 'Séduction', 'Sensibilité'],
+    traits: ['Causeur', 'Courtois', 'Esthète', 'Flegmatique', 'Hautain'],
     description: 'Le gentleman ou la lady maîtrise les codes de la haute société.',
     icon: '🎩'
   },
   'Roublard / Roublarde': {
-    competences: ['Discrétion', 'Crochetage', 'Escamotage', 'Tromperie'],
-    traits: ['Rusé', 'Fourbe', 'Opportuniste', 'Débrouillard', 'Malhonnête', 'Malin'],
+    competences: ['Comédie', 'Discrétion', 'Larcin', 'Monde du crime'],
+    traits: ['Boute-en-train', 'Intéressé', 'Malin', 'Narquois', 'Patibulaire'],
     description: 'Le roublard use de ruse et de discrétion pour parvenir à ses fins.',
     icon: '🎭'
   },
   'Savant / Savante': {
-    competences: ['Sciences', 'Médecine', 'Ingénierie', 'Alchimie'],
-    traits: ['Rationnel', 'Obsessionnel', 'Inventif', 'Méthodique', 'Excentrique', 'Brillant'],
+    competences: ['Habiletés', 'Médecine', 'Observation', 'Sciences'],
+    traits: ['Cérébral', 'Critique', 'Ingénieux', 'Méthodique', 'Pragmatique'],
     description: 'Le savant explore les mystères de la science et de la technique.',
     icon: '🔬'
   }
@@ -981,4 +953,120 @@ export const getProfilCompetences = (profilName) => {
 
 export const getProfilTraits = (profilName) => {
   return profils[profilName]?.traits || [];
+};
+
+/**
+ * Obtient le nom du profil adapté au sexe
+ * @param {string} profilName - Nom du profil (ex: "Aventurier / Aventurière")
+ * @param {string} sexe - "Homme", "Femme", ou "Androgyne"
+ * @returns {string} Nom adapté au sexe
+ */
+export const getProfilNameBySexe = (profilName, sexe) => {
+  if (!profilName) return '';
+  
+  const parts = profilName.split(' / ');
+  if (parts.length !== 2) return profilName;
+  
+  // Par défaut féminin pour androgyne
+  if (sexe === 'Homme') return parts[0];
+  return parts[1]; // Femme ou Androgyne
+};
+
+/**
+ * Calcule le rang d'un profil
+ * Rang = floor(somme des compétences du profil / 4)
+ * Si somme < 4, rang = 0
+ * @param {object} competencesBase - Map des compétences de base
+ * @param {object} competencesLibres - Compétences libres investies
+ * @param {array} profilCompetences - Liste des compétences du profil
+ * @returns {number} Rang du profil
+ */
+export const calculateProfilRang = (competencesBase, competencesLibres, profilCompetences) => {
+  if (!profilCompetences || profilCompetences.length === 0) return 0;
+  
+  const total = profilCompetences.reduce((sum, compName) => {
+    const base = competencesBase.get(compName)?.scoreBase || 0;
+    const libre = competencesLibres[compName]?.rangsSupplementaires || 0;
+    return sum + base + libre;
+  }, 0);
+  
+  return total < 4 ? 0 : Math.floor(total / 4);
+};
+
+// ============================================================================
+// FONCTIONS UTILITAIRES POUR COMPÉTENCES FUTILES AVEC CHOIX
+// ============================================================================
+
+/**
+ * Vérifie si une compétence futile de prédilection est un choix
+ * @param {string|object} comp - La compétence (string ou objet avec propriété choix)
+ * @returns {boolean} true si c'est un choix
+ * 
+ * Exemple:
+ * isCompetenceFutileChoix('Jeux') => false
+ * isCompetenceFutileChoix({ choix: ['Danse', 'Potins mondains'] }) => true
+ */
+export const isCompetenceFutileChoix = (comp) => {
+  return typeof comp === 'object' && comp !== null && comp.choix && Array.isArray(comp.choix);
+};
+
+/**
+ * Parse les compétences futiles de prédilection pour affichage
+ * @param {Array} competencesFutilesPredilection - Tableau des compétences futiles
+ * @returns {Array} Tableau d'objets { isChoix, nom?, options?, displayText }
+ * 
+ * Exemple pour le Bastet:
+ * Input: ['Jeux', { choix: ['Danse', 'Potins mondains'] }]
+ * Output: [
+ *   { isChoix: false, nom: 'Jeux', displayText: 'Jeux' },
+ *   { isChoix: true, options: ['Danse', 'Potins mondains'], displayText: 'Danse ou Potins mondains' }
+ * ]
+ */
+export const parseCompetencesFutilesPredilection = (competencesFutilesPredilection) => {
+  if (!competencesFutilesPredilection || !Array.isArray(competencesFutilesPredilection)) {
+    return [];
+  }
+  
+  return competencesFutilesPredilection.map(comp => {
+    if (isCompetenceFutileChoix(comp)) {
+      return {
+        isChoix: true,
+        options: comp.choix,
+        displayText: comp.choix.join(' ou ')
+      };
+    }
+    return {
+      isChoix: false,
+      nom: comp,
+      displayText: comp
+    };
+  });
+};
+
+/**
+ * Obtient le nombre total de compétences futiles de prédilection à obtenir
+ * @param {Array} competencesFutilesPredilection - Tableau des compétences futiles
+ * @returns {number} Nombre total de compétences
+ * 
+ * Exemple pour le Bastet:
+ * Input: ['Jeux', { choix: ['Danse', 'Potins mondains'] }]
+ * Output: 2 (car 1 fixe + 1 choix = 2 compétences au total)
+ */
+export const getCompetencesFutilesPredilectionCount = (competencesFutilesPredilection) => {
+  if (!competencesFutilesPredilection || !Array.isArray(competencesFutilesPredilection)) {
+    return 0;
+  }
+  
+  return competencesFutilesPredilection.length;
+};
+
+/**
+ * Vérifie si un choix de compétence futile est valide
+ * @param {object} choixItem - L'objet choix { choix: [...] }
+ * @param {string} selection - La compétence sélectionnée
+ * @returns {boolean} true si le choix est valide
+ */
+export const isValidCompetenceFutileChoice = (choixItem, selection) => {
+  if (!isCompetenceFutileChoix(choixItem)) return false;
+  return choixItem.choix.includes(selection);
 };
