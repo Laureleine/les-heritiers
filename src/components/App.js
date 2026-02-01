@@ -21,8 +21,8 @@ import DataEditor from './DataEditor';
 import { saveCharacterToSupabase } from '../utils/utils';
 import { exportToPDF } from '../utils/utils';
 
-const APP_VERSION = '2.3.0';
-const BUILD_DATE = '2026-01-31 19:15';
+const APP_VERSION = '2.3.1';
+const BUILD_DATE = '2026-02-01 14:06';
 
 function CharacterCreator() {
   const [session, setSession] = useState(null);

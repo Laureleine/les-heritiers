@@ -1,9 +1,9 @@
 // src/components/StepCompetencesLibres.js
-// Version: 2.4.0
-// Build: 2026-01-31 19:30
+// Version: 2.3.2
+// Build: 2026-01-31 19:25
 import React from 'react';
 import { Plus, Minus, Star, Info } from 'lucide-react';
-import { competences, competenceNames, profils as profilsData } from "../data/data";
+import { competences, competenceNames } from "../data/data";
 
 const POINTS_TOTAUX = 15;
 
@@ -219,14 +219,16 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
       </div>
     );
   };
-
-  // Organiser toutes les compétences par profil
-  const allProfilNames = Object.keys(profilsData);
-  const competencesByProfil = {};
   
-  allProfilNames.forEach(profilName => {
-    competencesByProfil[profilName] = profilsData[profilName].competences || [];
-  });
+  const competencesByProfil = {
+    majeur: character.profils?.majeur?.competences || [],
+    mineur: character.profils?.mineur?.competences || [],
+    autres: competenceNames.filter(nom => {
+      const inMajeur = character.profils?.majeur?.competences?.includes(nom);
+      const inMineur = character.profils?.mineur?.competences?.includes(nom);
+      return !inMajeur && !inMineur;
+    })
+  };
   
   return (
     <div className="space-y-4">
@@ -251,27 +253,36 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
         </div>
       </div>
       
-      {allProfilNames.map(profilName => {
-        const profilCompetences = competencesByProfil[profilName];
-        const isMajeur = character.profils?.majeur?.nom === profilName;
-        const isMineur = character.profils?.mineur?.nom === profilName;
-        
-        const borderColor = isMajeur ? 'border-purple-300' : isMineur ? 'border-blue-300' : 'border-gray-300';
-        const bgColor = isMajeur ? 'bg-purple-50' : isMineur ? 'bg-blue-50' : 'bg-gray-50';
-        const textColor = isMajeur ? 'text-purple-900' : isMineur ? 'text-blue-900' : 'text-gray-700';
-        const badge = isMajeur ? '(Majeur)' : isMineur ? '(Mineur)' : '';
-        
-        return (
-          <div key={profilName} className={`border-2 ${borderColor} rounded-lg p-3 ${bgColor}`}>
-            <h3 className={`text-lg font-serif ${textColor} mb-2 font-bold flex items-center gap-2`}>
-              {profilName} {badge && <span className="text-sm">{badge}</span>}
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-              {profilCompetences.map(renderCompetence)}
-            </div>
+      {character.profils?.majeur?.nom && (
+        <div className="border-2 border-purple-300 rounded-lg p-3 bg-purple-50">
+          <h3 className="text-lg font-serif text-purple-900 mb-2 font-bold flex items-center gap-2">
+            Profil Majeur: {character.profils.majeur.nom}
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            {competencesByProfil.majeur.map(renderCompetence)}
           </div>
-        );
-      })}
+        </div>
+      )}
+      
+      {character.profils?.mineur?.nom && (
+        <div className="border-2 border-blue-300 rounded-lg p-3 bg-blue-50">
+          <h3 className="text-lg font-serif text-blue-900 mb-2 font-bold flex items-center gap-2">
+            Profil Mineur: {character.profils.mineur.nom}
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            {competencesByProfil.mineur.map(renderCompetence)}
+          </div>
+        </div>
+      )}
+      
+      <div className="border-2 border-amber-200 rounded-lg p-3 bg-white">
+        <h3 className="text-lg font-serif text-amber-900 mb-2 font-bold">
+          Autres Compétences
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          {competencesByProfil.autres.map(renderCompetence)}
+        </div>
+      </div>
       
       {pointsRestants === 0 && (
         <div className="p-3 bg-green-100 border-2 border-green-400 rounded-lg text-center">
