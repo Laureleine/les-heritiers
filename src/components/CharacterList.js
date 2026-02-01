@@ -1,17 +1,19 @@
 // src/components/CharacterList.js
-// Version: 2.3.1
-// Build: 2026-01-31 19:20
+// Version: 2.5.0
+// Build: 2026-01-31 19:40
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe, Database } from 'lucide-react';
+import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe, Database, Settings } from 'lucide-react';
 import { getUserCharacters, getPublicCharacters, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/utils';
 import { exportCharacter, importCharacter } from '../utils/utils';
 import { exportToPDF } from '../utils/utils';
+import NotificationPreferences from './NotificationPreferences';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onDataEditor }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onDataEditor, session }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [activeTab, setActiveTab] = useState('my');
+  const [showNotifPrefs, setShowNotifPrefs] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -253,6 +255,14 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               </button>
 
               <button
+                onClick={() => setShowNotifPrefs(!showNotifPrefs)}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif"
+                title="Préférences de notification"
+              >
+                <Settings size={20} />
+              </button>
+
+              <button
                 onClick={onSignOut}
                 className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-serif"
                 title="Déconnexion"
@@ -261,6 +271,12 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               </button>
             </div>
           </div>
+
+          {showNotifPrefs && (
+            <div className="mb-6">
+              <NotificationPreferences session={session} />
+            </div>
+          )}
 
           {loading ? (
             <div className="text-center py-16">
