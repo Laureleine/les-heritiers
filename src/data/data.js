@@ -762,65 +762,77 @@ export const competences = {
   'Survie': {    description: 'Cette Compétence mesure l’instinct du danger et la capacité à se débrouiller dans la nature. Elle intervient dans certains tests relatifs à la perception.',
     specialites: ['Chasse', 'Vigilance', 'Faune et flore', 'Orientation', 'Premiers soins']
   },
-  'Art de la guerre': {    description: 'Cette Compétence mesure la faculté à obtenir l’avantage lors d’un conflit armé mais aussi politique ou stratégique. C’est également la Compétence utilisée pour déterminer l’Initiative.',
-    specialites: ['Embuscade', 'Évaluer forces et faiblesses', 'Initiative', 'Stratégie']
+  'Classe': {    description: 'Élégance, maintien, savoir-vivre et prestance en société',
+    specialites: ['Élégance', 'Maintien', 'Protocole', 'Style']
   },
-  'Autorité': {    description: 'C’est la faculté à imposer sa volonté et ainsi obtenir ce qu’on veut (information, autorisation, éviter un combat, etc.).',
-    specialites: ['Commander', 'Hiérarchie', 'Intimider']
+  'Habiletés': {    description: 'Débrouillardise, ingéniosité, improvisation et moyens détournés',
+    specialites: ['Ingéniosité', 'Improvisation', 'Moyen improvisé', 'Système D']
   },
-  'Mêlée': {    description: 'Cette Compétence évalue l’aptitude à savoir se battre en combat rapproché.',
-    specialites: ['Armes blanches légères', 'Armes blanches lourdes*', 'Armes naturelles', 'Fouet', 'Mauvaise main*']
+  'Larcin': {    description: 'Vol, pickpocket, cambriolage et larcins divers',
+    specialites: ['Vol à la tire', 'Cambriolage', 'Recel', 'Contrebande']
   },
-  'Tir': {    description: 'On utilise Tir pour se servir des armes de tir à distance.',
-    specialites: ['Armes d’épaule', 'Armes de poing', 'Armes à feu lourdes*', 'Armes de trait*', 'Mauvaise main*']
+  'Séduction': {    description: 'Charme, flirt, séduction et manipulation romantique',
+    specialites: ['Flirt', 'Charme', 'Séduction physique', 'Romantisme']
   },
-  'Culture': {    description: 'À cette Compétence correspond la culture d’un individu (générale ou plus spécialisée), ainsi que les langues parlées',
-    specialites: ['Archéologie', 'Connaissance d’Avalon*', 'Folklore féérique', 'Culture générale', 'Langues']
+  'Histoire': {    description: 'Connaissance du passé et des événements historiques',
+    specialites: ['Antiquité', 'Moyen Âge', 'Histoire moderne', 'Histoire locale']
   },
-  'Fortitude': {    description: 'La Fortitude est la force d’âme du moine ou du sage stoïcien. Cette Compétence mesure également la résistance à la magie et aux manipulations mentales.',
-    specialites: ['Concentration', 'Contrer la magie', 'Maîtrise de soi ', 'Résistance psychique']
-  },  
-  'Occultisme': {    description: 'L’Occultisme est la connaissance des pratiques religieuses ou profanes occultes.',
-    specialites: ['Connaissance des magies', 'Sciences occultes', 'Sixième sens', 'Spiritisme*']
+  'Littérature': {    description: 'Connaissance des œuvres littéraires',
+    specialites: ['Poésie', 'Romans', 'Théâtre', 'Essais']
   },
- 'Rhétorique': {    description: 'L’art de convaincre, de trouver les bons mots et arguments.',
-    specialites: ['Conversation', 'Diplomatie', 'Droit*', 'Orateur', 'Pédagogie', 'Persuader']
+  'Sciences': {    description: 'Physique, chimie, biologie',
+    specialites: ['Physique', 'Chimie', 'Biologie', 'Astronomie']
   },
-  'Classe': {    description: 'Cette Compétence évalue l’élégance, le savoir-vivre, l’urbanité mais aussi les prérogatives de la classe supérieure.',
-    specialites: ['Aplomb', 'Argent', 'Élégance', 'Étiquette', 'Flegme']
+  'Médecine': {    description: 'Soins, diagnostic, anatomie',
+    specialites: ['Premiers soins', 'Chirurgie', 'Diagnostic', 'Pharmacologie']
   },
-  'Entregent': {    description: 'C’est la capacité à se forger un réseau de contacts dans des milieux variés. Cette Compétence mesure également la connaissance de la réputation des gens notables',
-    specialites: ['Beau monde', 'Bourgeoisie', 'Prolétariat', 'Campagne', 'Ville', 'Crédit', 'Politique']
-  },  
-  'Séduction': {    description: 'L’art de charmer autrui, d’apparaître amical et de capter l’attention.',
-    specialites: ['Charmer', 'Appâts', 'Sympathie']
+  'Étiquette': {    description: 'Protocole, bonnes manières, savoir-vivre',
+    specialites: ['Haute société', 'Protocole royal', 'Dîners mondains']
   },
-  'Sensibilité': {    description: 'Cette Compétence mesure la capacité à sentir le véritable état d’esprit d’autrui, mais aussi à évaluer la beauté, ce que dégage une personne, un lieu ou un objet',
-    specialites: ['Intuition', 'Inspiration', 'Psychologie']
+  'Éloquence': {    description: 'Art oratoire, persuasion, rhétorique',
+    specialites: ['Discours', 'Débat', 'Négociation', 'Séduction']
   },
-  'Comédie': {    description: 'C’est la capacité à abuser autrui par ses paroles et ses manières.',
-    specialites: ['Déguisement', 'Jouer un rôle', 'Marchandage', 'Mentir']
+  'Intimidation': {    description: 'Impressionner, menacer, faire peur',
+    specialites: ['Menaces', 'Présence imposante', 'Interrogatoire']
   },
-  'Discrétion': {    description: 'C’est l’aptitude à passer inaperçu dans tous les sens du terme.',
-    specialites: ['Anonymat', 'Camouflage', 'Déplacement silencieux', 'Dissimulation d’objets et d’armes sur soi', 'Furtivité']
+  'Relations mondaines': {    description: 'Réseau social, contacts, réputation',
+    specialites: ['Haute société', 'Milieu artistique', 'Politique']
   },
-  'Larcin': {    description: 'Cette Compétence évalue la faculté à s’approprier les biens d’autrui par divers talents.',
-    specialites: ['Crochetage', 'Trouver ce qui est caché ', 'Pièges*', 'Pickpocket', 'Triche']
+  'Discrétion': {    description: 'Se cacher, se déplacer silencieusement',
+    specialites: ['Camouflage', 'Filature', 'Déplacement silencieux']
   },
-  'Monde du crime': {    description: 'Cette Compétence correspond au niveau de familiarité avec les milieux et activités interlopes.',
-    specialites: ['Assassinat*', 'Connaissance de la pègre', 'Corruption', 'Faussaire*']
+  'Crochetage': {    description: 'Ouvrir les serrures, crocheter',
+    specialites: ['Serrures simples', 'Serrures complexes', 'Coffres-forts']
   },
-   'Habiletés': {    description: 'À travers cette Compétence est évaluée la capacité à trouver des moyens astucieux pour parvenir à des solutions pratiques en tous genres ainsi que la capacité à fabriquer des objets.',
-    specialites: ['Artisanat*', 'Ingéniosité', 'Explosifs*', 'Mécanique', 'Moyen improvisé']
+  'Escamotage': {    description: 'Pickpocket, tours de passe-passe',
+    specialites: ['Vol à la tire', 'Tours de magie', 'Dissimulation']
   },
-  'Médecine': {    description: 'Cette Compétence mesure les connaissances et savoir-faire liés à la santé.',
-    specialites: ['Autopsie*', 'Chirurgie*', 'Pharmacopée*', 'Premiers soins']
+  'Ingénierie': {    description: 'Mécanique, construction, réparation',
+    specialites: ['Mécanique', 'Électricité', 'Horlogerie', 'Architecture']
   },
-  'Observation': {    description: 'Capacité à analyser l’environnement et à repérer des éléments sortant de l’ordinaire.',
-    specialites: ['Examen', 'Investigation', 'Sociologie']
+  'Exploration': {    description: 'Orientation, recherche, repérage',
+    specialites: ['Orientation', 'Pistage', 'Cartographie']
   },
-  'Sciences': {    description: 'Cette Compétence recouvre la compréhension, les connaissances et savoir-faire scientifiques, biologiques et technologiques (elle est plus théorique que pratique).',
-    specialites: ['Analyse et déduction', 'Biologie', 'Faëologie', 'Finance*', 'Invention*', 'Physique-chimie']
+  'Survie': {    description: 'Subsister en milieu naturel ou hostile',
+    specialites: ['Forêt', 'Montagne', 'Urbain', 'Chasse']
+  },
+  'Danse': {    description: 'Danses de salon, chorégraphie',
+    specialites: ['Valse', 'Tango', 'Ballet', 'Danses folkloriques']
+  },
+  'Tactique': {    description: 'Stratégie militaire, planification',
+    specialites: ['Combat de groupe', 'Embuscades', 'Défense']
+  },
+  'Tromperie': {    description: 'Mensonge, déguisement, bluff',
+    specialites: ['Mensonge', 'Déguisement', 'Contrefaçon', 'Bluff']
+  },
+  'Langues': {    description: 'Maîtrise des langues étrangères',
+    specialites: ['Anglais', 'Allemand', 'Italien', 'Espagnol', 'Latin', 'Grec']
+  },
+  'Culture générale': {    description: 'Connaissances diverses et variées',
+    specialites: ['Arts', 'Géographie', 'Actualités', 'Folklore']
+  },
+  'Alchimie': {    description: 'Préparation de potions, élixirs, substances',
+    specialites: ['Potions', 'Poisons', 'Explosifs', 'Philtre']
   }
 };
 
@@ -953,6 +965,44 @@ export const getProfilCompetences = (profilName) => {
 
 export const getProfilTraits = (profilName) => {
   return profils[profilName]?.traits || [];
+};
+
+/**
+ * Obtient le nom du profil adapté au sexe
+ * @param {string} profilName - Nom du profil (ex: "Aventurier / Aventurière")
+ * @param {string} sexe - "Homme", "Femme", ou "Androgyne"
+ * @returns {string} Nom adapté au sexe
+ */
+export const getProfilNameBySexe = (profilName, sexe) => {
+  if (!profilName) return '';
+  
+  const parts = profilName.split(' / ');
+  if (parts.length !== 2) return profilName;
+  
+  // Par défaut féminin pour androgyne
+  if (sexe === 'Homme') return parts[0];
+  return parts[1]; // Femme ou Androgyne
+};
+
+/**
+ * Calcule le rang d'un profil
+ * Rang = floor(somme des compétences du profil / 4)
+ * Si somme < 4, rang = 0
+ * @param {object} competencesBase - Map des compétences de base
+ * @param {object} competencesLibres - Compétences libres investies
+ * @param {array} profilCompetences - Liste des compétences du profil
+ * @returns {number} Rang du profil
+ */
+export const calculateProfilRang = (competencesBase, competencesLibres, profilCompetences) => {
+  if (!profilCompetences || profilCompetences.length === 0) return 0;
+  
+  const total = profilCompetences.reduce((sum, compName) => {
+    const base = competencesBase.get(compName)?.scoreBase || 0;
+    const libre = competencesLibres[compName]?.rangsSupplementaires || 0;
+    return sum + base + libre;
+  }, 0);
+  
+  return total < 4 ? 0 : Math.floor(total / 4);
 };
 
 // ============================================================================

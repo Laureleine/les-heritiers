@@ -361,7 +361,41 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
       {/* Le reste du composant n'est visible que si tous les choix sont faits */}
       {allChoicesMade && (
         <>
-          {/* Créer une compétence personnalisée */}
+          {/* Compétences personnalisées */}
+          {competencesPersonnalisees.length > 0 && (
+            <div className="border-2 border-blue-300 rounded-lg p-4 bg-blue-50">
+              <h3 className="text-xl font-serif text-blue-900 mb-4 font-bold flex items-center gap-2">
+                <Sparkles className="text-blue-600" />
+                Vos Compétences Personnalisées
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {competencesPersonnalisees.map(renderCompetence)}
+              </div>
+            </div>
+          )}
+          
+          {/* Liste des compétences de base */}
+          <div className="border-2 border-purple-200 rounded-lg p-4 bg-white">
+            <h3 className="text-xl font-serif text-purple-900 mb-4 font-bold">
+              Compétences Futiles Disponibles
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {competencesFutilesBase
+                .filter(comp => !competencesPredilection.includes(comp.nom))
+                .map(renderCompetence)}
+            </div>
+          </div>
+          
+          {/* Validation */}
+          {pointsRestants === 0 && (
+            <div className="p-4 bg-green-100 border-2 border-green-400 rounded-lg text-center">
+              <p className="text-green-800 font-serif text-lg">
+                ✓ Tous les points ont été répartis !
+              </p>
+            </div>
+          )}
+          
+          {/* Créer une compétence personnalisée - EN BAS */}
           <div className="border-2 border-blue-300 rounded-lg p-6 bg-gradient-to-r from-blue-50 to-cyan-50">
             <h3 className="text-xl font-serif text-blue-900 mb-4 font-bold flex items-center gap-2">
               <PlusCircle className="text-blue-600" />
@@ -406,40 +440,6 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
               </button>
             </div>
           </div>
-          
-          {/* Compétences personnalisées */}
-          {competencesPersonnalisees.length > 0 && (
-            <div className="border-2 border-blue-300 rounded-lg p-4 bg-blue-50">
-              <h3 className="text-xl font-serif text-blue-900 mb-4 font-bold flex items-center gap-2">
-                <Sparkles className="text-blue-600" />
-                Vos Compétences Personnalisées
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {competencesPersonnalisees.map(renderCompetence)}
-              </div>
-            </div>
-          )}
-          
-          {/* Liste des compétences de base */}
-          <div className="border-2 border-purple-200 rounded-lg p-4 bg-white">
-            <h3 className="text-xl font-serif text-purple-900 mb-4 font-bold">
-              Compétences Futiles Disponibles
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {competencesFutilesBase
-                .filter(comp => !competencesPredilection.includes(comp.nom))
-                .map(renderCompetence)}
-            </div>
-          </div>
-          
-          {/* Validation */}
-          {pointsRestants === 0 && (
-            <div className="p-4 bg-green-100 border-2 border-green-400 rounded-lg text-center">
-              <p className="text-green-800 font-serif text-lg">
-                ✓ Tous les points ont été répartis !
-              </p>
-            </div>
-          )}
         </>
       )}
     </div>

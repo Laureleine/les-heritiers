@@ -1,9 +1,9 @@
 // src/components/StepCompetencesLibres.js
-// Version: 2.7.1
-// Build: 2026-01-31 20:05
+// Version: 2.8.0
+// Build: 2026-01-31 20:20
 import React from 'react';
 import { Plus, Minus, Star, Info } from 'lucide-react';
-import { competences, profils as profilsData } from "../data/data";
+import { competences, profils as profilsData, getProfilNameBySexe, calculateProfilRang } from "../data/data";
 
 const POINTS_TOTAUX = 15;
 
@@ -256,15 +256,23 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
         const isMajeur = character.profils?.majeur?.nom === profilName;
         const isMineur = character.profils?.mineur?.nom === profilName;
         
+        // Calculer le rang du profil
+        const rang = calculateProfilRang(competencesBase, competencesLibres, profilCompetences);
+        
+        // Adapter le nom au sexe
+        const profilNameAdapted = getProfilNameBySexe(profilName, character.sexe);
+        
         const borderColor = isMajeur ? 'border-purple-300' : isMineur ? 'border-blue-300' : 'border-gray-300';
         const bgColor = isMajeur ? 'bg-purple-50' : isMineur ? 'bg-blue-50' : 'bg-gray-50';
         const textColor = isMajeur ? 'text-purple-900' : isMineur ? 'text-blue-900' : 'text-gray-700';
-        const badge = isMajeur ? '(Majeur)' : isMineur ? '(Mineur)' : '';
+        const badge = isMajeur ? 'Majeur' : isMineur ? 'Mineur' : '';
         
         return (
           <div key={profilName} className={`border-2 ${borderColor} rounded-lg p-3 ${bgColor}`}>
             <h3 className={`text-lg font-serif ${textColor} mb-2 font-bold flex items-center gap-2`}>
-              {profilName} {badge && <span className="text-sm">{badge}</span>}
+              {profilNameAdapted}
+              {badge && <span className="text-sm px-2 py-0.5 rounded bg-opacity-50 bg-white">{badge}</span>}
+              <span className="ml-auto text-xl font-bold">Rang {rang}</span>
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
               {profilCompetences.map(renderCompetence)}
