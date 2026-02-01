@@ -3,7 +3,8 @@
 // Build: 2026-01-31 18:45
 import React from 'react';
 import { Plus, Minus, Star, Info } from 'lucide-react';
-import { competences, competenceNames, profils } from "../data/data";
+// import { competences, competenceNames, profils } from "../data/data";
+import { competences, competenceNames } from "../data/data";
 
 const POINTS_TOTAUX = 15;
 
