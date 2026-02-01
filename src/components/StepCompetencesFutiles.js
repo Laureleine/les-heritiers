@@ -1,13 +1,14 @@
 // src/components/StepCompetencesFutiles.js
-// Version: 2.1
+// Version: 2.9.2
+// Build: 2026-01-31 20:45
 // Description: Étape 5 (Step 5 dans la séquence) - Compétences futiles (10 points)
-// Dernière modification: 2025-01-31
+// Dernière modification: 2026-01-31
 // Ajout: Support des choix entre compétences futiles de prédilection
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle } from 'lucide-react';
-import { fairyData, profils, competences } from '../data/data';
-import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
+import { competencesFutilesBase } from '../data/data';
+import { parseCompetencesFutilesPredilection } from '../data/dataHelpers';
 
 const POINTS_TOTAUX = 10;
 

@@ -1,10 +1,10 @@
 // src/components/StepCompetencesLibres.js
-// Version: 2.8.0
-// Build: 2026-01-31 20:20
+// Version: 2.9.2
+// Build: 2026-01-31 20:45
 import React from 'react';
 import { Plus, Minus, Star, Info } from 'lucide-react';
-import { fairyData, profils, competences } from '../data/data';
-import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
+import { competences, profils as profilsData } from '../data/data';
+import { getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
 
 const POINTS_TOTAUX = 15;
 

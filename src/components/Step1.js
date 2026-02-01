@@ -1,11 +1,11 @@
 // src/components/Step1.js
-// Version: 2.0
+// Version: 2.9.1
+// Build: 2026-01-31 20:40
 // Description: Étape 1 - Nom, sexe et type de fée
-// Dernière modification: 2025-01-30
+// Dernière modification: 2026-01-31
 
 import React from 'react';
-import { fairyData, profils, competences } from '../data/data';
-import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
+import { fairyTypesByAge } from '../data/data';
 
 export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeChange }) {
   return (

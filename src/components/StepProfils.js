@@ -1,8 +1,10 @@
 // src/components/StepProfils.js
+// Version: 2.9.2
+// Build: 2026-01-31 20:45
 import React from 'react';
 import { Info, Star, Award } from 'lucide-react';
-import { fairyData, profils, competences } from '../data/data';
-import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
+import { profils } from '../data/data';
+import { profilNames } from '../data/dataHelpers';
 
 export default function StepProfils({ character, onProfilsChange }) {
   // State pour info bulle (non utilisé actuellement)
