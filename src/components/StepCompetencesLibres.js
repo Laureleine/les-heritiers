@@ -1,9 +1,9 @@
 // src/components/StepCompetencesLibres.js
-// Version: 2.4.0
-// Build: 2026-01-31 19:30
+// Version: 2.7.1
+// Build: 2026-01-31 20:05
 import React from 'react';
 import { Plus, Minus, Star, Info } from 'lucide-react';
-import { competences, competenceNames, profils as profilsData } from "../data/data";
+import { competences, profils as profilsData } from "../data/data";
 
 const POINTS_TOTAUX = 15;
 

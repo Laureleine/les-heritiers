@@ -22,6 +22,7 @@ export default function NotificationPreferences({ session }) {
   useEffect(() => {
     setPushSupported('Notification' in window);
     loadPreferences();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadPreferences = async () => {

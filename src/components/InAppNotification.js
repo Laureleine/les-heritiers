@@ -1,9 +1,9 @@
 // src/components/InAppNotification.js
-// Version: 2.6.0
-// Build: 2026-01-31 19:50
+// Version: 2.7.1
+// Build: 2026-01-31 20:05
 
 import React, { useState, useEffect } from 'react';
-import { X, Bell, AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
 
 export default function InAppNotification() {
   const [notifications, setNotifications] = useState([]);
