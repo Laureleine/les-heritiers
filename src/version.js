@@ -1,14 +1,22 @@
 // src/version.js
 // Fichier de version centralisé - mis à jour automatiquement
-// Version: 2.12.0
-// Build: 2026-01-31 21:20
+// Version: 2.12.1
+// Build: 2026-01-31 21:25
 
-export const APP_VERSION = '2.12.0';
-export const BUILD_DATE = '2026-01-31 21:20';
-export const BUILD_NUMBER = 38;
+export const APP_VERSION = '2.12.1';
+export const BUILD_DATE = '2026-01-31 21:25';
+export const BUILD_NUMBER = 39;
 
 // Historique des versions avec changelogs
 export const VERSION_HISTORY = [
+  {
+    version: '2.12.1',
+    date: '2026-01-31 21:25',
+    type: 'patch',
+    changes: [
+      'Correction fermeture tags JSX dans affichage changelog'
+    ]
+  },
   {
     version: '2.12.0',
     date: '2026-01-31 21:20',
@@ -16,7 +24,9 @@ export const VERSION_HISTORY = [
     changes: [
       'Changelog intégré dans version.js',
       'Affichage changelog dynamique depuis VERSION_HISTORY',
-      'Suppression CHANGELOG.md (remplacé par version.js)'
+      'Suppression CHANGELOG.md (remplacé par version.js)',
+      'Couleurs par type: major (rouge), minor (violet), patch (bleu)',
+      'Tous les changelogs depuis v2.0.0 intégrés'
     ]
   },
   {

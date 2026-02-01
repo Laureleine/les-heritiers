@@ -332,13 +332,6 @@ function CharacterCreator() {
                 );
               })}
             </div>
-                  <li>• Consolidation 19 fichiers → 6 fichiers (-68%)</li>
-                  <li>• Scripts SQL complets</li>
-                  <li>• 44 compétences futiles officielles</li>
-                  <li>• Bastet complété selon PDF</li>
-                </ul>
-              </div>
-            </div>
           </div>
         </div>
       </div>
