@@ -813,26 +813,18 @@ export const competences = {
   'Monde du crime': {    description: 'Cette Compétence correspond au niveau de familiarité avec les milieux et activités interlopes.',
     specialites: ['Assassinat*', 'Connaissance de la pègre', 'Corruption', 'Faussaire*']
   },
-  
-  
-  'Habiletés': {    description: 'Débrouillardise, ingéniosité, improvisation et moyens détournés',
-    specialites: ['Ingéniosité', 'Improvisation', 'Moyen improvisé', 'Système D']
+   'Habiletés': {    description: 'À travers cette Compétence est évaluée la capacité à trouver des moyens astucieux pour parvenir à des solutions pratiques en tous genres ainsi que la capacité à fabriquer des objets.',
+    specialites: ['Artisanat*', 'Ingéniosité', 'Explosifs*', 'Mécanique', 'Moyen improvisé']
   },
-  'Sciences': {    description: 'Physique, chimie, biologie',
-    specialites: ['Physique', 'Chimie', 'Biologie', 'Astronomie']
+  'Médecine': {    description: 'Cette Compétence mesure les connaissances et savoir-faire liés à la santé.',
+    specialites: ['Autopsie*', 'Chirurgie*', 'Pharmacopée*', 'Premiers soins']
   },
-  'Médecine': {    description: 'Soins, diagnostic, anatomie',
-    specialites: ['Premiers soins', 'Chirurgie', 'Diagnostic', 'Pharmacologie']
+  'Observation': {    description: 'Capacité à analyser l’environnement et à repérer des éléments sortant de l’ordinaire.',
+    specialites: ['Examen', 'Investigation', 'Sociologie']
   },
-  'Crochetage': {    description: 'Ouvrir les serrures, crocheter',
-    specialites: ['Serrures simples', 'Serrures complexes', 'Coffres-forts']
-  },
-  'Escamotage': {    description: 'Pickpocket, tours de passe-passe',
-    specialites: ['Vol à la tire', 'Tours de magie', 'Dissimulation']
-  },
-  'Ingénierie': {    description: 'Mécanique, construction, réparation',
-    specialites: ['Mécanique', 'Électricité', 'Horlogerie', 'Architecture']
-  },
+  'Sciences': {    description: 'Cette Compétence recouvre la compréhension, les connaissances et savoir-faire scientifiques, biologiques et technologiques (elle est plus théorique que pratique).',
+    specialites: ['Analyse et déduction', 'Biologie', 'Faëologie', 'Finance*', 'Invention*', 'Physique-chimie']
+  }
 };
 
 export const competenceNames = Object.keys(competences);
