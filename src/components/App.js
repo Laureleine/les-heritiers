@@ -1,10 +1,10 @@
-// Version: 2.2.0
-// Build: 2026-01-31 18:45
+// Version: 2.3.0
+// Build: 2026-01-31 19:15
 // Description: Composant principal de l'application Les Héritiers
 // Dernière modification: 2026-01-31
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { fairyData, getFairyAge } from '../data/data';
 import Step1 from './Step1';
@@ -17,11 +17,12 @@ import Step3 from './Step3';
 import StepRecapitulatif from './StepRecapitulatif';
 import CharacterList from './CharacterList';
 import Auth from './Auth';
+import DataEditor from './DataEditor';
 import { saveCharacterToSupabase } from '../utils/utils';
 import { exportToPDF } from '../utils/utils';
 
-const APP_VERSION = '2.2.0';
-const BUILD_DATE = '2026-01-31 18:45';
+const APP_VERSION = '2.3.0';
+const BUILD_DATE = '2026-01-31 19:15';
 
 function CharacterCreator() {
   const [session, setSession] = useState(null);
@@ -234,6 +235,16 @@ function CharacterCreator() {
     );
   }
   
+  // Éditeur de données
+  if (view === 'data-editor') {
+    return (
+      <DataEditor
+        session={session}
+        onBack={() => setView('creation')}
+      />
+    );
+  }
+  
   // Changelog
   if (view === 'changelog') {
     return (
@@ -321,6 +332,14 @@ function CharacterCreator() {
             >
               <List size={20} />
               <span>Mes personnages</span>
+            </button>
+            
+            <button
+              onClick={() => setView('data-editor')}
+              className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-green-300 text-green-900 rounded-lg hover:bg-green-50 transition-all font-serif"
+            >
+              <Database size={20} />
+              <span>Données</span>
             </button>
             
             <button
