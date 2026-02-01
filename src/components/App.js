@@ -1,9 +1,10 @@
-// Version: 2.0
+// Version: 2.2.0
+// Build: 2026-01-31 18:45
 // Description: Composant principal de l'application Les Héritiers
-// Dernière modification: 2025-01-30
+// Dernière modification: 2026-01-31
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Save, List, FileText } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { fairyData, getFairyAge } from '../data/data';
 import Step1 from './Step1';
@@ -18,6 +19,9 @@ import CharacterList from './CharacterList';
 import Auth from './Auth';
 import { saveCharacterToSupabase } from '../utils/utils';
 import { exportToPDF } from '../utils/utils';
+
+const APP_VERSION = '2.2.0';
+const BUILD_DATE = '2026-01-31 18:45';
 
 function CharacterCreator() {
   const [session, setSession] = useState(null);
@@ -229,6 +233,66 @@ function CharacterCreator() {
       />
     );
   }
+  
+  // Changelog
+  if (view === 'changelog') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 p-4 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-serif text-purple-900">Changements</h1>
+              <button
+                onClick={() => setView('creation')}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-serif"
+              >
+                Retour
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="border-l-4 border-purple-600 pl-4">
+                <div className="flex items-baseline gap-3 mb-2">
+                  <span className="text-lg font-bold text-purple-900">v2.2.0</span>
+                  <span className="text-sm text-purple-600">2025-01-31 18:45</span>
+                </div>
+                <ul className="text-purple-800 space-y-1 text-sm">
+                  <li>• Regroupement des compétences par profil</li>
+                  <li>• Affichage compact des compétences</li>
+                  <li>• Version et date du build dans l'en-tête</li>
+                  <li>• Ajout onglet Changements</li>
+                </ul>
+              </div>
+              
+              <div className="border-l-4 border-blue-600 pl-4">
+                <div className="flex items-baseline gap-3 mb-2">
+                  <span className="text-lg font-bold text-blue-900">v2.1.0</span>
+                  <span className="text-sm text-blue-600">2025-01-31 17:30</span>
+                </div>
+                <ul className="text-blue-800 space-y-1 text-sm">
+                  <li>• Support des choix entre compétences futiles</li>
+                  <li>• Fonctions utilitaires pour gérer les choix</li>
+                </ul>
+              </div>
+              
+              <div className="border-l-4 border-green-600 pl-4">
+                <div className="flex items-baseline gap-3 mb-2">
+                  <span className="text-lg font-bold text-green-900">v2.0.0</span>
+                  <span className="text-sm text-green-600">2025-01-30</span>
+                </div>
+                <ul className="text-green-800 space-y-1 text-sm">
+                  <li>• Consolidation 19 fichiers → 6 fichiers (-68%)</li>
+                  <li>• Scripts SQL complets</li>
+                  <li>• 44 compétences futiles officielles</li>
+                  <li>• Bastet complété selon PDF</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Créateur de personnage
   return (
@@ -239,18 +303,34 @@ function CharacterCreator() {
             Les Héritiers
           </h1>
           <p className="text-xl text-amber-700 italic">Création de Personnage</p>
-          <div className="mt-4 text-sm text-amber-600">Belle Époque • Paris</div>
+          <div className="mt-2 flex items-center justify-center gap-4 text-sm text-amber-600">
+            <span>Belle Époque • Paris</span>
+            <span>•</span>
+            <span>v{APP_VERSION}</span>
+            <span>•</span>
+            <span>{BUILD_DATE}</span>
+          </div>
         </header>
 
         {/* Barre d'actions */}
         <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={() => setView('list')}
-            className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-amber-300 text-amber-900 rounded-lg hover:bg-amber-50 transition-all font-serif"
-          >
-            <List size={20} />
-            <span>Mes personnages</span>
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setView('list')}
+              className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-amber-300 text-amber-900 rounded-lg hover:bg-amber-50 transition-all font-serif"
+            >
+              <List size={20} />
+              <span>Mes personnages</span>
+            </button>
+            
+            <button
+              onClick={() => setView('changelog')}
+              className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-purple-300 text-purple-900 rounded-lg hover:bg-purple-50 transition-all font-serif"
+            >
+              <BookOpen size={20} />
+              <span>Changements</span>
+            </button>
+          </div>
 
           <div className="flex gap-2">
             <button

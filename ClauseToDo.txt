@@ -1,0 +1,3 @@
+Il faut afficher les compétences par profil
+
+il faut afficher la version du build sur la page principale de l'App
