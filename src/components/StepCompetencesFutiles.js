@@ -6,10 +6,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle } from 'lucide-react';
-import { 
-  competencesFutilesBase, 
-  parseCompetencesFutilesPredilection
-} from '../data/data';
+import { fairyData, profils, competences } from '../data/data';
+import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
 
 const POINTS_TOTAUX = 10;
 

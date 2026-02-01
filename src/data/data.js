@@ -1,7 +1,9 @@
 // src/data/data.js
-// Version: 2.0
-// Description: Fichier consolidé de toutes les données du jeu (fées, compétences, profils)
-// Dernière modification: 2025-01-30
+// Version: 2.9.0
+// Build: 2026-01-31 20:30
+// Description: Données du jeu (fées, compétences, profils) - DONNÉES UNIQUEMENT
+// Les fonctions utilitaires sont dans dataHelpers.js
+// Dernière modification: 2026-01-31
 
 // ============================================================================
 // TYPES DE FÉES ET ANCIENNETÉ
@@ -15,16 +17,6 @@ export const fairyTypesByAge = {
 };
 
 export const fairyTypes = [...fairyTypesByAge.anciennes, ...fairyTypesByAge.modernes];
-
-export const getFairyAge = (typeFee) => {
-  if (fairyTypesByAge.anciennes.includes(typeFee)) return 'ancienne';
-  if (fairyTypesByAge.modernes.includes(typeFee))  return 'moderne';
-  return null;
-};
-
-// ============================================================================
-// DONNÉES DES FÉES
-// ============================================================================
 
 export const fairyData = {
   'Ange': {
@@ -744,11 +736,6 @@ export const fairyData = {
     ]
   }
 };
-
-// ============================================================================
-// COMPÉTENCES
-// ============================================================================
-
 export const competences = {
   'Conduite': {    description: 'Cette compétence mesure la capacité à conduire des véhicules ou monter à cheval.',
     specialites: ['Équitation*', 'Conduite d’attelage*', 'Conduite d’automobile*', 'Navigation*', 'Pilotage d’aéronefs*']
@@ -823,29 +810,6 @@ export const competences = {
     specialites: ['Analyse et déduction', 'Biologie', 'Faëologie', 'Finance*', 'Invention*', 'Physique-chimie']
   }
 };
-
-export const competenceNames = Object.keys(competences);
-
-
-export const calculateCompetenceScore = (competenceName, character, fairyData) => {
-  let score = 0;
-  const feeData = fairyData[character.typeFee];
-  if (feeData?.competencesPredilection?.includes(competenceName)) {
-    score += 2;
-  }
-  if (character.profils?.majeur?.competences?.includes(competenceName)) {
-    score += 2;
-  }
-  if (character.profils?.mineur?.competences?.includes(competenceName)) {
-    score += 1;
-  }
-  return score;
-};
-
-// ============================================================================
-// COMPÉTENCES FUTILES
-// ============================================================================
-
 export const competencesFutilesBase = [
   { nom: 'Agriculture', description: 'Connaissance des cultures, élevage et travaux agricoles' },
   { nom: 'Architecture', description: 'Connaissance des styles architecturaux et de la construction' },
@@ -892,20 +856,6 @@ export const competencesFutilesBase = [
   { nom: 'Théâtre', description: 'Art dramatique, comédie et jeu d\'acteur' },
   { nom: 'Zoologie', description: 'Connaissance des animaux, de leur comportement et classification' }
 ];
-
-export const competenceFutileExists = (nom, customList = []) => {
-  const allCompetences = [...competencesFutilesBase, ...customList];
-  return allCompetences.some(c => c.nom.toLowerCase() === nom.toLowerCase());
-};
-
-export const getAllCompetencesFutiles = (customList = []) => {
-  return [...competencesFutilesBase, ...customList];
-};
-
-// ============================================================================
-// PROFILS
-// ============================================================================
-
 export const profils = {
   'Aventurier / Aventurière': {
     competences: ['Conduite', 'Ressort', 'Mouvement', 'Survie'],
@@ -943,130 +893,4 @@ export const profils = {
     description: 'Le savant explore les mystères de la science et de la technique.',
     icon: '🔬'
   }
-};
-
-export const profilNames = Object.keys(profils);
-
-export const getProfilCompetences = (profilName) => {
-  return profils[profilName]?.competences || [];
-};
-
-export const getProfilTraits = (profilName) => {
-  return profils[profilName]?.traits || [];
-};
-
-/**
- * Obtient le nom du profil adapté au sexe
- * @param {string} profilName - Nom du profil (ex: "Aventurier / Aventurière")
- * @param {string} sexe - "Homme", "Femme", ou "Androgyne"
- * @returns {string} Nom adapté au sexe
- */
-export const getProfilNameBySexe = (profilName, sexe) => {
-  if (!profilName) return '';
-  
-  const parts = profilName.split(' / ');
-  if (parts.length !== 2) return profilName;
-  
-  // Par défaut féminin pour androgyne
-  if (sexe === 'Homme') return parts[0];
-  return parts[1]; // Femme ou Androgyne
-};
-
-/**
- * Calcule le rang d'un profil
- * Rang = floor(somme des compétences du profil / 4)
- * Si somme < 4, rang = 0
- * @param {object} competencesBase - Map des compétences de base
- * @param {object} competencesLibres - Compétences libres investies
- * @param {array} profilCompetences - Liste des compétences du profil
- * @returns {number} Rang du profil
- */
-export const calculateProfilRang = (competencesBase, competencesLibres, profilCompetences) => {
-  if (!profilCompetences || profilCompetences.length === 0) return 0;
-  
-  const total = profilCompetences.reduce((sum, compName) => {
-    const base = competencesBase.get(compName)?.scoreBase || 0;
-    const libre = competencesLibres[compName]?.rangsSupplementaires || 0;
-    return sum + base + libre;
-  }, 0);
-  
-  return total < 4 ? 0 : Math.floor(total / 4);
-};
-
-// ============================================================================
-// FONCTIONS UTILITAIRES POUR COMPÉTENCES FUTILES AVEC CHOIX
-// ============================================================================
-
-/**
- * Vérifie si une compétence futile de prédilection est un choix
- * @param {string|object} comp - La compétence (string ou objet avec propriété choix)
- * @returns {boolean} true si c'est un choix
- * 
- * Exemple:
- * isCompetenceFutileChoix('Jeux') => false
- * isCompetenceFutileChoix({ choix: ['Danse', 'Potins mondains'] }) => true
- */
-export const isCompetenceFutileChoix = (comp) => {
-  return typeof comp === 'object' && comp !== null && comp.choix && Array.isArray(comp.choix);
-};
-
-/**
- * Parse les compétences futiles de prédilection pour affichage
- * @param {Array} competencesFutilesPredilection - Tableau des compétences futiles
- * @returns {Array} Tableau d'objets { isChoix, nom?, options?, displayText }
- * 
- * Exemple pour le Bastet:
- * Input: ['Jeux', { choix: ['Danse', 'Potins mondains'] }]
- * Output: [
- *   { isChoix: false, nom: 'Jeux', displayText: 'Jeux' },
- *   { isChoix: true, options: ['Danse', 'Potins mondains'], displayText: 'Danse ou Potins mondains' }
- * ]
- */
-export const parseCompetencesFutilesPredilection = (competencesFutilesPredilection) => {
-  if (!competencesFutilesPredilection || !Array.isArray(competencesFutilesPredilection)) {
-    return [];
-  }
-  
-  return competencesFutilesPredilection.map(comp => {
-    if (isCompetenceFutileChoix(comp)) {
-      return {
-        isChoix: true,
-        options: comp.choix,
-        displayText: comp.choix.join(' ou ')
-      };
-    }
-    return {
-      isChoix: false,
-      nom: comp,
-      displayText: comp
-    };
-  });
-};
-
-/**
- * Obtient le nombre total de compétences futiles de prédilection à obtenir
- * @param {Array} competencesFutilesPredilection - Tableau des compétences futiles
- * @returns {number} Nombre total de compétences
- * 
- * Exemple pour le Bastet:
- * Input: ['Jeux', { choix: ['Danse', 'Potins mondains'] }]
- * Output: 2 (car 1 fixe + 1 choix = 2 compétences au total)
- */
-export const getCompetencesFutilesPredilectionCount = (competencesFutilesPredilection) => {
-  if (!competencesFutilesPredilection || !Array.isArray(competencesFutilesPredilection)) {
-    return 0;
-  }
-  
-  return competencesFutilesPredilection.length;
-};
-
-/**
- * Vérifie si un choix de compétence futile est valide
- * @param {object} choixItem - L'objet choix { choix: [...] }
- * @param {string} selection - La compétence sélectionnée
- * @returns {boolean} true si le choix est valide
- */
-export const isValidCompetenceFutileChoice = (choixItem, selection) => {
-  if (!isCompetenceFutileChoix(choixItem)) return false;
-  return choixItem.choix.includes(selection);
 };

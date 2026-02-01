@@ -5,7 +5,8 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Edit, Check, X, AlertTriangle, Shield } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { fairyData, competences } from '../data/data';
+import { fairyData, profils, competences } from '../data/data';
+import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
 
 export default function DataEditor({ session, onBack }) {
   const [activeTab, setActiveTab] = useState('fairies');

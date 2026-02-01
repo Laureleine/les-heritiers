@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { User, Star, Award, Sparkles } from 'lucide-react';
-import { profils } from '../data/data';
+import { fairyData, profils, competences } from '../data/data';
+import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
 
 export default function StepRecapitulatif({ character, fairyData }) {
   const feeData = fairyData[character.typeFee];

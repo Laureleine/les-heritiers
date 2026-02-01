@@ -6,7 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { fairyData, getFairyAge } from '../data/data';
+import { fairyData, profils, competences } from '../data/data';
+import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import Step1 from './Step1';
 import StepCaracteristiques from './StepCaracteristiques';

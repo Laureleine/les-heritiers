@@ -1,14 +1,15 @@
 // src/version.js
 // Fichier de version centralisé - mis à jour automatiquement
-// Version: 2.8.0
-// Build: 2026-01-31 20:20
+// Version: 2.9.0
+// Build: 2026-01-31 20:30
 
-export const APP_VERSION = '2.8.0';
-export const BUILD_DATE = '2026-01-31 20:20';
-export const BUILD_NUMBER = 30;
+export const APP_VERSION = '2.9.0';
+export const BUILD_DATE = '2026-01-31 20:30';
+export const BUILD_NUMBER = 31;
 
 // Historique des versions
 export const VERSION_HISTORY = [
+  { version: '2.9.0', date: '2026-01-31 20:30', type: 'minor' },
   { version: '2.8.0', date: '2026-01-31 20:20', type: 'minor' },
   { version: '2.7.2', date: '2026-01-31 20:10', type: 'patch' },
   { version: '2.7.1', date: '2026-01-31 20:05', type: 'patch' },
