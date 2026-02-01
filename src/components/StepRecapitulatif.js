@@ -1,12 +1,12 @@
 // src/components/StepRecapitulatif.js
-// Version: 2.0
+// Version: 2.9.4
+// Build: 2026-01-31 20:52
 // Description: Étape 8 - Récapitulatif final du personnage
-// Dernière modification: 2025-01-30
+// Dernière modification: 2026-01-31
 
 import React from 'react';
 import { User, Star, Award, Sparkles } from 'lucide-react';
-import { fairyData, profils, competences } from '../data/data';
-import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
+import { profils } from '../data/data';
 
 export default function StepRecapitulatif({ character, fairyData }) {
   const feeData = fairyData[character.typeFee];

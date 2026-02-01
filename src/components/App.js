@@ -1,13 +1,12 @@
-// Version: 2.7.0
-// Build: 2026-01-31 20:00
+// Version: 2.9.3
+// Build: 2026-01-31 20:50
 // Description: Composant principal de l'application Les Héritiers
 // Dernière modification: 2026-01-31
 
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { fairyData, profils, competences } from '../data/data';
-import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
+import { fairyData } from '../data/data';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import Step1 from './Step1';
 import StepCaracteristiques from './StepCaracteristiques';

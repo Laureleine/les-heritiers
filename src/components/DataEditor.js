@@ -1,12 +1,11 @@
 // src/components/DataEditor.js
-// Version: 2.3.2
-// Build: 2026-01-31 19:25
+// Version: 2.9.3
+// Build: 2026-01-31 20:50
 
 import React, { useState, useEffect } from 'react';
 import { Save, Edit, Check, X, AlertTriangle, Shield } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { fairyData, profils, competences } from '../data/data';
-import { getFairyAge, getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
+import { fairyData, competences } from '../data/data';
 
 export default function DataEditor({ session, onBack }) {
   const [activeTab, setActiveTab] = useState('fairies');
