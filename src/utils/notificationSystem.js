@@ -105,33 +105,13 @@ export const notifyNewVersion = (version, changelog) => {
 /**
  * Vérifie s'il y a une nouvelle version (à appeler au démarrage)
  * Note: Désactivé car version.json n'est pas déployé en production
+ * TODO: Implémenter vérification version avec API backend
  */
 export const checkForUpdates = async (currentVersion) => {
-  try {
-    // TODO: Implémenter vérification version avec API backend
-    // Pour l'instant, désactivé pour éviter erreur 404
-    return;
-    
-    // Récupérer la dernière version depuis une API ou fichier
-    const response = await fetch('/version.json');
-    const { version, changelog } = await response.json();
-
-    if (version !== currentVersion) {
-      // Vérifier si l'utilisateur veut être notifié
-      const { data } = await supabase
-        .from('user_notification_preferences')
-        .select('enable_push_notifications')
-        .single();
-
-      if (data?.enable_push_notifications) {
-        notifyNewVersion(version, changelog);
-      }
-    }
-  } catch (error) {
-    // Silencieux en cas d'erreur (fichier absent, etc.)
-    console.debug('Vérification updates ignorée:', error.message);
-  }
+  // Désactivé pour éviter erreur 404
+  return;
 };
+
 
 /**
  * Service Worker pour notifications en arrière-plan

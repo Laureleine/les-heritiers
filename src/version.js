@@ -1,14 +1,23 @@
 // src/version.js
 // Fichier de version centralisé - mis à jour automatiquement
-// Version: 2.13.8
-// Build: 2026-01-31 22:22
+// Version: 2.13.9
+// Build: 2026-01-31 22:25
 
-export const APP_VERSION = '2.13.8';
-export const BUILD_DATE = '2026-01-31 22:22';
-export const BUILD_NUMBER = 52;
+export const APP_VERSION = '2.13.9';
+export const BUILD_DATE = '2026-01-31 22:25';
+export const BUILD_NUMBER = 53;
 
 // Historique des versions avec changelogs
 export const VERSION_HISTORY = [
+  {
+    version: '2.13.9',
+    date: '2026-01-31 22:25',
+    type: 'patch',
+    changes: [
+      'Suppression code mort dans checkForUpdates',
+      'Fix warnings ESLint "Unreachable code"'
+    ]
+  },
   {
     version: '2.13.8',
     date: '2026-01-31 22:22',
