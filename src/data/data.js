@@ -864,7 +864,7 @@ export const profils = {
     icon: '🗺️'
   },
   'Combattant / Combattante': {
-    competences: ['Art militaire', 'Autorité', 'Mêlée', 'Tir'],
+    competences: ['Art de la guerre', 'Autorité', 'Mêlée', 'Tir'],
     traits: ['Combatif', 'Endurci', 'Martial', 'Protecteur', 'Sanguin'],
     description: 'Le combattant maîtrise l\'art de la guerre et du combat.',
     icon: '⚔️'
