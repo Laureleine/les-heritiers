@@ -1,14 +1,74 @@
 // src/version.js
 // Fichier de version centralisé - mis à jour automatiquement
-// Version: 2.13.1
-// Build: 2026-01-31 21:50
+// Version: 2.13.7
+// Build: 2026-01-31 22:20
 
-export const APP_VERSION = '2.13.1';
-export const BUILD_DATE = '2026-01-31 21:50';
-export const BUILD_NUMBER = 45;
+export const APP_VERSION = '2.13.7';
+export const BUILD_DATE = '2026-01-31 22:20';
+export const BUILD_NUMBER = 51;
 
 // Historique des versions avec changelogs
 export const VERSION_HISTORY = [
+  {
+    version: '2.13.7',
+    date: '2026-01-31 22:20',
+    type: 'patch',
+    changes: [
+      'Renommage clé fairyTypesByAge.anciennes → .traditionnelles',
+      'Mise à jour 3 références (Step1.js, data.js)',
+      'Migration "ancienne → traditionnelle" 100% complète'
+    ]
+  },
+  {
+    version: '2.13.6',
+    date: '2026-01-31 22:15',
+    type: 'patch',
+    changes: [
+      'Migration complète "ancienne" → "traditionnelle"',
+      'Mise à jour data.js : 17 occurrences anciennete: \'traditionnelle\'',
+      'Mise à jour comparaisons dans 4 fichiers (CharacterList, StepRecapitulatif, dataHelpers, utils)'
+    ]
+  },
+  {
+    version: '2.13.5',
+    date: '2026-01-31 22:10',
+    type: 'patch',
+    changes: [
+      'Centralisation logique UUID : fonction isSupabaseId()',
+      'Remplace tous les tests "id.length > 20"',
+      'Code plus maintenable et lisible'
+    ]
+  },
+  {
+    version: '2.13.4',
+    date: '2026-01-31 22:05',
+    type: 'patch',
+    changes: [
+      'Fix erreur "Unexpected token \'<\'" au démarrage',
+      'Désactivation checkForUpdates (version.json absent)',
+      'Console.debug au lieu de crash si fichier manquant'
+    ]
+  },
+  {
+    version: '2.13.3',
+    date: '2026-01-31 22:00',
+    type: 'patch',
+    changes: [
+      'Amélioration validation suppression : détection ID locaux vs UUID',
+      'Message explicite si tentative suppression personnage local',
+      'Empêche erreur UUID sur personnages non sauvegardés Supabase'
+    ]
+  },
+  {
+    version: '2.13.2',
+    date: '2026-01-31 21:55',
+    type: 'patch',
+    changes: [
+      'Fix erreur suppression "invalid input syntax for type uuid"',
+      'Validation ID avant suppression (rejette "null", "undefined", vide)',
+      'Message d\'erreur plus clair'
+    ]
+  },
   {
     version: '2.13.1',
     date: '2026-01-31 21:50',

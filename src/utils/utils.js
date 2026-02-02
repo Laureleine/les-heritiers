@@ -1,10 +1,26 @@
 // src/utils/utils.js
-// Version: 2.0
+// Version: 2.13.5
 // Description: Fichier consolidé de tous les utilitaires (storage, PDF export, Supabase)
-// Dernière modification: 2025-01-30
+// Dernière modification: 2026-01-31
 
 import { supabase } from '../config/supabase';
 import { fairyData } from '../data/data';
+
+// ============================================================================
+// ID HELPERS
+// ============================================================================
+
+/**
+ * Vérifie si un ID est un UUID Supabase (vs ID local court)
+ * @param {string} id - L'ID à vérifier
+ * @returns {boolean} - true si UUID Supabase, false si ID local
+ */
+export const isSupabaseId = (id) => {
+  if (!id || typeof id !== 'string') return false;
+  // UUID = 36 caractères (ex: "550e8400-e29b-41d4-a716-446655440000")
+  // ID local = court (ex: "1738361234567")
+  return id.length > 20;
+};
 
 // ============================================================================
 // CHARACTER STORAGE (LocalStorage - Legacy)
@@ -107,8 +123,8 @@ export const saveCharacterToSupabase = async (character) => {
     }
   };
 
-  if (character.id && character.id.length > 20) {
-    // Mise à jour
+  if (isSupabaseId(character.id)) {
+    // Mise à jour d'un personnage existant
     const { data, error } = await supabase
       .from('characters')
       .update(characterData)
@@ -199,6 +215,16 @@ export const getPublicCharacters = async (isAdmin = false) => {
 };
 
 export const deleteCharacterFromSupabase = async (id) => {
+  // Validation de l'ID
+  if (!id || id === 'null' || id === 'undefined') {
+    throw new Error('ID invalide');
+  }
+  
+  // Vérifier que c'est un UUID Supabase (pas un ID local)
+  if (!isSupabaseId(id)) {
+    throw new Error('Ce personnage existe uniquement en local. Impossible de le supprimer de Supabase.');
+  }
+
   const { error } = await supabase
     .from('characters')
     .delete()

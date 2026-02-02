@@ -56,7 +56,7 @@ export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeC
               🏛️ Fées Traditionnelles
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {fairyTypesByAge.anciennes.map(type => (
+              {fairyTypesByAge.traditionnelles.map(type => (
                 <button
                   key={type}
                   onClick={() => onTypeFeeChange(type)}
@@ -100,7 +100,7 @@ export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeC
           <div className="mt-4 p-4 bg-gradient-to-r from-amber-100 to-blue-100 rounded-lg border-2 border-amber-300">
             <p className="text-center font-serif text-amber-900">
               <span className="font-semibold">Type sélectionné :</span> {character.typeFee}
-              {fairyTypesByAge.anciennes.includes(character.typeFee) && (
+              {fairyTypesByAge.traditionnelles.includes(character.typeFee) && (
                 <span className="ml-2 text-amber-700">(Fée Traditionnelle 🏛️)</span>
               )}
               {fairyTypesByAge.modernes.includes(character.typeFee) && (

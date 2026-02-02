@@ -162,6 +162,7 @@ export const fairyData = {
     ]
   },
 
+  // Autres fées anciennes (templates à compléter)
   'Farfadet': {
     anciennete: 'traditionnelle',
     description: 'À compléter.',
@@ -189,7 +190,7 @@ export const fairyData = {
   },
 
   'Gnome': {
-	anciennete: 'traditionnelle',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 4 }, constitution: { min: 3, max: 6 }, force: { min: 2, max: 5 },

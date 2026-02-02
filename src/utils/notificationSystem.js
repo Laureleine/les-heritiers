@@ -104,9 +104,14 @@ export const notifyNewVersion = (version, changelog) => {
 
 /**
  * Vérifie s'il y a une nouvelle version (à appeler au démarrage)
+ * Note: Désactivé car version.json n'est pas déployé en production
  */
 export const checkForUpdates = async (currentVersion) => {
   try {
+    // TODO: Implémenter vérification version avec API backend
+    // Pour l'instant, désactivé pour éviter erreur 404
+    return;
+    
     // Récupérer la dernière version depuis une API ou fichier
     const response = await fetch('/version.json');
     const { version, changelog } = await response.json();
@@ -123,6 +128,10 @@ export const checkForUpdates = async (currentVersion) => {
       }
     }
   } catch (error) {
+    // Silencieux en cas d'erreur (fichier absent, etc.)
+    console.debug('Vérification updates ignorée:', error.message);
+  }
+};
     console.error('Erreur vérification updates:', error);
   }
 };
