@@ -124,7 +124,7 @@ export default function StepRecapitulatif({ character, fairyData }) {
             </h2>
             <p className="text-amber-700">
               {character.typeFee} • {character.sexe} • 
-              {character.anciennete === 'ancienne' ? ' 🏛️ Fée Ancienne' : ' ⚡ Fée Moderne'}
+              {character.anciennete === 'traditionnelle' ? ' 🏛️ Fée Traditionnelle' : ' ⚡ Fée Moderne'}
             </p>
           </div>
         </div>

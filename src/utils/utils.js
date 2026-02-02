@@ -450,7 +450,7 @@ export const exportToPDF = (character) => {
             <div class="info-item" style="grid-column: span 2;">
               <div class="info-label">Ancienneté</div>
               <div class="info-value">
-                ${character.anciennete === 'ancienne' ? '🏛️ Fée Ancienne' : '⚡ Fée Moderne'}
+                ${character.anciennete === 'traditionnelle' ? '🏛️ Fée Traditionnelle' : '⚡ Fée Moderne'}
               </div>
             </div>
             ` : ''}

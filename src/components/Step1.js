@@ -50,10 +50,10 @@ export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeC
         </h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Colonne Fées Anciennes */}
+          {/* Colonne Fées Traditionnelles */}
           <div className="border-2 border-amber-300 rounded-lg p-4 bg-amber-50">
             <h3 className="text-xl font-serif text-amber-800 mb-4 text-center font-semibold">
-              🏛️ Fées Anciennes
+              🏛️ Fées Traditionnelles
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {fairyTypesByAge.anciennes.map(type => (
@@ -101,7 +101,7 @@ export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeC
             <p className="text-center font-serif text-amber-900">
               <span className="font-semibold">Type sélectionné :</span> {character.typeFee}
               {fairyTypesByAge.anciennes.includes(character.typeFee) && (
-                <span className="ml-2 text-amber-700">(Fée Ancienne 🏛️)</span>
+                <span className="ml-2 text-amber-700">(Fée Traditionnelle 🏛️)</span>
               )}
               {fairyTypesByAge.modernes.includes(character.typeFee) && (
                 <span className="ml-2 text-blue-700">(Fée Moderne ⚡)</span>

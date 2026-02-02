@@ -96,7 +96,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
           </p>
           {char.anciennete && (
             <p className="text-xs text-amber-600 italic">
-              {char.anciennete === 'ancienne' ? '🏛️ Fée Ancienne' : '⚡ Fée Moderne'}
+              {char.anciennete === 'traditionnelle' ? '🏛️ Fée Traditionnelle' : '⚡ Fée Moderne'}
             </p>
           )}
         </div>

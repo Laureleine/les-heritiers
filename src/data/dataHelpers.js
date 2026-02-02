@@ -19,7 +19,7 @@ export const getFairyAge = (typeFee, anciennete) => {
   const ages = feeData.age;
   if (!ages) return { min: 0, max: 0 };
   
-  return anciennete === 'ancienne' ? ages.ancienne : ages.moderne;
+  return anciennete === 'Traditionnelle' ? ages.ancienne : ages.moderne;
 };
 
 // ============================================================================

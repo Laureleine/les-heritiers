@@ -170,7 +170,7 @@ export default function DataEditor({ session, onBack }) {
                     onChange={(e) => setFormData({...formData, anciennete: e.target.value})}
                     className="w-full p-2 border rounded"
                   >
-                    <option value="ancienne">Ancienne</option>
+                    <option value="traditionnelle">Traditionnelle</option>
                     <option value="moderne">Moderne</option>
                   </select>
                 </div>

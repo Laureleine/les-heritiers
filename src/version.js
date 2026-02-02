@@ -1,14 +1,71 @@
 // src/version.js
 // Fichier de version centralisé - mis à jour automatiquement
-// Version: 2.12.1
-// Build: 2026-01-31 21:25
+// Version: 2.13.1
+// Build: 2026-01-31 21:50
 
-export const APP_VERSION = '2.12.1';
-export const BUILD_DATE = '2026-01-31 21:25';
-export const BUILD_NUMBER = 39;
+export const APP_VERSION = '2.13.1';
+export const BUILD_DATE = '2026-01-31 21:50';
+export const BUILD_NUMBER = 45;
 
 // Historique des versions avec changelogs
 export const VERSION_HISTORY = [
+  {
+    version: '2.13.1',
+    date: '2026-01-31 21:50',
+    type: 'patch',
+    changes: [
+      'Remplacement "Fée Ancienne" → "Fée Traditionnelle" (3 fichiers)',
+      'CharacterList.js, StepRecapitulatif.js, utils.js mis à jour'
+    ]
+  },
+  {
+    version: '2.13.0',
+    date: '2026-01-31 21:45',
+    type: 'minor',
+    changes: [
+      'Renommage "Fées Anciennes" → "Fées Traditionnelles"',
+      'Mise à jour Step1.js (titre et indicateur)'
+    ]
+  },
+  {
+    version: '2.12.5',
+    date: '2026-01-31 21:40',
+    type: 'patch',
+    changes: [
+      'Fix définitif "permission denied for table users"',
+      'Suppression références auth.users dans politiques RLS',
+      'Politiques RLS simplifiées sans accès auth.users',
+      'Admin géré côté application (pas RLS)',
+      'Script database_fix_rls_v2.sql'
+    ]
+  },
+  {
+    version: '2.12.4',
+    date: '2026-01-31 21:35',
+    type: 'patch',
+    changes: [
+      'Fix erreur "permission denied for table users"',
+      'Correction politiques RLS Supabase (database_fix_rls.sql)',
+      'Politiques complètes: SELECT, INSERT, UPDATE, DELETE'
+    ]
+  },
+  {
+    version: '2.12.3',
+    date: '2026-01-31 21:32',
+    type: 'patch',
+    changes: [
+      'Correction import AlertTriangle inutilisé dans App.js',
+      'Correction warning useEffect dans CharacterList.js'
+    ]
+  },
+  {
+    version: '2.12.2',
+    date: '2026-01-31 21:30',
+    type: 'patch',
+    changes: [
+      'Correction import getFairyAge manquant dans App.js'
+    ]
+  },
   {
     version: '2.12.1',
     date: '2026-01-31 21:25',

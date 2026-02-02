@@ -10,17 +10,17 @@
 // ============================================================================
 
 export const fairyTypesByAge = {
-  anciennes: [
+  traditionnelles: [
     'Ange', 'Bastet', 'Elfe', 'Farfadet', 'Gnome', 'Gobelin', 'Korrigan', 'Léporide', 'Loup-Garou', 'Ogre', 'Ondine', 'Orc', 'Phénix', 'Succube/Incube', 'Sylve', 'Troll', 'Vampyr'
   ],
   modernes: ['Fée électricité', 'Fleur de métal', 'Fouinard', 'Gargouille', 'Golem', 'Gremelin', 'Protys', 'Smog'  ]
 };
 
-export const fairyTypes = [...fairyTypesByAge.anciennes, ...fairyTypesByAge.modernes];
+export const fairyTypes = [...fairyTypesByAge.traditionnelles, ...fairyTypesByAge.modernes];
 
 export const fairyData = {
   'Ange': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'Les Anges sont des êtres célestes dotés de grandes ailes blanches. Ils incarnent la pureté et la lumière dans le Paris de la Belle Époque.',
     caracteristiques: {
       agilite: { min: 1, max: 4 },
@@ -57,7 +57,7 @@ export const fairyData = {
   },
 
   'Bastet': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'Homme-chat rusé, joueur et séducteur, il est aussi capable de prouesses acrobatiques. Le bastet est une créature gracieuse de forme humanoïde mais à tête de chat : il a des oreilles pointues, des moustaches et des yeux de félin. Sa queue est longue et son pelage soyeux. Le bastet est foncièrement joueur et paresseux, incorrigiblement séducteur et indépendant. Traits fréquents : charmeur, joueur, malicieux, paresseux.',
     caracteristiques: {
       agilite: { min: 3, max: 7 },
@@ -126,7 +126,7 @@ export const fairyData = {
   },
 
   'Elfe': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'Les Elfes sont réputés pour leur beauté éthérée et leur lien profond avec la nature.',
     caracteristiques: {
       agilite: { min: 3, max: 5 },
@@ -162,9 +162,8 @@ export const fairyData = {
     ]
   },
 
-  // Autres fées anciennes (templates à compléter)
   'Farfadet': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 1, max: 4 }, force: { min: 1, max: 3 },
@@ -190,7 +189,7 @@ export const fairyData = {
   },
 
   'Gnome': {
-    anciennete: 'ancienne',
+	anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 4 }, constitution: { min: 3, max: 6 }, force: { min: 2, max: 5 },
@@ -216,7 +215,7 @@ export const fairyData = {
   },
 
   'Gobelin': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 4 },
@@ -242,7 +241,7 @@ export const fairyData = {
   },
 
   'Korrigan': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 1, max: 4 },
@@ -268,7 +267,7 @@ export const fairyData = {
   },
 
   'Léporide': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 3, max: 6 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 3 },
@@ -294,7 +293,7 @@ export const fairyData = {
   },
 
   'Loup-Garou': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 3, max: 6 }, force: { min: 3, max: 6 },
@@ -320,7 +319,7 @@ export const fairyData = {
   },
 
   'Ogre': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 1, max: 3 }, constitution: { min: 4, max: 6 }, force: { min: 4, max: 6 },
@@ -346,7 +345,7 @@ export const fairyData = {
   },
 
   'Ondine': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 1, max: 4 },
@@ -372,7 +371,7 @@ export const fairyData = {
   },
 
   'Orc': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 4 }, constitution: { min: 3, max: 6 }, force: { min: 3, max: 6 },
@@ -398,7 +397,7 @@ export const fairyData = {
   },
 
   'Phénix': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 1, max: 4 },
@@ -424,7 +423,7 @@ export const fairyData = {
   },
 
   'Succube/Incube': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 4 }, force: { min: 1, max: 4 },
@@ -450,7 +449,7 @@ export const fairyData = {
   },
 
   'Sylve': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 1, max: 4 }, force: { min: 1, max: 3 },
@@ -476,7 +475,7 @@ export const fairyData = {
   },
 
   'Troll': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 1, max: 3 }, constitution: { min: 3, max: 6 }, force: { min: 3, max: 6 },
@@ -502,7 +501,7 @@ export const fairyData = {
   },
 
   'Vampyr': {
-    anciennete: 'ancienne',
+    anciennete: 'traditionnelle',
     description: 'À compléter.',
     caracteristiques: {
       agilite: { min: 2, max: 5 }, constitution: { min: 2, max: 5 }, force: { min: 2, max: 5 },
