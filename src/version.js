@@ -1,14 +1,23 @@
 // src/version.js
 // Fichier de version centralisé - mis à jour automatiquement
-// Version: 2.13.7
-// Build: 2026-01-31 22:20
+// Version: 2.13.8
+// Build: 2026-01-31 22:22
 
-export const APP_VERSION = '2.13.7';
-export const BUILD_DATE = '2026-01-31 22:20';
-export const BUILD_NUMBER = 51;
+export const APP_VERSION = '2.13.8';
+export const BUILD_DATE = '2026-01-31 22:22';
+export const BUILD_NUMBER = 52;
 
 // Historique des versions avec changelogs
 export const VERSION_HISTORY = [
+  {
+    version: '2.13.8',
+    date: '2026-01-31 22:22',
+    type: 'patch',
+    changes: [
+      'Fix erreur syntaxe notificationSystem.js ligne 136',
+      'Suppression doublon fermeture fonction'
+    ]
+  },
   {
     version: '2.13.7',
     date: '2026-01-31 22:20',

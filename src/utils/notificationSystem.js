@@ -132,9 +132,6 @@ export const checkForUpdates = async (currentVersion) => {
     console.debug('Vérification updates ignorée:', error.message);
   }
 };
-    console.error('Erreur vérification updates:', error);
-  }
-};
 
 /**
  * Service Worker pour notifications en arrière-plan
