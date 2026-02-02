@@ -34,7 +34,7 @@ function CharacterCreator() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   
-  const ADMIN_EMAIL = 'votre-email@example.com'; // À remplacer
+  const ADMIN_EMAIL = 'amaranthe@free.fr';
   
   useEffect(() => {
     // Initialiser Service Worker et vérifier updates

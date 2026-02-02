@@ -135,6 +135,13 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
   
   const renderCompetence = (nomComp) => {
     const compData = competences[nomComp];
+    
+    // Si la compétence n'existe pas dans les données, on skip
+    if (!compData) {
+      console.warn(`Compétence inconnue: ${nomComp}`);
+      return null;
+    }
+    
     const base = competencesBase.get(nomComp);
     const scoreBase = base?.scoreBase || 0;
     const isPredilection = base?.predilection || false;

@@ -1,14 +1,43 @@
 // src/version.js
 // Fichier de version centralisé - mis à jour automatiquement
-// Version: 2.13.9
-// Build: 2026-01-31 22:25
+// Version: 2.13.12
+// Build: 2026-01-31 22:40
 
-export const APP_VERSION = '2.13.9';
-export const BUILD_DATE = '2026-01-31 22:25';
-export const BUILD_NUMBER = 53;
+export const APP_VERSION = '2.13.12';
+export const BUILD_DATE = '2026-01-31 22:40';
+export const BUILD_NUMBER = 56;
 
 // Historique des versions avec changelogs
 export const VERSION_HISTORY = [
+  {
+    version: '2.13.12',
+    date: '2026-01-31 22:40',
+    type: 'patch',
+    changes: [
+      'Configuration email admin: amaranthe@free.fr',
+      'Accès complet fonctionnalités admin activé'
+    ]
+  },
+  {
+    version: '2.13.11',
+    date: '2026-01-31 22:35',
+    type: 'patch',
+    changes: [
+      'Fix erreur 403 sur data_change_requests',
+      'Création politiques RLS pour table data_change_requests',
+      'Script database_data_change_requests_rls.sql'
+    ]
+  },
+  {
+    version: '2.13.10',
+    date: '2026-01-31 22:30',
+    type: 'patch',
+    changes: [
+      'Fix crash StepCompetencesLibres sur compétence inexistante',
+      'Vérification compData existe avant utilisation',
+      'Console.warn si compétence inconnue détectée'
+    ]
+  },
   {
     version: '2.13.9',
     date: '2026-01-31 22:25',
