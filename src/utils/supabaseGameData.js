@@ -1,8 +1,8 @@
 // src/utils/supabaseGameData.js
-// Version: 2.15.0
-// Build: 2026-02-04 00:50
+// Version: 3.0.0
+// Build: 2026-02-04 01:30
 // Description: Fonctions pour charger toutes les données du jeu depuis Supabase
-// Migration complète: Profils, Compétences, Compétences Futiles, Fées
+// Migration v3.0.0 : Suppression de tous les fallbacks vers data.js
 
 import { supabase } from '../config/supabase';
 
@@ -31,9 +31,8 @@ export const loadCompetencesFutiles = async () => {
     }));
   } catch (error) {
     console.error('Erreur chargement compétences futiles:', error);
-    // Fallback vers data.js en cas d'erreur
-    const { competencesFutilesBase } = await import('../data/data');
-    return competencesFutilesBase;
+    // Retourner tableau vide en cas d'erreur
+    return [];
   }
 };
 
