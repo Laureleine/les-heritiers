@@ -1,23 +1,46 @@
 // src/components/StepCompetencesFutiles.js
-// Version: 2.9.2
-// Build: 2026-01-31 20:45
-// Description: Étape 5 (Step 5 dans la séquence) - Compétences futiles (10 points)
-// Dernière modification: 2026-01-31
-// Ajout: Support des choix entre compétences futiles de prédilection
+// Version: 3.0.0
+// Build: 2026-02-04 01:15
+// Migration: Chargement depuis Supabase, fonctions helpers gardées
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle } from 'lucide-react';
-import { competencesFutilesBase } from '../data/data';
-import { parseCompetencesFutilesPredilection } from '../data/dataHelpers';
+import { 
+  parseCompetencesFutilesPredilection,
+  isCompetenceFutileChoix 
+} from '../data/dataHelpers';
+import { 
+  getCompetencesFutiles,
+  addCompetenceFutile,
+  invalidateCompetencesFutilesCache 
+} from '../utils/supabaseGameData';
 
 const POINTS_TOTAUX = 10;
 
 export default function StepCompetencesFutiles({ character, onCompetencesFutilesChange, fairyData }) {
+  const [competencesFutilesBase, setCompetencesFutilesBase] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [newCompetenceName, setNewCompetenceName] = useState('');
   const [newCompetenceDesc, setNewCompetenceDesc] = useState('');
   const [choixPredilection, setChoixPredilection] = useState({});
   
   const feeData = fairyData[character.typeFee];
+  
+  // Charger compétences futiles depuis Supabase
+  useEffect(() => {
+    const loadCompetences = async () => {
+      try {
+        setLoading(true);
+        const comps = await getCompetencesFutiles();
+        setCompetencesFutilesBase(comps);
+      } catch (error) {
+        console.error('Erreur chargement compétences futiles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCompetences();
+  }, []);
   
   // Parser les compétences de prédilection pour gérer les choix
   const parsedPredilection = parseCompetencesFutilesPredilection(
@@ -62,14 +85,8 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
     return true;
   });
   
-  // Obtenir les compétences personnalisées
-  const competencesPersonnalisees = character.competencesFutiles?.personnalisees || [];
-  
-  // Obtenir toutes les compétences disponibles
-  const toutesLesCompetences = [
-    ...competencesFutilesBase,
-    ...competencesPersonnalisees
-  ];
+  // Toutes les compétences viennent maintenant de Supabase
+  const toutesLesCompetences = competencesFutilesBase;
   
   // Obtenir les rangs investis
   const rangsInvestis = character.competencesFutiles?.rangs || {};
@@ -134,7 +151,7 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
   };
   
   // Ajouter une compétence personnalisée
-  const handleAddCustomCompetence = () => {
+  const handleAddCustomCompetence = async () => {
     if (!newCompetenceName.trim()) return;
     
     // Vérifier si elle existe déjà
@@ -147,21 +164,29 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
       return;
     }
     
-    const nouvelleCompetence = {
-      nom: newCompetenceName.trim(),
-      description: newCompetenceDesc.trim() || 'Compétence personnalisée'
-    };
-    
-    const newPersonnalisees = [...competencesPersonnalisees, nouvelleCompetence];
-    
-    onCompetencesFutilesChange({
-      ...character.competencesFutiles,
-      personnalisees: newPersonnalisees,
-      choixPredilection
-    });
-    
-    setNewCompetenceName('');
-    setNewCompetenceDesc('');
+    try {
+      // Insérer dans Supabase
+      const newComp = await addCompetenceFutile(
+        newCompetenceName.trim(),
+        newCompetenceDesc.trim() || 'Compétence personnalisée'
+      );
+      
+      if (newComp) {
+        // Invalider le cache et recharger
+        invalidateCompetencesFutilesCache();
+        const refreshed = await getCompetencesFutiles();
+        setCompetencesFutilesBase(refreshed);
+        
+        // Réinitialiser le formulaire
+        setNewCompetenceName('');
+        setNewCompetenceDesc('');
+        
+        alert('Compétence ajoutée avec succès !');
+      }
+    } catch (error) {
+      console.error('Erreur ajout compétence:', error);
+      alert('Erreur lors de l\'ajout de la compétence');
+    }
   };
   
   const renderCompetence = (comp) => {
@@ -170,7 +195,6 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
     const rangsInvestisComp = rangsInvestis[comp.nom] || 0;
     const scoreTotal = scoreBase + rangsInvestisComp;
     const maxRangs = isPredilection ? 5 : 4;
-    const isCustom = competencesPersonnalisees.some(c => c.nom === comp.nom);
     
     return (
       <div key={comp.nom} className="p-4 border-2 border-purple-200 rounded-lg bg-white hover:border-purple-400 transition-all">
@@ -183,9 +207,6 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
               </h4>
               {isPredilection && (
                 <Star size={16} className="text-purple-600" fill="currentColor" title="Compétence de prédilection" />
-              )}
-              {isCustom && (
-                <Sparkles size={16} className="text-blue-600" title="Compétence personnalisée" />
               )}
             </div>
             <p className="text-xs text-purple-600">{comp.description}</p>
@@ -360,41 +381,7 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
       {/* Le reste du composant n'est visible que si tous les choix sont faits */}
       {allChoicesMade && (
         <>
-          {/* Compétences personnalisées */}
-          {competencesPersonnalisees.length > 0 && (
-            <div className="border-2 border-blue-300 rounded-lg p-4 bg-blue-50">
-              <h3 className="text-xl font-serif text-blue-900 mb-4 font-bold flex items-center gap-2">
-                <Sparkles className="text-blue-600" />
-                Vos Compétences Personnalisées
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {competencesPersonnalisees.map(renderCompetence)}
-              </div>
-            </div>
-          )}
-          
-          {/* Liste des compétences de base */}
-          <div className="border-2 border-purple-200 rounded-lg p-4 bg-white">
-            <h3 className="text-xl font-serif text-purple-900 mb-4 font-bold">
-              Compétences Futiles Disponibles
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {competencesFutilesBase
-                .filter(comp => !competencesPredilection.includes(comp.nom))
-                .map(renderCompetence)}
-            </div>
-          </div>
-          
-          {/* Validation */}
-          {pointsRestants === 0 && (
-            <div className="p-4 bg-green-100 border-2 border-green-400 rounded-lg text-center">
-              <p className="text-green-800 font-serif text-lg">
-                ✓ Tous les points ont été répartis !
-              </p>
-            </div>
-          )}
-          
-          {/* Créer une compétence personnalisée - EN BAS */}
+          {/* Créer une compétence personnalisée */}
           <div className="border-2 border-blue-300 rounded-lg p-6 bg-gradient-to-r from-blue-50 to-cyan-50">
             <h3 className="text-xl font-serif text-blue-900 mb-4 font-bold flex items-center gap-2">
               <PlusCircle className="text-blue-600" />
@@ -439,6 +426,27 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
               </button>
             </div>
           </div>
+          
+          {/* Liste des compétences de base */}
+          <div className="border-2 border-purple-200 rounded-lg p-4 bg-white">
+            <h3 className="text-xl font-serif text-purple-900 mb-4 font-bold">
+              Compétences Futiles Disponibles
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {competencesFutilesBase
+                .filter(comp => !competencesPredilection.includes(comp.nom))
+                .map(renderCompetence)}
+            </div>
+          </div>
+          
+          {/* Validation */}
+          {pointsRestants === 0 && (
+            <div className="p-4 bg-green-100 border-2 border-green-400 rounded-lg text-center">
+              <p className="text-green-800 font-serif text-lg">
+                ✓ Tous les points ont été répartis !
+              </p>
+            </div>
+          )}
         </>
       )}
     </div>

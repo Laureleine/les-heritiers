@@ -317,6 +317,8 @@ function CharacterCreator() {
       <DataEditor
         session={session}
         onBack={() => setView('creation')}
+        fairyData={gameData.fairyData}
+        competences={gameData.competences}
       />
     );
   }
@@ -429,7 +431,7 @@ function CharacterCreator() {
 
           <div className="flex gap-2">
             <button
-              onClick={() => exportToPDF(character)}
+              onClick={() => exportToPDF(character, gameData.fairyData)}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif"
               title="Exporter en PDF"
             >

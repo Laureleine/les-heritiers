@@ -1,20 +1,20 @@
 // src/components/DataEditor.js
-// Version: 2.9.3
-// Build: 2026-01-31 20:50
+// Version: 3.0.0
+// Build: 2026-02-04 01:10
+// Migration: Données depuis props, plus de data.js
 
 import React, { useState, useEffect } from 'react';
 import { Save, Edit, Check, X, AlertTriangle, Shield } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { fairyData, competences } from '../data/data';
 
-export default function DataEditor({ session, onBack }) {
+export default function DataEditor({ session, onBack, fairyData, competences }) {
   const [activeTab, setActiveTab] = useState('fairies');
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
   const [pendingChanges, setPendingChanges] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   
-  const ADMIN_EMAIL = 'votre-email@example.com'; // À remplacer par votre email
+  const ADMIN_EMAIL = 'amaranthe@free.fr';
 
   useEffect(() => {
     setIsAdmin(session?.user?.email === ADMIN_EMAIL);
@@ -170,7 +170,7 @@ export default function DataEditor({ session, onBack }) {
                     onChange={(e) => setFormData({...formData, anciennete: e.target.value})}
                     className="w-full p-2 border rounded"
                   >
-                    <option value="traditionnelle">Traditionnelle</option>
+                    <option value="ancienne">Ancienne</option>
                     <option value="moderne">Moderne</option>
                   </select>
                 </div>
