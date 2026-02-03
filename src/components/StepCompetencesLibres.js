@@ -1,19 +1,20 @@
 // src/components/StepCompetencesLibres.js
-// Version: 2.9.2
-// Build: 2026-01-31 20:45
+// Version: 3.0.0
+// Build: 2026-02-04 01:00
+// Migration: 100% Supabase - Plus de data.js !
+
 import React from 'react';
 import { Plus, Minus, Star, Info } from 'lucide-react';
-import { competences, profils as profilsData } from '../data/data';
-import { getProfilNameBySexe, calculateProfilRang } from '../data/dataHelpers';
 
 const POINTS_TOTAUX = 15;
 
-export default function StepCompetencesLibres({ character, onCompetencesLibresChange, fairyData }) {
+export default function StepCompetencesLibres({ character, onCompetencesLibresChange, fairyData, competences, competencesParProfil }) {
   const feeData = fairyData[character.typeFee];
   
   const getCompetencesBase = () => {
     const competencesMap = new Map();
     
+    // Compétences de prédilection de la fée
     if (feeData?.competencesPredilection) {
       feeData.competencesPredilection.forEach(comp => {
         competencesMap.set(comp.nom, {
@@ -24,20 +25,24 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
       });
     }
     
-    if (character.profils?.majeur?.competences) {
-      character.profils.majeur.competences.forEach(comp => {
-        const current = competencesMap.get(comp) || { scoreBase: 0, predilection: false };
-        competencesMap.set(comp, {
+    // Profil majeur (rang 3 = +2)
+    if (character.profils?.majeur?.nom) {
+      const profilMajeurComps = competencesParProfil[character.profils.majeur.nom] || [];
+      profilMajeurComps.forEach(comp => {
+        const current = competencesMap.get(comp.nom) || { scoreBase: 0, predilection: false };
+        competencesMap.set(comp.nom, {
           ...current,
           scoreBase: current.scoreBase + 2
         });
       });
     }
     
-    if (character.profils?.mineur?.competences) {
-      character.profils.mineur.competences.forEach(comp => {
-        const current = competencesMap.get(comp) || { scoreBase: 0, predilection: false };
-        competencesMap.set(comp, {
+    // Profil mineur (rang 2 = +1)
+    if (character.profils?.mineur?.nom) {
+      const profilMineurComps = competencesParProfil[character.profils.mineur.nom] || [];
+      profilMineurComps.forEach(comp => {
+        const current = competencesMap.get(comp.nom) || { scoreBase: 0, predilection: false };
+        competencesMap.set(comp.nom, {
           ...current,
           scoreBase: current.scoreBase + 1
         });
@@ -60,240 +65,202 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
   
   const pointsRestants = POINTS_TOTAUX - pointsDepenses;
   
-  const getScoreTotal = (nomComp) => {
-    const base = competencesBase.get(nomComp)?.scoreBase || 0;
-    const supplementaire = competencesLibres[nomComp]?.rangsSupplementaires || 0;
-    return base + supplementaire;
-  };
-  
-  const canAddRang = (nomComp) => {
-    if (pointsRestants <= 0) return false;
-    const scoreTotal = getScoreTotal(nomComp);
-    const isPredilection = competencesBase.get(nomComp)?.predilection || false;
-    const maxRangs = isPredilection ? 5 : 4;
-    return scoreTotal < maxRangs;
-  };
-  
-  const handleRangChange = (nomComp, delta) => {
-    const current = competencesLibres[nomComp]?.rangsSupplementaires || 0;
-    const newValue = Math.max(0, current + delta);
+  const handleRangChange = (competence, delta) => {
+    const current = competencesLibres[competence] || { rangsSupplementaires: 0, specialites: [] };
+    const newRangs = Math.max(0, (current.rangsSupplementaires || 0) + delta);
     
-    if (delta > 0 && !canAddRang(nomComp)) return;
-    if (delta < 0 && current === 0) return;
+    if (delta > 0 && pointsRestants < 1) return;
     
-    const newCompetences = {
+    const updated = {
       ...competencesLibres,
-      [nomComp]: {
-        ...competencesLibres[nomComp],
-        rangsSupplementaires: newValue
+      [competence]: {
+        ...current,
+        rangsSupplementaires: newRangs
       }
     };
     
-    if (newValue === 0 && (!newCompetences[nomComp].specialites || newCompetences[nomComp].specialites.length === 0)) {
-      delete newCompetences[nomComp];
+    if (newRangs === 0 && (!current.specialites || current.specialites.length === 0)) {
+      delete updated[competence];
     }
     
-    onCompetencesLibresChange(newCompetences);
+    onCompetencesLibresChange(updated);
   };
   
-  const handleAddSpecialite = (nomComp, specialite) => {
-    if (pointsRestants <= 0) return;
+  const handleSpecialiteToggle = (competence, specialite) => {
+    const current = competencesLibres[competence] || { rangsSupplementaires: 0, specialites: [] };
+    const specialites = current.specialites || [];
+    const hasSpecialite = specialites.includes(specialite);
     
-    const current = competencesLibres[nomComp]?.specialites || [];
-    if (current.includes(specialite)) return;
+    if (!hasSpecialite && pointsRestants < 1) return;
     
-    const newCompetences = {
+    const newSpecialites = hasSpecialite
+      ? specialites.filter(s => s !== specialite)
+      : [...specialites, specialite];
+    
+    const updated = {
       ...competencesLibres,
-      [nomComp]: {
-        ...competencesLibres[nomComp],
-        rangsSupplementaires: competencesLibres[nomComp]?.rangsSupplementaires || 0,
-        specialites: [...current, specialite]
-      }
-    };
-    
-    onCompetencesLibresChange(newCompetences);
-  };
-  
-  const handleRemoveSpecialite = (nomComp, specialite) => {
-    const current = competencesLibres[nomComp]?.specialites || [];
-    const newSpecialites = current.filter(s => s !== specialite);
-    
-    const newCompetences = {
-      ...competencesLibres,
-      [nomComp]: {
-        ...competencesLibres[nomComp],
+      [competence]: {
+        ...current,
         specialites: newSpecialites
       }
     };
     
-    if (newCompetences[nomComp].rangsSupplementaires === 0 && newSpecialites.length === 0) {
-      delete newCompetences[nomComp];
+    if ((current.rangsSupplementaires || 0) === 0 && newSpecialites.length === 0) {
+      delete updated[competence];
     }
     
-    onCompetencesLibresChange(newCompetences);
+    onCompetencesLibresChange(updated);
   };
   
-  const renderCompetence = (nomComp) => {
-    const compData = competences[nomComp];
+  const getScoreTotal = (competence) => {
+    const base = competencesBase.get(competence)?.scoreBase || 0;
+    const supplementaire = competencesLibres[competence]?.rangsSupplementaires || 0;
+    return base + supplementaire;
+  };
+  
+  // Grouper les compétences par catégorie
+  const toutesCompetences = Object.values(competences);
+  const competencesAvecScore = Array.from(competencesBase.keys());
+  const competencesSansScore = toutesCompetences
+    .map(c => c.nom)
+    .filter(nom => !competencesBase.has(nom));
+  
+  const renderCompetence = (nomCompetence) => {
+    const competenceData = competences[nomCompetence];
+    if (!competenceData) return null;
     
-    // Si la compétence n'existe pas dans les données, on skip
-    if (!compData) {
-      console.warn(`Compétence inconnue: ${nomComp}`);
-      return null;
-    }
-    
-    const base = competencesBase.get(nomComp);
-    const scoreBase = base?.scoreBase || 0;
-    const isPredilection = base?.predilection || false;
-    const specialiteBase = base?.specialiteBase;
-    const rangsSupp = competencesLibres[nomComp]?.rangsSupplementaires || 0;
-    const scoreTotal = scoreBase + rangsSupp;
-    const maxRangs = isPredilection ? 5 : 4;
-    const specialitesSupp = competencesLibres[nomComp]?.specialites || [];
+    const baseInfo = competencesBase.get(nomCompetence) || { scoreBase: 0, predilection: false };
+    const scoreTotal = getScoreTotal(nomCompetence);
+    const rangsSupp = competencesLibres[nomCompetence]?.rangsSupplementaires || 0;
+    const specialitesChoisies = competencesLibres[nomCompetence]?.specialites || [];
     
     return (
-      <div key={nomComp} className="p-2 border border-amber-200 rounded bg-white hover:border-amber-400 transition-all">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1">
-              <h4 className="font-serif text-sm text-amber-900 font-semibold truncate">
-                {nomComp}
-              </h4>
-              {isPredilection && <Star size={12} className="text-amber-600 flex-shrink-0" fill="currentColor" />}
-            </div>
-            <div className="flex items-center gap-2 mt-1">
-              <div className="text-lg font-bold text-amber-900">
-                {scoreTotal}<span className="text-xs text-amber-600">/{maxRangs}</span>
-              </div>
-              {scoreBase > 0 && (
-                <span className="text-xs text-amber-600">
-                  ({scoreBase}{rangsSupp > 0 ? `+${rangsSupp}` : ''})
-                </span>
+      <div key={nomCompetence} className="p-4 bg-white rounded-lg border-2 border-amber-200">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-serif font-semibold text-amber-900">{nomCompetence}</h3>
+              {baseInfo.predilection && (
+                <Star size={16} className="text-yellow-500 fill-yellow-500" title="Prédilection" />
               )}
             </div>
+            <p className="text-sm text-gray-600">{competenceData.description}</p>
           </div>
           
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => handleRangChange(nomComp, -1)}
-              disabled={rangsSupp === 0}
-              className={`p-1 rounded ${rangsSupp > 0 ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-gray-100 text-gray-400'}`}
-            >
-              <Minus size={14} />
-            </button>
-            <button
-              onClick={() => handleRangChange(nomComp, 1)}
-              disabled={!canAddRang(nomComp)}
-              className={`p-1 rounded ${canAddRang(nomComp) ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-400'}`}
-            >
-              <Plus size={14} />
-            </button>
+          <div className="flex items-center gap-3 ml-4">
+            <div className="text-center">
+              <div className="text-xs text-gray-500 mb-1">Base</div>
+              <div className="text-lg font-bold text-gray-700">{baseInfo.scoreBase}</div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleRangChange(nomCompetence, -1)}
+                disabled={rangsSupp === 0}
+                className="p-1 rounded bg-red-100 hover:bg-red-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Minus size={20} className="text-red-600" />
+              </button>
+              <div className="w-12 text-center">
+                <div className="text-xs text-gray-500 mb-1">+</div>
+                <div className="text-lg font-bold text-blue-600">{rangsSupp}</div>
+              </div>
+              <button
+                onClick={() => handleRangChange(nomCompetence, 1)}
+                disabled={pointsRestants === 0}
+                className="p-1 rounded bg-green-100 hover:bg-green-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Plus size={20} className="text-green-600" />
+              </button>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-xs text-gray-500 mb-1">Total</div>
+              <div className="text-2xl font-bold text-amber-600">{scoreTotal}</div>
+            </div>
           </div>
         </div>
         
-        {(specialiteBase || specialitesSupp.length > 0 || (scoreTotal > 0 && compData.specialites)) && (
-          <div className="mt-2 pt-2 border-t border-amber-100">
-            <div className="flex flex-wrap gap-1 text-xs">
-              {specialiteBase && (
-                <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded">
-                  {specialiteBase}
-                </span>
-              )}
-              {specialitesSupp.map(spec => (
-                <span key={spec} className="px-2 py-0.5 bg-green-100 text-green-800 rounded flex items-center gap-1">
+        {/* Spécialités */}
+        {competenceData.hasSpecialites && competenceData.specialites?.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-amber-100">
+            <div className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+              <Info size={14} />
+              Spécialités (1 point chacune)
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {competenceData.specialites.map(spec => (
+                <button
+                  key={spec}
+                  onClick={() => handleSpecialiteToggle(nomCompetence, spec)}
+                  disabled={!specialitesChoisies.includes(spec) && pointsRestants === 0}
+                  className={`px-3 py-1 rounded-full text-sm border-2 transition-all ${
+                    specialitesChoisies.includes(spec)
+                      ? 'border-amber-600 bg-amber-100 text-amber-900'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-amber-400 disabled:opacity-30 disabled:cursor-not-allowed'
+                  }`}
+                >
                   {spec}
-                  <button onClick={() => handleRemoveSpecialite(nomComp, spec)} className="hover:text-red-600">×</button>
-                </span>
+                </button>
               ))}
             </div>
-            {scoreTotal > 0 && compData.specialites && (
-              <select
-                onChange={(e) => {
-                  if (e.target.value) {
-                    handleAddSpecialite(nomComp, e.target.value);
-                    e.target.value = '';
-                  }
-                }}
-                className="text-xs border border-amber-300 rounded px-1 py-0.5 bg-white mt-1 w-full"
-              >
-                <option value="">+ Spécialité</option>
-                {compData.specialites.filter(s => s !== specialiteBase && !specialitesSupp.includes(s)).map(spec => (
-                  <option key={spec} value={spec}>{spec}</option>
-                ))}
-              </select>
+            {baseInfo.specialiteBase && (
+              <div className="mt-2 text-xs text-green-700 flex items-center gap-1">
+                <Star size={12} className="fill-green-600" />
+                Spécialité de prédilection : {baseInfo.specialiteBase}
+              </div>
             )}
           </div>
         )}
       </div>
     );
   };
-
-  // Organiser toutes les compétences par profil
-  const allProfilNames = Object.keys(profilsData);
-  const competencesByProfil = {};
-  
-  allProfilNames.forEach(profilName => {
-    competencesByProfil[profilName] = profilsData[profilName].competences || [];
-  });
   
   return (
-    <div className="space-y-4">
-      <div className="bg-amber-50 p-4 rounded-lg border-2 border-amber-200">
-        <h2 className="text-2xl font-serif text-amber-900 mb-2">
-          Répartition Libre des Compétences
-        </h2>
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-amber-800">
-            Vous disposez de <span className="font-bold text-2xl text-amber-900">{pointsRestants}</span> points à répartir.
-          </p>
-        </div>
-        <div className="space-y-1 text-xs text-amber-700">
-          <div className="flex items-center gap-2">
-            <Info size={14} />
-            <span>1 point = 1 rang | Max: 4 rangs (5 pour prédilection <Star size={12} className="inline text-amber-600" fill="currentColor" />)</span>
+    <div className="space-y-6">
+      {/* Header avec compteur de points */}
+      <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-6 rounded-lg border-2 border-amber-300">
+        <h2 className="text-2xl font-serif text-amber-900 mb-2">Compétences Libres</h2>
+        <p className="text-gray-700 mb-4">
+          Vous disposez de <strong>15 points</strong> à répartir librement parmi toutes les compétences.
+          Chaque rang coûte 1 point, chaque spécialité coûte 1 point.
+        </p>
+        <div className="flex items-center justify-center gap-4 p-4 bg-white rounded-lg border-2 border-amber-400">
+          <div className="text-center">
+            <div className="text-sm text-gray-600">Points dépensés</div>
+            <div className="text-3xl font-bold text-amber-900">{pointsDepenses}</div>
           </div>
-          <div className="flex items-center gap-2">
-            <Info size={14} />
-            <span>1 point = 1 spécialité</span>
+          <div className="text-3xl text-gray-400">/</div>
+          <div className="text-center">
+            <div className="text-sm text-gray-600">Points restants</div>
+            <div className={`text-3xl font-bold ${pointsRestants === 0 ? 'text-green-600' : 'text-blue-600'}`}>
+              {pointsRestants}
+            </div>
           </div>
         </div>
       </div>
       
-      {allProfilNames.map(profilName => {
-        const profilCompetences = competencesByProfil[profilName];
-        const isMajeur = character.profils?.majeur?.nom === profilName;
-        const isMineur = character.profils?.mineur?.nom === profilName;
-        
-        // Calculer le rang du profil
-        const rang = calculateProfilRang(competencesBase, competencesLibres, profilCompetences);
-        
-        // Adapter le nom au sexe
-        const profilNameAdapted = getProfilNameBySexe(profilName, character.sexe);
-        
-        const borderColor = isMajeur ? 'border-purple-300' : isMineur ? 'border-blue-300' : 'border-gray-300';
-        const bgColor = isMajeur ? 'bg-purple-50' : isMineur ? 'bg-blue-50' : 'bg-gray-50';
-        const textColor = isMajeur ? 'text-purple-900' : isMineur ? 'text-blue-900' : 'text-gray-700';
-        const badge = isMajeur ? 'Majeur' : isMineur ? 'Mineur' : '';
-        
-        return (
-          <div key={profilName} className={`border-2 ${borderColor} rounded-lg p-3 ${bgColor}`}>
-            <h3 className={`text-lg font-serif ${textColor} mb-2 font-bold flex items-center gap-2`}>
-              {profilNameAdapted}
-              {badge && <span className="text-sm px-2 py-0.5 rounded bg-opacity-50 bg-white">{badge}</span>}
-              <span className="ml-auto text-xl font-bold">Rang {rang}</span>
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-              {profilCompetences.map(renderCompetence)}
-            </div>
+      {/* Compétences avec score de base */}
+      {competencesAvecScore.length > 0 && (
+        <div>
+          <h3 className="text-xl font-serif text-amber-900 mb-4 border-b-2 border-amber-200 pb-2">
+            Vos compétences (profils + prédilections)
+          </h3>
+          <div className="space-y-3">
+            {competencesAvecScore.map(renderCompetence)}
           </div>
-        );
-      })}
+        </div>
+      )}
       
-      {pointsRestants === 0 && (
-        <div className="p-3 bg-green-100 border-2 border-green-400 rounded-lg text-center">
-          <p className="text-green-800 font-serif">
-            ✓ Tous les points ont été répartis !
-          </p>
+      {/* Autres compétences */}
+      {competencesSansScore.length > 0 && (
+        <div>
+          <h3 className="text-xl font-serif text-gray-700 mb-4 border-b-2 border-gray-200 pb-2">
+            Autres compétences disponibles
+          </h3>
+          <div className="space-y-3">
+            {competencesSansScore.map(renderCompetence)}
+          </div>
         </div>
       )}
     </div>

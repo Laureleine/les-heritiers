@@ -1,12 +1,13 @@
-// Version: 2.10.0
-// Build: 2026-01-31 21:00
+// Version: 2.15.0
+// Build: 2026-02-04 00:50
 // Description: Composant principal de l'application Les Héritiers
-// Dernière modification: 2026-01-31
+// Dernière modification: 2026-02-04
+// Migration: Chargement données depuis Supabase
 
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { fairyData } from '../data/data';
+import { loadAllGameData } from '../utils/supabaseGameData';
 import { getFairyAge } from '../data/dataHelpers';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from '../version';
 import Step1 from './Step1';
@@ -29,12 +30,40 @@ import { registerServiceWorker, checkForUpdates } from '../utils/notificationSys
 function CharacterCreator() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [gameDataLoading, setGameDataLoading] = useState(true);
   const [view, setView] = useState('list');
   const [step, setStep] = useState(1);
   const [isAdmin, setIsAdmin] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   
+  // Données du jeu chargées depuis Supabase
+  const [gameData, setGameData] = useState({
+    profils: [],
+    competences: {},
+    competencesParProfil: {},
+    competencesFutiles: [],
+    fairyData: {},
+    fairyTypes: [],
+    fairyTypesByAge: { traditionnelles: [], modernes: [] }
+  });
+  
   const ADMIN_EMAIL = 'amaranthe@free.fr';
+  
+  // Charger les données du jeu au démarrage
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setGameDataLoading(true);
+        const data = await loadAllGameData();
+        setGameData(data);
+      } catch (error) {
+        console.error('Erreur chargement données du jeu:', error);
+      } finally {
+        setGameDataLoading(false);
+      }
+    };
+    loadData();
+  }, []);
   
   useEffect(() => {
     // Initialiser Service Worker et vérifier updates
@@ -239,7 +268,20 @@ function CharacterCreator() {
   const canProceedStep7 = character.pouvoirs.length === 3;
   // Step 8 (Récapitulatif) toujours accessible
 
-  // Afficher l'écran de chargement
+  // Afficher l'écran de chargement des données du jeu
+  if (gameDataLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-amber-900 mx-auto mb-4"></div>
+          <div className="text-2xl font-serif text-amber-900">Chargement des données du jeu...</div>
+          <div className="text-sm text-amber-700 mt-2">Profils, Compétences, Types de Fées</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Afficher l'écran de chargement auth
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex items-center justify-center">
@@ -451,53 +493,59 @@ function CharacterCreator() {
                 onNomChange={handleNomChange}
                 onSexeChange={handleSexeChange}
                 onTypeFeeChange={handleTypeFeeChange}
+                fairyTypes={gameData.fairyTypes}
+                fairyTypesByAge={gameData.fairyTypesByAge}
               />
             )}
             {step === 2 && (
               <StepCaracteristiques
                 character={character}
                 onCaracteristiquesChange={handleCaracteristiquesChange}
-                fairyData={fairyData}
+                fairyData={gameData.fairyData}
               />
             )}
             {step === 3 && (
               <StepProfils
                 character={character}
                 onProfilsChange={handleProfilsChange}
+                profils={gameData.profils}
               />
             )}
             {step === 4 && (
               <StepCompetencesLibres
                 character={character}
                 onCompetencesLibresChange={handleCompetencesLibresChange}
-                fairyData={fairyData}
+                fairyData={gameData.fairyData}
+                competences={gameData.competences}
+                competencesParProfil={gameData.competencesParProfil}
               />
             )}
             {step === 5 && (
               <StepCompetencesFutiles
                 character={character}
                 onCompetencesFutilesChange={handleCompetencesFutilesChange}
-                fairyData={fairyData}
+                fairyData={gameData.fairyData}
               />
             )}
             {step === 6 && (
               <Step2
                 character={character}
                 onCapaciteChoice={handleCapaciteChoice}
-                fairyData={fairyData}
+                fairyData={gameData.fairyData}
               />
             )}
             {step === 7 && (
               <Step3
                 character={character}
                 onPouvoirToggle={handlePouvoirToggle}
-                fairyData={fairyData}
+                fairyData={gameData.fairyData}
               />
             )}
             {step === 8 && (
               <StepRecapitulatif
                 character={character}
-                fairyData={fairyData}
+                fairyData={gameData.fairyData}
+                competences={gameData.competences}
               />
             )}
           </div>

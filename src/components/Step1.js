@@ -1,13 +1,11 @@
 // src/components/Step1.js
-// Version: 2.9.1
-// Build: 2026-01-31 20:40
-// Description: Étape 1 - Nom, sexe et type de fée
-// Dernière modification: 2026-01-31
+// Version: 3.0.0
+// Build: 2026-02-04 01:00
+// Migration: 100% Supabase - Plus de data.js !
 
 import React from 'react';
-import { fairyTypesByAge } from '../data/data';
 
-export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeChange }) {
+export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeChange, fairyTypesByAge }) {
   return (
     <div className="space-y-8">
       <div>
@@ -56,7 +54,7 @@ export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeC
               🏛️ Fées Traditionnelles
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {fairyTypesByAge.traditionnelles.map(type => (
+              {fairyTypesByAge?.traditionnelles?.map(type => (
                 <button
                   key={type}
                   onClick={() => onTypeFeeChange(type)}
@@ -78,7 +76,7 @@ export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeC
               ⚡ Fées Modernes
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {fairyTypesByAge.modernes.map(type => (
+              {fairyTypesByAge?.modernes?.map(type => (
                 <button
                   key={type}
                   onClick={() => onTypeFeeChange(type)}
@@ -100,10 +98,10 @@ export default function Step1({ character, onNomChange, onSexeChange, onTypeFeeC
           <div className="mt-4 p-4 bg-gradient-to-r from-amber-100 to-blue-100 rounded-lg border-2 border-amber-300">
             <p className="text-center font-serif text-amber-900">
               <span className="font-semibold">Type sélectionné :</span> {character.typeFee}
-              {fairyTypesByAge.traditionnelles.includes(character.typeFee) && (
+              {fairyTypesByAge?.traditionnelles?.includes(character.typeFee) && (
                 <span className="ml-2 text-amber-700">(Fée Traditionnelle 🏛️)</span>
               )}
-              {fairyTypesByAge.modernes.includes(character.typeFee) && (
+              {fairyTypesByAge?.modernes?.includes(character.typeFee) && (
                 <span className="ml-2 text-blue-700">(Fée Moderne ⚡)</span>
               )}
             </p>
