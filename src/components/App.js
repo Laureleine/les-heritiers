@@ -529,6 +529,7 @@ function CharacterCreator() {
                 character={character}
                 onProfilsChange={handleProfilsChange}
                 profils={gameData.profils}
+                competencesParProfil={gameData.competencesParProfil}
               />
             )}
             {step === 4 && (

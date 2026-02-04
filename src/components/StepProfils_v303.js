@@ -5,7 +5,7 @@
 import React from 'react';
 import { Info, Star, Award } from 'lucide-react';
 
-export default function StepProfils({ character, onProfilsChange, profils, competencesParProfil }) {
+export default function StepProfils({ character, onProfilsChange, profils }) {
   // Créer un objet indexé par nom pour compatibilité avec le code existant
   const profilsObj = {};
   const profilNames = [];
@@ -14,7 +14,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
     profilsObj[p.nom] = {
       icon: p.icon || '👤',
       description: p.description,
-      competences: (competencesParProfil[p.nom] || []).map(c => c.nom),
+      competences: p.competences || [],
       traits: p.traits || ['Trait 1', 'Trait 2', 'Trait 3']
     };
     profilNames.push(p.nom);
