@@ -377,12 +377,60 @@ export const getCompetenceByName = async (name) => {
  */
 export const loadFairyTypes = async () => {
   try {
+    // Charger les types de fées
     const { data, error } = await supabase
       .from('fairy_types')
       .select('*')
       .order('name');
 
     if (error) throw error;
+
+    // Charger TOUTES les compétences de prédilection en une seule requête
+    const { data: allCompPred, error: compPredError } = await supabase
+      .from('fairy_competences_predilection')
+      .select('fairy_type_id, competence_name, specialite');
+
+    // Charger TOUTES les compétences futiles de prédilection en une seule requête
+    const { data: allCompFutPred, error: compFutPredError } = await supabase
+      .from('fairy_competences_futiles_predilection')
+      .select(`
+        fairy_type_id,
+        is_choice,
+        choice_options,
+        competence_futile:competence_futile_id (name)
+      `);
+
+    // Organiser les compétences par fairy_type_id
+    const compPredByFairy = {};
+    const compFutPredByFairy = {};
+
+    if (allCompPred) {
+      allCompPred.forEach(cp => {
+        if (!compPredByFairy[cp.fairy_type_id]) {
+          compPredByFairy[cp.fairy_type_id] = [];
+        }
+        compPredByFairy[cp.fairy_type_id].push({
+          nom: cp.competence_name,
+          specialite: cp.specialite
+        });
+      });
+    }
+
+    if (allCompFutPred) {
+      allCompFutPred.forEach(cfp => {
+        if (!compFutPredByFairy[cfp.fairy_type_id]) {
+          compFutPredByFairy[cfp.fairy_type_id] = [];
+        }
+        if (cfp.is_choice) {
+          compFutPredByFairy[cfp.fairy_type_id].push({
+            isChoix: true,
+            options: cfp.choice_options
+          });
+        } else {
+          compFutPredByFairy[cfp.fairy_type_id].push(cfp.competence_futile?.name);
+        }
+      });
+    }
 
     // Format pour compatibilité avec data.js
     const fairyData = {};
@@ -406,9 +454,9 @@ export const loadFairyTypes = async () => {
           prestance: { min: fairy.prestance_min, max: fairy.prestance_max },
           sangFroid: { min: fairy.sang_froid_min, max: fairy.sang_froid_max }
         },
-        // Ces données seront chargées séparément si nécessaire
-        competencesPredilection: [],
-        competencesFutilesPredilection: [],
+        // Charger les compétences depuis les maps construites ci-dessus
+        competencesPredilection: compPredByFairy[fairy.id] || [],
+        competencesFutilesPredilection: compFutPredByFairy[fairy.id] || [],
         capacites: { fixe1: null, fixe2: null, choix: [] },
         pouvoirs: []
       };
