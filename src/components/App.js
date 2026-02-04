@@ -35,6 +35,7 @@ function CharacterCreator() {
   const [step, setStep] = useState(1);
   const [isAdmin, setIsAdmin] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
+  const [dataEditorEnabled, setDataEditorEnabled] = useState(true); // Contrôle affichage bouton DataEditor
   
   // Données du jeu chargées depuis Supabase
   const [gameData, setGameData] = useState({
@@ -63,6 +64,22 @@ function CharacterCreator() {
       }
     };
     loadData();
+  }, []);
+  
+  // Charger paramètres admin (affichage bouton DataEditor)
+  useEffect(() => {
+    const loadAdminSettings = async () => {
+      const { data } = await supabase
+        .from('admin_settings')
+        .select('setting_value')
+        .eq('setting_key', 'data_editor_enabled')
+        .single();
+      
+      if (data) {
+        setDataEditorEnabled(data.setting_value.enabled);
+      }
+    };
+    loadAdminSettings();
   }, []);
   
   useEffect(() => {
@@ -412,13 +429,16 @@ function CharacterCreator() {
               <span>Mes personnages</span>
             </button>
             
-            <button
-              onClick={() => setView('data-editor')}
-              className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-green-300 text-green-900 rounded-lg hover:bg-green-50 transition-all font-serif"
-            >
-              <Database size={20} />
-              <span>Données</span>
-            </button>
+            {/* Bouton DataEditor - Visible si admin OU si activé par admin pour tous */}
+            {(isAdmin || dataEditorEnabled) && (
+              <button
+                onClick={() => setView('data-editor')}
+                className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-green-300 text-green-900 rounded-lg hover:bg-green-50 transition-all font-serif"
+              >
+                <Database size={20} />
+                <span>Données</span>
+              </button>
+            )}
             
             <button
               onClick={() => setView('changelog')}

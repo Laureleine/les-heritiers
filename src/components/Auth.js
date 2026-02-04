@@ -1,9 +1,10 @@
 // src/components/Auth.js
-// Version: 2.5.0
-// Build: 2026-01-31 19:40
+// Version: 3.0.1
+// Build: 2026-02-04 02:00
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
 import { Mail, Lock, User as UserIcon, Bell } from 'lucide-react';
+import { APP_VERSION, BUILD_DATE } from '../version';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -68,6 +69,11 @@ export default function Auth() {
             Les Héritiers
           </h1>
           <p className="text-xl text-amber-700 italic">Belle Époque • Paris</p>
+          <div className="mt-3 text-sm text-amber-600">
+            <span>Version {APP_VERSION}</span>
+            <span className="mx-2">•</span>
+            <span>{BUILD_DATE}</span>
+          </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-xl p-8 border-4 border-amber-200">
