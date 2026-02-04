@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe } from 'lucide-react';
 import { getUserCharacters, getPublicCharacters, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
 import { exportCharacter, importCharacter } from '../utils/characterStorage';
-import { exportToPDF } from '../utils/pdfExport';
+import { exportToPDF } from '../utils/utils';
 import { APP_VERSION, BUILD_DATE } from '../version';
 
 export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut }) {
