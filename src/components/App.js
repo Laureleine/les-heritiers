@@ -536,6 +536,7 @@ function CharacterCreator() {
               <StepCompetencesLibres
                 character={character}
                 onCompetencesLibresChange={handleCompetencesLibresChange}
+                profils={gameData.profils}
                 fairyData={gameData.fairyData}
                 competences={gameData.competences}
                 competencesParProfil={gameData.competencesParProfil}
