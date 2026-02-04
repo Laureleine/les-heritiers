@@ -1,6 +1,7 @@
 // src/components/ValidationsPendantes.js
-// Version: 3.0.1
-// Build: 2026-02-04 02:30
+// Version: 3.0.2
+// Build: 2026-02-04 03:00
+// Description: Panel admin - Validation des modifications et paramètres
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, AlertTriangle, Clock, CheckCircle, XCircle, ArrowLeft, Settings } from 'lucide-react';
@@ -16,7 +17,6 @@ export default function ValidationsPendantes({ session, onBack, isAdmin }) {
   useEffect(() => {
     loadChanges();
     loadAdminSettings();
-    // Rafraîchir toutes les 30 secondes
     const interval = setInterval(loadChanges, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -48,37 +48,33 @@ export default function ValidationsPendantes({ session, onBack, isAdmin }) {
     if (error) {
       console.error('Erreur mise à jour setting:', error);
       alert('Erreur lors de la mise à jour du paramètre');
-    } else {
-      setDataEditorEnabled(newValue);
-      alert(`Bouton "Données" ${newValue ? 'activé' : 'désactivé'} pour tous les utilisateurs (sauf admin)`);
+      return;
     }
+    
+    setDataEditorEnabled(newValue);
+    alert(`Bouton DataEditor ${newValue ? 'activé' : 'désactivé'} pour tous les utilisateurs`);
   };
 
   const loadChanges = async () => {
     setLoading(true);
-    try {
-      // Charger les demandes en attente
-      const { data: pending } = await supabase
+    
+    const [pending, history] = await Promise.all([
+      supabase
         .from('data_change_requests')
         .select('*')
         .eq('status', 'pending')
-        .order('created_at', { ascending: false });
-
-      // Charger l'historique (approuvées + rejetées)
-      const { data: history } = await supabase
+        .order('created_at', { ascending: false }),
+      supabase
         .from('data_change_requests')
         .select('*')
         .in('status', ['approved', 'rejected'])
         .order('approved_at', { ascending: false })
-        .limit(20);
+        .limit(50)
+    ]);
 
-      setPendingChanges(pending || []);
-      setHistoryChanges(history || []);
-    } catch (error) {
-      console.error('Erreur chargement:', error);
-    } finally {
-      setLoading(false);
-    }
+    if (pending.data) setPendingChanges(pending.data);
+    if (history.data) setHistoryChanges(history.data);
+    setLoading(false);
   };
 
   const handleApprove = async (changeId) => {
@@ -92,7 +88,7 @@ export default function ValidationsPendantes({ session, onBack, isAdmin }) {
       .eq('id', changeId);
 
     if (!error) {
-      alert('✓ Modification approuvée !');
+      alert('✓ Modification approuvée');
       loadChanges();
     } else {
       alert('Erreur lors de l\'approbation');
@@ -163,9 +159,9 @@ export default function ValidationsPendantes({ session, onBack, isAdmin }) {
           )}
         </div>
 
-        <details className="text-sm">
-          <summary className="cursor-pointer text-blue-600 hover:text-blue-800 font-semibold mb-2">
-            📋 Voir les modifications proposées
+        <details className="mt-3">
+          <summary className="cursor-pointer text-sm text-blue-600 hover:text-blue-800 font-semibold">
+            📋 Voir les détails
           </summary>
           <div className="mt-3 p-3 bg-gray-50 rounded border border-gray-200">
             <div className="grid grid-cols-2 gap-4">
@@ -218,7 +214,7 @@ export default function ValidationsPendantes({ session, onBack, isAdmin }) {
                 Validations en attente
               </h1>
               <p className="text-amber-700 mt-1">
-                Approuvez ou rejetez les modifications proposées par les utilisateurs
+                Approuvez ou rejetez les modifications proposées
               </p>
             </div>
             <button
@@ -232,22 +228,20 @@ export default function ValidationsPendantes({ session, onBack, isAdmin }) {
 
           {/* Panel Admin Settings */}
           <div className="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-300">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Settings className="text-blue-600" size={24} />
-                <div>
-                  <h3 className="font-serif text-lg text-blue-900 font-semibold">Paramètres Administrateur</h3>
-                  <p className="text-sm text-blue-700">Contrôle des fonctionnalités pour tous les utilisateurs</p>
-                </div>
+            <div className="flex items-center gap-3 mb-3">
+              <Settings className="text-blue-600" size={24} />
+              <div>
+                <h3 className="font-serif text-lg text-blue-900 font-semibold">Paramètres Administrateur</h3>
+                <p className="text-sm text-blue-700">Contrôle des fonctionnalités pour tous les utilisateurs</p>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-3 p-3 bg-white rounded border border-blue-200">
+            <div className="flex items-center gap-3 p-3 bg-white rounded border border-blue-200">
               <input
                 type="checkbox"
                 id="dataEditorToggle"
                 checked={dataEditorEnabled}
                 onChange={toggleDataEditor}
-                className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
               />
               <label htmlFor="dataEditorToggle" className="flex-1 cursor-pointer">
                 <span className="font-semibold text-gray-900">Bouton "Données" visible pour tous</span>
@@ -258,19 +252,6 @@ export default function ValidationsPendantes({ session, onBack, isAdmin }) {
                 </p>
               </label>
             </div>
-          </div>
-
-          <p className="text-amber-700 mt-1">
-                Gérer les demandes de modification des données du jeu
-              </p>
-            </div>
-            <button
-              onClick={onBack}
-              className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-serif"
-            >
-              <ArrowLeft size={20} />
-              Retour
-            </button>
           </div>
 
           {/* Onglets */}
@@ -302,14 +283,13 @@ export default function ValidationsPendantes({ session, onBack, isAdmin }) {
           {/* Contenu */}
           {loading ? (
             <div className="text-center py-16">
-              <div className="text-amber-800 text-lg font-serif">Chargement...</div>
+              <p className="text-gray-600 text-lg font-serif">Chargement...</p>
             </div>
           ) : activeTab === 'pending' ? (
             pendingChanges.length === 0 ? (
               <div className="text-center py-16">
-                <CheckCircle className="mx-auto text-green-400 mb-4" size={64} />
-                <p className="text-green-800 text-lg font-serif">
-                  ✓ Aucune modification en attente !
+                <p className="text-gray-600 text-lg font-serif">
+                  Aucune modification en attente
                 </p>
               </div>
             ) : (
