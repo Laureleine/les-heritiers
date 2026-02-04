@@ -257,7 +257,9 @@ export const loadProfils = async () => {
       id: profil.id,
       nom: profil.name_masculine,
       nomFeminin: profil.name_feminine,
-      description: profil.description
+      description: profil.description,
+      traits: profil.traits || [],
+      icon: profil.icon || '👤'
     }));
   } catch (error) {
     console.error('Erreur chargement profils:', error);

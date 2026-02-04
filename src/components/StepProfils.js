@@ -12,13 +12,26 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
   
   profils.forEach(p => {
     profilsObj[p.nom] = {
+      nom: p.nom,
+      nomFeminin: p.nomFeminin,
       icon: p.icon || '👤',
       description: p.description,
       competences: (competencesParProfil[p.nom] || []).map(c => c.nom),
-      traits: p.traits || ['Trait 1', 'Trait 2', 'Trait 3']
+      traits: p.traits || []
     };
     profilNames.push(p.nom);
   });
+
+  // Fonction pour obtenir le nom adapté au sexe
+  const getProfilDisplayName = (profilName) => {
+    const profil = profilsObj[profilName];
+    if (!profil) return profilName;
+    
+    if (character.sexe === 'Femme') {
+      return profil.nomFeminin || profilName;
+    }
+    return profil.nom || profilName;
+  };
 
   const handleProfilMajeurChange = (profil) => {
     onProfilsChange({
@@ -90,7 +103,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
           <div className="flex items-center gap-2">
             <span className="text-2xl">{profilData.icon}</span>
             <h3 className="font-serif text-lg text-amber-900 font-semibold">
-              {profilName}
+              {getProfilDisplayName(profilName)}
             </h3>
           </div>
           {isSelected && (
@@ -228,7 +241,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
             <div className="flex items-start gap-3">
               <Star className="text-amber-600 flex-shrink-0 mt-1" size={20} fill="currentColor" />
               <div>
-                <span className="font-semibold text-amber-900">{profilMajeur}</span>
+                <span className="font-semibold text-amber-900">{getProfilDisplayName(profilMajeur)}</span>
                 <span className="text-amber-700"> - Trait : </span>
                 <span className="font-semibold text-amber-900">{traitMajeur}</span>
                 <div className="text-sm text-amber-700 mt-1">
@@ -239,7 +252,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
             <div className="flex items-start gap-3">
               <Award className="text-blue-600 flex-shrink-0 mt-1" size={20} />
               <div>
-                <span className="font-semibold text-blue-900">{profilMineur}</span>
+                <span className="font-semibold text-blue-900">{getProfilDisplayName(profilMineur)}</span>
                 <span className="text-blue-700"> - Trait : </span>
                 <span className="font-semibold text-blue-900">{traitMineur}</span>
                 <div className="text-sm text-blue-700 mt-1">
