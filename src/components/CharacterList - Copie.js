@@ -227,14 +227,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               </button>
 
               <button
-                onClick={() => setShowNotifPrefs(!showNotifPrefs)}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif"
-                title="Préférences de notification"
-              >
-                <Settings size={20} />
-              </button>
-			  
-              <button
                 onClick={onSignOut}
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-serif"
                 title="Déconnexion"

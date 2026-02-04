@@ -1,12 +1,25 @@
 // src/version.js
-// Version: 3.0.0
-// Build: 2026-02-04 01:00
+// Version: 3.0.4
+// Build: 2026-02-04 05:15
 
-export const APP_VERSION = '3.0.0';
-export const BUILD_DATE = '2026-02-04 01:00';
-export const BUILD_NUMBER = 100;
+export const APP_VERSION = '3.0.4';
+export const BUILD_DATE = '2026-02-04 05:15';
+export const BUILD_NUMBER = 104;
 
 export const VERSION_HISTORY = [
+  {
+    version: '3.0.4',
+    date: '2026-02-04 05:15',
+    type: 'patch',
+    changes: [
+      '✨ Traits et icônes ajoutés aux profils',
+      '🎨 StepProfils: noms adaptés au sexe (Aventurier/Aventurière)',
+      '🎨 StepProfils: affichage des compétences par profil',
+      '🎨 StepCompetencesLibres: organisation par profil',
+      '📊 Calcul du rang de profil (base + bonus/4)',
+      '📝 Affichage "Rang X (base + bonus)"'
+    ]
+  },
   {
     version: '3.0.0',
     date: '2026-02-04 01:00',
