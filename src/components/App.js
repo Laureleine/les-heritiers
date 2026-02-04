@@ -415,15 +415,6 @@ function CharacterCreator() {
             <span>{BUILD_DATE}</span>
           </div>
         </header>
-          <p className="text-xl text-amber-700 italic">Création de Personnage</p>
-          <div className="mt-2 flex items-center justify-center gap-4 text-sm text-amber-600">
-            <span>Belle Époque • Paris</span>
-            <span>•</span>
-            <span>v{APP_VERSION}</span>
-            <span>•</span>
-            <span>{BUILD_DATE}</span>
-          </div>
-        </header>
 
         {/* Barre d'actions */}
         <div className="flex justify-between items-center mb-4">
