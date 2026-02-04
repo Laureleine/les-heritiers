@@ -236,7 +236,7 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
           </div>
         </div>
         
-        {(specialiteBase || specialitesSupp.length > 0 || (scoreTotal > 0 && compData.specialites)) && (
+        {(specialiteBase || specialitesSupp.length > 0 || compData.specialites) && (
           <div className="mt-2 pt-2 border-t border-amber-100">
             <div className="flex flex-wrap gap-1 text-xs">
               {specialiteBase && (
@@ -251,7 +251,7 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
                 </span>
               ))}
             </div>
-            {scoreTotal > 0 && compData.specialites && compData.specialites.length > 0 && (
+            {compData.specialites && compData.specialites.length > 0 && (
               <select
                 onChange={(e) => {
                   if (e.target.value) {
