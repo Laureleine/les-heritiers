@@ -195,7 +195,7 @@ function CharacterCreator() {
   const handleTypeFeeChange = (typeFee) => {
     const anciennete = getFairyAge(typeFee);
     // Initialiser les caractéristiques au minimum
-    const feeData = fairyData[typeFee];
+    const feeData = gameData.fairyData[typeFee];
     const caracteristiques = {};
     if (feeData && feeData.caracteristiques) {
       Object.keys(feeData.caracteristiques).forEach(key => {
