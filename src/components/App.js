@@ -408,6 +408,13 @@ function CharacterCreator() {
           <h1 className="text-4xl md:text-5xl font-serif text-amber-900 mb-2">
             Les Héritiers
           </h1>
+          <p className="text-xl text-amber-700 italic">Belle Époque • Paris</p>
+          <div className="mt-3 text-sm text-amber-600">
+            <span>Version {APP_VERSION}</span>
+            <span className="mx-2">•</span>
+            <span>{BUILD_DATE}</span>
+          </div>
+        </header>
           <p className="text-xl text-amber-700 italic">Création de Personnage</p>
           <div className="mt-2 flex items-center justify-center gap-4 text-sm text-amber-600">
             <span>Belle Époque • Paris</span>
