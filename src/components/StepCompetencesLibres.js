@@ -161,19 +161,19 @@ export default function StepCompetencesLibres({ character, onCompetencesLibresCh
     // Base : 8 pour majeur, 4 pour mineur, 0 pour les autres
     const base = isMajeur ? 8 : isMineur ? 4 : 0;
     
-    // Calculer les points investis dans les compétences de ce profil
+    // Calculer la somme des scores totaux des compétences de ce profil
     const competencesDuProfil = competencesParProfil[profilNom] || [];
     const nomsCompetencesDuProfil = competencesDuProfil.map(c => c.nom);
     
-    const pointsInvestis = Object.entries(competencesLibres).reduce((sum, [nomComp, data]) => {
-      if (nomsCompetencesDuProfil.includes(nomComp)) {
-        return sum + (data.rangsSupplementaires || 0);
-      }
-      return sum;
+    const sommeTotale = nomsCompetencesDuProfil.reduce((sum, nomComp) => {
+      const scoreBase = competencesBase.get(nomComp)?.scoreBase || 0;
+      const rangsSupp = competencesLibres[nomComp]?.rangsSupplementaires || 0;
+      const scoreTotal = scoreBase + rangsSupp;
+      return sum + scoreTotal;
     }, 0);
     
-    // Bonus = pointsInvestis / 4 arrondi à l'entier inférieur
-    const bonus = Math.floor(pointsInvestis / 4);
+    // Bonus = sommeTotale / 4 arrondi à l'entier inférieur
+    const bonus = Math.floor(sommeTotale / 4);
     
     return {
       total: base + bonus,
