@@ -1,24 +1,22 @@
 // src/components/CharacterList.js
-// Version: 2.5.0
-// Build: 2026-01-31 19:40
+// Version: 3.0.2
+// Build: 2026-02-04 03:30
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe, Database, Settings, AlertTriangle } from 'lucide-react';
-import { getUserCharacters, getPublicCharacters, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/utils';
-import { exportCharacter, importCharacter } from '../utils/utils';
-import { exportToPDF } from '../utils/utils';
-import NotificationPreferences from './NotificationPreferences';
+import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Globe } from 'lucide-react';
+import { getUserCharacters, getPublicCharacters, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
+import { exportCharacter, importCharacter } from '../utils/characterStorage';
+import { exportToPDF } from '../utils/pdfExport';
+import { APP_VERSION, BUILD_DATE } from '../version';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onDataEditor, session, setView, isAdmin, pendingCount }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [activeTab, setActiveTab] = useState('my');
-  const [showNotifPrefs, setShowNotifPrefs] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadCharacters();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadCharacters = async () => {
@@ -26,7 +24,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     try {
       const [myChars, publicChars] = await Promise.all([
         getUserCharacters(),
-        getPublicCharacters(isAdmin) // Passer isAdmin pour voir tous les persos
+        getPublicCharacters()
       ]);
       setMyCharacters(myChars);
       setPublicCharacters(publicChars);
@@ -64,87 +62,68 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       const character = await importCharacter(file);
       onSelectCharacter(character);
     } catch (error) {
-      alert('Erreur lors de l\'import : ' + error.message);
+      alert('Erreur lors de l\'importation : ' + error.message);
     }
   };
 
-  const formatDate = (isoString) => {
-    if (!isoString) return 'Date inconnue';
-    const date = new Date(isoString);
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const renderCharacter = (char, isMine = true) => (
-    <div
-      key={char.id}
-      className="p-4 border-2 border-amber-200 rounded-lg hover:border-amber-400 transition-all bg-amber-50"
-    >
-      <div className="flex items-start justify-between mb-3">
+  const renderCharacterCard = (char, isMyCharacter = true) => (
+    <div key={char.id} className="bg-amber-50 p-4 rounded-lg border-2 border-amber-200 hover:border-amber-400 transition-all">
+      <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
-          <h3 className="text-lg font-serif text-amber-900 font-semibold flex items-center gap-2">
-            {char.nom || 'Sans nom'}
-            {char.isPublic && <Globe size={16} className="text-blue-600" title="Public" />}
-          </h3>
-          <p className="text-sm text-amber-700">
-            {char.typeFee} • {char.sexe}
-          </p>
-          {char.anciennete && (
-            <p className="text-xs text-amber-600 italic">
-              {char.anciennete === 'traditionnelle' ? '🏛️ Fée Traditionnelle' : '⚡ Fée Moderne'}
-            </p>
-          )}
+          <div className="flex items-center gap-2 mb-1">
+            <User size={20} className="text-amber-600" />
+            <h3 className="text-xl font-serif text-amber-900 font-bold">{char.nom}</h3>
+            {char.is_public && <Globe size={16} className="text-blue-600" title="Public" />}
+          </div>
+          <div className="text-sm text-amber-700 space-y-1">
+            <div>{char.typeFee} • {char.sexe}</div>
+            {char.profils?.majeur?.nom && (
+              <div className="text-xs">
+                {char.profils.majeur.nom} / {char.profils.mineur?.nom || '?'}
+              </div>
+            )}
+            <div className="text-xs text-gray-600">
+              Modifié : {new Date(char.updated_at || char.created_at).toLocaleString('fr-FR')}
+            </div>
+          </div>
         </div>
-        <User className="text-amber-400" size={24} />
-      </div>
-
-      <div className="text-xs text-amber-600 mb-4">
-        Modifié : {formatDate(char.lastModified)}
       </div>
 
       <div className="flex gap-2 flex-wrap">
-        {isMine && (
+        {isMyCharacter && (
           <>
             <button
               onClick={() => onSelectCharacter(char)}
-              className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-all text-sm"
+              className="px-3 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-all border border-amber-700 font-serif text-sm"
+              title="Modifier"
             >
-              <Edit size={16} />
-              <span>Modifier</span>
+              <Edit size={16} className="inline mr-1" />
+              Modifier
             </button>
 
             <button
-              onClick={() => handleToggleVisibility(char.id, char.isPublic)}
-              className={`px-3 py-2 rounded transition-all border ${
-                char.isPublic
-                  ? 'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200'
-                  : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+              onClick={() => handleToggleVisibility(char.id, char.is_public)}
+              className={`px-3 py-2 rounded transition-all border text-sm ${
+                char.is_public
+                  ? 'bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100'
+                  : 'bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100'
               }`}
-              title={char.isPublic ? 'Rendre privé' : 'Rendre public'}
+              title={char.is_public ? "Rendre privé" : "Rendre public"}
             >
-              {char.isPublic ? <Eye size={16} /> : <EyeOff size={16} />}
+              {char.is_public ? <Eye size={16} /> : <EyeOff size={16} />}
             </button>
-          </>
-        )}
 
-        <button
-          onClick={() => exportToPDF(char)}
-          className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-all border border-blue-300"
-          title="Export PDF"
-        >
-          <FileText size={16} />
-        </button>
+            <button
+              onClick={() => exportToPDF(char)}
+              className="px-3 py-2 bg-blue-100 text-blue-900 rounded hover:bg-blue-200 transition-all border border-blue-300"
+              title="Export PDF"
+            >
+              <FileText size={16} />
+            </button>
 
-        {isMine && (
-          <>
             <button
               onClick={() => exportCharacter(char)}
-              className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-all border border-gray-300"
+              className="px-3 py-2 bg-amber-100 text-amber-900 rounded hover:bg-amber-200 transition-all border border-amber-300"
               title="Export JSON"
             >
               <Download size={16} />
@@ -152,7 +131,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
             <button
               onClick={() => setShowDeleteConfirm(char.id)}
-              className="px-3 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-all border border-red-300"
+              className="px-3 py-2 bg-red-50 text-red-600 rounded hover:bg-red-100 transition-all border border-red-300"
               title="Supprimer"
             >
               <Trash2 size={16} />
@@ -193,7 +172,13 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
             Les Héritiers
           </h1>
           <p className="text-xl text-amber-700 italic">Vos Personnages</p>
-          <div className="mt-4 text-sm text-amber-600">Belle Époque • Paris</div>
+          <div className="mt-3 text-sm text-amber-600">
+            <span>Belle Époque • Paris</span>
+            <span className="mx-2">•</span>
+            <span>Version {APP_VERSION}</span>
+            <span className="mx-2">•</span>
+            <span>{BUILD_DATE}</span>
+          </div>
         </header>
 
         <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 border-4 border-amber-200">
@@ -217,71 +202,33 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                     : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
                 }`}
               >
-                <Globe size={18} className="inline mr-2" />
-                {isAdmin ? 'Tous' : 'Publics'} ({publicCharacters.length})
+                Personnages publics ({publicCharacters.length})
               </button>
             </div>
-            
-            <div className="flex gap-3">
-              {activeTab === 'my' && (
-                <>
-                  <label className="flex items-center space-x-2 px-4 py-2 bg-amber-100 text-amber-900 rounded-lg border-2 border-amber-300 hover:bg-amber-200 cursor-pointer transition-all font-serif">
-                    <Upload size={20} />
-                    <span>Importer</span>
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleImport}
-                      className="hidden"
-                    />
-                  </label>
 
-                  <button
-                    onClick={onNewCharacter}
-                    className="flex items-center space-x-2 px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all font-serif"
-                  >
-                    <Plus size={20} />
-                    <span>Nouveau</span>
-                  </button>
-                </>
-              )}
+            <div className="flex gap-2">
+              <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all cursor-pointer font-serif">
+                <Upload size={20} />
+                <span>Importer</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+              </label>
 
               <button
-                onClick={onDataEditor}
-                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif"
-                title="Éditer les données du jeu"
+                onClick={onNewCharacter}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif"
               >
-                <Database size={20} />
-                <span>Données</span>
-              </button>
-
-              {isAdmin && (
-                <button
-                  onClick={() => setView('validations')}
-                  className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all font-serif relative"
-                  title="Validations en attente"
-                >
-                  <AlertTriangle size={20} />
-                  <span>Validations</span>
-                  {pendingCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      {pendingCount}
-                    </span>
-                  )}
-                </button>
-              )}
-
-              <button
-                onClick={() => setShowNotifPrefs(!showNotifPrefs)}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif"
-                title="Préférences de notification"
-              >
-                <Settings size={20} />
+                <Plus size={20} />
+                Nouveau
               </button>
 
               <button
                 onClick={onSignOut}
-                className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-serif"
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-serif"
                 title="Déconnexion"
               >
                 <LogOut size={20} />
@@ -289,60 +236,40 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
             </div>
           </div>
 
-          {showNotifPrefs && (
-            <div className="mb-6">
-              <NotificationPreferences session={session} />
-            </div>
-          )}
-
           {loading ? (
             <div className="text-center py-16">
-              <div className="text-amber-800 text-lg font-serif">Chargement...</div>
+              <p className="text-gray-600 text-lg font-serif">Chargement...</p>
             </div>
-          ) : activeTab === 'my' ? (
-            myCharacters.length === 0 ? (
-              <div className="text-center py-16">
-                <User size={64} className="mx-auto text-amber-300 mb-4" />
-                <p className="text-amber-800 text-lg mb-4 font-serif">
-                  Aucun personnage sauvegardé
-                </p>
-                <button
-                  onClick={onNewCharacter}
-                  className="px-8 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all font-serif text-lg"
-                >
-                  Créer mon premier personnage
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {myCharacters.map(char => renderCharacter(char, true))}
-              </div>
-            )
           ) : (
-            publicCharacters.length === 0 ? (
-              <div className="text-center py-16">
-                <Globe size={64} className="mx-auto text-amber-300 mb-4" />
-                <p className="text-amber-800 text-lg font-serif">
-                  {isAdmin ? 'Aucun personnage' : 'Aucun personnage public disponible'}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {publicCharacters.map(char => {
-                  const isPrivate = isAdmin && !char.isPublic;
-                  return (
-                    <div key={char.id} className="relative">
-                      {isPrivate && (
-                        <div className="absolute -top-2 -right-2 z-10 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                          🔒 PRIVÉ
-                        </div>
-                      )}
-                      {renderCharacter(char, false)}
-                    </div>
-                  );
-                })}
-              </div>
-            )
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {activeTab === 'my' ? (
+                myCharacters.length === 0 ? (
+                  <div className="col-span-full text-center py-16">
+                    <p className="text-gray-600 text-lg font-serif mb-4">
+                      Aucun personnage créé
+                    </p>
+                    <button
+                      onClick={onNewCharacter}
+                      className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif"
+                    >
+                      Créer mon premier personnage
+                    </button>
+                  </div>
+                ) : (
+                  myCharacters.map(char => renderCharacterCard(char, true))
+                )
+              ) : (
+                publicCharacters.length === 0 ? (
+                  <div className="col-span-full text-center py-16">
+                    <p className="text-gray-600 text-lg font-serif">
+                      Aucun personnage public pour le moment
+                    </p>
+                  </div>
+                ) : (
+                  publicCharacters.map(char => renderCharacterCard(char, false))
+                )
+              )}
+            </div>
           )}
         </div>
       </div>
