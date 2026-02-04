@@ -20,7 +20,24 @@ export const getUserCharacters = async () => {
       .order('updated_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    
+    // Transformer les données de la BDD vers le format JavaScript
+    return (data || []).map(char => ({
+      id: char.id,
+      nom: char.nom,
+      sexe: char.sexe,
+      typeFee: char.type_fee,
+      anciennete: char.anciennete,
+      caracteristiques: char.caracteristiques,
+      profils: char.profils,
+      competencesLibres: char.competences_libres,
+      competencesFutiles: char.competences_futiles,
+      capaciteChoisie: char.capacite_choisie,
+      pouvoirs: char.pouvoirs,
+      isPublic: char.is_public,
+      created_at: char.created_at,
+      updated_at: char.updated_at
+    }));
   } catch (error) {
     console.error('Erreur getUserCharacters:', error);
     return [];
@@ -39,7 +56,24 @@ export const getPublicCharacters = async () => {
       .order('updated_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    
+    // Transformer les données de la BDD vers le format JavaScript
+    return (data || []).map(char => ({
+      id: char.id,
+      nom: char.nom,
+      sexe: char.sexe,
+      typeFee: char.type_fee,
+      anciennete: char.anciennete,
+      caracteristiques: char.caracteristiques,
+      profils: char.profils,
+      competencesLibres: char.competences_libres,
+      competencesFutiles: char.competences_futiles,
+      capaciteChoisie: char.capacite_choisie,
+      pouvoirs: char.pouvoirs,
+      isPublic: char.is_public,
+      created_at: char.created_at,
+      updated_at: char.updated_at
+    }));
   } catch (error) {
     console.error('Erreur getPublicCharacters:', error);
     return [];
