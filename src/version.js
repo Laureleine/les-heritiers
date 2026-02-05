@@ -1,12 +1,33 @@
 // src/version.js
-// Version: 3.0.4
-// Build: 2026-02-04 05:15
+// Version: 3.0.7
+// Build: 2026-02-04 07:15
 
-export const APP_VERSION = '3.0.4';
-export const BUILD_DATE = '2026-02-04 05:15';
-export const BUILD_NUMBER = 104;
+export const APP_VERSION = '3.0.7';
+export const BUILD_DATE = '2026-02-04 07:15';
+export const BUILD_NUMBER = 107;
 
 export const VERSION_HISTORY = [
+  {
+    version: '3.0.7',
+    date: '2026-02-04 07:15',
+    type: 'patch',
+    changes: [
+      '❌ Bouton "Données" désactivé temporairement'
+    ]
+  },
+  {
+    version: '3.0.6',
+    date: '2026-02-04 07:00',
+    type: 'minor',
+    changes: [
+      '✨ Système de bonus implémenté (capacités/pouvoirs)',
+      '📊 Bonus caractéristiques avec format masqué/démasqué',
+      '📈 Bonus compétences visibles',
+      '🎁 Spécialités gratuites depuis capacités',
+      '🔧 Correction chargement personnages (typeFee, etc.)',
+      '🗄️ Ajout colonne bonus JSONB dans Supabase'
+    ]
+  },
   {
     version: '3.0.4',
     date: '2026-02-04 05:15',

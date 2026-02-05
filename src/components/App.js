@@ -431,7 +431,8 @@ function CharacterCreator() {
               <span>Mes personnages</span>
             </button>
             
-            {/* Bouton DataEditor - Visible si admin OU si activé par admin pour tous */}
+            {/* Bouton DataEditor - DÉSACTIVÉ */}
+            {/* 
             {(isAdmin || dataEditorEnabled) && (
               <button
                 onClick={() => setView('data-editor')}
@@ -441,6 +442,7 @@ function CharacterCreator() {
                 <span>Données</span>
               </button>
             )}
+            */}
             
             <button
               onClick={() => setView('changelog')}
