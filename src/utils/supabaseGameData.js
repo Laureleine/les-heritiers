@@ -523,13 +523,13 @@ export const loadFairyDetails = async (fairyName) => {
     // Charger capacités
     const { data: capacites, error: capacitesError } = await supabase
       .from('fairy_capacites')
-      .select('capacite_type, nom, description')
+      .select('capacite_type, nom, description, bonus')
       .eq('fairy_type_id', fairy.id);
 
     // Charger pouvoirs
     const { data: pouvoirs, error: pouvoirsError } = await supabase
       .from('fairy_pouvoirs')
-      .select('nom, description')
+      .select('nom, description, bonus')
       .eq('fairy_type_id', fairy.id);
 
     // Formatter les données

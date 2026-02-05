@@ -176,6 +176,10 @@ function CharacterCreator() {
   };
 
   const handleSelectCharacter = (char) => {
+    console.log('📥 Chargement personnage:', char);
+    console.log('  - typeFee:', char.typeFee);
+    console.log('  - profils:', char.profils);
+    console.log('  - competencesLibres:', char.competencesLibres);
     setCharacter(char);
     setStep(1);
     setView('creator');
