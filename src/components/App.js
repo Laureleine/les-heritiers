@@ -1,7 +1,7 @@
 // src/App.js
-// Version: 3.5.0
-// Build: 2026-02-05 12:00
-// Description: Composant principal avec design intégré (Source v2.15) et validation des choix.
+// Version: 3.5.1
+// Build: 2026-02-05 14:00
+// Correction: Réintégration du tableau [1..8] pour la barre de progression (Fix SyntaxError).
 
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Save, List, FileText } from 'lucide-react';
@@ -102,7 +102,6 @@ function CharacterCreator() {
     } catch (e) { alert(e.message); }
   };
 
-  // VALIDATIONS DES ÉTAPES
   const canProceedStep1 = character.nom.trim() && character.sexe && character.typeFee;
   const canProceedStep2 = Object.keys(character.caracteristiques).length > 0;
   const canProceedStep3 = character.profils?.majeur?.nom && character.profils?.mineur?.nom;
@@ -132,7 +131,6 @@ function CharacterCreator() {
     <div className="min-h-screen bg-amber-50 py-10 px-4">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl border border-amber-100 overflow-hidden">
         
-        {/* HEADER INTÉGRÉ AU FLUX */}
         <header className="bg-amber-900 text-white p-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
@@ -153,7 +151,7 @@ function CharacterCreator() {
           </div>
 
           <div className="mt-8 flex items-center justify-between gap-2 max-w-3xl mx-auto">
-            {.map(s => (
+            {[1-8].map(s => (
               <React.Fragment key={s}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-serif text-xs ${step === s ? 'bg-amber-500 text-white ring-4 ring-amber-500/30' : step > s ? 'bg-amber-700 text-amber-200' : 'bg-amber-950 text-amber-600 border border-amber-800'}`}>
                   {s}
@@ -164,7 +162,6 @@ function CharacterCreator() {
           </div>
         </header>
 
-        {/* CONTENU PRINCIPAL */}
         <main className="p-8 md:p-12">
           {step === 1 && <Step1 character={character} onNomChange={(n) => setCharacter({...character, nom: n})} onSexeChange={(s) => setCharacter({...character, sexe: s})} onTypeFeeChange={(t) => setCharacter({...character, typeFee: t, anciennete: getFairyAge(t)})} fairyTypesByAge={gameData.fairyTypesByAge} />}
           {step === 2 && <StepCaracteristiques character={character} onCaracteristiquesChange={(c) => setCharacter({...character, caracteristiques: c})} fairyData={gameData.fairyData} />}
@@ -175,7 +172,6 @@ function CharacterCreator() {
           {step === 7 && <Step3 character={character} onPouvoirToggle={(p) => setCharacter({...character, pouvoirs: character.pouvoirs.includes(p) ? character.pouvoirs.filter(x => x !== p) : [...character.pouvoirs, p]})} fairyData={gameData.fairyData} />}
           {step === 8 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} competencesParProfil={gameData.competencesParProfil} />}
 
-          {/* NAVIGATION INTÉGRÉE */}
           <div className="mt-12 pt-8 border-t border-amber-100 flex justify-between">
             <button onClick={() => setStep(step - 1)} disabled={step === 1} className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 disabled:opacity-50 font-serif">
               <ChevronLeft size={20} /> Précédent
