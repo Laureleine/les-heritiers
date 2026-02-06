@@ -1,8 +1,7 @@
 // src/data/dataHelpers.js
-// Version: 3.4.1
-// Build: 2026-02-04 23:45
+// Version: 3.5.0
+// Build: 2026-02-05 11:30
 // Description: Moteur de règles pur pour le Système 3D.
-// Correction: Suppression des tokens de citation erronés provoquant la SyntaxError.
 
 /**
  * Calcule l'âge d'une fée selon son ancienneté.
@@ -14,7 +13,7 @@ export const getFairyAge = (typeFee, anciennete, fairyData = {}) => {
 };
 
 /**
- * Obtient le nom du profil adapté au sexe.
+ * Obtient le nom du profil adapté au sexe (ex: Érudit / Érudite).
  */
 export const getProfilNameBySexe = (profilName, sexe, nomFeminin = '') => {
   if (!profilName) return '';
@@ -26,31 +25,18 @@ export const getProfilNameBySexe = (profilName, sexe, nomFeminin = '') => {
 };
 
 /**
- * Parse les compétences de prédilection (Utiles).
+ * Parse les compétences de prédilection (Utiles) pour gérer les choix multiples.
  */
 export const parseCompetencesPredilection = (competences) => {
   if (!competences || !Array.isArray(competences)) return [];
   return competences.map(item => ({
     nom: item.nom,
-    isChoix: !!item.isChoix,
+    isChoix: !!item.isChoix, // Gère le cas "Mêlée ou Tir"
     options: item.options || [],
     specialite: item.specialite || null,
-    isSpecialiteChoix: !!item.isSpecialiteChoix,
+    isSpecialiteChoix: !!item.isSpecialiteChoix, // Gère le choix de spécialité féerique
     specialiteOptions: item.specialiteOptions || []
   }));
-};
-
-/**
- * Parse les compétences de prédilection (Futiles).
- */
-export const parseCompetencesFutilesPredilection = (competences) => {
-  if (!competences) return [];
-  return competences.map(item => {
-    if (typeof item === 'object' && item.isChoix) {
-      return { isChoix: true, options: item.options || [] };
-    }
-    return { isChoix: false, nom: item };
-  });
 };
 
 /**
@@ -97,12 +83,12 @@ export const calculateCombatStats = (character, skills) => {
 };
 
 /**
- * Calcule les Points de Vie : (3 * Constitution) + 9.
+ * Calcule les Points de Vie : (3 * Constitution) + 9 (Source p.128).
  */
 export const calculateMaxHP = (constitution) => (3 * (parseInt(constitution) || 0)) + 9;
 
 /**
- * Calcule le budget total de PP (Étape 6).
+ * Calcule le budget total de PP (Source p.130).
  */
 export const calculateTotalPP = (character, skills) => {
   let total = 0;
