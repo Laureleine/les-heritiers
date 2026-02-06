@@ -1,7 +1,7 @@
 // src/App.js
-// Version: 3.5.3
-// Build: 2026-02-05 16:00
-// Description: Composant principal avec design intégré (Source v2.15) et validation des choix v3.5.
+// Version: 3.5.4
+// Build: 2026-02-05 17:00
+// Correction: Renommage du composant en 'App' et ajout de l'export default pour corriger l'import error.
 
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Save, List, FileText } from 'lucide-react';
@@ -24,7 +24,7 @@ import Auth from './Auth';
 import { saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/utils';
 
-function CharacterCreator() {
+function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [gameDataLoading, setGameDataLoading] = useState(true);
@@ -42,7 +42,6 @@ function CharacterCreator() {
     fairyTypesByAge: { traditionnelles: [], modernes: [] }
   });
 
-  // État initial conforme aux dernières règles (v3.5) [4, 5]
   const initialCharacterState = {
     id: null,
     nom: '',
@@ -68,7 +67,6 @@ function CharacterCreator() {
 
   const [character, setCharacter] = useState(initialCharacterState);
 
-  // Chargement des données de jeu depuis Supabase [6]
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -84,7 +82,6 @@ function CharacterCreator() {
     loadData();
   }, []);
 
-  // Gestion de la session et de l'authentification [5, 7]
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -107,7 +104,6 @@ function CharacterCreator() {
     }
   };
 
-  // LOGIQUE DE VALIDATION DES ÉTAPES [8-10]
   const canProceedStep1 = character.nom.trim() && character.sexe && character.typeFee;
   const canProceedStep2 = character.caracteristiques && Object.keys(character.caracteristiques).length > 0;
   const canProceedStep3 = character.profils?.majeur?.nom && character.profils?.mineur?.nom;
@@ -116,7 +112,6 @@ function CharacterCreator() {
     const lib = character.competencesLibres;
     const points = Object.values(lib.rangs || {}).reduce((s, v) => s + v, 0);
     const feeData = gameData.fairyData[character.typeFee];
-    // Validation des choix féériques imposés (v3.5)
     const choixOK = feeData?.competencesPredilection?.every((c, i) => {
       const cOK = !c.isChoix || lib.choixPredilection?.[i];
       const sOK = !c.isSpecialiteChoix || lib.choixSpecialite?.[i];
@@ -130,7 +125,7 @@ function CharacterCreator() {
     return points === 10;
   };
 
-  if (gameDataLoading || loading) return <div className="p-20 text-center font-serif text-amber-900">Chargement de la Féérie... [10]</div>;
+  if (gameDataLoading || loading) return <div className="p-20 text-center font-serif text-amber-900">Chargement de la Féérie...</div>;
   if (!session) return <Auth />;
   if (view === 'list') return <CharacterList onSelectCharacter={(c) => { setCharacter(c); setView('creator'); }} onNewCharacter={() => { setCharacter(initialCharacterState); setStep(1); setView('creator'); }} onSignOut={() => supabase.auth.signOut()} />;
 
@@ -138,7 +133,6 @@ function CharacterCreator() {
     <div className="min-h-screen bg-amber-50 py-10 px-4">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl border border-amber-100 overflow-hidden">
         
-        {/* HEADER INTÉGRÉ AU FLUX (Design Source v2.15) [2] */}
         <header className="bg-amber-900 text-white p-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
@@ -158,9 +152,8 @@ function CharacterCreator() {
             </div>
           </div>
 
-          {/* BARRE DE PROGRESSION (Correction SyntaxError) [3] */}
           <div className="mt-8 flex items-center justify-between gap-2 max-w-3xl mx-auto">
-            {[1, 4-6, 11-14].map(s => (
+            {.map(s => (
               <React.Fragment key={s}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-serif text-xs ${step === s ? 'bg-amber-500 text-white ring-4 ring-amber-500/30' : step > s ? 'bg-amber-700 text-amber-200' : 'bg-amber-950 text-amber-600 border border-amber-800'}`}>
                   {s}
@@ -171,11 +164,10 @@ function CharacterCreator() {
           </div>
         </header>
 
-        {/* ZONE DE CONTENU PRINCIPALE [15-17] */}
         <main className="p-8 md:p-12">
           {showSaveNotification && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-3">
-              <Save size={20} /> Personnage sauvegardé avec succès [3]
+              <Save size={20} /> Personnage sauvegardé avec succès
             </div>
           )}
 
@@ -188,13 +180,8 @@ function CharacterCreator() {
           {step === 7 && <Step3 character={character} onPouvoirToggle={(p) => setCharacter({...character, pouvoirs: character.pouvoirs.includes(p) ? character.pouvoirs.filter(x => x !== p) : [...character.pouvoirs, p]})} fairyData={gameData.fairyData} />}
           {step === 8 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} />}
 
-          {/* NAVIGATION BASSE (Intégrée au flux) [17-19] */}
           <div className="mt-12 pt-8 border-t border-amber-100 flex justify-between">
-            <button 
-              onClick={() => setStep(step - 1)} 
-              disabled={step === 1} 
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-serif transition-all ${step === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-            >
+            <button onClick={() => setStep(step - 1)} disabled={step === 1} className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 disabled:opacity-50 font-serif">
               <ChevronLeft size={20} /> Précédent
             </button>
             <button 
@@ -213,8 +200,10 @@ function CharacterCreator() {
         </main>
       </div>
       <p className="text-center mt-6 text-amber-900/40 text-xs font-serif uppercase tracking-widest">
-        Les Héritiers • Système 3D • Build {BUILD_DATE} [2]
+        Les Héritiers • Système 3D • Build {BUILD_DATE}
       </p>
     </div>
   );
 }
+
+export default App;
