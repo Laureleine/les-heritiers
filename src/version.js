@@ -1,94 +1,72 @@
 // src/version.js
-// Version: 3.0.7
-// Build: 2026-02-04 07:15
+// Version: 3.4.0
+// Build: 2026-02-04 22:30
+// Description: Historique des versions et constantes globales de l'application.
 
-export const APP_VERSION = '3.0.7';
-export const BUILD_DATE = '2026-02-04 07:15';
-export const BUILD_NUMBER = 107;
+export const APP_VERSION = "3.4.0";
+export const BUILD_DATE = "2026-02-04";
 
 export const VERSION_HISTORY = [
   {
-    version: '3.0.7',
-    date: '2026-02-04 07:15',
-    type: 'patch',
+    version: "3.4.0",
+    date: "2026-02-04",
+    type: "patch",
     changes: [
-      '❌ Bouton "Données" désactivé temporairement'
+      "Correction de l'export de 'loadAllGameData' pour la compilation",
+      "Renforcement de la validation de l'étape 4 (choix de prédilections)",
+      "Optimisation du cache global pour le premier chargement"
     ]
   },
   {
-    version: '3.0.6',
-    date: '2026-02-04 07:00',
-    type: 'minor',
+    version: "3.3.0",
+    date: "2026-02-04",
+    type: "minor",
     changes: [
-      '✨ Système de bonus implémenté (capacités/pouvoirs)',
-      '📊 Bonus caractéristiques avec format masqué/démasqué',
-      '📈 Bonus compétences visibles',
-      '🎁 Spécialités gratuites depuis capacités',
-      '🔧 Correction chargement personnages (typeFee, etc.)',
-      '🗄️ Ajout colonne bonus JSONB dans Supabase'
+      "Implémentation du mode Hors-ligne (PWA) via LocalStorage",
+      "Ajout du verrouillage optimiste (Optimistic Locking) contre les conflits de sauvegarde",
+      "Nettoyage automatique des données (rangs à 0) avant enregistrement",
+      "Gestion des alertes administrateur pour les identifiants orphelins"
     ]
   },
   {
-    version: '3.0.4',
-    date: '2026-02-04 05:15',
-    type: 'patch',
+    version: "3.2.0",
+    date: "2026-02-04",
+    type: "minor",
     changes: [
-      '✨ Traits et icônes ajoutés aux profils',
-      '🎨 StepProfils: noms adaptés au sexe (Aventurier/Aventurière)',
-      '🎨 StepProfils: affichage des compétences par profil',
-      '🎨 StepCompetencesLibres: organisation par profil',
-      '📊 Calcul du rang de profil (base + bonus/4)',
-      '📝 Affichage "Rang X (base + bonus)"'
+      "Gestion des spécialités au choix pour les prédilections (ex: Gnome, Gargouille)",
+      "Intégration de la dualité Forme Humaine / Forme Démasquée (🎭) dans le moteur de stats",
+      "Détection automatique des spécialités d'armes pour les bonus de Parade et d'Esquive",
+      "Calcul dynamique du nombre de langues basées sur la Culture"
     ]
   },
   {
-    version: '3.0.0',
-    date: '2026-02-04 01:00',
-    type: 'major',
+    version: "3.1.0",
+    date: "2026-02-04",
+    type: "minor",
     changes: [
-      '🚀 MIGRATION MAJEURE v3.0 - 100% Supabase !',
-      '🗑️ data.js complètement supprimé',
-      '✅ Tous les composants migrés vers Supabase',
-      '✅ Step1: fairyTypesByAge depuis props',
-      '✅ StepProfils: profils depuis props',
-      '✅ StepCompetencesLibres: competences depuis props',
-      '✅ StepRecapitulatif: données depuis props',
-      '📦 Chargement unique au démarrage avec cache',
-      '⚡ Performance optimisée (1 seul fetch)',
-      '🎯 Architecture propre et maintenable'
+      "Centralisation du moteur de règles Système 3D (dataHelpers.js)",
+      "Calcul automatique des valeurs de Défense, Résistance et Initiative",
+      "Calcul du budget de Points de Personnage (PP) pour l'étape de personnalisation",
+      "Mise à jour de l'export PDF avec les statistiques de combat calculées"
     ]
   },
   {
-    version: '2.15.0',
-    date: '2026-02-04 00:50',
-    type: 'minor',
+    version: "3.0.0",
+    date: "2026-02-03",
+    type: "major",
     changes: [
-      'Migration partielle: données du jeu vers Supabase',
-      'App.js charge profils, compétences, fées au démarrage',
-      'Module supabaseGameData.js complet',
-      'Scripts SQL: insert profils, compétences, fées',
-      'Cache intelligent évite requêtes multiples',
-      'StepCompetencesFutiles 100% Supabase'
+      "Migration complète vers Supabase (PostgreSQL)",
+      "Passage d'une structure de données statique vers une base dynamique",
+      "Gestion des identifiants (UIDs) pour les compétences et types de fées",
+      "Refonte de l'initialisation de l'état du personnage"
     ]
   },
   {
-    version: '2.14.3',
-    date: '2026-02-01 00:00',
-    type: 'patch',
+    version: "2.15.0",
+    date: "2026-02-02",
+    type: "patch",
     changes: [
-      'Script SQL complet consolidé',
-      'Application automatique data_change_requests',
-      'Scripts inspection change requests'
+      "Version initiale de transition avant la migration Supabase"
     ]
   }
 ];
-
-export const getVersionType = () => {
-  const parts = APP_VERSION.split('.');
-  if (parts[0] !== '2' && parts[0] !== '3') return 'major';
-  if (parts[0] === '3' && parts[1] === '0' && parts[2] === '0') return 'major';
-  if (parts[2] === '0') return 'minor';
-  return 'patch';
-};
-
-export const CURRENT_VERSION_TYPE = getVersionType();

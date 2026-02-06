@@ -1,37 +1,67 @@
 // src/utils/supabaseGameData.js
-// Version: 3.3.0
-// Build: 2026-02-04 12:00
-// Migration: Spécialités au choix et Alertes Admin pour UIDs orphelins.
+// Version: 3.4.0
+// Build: 2026-02-04 22:15
+// Description: Moteur de données pour Supabase avec résolution d'identifiants et gestion des choix.
+// Correction: Assure l'export explicite de loadAllGameData pour corriger l'erreur de compilation.
 
 import { supabase } from '../config/supabase';
 
 // ============================================================================
-// LOGIQUE DE RÉSOLUTION ET ALERTES
+// LOGIQUE DE RÉSOLUTION ET ALERTES (POUR ADMINISTRATEUR)
 // ============================================================================
 
-/**
- * Crée une Map d'indexage UUID -> Nom.
- * Alerte l'admin via la console si des compétences sont mal configurées.
- */
 const createCompetenceLookup = async () => {
   const { data, error } = await supabase.from('competences').select('id, name');
   if (error) {
-    console.error('[ADMIN] Erreur critique de lecture des compétences:', error);
+    console.error('[ADMIN ALERT] Erreur critique de lecture des compétences:', error);
     return new Map();
   }
   return new Map(data.map(c => [c.id, c.name]));
 };
 
-/**
- * Vérifie l'intégrité d'une prédilection et génère une alerte si l'UID est introuvable.
- */
 const resolveAndValidate = (id, lookup, fairyName, context) => {
   const name = lookup.get(id);
   if (!name && id) {
-    console.warn(`[ADMIN ALERT] ID Compétence orphelin détecté pour la fée "${fairyName}" dans ${context}. ID: ${id}`);
-    return `!! ERREUR ID !!`; // Marqueur visuel pour l'interface
+    console.warn(`[ADMIN ALERT] ID Compétence orphelin détecté pour "${fairyName}" (${context}). ID: ${id}`);
+    return `!! ERREUR ID !!`;
   }
   return name;
+};
+
+// ============================================================================
+// COMPÉTENCES FUTILES
+// ============================================================================
+
+export const loadCompetencesFutiles = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('competences_futiles')
+      .select('id, name, description')
+      .order('name');
+    if (error) throw error;
+    return data.map(comp => ({
+      id: comp.id,
+      nom: comp.name,
+      description: comp.description
+    }));
+  } catch (error) {
+    console.error('Erreur chargement compétences futiles:', error);
+    return [];
+  }
+};
+
+export const getCompetenceFutileIdByName = async (name) => {
+  const { data } = await supabase.from('competences_futiles').select('id').eq('name', name).single();
+  return data?.id || null;
+};
+
+export const addCompetenceFutile = async (name, description) => {
+  const { data, error } = await supabase
+    .from('competences_futiles')
+    .insert([{ name, description }])
+    .select().single();
+  if (error) throw error;
+  return { id: data.id, nom: data.name, description: data.description };
 };
 
 // ============================================================================
@@ -76,7 +106,7 @@ export const loadCompetences = async () => {
 };
 
 // ============================================================================
-// TYPES DE FÉES (RESOLUTION V3.3.0)
+// TYPES DE FÉES (RÉSOLUTION ET CHOIX MULTIPLES)
 // ============================================================================
 
 export const loadFairyTypes = async () => {
@@ -88,10 +118,7 @@ export const loadFairyTypes = async () => {
 
     if (tErr) throw tErr;
 
-    const { data: allCompPred } = await supabase
-      .from('fairy_competences_predilection')
-      .select('*');
-
+    const { data: allCompPred } = await supabase.from('fairy_competences_predilection').select('*');
     const { data: allCompFutPred } = await supabase
       .from('fairy_competences_futiles_predilection')
       .select('fairy_type_id, is_choice, choice_options, competence_futile:competence_futile_id (name)');
@@ -99,23 +126,20 @@ export const loadFairyTypes = async () => {
     const compPredByFairy = {};
     const compFutPredByFairy = {};
 
-    // Mapping Prédilections UTILES avec Validation
     allCompPred?.forEach(cp => {
       if (!compPredByFairy[cp.fairy_type_id]) compPredByFairy[cp.fairy_type_id] = [];
+      const fName = types.find(t => t.id === cp.fairy_type_id)?.name || "Inconnue";
       
-      const fairyName = types.find(t => t.id === cp.fairy_type_id)?.name || "Inconnue";
-
       compPredByFairy[cp.fairy_type_id].push({
-        nom: cp.is_choice ? null : resolveAndValidate(cp.competence_id, lookup, fairyName, "Prédilection fixe"),
+        nom: cp.is_choice ? null : resolveAndValidate(cp.competence_id, lookup, fName, "Fixe"),
         specialite: cp.specialite,
         isChoix: cp.is_choice,
-        options: cp.is_choice ? cp.choice_ids.map(id => resolveAndValidate(id, lookup, fairyName, "Choix multiple")) : [],
+        options: cp.is_choice ? cp.choice_ids.map(id => resolveAndValidate(id, lookup, fName, "Choix")) : [],
         isSpecialiteChoix: cp.is_specialite_choice,
         specialiteOptions: cp.specialite_options || []
       });
     });
 
-    // Mapping Prédilections FUTILES
     allCompFutPred?.forEach(cfp => {
       if (!compFutPredByFairy[cfp.fairy_type_id]) compFutPredByFairy[cfp.fairy_type_id] = [];
       if (cfp.is_choice) {
@@ -157,49 +181,49 @@ export const loadFairyTypes = async () => {
   }
 };
 
+// ============================================================================
+// CACHE GLOBAL ET ORCHESTRATION (LA FONCTION MANQUANTE)
+// ============================================================================
+
+let cachedProfils = null;
+let cachedCompetences = null;
+let cachedFairyTypes = null;
+let cachedCompetencesFutiles = null;
+
 /**
- * Détails d'une fée avec résolution spécifique des choix de spécialité.
+ * Fonction centrale appelée par App.js pour initialiser le créateur.
+ * Exporte explicitement loadAllGameData pour résoudre l'erreur de compilation.
  */
-export const loadFairyDetails = async (fairyName) => {
-  try {
-    const lookup = await createCompetenceLookup();
-    const { data: fairy, error: fErr } = await supabase.from('fairy_types').select('*').eq('name', fairyName).single();
-    if (fErr) throw fErr;
-
-    const [compPred, compFut, capacites, pouvoirs] = await Promise.all([
-      supabase.from('fairy_competences_predilection').select('*').eq('fairy_type_id', fairy.id),
-      supabase.from('fairy_competences_futiles_predilection').select('is_choice, choice_options, competence_futile:competence_futile_id(name)').eq('fairy_type_id', fairy.id),
-      supabase.from('fairy_capacites').select('capacite_type, nom, description, bonus').eq('fairy_type_id', fairy.id),
-      supabase.from('fairy_pouvoirs').select('nom, description, bonus').eq('fairy_type_id', fairy.id)
-    ]);
-
+export const loadAllGameData = async (forceRefresh = false) => {
+  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes) {
     return {
-      id: fairy.id,
-      description: fairy.description,
-      caracteristiques: {
-        agilite: { min: fairy.agilite_min, max: fairy.agilite_max },
-        constitution: { min: fairy.constitution_min, max: fairy.constitution_max },
-        force: { min: fairy.force_min, max: fairy.force_max },
-        precision: { min: fairy.precision_min, max: fairy.precision_max },
-        esprit: { min: fairy.esprit_min, max: fairy.esprit_max },
-        perception: { min: fairy.perception_min, max: fairy.perception_max },
-        prestance: { min: fairy.prestance_min, max: fairy.prestance_max },
-        sangFroid: { min: fairy.sang_froid_min, max: fairy.sang_f_max }
-      },
-      competencesPredilection: compPred.data?.map(cp => ({
-        nom: cp.is_choice ? null : resolveAndValidate(cp.competence_id, lookup, fairyName, "Détails fixes"),
-        specialite: cp.specialite,
-        isChoix: cp.is_choice,
-        options: cp.is_choice ? cp.choice_ids.map(id => resolveAndValidate(id, lookup, fairyName, "Détails choix multiple")) : [],
-        isSpecialiteChoix: cp.is_specialite_choice,
-        specialiteOptions: cp.specialite_options || []
-      })) || [],
-      // ... reste du code (capacités, pouvoirs) identique à v3.2.0
+      profils: cachedProfils,
+      competences: cachedCompetences.competences,
+      competencesParProfil: cachedCompetences.competencesParProfil,
+      competencesFutiles: cachedCompetencesFutiles,
+      fairyData: cachedFairyTypes.fairyData,
+      fairyTypes: cachedFairyTypes.fairyTypes,
+      fairyTypesByAge: cachedFairyTypes.fairyTypesByAge
     };
-  } catch (error) {
-    console.error(`Erreur loadFairyDetails ${fairyName}:`, error);
-    return null;
   }
+
+  const [p, c, f, fut] = await Promise.all([
+    loadProfils(), loadCompetences(), loadFairyTypes(), loadCompetencesFutiles()
+  ]);
+
+  cachedProfils = p; cachedCompetences = c; cachedFairyTypes = f; cachedCompetencesFutiles = fut;
+
+  return {
+    profils: p, 
+    competences: c.competences, 
+    competencesParProfil: c.competencesParProfil,
+    competencesFutiles: fut, 
+    fairyData: f.fairyData, 
+    fairyTypes: f.fairyTypes,
+    fairyTypesByAge: f.fairyTypesByAge
+  };
 };
 
-// ... loadAllGameData et invalidateAllCaches identiques à v3.2.0
+export const invalidateAllCaches = () => {
+  cachedProfils = null; cachedCompetences = null; cachedFairyTypes = null; cachedCompetencesFutiles = null;
+};
