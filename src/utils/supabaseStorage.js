@@ -1,17 +1,88 @@
 // src/utils/supabaseStorage.js
-// Version: 3.0.3
-// Build: 2026-02-04 04:15
-// Description: Gestion du stockage des personnages dans Supabase
+// Version: 3.3.0
+// Build: 2026-02-04 20:00
+// Migration: Mode Hors-ligne (PWA) via LocalStorage, Nettoyage auto et Optimistic Locking.
 
 import { supabase } from '../config/supabase';
 
+// ============================================================================
+// CONFIGURATION ET CACHE
+// ============================================================================
+const OFFLINE_STORAGE_KEY = 'heritiers_character_cache';
+let userCharactersCache = null;
+
 /**
- * Récupère tous les personnages de l'utilisateur connecté
+ * Nettoie les données (suppression des rangs à 0) pour optimiser le JSONB.
  */
-export const getUserCharacters = async () => {
+const cleanupCharacterData = (char) => {
+  const cleanRangs = (rangs) => 
+    Object.fromEntries(Object.entries(rangs || {}).filter(([_, v]) => v > 0));
+
+  return {
+    ...char,
+    competencesLibres: {
+      ...char.competencesLibres,
+      rangs: cleanRangs(char.competencesLibres?.rangs)
+    },
+    competencesFutiles: {
+      ...char.competencesFutiles,
+      rangs: cleanRangs(char.competencesFutiles?.rangs)
+    }
+  };
+};
+
+/**
+ * Mappage Base de données (snake_case) -> Application (camelCase)
+ * Assure la présence des nouvelles structures de choix [Source 642, 657].
+ */
+const mapDatabaseToCharacter = (char) => ({
+  id: char.id,
+  nom: char.nom,
+  sexe: char.sexe,
+  typeFee: char.type_fee,
+  anciennete: char.anciennete,
+  caracteristiques: char.caracteristiques || {},
+  profils: char.profils || { majeur: { nom: '', trait: '' }, mineur: { nom: '', trait: '' } },
+  competencesLibres: {
+    rangs: char.competences_libres?.rangs || {},
+    choixPredilection: char.competences_libres?.choixPredilection || {},
+    choixSpecialite: char.competences_libres?.choixSpecialite || {}
+  },
+  competencesFutiles: char.competences_futiles || { rangs: {}, personnalisees: [] },
+  capaciteChoisie: char.capacite_choisie,
+  pouvoirs: char.pouvoirs || [],
+  isPublic: char.is_public,
+  created_at: char.created_at,
+  updated_at: char.updated_at
+});
+
+// ============================================================================
+// GESTION DU MODE HORS-LIGNE (PWA)
+// ============================================================================
+
+const updateOfflineMirror = (characters) => {
   try {
+    localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(characters));
+  } catch (e) {
+    console.error('Erreur LocalStorage (Cache plein ?):', e);
+  }
+};
+
+const getOfflineMirror = () => {
+  const stored = localStorage.getItem(OFFLINE_STORAGE_KEY);
+  return stored ? JSON.parse(stored) : [];
+};
+
+// ============================================================================
+// RÉCUPÉRATION DES PERSONNAGES
+// ============================================================================
+
+export const getUserCharacters = async (forceRefresh = false) => {
+  try {
+    if (userCharactersCache && !forceRefresh) return userCharactersCache;
+
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return [];
+    if (!user) return getOfflineMirror(); // Mode consultation hors-ligne
 
     const { data, error } = await supabase
       .from('characters')
@@ -21,171 +92,79 @@ export const getUserCharacters = async () => {
 
     if (error) throw error;
     
-    // Transformer les données de la BDD vers le format JavaScript
-    return (data || []).map(char => ({
-      id: char.id,
-      nom: char.nom,
-      sexe: char.sexe,
-      typeFee: char.type_fee,
-      anciennete: char.anciennete,
-      caracteristiques: char.caracteristiques,
-      profils: char.profils,
-      competencesLibres: char.competences_libres,
-      competencesFutiles: char.competences_futiles,
-      capaciteChoisie: char.capacite_choisie,
-      pouvoirs: char.pouvoirs,
-      isPublic: char.is_public,
-      created_at: char.created_at,
-      updated_at: char.updated_at
-    }));
-  } catch (error) {
-    console.error('Erreur getUserCharacters:', error);
-    return [];
-  }
-};
-
-/**
- * Récupère tous les personnages publics
- */
-export const getPublicCharacters = async () => {
-  try {
-    const { data, error } = await supabase
-      .from('characters')
-      .select('*')
-      .eq('is_public', true)
-      .order('updated_at', { ascending: false });
-
-    if (error) throw error;
+    const mappedData = (data || []).map(mapDatabaseToCharacter);
     
-    // Transformer les données de la BDD vers le format JavaScript
-    return (data || []).map(char => ({
-      id: char.id,
-      nom: char.nom,
-      sexe: char.sexe,
-      typeFee: char.type_fee,
-      anciennete: char.anciennete,
-      caracteristiques: char.caracteristiques,
-      profils: char.profils,
-      competencesLibres: char.competences_libres,
-      competencesFutiles: char.competences_futiles,
-      capaciteChoisie: char.capacite_choisie,
-      pouvoirs: char.pouvoirs,
-      isPublic: char.is_public,
-      created_at: char.created_at,
-      updated_at: char.updated_at
-    }));
+    // Mise à jour des caches
+    userCharactersCache = mappedData;
+    updateOfflineMirror(mappedData);
+    
+    return mappedData;
   } catch (error) {
-    console.error('Erreur getPublicCharacters:', error);
-    return [];
+    console.warn('Utilisation du mode hors-ligne (Erreur réseau ou déconnecté)');
+    return getOfflineMirror();
   }
 };
 
-/**
- * Sauvegarde un personnage dans Supabase
- */
+// ============================================================================
+// SAUVEGARDE ET GESTION DES CONFLITS
+// ============================================================================
+
 export const saveCharacterToSupabase = async (character) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Utilisateur non connecté');
+    if (!user) throw new Error('Action impossible en mode hors-ligne');
 
+    const cleaned = cleanupCharacterData(character);
+    
     const characterData = {
-      ...character,
       user_id: user.id,
+      nom: cleaned.nom,
+      sexe: cleaned.sexe,
+      type_fee: cleaned.typeFee,
+      anciennete: cleaned.anciennete,
+      caracteristiques: cleaned.caracteristiques,
+      profils: cleaned.profils,
+      competences_libres: cleaned.competencesLibres,
+      competences_futiles: cleaned.competencesFutiles,
+      capacite_choisie: cleaned.capaciteChoisie,
+      pouvoirs: cleaned.pouvoirs,
+      is_public: cleaned.isPublic || false,
       updated_at: new Date().toISOString()
     };
 
-    // Si le personnage a un ID, on fait un update, sinon un insert
+    // VÉRIFICATION DE CONFLIT (Optimistic Locking)
     if (character.id) {
-      const { data, error } = await supabase
-        .from('characters')
-        .update(characterData)
-        .eq('id', character.id)
-        .eq('user_id', user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } else {
-      const { data, error } = await supabase
-        .from('characters')
-        .insert([characterData])
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+      const { data: remote } = await supabase.from('characters').select('updated_at').eq('id', character.id).single();
+      if (remote && remote.updated_at !== character.updated_at) {
+        throw new Error('CONFLIT : Ce personnage a été modifié ailleurs. Veuillez copier vos changements et rafraîchir.');
+      }
     }
+
+    const { data, error } = character.id 
+      ? await supabase.from('characters').update(characterData).eq('id', character.id).select().single()
+      : await supabase.from('characters').insert([characterData]).select().single();
+
+    if (error) throw error;
+
+    const finalChar = mapDatabaseToCharacter(data);
+    
+    // Rafraîchissement forcé du cache global
+    userCharactersCache = null; 
+    await getUserCharacters(true); 
+
+    return finalChar;
   } catch (error) {
-    console.error('Erreur saveCharacterToSupabase:', error);
+    console.error('Erreur sauvegarde:', error);
     throw error;
   }
 };
 
-/**
- * Supprime un personnage de Supabase
- */
+// TODO: Implémenter Compression (v3.4) et Historique (v4.0)
+
 export const deleteCharacterFromSupabase = async (characterId) => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Utilisateur non connecté');
-
-    const { error } = await supabase
-      .from('characters')
-      .delete()
-      .eq('id', characterId)
-      .eq('user_id', user.id);
-
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    console.error('Erreur deleteCharacterFromSupabase:', error);
-    throw error;
-  }
-};
-
-/**
- * Change la visibilité d'un personnage (public/privé)
- */
-export const toggleCharacterVisibility = async (characterId, isPublic) => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Utilisateur non connecté');
-
-    const { data, error } = await supabase
-      .from('characters')
-      .update({ 
-        is_public: isPublic,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', characterId)
-      .eq('user_id', user.id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Erreur toggleCharacterVisibility:', error);
-    throw error;
-  }
-};
-
-/**
- * Récupère un personnage spécifique par son ID
- */
-export const getCharacterById = async (characterId) => {
-  try {
-    const { data, error } = await supabase
-      .from('characters')
-      .select('*')
-      .eq('id', characterId)
-      .single();
-
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Erreur getCharacterById:', error);
-    throw error;
-  }
+  const { error } = await supabase.from('characters').delete().eq('id', characterId);
+  if (error) throw error;
+  userCharactersCache = null;
+  await getUserCharacters(true);
+  return true;
 };

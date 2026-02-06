@@ -1,8 +1,7 @@
-// Version: 2.15.0
-// Build: 2026-02-04 00:50
-// Description: Composant principal de l'application Les Héritiers
-// Dernière modification: 2026-02-04
-// Migration: Chargement données depuis Supabase
+// src/App.js
+// Version: 3.4.0
+// Build: 2026-02-04 17:00
+// Migration: Validation Step 4 (Choix Predilection + Points) et initialisation structurelle.
 
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Database } from 'lucide-react';
@@ -10,21 +9,21 @@ import { supabase } from '../config/supabase';
 import { loadAllGameData } from '../utils/supabaseGameData';
 import { getFairyAge } from '../data/dataHelpers';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from '../version';
+
 import Step1 from './Step1';
 import StepCaracteristiques from './StepCaracteristiques';
 import StepProfils from './StepProfils';
 import StepCompetencesLibres from './StepCompetencesLibres';
 import StepCompetencesFutiles from './StepCompetencesFutiles';
-import Step2 from './Step2';
-import Step3 from './Step3';
+import Step2 from './Step2'; // Choix de capacité
+import Step3 from './Step3'; // Choix de pouvoirs
 import StepRecapitulatif from './StepRecapitulatif';
 import CharacterList from './CharacterList';
 import Auth from './Auth';
 import DataEditor from './DataEditor';
 import ValidationsPendantes from './ValidationsPendantes';
-import InAppNotification from './InAppNotification';
-import { saveCharacterToSupabase } from '../utils/utils';
-import { exportToPDF } from '../utils/utils';
+
+import { saveCharacterToSupabase, exportToPDF } from '../utils/utils';
 import { registerServiceWorker, checkForUpdates } from '../utils/notificationSystem';
 
 function CharacterCreator() {
@@ -34,10 +33,8 @@ function CharacterCreator() {
   const [view, setView] = useState('list');
   const [step, setStep] = useState(1);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [pendingCount, setPendingCount] = useState(0);
-  const [dataEditorEnabled, setDataEditorEnabled] = useState(true); // Contrôle affichage bouton DataEditor
-  
-  // Données du jeu chargées depuis Supabase
+  const ADMIN_EMAIL = 'amaranthe@free.fr';
+
   const [gameData, setGameData] = useState({
     profils: [],
     competences: {},
@@ -47,64 +44,11 @@ function CharacterCreator() {
     fairyTypes: [],
     fairyTypesByAge: { traditionnelles: [], modernes: [] }
   });
-  
-  const ADMIN_EMAIL = 'amaranthe@free.fr';
-  
-  // Charger les données du jeu au démarrage
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setGameDataLoading(true);
-        const data = await loadAllGameData();
-        setGameData(data);
-      } catch (error) {
-        console.error('Erreur chargement données du jeu:', error);
-      } finally {
-        setGameDataLoading(false);
-      }
-    };
-    loadData();
-  }, []);
-  
-  // Charger paramètres admin (affichage bouton DataEditor)
-  useEffect(() => {
-    const loadAdminSettings = async () => {
-      const { data } = await supabase
-        .from('admin_settings')
-        .select('setting_value')
-        .eq('setting_key', 'data_editor_enabled')
-        .single();
-      
-      if (data) {
-        setDataEditorEnabled(data.setting_value.enabled);
-      }
-    };
-    loadAdminSettings();
-  }, []);
-  
-  useEffect(() => {
-    // Initialiser Service Worker et vérifier updates
-    registerServiceWorker();
-    checkForUpdates(APP_VERSION);
-    
-    // Vérifier admin
-    if (session?.user?.email === ADMIN_EMAIL) {
-      setIsAdmin(true);
-      checkPendingChanges();
-      // Polling toutes les 30s
-      const interval = setInterval(checkPendingChanges, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [session]);
 
-  const checkPendingChanges = async () => {
-    const { count } = await supabase
-      .from('data_change_requests')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'pending');
-    setPendingCount(count || 0);
-  };
-  const [character, setCharacter] = useState({
+  // ============================================================================
+  // ÉTAT INITIAL DU PERSONNAGE (STRUCTURE V3.4.0)
+  // ============================================================================
+  const initialCharacterState = {
     id: null,
     nom: '',
     sexe: '',
@@ -112,77 +56,88 @@ function CharacterCreator() {
     anciennete: null,
     caracteristiques: {},
     profils: {
-      majeur: { nom: '', trait: '' },
-      mineur: { nom: '', trait: '' }
+      majeur: { nom: '', trait: '', competences: [] },
+      mineur: { nom: '', trait: '', competences: [] }
     },
-    competencesLibres: {},
+    competencesLibres: {
+      rangs: {},              // Les 15 points investis
+      choixPredilection: {},  // Ex: { 2: "Mêlée" }
+      choixSpecialite: {}     // Ex: { 1: "Explosifs" }
+    },
     competencesFutiles: {
       rangs: {},
+      choixPredilection: {},
       personnalisees: []
     },
     capaciteChoisie: '',
     pouvoirs: [],
     isPublic: false,
     createdAt: new Date().toISOString()
-  });
+  };
+
+  const [character, setCharacter] = useState(initialCharacterState);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
 
+  // ============================================================================
+  // CHARGEMENT DES DONNÉES ET AUTH
+  // ============================================================================
+
   useEffect(() => {
-    // Vérifier la session au chargement
+    const loadData = async () => {
+      try {
+        setGameDataLoading(true);
+        const data = await loadAllGameData();
+        setGameData(data);
+      } catch (error) {
+        console.error('Erreur chargement données:', error);
+      } finally {
+        setGameDataLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session?.user?.email === ADMIN_EMAIL) setIsAdmin(true);
       setLoading(false);
     });
-
-    // Écouter les changements d'authentification
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setView('list');
-  };
+  // ============================================================================
+  // GESTIONNAIRES D'ÉVÉNEMENTS
+  // ============================================================================
 
   const handleNewCharacter = () => {
-    setCharacter({
-      id: null,
-      nom: '',
-      sexe: '',
-      typeFee: '',
-      anciennete: null,
-      caracteristiques: {},
-      profils: {
-        majeur: { nom: '', trait: '' },
-        mineur: { nom: '', trait: '' }
-      },
-      competencesLibres: {},
-      competencesFutiles: {
-        rangs: {},
-        personnalisees: []
-      },
-      capaciteChoisie: '',
-      pouvoirs: [],
-      isPublic: false,
-      createdAt: new Date().toISOString()
-    });
+    setCharacter(initialCharacterState);
     setStep(1);
     setView('creator');
   };
 
-  const handleSelectCharacter = (char) => {
-    console.log('📥 Chargement personnage:', char);
-    console.log('  - typeFee:', char.typeFee);
-    console.log('  - profils:', char.profils);
-    console.log('  - competencesLibres:', char.competencesLibres);
-    setCharacter(char);
-    setStep(1);
-    setView('creator');
+  const handleTypeFeeChange = (typeFee) => {
+    const anciennete = getFairyAge(typeFee);
+    const feeData = gameData.fairyData[typeFee];
+    const caracteristiques = {};
+    if (feeData?.caracteristiques) {
+      Object.keys(feeData.caracteristiques).forEach(key => {
+        caracteristiques[key] = feeData.caracteristiques[key].min;
+      });
+    }
+    // Reset partiel pour éviter les conflits de prédilections entre espèces
+    setCharacter({
+      ...character,
+      typeFee,
+      anciennete,
+      caracteristiques,
+      competencesLibres: initialCharacterState.competencesLibres,
+      capaciteChoisie: '',
+      pouvoirs: []
+    });
   };
 
   const handleSave = async () => {
@@ -190,446 +145,111 @@ function CharacterCreator() {
       alert('Veuillez donner un nom à votre personnage');
       return;
     }
-    if (!character.sexe || !character.typeFee) {
-      alert('Veuillez compléter au moins le sexe et le type de fée');
-      return;
-    }
-
     try {
       const savedChar = await saveCharacterToSupabase(character);
       setCharacter({ ...character, id: savedChar.id });
       setShowSaveNotification(true);
       setTimeout(() => setShowSaveNotification(false), 3000);
     } catch (error) {
-      alert('Erreur lors de la sauvegarde : ' + error.message);
+      alert('Erreur sauvegarde: ' + error.message);
     }
   };
 
-  const handleNomChange = (nom) => {
-    setCharacter({ ...character, nom });
-  };
-
-  const handleSexeChange = (sexe) => {
-    setCharacter({ ...character, sexe });
-  };
-
-  const handleTypeFeeChange = (typeFee) => {
-    const anciennete = getFairyAge(typeFee);
-    // Initialiser les caractéristiques au minimum
-    const feeData = gameData.fairyData[typeFee];
-    const caracteristiques = {};
-    if (feeData && feeData.caracteristiques) {
-      Object.keys(feeData.caracteristiques).forEach(key => {
-        caracteristiques[key] = feeData.caracteristiques[key].min;
-      });
-    }
-    setCharacter({ 
-      ...character, 
-      typeFee,
-      anciennete,
-      caracteristiques, 
-      capaciteChoisie: '', 
-      pouvoirs: [] 
-    });
-  };
-
-  const handleCaracteristiquesChange = (caracteristiques) => {
-    setCharacter({ ...character, caracteristiques });
-  };
-
-  const handleProfilsChange = (profils) => {
-    setCharacter({ ...character, profils });
-  };
-
-  const handleCompetencesLibresChange = (competencesLibres) => {
-    setCharacter({ ...character, competencesLibres });
-  };
-
-  const handleCompetencesFutilesChange = (competencesFutiles) => {
-    setCharacter({ ...character, competencesFutiles });
-  };
-
-  const handleCapaciteChoice = (capacite) => {
-    setCharacter({ ...character, capaciteChoisie: capacite });
-  };
-
-  const handlePouvoirToggle = (pouvoir) => {
-    const pouvoirs = character.pouvoirs.includes(pouvoir)
-      ? character.pouvoirs.filter(p => p !== pouvoir)
-      : character.pouvoirs.length < 3
-      ? [...character.pouvoirs, pouvoir]
-      : character.pouvoirs;
-    setCharacter({ ...character, pouvoirs });
-  };
+  // ============================================================================
+  // LOGIQUE DE VALIDATION (RULES ENGINE)
+  // ============================================================================
 
   const canProceedStep1 = character.nom.trim() && character.sexe && character.typeFee;
-  const canProceedStep2 = character.caracteristiques && Object.keys(character.caracteristiques).length > 0;
-  const canProceedStep3 = character.profils?.majeur?.nom && character.profils?.majeur?.trait && 
-                          character.profils?.mineur?.nom && character.profils?.mineur?.trait;
-  
-  // Validation Step4 : Vérifier que les 15 points ont été dépensés
+  const canProceedStep2 = Object.keys(character.caracteristiques).length > 0;
+  const canProceedStep3 = character.profils?.majeur?.nom && character.profils?.mineur?.nom;
+
+  /**
+   * Validation Step 4 : 15 points dépensés + tous les choix de prédilection faits.
+   */
   const canProceedStep4 = () => {
-    const pointsDepenses = Object.entries(character.competencesLibres || {}).reduce((sum, [comp, data]) => {
-      let points = data.rangsSupplementaires || 0;
-      if (data.specialites) {
-        points += data.specialites.length;
-      }
-      return sum + points;
-    }, 0);
-    return pointsDepenses === 15;
+    const lib = character.competencesLibres || {};
+    const pointsDepenses = Object.values(lib.rangs || {}).reduce((sum, val) => sum + val, 0);
+    
+    const feeData = gameData.fairyData[character.typeFee];
+    const predOK = feeData?.competencesPredilection?.every((c, i) => {
+      const compOK = !c.isChoix || lib.choixPredilection?.[i];
+      const specOK = !c.isSpecialiteChoix || lib.choixSpecialite?.[i];
+      return compOK && specOK;
+    }) ?? true;
+
+    return pointsDepenses === 15 && predOK;
   };
-  
-  // Validation Step5 : Vérifier que les 10 points ont été dépensés pour les compétences futiles
+
   const canProceedStep5 = () => {
-    const pointsDepenses = Object.values(character.competencesFutiles?.rangs || {}).reduce((sum, rangs) => sum + rangs, 0);
+    const pointsDepenses = Object.values(character.competencesFutiles?.rangs || {}).reduce((sum, r) => sum + r, 0);
     return pointsDepenses === 10;
   };
-  
-  const canProceedStep6 = character.capaciteChoisie;
-  const canProceedStep7 = character.pouvoirs.length === 3;
-  // Step 8 (Récapitulatif) toujours accessible
 
-  // Afficher l'écran de chargement des données du jeu
-  if (gameDataLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-amber-900 mx-auto mb-4"></div>
-          <div className="text-2xl font-serif text-amber-900">Chargement des données du jeu...</div>
-          <div className="text-sm text-amber-700 mt-2">Profils, Compétences, Types de Fées</div>
-        </div>
-      </div>
-    );
-  }
+  // ============================================================================
+  // RENDU PRINCIPAL
+  // ============================================================================
 
-  // Afficher l'écran de chargement auth
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex items-center justify-center">
-        <div className="text-2xl font-serif text-amber-900">Chargement...</div>
-      </div>
-    );
-  }
+  if (gameDataLoading || loading) return <div className="p-20 text-center">Chargement...</div>;
+  if (!session) return <Auth />;
+  if (view === 'list') return <CharacterList onSelectCharacter={(c) => { setCharacter(c); setView('creator'); }} onNewCharacter={handleNewCharacter} onSignOut={() => supabase.auth.signOut()} />;
 
-  // Si pas de session, afficher l'authentification
-  if (!session) {
-    return <Auth />;
-  }
-
-  // Liste des personnages
-  if (view === 'list') {
-    return (
-      <CharacterList
-        onSelectCharacter={handleSelectCharacter}
-        onNewCharacter={handleNewCharacter}
-        onSignOut={handleSignOut}
-        onDataEditor={() => setView('data-editor')}
-        session={session}
-        setView={setView}
-        isAdmin={isAdmin}
-        pendingCount={pendingCount}
-      />
-    );
-  }
-  
-  // Éditeur de données
-  if (view === 'data-editor') {
-    return (
-      <DataEditor
-        session={session}
-        onBack={() => setView('creation')}
-        fairyData={gameData.fairyData}
-        competences={gameData.competences}
-      />
-    );
-  }
-  
-  // Validations pendantes
-  if (view === 'validations') {
-    return (
-      <ValidationsPendantes
-        session={session}
-        onBack={() => setView('list')}
-        isAdmin={isAdmin}
-      />
-    );
-  }
-  
-  // Changelog
-  if (view === 'changelog') {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-serif text-purple-900">Changements</h1>
-              <button
-                onClick={() => setView('creation')}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-serif"
-              >
-                Retour
-              </button>
-            </div>
-            
-            <div className="space-y-6">
-              {VERSION_HISTORY.map((version, idx) => {
-                const colors = {
-                  major: { border: 'border-red-600', text: 'text-red-900', subtext: 'text-red-600', bg: 'text-red-800' },
-                  minor: { border: 'border-purple-600', text: 'text-purple-900', subtext: 'text-purple-600', bg: 'text-purple-800' },
-                  patch: { border: 'border-blue-600', text: 'text-blue-900', subtext: 'text-blue-600', bg: 'text-blue-800' }
-                };
-                const color = colors[version.type] || colors.patch;
-                
-                return (
-                  <div key={idx} className={`border-l-4 ${color.border} pl-4`}>
-                    <div className="flex items-baseline gap-3 mb-2">
-                      <span className={`text-lg font-bold ${color.text}`}>v{version.version}</span>
-                      <span className={`text-sm ${color.subtext}`}>{version.date}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded ${color.subtext} bg-opacity-20 bg-current`}>
-                        {version.type}
-                      </span>
-                    </div>
-                    <ul className={`${color.bg} space-y-1 text-sm`}>
-                      {version.changes.map((change, changeIdx) => (
-                        <li key={changeIdx}>• {change}</li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Créateur de personnage
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-serif text-amber-900 mb-2">
-            Les Héritiers
-          </h1>
-          <p className="text-xl text-amber-700 italic">Belle Époque • Paris</p>
-          <div className="mt-3 text-sm text-amber-600">
-            <span>Version {APP_VERSION}</span>
-            <span className="mx-2">•</span>
-            <span>{BUILD_DATE}</span>
-          </div>
-        </header>
-
-        {/* Barre d'actions */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setView('list')}
-              className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-amber-300 text-amber-900 rounded-lg hover:bg-amber-50 transition-all font-serif"
-            >
-              <List size={20} />
-              <span>Mes personnages</span>
-            </button>
-            
-            {/* Bouton DataEditor - DÉSACTIVÉ */}
-            {/* 
-            {(isAdmin || dataEditorEnabled) && (
-              <button
-                onClick={() => setView('data-editor')}
-                className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-green-300 text-green-900 rounded-lg hover:bg-green-50 transition-all font-serif"
-              >
-                <Database size={20} />
-                <span>Données</span>
-              </button>
-            )}
-            */}
-            
-            <button
-              onClick={() => setView('changelog')}
-              className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-purple-300 text-purple-900 rounded-lg hover:bg-purple-50 transition-all font-serif"
-            >
-              <BookOpen size={20} />
-              <span>Changements</span>
-            </button>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => exportToPDF(character, gameData.fairyData)}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif"
-              title="Exporter en PDF"
-            >
-              <FileText size={20} />
-              <span>PDF</span>
-            </button>
-
-            <button
-              onClick={handleSave}
-              className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif"
-            >
-              <Save size={20} />
-              <span>Sauvegarder</span>
-            </button>
-          </div>
+    <div className="min-h-screen bg-amber-50 pb-20">
+      {/* Header & Barre d'actions */}
+      <header className="bg-amber-900 text-white p-4 shadow-lg flex justify-between items-center">
+        <h1 className="font-serif text-2xl">Les Héritiers</h1>
+        <div className="flex gap-2">
+          <button onClick={() => setView('list')} className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 flex items-center gap-2">
+            <List size={18} /> Mes personnages
+          </button>
+          <button onClick={handleSave} className="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 flex items-center gap-2">
+            <Save size={18} /> Sauvegarder
+          </button>
+          <button onClick={() => exportToPDF(character, gameData.fairyData)} className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+            <FileText size={18} /> PDF
+          </button>
         </div>
+      </header>
 
-        {/* Notification de sauvegarde */}
-        {showSaveNotification && (
-          <div className="mb-4 p-4 bg-green-100 border-2 border-green-400 rounded-lg text-green-800 text-center font-serif">
-            ✓ Personnage sauvegardé avec succès !
+      {/* Barre de progression [1] */}
+      <div className="max-w-5xl mx-auto px-4 mt-8 flex items-center justify-between">
+        {[2-9].map(s => (
+          <div key={s} className={`w-10 h-10 rounded-full flex items-center justify-center font-serif ${step === s ? 'bg-amber-600 text-white ring-4 ring-amber-200' : step > s ? 'bg-amber-400 text-white' : 'bg-white text-amber-900 border-2 border-amber-200'}`}>
+            {s}
           </div>
-        )}
-
-        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 border-4 border-amber-200">
-          {/* Barre de progression */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex-1">
-              <div className="flex items-center space-x-1">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
-                  <React.Fragment key={s}>
-                    <div
-                      className={`w-9 h-9 rounded-full flex items-center justify-center font-serif text-xs ${
-                        step === s
-                          ? 'bg-amber-600 text-white'
-                          : step > s
-                          ? 'bg-amber-400 text-white'
-                          : 'bg-amber-100 text-amber-600'
-                      }`}
-                    >
-                      {s}
-                    </div>
-                    {s < 8 && (
-                      <div
-                        className={`flex-1 h-1 ${
-                          step > s ? 'bg-amber-400' : 'bg-amber-100'
-                        }`}
-                      />
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Étapes */}
-          <div className="mb-8">
-            {step === 1 && (
-              <Step1
-                character={character}
-                onNomChange={handleNomChange}
-                onSexeChange={handleSexeChange}
-                onTypeFeeChange={handleTypeFeeChange}
-                fairyTypes={gameData.fairyTypes}
-                fairyTypesByAge={gameData.fairyTypesByAge}
-              />
-            )}
-            {step === 2 && (
-              <StepCaracteristiques
-                character={character}
-                onCaracteristiquesChange={handleCaracteristiquesChange}
-                fairyData={gameData.fairyData}
-              />
-            )}
-            {step === 3 && (
-              <StepProfils
-                character={character}
-                onProfilsChange={handleProfilsChange}
-                profils={gameData.profils}
-                competencesParProfil={gameData.competencesParProfil}
-              />
-            )}
-            {step === 4 && (
-              <StepCompetencesLibres
-                character={character}
-                onCompetencesLibresChange={handleCompetencesLibresChange}
-                profils={gameData.profils}
-                fairyData={gameData.fairyData}
-                competences={gameData.competences}
-                competencesParProfil={gameData.competencesParProfil}
-              />
-            )}
-            {step === 5 && (
-              <StepCompetencesFutiles
-                character={character}
-                onCompetencesFutilesChange={handleCompetencesFutilesChange}
-                fairyData={gameData.fairyData}
-              />
-            )}
-            {step === 6 && (
-              <Step2
-                character={character}
-                onCapaciteChoice={handleCapaciteChoice}
-                fairyData={gameData.fairyData}
-              />
-            )}
-            {step === 7 && (
-              <Step3
-                character={character}
-                onPouvoirToggle={handlePouvoirToggle}
-                fairyData={gameData.fairyData}
-              />
-            )}
-            {step === 8 && (
-              <StepRecapitulatif
-                character={character}
-                fairyData={gameData.fairyData}
-                competences={gameData.competences}
-              />
-            )}
-          </div>
-
-          {/* Navigation */}
-          <div className="flex justify-between items-center pt-6 border-t-2 border-amber-200">
-            <button
-              onClick={() => setStep(step - 1)}
-              disabled={step === 1}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-serif transition-all ${
-                step === 1
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-amber-600 text-white hover:bg-amber-700'
-              }`}
-            >
-              <ChevronLeft size={20} />
-              <span>Précédent</span>
-            </button>
-
-            <button
-              onClick={() => {
-                if (step === 8) {
-                  handleSave();
-                  setView('list');
-                } else {
-                  setStep(step + 1);
-                }
-              }}
-              disabled={
-                (step === 1 && !canProceedStep1) ||
-                (step === 2 && !canProceedStep2) ||
-                (step === 3 && !canProceedStep3) ||
-                (step === 4 && !canProceedStep4()) ||
-                (step === 5 && !canProceedStep5()) ||
-                (step === 6 && !canProceedStep6) ||
-                (step === 7 && !canProceedStep7)
-              }
-              className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-serif transition-all ${
-                (step === 1 && !canProceedStep1) ||
-                (step === 2 && !canProceedStep2) ||
-                (step === 3 && !canProceedStep3) ||
-                (step === 4 && !canProceedStep4()) ||
-                (step === 5 && !canProceedStep5()) ||
-                (step === 6 && !canProceedStep6) ||
-                (step === 7 && !canProceedStep7)
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-amber-600 text-white hover:bg-amber-700'
-              }`}
-            >
-              <span>{step === 8 ? 'Sauvegarder et Terminer' : 'Suivant'}</span>
-              {step === 8 ? <Save size={20} /> : <ChevronRight size={20} />}
-            </button>
-          </div>
-        </div>
+        ))}
       </div>
-      <InAppNotification />
+
+      {/* Contenu des Étapes [10-12] */}
+      <main className="max-w-5xl mx-auto px-4 mt-10 bg-white p-8 rounded-2xl shadow-xl border border-amber-100">
+        {step === 1 && <Step1 character={character} onNomChange={(nom) => setCharacter({...character, nom})} onSexeChange={(sexe) => setCharacter({...character, sexe})} onTypeFeeChange={handleTypeFeeChange} fairyTypesByAge={gameData.fairyTypesByAge} />}
+        {step === 2 && <StepCaracteristiques character={character} onCaracteristiquesChange={(caracteristiques) => setCharacter({...character, caracteristiques})} fairyData={gameData.fairyData} />}
+        {step === 3 && <StepProfils character={character} onProfilsChange={(profils) => setCharacter({...character, profils})} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
+        {step === 4 && <StepCompetencesLibres character={character} onCompetencesLibresChange={(c) => setCharacter({...character, competencesLibres: c})} fairyData={gameData.fairyData} competences={gameData.competences} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
+        {step === 5 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={(f) => setCharacter({...character, competencesFutiles: f})} fairyData={gameData.fairyData} />}
+        {step === 6 && <Step2 character={character} onCapaciteChoice={(cap) => setCharacter({...character, capaciteChoisie: cap})} fairyData={gameData.fairyData} />}
+        {step === 7 && <Step3 character={character} onPouvoirToggle={(p) => setCharacter({...character, pouvoirs: character.pouvoirs.includes(p) ? character.pouvoirs.filter(x => x !== p) : [...character.pouvoirs, p]})} fairyData={gameData.fairyData} />}
+        {step === 8 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} competencesParProfil={gameData.competencesParProfil} />}
+      </main>
+
+      {/* Navigation Bas de Page [12, 13] */}
+      <footer className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-amber-100 flex justify-center gap-10 shadow-2xl">
+        <button onClick={() => setStep(step - 1)} disabled={step === 1} className="px-8 py-3 bg-gray-200 text-gray-600 rounded-xl disabled:opacity-50 flex items-center gap-2 font-serif">
+          <ChevronLeft /> Précédent
+        </button>
+        <button 
+          onClick={() => step === 8 ? handleSave() : setStep(step + 1)} 
+          disabled={
+            (step === 1 && !canProceedStep1) || (step === 2 && !canProceedStep2) || 
+            (step === 3 && !canProceedStep3) || (step === 4 && !canProceedStep4()) ||
+            (step === 5 && !canProceedStep5()) || (step === 6 && !character.capaciteChoisie) ||
+            (step === 7 && character.pouvoirs.length !== 3)
+          }
+          className="px-8 py-3 bg-amber-600 text-white rounded-xl disabled:bg-gray-300 font-serif flex items-center gap-2"
+        >
+          {step === 8 ? 'Terminer' : 'Suivant'} <ChevronRight />
+        </button>
+      </footer>
     </div>
   );
 }
