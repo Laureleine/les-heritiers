@@ -1,18 +1,18 @@
 // src/utils/supabaseStorage.js
-// Version: 3.3.0
-// Build: 2026-02-04 20:00
-// Migration: Mode Hors-ligne (PWA) via LocalStorage, Nettoyage auto et Optimistic Locking.
+// Version: 3.3.1
+// Build: 2026-02-04 23:00
+// Migration: Correction de l'export 'getPublicCharacters' et consolidation du mode PWA.
 
 import { supabase } from '../config/supabase';
 
 // ============================================================================
-// CONFIGURATION ET CACHE
+// CONFIGURATION ET CACHE HORS-LIGNE
 // ============================================================================
 const OFFLINE_STORAGE_KEY = 'heritiers_character_cache';
 let userCharactersCache = null;
 
 /**
- * Nettoie les données (suppression des rangs à 0) pour optimiser le JSONB.
+ * Nettoie les données pour optimiser le stockage JSONB.
  */
 const cleanupCharacterData = (char) => {
   const cleanRangs = (rangs) => 
@@ -32,8 +32,8 @@ const cleanupCharacterData = (char) => {
 };
 
 /**
- * Mappage Base de données (snake_case) -> Application (camelCase)
- * Assure la présence des nouvelles structures de choix [Source 642, 657].
+ * Mappage Base de données -> Application.
+ * Assure la structure des choix de prédilections [4].
  */
 const mapDatabaseToCharacter = (char) => ({
   id: char.id,
@@ -51,20 +51,20 @@ const mapDatabaseToCharacter = (char) => ({
   competencesFutiles: char.competences_futiles || { rangs: {}, personnalisees: [] },
   capaciteChoisie: char.capacite_choisie,
   pouvoirs: char.pouvoirs || [],
-  isPublic: char.is_public,
+  is_public: char.is_public,
   created_at: char.created_at,
   updated_at: char.updated_at
 });
 
 // ============================================================================
-// GESTION DU MODE HORS-LIGNE (PWA)
+// GESTION DU MODE PWA (LOCALSTORAGE)
 // ============================================================================
 
 const updateOfflineMirror = (characters) => {
   try {
     localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(characters));
   } catch (e) {
-    console.error('Erreur LocalStorage (Cache plein ?):', e);
+    console.error('Erreur LocalStorage cache:', e);
   }
 };
 
@@ -74,7 +74,7 @@ const getOfflineMirror = () => {
 };
 
 // ============================================================================
-// RÉCUPÉRATION DES PERSONNAGES
+// RÉCUPÉRATION ET PERSISTANCE
 // ============================================================================
 
 export const getUserCharacters = async (forceRefresh = false) => {
@@ -82,7 +82,7 @@ export const getUserCharacters = async (forceRefresh = false) => {
     if (userCharactersCache && !forceRefresh) return userCharactersCache;
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return getOfflineMirror(); // Mode consultation hors-ligne
+    if (!user) return getOfflineMirror();
 
     const { data, error } = await supabase
       .from('characters')
@@ -93,29 +93,39 @@ export const getUserCharacters = async (forceRefresh = false) => {
     if (error) throw error;
     
     const mappedData = (data || []).map(mapDatabaseToCharacter);
-    
-    // Mise à jour des caches
     userCharactersCache = mappedData;
     updateOfflineMirror(mappedData);
-    
     return mappedData;
   } catch (error) {
-    console.warn('Utilisation du mode hors-ligne (Erreur réseau ou déconnecté)');
     return getOfflineMirror();
   }
 };
 
-// ============================================================================
-// SAUVEGARDE ET GESTION DES CONFLITS
-// ============================================================================
+/**
+ * RÉSOLUTION DE L'ERREUR : Exportation explicite pour CharacterList.js [1, 2].
+ */
+export const getPublicCharacters = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('characters')
+      .select('*')
+      .eq('is_public', true)
+      .order('updated_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []).map(mapDatabaseToCharacter);
+  } catch (error) {
+    console.error('Erreur getPublicCharacters:', error);
+    return [];
+  }
+};
 
 export const saveCharacterToSupabase = async (character) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Action impossible en mode hors-ligne');
+    if (!user) throw new Error('Utilisateur non connecté');
 
     const cleaned = cleanupCharacterData(character);
-    
     const characterData = {
       user_id: user.id,
       nom: cleaned.nom,
@@ -132,11 +142,11 @@ export const saveCharacterToSupabase = async (character) => {
       updated_at: new Date().toISOString()
     };
 
-    // VÉRIFICATION DE CONFLIT (Optimistic Locking)
+    // VÉRIFICATION DE CONFLIT [Conversation History]
     if (character.id) {
       const { data: remote } = await supabase.from('characters').select('updated_at').eq('id', character.id).single();
       if (remote && remote.updated_at !== character.updated_at) {
-        throw new Error('CONFLIT : Ce personnage a été modifié ailleurs. Veuillez copier vos changements et rafraîchir.');
+        throw new Error('CONFLIT : Ce personnage a été modifié ailleurs.');
       }
     }
 
@@ -145,26 +155,27 @@ export const saveCharacterToSupabase = async (character) => {
       : await supabase.from('characters').insert([characterData]).select().single();
 
     if (error) throw error;
-
-    const finalChar = mapDatabaseToCharacter(data);
-    
-    // Rafraîchissement forcé du cache global
     userCharactersCache = null; 
-    await getUserCharacters(true); 
-
-    return finalChar;
+    return mapDatabaseToCharacter(data);
   } catch (error) {
-    console.error('Erreur sauvegarde:', error);
     throw error;
   }
 };
-
-// TODO: Implémenter Compression (v3.4) et Historique (v4.0)
 
 export const deleteCharacterFromSupabase = async (characterId) => {
   const { error } = await supabase.from('characters').delete().eq('id', characterId);
   if (error) throw error;
   userCharactersCache = null;
-  await getUserCharacters(true);
   return true;
+};
+
+export const toggleCharacterVisibility = async (characterId, isPublic) => {
+  const { data, error } = await supabase
+    .from('characters')
+    .update({ is_public: isPublic, updated_at: new Date().toISOString() })
+    .eq('id', characterId)
+    .select().single();
+  if (error) throw error;
+  userCharactersCache = null;
+  return mapDatabaseToCharacter(data);
 };
