@@ -1,8 +1,8 @@
 // src/utils/supabaseGameData.js
-// Version: 3.4.0
-// Build: 2026-02-04 22:15
-// Description: Moteur de données pour Supabase avec résolution d'identifiants et gestion des choix.
-// Correction: Assure l'export explicite de loadAllGameData pour corriger l'erreur de compilation.
+// Version: 3.4.1
+// Build: 2026-02-04 23:30
+// Description: Moteur de données Supabase avec cache et résolution d'identifiants.
+// Correction: Restauration des exports 'getCompetencesFutiles' et 'invalidateCompetencesFutilesCache'.
 
 import { supabase } from '../config/supabase';
 
@@ -29,8 +29,10 @@ const resolveAndValidate = (id, lookup, fairyName, context) => {
 };
 
 // ============================================================================
-// COMPÉTENCES FUTILES
+// COMPÉTENCES FUTILES (RESTAURATION V3.4.1)
 // ============================================================================
+
+let cachedCompetencesFutiles = null;
 
 export const loadCompetencesFutiles = async () => {
   try {
@@ -48,6 +50,20 @@ export const loadCompetencesFutiles = async () => {
     console.error('Erreur chargement compétences futiles:', error);
     return [];
   }
+};
+
+/**
+ * RECTIFICATION : Exportation pour StepCompetencesFutiles.js
+ */
+export const getCompetencesFutiles = async (forceRefresh = false) => {
+  if (!cachedCompetencesFutiles || forceRefresh) {
+    cachedCompetencesFutiles = await loadCompetencesFutiles();
+  }
+  return cachedCompetencesFutiles;
+};
+
+export const invalidateCompetencesFutilesCache = () => {
+  cachedCompetencesFutiles = null;
 };
 
 export const getCompetenceFutileIdByName = async (name) => {
@@ -182,20 +198,15 @@ export const loadFairyTypes = async () => {
 };
 
 // ============================================================================
-// CACHE GLOBAL ET ORCHESTRATION (LA FONCTION MANQUANTE)
+// CACHE GLOBAL ET ORCHESTRATION
 // ============================================================================
 
 let cachedProfils = null;
 let cachedCompetences = null;
 let cachedFairyTypes = null;
-let cachedCompetencesFutiles = null;
 
-/**
- * Fonction centrale appelée par App.js pour initialiser le créateur.
- * Exporte explicitement loadAllGameData pour résoudre l'erreur de compilation.
- */
 export const loadAllGameData = async (forceRefresh = false) => {
-  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes) {
+  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes && cachedCompetencesFutiles) {
     return {
       profils: cachedProfils,
       competences: cachedCompetences.competences,
@@ -208,10 +219,10 @@ export const loadAllGameData = async (forceRefresh = false) => {
   }
 
   const [p, c, f, fut] = await Promise.all([
-    loadProfils(), loadCompetences(), loadFairyTypes(), loadCompetencesFutiles()
+    loadProfils(), loadCompetences(), loadFairyTypes(), getCompetencesFutiles(forceRefresh)
   ]);
 
-  cachedProfils = p; cachedCompetences = c; cachedFairyTypes = f; cachedCompetencesFutiles = fut;
+  cachedProfils = p; cachedCompetences = c; cachedFairyTypes = f; 
 
   return {
     profils: p, 
