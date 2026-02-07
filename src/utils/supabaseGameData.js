@@ -1,7 +1,7 @@
 // src/utils/supabaseGameData.js
-// Version: 3.4.1
-// Build: 2026-02-04 23:30
+// Version: 3.5.2
 // Description: Moteur de données Supabase avec cache et résolution d'identifiants.
+// Correction: Déduplication stricte des prédilections pour éviter le bug "3x Mêlée ou Tir".
 // Correction: Restauration des exports 'getCompetencesFutiles' et 'invalidateCompetencesFutilesCache'.
 
 import { supabase } from '../config/supabase';
@@ -134,11 +134,6 @@ export const loadFairyTypes = async () => {
 
     if (tErr) throw tErr;
 
-    // ... (Logique de chargement des prédilections inchangée) ...
-    // Note : Je ne remets pas tout le bloc intermédiaire pour alléger, 
-    // l'important est le mappage final ci-dessous.
-
-    // On recharge les prédilections pour être sûr d'avoir les données complètes
     const { data: allCompPred } = await supabase.from('fairy_competences_predilection').select('*');
     const { data: allCompFutPred } = await supabase
       .from('fairy_competences_futiles_predilection')
@@ -147,25 +142,40 @@ export const loadFairyTypes = async () => {
     const compPredByFairy = {};
     const compFutPredByFairy = {};
 
-    // Reconstruction des maps de prédilection...
+    // --- CORRECTION DU BUG DE DUPLICATION ---
     allCompPred?.forEach(cp => {
       if (!compPredByFairy[cp.fairy_type_id]) compPredByFairy[cp.fairy_type_id] = [];
       const fName = types.find(t => t.id === cp.fairy_type_id)?.name || "Inconnue";
       
-      compPredByFairy[cp.fairy_type_id].push({
+      // Construction de l'objet compétence
+      const newPred = {
         nom: cp.is_choice ? null : resolveAndValidate(cp.competence_id, lookup, fName, "Fixe"),
         specialite: cp.specialite,
         isChoix: cp.is_choice,
         options: cp.is_choice ? cp.choice_ids.map(id => resolveAndValidate(id, lookup, fName, "Choix")) : [],
         isSpecialiteChoix: cp.is_specialite_choice,
         specialiteOptions: cp.specialite_options || []
+      };
+
+      // DÉDUPLICATION : On vérifie si cette compétence (ou ce choix) existe déjà
+      const exists = compPredByFairy[cp.fairy_type_id].some(existing => {
+        if (newPred.isChoix && existing.isChoix) {
+          // Si c'est un choix, on compare les options pour voir si c'est le même
+          return JSON.stringify(newPred.options.sort()) === JSON.stringify(existing.options.sort());
+        }
+        return existing.nom === newPred.nom && existing.specialite === newPred.specialite;
       });
+
+      if (!exists) {
+        compPredByFairy[cp.fairy_type_id].push(newPred);
+      }
     });
+    // ----------------------------------------
 
     allCompFutPred?.forEach(cfp => {
       if (!compFutPredByFairy[cfp.fairy_type_id]) compFutPredByFairy[cfp.fairy_type_id] = [];
       if (cfp.is_choice) {
-        compFutPredByFairy[cfp.fairy_type_id].push({ isChoix: true, options: cfp.choice_options, displayText: cfp.choice_options.join(' ou ') });
+        compFutPredByFairy[cfp.fairy_type_id].push({ isChoix: true, options: cfp.choice_options });
       } else {
         compFutPredByFairy[cfp.fairy_type_id].push(cfp.competence_futile?.name);
       }
@@ -187,8 +197,7 @@ export const loadFairyTypes = async () => {
           esprit: { min: f.esprit_min, max: f.esprit_max },
           perception: { min: f.perception_min, max: f.perception_max },
           prestance: { min: f.prestance_min, max: f.prestance_max },
-          // CORRECTION ICI : Utilisation des noms complets de la base de données
-          sangFroid: { min: f.sang_froid_min, max: f.sang_froid_max } 
+          sangFroid: { min: f.sang_froid_min, max: f.sang_froid_max }
         },
         competencesPredilection: compPredByFairy[f.id] || [],
         competencesFutilesPredilection: compFutPredByFairy[f.id] || [],
