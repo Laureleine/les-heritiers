@@ -10,7 +10,6 @@ import { loadAllGameData } from '../utils/supabaseGameData';
 import { getFairyAge } from '../data/dataHelpers';
 import { APP_VERSION, BUILD_DATE } from '../version';
 
-// Imports des composants
 import Step1 from './Step1';
 import StepCaracteristiques from './StepCaracteristiques';
 import StepProfils from './StepProfils';
@@ -20,13 +19,9 @@ import Step2 from './Step2';
 import Step3 from './Step3';
 import StepRecapitulatif from './StepRecapitulatif';
 import CharacterList from './CharacterList';
-import Changelog from './Changelog';
 import Auth from './Auth';
-
-// Utilitaires
 import { saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/utils';
-import { List, Save, FileText, BookOpen, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -35,8 +30,7 @@ function App() {
   const [view, setView] = useState('list');
   const [step, setStep] = useState(1);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
-  const [isReadOnly, setIsReadOnly] = useState(false);
-
+  
   const [gameData, setGameData] = useState({
     profils: [],
     competences: {},
@@ -54,20 +48,14 @@ function App() {
     typeFee: '',
     anciennete: null,
     caracteristiques: {},
-    profils: { 
-      majeur: { nom: '', trait: '', competences: [] }, 
-      mineur: { nom: '', trait: '', competences: [] } 
+    profils: {
+      majeur: { nom: '', trait: '' },
+      mineur: { nom: '', trait: '' }
     },
-    competencesLibres: { 
-      rangs: {}, 
-      choixPredilection: {}, 
-      choixSpecialite: {},
-      choixSpecialiteUser: {}
-    },
-    competencesFutiles: { 
-      rangs: {}, 
-      choixPredilection: {}, 
-      personnalisees: [] 
+    competencesLibres: {},
+    competencesFutiles: {
+      rangs: {},
+      personnalisees: []
     },
     capaciteChoisie: '',
     pouvoirs: [],
@@ -76,7 +64,6 @@ function App() {
 
   const [character, setCharacter] = useState(initialCharacterState);
 
-  // Chargement des données
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -92,50 +79,58 @@ function App() {
     loadData();
   }, []);
 
-  // Gestion Session
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
     });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
+
     return () => subscription.unsubscribe();
   }, []);
 
-  // Sauvegarde
   const handleSave = async () => {
-    if (isReadOnly) return;
-    if (!character.nom.trim() || !character.sexe || !character.typeFee) {
-      alert('Veuillez compléter les informations de base (Nom, Sexe, Type de Fée).');
+    if (!character.nom.trim()) {
+      alert('Veuillez donner un nom à votre personnage');
       return;
     }
+    if (!character.sexe || !character.typeFee) {
+      alert('Veuillez compléter au moins le sexe et le type de fée');
+      return;
+    }
+
     try {
       const saved = await saveCharacterToSupabase(character);
       setCharacter({ ...character, id: saved.id });
       setShowSaveNotification(true);
       setTimeout(() => setShowSaveNotification(false), 3000);
-    } catch (e) { 
-      alert('Erreur lors de la sauvegarde : ' + e.message); 
+    } catch (e) {
+      alert('Erreur lors de la sauvegarde : ' + e.message);
     }
   };
 
-  // Handlers Principaux
-  const handleNomChange = (n) => !isReadOnly && setCharacter({ ...character, nom: n });
-  const handleSexeChange = (s) => !isReadOnly && setCharacter({ ...character, sexe: s });
-  const handleTypeFeeChange = (t) => {
-    if (isReadOnly) return;
-    const anciennete = getFairyAge(t, 'traditionnelle', gameData.fairyData);
-    setCharacter({
-      ...character,
-      typeFee: t,
-      anciennete,
-      caracteristiques: {},
-      capaciteChoisie: '',
-      pouvoirs: [],
-      competencesLibres: initialCharacterState.competencesLibres,
-      competencesFutiles: initialCharacterState.competencesFutiles
+  // Handlers individuels pour compatibilité composants v2.15
+  const handleNomChange = (nom) => setCharacter({ ...character, nom });
+  const handleSexeChange = (sexe) => setCharacter({ ...character, sexe });
+  const handleTypeFeeChange = (typeFee) => {
+    const anciennete = getFairyAge(typeFee, 'traditionnelle', gameData.fairyData);
+    const feeData = gameData.fairyData[typeFee];
+    const caracteristiques = {};
+    if (feeData?.caracteristiques) {
+      Object.keys(feeData.caracteristiques).forEach(key => {
+        caracteristiques[key] = feeData.caracteristiques[key].min;
+      });
+    }
+    setCharacter({ 
+      ...character, 
+      typeFee, 
+      anciennete, 
+      caracteristiques, 
+      capaciteChoisie: '', 
+      pouvoirs: [] 
     });
   };
   const handleCaracteristiquesChange = (caracteristiques) => 
