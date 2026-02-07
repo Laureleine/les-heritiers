@@ -16,10 +16,11 @@ export default function StepCompetencesLibres({
   fairyData 
 }) {
   const feeData = fairyData[character.typeFee];
-  // Sécurisation de l'objet pour éviter les crashs si les champs n'existent pas encore
-  const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {} };
+  
+  // BLINDAGE CONTRE LE CRASH
+  const lib = character.competencesLibres || {};
   const rangs = lib.rangs || {};
-  const choixPred = lib.choixPredilection || {};
+  const choixPred = lib.choixPredilection || {}; // Empêche le crash sur l'accès par index [i]
   const choixSpec = lib.choixSpecialite || {};
 
   // 1. Calcul du budget restant

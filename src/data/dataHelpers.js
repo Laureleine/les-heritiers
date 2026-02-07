@@ -8,8 +8,22 @@
  */
 export const getFairyAge = (typeFee, anciennete, fairyData = {}) => {
   const feeData = fairyData[typeFee];
-  if (!feeData || !feeData.age) return { min: 0, max: 0 };
-  return anciennete === 'traditionnelle' ? feeData.age.ancienne : feeData.age.moderne;
+  // Correction : Supabase retourne 'era', pas une structure 'age'
+  if (!feeData) return { min: 0, max: 0 };
+  
+  // Valeurs par défaut si les données d'âge ne sont pas en base
+  const defaultAges = {
+    traditionnelle: { min: 16, max: 800 },
+    moderne: { min: 12, max: 100 }
+  };
+
+  // Si anciennete est passée comme prop (ex: 'traditionnelle')
+  if (anciennete && defaultAges[anciennete]) {
+    return defaultAges[anciennete];
+  }
+  
+  // Fallback sur l'ère de la fée
+  return feeData.anciennete === 'traditionnelle' ? defaultAges.traditionnelle : defaultAges.moderne;
 };
 
 /**

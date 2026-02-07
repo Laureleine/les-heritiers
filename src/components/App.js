@@ -41,27 +41,33 @@ function App() {
     fairyTypesByAge: { traditionnelles: [], modernes: [] }
   });
 
-  const initialCharacterState = {
-    id: null,
-    nom: '',
-    sexe: '',
-    typeFee: '',
-    anciennete: null,
-    caracteristiques: {},
-    profils: {
-      majeur: { nom: '', trait: '' },
-      mineur: { nom: '', trait: '' }
-    },
-    competencesLibres: {},
-    competencesFutiles: {
-      rangs: {},
-      personnalisees: []
-    },
-    capaciteChoisie: '',
-    pouvoirs: [],
-    isPublic: false
-  };
-
+const initialCharacterState = {
+  id: null,
+  nom: '',
+  sexe: '',
+  typeFee: '',
+  anciennete: null,
+  caracteristiques: {},
+  profils: {
+    majeur: { nom: '', trait: '', competences: [] }, // Ajout de competences: [] par sécurité
+    mineur: { nom: '', trait: '', competences: [] }
+  },
+  // CORRECTION ICI : Structure complète requise par v3.5
+  competencesLibres: { 
+    rangs: {}, 
+    choixPredilection: {}, 
+    choixSpecialite: {} 
+  },
+  competencesFutiles: {
+    rangs: {},
+    choixPredilection: {}, // Ajouté pour éviter le crash à l'étape 5
+    personnalisees: []
+  },
+  capaciteChoisie: '',
+  pouvoirs: [],
+  isPublic: false
+};
+  
   const [character, setCharacter] = useState(initialCharacterState);
 
   useEffect(() => {

@@ -134,6 +134,11 @@ export const loadFairyTypes = async () => {
 
     if (tErr) throw tErr;
 
+    // ... (Logique de chargement des prédilections inchangée) ...
+    // Note : Je ne remets pas tout le bloc intermédiaire pour alléger, 
+    // l'important est le mappage final ci-dessous.
+
+    // On recharge les prédilections pour être sûr d'avoir les données complètes
     const { data: allCompPred } = await supabase.from('fairy_competences_predilection').select('*');
     const { data: allCompFutPred } = await supabase
       .from('fairy_competences_futiles_predilection')
@@ -142,6 +147,7 @@ export const loadFairyTypes = async () => {
     const compPredByFairy = {};
     const compFutPredByFairy = {};
 
+    // Reconstruction des maps de prédilection...
     allCompPred?.forEach(cp => {
       if (!compPredByFairy[cp.fairy_type_id]) compPredByFairy[cp.fairy_type_id] = [];
       const fName = types.find(t => t.id === cp.fairy_type_id)?.name || "Inconnue";
@@ -159,7 +165,7 @@ export const loadFairyTypes = async () => {
     allCompFutPred?.forEach(cfp => {
       if (!compFutPredByFairy[cfp.fairy_type_id]) compFutPredByFairy[cfp.fairy_type_id] = [];
       if (cfp.is_choice) {
-        compFutPredByFairy[cfp.fairy_type_id].push({ isChoix: true, options: cfp.choice_options });
+        compFutPredByFairy[cfp.fairy_type_id].push({ isChoix: true, options: cfp.choice_options, displayText: cfp.choice_options.join(' ou ') });
       } else {
         compFutPredByFairy[cfp.fairy_type_id].push(cfp.competence_futile?.name);
       }
@@ -170,7 +176,9 @@ export const loadFairyTypes = async () => {
 
     types.forEach(f => {
       fairyData[f.name] = {
-        id: f.id, anciennete: f.era, description: f.description,
+        id: f.id, 
+        anciennete: f.era, 
+        description: f.description,
         caracteristiques: {
           agilite: { min: f.agilite_min, max: f.agilite_max },
           constitution: { min: f.constitution_min, max: f.constitution_max },
@@ -179,7 +187,8 @@ export const loadFairyTypes = async () => {
           esprit: { min: f.esprit_min, max: f.esprit_max },
           perception: { min: f.perception_min, max: f.perception_max },
           prestance: { min: f.prestance_min, max: f.prestance_max },
-          sangFroid: { min: f.sang_f_min, max: f.sang_f_max }
+          // CORRECTION ICI : Utilisation des noms complets de la base de données
+          sangFroid: { min: f.sang_froid_min, max: f.sang_froid_max } 
         },
         competencesPredilection: compPredByFairy[f.id] || [],
         competencesFutilesPredilection: compFutPredByFairy[f.id] || [],
