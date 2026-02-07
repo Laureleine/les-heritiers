@@ -5,14 +5,39 @@
 export const APP_VERSION = '3.6.5';
 export const BUILD_DATE = '2026-02-06 22:30';
 
+// Historique des versions
+
+export const APP_VERSION = '3.7.5';
+export const BUILD_DATE = '2026-02-07 12:00';
+
 export const VERSION_HISTORY = [
+  {
+    version: "3.7.5",
+    date: "2026-02-07",
+    type: "patch",
+    changes: [
+      "Retour au style visuel v2.5 (Design épuré et clair)",
+      "Suppression des bandeaux sombres et restauration des boutons outline",
+      "Correction des conflits de style dans l'en-tête"
+    ]
+  },
+  {
+    version: "3.7.0",
+    date: "2026-02-06",
+    type: "minor",
+    changes: [
+      "Ajout du mode Lecture Seule pour les visiteurs",
+      "Activation du Panel Admin pour la visualisation globale",
+      "Activation du bouton 'Changements' vers le journal des versions"
+    ]
+  },
   {
     version: "3.6.5",
     date: "2026-02-06",
     type: "patch",
     changes: [
-      "Blocage strict des caractéristiques à 5 maximum à la création (Règle p.44)",
-      "Correction de l'affichage des valeurs minimales imposées par le type de fée"
+      "Blocage strict des caractéristiques à 5 maximum",
+      "Ajout du calcul visuel des Points de Personnage (Rang + Bonus)"
     ]
   },
   {

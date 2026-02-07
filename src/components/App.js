@@ -1,15 +1,15 @@
 // src/App.js
-// Version: 3.7.0
-// Build: 2026-02-07 10:00
-// Description: Restauration du style visuel "Classic" (v3.0) sans le gros bandeau marron, tout en gardant les fonctionnalités v3.6.
+// Version: 3.7.5 (Moteur v3.7 + Design v2.5 Strict)
+// Build: 2026-02-07 12:00
+// Description: Restauration exacte du style visuel v2.5 demandé.
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen, Eye } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { loadAllGameData } from '../utils/supabaseGameData';
 import { getFairyAge } from '../data/dataHelpers';
 import { APP_VERSION, BUILD_DATE } from '../version';
 
+// Imports des composants
 import Step1 from './Step1';
 import StepCaracteristiques from './StepCaracteristiques';
 import StepProfils from './StepProfils';
@@ -22,8 +22,10 @@ import CharacterList from './CharacterList';
 import Changelog from './Changelog';
 import Auth from './Auth';
 
+// Utilitaires
 import { saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/utils';
+import { List, Save, FileText, BookOpen, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -32,7 +34,6 @@ function App() {
   const [view, setView] = useState('list');
   const [step, setStep] = useState(1);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
-  
   const [isReadOnly, setIsReadOnly] = useState(false);
 
   const [gameData, setGameData] = useState({
@@ -74,6 +75,7 @@ function App() {
 
   const [character, setCharacter] = useState(initialCharacterState);
 
+  // Chargement des données
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -89,6 +91,7 @@ function App() {
     loadData();
   }, []);
 
+  // Gestion Session
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -100,18 +103,13 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Sauvegarde
   const handleSave = async () => {
     if (isReadOnly) return;
-
-    if (!character.nom.trim()) {
-      alert('Veuillez donner un nom à votre personnage');
+    if (!character.nom.trim() || !character.sexe || !character.typeFee) {
+      alert('Veuillez compléter les informations de base (Nom, Sexe, Type de Fée).');
       return;
     }
-    if (!character.sexe || !character.typeFee) {
-      alert('Veuillez compléter au moins le sexe et le type de fée');
-      return;
-    }
-
     try {
       const saved = await saveCharacterToSupabase(character);
       setCharacter({ ...character, id: saved.id });
@@ -122,55 +120,41 @@ function App() {
     }
   };
 
-  // Handlers
-  const handleNomChange = (nom) => !isReadOnly && setCharacter({ ...character, nom });
-  const handleSexeChange = (sexe) => !isReadOnly && setCharacter({ ...character, sexe });
-  
-  const handleTypeFeeChange = (typeFee) => {
+  // Handlers Principaux
+  const handleNomChange = (n) => !isReadOnly && setCharacter({ ...character, nom: n });
+  const handleSexeChange = (s) => !isReadOnly && setCharacter({ ...character, sexe: s });
+  const handleTypeFeeChange = (t) => {
     if (isReadOnly) return;
-    const anciennete = getFairyAge(typeFee, 'traditionnelle', gameData.fairyData);
+    const anciennete = getFairyAge(t, 'traditionnelle', gameData.fairyData);
     setCharacter({
       ...character,
-      typeFee,
+      typeFee: t,
       anciennete,
       caracteristiques: {},
       capaciteChoisie: '',
       pouvoirs: [],
-      competencesLibres: { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} },
-      competencesFutiles: { rangs: {}, choixPredilection: {}, personnalisees: [] }
+      competencesLibres: initialCharacterState.competencesLibres,
+      competencesFutiles: initialCharacterState.competencesFutiles
     });
   };
 
-  const handleCaracteristiquesChange = (c) => !isReadOnly && setCharacter({...character, caracteristiques: c});
-  const handleProfilsChange = (p) => !isReadOnly && setCharacter({...character, profils: p});
-  const handleCompetencesLibresChange = (cl) => !isReadOnly && setCharacter({...character, competencesLibres: cl});
-  const handleCompetencesFutilesChange = (cf) => !isReadOnly && setCharacter({...character, competencesFutiles: cf});
-  const handleCapaciteChoice = (c) => !isReadOnly && setCharacter({...character, capaciteChoisie: c});
-  const handlePouvoirToggle = (p) => {
-    if (isReadOnly) return;
-    const current = character.pouvoirs || [];
-    const exists = current.includes(p);
-    let newPouvoirs;
-    if (exists) {
-      newPouvoirs = current.filter(x => x !== p);
-    } else {
-      if (current.length >= 3) return;
-      newPouvoirs = [...current, p];
-    }
-    setCharacter({...character, pouvoirs: newPouvoirs});
-  };
-
+  // Validations pour navigation (Moteur v3.5+)
   const canProceedStep1 = character.nom.trim() && character.sexe && character.typeFee;
   const canProceedStep2 = character.caracteristiques && Object.keys(character.caracteristiques).length > 0;
   const canProceedStep3 = character.profils?.majeur?.nom && character.profils?.mineur?.nom;
-  const canProceedStep4 = () => true;
+  const canProceedStep4 = () => true; // La validation se fait dans le composant visuellement
   const canProceedStep5 = () => true; 
+  const canProceedStep6 = !!character.capaciteChoisie;
+  const canProceedStep7 = character.pouvoirs.length === 3;
 
+  // Affichages conditionnels (Loading / Auth)
   if (gameDataLoading || loading) return <div className="p-20 text-center font-serif text-amber-900">Chargement de la Féérie...</div>;
   if (!session) return <Auth />;
 
+  // Vue Changelog
   if (view === 'changelog') return <Changelog onBack={() => setView('list')} />;
 
+  // Vue Liste (Moteur v3.7 avec gestion ReadOnly)
   if (view === 'list') return (
     <CharacterList 
       onSelectCharacter={(c, readOnlyMode = false) => { 
@@ -189,57 +173,60 @@ function App() {
     />
   );
 
+  // --- RENDU PRINCIPAL (DESIGN STYLE V2.5) ---
   return (
-    <div className="min-h-screen bg-amber-50 p-6 font-sans text-gray-800">
+    <div className="min-h-screen bg-amber-50 p-8 font-sans text-gray-800">
       
-      {/* HEADER CLASSIQUE (Retour au style précédent) */}
-      <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      {/* HEADER v2.5 : Simple et Blanc */}
+      <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
-          <h1 className="font-serif text-4xl text-amber-900 flex items-center gap-3">
+          <h1 className="font-serif text-4xl text-amber-900 flex items-center gap-2">
             Les Héritiers
-            {isReadOnly && <span className="text-xs bg-amber-200 text-amber-900 px-2 py-1 rounded uppercase tracking-widest border border-amber-300">Lecture Seule</span>}
+            {isReadOnly && <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded uppercase font-sans tracking-widest border">Lecture Seule</span>}
           </h1>
-          <p className="text-amber-700 italic mt-1 text-sm">Créateur de Faux-Semblants • v{APP_VERSION}</p>
+          <p className="text-amber-700 italic mt-1 text-sm">Belle Époque • Paris | v{APP_VERSION}</p>
         </div>
         
-        <div className="flex gap-2">
-          <button onClick={() => setView('list')} className="flex items-center gap-2 px-4 py-2 bg-white text-amber-900 border border-amber-300 rounded-lg hover:bg-amber-50 font-serif shadow-sm">
-            <List size={16} /> Liste
+        {/* Barre d'actions v2.5 */}
+        <div className="flex gap-3">
+          <button onClick={() => setView('list')} className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-amber-300 text-amber-900 rounded-lg hover:bg-amber-50 transition-all font-serif">
+            <List size={18} /> Mes personnages
           </button>
-          <button onClick={() => setView('changelog')} className="flex items-center gap-2 px-4 py-2 bg-white text-purple-900 border border-purple-300 rounded-lg hover:bg-purple-50 font-serif shadow-sm">
-            <BookOpen size={16} />
+          <button onClick={() => setView('changelog')} className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-purple-300 text-purple-900 rounded-lg hover:bg-purple-50 transition-all font-serif">
+            <BookOpen size={18} /> Changements
           </button>
-          <button onClick={() => exportToPDF(character, gameData.fairyData)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-serif shadow-sm">
-            <FileText size={16} /> PDF
+          <button onClick={() => exportToPDF(character, gameData.fairyData)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif">
+            <FileText size={18} /> PDF
           </button>
           {!isReadOnly && (
-            <button onClick={handleSave} className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-serif shadow-md">
-              <Save size={16} /> Sauver
+            <button onClick={handleSave} className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif">
+              <Save size={18} /> Sauvegarder
             </button>
           )}
         </div>
       </div>
 
+      {/* Notification v2.5 */}
       {showSaveNotification && (
-        <div className="max-w-5xl mx-auto mb-6 p-4 bg-green-100 border border-green-300 text-green-800 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2 shadow-sm">
+        <div className="max-w-4xl mx-auto mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-800 rounded shadow-sm flex items-center gap-3">
           <Save size={20} /> Personnage sauvegardé avec succès !
         </div>
       )}
 
-      {/* BARRE DE PROGRESSION FLOTTANTE */}
-      <div className="max-w-3xl mx-auto mb-8 flex justify-between items-center relative">
-        <div className="absolute top-1/2 left-0 w-full h-1 bg-amber-200 -z-10 rounded"></div>
+      {/* BARRE DE PROGRESSION v2.5 (Cercles simples) */}
+      <div className="max-w-4xl mx-auto mb-8 flex justify-between items-center relative px-4">
+        <div className="absolute top-1/2 left-0 w-full h-1 bg-amber-100 -z-10 rounded"></div>
         {[1-8].map(s => (
           <button 
             key={s}
             onClick={() => setStep(s)}
             disabled={isReadOnly && s !== 8}
-            className={`w-10 h-10 rounded-full flex items-center justify-center font-serif font-bold text-sm transition-all border-4 ${
+            className={`w-10 h-10 rounded-full flex items-center justify-center font-serif font-bold text-sm transition-all border-2 ${
               step === s 
-                ? 'bg-amber-600 text-white border-amber-100 scale-110 shadow-lg' 
+                ? 'bg-amber-600 text-white border-amber-600 scale-110 shadow-lg' 
                 : step > s 
-                  ? 'bg-amber-400 text-white border-amber-50' 
-                  : 'bg-white text-amber-300 border-amber-100'
+                  ? 'bg-amber-400 text-white border-amber-400' 
+                  : 'bg-white text-amber-300 border-amber-200'
             }`}
           >
             {s}
@@ -247,24 +234,32 @@ function App() {
         ))}
       </div>
 
-      {/* CONTENEUR PRINCIPAL */}
-      <main className="max-w-5xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-amber-100 min-h-[500px]">
+      {/* CONTENU PRINCIPAL (Sans gros conteneur ombré) */}
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl border border-amber-100 shadow-sm min-h-[400px]">
         {step === 1 && <Step1 character={character} onNomChange={handleNomChange} onSexeChange={handleSexeChange} onTypeFeeChange={handleTypeFeeChange} fairyTypesByAge={gameData.fairyTypesByAge} />}
-        {step === 2 && <StepCaracteristiques character={character} onCaracteristiquesChange={handleCaracteristiquesChange} fairyData={gameData.fairyData} />}
-        {step === 3 && <StepProfils character={character} onProfilsChange={handleProfilsChange} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
-        {step === 4 && <StepCompetencesLibres character={character} onCompetencesLibresChange={handleCompetencesLibresChange} fairyData={gameData.fairyData} competences={gameData.competences} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
-        {step === 5 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={handleCompetencesFutilesChange} fairyData={gameData.fairyData} />}
-        {step === 6 && <Step2 character={character} onCapaciteChoice={handleCapaciteChoice} fairyData={gameData.fairyData} />}
-        {step === 7 && <Step3 character={character} onPouvoirToggle={handlePouvoirToggle} fairyData={gameData.fairyData} />}
+        {step === 2 && <StepCaracteristiques character={character} onCaracteristiquesChange={(c) => !isReadOnly && setCharacter({...character, caracteristiques: c})} fairyData={gameData.fairyData} />}
+        {step === 3 && <StepProfils character={character} onProfilsChange={(p) => !isReadOnly && setCharacter({...character, profils: p})} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
+        {step === 4 && <StepCompetencesLibres character={character} onCompetencesLibresChange={(cl) => !isReadOnly && setCharacter({...character, competencesLibres: cl})} fairyData={gameData.fairyData} competences={gameData.competences} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
+        {step === 5 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={(cf) => !isReadOnly && setCharacter({...character, competencesFutiles: cf})} fairyData={gameData.fairyData} />}
+        {step === 6 && <Step2 character={character} onCapaciteChoice={(c) => !isReadOnly && setCharacter({...character, capaciteChoisie: c})} fairyData={gameData.fairyData} />}
+        {step === 7 && <Step3 character={character} onPouvoirToggle={(p) => {
+            if (isReadOnly) return;
+            const current = character.pouvoirs || [];
+            const exists = current.includes(p);
+            let newPouvoirs = exists ? current.filter(x => x !== p) : (current.length < 3 ? [...current, p] : current);
+            setCharacter({...character, pouvoirs: newPouvoirs});
+        }} fairyData={gameData.fairyData} />}
         {step === 8 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} />}
-      </main>
+      </div>
 
-      {/* NAVIGATION BASSE */}
-      <div className="max-w-5xl mx-auto mt-8 flex justify-between">
+      {/* NAVIGATION BASSE v2.5 */}
+      <div className="max-w-4xl mx-auto mt-8 flex justify-between">
         <button 
           onClick={() => setStep(step - 1)} 
           disabled={step === 1} 
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-serif transition-all ${step === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-600 hover:bg-amber-50 border border-amber-200 shadow-sm'}`}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-serif transition-all ${
+            step === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-amber-200 text-amber-800 hover:bg-amber-50'
+          }`}
         >
           <ChevronLeft size={20} /> Précédent
         </button>
@@ -272,7 +267,7 @@ function App() {
         {isReadOnly ? (
           <button 
             onClick={() => step === 8 ? setView('list') : setStep(step + 1)}
-            className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg font-serif"
+            className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-serif"
           >
             {step === 8 ? 'Retour liste' : 'Suivant (Lecture)'} <ChevronRight size={20} />
           </button>
@@ -282,17 +277,17 @@ function App() {
             disabled={
               (step === 1 && !canProceedStep1) || (step === 2 && !canProceedStep2) || 
               (step === 3 && !canProceedStep3) || (step === 4 && !canProceedStep4()) ||
-              (step === 5 && !canProceedStep5()) || (step === 6 && !character.capaciteChoisie) ||
-              (step === 7 && character.pouvoirs.length !== 3)
+              (step === 5 && !canProceedStep5()) || (step === 6 && !canProceedStep6) ||
+              (step === 7 && !canProceedStep7)
             }
-            className="flex items-center gap-2 px-8 py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 shadow-lg disabled:bg-gray-300 font-serif"
+            className="flex items-center gap-2 px-8 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 shadow-md disabled:bg-gray-300 font-serif"
           >
             {step === 8 ? 'Terminer' : 'Suivant'} <ChevronRight size={20} />
           </button>
         )}
       </div>
 
-      <p className="text-center mt-12 text-amber-900/30 text-xs font-serif uppercase tracking-widest">
+      <p className="text-center mt-12 text-amber-900/30 text-xs font-serif">
         Les Héritiers • Système 3D • {BUILD_DATE}
       </p>
     </div>
