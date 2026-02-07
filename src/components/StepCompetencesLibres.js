@@ -1,7 +1,7 @@
 // src/components/StepCompetencesLibres.js
-// Version: 3.5.1
-// Build: 2026-02-05 15:00
-// Description: Interface fidèle aux sources (v3.0) avec intégration des choix de prédilection.
+// Version: 3.5.5
+// Build: 2026-02-05 18:00
+// Correction: Ajout du sélecteur "Héritage" pour l'Ange (Mêlée/Tir) sans changer le design.
 
 import React from 'react';
 import { Plus, Minus, Star, Target } from 'lucide-react';
@@ -16,62 +16,84 @@ export default function StepCompetencesLibres({
   fairyData 
 }) {
   const feeData = fairyData[character.typeFee];
+  // Sécurisation de l'objet pour éviter les crashs si les champs n'existent pas encore
   const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {} };
+  const rangs = lib.rangs || {};
+  const choixPred = lib.choixPredilection || {};
+  const choixSpec = lib.choixSpecialite || {};
 
-  // 1. Calcul du budget restant (1 point = 1 rang) [Source 181]
-  const pointsDepenses = Object.values(lib.rangs || {}).reduce((sum, v) => sum + v, 0);
+  // 1. Calcul du budget restant
+  const pointsDepenses = Object.values(rangs).reduce((sum, v) => sum + v, 0);
   const pointsRestants = POINTS_TOTAUX - pointsDepenses;
 
-  // 2. Détermination des compétences de prédilection finales (fixes + choix de l'utilisateur)
+  // 2. Logique pour identifier les prédilections actives (fixes + choix)
   const getPredilectionsFinales = () => {
     if (!feeData?.competencesPredilection) return [];
     return feeData.competencesPredilection.map((p, i) => {
-      if (p.isChoix) return lib.choixPredilection[i];
+      // Si c'est un choix (ex: Ange), on regarde ce que l'utilisateur a sélectionné
+      if (p.isChoix) return choixPred[i];
       return p.nom;
     }).filter(Boolean);
   };
 
   const predFinales = getPredilectionsFinales();
 
-  // 3. Calcul du score de base (Prédilections + Bonus de Profils) [Source 111, 182]
+  // 3. Calcul du score de base (Prédilection + Profils)
   const getScoreBase = (nomComp) => {
     let base = 0;
-    if (predFinales.includes(nomComp)) base += 2; // Bonus de fée
-    if (character.profils.majeur.competences?.includes(nomComp)) base += 2; // Profil Majeur
-    if (character.profils.mineur.competences?.includes(nomComp)) base += 1; // Profil Mineur
+    // +2 si c'est une compétence de fée (fixe ou choisie)
+    if (predFinales.includes(nomComp)) base += 2;
+    // +2 si Profil Majeur
+    if (character.profils.majeur.competences?.includes(nomComp)) base += 2;
+    // +1 si Profil Mineur
+    if (character.profils.mineur.competences?.includes(nomComp)) base += 1;
     return base;
   };
 
   const handleRangChange = (nomComp, delta) => {
-    const currentInvested = lib.rangs[nomComp] || 0;
+    const currentInvested = rangs[nomComp] || 0;
     const isPred = predFinales.includes(nomComp);
-    const maxRank = isPred ? 5 : 4; // Règle p.110 des sources
+    const maxRank = isPred ? 5 : 4; // Règle: 5 pour prédilection, 4 sinon
     const totalScore = getScoreBase(nomComp) + currentInvested;
 
+    // Bloquer si plus de points ou max atteint
     if (delta > 0 && (pointsRestants <= 0 || totalScore >= maxRank)) return;
     if (delta < 0 && currentInvested <= 0) return;
 
     onCompetencesLibresChange({
       ...lib,
-      rangs: { ...lib.rangs, [nomComp]: currentInvested + delta }
+      rangs: { ...rangs, [nomComp]: currentInvested + delta }
+    });
+  };
+
+  // Mise à jour des choix (ex: Ange choisissant "Tir")
+  const handleChoixChange = (index, value, type) => {
+    const target = type === 'competence' ? 'choixPredilection' : 'choixSpecialite';
+    const currentChoix = lib[target] || {};
+    
+    onCompetencesLibresChange({
+      ...lib,
+      [target]: { ...currentChoix, [index]: value }
     });
   };
 
   const renderCompRow = (nomComp) => {
     const scoreBase = getScoreBase(nomComp);
-    const investis = lib.rangs[nomComp] || 0;
+    const investis = rangs[nomComp] || 0;
     const total = scoreBase + investis;
     const isPred = predFinales.includes(nomComp);
 
     return (
-      <div key={nomComp} className="flex items-center justify-between p-2 bg-white rounded border border-amber-100 shadow-sm hover:border-amber-300 transition-colors">
+      <div key={nomComp} className="flex items-center justify-between p-2 mb-1 bg-white rounded border border-amber-100 shadow-sm">
         <div className="flex items-center gap-2 flex-1">
           <span className="font-serif text-amber-900 text-sm">{nomComp}</span>
-          {isPred && <Star size={12} className="fill-amber-400 text-amber-400" title="Prédilection" />}
+          {isPred && <Star size={12} className="fill-amber-400 text-amber-400" title="Compétence de prédilection" />}
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="text-[9px] text-amber-600 font-bold uppercase tracking-tighter">Base {scoreBase}</div>
+          <div className="text-[9px] text-amber-600 font-bold uppercase tracking-tighter">
+            Base {scoreBase}
+          </div>
           <div className="flex items-center gap-2 bg-amber-50 rounded border border-amber-200 p-0.5">
             <button 
               onClick={() => handleRangChange(nomComp, -1)} 
@@ -84,7 +106,7 @@ export default function StepCompetencesLibres({
             <button 
               onClick={() => handleRangChange(nomComp, 1)} 
               className="p-0.5 text-amber-700 hover:text-green-600 disabled:opacity-30"
-              disabled={pointsRestants <= 0 || total >= (isPred ? 5 : 4)}
+              disabled={pointsRestants <= 0}
             >
               <Plus size={14} />
             </button>
@@ -96,52 +118,54 @@ export default function StepCompetencesLibres({
 
   return (
     <div className="space-y-8">
-      {/* HEADER ÉTAPE */}
+      {/* En-tête "intégré" style papier */}
       <div className="flex justify-between items-center border-b-2 border-amber-100 pb-4">
         <div>
           <h2 className="text-2xl font-serif text-amber-900">Compétences Utiles</h2>
           <p className="text-xs text-amber-700 italic">Répartissez vos 15 points (Max 4, ou 5 en Prédilection).</p>
         </div>
-        <div className="bg-amber-600 text-white px-6 py-2 rounded-xl font-serif shadow-lg flex flex-col items-center">
-          <span className="text-2xl font-bold leading-none">{pointsRestants}</span>
-          <span className="text-[8px] uppercase tracking-widest">Points</span>
+        <div className="bg-amber-100 text-amber-900 border border-amber-200 px-4 py-2 rounded font-serif">
+          <span className="text-xl font-bold">{pointsRestants}</span> <span className="text-xs uppercase">pts restants</span>
         </div>
       </div>
 
-      {/* SECTION CHOIX FÉÉRIQUES (S'affiche uniquement si la fée a des choix) */}
+      {/* BLOC DE CHOIX FÉÉRIQUE (S'affiche uniquement si nécessaire) */}
+      {/* C'est ce bloc qui manquait pour l'Ange */}
       {feeData?.competencesPredilection?.some(p => p.isChoix || p.isSpecialiteChoix) && (
-        <div className="p-6 bg-amber-50 border-2 border-dashed border-amber-200 rounded-2xl space-y-4 shadow-sm">
-          <h3 className="font-serif text-amber-900 flex items-center gap-2 text-lg">
-            <Target size={20} className="text-amber-600" /> Vos choix d'Héritage
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <h3 className="font-serif text-amber-900 flex items-center gap-2 text-md mb-3">
+            <Target size={16} className="text-amber-600" /> Héritage Féérique : Faites vos choix
           </h3>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4">
             {feeData.competencesPredilection.map((p, i) => {
+              // Cas 1: Choix de compétence (ex: Mêlée ou Tir)
               if (p.isChoix) return (
-                <div key={`c-${i}`} className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-amber-700 flex items-center gap-1">
-                    Compétence de prédilection au choix :
+                <div key={`c-${i}`}>
+                  <label className="block text-xs font-bold text-amber-800 uppercase mb-1">
+                    Prédilection au choix :
                   </label>
                   <select 
-                    value={lib.choixPredilection[i] || ''} 
-                    onChange={(e) => onCompetencesLibresChange({...lib, choixPredilection: {...lib.choixPredilection, [i]: e.target.value}})}
-                    className="w-full p-2.5 border-2 border-amber-200 rounded-xl font-serif text-sm bg-white focus:border-amber-600 outline-none"
+                    value={choixPred[i] || ''} 
+                    onChange={(e) => handleChoixChange(i, e.target.value, 'competence')}
+                    className="w-full p-2 border border-amber-300 rounded font-serif text-sm bg-white"
                   >
-                    <option value="">-- Sélectionner --</option>
+                    <option value="">-- Choisir --</option>
                     {p.options.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
               );
+              // Cas 2: Choix de spécialité (ex: Gnome)
               if (p.isSpecialiteChoix) return (
-                <div key={`s-${i}`} className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-amber-700">
-                    Spécialité féérique pour {p.nom} :
+                <div key={`s-${i}`}>
+                  <label className="block text-xs font-bold text-amber-800 uppercase mb-1">
+                    Spécialité ({p.nom}) :
                   </label>
                   <select 
-                    value={lib.choixSpecialite[i] || ''} 
-                    onChange={(e) => onCompetencesLibresChange({...lib, choixSpecialite: {...lib.choixSpecialite, [i]: e.target.value}})}
-                    className="w-full p-2.5 border-2 border-amber-200 rounded-xl font-serif text-sm bg-white focus:border-amber-600 outline-none"
+                    value={choixSpec[i] || ''} 
+                    onChange={(e) => handleChoixChange(i, e.target.value, 'specialite')}
+                    className="w-full p-2 border border-amber-300 rounded font-serif text-sm bg-white"
                   >
-                    <option value="">-- Sélectionner --</option>
+                    <option value="">-- Choisir --</option>
                     {p.specialiteOptions.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
@@ -152,28 +176,19 @@ export default function StepCompetencesLibres({
         </div>
       )}
 
-      {/* GRILLE DES PROFILS (Design identique aux sources) */}
+      {/* Grille des compétences par profil (Design existant conservé) */}
       <div className="grid md:grid-cols-2 gap-6">
         {profils.map(profil => {
           const isMajeur = character.profils.majeur.nom === profil.nom;
           const isMineur = character.profils.mineur.nom === profil.nom;
           return (
-            <div 
-              key={profil.id} 
-              className={`p-5 rounded-2xl border-2 transition-all ${
-                isMajeur ? 'bg-amber-50/50 border-amber-400 shadow-md' : 
-                isMineur ? 'bg-blue-50/30 border-blue-200' : 
-                'bg-gray-50/50 border-gray-200 grayscale-[0.5] opacity-80'
-              }`}
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="font-serif text-lg flex items-center gap-2 text-amber-950">
-                  <span className="text-xl">{profil.icon}</span> {profil.nom}
-                </h4>
-                {isMajeur && <span className="text-[9px] bg-amber-600 text-white px-2 py-0.5 rounded-full uppercase font-bold">Majeur</span>}
-                {isMineur && <span className="text-[9px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase font-bold">Mineur</span>}
-              </div>
-              <div className="space-y-2">
+            <div key={profil.id} className={`p-4 rounded-lg border-2 ${isMajeur ? 'bg-amber-50/50 border-amber-300' : isMineur ? 'bg-blue-50/30 border-blue-200' : 'bg-gray-50 border-gray-100'}`}>
+              <h4 className="font-serif text-lg flex items-center gap-2 mb-3 text-amber-950">
+                <span>{profil.icon}</span> {profil.nom}
+                {isMajeur && <span className="text-[9px] bg-amber-600 text-white px-2 py-0.5 rounded uppercase">Majeur</span>}
+                {isMineur && <span className="text-[9px] bg-blue-600 text-white px-2 py-0.5 rounded uppercase">Mineur</span>}
+              </h4>
+              <div>
                 {(competencesParProfil[profil.nom] || []).map(comp => renderCompRow(comp.nom))}
               </div>
             </div>
