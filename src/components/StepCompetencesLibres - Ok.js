@@ -1,8 +1,10 @@
 // src/components/StepCompetencesLibres.js
-// Version: 3.7.0 (Fusion v3.6.3 + Règle Esprit + Correctif Choix Spécialité)
+// Version: 3.6.4
+// Build: 2026-02-07 16:00
+// Description: Base v3.6.3 (Calculs PP + Design) + Règle Bonus Esprit (Livre de Base p.44/72)
 
 import React from 'react';
-import { Plus, Minus, Star, Brain } from 'lucide-react';
+import { Plus, Minus, Star, Target, ShieldCheck, Coins, Brain } from 'lucide-react';
 
 const POINTS_TOTAUX = 15;
 
@@ -23,7 +25,7 @@ export default function StepCompetencesLibres({
   const feeData = fairyData[character.typeFee];
   const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} };
 
-  // --- 1. CALCUL DU BUDGET (Règle Esprit) ---
+  // --- 1. CALCUL DU BUDGET (NOUVELLE LOGIQUE ESPRIT) ---
 
   // A. Calcul du montant du bonus (Esprit - 3)
   const scoreEsprit = character.caracteristiques?.esprit || 3;
@@ -33,7 +35,7 @@ export default function StepCompetencesLibres({
   let coutBonusUtilise = 0;
   let coutGeneralUtilise = 0;
 
-  // Parcours des rangs achetés et spécialités utilisateur
+  // Parcours des rangs achetés
   Object.entries(lib.rangs || {}).forEach(([nomComp, valeur]) => {
     let coutLigne = valeur; // Coût des rangs
     
@@ -60,7 +62,7 @@ export default function StepCompetencesLibres({
   const pointsRestantsGeneral = POINTS_TOTAUX - coutGeneralUtilise;
   const pointsRestantsBonus = POINTS_BONUS_ESPRIT_MAX - coutBonusUtilise;
 
-  // --- 2. PRÉDILECTIONS ---
+  // --- 2. PRÉDILECTIONS (LOGIQUE v3.6.3 CONSERVÉE) ---
 
   const getPredilectionsFinales = () => {
     if (!feeData?.competencesPredilection) return [];
@@ -72,7 +74,7 @@ export default function StepCompetencesLibres({
 
   const predFinales = getPredilectionsFinales();
 
-  // --- 3. SCORE DE BASE ---
+  // --- 3. SCORE DE BASE (LOGIQUE v3.6.3 CONSERVÉE) ---
 
   const getScoreBase = (nomComp) => {
     let base = 0;
@@ -82,7 +84,7 @@ export default function StepCompetencesLibres({
     return base;
   };
 
-  // --- 4. CALCUL RANG DE PROFIL (Design v3.6.3) ---
+  // --- 4. CALCUL RANG DE PROFIL (LOGIQUE v3.6.3 CONSERVÉE) ---
 
   const calculateProfilStats = (profilNom, isMajeur, isMineur) => {
     const compsDuProfil = competencesParProfil[profilNom] || [];
@@ -101,7 +103,7 @@ export default function StepCompetencesLibres({
     return { rang, bonusFixe, totalPP };
   };
 
-  // --- HANDLERS ---
+  // --- HANDLERS (MIS À JOUR AVEC DOUBLE BUDGET) ---
 
   const canSpendPoint = (nomComp) => {
     const isEligibleBonus = COMPETENCES_BONUS_LIST.includes(nomComp);
@@ -138,6 +140,7 @@ export default function StepCompetencesLibres({
 
   const handleAddSpecialiteUser = (nomComp, specName) => {
     if (!specName) return;
+    // Vérification budget double
     if (!canSpendPoint(nomComp)) return;
 
     const currentSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
@@ -163,7 +166,7 @@ export default function StepCompetencesLibres({
     });
   };
 
-  // --- RENDER ROW ---
+  // --- RENDER ROW (DESIGN v3.6.3 CONSERVÉ) ---
 
   const renderCompRow = (nomComp) => {
     const scoreBase = getScoreBase(nomComp);
@@ -175,21 +178,24 @@ export default function StepCompetencesLibres({
     const maxAtteint = total >= (isPred ? 5 : 4);
     const canBuy = canSpendPoint(nomComp) && !maxAtteint;
 
-    // --- MODIFICATION : Calcul de la spécialité offerte (Fixe OU Choix) ---
+// Calcul de la spécialité offerte (soit fixe, soit choisie par le joueur)
+    let fairySpecFixe = null;
+    
+    // On cherche dans la config du type de fée
     const predData = feeData?.competencesPredilection?.find(p => p.nom === nomComp);
     const predIndex = feeData?.competencesPredilection?.findIndex(p => p.nom === nomComp);
 
-    let fairySpecFixe = null;
     if (predData) {
-        if (predData.specialite) {
-            // Cas A : Spécialité imposée (ex: Nage pour Ondine)
-            fairySpecFixe = predData.specialite;
-        } else if (predData.isSpecialiteChoix && predIndex !== -1) {
-            // Cas B : Spécialité choisie (ex: Gargouille) -> On regarde le choix utilisateur
-            fairySpecFixe = lib.choixSpecialite?.[predIndex];
-        }
+      if (predData.specialite) {
+        // Cas A : Spécialité imposée (ex: Nage pour Ondine)
+        fairySpecFixe = predData.specialite;
+      } else if (predData.isSpecialiteChoix && predIndex !== -1) {
+        // Cas B : Spécialité choisie (ex: Gargouille) -> On regarde le choix utilisateur
+        fairySpecFixe = lib.choixSpecialite?.[predIndex];
+      }
     }
-    // ---------------------------------------------------------------------
+
+    // ... suite du code (userSpecs, availableSpecs...)
 
     const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
     const availableSpecs = competences[nomComp]?.specialites || [];
@@ -227,9 +233,7 @@ export default function StepCompetencesLibres({
         {/* Zone Spécialités */}
         <div className="flex flex-wrap gap-1 mt-1 pl-1">
           {fairySpecFixe && (
-            <span className="text-[10px] bg-purple-100 text-purple-800 px-1.5 rounded border border-purple-200 flex items-center gap-1" title="Spécialité offerte par la fée">
-               ★ {fairySpecFixe}
-            </span>
+            <span className="text-[10px] bg-purple-100 text-purple-800 px-1.5 rounded border border-purple-200">{fairySpecFixe}</span>
           )}
           {userSpecs.map(spec => (
             <span key={spec} className="text-[10px] bg-amber-100 text-amber-800 px-1.5 rounded border border-amber-200 flex items-center gap-1">
@@ -282,49 +286,43 @@ export default function StepCompetencesLibres({
         )}
       </div>
 
-      {/* Choix Héritage */}
-      {feeData?.competencesPredilection?.some(p => p.isChoix || p.isSpecialiteChoix) && (
-        <div className="bg-purple-50 p-4 rounded-xl border border-purple-200">
-          <h3 className="font-bold text-purple-900 mb-2 flex items-center gap-2"><Star size={16}/> Héritage Féérique : Choix requis</h3>
-          {feeData.competencesPredilection.map((p, i) => {
-            
-            // Cas 1 : Choix de la compétence (ex: Ange - Mêlée ou Tir)
-            if (p.isChoix) return (
-              <div key={i} className="mb-2">
-                <label className="text-sm text-purple-800 block mb-1">Prédilection au choix :</label>
-                <select 
-                  className="w-full p-2 border rounded font-serif shadow-sm"
-                  value={lib.choixPredilection?.[i] || ''}
-                  onChange={(e) => handleChoixChange(i, e.target.value, 'competence')}
-                >
-                  <option value="">-- Sélectionner --</option>
-                  {p.options.map(o => <option key={o} value={o}>{o}</option>)}
-                </select>
-              </div>
-            );
+      {/* Choix Héritage (v3.6.3) */}
+{feeData.competencesPredilection.map((p, i) => {
+  // Cas 1 : Choix de la compétence (ex: Ange - Mêlée ou Tir)
+  if (p.isChoix) return (
+    <div key={i} className="mb-2">
+      <label className="text-sm text-purple-800 block mb-1">Prédilection au choix :</label>
+      <select 
+        className="w-full p-2 border rounded font-serif shadow-sm"
+        value={lib.choixPredilection?.[i] || ''}
+        onChange={(e) => handleChoixChange(i, e.target.value, 'competence')}
+      >
+        <option value="">-- Sélectionner --</option>
+        {p.options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  );
 
-            // --- MODIFICATION : Cas 2 : Choix de la spécialité (ex: Gargouille) ---
-            else if (p.isSpecialiteChoix) return (
-                <div key={i} className="mb-2">
-                  <label className="text-sm text-purple-800 block mb-1">
-                    Spécialité pour <strong>{p.nom}</strong> :
-                  </label>
-                  <select 
-                    className="w-full p-2 border rounded font-serif shadow-sm"
-                    value={lib.choixSpecialite?.[i] || ''}
-                    onChange={(e) => handleChoixChange(i, e.target.value, 'specialite')}
-                  >
-                    <option value="">-- Sélectionner --</option>
-                    {p.optionsSpecialite.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-            );
-            // ---------------------------------------------------------------------
-            
-            return null;
-          })}
-        </div>
-      )}
+  // Cas 2 : Choix de la spécialité (ex: Gargouille - Sciences occultes ou Spiritisme)
+  // --- C'EST CE BLOC QUI MANQUAIT ---
+  else if (p.isSpecialiteChoix) return (
+    <div key={i} className="mb-2">
+      <label className="text-sm text-purple-800 block mb-1">
+        Spécialité pour {p.nom} :
+      </label>
+      <select 
+        className="w-full p-2 border rounded font-serif shadow-sm"
+        value={lib.choixSpecialite?.[i] || ''}
+        onChange={(e) => handleChoixChange(i, e.target.value, 'specialite')}
+      >
+        <option value="">-- Sélectionner --</option>
+        {p.optionsSpecialite.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  );
+  
+  return null;
+})}
 
       {/* Grille Profils (v3.6.3 + Design) */}
       <div className="grid md:grid-cols-2 gap-6">
