@@ -3,18 +3,48 @@
 // Design : 2.15 (Intégré/Papier)
 
 export const APP_VERSION = '3.6.5';
-export const BUILD_DATE = '2026-02-06 20:30';
-
-export const CHANGELOG = [
-  '3.6.5 : Blocage strict des caractéristiques à 5 (Règle p.44).',
-  '3.6.3 : Ajout de l\'équation visuelle pour les Points de Personnage (Rang + Bonus = Total).',
-  '3.6.2 : Calcul automatique des Rangs de Profil (Moyenne/4).',
-  '3.6.1 : Restauration des Spécialités manuelles et affichage des Spécialités de Prédilection (ex: Bastet).',
-  '3.5.5 : Gestion des choix multiples pour les fées complexes (Ange : Mêlée ou Tir).',
-  '3.5.0 : Retour au design "Fiche Intégrée" (v2.15).'
-];
+export const BUILD_DATE = '2026-02-06 22:30';
 
 export const VERSION_HISTORY = [
+  {
+    version: "3.6.5",
+    date: "2026-02-06",
+    type: "patch",
+    changes: [
+      "Blocage strict des caractéristiques à 5 maximum à la création (Règle p.44)",
+      "Correction de l'affichage des valeurs minimales imposées par le type de fée"
+    ]
+  },
+  {
+    version: "3.6.0",
+    date: "2026-02-05",
+    type: "minor",
+    changes: [
+      "Ajout de l'équation visuelle pour les Points de Personnage (Rang + Bonus = Total)",
+      "Calcul automatique des Rangs de Profil (Moyenne des compétences / 4)",
+      "Restauration de l'achat de Spécialités manuelles",
+      "Affichage automatique des Spécialités de Prédilection (ex: Bastet, Ondine)"
+    ]
+  },
+  {
+    version: "3.5.5",
+    date: "2026-02-05",
+    type: "patch",
+    changes: [
+      "Gestion des choix multiples pour les fées complexes (ex: Ange : choix Mêlée ou Tir)",
+      "Correction des doublons dans le chargement des prédilections"
+    ]
+  },
+  {
+    version: "3.5.0",
+    date: "2026-02-05",
+    type: "major",
+    changes: [
+      "Retour au design 'Fiche Intégrée' (Style v2.15) pour une expérience type papier",
+      "Intégration de la navigation et du header dans le flux principal",
+      "Refonte de la gestion des données via Supabase pour les choix féériques"
+    ]
+  },
   {
     version: "3.4.0",
     date: "2026-02-04",
