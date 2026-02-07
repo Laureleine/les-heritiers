@@ -1,10 +1,18 @@
 // src/version.js
-// Version: 3.4.0
-// Build: 2026-02-04 22:30
-// Description: Historique des versions et constantes globales de l'application.
+// Moteur : 3.6.x (Logique de calculs v3.6)
+// Design : 2.15 (Intégré/Papier)
 
-export const APP_VERSION = "3.4.0";
-export const BUILD_DATE = "2026-02-04";
+export const APP_VERSION = '3.6.5';
+export const BUILD_DATE = '2026-02-06 20:30';
+
+export const CHANGELOG = [
+  '3.6.5 : Blocage strict des caractéristiques à 5 (Règle p.44).',
+  '3.6.3 : Ajout de l\'équation visuelle pour les Points de Personnage (Rang + Bonus = Total).',
+  '3.6.2 : Calcul automatique des Rangs de Profil (Moyenne/4).',
+  '3.6.1 : Restauration des Spécialités manuelles et affichage des Spécialités de Prédilection (ex: Bastet).',
+  '3.5.5 : Gestion des choix multiples pour les fées complexes (Ange : Mêlée ou Tir).',
+  '3.5.0 : Retour au design "Fiche Intégrée" (v2.15).'
+];
 
 export const VERSION_HISTORY = [
   {
