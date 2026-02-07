@@ -4,7 +4,6 @@
 // Adaptation: Design complet de la v2.15.0 avec spécialités + structure v3.5.4
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Save, List, FileText, BookOpen } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { loadAllGameData } from '../utils/supabaseGameData';
 import { getFairyAge } from '../data/dataHelpers';
