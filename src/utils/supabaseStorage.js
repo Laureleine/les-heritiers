@@ -169,6 +169,42 @@ export const deleteCharacterFromSupabase = async (characterId) => {
   return true;
 };
 
+/**
+ * Récupère TOUS les personnages (Fonction Admin)
+ */
+export const getAllCharactersAdmin = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('characters')
+      .select('*') // Pas de filtre user_id ou is_public
+      .order('updated_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Mapping identique à getPublicCharacters
+    return (data || []).map(char => ({
+      id: char.id,
+      nom: char.nom,
+      sexe: char.sexe,
+      typeFee: char.type_fee,
+      anciennete: char.anciennete,
+      caracteristiques: char.caracteristiques,
+      profils: char.profils,
+      competencesLibres: char.competences_libres,
+      competencesFutiles: char.competences_futiles,
+      capaciteChoisie: char.capacite_choisie,
+      pouvoirs: char.pouvoirs,
+      isPublic: char.is_public,
+      userId: char.user_id, // Important pour vérifier la propriété
+      created_at: char.created_at,
+      updated_at: char.updated_at
+    }));
+  } catch (error) {
+    console.error('Erreur Admin getAllCharacters:', error);
+    return [];
+  }
+};
+
 export const toggleCharacterVisibility = async (characterId, isPublic) => {
   const { data, error } = await supabase
     .from('characters')
