@@ -245,7 +245,7 @@ function App() {
               <span>Mes personnages</span>
             </button>
             <button
-              onClick={() => {/* setView('changelog') */}}
+              onClick={() => {setView('changelog')}}
               className="flex items-center space-x-2 px-4 py-2 bg-white border-2 border-purple-300 text-purple-900 rounded-lg hover:bg-purple-50 transition-all font-serif"
             >
               <BookOpen size={20} />
