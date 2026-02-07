@@ -20,9 +20,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const [activeTab, setActiveTab] = useState('my');
   const [loading, setLoading] = useState(true);
 
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  
   useEffect(() => {
     loadCharacters();
   }, []);
