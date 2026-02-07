@@ -2,9 +2,6 @@
 // Moteur : 3.6.x (Logique de calculs v3.6)
 // Design : 2.15 (Intégré/Papier)
 
-export const APP_VERSION = '3.6.5';
-export const BUILD_DATE = '2026-02-06 22:30';
-
 // Historique des versions
 
 export const APP_VERSION = '3.7.5';
