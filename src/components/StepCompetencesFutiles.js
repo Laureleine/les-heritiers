@@ -1,215 +1,325 @@
 // src/components/StepCompetencesFutiles.js
-// Version: 3.5.0
-// Build: 2026-02-05 18:30
-// Description: Gestion des compétences futiles avec design intégré et support des choix féériques.
+// Version: 3.9.0
+// Correction : Affichage de la liste complète des compétences futiles pour dépense des points
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Minus, Star, Sparkles, PlusCircle } from 'lucide-react';
-import { getCompetencesFutiles, addCompetenceFutile, invalidateCompetencesFutilesCache } from '../utils/supabaseGameData';
+import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle } from 'lucide-react';
 import { parseCompetencesFutilesPredilection } from '../data/dataHelpers';
+import { getCompetencesFutiles, addCompetenceFutile, invalidateCompetencesFutilesCache } from '../utils/supabaseGameData';
 
 const POINTS_TOTAUX = 10;
 
 export default function StepCompetencesFutiles({ character, onCompetencesFutilesChange, fairyData }) {
-  const [availableCompetences, setAvailableCompetences] = useState([]);
+  const [competencesFutilesBase, setCompetencesFutilesBase] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [newCompName, setNewCompName] = useState('');
-  const [isCreating, setIsCreating] = useState(false);
+  const [newCompetenceName, setNewCompetenceName] = useState('');
+  const [newCompetenceDesc, setNewCompetenceDesc] = useState('');
+  const [choixPredilection, setChoixPredilection] = useState({});
 
   const feeData = fairyData[character.typeFee];
-  const futiles = character.competencesFutiles || { rangs: {}, choixPredilection: {}, personnalisees: [] };
-  
-  // 1. Chargement des données
+
+  // 1. Charger la liste complète des compétences futiles depuis Supabase
   useEffect(() => {
-    const load = async () => {
-      const data = await getCompetencesFutiles();
-      setAvailableCompetences(data);
-      setLoading(false);
+    const loadCompetences = async () => {
+      try {
+        setLoading(true);
+        const comps = await getCompetencesFutiles();
+        setCompetencesFutilesBase(comps);
+      } catch (error) {
+        console.error('Erreur chargement compétences futiles:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-    load();
+    loadCompetences();
   }, []);
 
-  // 2. Gestion des choix de prédilection (ex: Musique ou Héraldique)
-  const parsedPredilections = React.useMemo(() => {
-    return parseCompetencesFutilesPredilection(feeData?.competencesFutilesPredilection || []);
-  }, [feeData]);
+  // 2. Gérer les compétences de prédilection (celles imposées ou à choisir par la fée)
+  const parsedPredilection = parseCompetencesFutilesPredilection(
+    feeData?.competencesFutilesPredilection || []
+  );
 
-  const getPredilectionsFinales = () => {
-    return parsedPredilections.map((p, i) => {
-      if (p.isChoix) return futiles.choixPredilection?.[i];
-      return p.nom;
-    }).filter(Boolean);
+  // Initialiser les choix si on revient sur l'étape
+  useEffect(() => {
+    if (character.competencesFutiles?.choixPredilection) {
+      setChoixPredilection(character.competencesFutiles.choixPredilection);
+    }
+  }, [character.competencesFutiles]);
+
+  // Liste finale des prédilections (fixes + choix faits)
+  const getCompetencesPredilectionFinales = () => {
+    const finales = [];
+    parsedPredilection.forEach((item, index) => {
+      if (item.isChoix) {
+        const selection = choixPredilection[index];
+        if (selection) finales.push(selection);
+      } else {
+        finales.push(item.nom);
+      }
+    });
+    return finales;
   };
 
-  const predFinales = getPredilectionsFinales();
+  const competencesPredilection = getCompetencesPredilectionFinales();
 
-  // 3. Calculs des points
-  const pointsDepenses = Object.values(futiles.rangs).reduce((sum, v) => sum + v, 0);
+  // Vérifier si tous les menus déroulants ont été répondus
+  const allChoicesMade = parsedPredilection.every((item, index) => {
+    if (item.isChoix) return choixPredilection[index] !== undefined;
+    return true;
+  });
+
+  // Calcul des points
+  const rangsInvestis = character.competencesFutiles?.rangs || {};
+  const pointsDepenses = Object.values(rangsInvestis).reduce((sum, rangs) => sum + rangs, 0);
   const pointsRestants = POINTS_TOTAUX - pointsDepenses;
 
+  // Helpers de logique
+  const getScoreTotal = (nomComp) => {
+    const isPredilection = competencesPredilection.includes(nomComp);
+    const base = isPredilection ? 2 : 0;
+    const investis = rangsInvestis[nomComp] || 0;
+    return base + investis;
+  };
+
+  const canAddRang = (nomComp) => {
+    if (pointsRestants <= 0) return false;
+    const scoreTotal = getScoreTotal(nomComp);
+    const isPredilection = competencesPredilection.includes(nomComp);
+    const maxRangs = isPredilection ? 5 : 4;
+    return scoreTotal < maxRangs;
+  };
+
+  // Handlers
+  const handleChoixPredilectionChange = (index, value) => {
+    const newChoix = { ...choixPredilection, [index]: value };
+    setChoixPredilection(newChoix);
+    onCompetencesFutilesChange({
+      ...character.competencesFutiles,
+      choixPredilection: newChoix
+    });
+  };
+
   const handleRangChange = (nomComp, delta) => {
-    const current = futiles.rangs[nomComp] || 0;
-    const isPred = predFinales.includes(nomComp);
-    const base = isPred ? 2 : 0; // Les futiles de prédilection commencent à 2 (gratuit)
-    const max = isPred ? 5 : 4;
-    const total = base + current;
+    const current = rangsInvestis[nomComp] || 0;
+    const newValue = Math.max(0, current + delta);
 
-    if (delta > 0 && (pointsRestants <= 0 || total >= max)) return;
-    if (delta < 0 && current <= 0) return;
+    if (delta > 0 && !canAddRang(nomComp)) return;
+    if (delta < 0 && current === 0) return;
+
+    const newRangs = { ...rangsInvestis };
+    if (newValue === 0) delete newRangs[nomComp];
+    else newRangs[nomComp] = newValue;
 
     onCompetencesFutilesChange({
-      ...futiles,
-      rangs: { ...futiles.rangs, [nomComp]: current + delta }
+      ...character.competencesFutiles,
+      rangs: newRangs,
+      choixPredilection
     });
   };
 
-  const handleChoixChange = (index, value) => {
-    onCompetencesFutilesChange({
-      ...futiles,
-      choixPredilection: { ...futiles.choixPredilection, [index]: value }
-    });
-  };
+  const handleAddCustomCompetence = async () => {
+    if (!newCompetenceName.trim()) return;
+    
+    // Vérif doublon local
+    if (competencesFutilesBase.some(c => c.nom.toLowerCase() === newCompetenceName.trim().toLowerCase())) {
+        alert('Cette compétence existe déjà !');
+        return;
+    }
 
-  // Ajout de compétence personnalisée
-  const handleCreate = async () => {
-    if (!newCompName.trim()) return;
     try {
-      const newComp = await addCompetenceFutile(newCompName, "Compétence personnalisée");
-      invalidateCompetencesFutilesCache();
-      setAvailableCompetences([...availableCompetences, newComp]);
-      setNewCompName('');
-      setIsCreating(false);
-      // On ajoute automatiquement 1 point dedans pour qu'elle apparaisse
-      handleRangChange(newComp.nom, 1);
-    } catch (e) {
-      alert("Erreur lors de la création : " + e.message);
+        const newComp = await addCompetenceFutile(
+            newCompetenceName.trim(), 
+            newCompetenceDesc.trim() || 'Compétence personnalisée'
+        );
+        if (newComp) {
+            invalidateCompetencesFutilesCache();
+            const refreshed = await getCompetencesFutiles(true); // Force refresh
+            setCompetencesFutilesBase(refreshed);
+            setNewCompetenceName('');
+            setNewCompetenceDesc('');
+        }
+    } catch (error) {
+        alert("Erreur lors de l'ajout : " + error.message);
     }
   };
 
-  const renderRow = (comp) => {
-    const isPred = predFinales.includes(comp.nom);
-    const base = isPred ? 2 : 0;
-    const investis = futiles.rangs[comp.nom] || 0;
-    const total = base + investis;
-
-    // On n'affiche que les prédilections et celles où on a investi des points
-    if (!isPred && investis === 0 && !isCreating) return null;
+  // Rendu d'une ligne de compétence
+  const renderCompetence = (comp) => {
+    const isPredilection = competencesPredilection.includes(comp.nom);
+    const scoreBase = isPredilection ? 2 : 0;
+    const rangsInvestisComp = rangsInvestis[comp.nom] || 0;
+    const scoreTotal = scoreBase + rangsInvestisComp;
+    const maxRangs = isPredilection ? 5 : 4;
 
     return (
-      <div key={comp.id || comp.nom} className="flex items-center justify-between p-3 bg-white border border-amber-100 rounded-lg mb-2 shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="font-serif text-amber-900">{comp.nom}</span>
-          {isPred && <Star size={14} className="text-amber-400 fill-amber-400" />}
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-amber-600 font-bold uppercase">Base {base}</span>
-          <div className="flex items-center gap-2 bg-amber-50 rounded border border-amber-200 p-1">
-            <button onClick={() => handleRangChange(comp.nom, -1)} disabled={investis <= 0} className="hover:text-red-600 disabled:opacity-30"><Minus size={16}/></button>
-            <span className="w-6 text-center font-bold text-amber-900">{total}</span>
-            <button onClick={() => handleRangChange(comp.nom, 1)} disabled={pointsRestants <= 0} className="hover:text-green-600 disabled:opacity-30"><Plus size={16}/></button>
+      <div key={comp.nom} className={`p-3 rounded-lg border flex justify-between items-center transition-all ${
+        isPredilection ? 'bg-purple-50 border-purple-200' : 
+        rangsInvestisComp > 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-gray-200'
+      }`}>
+        <div className="flex-1">
+          <div className="font-bold text-gray-800 flex items-center gap-2">
+            {comp.nom}
+            {isPredilection && <Star size={14} className="text-purple-600 fill-purple-600"/>}
           </div>
+          <div className="text-xs text-gray-500">{comp.description}</div>
+        </div>
+
+        <div className="flex items-center gap-3 bg-white px-2 py-1 rounded border border-gray-100 shadow-sm ml-2">
+            <span className="font-serif font-bold text-lg w-8 text-center text-amber-900">
+                {scoreTotal}<span className="text-gray-300 text-sm">/{maxRangs}</span>
+            </span>
+            
+            <button 
+                onClick={() => handleRangChange(comp.nom, -1)}
+                disabled={rangsInvestisComp === 0}
+                className={`w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600 disabled:opacity-30 transition-colors`}
+            >
+                <Minus size={16}/>
+            </button>
+            
+            <button 
+                onClick={() => handleRangChange(comp.nom, 1)}
+                disabled={!canAddRang(comp.nom)}
+                className={`w-8 h-8 flex items-center justify-center rounded bg-amber-100 hover:bg-amber-200 text-amber-800 disabled:opacity-30 disabled:bg-gray-100 transition-colors`}
+            >
+                <Plus size={16}/>
+            </button>
         </div>
       </div>
     );
   };
 
-  if (loading) return <div className="text-center italic text-amber-800">Recherche des passe-temps...</div>;
-
   return (
-    <div className="space-y-8">
-      {/* Header Intégré */}
-      <div className="flex justify-between items-center border-b-2 border-amber-100 pb-4">
+    <div className="space-y-8 animate-fade-in">
+      
+      {/* En-tête Sticky */}
+      <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 flex flex-col md:flex-row justify-between items-center sticky top-20 z-20 shadow-sm">
         <div>
-          <h2 className="text-2xl font-serif text-amber-900">Compétences Futiles</h2>
-          <p className="text-xs text-amber-700 italic">Loisirs, arts et savoirs inutiles (Max 4, ou 5 si Prédilection).</p>
+            <h2 className="text-xl font-bold text-amber-900 font-serif flex items-center gap-2">
+                <Sparkles className="text-amber-600"/> Compétences Futiles
+            </h2>
+            <p className="text-sm text-amber-700">Loisirs, arts et passions (Max 4, ou 5 si prédilection)</p>
         </div>
-        <div className="bg-amber-100 text-amber-900 border border-amber-200 px-4 py-2 rounded font-serif">
-          <span className="text-xl font-bold">{pointsRestants}</span> <span className="text-xs uppercase">pts restants</span>
+        <div className="flex items-center gap-2 mt-2 md:mt-0">
+            <span className="text-sm text-amber-800 font-bold uppercase tracking-wider">Points restants:</span>
+            <div className={`text-2xl font-bold font-serif w-12 h-12 flex items-center justify-center rounded-full border-2 ${
+                pointsRestants === 0 ? 'bg-green-100 text-green-700 border-green-300' : 
+                pointsRestants < 0 ? 'bg-red-100 text-red-700 border-red-300' : 
+                'bg-white text-amber-600 border-amber-300'
+            }`}>
+                {pointsRestants}
+            </div>
         </div>
       </div>
 
-      {/* 1. Zone de Choix Féériques (Si nécessaire) */}
-      {parsedPredilections.some(p => p.isChoix) && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-          <h3 className="font-serif text-amber-900 flex items-center gap-2 text-md mb-3">
-            <Sparkles size={16} className="text-amber-600"/> Héritage : Vos passions féériques
-          </h3>
-          <div className="grid md:grid-cols-2 gap-4">
-            {parsedPredilections.map((p, i) => {
-              if (!p.isChoix) return null;
-              return (
-                <div key={i}>
-                  <label className="block text-xs font-bold text-amber-800 uppercase mb-1">Futilité au choix :</label>
-                  <select 
-                    value={futiles.choixPredilection?.[i] || ''}
-                    onChange={(e) => handleChoixChange(i, e.target.value)}
-                    className="w-full p-2 border border-amber-300 rounded font-serif text-sm"
-                  >
-                    <option value="">-- Choisir --</option>
-                    {p.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                </div>
-              );
-            })}
-          </div>
+      {/* 1. Sélection des Prédilections (Si choix requis) */}
+      {parsedPredilection.some(item => item.isChoix) && (
+        <div className="bg-purple-50 p-6 rounded-xl border border-purple-200">
+            <h3 className="font-serif text-lg text-purple-900 mb-4 flex items-center gap-2">
+                <AlertCircle size={20}/> Héritage Féérique : Choix requis
+            </h3>
+            <div className="space-y-4">
+                {parsedPredilection.map((item, index) => {
+                    if (!item.isChoix) return null;
+                    return (
+                        <div key={index} className="space-y-2">
+                            <label className="block text-sm font-bold text-purple-800">
+                                Prédilection au choix {index + 1} :
+                            </label>
+                            <select
+                                value={choixPredilection[index] || ''}
+                                onChange={(e) => handleChoixPredilectionChange(index, e.target.value)}
+                                className="w-full p-3 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none font-serif bg-white"
+                            >
+                                <option value="">-- Sélectionner une compétence --</option>
+                                {item.options.map(opt => (
+                                    <option key={opt} value={opt}>{opt}</option>
+                                ))}
+                            </select>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
       )}
 
-      {/* 2. Liste des Compétences Actives */}
-      <div className="grid md:grid-cols-2 gap-4">
-        {/* Colonne Gauche : Prédilections (Toujours visibles) */}
+      {/* 2. Liste des Prédilections Actives */}
+      {allChoicesMade && competencesPredilection.length > 0 && (
         <div>
-          <h4 className="font-serif text-amber-800 border-b border-amber-200 mb-3 pb-1">Inné & Héritage</h4>
-          {availableCompetences.filter(c => predFinales.includes(c.nom)).map(renderRow)}
-          {predFinales.length === 0 && <p className="text-sm italic text-gray-400">Aucune prédilection futile.</p>}
-        </div>
-
-        {/* Colonne Droite : Acquises (Points dépensés) */}
-        <div>
-          <h4 className="font-serif text-amber-800 border-b border-amber-200 mb-3 pb-1">Acquis & Passions</h4>
-          {availableCompetences.filter(c => !predFinales.includes(c.nom) && futiles.rangs[c.nom] > 0).map(renderRow)}
-          
-          {/* Bouton d'ajout */}
-          {!isCreating ? (
-            <button 
-              onClick={() => setIsCreating(true)}
-              className="w-full py-3 mt-2 border-2 border-dashed border-amber-300 text-amber-700 rounded-lg hover:bg-amber-50 flex items-center justify-center gap-2 transition-all"
-            >
-              <PlusCircle size={20}/> Ajouter une compétence
-            </button>
-          ) : (
-            <div className="mt-2 p-3 bg-white border border-amber-300 rounded-lg shadow-lg animate-in fade-in zoom-in duration-200">
-              <label className="block text-xs font-bold text-gray-500 mb-1">Nom de la compétence :</label>
-              <div className="flex gap-2">
-                <input 
-                  autoFocus
-                  type="text" 
-                  value={newCompName}
-                  onChange={(e) => setNewCompName(e.target.value)}
-                  className="flex-1 p-2 border rounded font-serif"
-                  placeholder="Ex: Philatélie..."
-                />
-                <button onClick={handleCreate} className="bg-amber-600 text-white px-3 rounded hover:bg-amber-700">OK</button>
-                <button onClick={() => setIsCreating(false)} className="text-gray-500 px-2 hover:text-gray-700">X</button>
-              </div>
-              <div className="mt-2 max-h-40 overflow-y-auto border-t pt-2">
-                <p className="text-xs text-gray-400 mb-1">Ou choisissez dans la liste :</p>
-                {availableCompetences
-                  .filter(c => !predFinales.includes(c.nom) && !futiles.rangs[c.nom])
-                  .map(c => (
-                    <button 
-                      key={c.id} 
-                      onClick={() => handleRangChange(c.nom, 1)}
-                      className="block w-full text-left text-sm py-1 px-2 hover:bg-amber-50 rounded truncate"
-                    >
-                      {c.nom}
-                    </button>
-                  ))}
-              </div>
+            <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2">
+                Vos Compétences de Prédilection (Base 2 gratuite)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {competencesPredilection.map(nomComp => {
+                    const comp = competencesFutilesBase.find(c => c.nom === nomComp) || { nom: nomComp, description: "Compétence spécifique" };
+                    return renderCompetence(comp);
+                })}
             </div>
-          )}
         </div>
-      </div>
+      )}
+
+      {/* 3. Liste Complète des Compétences Disponibles */}
+      {allChoicesMade ? (
+        <>
+            <div className="mt-8">
+                <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2 flex justify-between items-end">
+                    <span>Compétences Disponibles</span>
+                    <span className="text-xs font-sans text-gray-400 font-normal">Classées par ordre alphabétique</span>
+                </h3>
+                
+                {loading ? (
+                    <div className="text-center py-8 text-gray-500 italic">Chargement du catalogue...</div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {competencesFutilesBase
+                            .filter(comp => !competencesPredilection.includes(comp.nom))
+                            .map(renderCompetence)}
+                    </div>
+                )}
+            </div>
+
+            {/* 4. Création Custom */}
+            <div className="mt-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                <h3 className="font-serif text-lg text-gray-700 mb-4 flex items-center gap-2">
+                    <PlusCircle size={20}/> Créer une compétence sur mesure
+                </h3>
+                <div className="flex flex-col md:flex-row gap-3">
+                    <input
+                        type="text"
+                        value={newCompetenceName}
+                        onChange={(e) => setNewCompetenceName(e.target.value)}
+                        placeholder="Nom (ex: Collection de timbres)"
+                        className="flex-1 p-3 border rounded-lg"
+                    />
+                    <input
+                        type="text"
+                        value={newCompetenceDesc}
+                        onChange={(e) => setNewCompetenceDesc(e.target.value)}
+                        placeholder="Description courte"
+                        className="flex- p-3 border rounded-lg"
+                    />
+                    <button
+                        onClick={handleAddCustomCompetence}
+                        disabled={!newCompetenceName.trim()}
+                        className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 font-bold"
+                    >
+                        Ajouter
+                    </button>
+                </div>
+            </div>
+        </>
+      ) : (
+        <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+            Veuillez faire vos choix de prédilection ci-dessus pour débloquer la suite.
+        </div>
+      )}
+
+      {/* Validation Finale */}
+      {pointsRestants === 0 && (
+        <div className="mt-6 p-4 bg-green-100 text-green-800 rounded-lg text-center font-bold border border-green-200 animate-pulse">
+            ✓ Tous les points ont été répartis ! Vous pouvez passer à l'étape suivante.
+        </div>
+      )}
     </div>
   );
 }

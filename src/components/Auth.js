@@ -1,20 +1,20 @@
 // src/components/Auth.js
-// Version: 3.0.1
-// Build: 2026-02-04 02:00
+// Version: 4.0.0
+// Ajout : Champ "Nom d'utilisateur" à l'inscription
+
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
-import { Mail, Lock, User as UserIcon, Bell } from 'lucide-react';
 import { APP_VERSION, BUILD_DATE } from '../version';
+import { Mail, Lock, User, AlertCircle, Sparkles } from 'lucide-react';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(''); // Nouveau state
+  const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
-  const [subscribeToUpdates, setSubscribeToUpdates] = useState(false);
-  const [notifyMajor, setNotifyMajor] = useState(true);
-  const [notifyMinor, setNotifyMinor] = useState(false);
+  const [resetMode, setResetMode] = useState(false);
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -22,36 +22,34 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        // Inscription
+      if (resetMode) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin,
+        });
+        if (error) throw error;
+        alert('Si cet email existe, un lien de réinitialisation a été envoyé.');
+        setResetMode(false);
+      } 
+      else if (isSignUp) {
+        if (!username.trim()) throw new Error("Le nom d'utilisateur est requis.");
+        
+        // Inscription avec métadonnées (Pseudo)
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              username: username.trim(), // On stocke le pseudo ici
+            }
+          }
         });
-        
         if (error) throw error;
-
-        // Créer préférences de notification si abonné
-        if (data.user && subscribeToUpdates) {
-          await supabase
-            .from('user_notification_preferences')
-            .insert({
-              user_id: data.user.id,
-              email: email,
-              subscribe_to_updates: true,
-              notify_major_versions: notifyMajor,
-              notify_minor_versions: notifyMinor
-            });
-        }
-        
-        alert('Inscription réussie ! Vérifiez votre email pour confirmer votre compte.');
+        alert('Inscription réussie ! Vérifiez votre email pour confirmer.');
       } else {
-        // Connexion
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        
         if (error) throw error;
       }
     } catch (error) {
@@ -62,143 +60,97 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-serif text-amber-900 mb-2">
-            Les Héritiers
+    <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border-2 border-amber-100 overflow-hidden">
+        
+        <div className="bg-amber-50 p-8 text-center border-b border-amber-100">
+          <h1 className="text-4xl font-serif text-amber-900 mb-2 flex justify-center items-center gap-3">
+             Les Héritiers
           </h1>
-          <p className="text-xl text-amber-700 italic">Belle Époque • Paris</p>
-          <div className="mt-3 text-sm text-amber-600">
-            <span>Version {APP_VERSION}</span>
-            <span className="mx-2">•</span>
-            <span>{BUILD_DATE}</span>
+          <p className="text-amber-700 italic font-serif">Belle Époque • Paris</p>
+          <div className="text-[10px] text-gray-400 mt-2 uppercase tracking-widest">
+            v{APP_VERSION} • {BUILD_DATE}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-xl p-8 border-4 border-amber-200">
-          <div className="flex justify-center mb-6">
-            <UserIcon className="text-amber-600" size={48} />
-          </div>
+        <div className="p-8">
+            {/* Onglets */}
+            {!resetMode && (
+                <div className="flex mb-6 bg-gray-100 p-1 rounded-lg">
+                    <button onClick={() => setIsSignUp(false)} className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${!isSignUp ? 'bg-white text-amber-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>Connexion</button>
+                    <button onClick={() => setIsSignUp(true)} className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${isSignUp ? 'bg-white text-amber-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>Inscription</button>
+                </div>
+            )}
 
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setIsSignUp(false)}
-              className={`flex-1 py-2 px-4 rounded-lg font-serif transition-all ${
-                !isSignUp
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
-              }`}
-            >
-              Connexion
-            </button>
-            <button
-              onClick={() => setIsSignUp(true)}
-              className={`flex-1 py-2 px-4 rounded-lg font-serif transition-all ${
-                isSignUp
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
-              }`}
-            >
-              Inscription
-            </button>
-          </div>
-
-          <form onSubmit={handleAuth} className="space-y-4">
-            <div>
-              <label className="block text-sm font-serif text-amber-900 mb-2">
-                <Mail size={16} className="inline mr-2" />
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-2 border-2 border-amber-200 rounded-lg focus:border-amber-600 focus:outline-none font-serif"
-                placeholder="votre@email.com"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-serif text-amber-900 mb-2">
-                <Lock size={16} className="inline mr-2" />
-                Mot de passe
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full px-4 py-2 border-2 border-amber-200 rounded-lg focus:border-amber-600 focus:outline-none font-serif"
-                placeholder="••••••"
-              />
-            </div>
-
-            {isSignUp && (
-              <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
-                <label className="flex items-start gap-3 cursor-pointer mb-3">
-                  <input
-                    type="checkbox"
-                    checked={subscribeToUpdates}
-                    onChange={(e) => setSubscribeToUpdates(e.target.checked)}
-                    className="w-5 h-5 text-blue-600 rounded mt-1"
-                  />
-                  <div>
-                    <div className="font-serif font-bold text-blue-900 flex items-center gap-2">
-                      <Bell size={16} />
-                      M'abonner aux notifications
+            <form onSubmit={handleAuth} className="space-y-4">
+                
+                {/* Champ PSEUDO (Seulement inscription) */}
+                {isSignUp && !resetMode && (
+                    <div className="relative">
+                        <User className="absolute left-3 top-3 text-gray-400" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Nom d'utilisateur"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                            required
+                        />
                     </div>
-                    <div className="text-sm text-blue-600">
-                      Recevoir un email lors des nouvelles versions
-                    </div>
-                  </div>
-                </label>
-
-                {subscribeToUpdates && (
-                  <div className="ml-8 space-y-2 border-l-2 border-blue-300 pl-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={notifyMajor}
-                        onChange={(e) => setNotifyMajor(e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded"
-                      />
-                      <span className="text-sm text-blue-800">Versions majeures (v2.0, v3.0...)</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={notifyMinor}
-                        onChange={(e) => setNotifyMinor(e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded"
-                      />
-                      <span className="text-sm text-blue-800">Versions mineures (v2.1, v2.2...)</span>
-                    </label>
-                  </div>
                 )}
-              </div>
-            )}
 
-            {error && (
-              <div className="p-3 bg-red-50 border-2 border-red-200 rounded-lg text-red-800 text-sm">
-                {error}
-              </div>
-            )}
+                <div className="relative">
+                    <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+                    <input
+                        type="email"
+                        placeholder="Votre email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                        required
+                    />
+                </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-3 rounded-lg font-serif text-lg transition-all ${
-                loading
-                  ? 'bg-gray-400 text-white cursor-not-allowed'
-                  : 'bg-amber-600 text-white hover:bg-amber-700'
-              }`}
-            >
-              {loading ? 'Chargement...' : isSignUp ? 'Créer mon compte' : 'Se connecter'}
-            </button>
-          </form>
+                {!resetMode && (
+                    <div className="relative">
+                        <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+                        <input
+                            type="password"
+                            placeholder="Mot de passe"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                            required
+                        />
+                    </div>
+                )}
+
+                {error && (
+                    <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center gap-2">
+                        <AlertCircle size={16} /> {error}
+                    </div>
+                )}
+
+                <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full bg-amber-600 text-white py-3 rounded-lg font-serif font-bold hover:bg-amber-700 transition-all shadow-md transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {loading ? 'Traitement...' : resetMode ? 'Envoyer le lien' : isSignUp ? 'Créer mon compte' : 'Se connecter'}
+                </button>
+            </form>
+
+            <div className="mt-4 text-center">
+                {!resetMode ? (
+                    <button onClick={() => setResetMode(true)} className="text-sm text-gray-500 hover:text-amber-700 underline">
+                        Mot de passe oublié ?
+                    </button>
+                ) : (
+                    <button onClick={() => setResetMode(false)} className="text-sm text-gray-500 hover:text-amber-700 underline">
+                        Retour à la connexion
+                    </button>
+                )}
+            </div>
         </div>
       </div>
     </div>
