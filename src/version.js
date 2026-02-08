@@ -3,7 +3,7 @@
 export const APP_VERSION = '3.7.0';
 export const BUILD_DATE = '7 Février 2026';
 
-export const CHANGELOG = [
+export const VERSION_HISTORY = [
   {
     version: '3.9.0',
     date: '2026-02-07',
