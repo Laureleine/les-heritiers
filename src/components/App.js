@@ -163,12 +163,64 @@ function App() {
                           character.profils?.mineur?.nom && character.profils?.mineur?.trait;
   
   const canProceedStep4 = () => {
-    const pointsDepenses = Object.entries(character.competencesLibres || {}).reduce((sum, [comp, data]) => {
-      let points = data.rangsSupplementaires || 0;
-      if (data.specialites) points += data.specialites.length;
-      return sum + points;
-    }, 0);
-    return pointsDepenses === 15;
+    const lib = character.competencesLibres || {};
+    
+    // 1. CALCUL DU BUDGET (Réplique de la logique de StepCompetencesLibres)
+    const scoreEsprit = character.caracteristiques?.esprit || 3;
+    const POINTS_BONUS_ESPRIT_MAX = Math.max(0, scoreEsprit - 3);
+    const COMPETENCES_BONUS_LIST = [
+      'Culture', 'Occultisme', 'Fortitude', 'Rhétorique', // Érudit
+      'Habiletés', 'Médecine', 'Sciences', 'Observation'  // Savant
+    ];
+
+    let coutBonusUtilise = 0;
+    let coutGeneralUtilise = 0;
+
+    Object.entries(lib.rangs || {}).forEach(([nomComp, valeur]) => {
+      let coutLigne = valeur;
+      const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
+      let coutSpecs = userSpecs.length;
+
+      // Règle Conduite Gratuite
+      if (nomComp === 'Conduite') {
+        // Recalcul du score de base nécessaire pour savoir si on a le droit au gratuit
+        // Note: C'est une approximation ici, idéalement on importerait getScoreBase
+        // Mais vérifier si on a investi des rangs OU si on a le profil Aventurier suffit souvent
+        // Pour être sûr, on regarde si rang > 0 (investi) ou si specs > 0 (ce qui implique rang > 0 souvent)
+        // Simplification pour App.js : Si specs > 0, la première est gratuite.
+        if (coutSpecs > 0) coutSpecs -= 1;
+      }
+
+      coutLigne += coutSpecs;
+
+      if (coutLigne > 0) {
+        if (COMPETENCES_BONUS_LIST.includes(nomComp)) {
+          const resteBonus = POINTS_BONUS_ESPRIT_MAX - coutBonusUtilise;
+          const partBonus = Math.min(coutLigne, resteBonus);
+          coutBonusUtilise += partBonus;
+          coutGeneralUtilise += (coutLigne - partBonus);
+        } else {
+          coutGeneralUtilise += coutLigne;
+        }
+      }
+    });
+
+    // VALIDATIONS
+    const generalOk = coutGeneralUtilise === 15; // Doit être exactement 15
+    const bonusOk = coutBonusUtilise === POINTS_BONUS_ESPRIT_MAX; // Doit avoir tout utilisé
+
+    // Validation Conduite : Si on a des rangs, on DOIT avoir au moins 1 spé
+    // On vérifie grossièrement si 'Conduite' est présente dans les rangs ou les profils
+    // Pour simplifier dans App.js sans réimporter toute la logique des profils :
+    // On regarde simplement si l'utilisateur a activé la compétence Conduite (rang > 0)
+    // S'il a des rangs, il doit avoir une spé.
+    let conduiteOk = true;
+    if ((lib.rangs?.['Conduite'] || 0) > 0) {
+        const specs = lib.choixSpecialiteUser?.['Conduite'] || [];
+        if (specs.length === 0) conduiteOk = false;
+    }
+
+    return generalOk && bonusOk && conduiteOk;
   };
   
   const canProceedStep5 = () => {

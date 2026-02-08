@@ -1,8 +1,8 @@
 // src/components/StepCompetencesLibres.js
-// Version: 3.7.0 (Fusion v3.6.3 + Règle Esprit + Correctif Choix Spécialité)
+// Version: 3.9.1 (Correctif ReferenceError + Conduite Gratuite)
 
 import React from 'react';
-import { Plus, Minus, Star, Brain } from 'lucide-react';
+import { Plus, Minus, Star, Brain, ShieldCheck } from 'lucide-react';
 
 const POINTS_TOTAUX = 15;
 
@@ -23,7 +23,31 @@ export default function StepCompetencesLibres({
   const feeData = fairyData[character.typeFee];
   const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} };
 
-  // --- 1. CALCUL DU BUDGET (Règle Esprit) ---
+  // --- 1. DÉFINITIONS PRÉALABLES (Remontées ici pour éviter l'erreur) ---
+
+  // A. Calcul des Prédilections (Fixes + Choix)
+  const getPredilectionsFinales = () => {
+    if (!feeData?.competencesPredilection) return [];
+    return feeData.competencesPredilection.map((p, i) => {
+      // Si c'est un choix de compétence (ex: Ange), on prend la valeur choisie
+      if (p.isChoix) return lib.choixPredilection?.[i];
+      // Sinon on prend le nom fixe (qui peut avoir un choix de spécialité, ex: Gargouille)
+      return p.nom;
+    }).filter(Boolean);
+  };
+
+  const predFinales = getPredilectionsFinales();
+
+  // B. Calcul du Score de Base (Nécessaire pour le budget Conduite)
+  const getScoreBase = (nomComp) => {
+    let base = 0;
+    if (predFinales.includes(nomComp)) base += 2;
+    if (character.profils.majeur.competences?.includes(nomComp)) base += 2;
+    if (character.profils.mineur.competences?.includes(nomComp)) base += 1;
+    return base;
+  };
+
+  // --- 2. CALCUL DU BUDGET (Avec règle Esprit + Conduite) ---
 
   // A. Calcul du montant du bonus (Esprit - 3)
   const scoreEsprit = character.caracteristiques?.esprit || 3;
@@ -39,7 +63,20 @@ export default function StepCompetencesLibres({
     
     // Ajout du coût des spécialités achetées par l'utilisateur pour cette compétence
     const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
-    coutLigne += userSpecs.length;
+    let coutSpecs = userSpecs.length;
+
+    // --- REGLE SPÉCIALE CONDUITE ---
+    // Si c'est Conduite et qu'on a au moins 1 rang (Base + Investi), la 1ère spé est gratuite
+    if (nomComp === 'Conduite') {
+        const totalConduite = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
+        // Si on a le niveau requis et qu'on a pris des spé, la première ne coûte rien
+        if (totalConduite > 0 && coutSpecs > 0) {
+            coutSpecs -= 1; 
+        }
+    }
+    // -------------------------------
+
+    coutLigne += coutSpecs;
 
     if (coutLigne > 0) {
       if (COMPETENCES_BONUS_LIST.includes(nomComp)) {
@@ -60,29 +97,7 @@ export default function StepCompetencesLibres({
   const pointsRestantsGeneral = POINTS_TOTAUX - coutGeneralUtilise;
   const pointsRestantsBonus = POINTS_BONUS_ESPRIT_MAX - coutBonusUtilise;
 
-  // --- 2. PRÉDILECTIONS ---
-
-  const getPredilectionsFinales = () => {
-    if (!feeData?.competencesPredilection) return [];
-    return feeData.competencesPredilection.map((p, i) => {
-      if (p.isChoix) return lib.choixPredilection?.[i];
-      return p.nom;
-    }).filter(Boolean);
-  };
-
-  const predFinales = getPredilectionsFinales();
-
-  // --- 3. SCORE DE BASE ---
-
-  const getScoreBase = (nomComp) => {
-    let base = 0;
-    if (predFinales.includes(nomComp)) base += 2;
-    if (character.profils.majeur.competences?.includes(nomComp)) base += 2;
-    if (character.profils.mineur.competences?.includes(nomComp)) base += 1;
-    return base;
-  };
-
-  // --- 4. CALCUL RANG DE PROFIL (Design v3.6.3) ---
+  // --- 3. CALCUL RANG DE PROFIL ---
 
   const calculateProfilStats = (profilNom, isMajeur, isMineur) => {
     const compsDuProfil = competencesParProfil[profilNom] || [];
@@ -103,7 +118,15 @@ export default function StepCompetencesLibres({
 
   // --- HANDLERS ---
 
-  const canSpendPoint = (nomComp) => {
+  const canSpendPoint = (nomComp, isSpecialite = false) => {
+    // Cas Spécial Conduite Gratuite (autorisé même si plus de points)
+    if (isSpecialite && nomComp === 'Conduite') {
+        const total = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
+        const nbSpecs = lib.choixSpecialiteUser?.['Conduite']?.length || 0;
+        // Si on a le rang requis et aucune spé, c'est gratuit -> on autorise toujours
+        if (total > 0 && nbSpecs === 0) return true;
+    }
+
     const isEligibleBonus = COMPETENCES_BONUS_LIST.includes(nomComp);
     // On peut dépenser si on a du général OU (c'est éligible ET on a du bonus)
     return pointsRestantsGeneral > 0 || (isEligibleBonus && pointsRestantsBonus > 0);
@@ -138,7 +161,8 @@ export default function StepCompetencesLibres({
 
   const handleAddSpecialiteUser = (nomComp, specName) => {
     if (!specName) return;
-    if (!canSpendPoint(nomComp)) return;
+    // On passe 'true' pour dire que c'est une spécialité (pour la règle Conduite)
+    if (!canSpendPoint(nomComp, true)) return;
 
     const currentSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
     if (currentSpecs.includes(specName)) return;
@@ -173,9 +197,10 @@ export default function StepCompetencesLibres({
     
     // Calcul pour l'état disabled
     const maxAtteint = total >= (isPred ? 5 : 4);
-    const canBuy = canSpendPoint(nomComp) && !maxAtteint;
+    // On passe 'false' car ici on achète un rang, pas une spé
+    const canBuy = canSpendPoint(nomComp, false) && !maxAtteint;
 
-    // --- MODIFICATION : Calcul de la spécialité offerte (Fixe OU Choix) ---
+    // Calcul de la spécialité offerte (Fixe OU Choix Héritage)
     const predData = feeData?.competencesPredilection?.find(p => p.nom === nomComp);
     const predIndex = feeData?.competencesPredilection?.findIndex(p => p.nom === nomComp);
 
@@ -189,12 +214,10 @@ export default function StepCompetencesLibres({
             fairySpecFixe = lib.choixSpecialite?.[predIndex];
         }
     }
-    // ---------------------------------------------------------------------
 
     const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
     const availableSpecs = competences[nomComp]?.specialites || [];
     
-    // Indicateur visuel Bonus Esprit
     const isBonusEligible = COMPETENCES_BONUS_LIST.includes(nomComp) && POINTS_BONUS_ESPRIT_MAX > 0;
 
     return (
@@ -231,28 +254,70 @@ export default function StepCompetencesLibres({
                ★ {fairySpecFixe}
             </span>
           )}
-          {userSpecs.map(spec => (
-            <span key={spec} className="text-[10px] bg-amber-100 text-amber-800 px-1.5 rounded border border-amber-200 flex items-center gap-1">
-              {spec}
-              <button onClick={() => handleRemoveSpecialiteUser(nomComp, spec)} className="hover:text-red-600 font-bold ml-1">×</button>
-            </span>
-          ))}
+          {userSpecs.map((spec, index) => {
+            // Détection si c'est la spé gratuite de Conduite
+            const isConduiteFree = nomComp === 'Conduite' && index === 0 && total > 0;
+            
+            return (
+                <span key={spec} className={`text-[10px] px-1.5 rounded border flex items-center gap-1 ${
+                    isConduiteFree 
+                    ? 'bg-green-100 text-green-800 border-green-200' 
+                    : 'bg-amber-100 text-amber-800 border-amber-200'
+                }`}>
+                  {spec}
+                  {isConduiteFree && <span className="text-[8px] font-bold uppercase ml-1">(Gratuit)</span>}
+                  <button onClick={() => handleRemoveSpecialiteUser(nomComp, spec)} className="hover:text-red-600 font-bold ml-1">×</button>
+                </span>
+            );
+          })}
         </div>
 
         {/* Achat Spécialité */}
         {availableSpecs.length > 0 && (
           <select 
             className="w-full text-[10px] p-1 border rounded bg-gray-50 font-serif text-gray-500 outline-none focus:border-amber-400 mt-1 cursor-pointer"
+            // On passe 'true' pour dire que c'est une spécialité
+            disabled={!canSpendPoint(nomComp, true)} 
             onChange={(e) => { if(e.target.value) { handleAddSpecialiteUser(nomComp, e.target.value); e.target.value = ""; }}}
-            disabled={!canSpendPoint(nomComp)}
           >
-            <option value="">+ Acheter spécialité (1 pt)</option>
+            <option value="">+ Acheter spécialité</option>
             {availableSpecs.filter(s => !userSpecs.includes(s) && s !== fairySpecFixe).map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         )}
       </div>
     );
   };
+
+  // --- LOGIQUE DE VALIDATION (Pour notification) ---
+  const alerts = [];
+
+  // 1. Vérification du Budget Général
+  if (pointsRestantsGeneral > 0) {
+    alerts.push(`Il vous reste ${pointsRestantsGeneral} point(s) libre(s) à dépenser.`);
+  } else if (pointsRestantsGeneral < 0) {
+    alerts.push(`Vous avez dépensé trop de points (${Math.abs(pointsRestantsGeneral)} en trop).`);
+  }
+
+  // 2. Vérification du Budget Esprit
+  if (pointsRestantsBonus > 0) {
+    alerts.push(`Il vous reste ${pointsRestantsBonus} point(s) de bonus d'Esprit (pour Érudit/Savant).`);
+  }
+
+  // 3. Vérification Spécialité Gratuite Conduite
+  const scoreConduiteTotal = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
+  const specsConduite = lib.choixSpecialiteUser?.['Conduite'] || [];
+  if (scoreConduiteTotal > 0 && specsConduite.length === 0) {
+    alerts.push("Vous avez droit à une spécialité gratuite en Conduite (Premier moyen de transport).");
+  }
+
+  // 4. Vérification des choix de Prédilection (Héritage)
+  const missingPredChoice = feeData?.competencesPredilection?.some((p, i) => 
+    (p.isChoix && !lib.choixPredilection?.[i]) || 
+    (p.isSpecialiteChoix && !lib.choixSpecialite?.[i])
+  );
+  if (missingPredChoice) {
+    alerts.push("Vous devez faire tous les choix d'Héritage Féérique (en haut de page).");
+  }
 
   return (
     <div className="space-y-6">
@@ -303,7 +368,7 @@ export default function StepCompetencesLibres({
               </div>
             );
 
-            // --- MODIFICATION : Cas 2 : Choix de la spécialité (ex: Gargouille) ---
+            // Cas 2 : Choix de la spécialité (ex: Gargouille - Spiritisme ou Sciences occultes)
             else if (p.isSpecialiteChoix) return (
                 <div key={i} className="mb-2">
                   <label className="text-sm text-purple-800 block mb-1">
@@ -319,14 +384,13 @@ export default function StepCompetencesLibres({
                   </select>
                 </div>
             );
-            // ---------------------------------------------------------------------
             
             return null;
           })}
         </div>
       )}
 
-      {/* Grille Profils (v3.6.3 + Design) */}
+      {/* Grille Profils */}
       <div className="grid md:grid-cols-2 gap-6">
         {profils.map(profil => {
           const isMajeur = character.profils.majeur.nom === profil.nom;
@@ -356,6 +420,32 @@ export default function StepCompetencesLibres({
           );
         })}
       </div>
+
+      {/* --- BLOC DE NOTIFICATION DE VALIDATION --- */}
+      {alerts.length > 0 ? (
+        <div className="sticky bottom-4 z-20 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-lg mx-auto max-w-2xl animate-pulse">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <ShieldCheck className="h-5 w-5 text-red-500" />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Actions requises pour continuer :</h3>
+              <ul className="mt-2 list-disc list-inside text-sm text-red-700">
+                {alerts.map((alert, idx) => (
+                  <li key={idx}>{alert}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="sticky bottom-4 z-20 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-lg mx-auto max-w-2xl">
+          <div className="flex items-center">
+            <ShieldCheck className="h-5 w-5 text-green-500 mr-3" />
+            <span className="text-green-700 font-medium">Tout est en ordre ! Vous pouvez passer à l'étape suivante.</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
