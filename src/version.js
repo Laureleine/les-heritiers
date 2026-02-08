@@ -1,13 +1,37 @@
 // src/version.js
-// Moteur : 3.6.x (Logique de calculs v3.6)
-// Design : 2.15 (Intégré/Papier)
 
-// Historique des versions
+export const APP_VERSION = '3.7.0';
+export const BUILD_DATE = '7 Février 2026';
 
-export const APP_VERSION = '3.7.5';
-export const BUILD_DATE = '2026-02-07 12:00';
-
-export const VERSION_HISTORY = [
+export const CHANGELOG = [
+  {
+    version: '3.9.0',
+    date: '2026-02-07',
+    changes: [
+      '✨ Ajout de la règle "Bonus Esprit" : Points gratuits pour les compétences Érudit/Savant si Esprit > 3.',
+      '🛠️ Support complet des choix de prédilection complexes (Compétences au choix OU Spécialités au choix).',
+      '🐛 Correction : Affichage des menus déroulants pour l\'Ange (Mêlée/Tir) et la Gargouille (Occultisme).',
+      '💾 Mise à jour de la structure de base de données pour gérer les IDs de choix multiples.',
+      '🎨 Intégration visuelle des compteurs séparés (Budget Général vs Bonus Esprit) dans l\'étape 4.'
+    ]
+  },
+  {
+    version: '3.8.5',
+    date: '2026-02-05',
+    changes: [
+      '🎨 Refonte design Étape 4 (Compétences Libres) : En-têtes clairs avec calcul des PP.',
+      '✨ Calcul automatique des Rangs de Profil (Moyenne des compétences).',
+      '🐛 Correctif : Calcul des scores de base (+2 Majeur, +1 Mineur).'
+    ]
+  },
+  {
+    version: '3.8.4',
+    date: '2026-02-04',
+    changes: [
+      '✨ Nouvelle interface de liste des personnages avec onglets (Moi / Public / Admin).',
+      '🔒 Sécurisation des accès et nettoyage des doublons.'
+    ]
+  },
   {
     version: "3.7.5",
     date: "2026-02-07",
