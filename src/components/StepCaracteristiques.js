@@ -63,96 +63,79 @@ export default function StepCaracteristiques({ character, onCaracteristiquesChan
   const constitution = currentCaracs.constitution || feeData.caracteristiques.constitution?.min || 1;
   const pvMax = (constitution * 3) + 9;
 
-  return (
-    <div className="space-y-6">
-      {/* Header avec Compteurs */}
-      <div className="flex flex-col md:flex-row justify-between items-center border-b-2 border-amber-100 pb-4 gap-4">
-        <div>
-          <h2 className="text-2xl font-serif text-amber-900">Caractéristiques</h2>
-          <p className="text-sm text-amber-700 italic">
-            Ajoutez 10 points aux minimums de votre fée (Max 5).
-          </p>
-        </div>
-        
-        <div className="flex gap-4">
-          <div className="bg-amber-600 text-white px-4 py-2 rounded shadow-lg flex flex-col items-center min-w-[80px]">
-            <span className="text-2xl font-bold leading-none">{pointsRestants}</span>
-            <span className="text-[9px] uppercase tracking-widest opacity-90">Points</span>
-          </div>
-          <div className="bg-red-700 text-white px-4 py-2 rounded shadow-lg flex flex-col items-center min-w-[80px]">
-            <span className="text-2xl font-bold leading-none">{pvMax}</span>
-            <span className="text-[9px] uppercase tracking-widest opacity-90">PV Max</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Grille des Caractéristiques */}
-      <div className="grid md:grid-cols-2 gap-4">
-        {CARAC_LIST.map((carac) => {
-          const min = feeData.caracteristiques[carac.key]?.min || 1;
-          const current = currentCaracs[carac.key] || min;
-          const investis = current - min;
-
-          return (
-            <div key={carac.key} className="bg-white p-3 rounded-xl border border-amber-100 shadow-sm flex items-center justify-between hover:border-amber-300 transition-colors">
-              
-              {/* Infos Carac */}
-              <div className="flex items-center gap-3">
-                <div className="text-2xl bg-amber-50 w-10 h-10 flex items-center justify-center rounded-full border border-amber-100">
-                  {carac.icon}
-                </div>
+    return (
+        <div className="space-y-6 pb-20">
+            {/* EN-TÊTE STICKY MOBILE */}
+            <div className={`sticky top-0 z-10 p-4 rounded-xl border shadow-md flex justify-between items-center transition-all bg-white/95 backdrop-blur-sm ${
+                pointsRestants === 0 ? 'border-green-200' : 'border-amber-200'
+            }`}>
                 <div>
-                  <div className="font-serif font-bold text-amber-900 leading-none">
-                    {carac.label}
-                  </div>
-                  <div className="text-[10px] text-gray-500 mt-0.5">
-                    {carac.description}
-                  </div>
+                    <h3 className="text-lg font-serif font-bold text-amber-900">Caractéristiques</h3>
+                    <div className="text-xs text-gray-500 hidden md:block">
+                        Ajoutez 10 points (Max 5).
+                    </div>
                 </div>
-              </div>
 
-              {/* Contrôles */}
-              <div className="flex items-center gap-3">
-                {/* Indicateur Min/Bonus CORRIGÉ */}
-				<div className="flex flex-col items-end justify-center w-16 mr-2">
-					<span className="text-xs font-bold text-gray-400">
-						Min {min}
-					</span>
-					
-					{/* Le badge s'affiche proprement en dessous, sans casser la ligne */}
-					{investis > 0 && (
-						<span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full whitespace-nowrap animate-pulse mt-0.5">
-							+{investis} pts
-						</span>
-					)}
-				</div>
-
-                <div className="flex items-center bg-amber-50 rounded-lg border border-amber-200">
-                  <button 
-                    onClick={() => handleChange(carac.key, -1)}
-                    disabled={current <= min}
-                    className="p-2 hover:bg-red-100 text-amber-800 disabled:opacity-30 rounded-l-lg transition-colors"
-                  >
-                    <Minus size={16} />
-                  </button>
-                  
-                  <div className="w-10 text-center font-serif font-bold text-xl text-amber-900">
-                    {current}
-                  </div>
-
-                  <button 
-                    onClick={() => handleChange(carac.key, 1)}
-                    disabled={pointsRestants <= 0 || current >= MAX_SCORE_CREATION}
-                    className="p-2 hover:bg-green-100 text-amber-800 disabled:opacity-30 rounded-r-lg transition-colors"
-                  >
-                    <Plus size={16} />
-                  </button>
+                <div className="flex gap-3">
+                    <div className={`flex flex-col items-center px-3 py-1 rounded-lg border ${
+                        pointsRestants === 0 ? 'bg-green-100 text-green-700 border-green-200' : 'bg-amber-100 text-amber-800 border-amber-200'
+                    }`}>
+                        <span className="text-xl font-bold leading-none">{pointsRestants}</span>
+                        <span className="text-[9px] uppercase font-bold">Points</span>
+                    </div>
+                    
+                    <div className="flex flex-col items-center px-3 py-1 rounded-lg bg-red-50 text-red-800 border border-red-200">
+                        <span className="text-xl font-bold leading-none">{pvMax}</span>
+                        <span className="text-[9px] uppercase font-bold">PV Max</span>
+                    </div>
                 </div>
-              </div>
             </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+
+            {/* Grille des Caractéristiques (inchangée mais avec padding pour les gros doigts) */}
+            {/* CORRECTION : 1 colonne sur mobile (grid-cols-1), 2 colonnes sur PC (md:grid-cols-2) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {CARAC_LIST.map((carac) => {
+                    const min = feeData.caracteristiques[carac.key]?.min || 1;
+                    const current = currentCaracs[carac.key] || min;
+                    const investis = current - min;
+
+                    return (
+                        <div key={carac.key} className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <span className="text-2xl">{carac.icon}</span>
+                                <div>
+                                    <div className="font-bold text-gray-800">{carac.label}</div>
+                                    <div className="text-xs text-gray-400">Min {min}</div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-1">
+                                {/* BOUTONS PLUS GROS POUR LE MOBILE (h-10 w-10) */}
+                                <button 
+                                    onClick={() => handleChange(carac.key, -1)} 
+                                    disabled={current <= min}
+                                    className="h-10 w-10 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-600 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
+                                >
+                                    <Minus size={18} />
+                                </button>
+                                
+                                <div className="w-12 text-center">
+                                    <span className="text-xl font-bold text-amber-900">{current}</span>
+                                    {investis > 0 && <div className="text-[10px] text-green-600 font-bold">+{investis} pts</div>}
+                                </div>
+
+                                <button 
+                                    onClick={() => handleChange(carac.key, 1)} 
+                                    disabled={pointsRestants <= 0 || current >= MAX_SCORE_CREATION}
+                                    className="h-10 w-10 flex items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
+                                >
+                                    <Plus size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
 }

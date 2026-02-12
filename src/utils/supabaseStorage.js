@@ -150,45 +150,78 @@ export const getPublicCharacters = async () => {
 };
 
 export const saveCharacterToSupabase = async (character) => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Utilisateur non connecté');
-
+    // 1. Préparation des données (Nettoyage)
     const cleaned = cleanupCharacterData(character);
-    const characterData = {
-      user_id: user.id,
-      nom: cleaned.nom,
-      sexe: cleaned.sexe,
-      type_fee: cleaned.typeFee,
-      anciennete: cleaned.anciennete,
-      caracteristiques: cleaned.caracteristiques,
-      profils: cleaned.profils,
-      competences_libres: cleaned.competencesLibres,
-      competences_futiles: cleaned.competencesFutiles,
-      capacite_choisie: cleaned.capaciteChoisie,
-      pouvoirs: cleaned.pouvoirs,
-      is_public: cleaned.isPublic || false,
-      updated_at: new Date().toISOString()
+    const idTemp = character.id || `temp_${Date.now()}`; // ID temporaire si nouveau
+    
+    // 2. SAUVEGARDE LOCALE IMMÉDIATE (Sécurité Mobile)
+    // On met à jour le miroir local tout de suite pour que l'UI soit réactive
+    const currentCache = getOfflineMirror();
+    const otherChars = currentCache.filter(c => c.id !== character.id);
+    const charToCache = { 
+        ...cleaned, 
+        id: idTemp, 
+        updated_at: new Date().toISOString(),
+        _pendingSync: true // Marqueur pour dire "pas encore sur le serveur"
     };
+    updateOfflineMirror([charToCache, ...otherChars]);
 
-    // VÉRIFICATION DE CONFLIT [Conversation History]
-    if (character.id) {
-      const { data: remote } = await supabase.from('characters').select('updated_at').eq('id', character.id).single();
-      if (remote && remote.updated_at !== character.updated_at) {
-        throw new Error('CONFLIT : Ce personnage a été modifié ailleurs.');
-      }
+    try {
+        // 3. Tentative de sauvegarde Cloud
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Utilisateur non connecté (Sauvegarde locale uniquement)');
+
+        const characterData = {
+            user_id: user.id,
+            nom: cleaned.nom,
+            sexe: cleaned.sexe,
+            type_fee: cleaned.typeFee,
+            anciennete: cleaned.anciennete,
+            caracteristiques: cleaned.caracteristiques,
+            profils: cleaned.profils,
+            competences_libres: cleaned.competencesLibres,
+            competences_futiles: cleaned.competencesFutiles,
+            capacite_choisie: cleaned.capaciteChoisie,
+            pouvoirs: cleaned.pouvoirs,
+            is_public: cleaned.isPublic || false,
+            updated_at: new Date().toISOString()
+        };
+
+        let savedData;
+        
+        if (character.id && !character.id.toString().startsWith('temp_')) {
+            // Mise à jour
+            const { data, error } = await supabase
+                .from('characters')
+                .update(characterData)
+                .eq('id', character.id)
+                .select()
+                .single();
+            if (error) throw error;
+            savedData = data;
+        } else {
+            // Création
+            const { data, error } = await supabase
+                .from('characters')
+                .insert([characterData])
+                .select()
+                .single();
+            if (error) throw error;
+            savedData = data;
+        }
+
+        // 4. Succès Cloud : On met à jour le cache avec les vraies données (ID propre, _pendingSync retiré)
+        const finalCache = getOfflineMirror().filter(c => c.id !== idTemp && c.id !== savedData.id);
+        updateOfflineMirror([mapDatabaseToCharacter(savedData), ...finalCache]);
+
+        return mapDatabaseToCharacter(savedData);
+
+    } catch (error) {
+        console.warn("Échec sauvegarde Cloud (Mode Hors-ligne activé):", error);
+        // On retourne l'objet local pour ne pas bloquer l'utilisateur
+        // L'app considérera que c'est sauvegardé (juste sur le téléphone)
+        return charToCache;
     }
-
-    const { data, error } = character.id 
-      ? await supabase.from('characters').update(characterData).eq('id', character.id).select().single()
-      : await supabase.from('characters').insert([characterData]).select().single();
-
-    if (error) throw error;
-    userCharactersCache = null; 
-    return mapDatabaseToCharacter(data);
-  } catch (error) {
-    throw error;
-  }
 };
 
 export const deleteCharacterFromSupabase = async (characterId) => {
