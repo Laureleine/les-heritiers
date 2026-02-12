@@ -1,10 +1,39 @@
 // src/version.js
 
-export const APP_VERSION = '3.7.0';
-export const BUILD_DATE = '7 Février 2026';
+export const APP_VERSION = '5.1.0';
+export const BUILD_DATE = '8 Février 2026';
 
 export const VERSION_HISTORY = [
-  {
+    {
+        version: '5.1.0',
+        date: '8 Février 2026',
+        changes: [
+            '🧠 Compétences (Step 4) : Gestion parallèle des budgets (Vert = Standard / Violet = Esprit).',
+            '👤 Identité (Step 1) : Retour de la saisie Nom/Sexe et sélecteur de fées vertical.',
+            '🔓 Navigation : Mode "Création Libre" activé (les étapes ne sont plus bloquantes).',
+            '🔘 Ergonomie : Les cercles de la barre de progression sont maintenant cliquables.',
+            '🎨 Caractéristiques : Correction de l\'alignement visuel des bonus.',
+            '🛠️ Technique : Résolution du conflit lors des sauvegardes successives.'
+        ]
+    },
+    {
+        version: '4.8.0',
+        date: '7 Février 2026',
+        changes: [
+            '✨ Ajout du calcul automatique du bonus d\'Esprit pour les compétences de Savant/Érudit.',
+            '🖼️ Amélioration visuelle du sélecteur de fées.'
+        ]
+    },
+    {
+        version: '4.7.2',
+        date: '6 Février 2026',
+        changes: [
+            '📌 UI : Bandeau de score "Flottant" (Sticky) amélioré.',
+            '🚗 Règles : Gestion automatique de la gratuité pour la compétence Conduite.',
+            '🔒 Data : Séparation stricte des données masquées et démasquées.'
+        ]
+    },
+    {
     version: '4.0.0',
     date: '2026-02-07',
     changes: [

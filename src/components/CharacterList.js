@@ -50,7 +50,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       const myUserId = user?.id;
 
       setMyCharacters(myCharsRaw);
-      setPublicCharacters(publicCharsRaw.filter(c => c.userId !== myUserId && c.is_public === true));
+      setPublicCharacters(publicCharsRaw.filter(c => c.userId !== myUserId));
       setAdminCharacters(adminCharsRaw.filter(c => c.userId !== myUserId && !c.isPublic));
 
     } catch (error) {
