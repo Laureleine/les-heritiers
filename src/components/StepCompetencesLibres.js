@@ -1,451 +1,422 @@
 // src/components/StepCompetencesLibres.js
-// Version: 3.9.1 (Correctif ReferenceError + Conduite Gratuite)
+// Version: 4.7.5
+// Correction: useState déplacé hors renderCompRow (Rules of Hooks)
 
-import React from 'react';
-import { Plus, Minus, Star, Brain, ShieldCheck } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { Plus, Minus, Star, Target, ShieldCheck, Coins, UploadCloud, X, Users, Brain } from 'lucide-react';
+import { addGlobalSpeciality } from '../utils/supabaseGameData';
 
 const POINTS_TOTAUX = 15;
-
-// Liste des compétences éligibles au Bonus Esprit (Profils Érudit et Savant)
-const COMPETENCES_BONUS_LIST = [
-  'Culture', 'Occultisme', 'Fortitude', 'Rhétorique', // Érudit
-  'Habiletés', 'Médecine', 'Sciences', 'Observation'  // Savant
+const SKILLS_ESPRIT = [
+    'Culture', 'Occultisme', 'Fortitude', 'Rhétorique',
+    'Habiletés', 'Médecine', 'Observation', 'Sciences'
 ];
 
 export default function StepCompetencesLibres({ 
-  character, 
-  onCompetencesLibresChange, 
-  profils, 
-  competences, 
-  competencesParProfil, 
-  fairyData 
+    character, 
+    onCompetencesLibresChange, 
+    profils, 
+    competences, 
+    competencesParProfil, 
+    fairyData 
 }) {
-  const feeData = fairyData[character.typeFee];
-  const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} };
+    const [creatingSpecFor, setCreatingSpecFor] = useState(null);
+    const [selectValue, setSelectValue] = useState(''); // ✅ STATE AU NIVEAU TOP
 
-  // --- 1. DÉFINITIONS PRÉALABLES (Remontées ici pour éviter l'erreur) ---
+    const feeData = fairyData[character.typeFee];
+    const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} };
 
-  // A. Calcul des Prédilections (Fixes + Choix)
-  const getPredilectionsFinales = () => {
-    if (!feeData?.competencesPredilection) return [];
-    return feeData.competencesPredilection.map((p, i) => {
-      // Si c'est un choix de compétence (ex: Ange), on prend la valeur choisie
-      if (p.isChoix) return lib.choixPredilection?.[i];
-      // Sinon on prend le nom fixe (qui peut avoir un choix de spécialité, ex: Gargouille)
-      return p.nom;
-    }).filter(Boolean);
-  };
+    const predFinales = useMemo(() => {
+        if (!feeData?.competencesPredilection) return [];
+        return feeData.competencesPredilection.map((p, i) => {
+            if (p.isChoix) return lib.choixPredilection?.[i];
+            return p.nom;
+        }).filter(Boolean);
+    }, [feeData?.competencesPredilection, lib.choixPredilection]);
 
-  const predFinales = getPredilectionsFinales();
+    const getScoreBase = useCallback((nomComp) => {
+        let base = 0;
+        if (predFinales.includes(nomComp)) base += 2;
+        if (character.profils.majeur.competences?.includes(nomComp)) base += 2;
+        if (character.profils.mineur.competences?.includes(nomComp)) base += 1;
+        return base;
+    }, [predFinales, character.profils]);
 
-  // B. Calcul du Score de Base (Nécessaire pour le budget Conduite)
-  const getScoreBase = (nomComp) => {
-    let base = 0;
-    if (predFinales.includes(nomComp)) base += 2;
-    if (character.profils.majeur.competences?.includes(nomComp)) base += 2;
-    if (character.profils.mineur.competences?.includes(nomComp)) base += 1;
-    return base;
-  };
+    const budgetData = useMemo(() => {
+        const esprit = Number(character.caracteristiques?.esprit || 0);
+        const bonusEspritMax = Math.max(0, esprit - 3);
+        let investissementEligibleEsprit = 0;
+        let investissementStandard = 0;
 
-  // --- 2. CALCUL DU BUDGET (Avec règle Esprit + Conduite) ---
+        Object.entries(lib.rangs || {}).forEach(([nom, val]) => {
+            if (SKILLS_ESPRIT.includes(nom)) investissementEligibleEsprit += val;
+            else investissementStandard += val;
+        });
 
-  // A. Calcul du montant du bonus (Esprit - 3)
-  const scoreEsprit = character.caracteristiques?.esprit || 3;
-  const POINTS_BONUS_ESPRIT_MAX = Math.max(0, scoreEsprit - 3);
+        Object.entries(lib.choixSpecialiteUser || {}).forEach(([nom, specs]) => {
+            let count = specs.length;
+            if (nom === 'Conduite' && count > 0) {
+                const rangTotal = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
+                if (rangTotal > 0) count -= 1;
+            }
+            if (SKILLS_ESPRIT.includes(nom)) investissementEligibleEsprit += count;
+            else investissementStandard += count;
+        });
 
-  // B. Calcul des dépenses réparties (Bonus vs Général)
-  let coutBonusUtilise = 0;
-  let coutGeneralUtilise = 0;
+        const pointsVioletsUtilises = Math.min(investissementEligibleEsprit, bonusEspritMax);
+        const pointsRestantsViolets = bonusEspritMax - pointsVioletsUtilises;
+        const debordementEspritVersVert = investissementEligibleEsprit - pointsVioletsUtilises;
+        const totalVertUtilise = investissementStandard + debordementEspritVersVert;
+        const pointsRestantsVerts = POINTS_TOTAUX - totalVertUtilise;
 
-  // Parcours des rangs achetés et spécialités utilisateur
-  Object.entries(lib.rangs || {}).forEach(([nomComp, valeur]) => {
-    let coutLigne = valeur; // Coût des rangs
-    
-    // Ajout du coût des spécialités achetées par l'utilisateur pour cette compétence
-    const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
-    let coutSpecs = userSpecs.length;
+        return { bonusEspritMax, pointsRestantsViolets, pointsRestantsVerts, nextSpecCost: 1 };
+    }, [character.caracteristiques, lib, getScoreBase]);
 
-    // --- REGLE SPÉCIALE CONDUITE ---
-    // Si c'est Conduite et qu'on a au moins 1 rang (Base + Investi), la 1ère spé est gratuite
-    if (nomComp === 'Conduite') {
-        const totalConduite = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
-        // Si on a le niveau requis et qu'on a pris des spé, la première ne coûte rien
-        if (totalConduite > 0 && coutSpecs > 0) {
-            coutSpecs -= 1; 
+    const { bonusEspritMax, pointsRestantsViolets, pointsRestantsVerts, nextSpecCost } = budgetData;
+
+    const calculateProfilStats = useCallback((profilNom, isMajeur, isMineur) => {
+        const compsDuProfil = competencesParProfil[profilNom] || [];
+        let sommeScores = 0;
+        compsDuProfil.forEach(c => {
+            const base = getScoreBase(c.nom);
+            const investi = lib.rangs[c.nom] || 0;
+            sommeScores += (base + investi);
+        });
+        const rang = Math.floor(sommeScores / 4);
+        const bonusFixe = isMajeur ? 8 : isMineur ? 4 : 0;
+        return { rang, bonusFixe, totalPP: rang + bonusFixe };
+    }, [getScoreBase, lib.rangs, competencesParProfil]);
+
+    // Handlers
+    const handleRangChange = useCallback((nomComp, delta) => {
+        const current = lib.rangs[nomComp] || 0;
+        const totalScore = getScoreBase(nomComp) + current;
+        const isPred = predFinales.includes(nomComp);
+        const max = isPred ? 5 : 4;
+
+        if (delta > 0) {
+            if (totalScore >= max) return;
+            const isEsprit = SKILLS_ESPRIT.includes(nomComp);
+            if (!(pointsRestantsVerts > 0 || (isEsprit && pointsRestantsViolets > 0))) return;
         }
-    }
-    // -------------------------------
+        if (delta < 0 && current <= 0) return;
 
-    coutLigne += coutSpecs;
+        onCompetencesLibresChange({ ...lib, rangs: { ...lib.rangs, [nomComp]: current + delta } });
+    }, [lib.rangs, getScoreBase, predFinales, pointsRestantsVerts, pointsRestantsViolets, onCompetencesLibresChange, lib]);
 
-    if (coutLigne > 0) {
-      if (COMPETENCES_BONUS_LIST.includes(nomComp)) {
-        // C'est une compétence Érudit/Savant : on utilise le bonus dispo
-        const resteBonus = POINTS_BONUS_ESPRIT_MAX - coutBonusUtilise;
-        const partBonus = Math.min(coutLigne, resteBonus);
+    const handleChoixChange = useCallback((index, value, type) => {
+        const target = type === 'competence' ? 'choixPredilection' : 'choixSpecialite';
+        onCompetencesLibresChange({ ...lib, [target]: { ...lib[target], [index]: value } });
+    }, [lib, onCompetencesLibresChange]);
+
+    const handleAddSpecialiteUser = useCallback((nomComp, specName) => {
+        if (!specName) return;
+        const isConduite = nomComp === 'Conduite';
+        const conduitePayee = isConduite && (getScoreBase('Conduite') + (lib.rangs['Conduite']||0) > 0);
+        const slotGratuitDispo = conduitePayee && (!lib.choixSpecialiteUser?.['Conduite']?.length);
         
-        coutBonusUtilise += partBonus;
-        coutGeneralUtilise += (coutLigne - partBonus);
-      } else {
-        // Compétence standard : tout sur le général
-        coutGeneralUtilise += coutLigne;
-      }
-    }
-  });
-
-  // C. Soldes restants
-  const pointsRestantsGeneral = POINTS_TOTAUX - coutGeneralUtilise;
-  const pointsRestantsBonus = POINTS_BONUS_ESPRIT_MAX - coutBonusUtilise;
-
-  // --- 3. CALCUL RANG DE PROFIL ---
-
-  const calculateProfilStats = (profilNom, isMajeur, isMineur) => {
-    const compsDuProfil = competencesParProfil[profilNom] || [];
-    let sommeScores = 0;
-
-    compsDuProfil.forEach(c => {
-      const base = getScoreBase(c.nom);
-      const investi = lib.rangs[c.nom] || 0;
-      sommeScores += (base + investi);
-    });
-
-    const rang = Math.floor(sommeScores / 4); // Règle : Moyenne arrondie à l'inférieur
-    const bonusFixe = isMajeur ? 8 : isMineur ? 4 : 0;
-    const totalPP = rang + bonusFixe;
-
-    return { rang, bonusFixe, totalPP };
-  };
-
-  // --- HANDLERS ---
-
-  const canSpendPoint = (nomComp, isSpecialite = false) => {
-    // Cas Spécial Conduite Gratuite (autorisé même si plus de points)
-    if (isSpecialite && nomComp === 'Conduite') {
-        const total = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
-        const nbSpecs = lib.choixSpecialiteUser?.['Conduite']?.length || 0;
-        // Si on a le rang requis et aucune spé, c'est gratuit -> on autorise toujours
-        if (total > 0 && nbSpecs === 0) return true;
-    }
-
-    const isEligibleBonus = COMPETENCES_BONUS_LIST.includes(nomComp);
-    // On peut dépenser si on a du général OU (c'est éligible ET on a du bonus)
-    return pointsRestantsGeneral > 0 || (isEligibleBonus && pointsRestantsBonus > 0);
-  };
-
-  const handleRangChange = (nomComp, delta) => {
-    const current = lib.rangs[nomComp] || 0;
-    const isPred = predFinales.includes(nomComp);
-    const max = isPred ? 5 : 4;
-    const totalScore = getScoreBase(nomComp) + current;
-
-    // Blocage : Plus de budget OU Max atteint
-    if (delta > 0) {
-      if (!canSpendPoint(nomComp)) return;
-      if (totalScore >= max) return;
-    }
-    if (delta < 0 && current <= 0) return;
-
-    onCompetencesLibresChange({
-      ...lib,
-      rangs: { ...lib.rangs, [nomComp]: current + delta }
-    });
-  };
-
-  const handleChoixChange = (index, value, type) => {
-    const target = type === 'competence' ? 'choixPredilection' : 'choixSpecialite';
-    onCompetencesLibresChange({
-      ...lib,
-      [target]: { ...lib[target], [index]: value }
-    });
-  };
-
-  const handleAddSpecialiteUser = (nomComp, specName) => {
-    if (!specName) return;
-    // On passe 'true' pour dire que c'est une spécialité (pour la règle Conduite)
-    if (!canSpendPoint(nomComp, true)) return;
-
-    const currentSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
-    if (currentSpecs.includes(specName)) return;
-
-    onCompetencesLibresChange({
-      ...lib,
-      choixSpecialiteUser: {
-        ...lib.choixSpecialiteUser,
-        [nomComp]: [...currentSpecs, specName]
-      }
-    });
-  };
-
-  const handleRemoveSpecialiteUser = (nomComp, specName) => {
-    const currentSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
-    onCompetencesLibresChange({
-      ...lib,
-      choixSpecialiteUser: {
-        ...lib.choixSpecialiteUser,
-        [nomComp]: currentSpecs.filter(s => s !== specName)
-      }
-    });
-  };
-
-  // --- RENDER ROW ---
-
-  const renderCompRow = (nomComp) => {
-    const scoreBase = getScoreBase(nomComp);
-    const investis = lib.rangs[nomComp] || 0;
-    const total = scoreBase + investis;
-    const isPred = predFinales.includes(nomComp);
-    
-    // Calcul pour l'état disabled
-    const maxAtteint = total >= (isPred ? 5 : 4);
-    // On passe 'false' car ici on achète un rang, pas une spé
-    const canBuy = canSpendPoint(nomComp, false) && !maxAtteint;
-
-    // Calcul de la spécialité offerte (Fixe OU Choix Héritage)
-    const predData = feeData?.competencesPredilection?.find(p => p.nom === nomComp);
-    const predIndex = feeData?.competencesPredilection?.findIndex(p => p.nom === nomComp);
-
-    let fairySpecFixe = null;
-    if (predData) {
-        if (predData.specialite) {
-            // Cas A : Spécialité imposée (ex: Nage pour Ondine)
-            fairySpecFixe = predData.specialite;
-        } else if (predData.isSpecialiteChoix && predIndex !== -1) {
-            // Cas B : Spécialité choisie (ex: Gargouille) -> On regarde le choix utilisateur
-            fairySpecFixe = lib.choixSpecialite?.[predIndex];
+        if (!slotGratuitDispo) {
+            const isEsprit = SKILLS_ESPRIT.includes(nomComp);
+            if (!((isEsprit && pointsRestantsViolets > 0) || pointsRestantsVerts > 0)) return;
         }
-    }
 
-    const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
-    const availableSpecs = competences[nomComp]?.specialites || [];
-    
-    const isBonusEligible = COMPETENCES_BONUS_LIST.includes(nomComp) && POINTS_BONUS_ESPRIT_MAX > 0;
+        const currentSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
+        if (currentSpecs.includes(specName)) return;
+        onCompetencesLibresChange({
+            ...lib,
+            choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] }
+        });
+        setSelectValue(''); // Reset après ajout
+    }, [lib, getScoreBase, pointsRestantsViolets, pointsRestantsVerts, onCompetencesLibresChange]);
+
+    const handleRemoveSpecialiteUser = useCallback((nomComp, specName) => {
+        const currentSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
+        onCompetencesLibresChange({
+            ...lib,
+            choixSpecialiteUser: {
+                ...lib.choixSpecialiteUser,
+                [nomComp]: currentSpecs.filter(s => s !== specName)
+            }
+        });
+    }, [lib, onCompetencesLibresChange]);
+
+    const handleCreateGlobalSpeciality = useCallback(async (nomComp, specName) => {
+        const compData = competences[nomComp];
+        if (!compData || !compData.id) {
+            alert("Erreur technique : ID compétence introuvable.");
+            return;
+        }
+        try {
+            const newSpecObj = await addGlobalSpeciality(compData.id, specName);
+            if (competences[nomComp]) {
+                const currentSpecs = competences[nomComp].specialites || [];
+                competences[nomComp].specialites = [...currentSpecs, newSpecObj];
+            }
+            handleAddSpecialiteUser(nomComp, specName);
+            setCreatingSpecFor(null);
+        } catch (e) {
+            alert("Erreur : " + e.message);
+        }
+    }, [competences, handleAddSpecialiteUser]);
+
+    // ✅ FONCTION RENDER SANS HOOKS
+    const renderCompRow = useCallback((nomComp) => {
+        const scoreBase = getScoreBase(nomComp);
+        const investis = lib.rangs[nomComp] || 0;
+        const total = scoreBase + investis;
+        const isPred = predFinales.includes(nomComp);
+        const isEspritEligible = SKILLS_ESPRIT.includes(nomComp);
+        const canAfford = pointsRestantsVerts > 0 || (isEspritEligible && pointsRestantsViolets > 0);
+
+        const getFairySpec = () => {
+            if (!feeData?.competencesPredilection) return null;
+            const predIndex = feeData.competencesPredilection.findIndex(p => p.nom === nomComp);
+            if (predIndex === -1) return null;
+            const pred = feeData.competencesPredilection[predIndex];
+            return pred.specialite || (pred.isSpecialiteChoix ? lib.choixSpecialite?.[predIndex] : null);
+        };
+
+        const fairySpecActuelle = getFairySpec();
+        const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
+        const availableSpecs = competences[nomComp]?.specialites || [];
+        const isCreating = creatingSpecFor === nomComp;
+
+        const isConduite = nomComp === 'Conduite';
+        const isFreeEligible = isConduite && total > 0;
+        const hasFreeSpecUsed = isFreeEligible && userSpecs.length > 0;
+        const effectiveCanAffordSpec = canAfford || (isFreeEligible && !hasFreeSpecUsed);
+
+        const onSelectChange = (e) => {
+            const val = e.target.value;
+            if (val === '__CREATE_NEW__') setCreatingSpecFor(nomComp);
+            else if (val) handleAddSpecialiteUser(nomComp, val);
+            setSelectValue('');
+        };
+
+        return (
+            <div key={nomComp} className="mb-2 p-2 rounded border border-stone-200 bg-white shadow-sm">
+                {/* Header compétence */}
+                <div className="flex justify-between items-center mb-1">
+                    <div className="flex items-center gap-2">
+                        <span className={`font-bold text-sm ${isPred ? 'text-amber-700' : 'text-gray-800'}`}>
+                            {nomComp}
+                        </span>
+                        {isPred && <Star size={12} className="text-amber-500 fill-amber-500" />}
+                        {isEspritEligible && bonusEspritMax > 0 && (
+                            <span className="text-[10px] bg-purple-100 text-purple-800 px-1.5 rounded border border-purple-200 flex items-center gap-1">
+                                <Brain size={10}/>
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-1 bg-stone-100 rounded border border-stone-300">
+                        <div className="px-2 text-[10px] text-gray-500 border-r border-stone-300 hidden sm:block">
+                            Base {scoreBase}
+                            {investis > 0 && <span className="text-green-600 font-bold ml-1">+{investis} pts</span>}
+                        </div>
+                        <button onClick={() => handleRangChange(nomComp, -1)} 
+                                disabled={investis <= 0} 
+                                className="px-2 py-1 hover:bg-red-100 text-amber-800 disabled:opacity-30 border-r border-stone-300 font-bold">
+                            -
+                        </button>
+                        <span className={`px-2 font-bold w-8 text-center ${total >= (isPred ? 5 : 4) ? 'text-green-600' : ''}`}>
+                            {total}
+                        </span>
+                        <button onClick={() => handleRangChange(nomComp, 1)} 
+                                disabled={total >= (isPred ? 5 : 4) || !canAfford} 
+                                className="px-2 py-1 hover:bg-green-100 text-amber-800 disabled:opacity-30 border-l border-stone-300 font-bold">
+                            +
+                        </button>
+                    </div>
+                </div>
+
+                {/* Spécialités */}
+                <div className="pl-2 border-l-2 border-amber-100 mt-1">
+                    <div className="flex flex-wrap gap-1 mb-1">
+                        {fairySpecActuelle && (
+                            <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded border border-amber-200 flex items-center" title="Héritage">
+                                🔒 {fairySpecActuelle}
+                            </span>
+                        )}
+                        {userSpecs.map((specName, index) => {
+                            const specData = availableSpecs.find(s => s.nom === specName);
+                            const isCommunity = specData ? !specData.is_official : false;
+                            const isFreeSlot = isFreeEligible && index === 0;
+                            let badgeStyle = "bg-blue-50 text-blue-800 border-blue-200";
+                            if (isFreeSlot) badgeStyle = "bg-green-50 text-green-800 border-green-200";
+                            else if (isCommunity) badgeStyle = "bg-purple-100 text-purple-900 border-purple-300 ring-1 ring-purple-200";
+
+                            return (
+                                <span key={specName} className={`text-[10px] px-2 py-1 rounded border flex items-center gap-1 group transition-all ${badgeStyle}`}>
+                                    {isCommunity && !isFreeSlot && <Users size={10} className="opacity-70" />}
+                                    <span className="font-medium font-serif">{specName}</span>
+                                    {isFreeSlot && <span className="text-[8px] uppercase font-bold ml-0.5 opacity-80">(Gratuit)</span>}
+                                    <button onClick={() => handleRemoveSpecialiteUser(nomComp, specName)} 
+                                            className="font-bold ml-1.5 focus:outline-none hover:text-red-600">×</button>
+                                </span>
+                            );
+                        })}
+                    </div>
+
+                    <div className="mt-1">
+                        {!isCreating ? (
+                            <select value={selectValue} onChange={onSelectChange} 
+                                    disabled={!effectiveCanAffordSpec}
+                                    className="w-full text-[11px] p-1 border rounded bg-gray-50 font-serif text-gray-700 outline-none focus:border-amber-400 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <option value="">+ Choisir ({nextSpecCost === 0 ? 'Gratuit' : '1 pt'})</option>
+                                <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
+                                <optgroup label="📚 Officielles">
+                                    {availableSpecs.filter(s => s.is_official && !userSpecs.includes(s.nom) && s.nom !== fairySpecActuelle)
+                                        .map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+                                </optgroup>
+                                {availableSpecs.some(s => !s.is_official) && (
+                                    <optgroup label="👥 Communauté">
+                                        {availableSpecs.filter(s => !s.is_official && !userSpecs.includes(s.nom) && s.nom !== fairySpecActuelle)
+                                            .map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+                                    </optgroup>
+                                )}
+                            </select>
+                        ) : (
+                            <div className="flex gap-1 animate-fade-in">
+                                <input type="text" id={`input-spec-${nomComp}`} autoFocus 
+                                       placeholder="Nom de la spécialité..." 
+                                       className="flex-1 text-[11px] p-1 border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                                       onKeyDown={(e) => {
+                                           if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                                               handleCreateGlobalSpeciality(nomComp, e.currentTarget.value.trim());
+                                           }
+                                           if (e.key === 'Escape') setCreatingSpecFor(null);
+                                       }}/>
+                                <button onClick={() => {
+                                    const input = document.getElementById(`input-spec-${nomComp}`);
+                                    const val = input?.value?.trim();
+                                    if (val) handleCreateGlobalSpeciality(nomComp, val);
+                                }} className="bg-blue-600 hover:bg-blue-700 text-white rounded px-2 py-1 transition-colors flex items-center gap-1 text-xs">
+                                    <UploadCloud size={12}/>Créer
+                                </button>
+                                <button onClick={() => setCreatingSpecFor(null)} 
+                                        className="bg-gray-200 hover:bg-gray-300 text-gray-600 rounded px-2 py-1 transition-colors flex items-center gap-1 text-xs">
+                                    <X size={12}/>Annuler
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }, [selectValue, creatingSpecFor, lib, getScoreBase, predFinales, pointsRestantsVerts, pointsRestantsViolets, bonusEspritMax, nextSpecCost, feeData, competences, handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality]);
 
     return (
-      <div key={nomComp} className={`p-2 rounded border mb-2 flex flex-col ${
-        investis > 0 || userSpecs.length > 0 ? (isBonusEligible && pointsRestantsBonus >= 0 ? 'bg-blue-50/30 border-blue-200' : 'bg-white border-amber-300') : 'bg-white border-gray-100'
-      }`}>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1 font-serif text-gray-800">
-            {nomComp}
-            {isPred && <Star size={12} className="text-purple-600 fill-purple-600" />}
-            {isBonusEligible && <Brain size={12} className="text-blue-500" title="Éligible au Bonus Esprit" />}
-          </div>
-          
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-gray-400">Base {scoreBase}</span>
-            {investis > 0 && <span className="text-amber-600 font-bold">+{investis} pts</span>}
-            
-            <div className="flex items-center border rounded bg-white">
-              <button onClick={() => handleRangChange(nomComp, -1)} disabled={investis <= 0} className="px-2 py-1 hover:bg-red-100 text-amber-800 disabled:opacity-30 border-r border-amber-200">
-                <Minus size={14} />
-              </button>
-              <span className="w-6 text-center font-bold">{total}</span>
-              <button onClick={() => handleRangChange(nomComp, 1)} disabled={!canBuy} className="px-2 py-1 hover:bg-green-100 text-amber-800 disabled:opacity-30 border-l border-amber-200">
-                <Plus size={14} />
-              </button>
+        <div className="space-y-6 animate-fade-in relative">
+            {/* Header flottant */}
+            <div className="sticky top-0 z-50 bg-stone-100/95 backdrop-blur-md shadow-md py-3 px-4 rounded-b-xl border-b border-stone-200 flex justify-between items-center mb-6 transition-all">
+                <div>
+                    <h3 className="text-lg font-serif font-bold text-amber-900 flex items-center gap-2">
+                        <Target size={24}/> Compétences Utiles
+                    </h3>
+                    <p className="text-xs text-gray-600 hidden sm:block">15 points à répartir. (Max 4, ou 5 en Prédilection).</p>
+                </div>
+                <div className="flex gap-4">
+                    {bonusEspritMax > 0 && (
+                        <div className={`flex flex-col items-end px-3 py-1 rounded-lg border transition-colors ${
+                            pointsRestantsViolets > 0 ? 'bg-purple-100 border-purple-300 text-purple-900' : 'bg-gray-50 border-gray-200 text-gray-400 opacity-60'
+                        }`}>
+                            <div className="flex items-center gap-1 font-bold">
+                                <span className="text-xl leading-none">{pointsRestantsViolets}</span><Brain size={16} />
+                            </div>
+                            <span className="text-[9px] uppercase font-bold">Bonus Esprit</span>
+                        </div>
+                    )}
+                    <div className={`flex flex-col items-end px-3 py-1 rounded-lg border transition-colors ${
+                        pointsRestantsVerts === 0 ? 'bg-green-100 text-green-800 border-green-300' : 
+                        pointsRestantsVerts < 0 ? 'bg-red-100 text-red-800 border-red-300' : 
+                        'bg-amber-100 text-amber-900 border-amber-300'
+                    }`}>
+                        <div className="flex items-center gap-1 font-bold">
+                            <span className="text-xl leading-none">{pointsRestantsVerts}</span><Coins size={16} />
+                        </div>
+                        <span className="text-[9px] uppercase font-bold">Points Libres</span>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        {/* Zone Spécialités */}
-        <div className="flex flex-wrap gap-1 mt-1 pl-1">
-          {fairySpecFixe && (
-            <span className="text-[10px] bg-purple-100 text-purple-800 px-1.5 rounded border border-purple-200 flex items-center gap-1" title="Spécialité offerte par la fée">
-               ★ {fairySpecFixe}
-            </span>
-          )}
-          {userSpecs.map((spec, index) => {
-            // Détection si c'est la spé gratuite de Conduite
-            const isConduiteFree = nomComp === 'Conduite' && index === 0 && total > 0;
-            
-            return (
-                <span key={spec} className={`text-[10px] px-1.5 rounded border flex items-center gap-1 ${
-                    isConduiteFree 
-                    ? 'bg-green-100 text-green-800 border-green-200' 
-                    : 'bg-amber-100 text-amber-800 border-amber-200'
-                }`}>
-                  {spec}
-                  {isConduiteFree && <span className="text-[8px] font-bold uppercase ml-1">(Gratuit)</span>}
-                  <button onClick={() => handleRemoveSpecialiteUser(nomComp, spec)} className="hover:text-red-600 font-bold ml-1">×</button>
-                </span>
-            );
-          })}
-        </div>
+            {/* Section héritage */}
+            {feeData?.competencesPredilection?.some(p => p.isChoix || p.isSpecialiteChoix) && (
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6 shadow-sm">
+                    <h4 className="font-bold text-amber-800 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
+                        <Star size={16} className="fill-amber-600 text-amber-600"/> Héritage Féérique : Choix requis
+                    </h4>
+                    <div className="space-y-3">
+                        {feeData.competencesPredilection.map((p, i) => {
+                            if (p.isChoix) return (
+                                <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-amber-100 pb-2 last:border-0">
+                                    <span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">Prédilection au choix :</span>
+                                    <select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer"
+                                            value={lib.choixPredilection?.[i] || ''}
+                                            onChange={(e) => handleChoixChange(i, e.target.value, 'competence')}>
+                                        <option value="">-- Sélectionner --</option>
+                                        {p.options?.map(o => <option key={o} value={o}>{o}</option>)}
+                                    </select>
+                                </div>
+                            );
+                            if (p.isSpecialiteChoix) return (
+                                <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-amber-100 pb-2 last:border-0">
+                                    <span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">{p.nom} (Spécialité) :</span>
+                                    <select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer"
+                                            value={lib.choixSpecialite?.[i] || ''}
+                                            onChange={(e) => handleChoixChange(i, e.target.value, 'specialite')}>
+                                        <option value="">-- Sélectionner --</option>
+                                        {p.options?.map(o => <option key={o} value={o}>{o}</option>)}
+                                    </select>
+                                </div>
+                            );
+                            return null;
+                        })}
+                    </div>
+                </div>
+            )}
 
-        {/* Achat Spécialité */}
-        {availableSpecs.length > 0 && (
-          <select 
-            className="w-full text-[10px] p-1 border rounded bg-gray-50 font-serif text-gray-500 outline-none focus:border-amber-400 mt-1 cursor-pointer"
-            // On passe 'true' pour dire que c'est une spécialité
-            disabled={!canSpendPoint(nomComp, true)} 
-            onChange={(e) => { if(e.target.value) { handleAddSpecialiteUser(nomComp, e.target.value); e.target.value = ""; }}}
-          >
-            <option value="">+ Acheter spécialité</option>
-            {availableSpecs.filter(s => !userSpecs.includes(s) && s !== fairySpecFixe).map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        )}
-      </div>
+            {/* Grille profils */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+                {profils.map(profil => {
+                    const isMajeur = character.profils.majeur.nom === profil.nom;
+                    const isMineur = character.profils.mineur.nom === profil.nom;
+                    const stats = calculateProfilStats(profil.nom, isMajeur, isMineur);
+                    const headerColor = isMajeur ? 'text-amber-900' : isMineur ? 'text-blue-900' : 'text-gray-500';
+                    const borderColor = isMajeur ? 'border-amber-400' : isMineur ? 'border-blue-300' : 'border-gray-200';
+                    const bgColor = isMajeur ? 'bg-amber-50/50' : isMineur ? 'bg-blue-50/30' : 'bg-gray-50/50';
+
+                    return (
+                        <div key={profil.nom} className={`rounded-xl border-2 overflow-hidden ${borderColor} ${bgColor}`}>
+                            <div className={`px-4 py-2 border-b ${borderColor} bg-white/50 flex justify-between items-center`}>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xl">{profil.icon || '👤'}</span>
+                                    <div className="flex flex-col">
+                                        <span className={`font-serif font-bold ${headerColor}`}>{profil.nom}</span>
+                                        <div className="flex gap-1 text-[10px] font-bold uppercase tracking-wide">
+                                            {isMajeur && <span className="text-amber-600 bg-amber-100 px-1 rounded">Majeur (+2)</span>}
+                                            {isMineur && <span className="text-blue-600 bg-blue-100 px-1 rounded">Mineur (+1)</span>}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-right flex flex-col items-end">
+                                    <div className="text-xs text-gray-500 font-mono">
+                                        Rang {stats.rang} <span className="mx-1 text-gray-300">+</span> 
+                                        <span className={isMajeur ? 'text-amber-600' : isMineur ? 'text-blue-600' : 'text-gray-400'}>
+                                            {isMajeur ? '8' : isMineur ? '4' : '0'}
+                                        </span>
+                                    </div>
+                                    <div className="font-bold text-sm text-gray-800 bg-white px-2 rounded border border-gray-200 shadow-sm">
+                                        = {stats.totalPP} PP
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-3">
+                                {(competencesParProfil[profil.nom] || []).map(comp => renderCompRow(comp.nom))}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
     );
-  };
-
-  // --- LOGIQUE DE VALIDATION (Pour notification) ---
-  const alerts = [];
-
-  // 1. Vérification du Budget Général
-  if (pointsRestantsGeneral > 0) {
-    alerts.push(`Il vous reste ${pointsRestantsGeneral} point(s) libre(s) à dépenser.`);
-  } else if (pointsRestantsGeneral < 0) {
-    alerts.push(`Vous avez dépensé trop de points (${Math.abs(pointsRestantsGeneral)} en trop).`);
-  }
-
-  // 2. Vérification du Budget Esprit
-  if (pointsRestantsBonus > 0) {
-    alerts.push(`Il vous reste ${pointsRestantsBonus} point(s) de bonus d'Esprit (pour Érudit/Savant).`);
-  }
-
-  // 3. Vérification Spécialité Gratuite Conduite
-  const scoreConduiteTotal = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
-  const specsConduite = lib.choixSpecialiteUser?.['Conduite'] || [];
-  if (scoreConduiteTotal > 0 && specsConduite.length === 0) {
-    alerts.push("Vous avez droit à une spécialité gratuite en Conduite (Premier moyen de transport).");
-  }
-
-  // 4. Vérification des choix de Prédilection (Héritage)
-  const missingPredChoice = feeData?.competencesPredilection?.some((p, i) => 
-    (p.isChoix && !lib.choixPredilection?.[i]) || 
-    (p.isSpecialiteChoix && !lib.choixSpecialite?.[i])
-  );
-  if (missingPredChoice) {
-    alerts.push("Vous devez faire tous les choix d'Héritage Féérique (en haut de page).");
-  }
-
-  return (
-    <div className="space-y-6">
-      
-      {/* HEADER STICKY AVEC COMPTEURS DOUBLES */}
-      <div className="sticky top-0 z-10 bg-white p-4 rounded-xl border border-amber-200 shadow-md flex justify-between items-center gap-4">
-        
-        {/* Compteur Général */}
-        <div className="flex-1 text-center">
-          <div className="text-xs uppercase text-gray-500 font-bold tracking-wider mb-1">Points Libres</div>
-          <div className={`text-3xl font-serif font-bold ${pointsRestantsGeneral < 0 ? 'text-red-600' : 'text-amber-600'}`}>
-            {pointsRestantsGeneral} <span className="text-sm font-sans text-gray-400">/ 15</span>
-          </div>
-        </div>
-
-        {/* Compteur Bonus Esprit (affiché seulement si pertinent) */}
-        {POINTS_BONUS_ESPRIT_MAX > 0 && (
-          <div className="flex-1 text-center border-l border-gray-200">
-            <div className="text-xs uppercase text-blue-600 font-bold tracking-wider mb-1 flex items-center justify-center gap-1">
-              <Brain size={14}/> Bonus Esprit
-            </div>
-            <div className={`text-3xl font-serif font-bold ${pointsRestantsBonus < 0 ? 'text-red-600' : 'text-blue-600'}`}>
-              {pointsRestantsBonus} <span className="text-sm font-sans text-gray-400">/ {POINTS_BONUS_ESPRIT_MAX}</span>
-            </div>
-            <div className="text-[9px] text-blue-400 leading-tight">Pour Érudit & Savant</div>
-          </div>
-        )}
-      </div>
-
-      {/* Choix Héritage */}
-      {feeData?.competencesPredilection?.some(p => p.isChoix || p.isSpecialiteChoix) && (
-        <div className="bg-purple-50 p-4 rounded-xl border border-purple-200">
-          <h3 className="font-bold text-purple-900 mb-2 flex items-center gap-2"><Star size={16}/> Héritage Féérique : Choix requis</h3>
-          {feeData.competencesPredilection.map((p, i) => {
-            
-            // Cas 1 : Choix de la compétence (ex: Ange - Mêlée ou Tir)
-            if (p.isChoix) return (
-              <div key={i} className="mb-2">
-                <label className="text-sm text-purple-800 block mb-1">Prédilection au choix :</label>
-                <select 
-                  className="w-full p-2 border rounded font-serif shadow-sm"
-                  value={lib.choixPredilection?.[i] || ''}
-                  onChange={(e) => handleChoixChange(i, e.target.value, 'competence')}
-                >
-                  <option value="">-- Sélectionner --</option>
-                  {p.options.map(o => <option key={o} value={o}>{o}</option>)}
-                </select>
-              </div>
-            );
-
-            // Cas 2 : Choix de la spécialité (ex: Gargouille - Spiritisme ou Sciences occultes)
-            else if (p.isSpecialiteChoix) return (
-                <div key={i} className="mb-2">
-                  <label className="text-sm text-purple-800 block mb-1">
-                    Spécialité pour <strong>{p.nom}</strong> :
-                  </label>
-                  <select 
-                    className="w-full p-2 border rounded font-serif shadow-sm"
-                    value={lib.choixSpecialite?.[i] || ''}
-                    onChange={(e) => handleChoixChange(i, e.target.value, 'specialite')}
-                  >
-                    <option value="">-- Sélectionner --</option>
-                    {p.optionsSpecialite.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-            );
-            
-            return null;
-          })}
-        </div>
-      )}
-
-      {/* Grille Profils */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {profils.map(profil => {
-          const isMajeur = character.profils.majeur.nom === profil.nom;
-          const isMineur = character.profils.mineur.nom === profil.nom;
-          const stats = calculateProfilStats(profil.nom, isMajeur, isMineur);
-          
-          return (
-            <div key={profil.nom} className={`rounded-xl border overflow-hidden transition-all ${
-              isMajeur ? 'border-amber-400 bg-amber-50/50' : isMineur ? 'border-blue-300 bg-blue-50/30' : 'border-gray-200 bg-gray-50/50'
-            }`}>
-              {/* EN-TÊTE AVEC CALCUL PP */}
-              <div className="px-4 py-2 bg-white/80 border-b border-gray-100 flex justify-between items-center">
-                <div className={`font-bold flex items-center gap-2 ${isMajeur ? 'text-amber-900' : isMineur ? 'text-blue-900' : 'text-gray-500'}`}>
-                  {profil.icon} {profil.nom}
-                  {isMajeur && <span className="text-[10px] bg-amber-100 px-1 rounded border border-amber-200">Majeur (+2)</span>}
-                  {isMineur && <span className="text-[10px] bg-blue-100 px-1 rounded border border-blue-200">Mineur (+1)</span>}
-                </div>
-                <div className="text-[10px] font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded" title="Rang calculé + Bonus Profil = Points Personnage">
-                  Rang {stats.rang} + {stats.bonusFixe} = <strong>{stats.totalPP} PP</strong>
-                </div>
-              </div>
-
-              <div className="p-3">
-                {(competencesParProfil[profil.nom] || []).map(comp => renderCompRow(comp.nom))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* --- BLOC DE NOTIFICATION DE VALIDATION --- */}
-      {alerts.length > 0 ? (
-        <div className="sticky bottom-4 z-20 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-lg mx-auto max-w-2xl animate-pulse">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <ShieldCheck className="h-5 w-5 text-red-500" />
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Actions requises pour continuer :</h3>
-              <ul className="mt-2 list-disc list-inside text-sm text-red-700">
-                {alerts.map((alert, idx) => (
-                  <li key={idx}>{alert}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="sticky bottom-4 z-20 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-lg mx-auto max-w-2xl">
-          <div className="flex items-center">
-            <ShieldCheck className="h-5 w-5 text-green-500 mr-3" />
-            <span className="text-green-700 font-medium">Tout est en ordre ! Vous pouvez passer à l'étape suivante.</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
 }

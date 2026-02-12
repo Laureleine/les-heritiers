@@ -113,11 +113,19 @@ export default function StepCaracteristiques({ character, onCaracteristiquesChan
 
               {/* Contrôles */}
               <div className="flex items-center gap-3">
-                {/* Indicateur Min/Bonus */}
-                <div className="text-right mr-1">
-                  <div className="text-[9px] text-gray-400 uppercase font-bold tracking-widest">Min {min}</div>
-                  {investis > 0 && <div className="text-[9px] text-green-600 font-bold">+{investis} pts</div>}
-                </div>
+                {/* Indicateur Min/Bonus CORRIGÉ */}
+				<div className="flex flex-col items-end justify-center w-16 mr-2">
+					<span className="text-xs font-bold text-gray-400">
+						Min {min}
+					</span>
+					
+					{/* Le badge s'affiche proprement en dessous, sans casser la ligne */}
+					{investis > 0 && (
+						<span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full whitespace-nowrap animate-pulse mt-0.5">
+							+{investis} pts
+						</span>
+					)}
+				</div>
 
                 <div className="flex items-center bg-amber-50 rounded-lg border border-amber-200">
                   <button 

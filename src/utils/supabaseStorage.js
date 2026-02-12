@@ -32,29 +32,58 @@ const cleanupCharacterData = (char) => {
 };
 
 /**
- * Mappage Base de données -> Application.
- * Assure la structure des choix de prédilections [4].
+ * Mappage Universel : Gère les colonnes SQL (snake_case) ET les vieux JSON (camelCase).
  */
-const mapDatabaseToCharacter = (char) => ({
-  id: char.id,
-  nom: char.nom,
-  sexe: char.sexe,
-  typeFee: char.type_fee,
-  anciennete: char.anciennete,
-  caracteristiques: char.caracteristiques || {},
-  profils: char.profils || { majeur: { nom: '', trait: '' }, mineur: { nom: '', trait: '' } },
-  competencesLibres: {
-    rangs: char.competences_libres?.rangs || {},
-    choixPredilection: char.competences_libres?.choixPredilection || {},
-    choixSpecialite: char.competences_libres?.choixSpecialite || {}
-  },
-  competencesFutiles: char.competences_futiles || { rangs: {}, personnalisees: [] },
-  capaciteChoisie: char.capacite_choisie,
-  pouvoirs: char.pouvoirs || [],
-  is_public: char.is_public,
-  created_at: char.created_at,
-  updated_at: char.updated_at
-});
+const mapDatabaseToCharacter = (char) => {
+  // 1. Sécurité : On essaie de récupérer les données, qu'elles soient à la racine ou dans un champ 'data'
+  // Cela permet de récupérer les infos des personnages créés avec d'anciennes versions.
+  const source = { ...char.data, ...char };
+
+  // 2. Extraction permissive des blocs de compétences (snake_case OU camelCase)
+  const cLibres = source.competences_libres || source.competencesLibres || {};
+  const cFutiles = source.competences_futiles || source.competencesFutiles || {};
+
+  return {
+    id: source.id,
+	userId: source.user_id, // <--- AJOUT CRUCIAL : Permet d'identifier le créateur
+    nom: source.nom || 'Sans nom',
+    sexe: source.sexe || '',
+    
+    // Tente de lire type_fee (base) ou typeFee (vieux JSON)
+    typeFee: source.type_fee || source.typeFee || '', 
+    anciennete: source.anciennete || '',
+
+    caracteristiques: source.caracteristiques || {},
+
+    profils: source.profils || { 
+        majeur: { nom: '', trait: '', competences: [] }, 
+        mineur: { nom: '', trait: '', competences: [] } 
+    },
+
+    competencesLibres: {
+        rangs: cLibres.rangs || {},
+        choixPredilection: cLibres.choixPredilection || {},
+        choixSpecialite: cLibres.choixSpecialite || {},
+        // C'est souvent ici que ça casse pour les vieux persos : on met {} par défaut
+        choixSpecialiteUser: cLibres.choixSpecialiteUser || {} 
+    },
+
+    competencesFutiles: {
+        rangs: cFutiles.rangs || {},
+        choixPredilection: cFutiles.choixPredilection || {},
+        personnalisees: cFutiles.personnalisees || []
+    },
+
+    capaciteChoisie: source.capacite_choisie || source.capaciteChoisie || '',
+    pouvoirs: source.pouvoirs || [],
+    
+    isPublic: source.is_public || source.isPublic || false,
+    
+    // Dates : Gestion souple
+    created_at: source.created_at || new Date().toISOString(),
+    updated_at: source.updated_at || new Date().toISOString()
+  };
+};
 
 // ============================================================================
 // GESTION DU MODE PWA (LOCALSTORAGE)
@@ -215,3 +244,4 @@ export const toggleCharacterVisibility = async (characterId, isPublic) => {
   userCharactersCache = null;
   return mapDatabaseToCharacter(data);
 };
+

@@ -94,81 +94,40 @@ export const loadProfils = async () => {
 };
 
 export const loadCompetences = async () => {
-  try {
-    const { data, error } = await supabase
-      .from('competences')
-      .select(`
-        id,
-        name,
-        description,
-        has_specialites,
-        profil:profil_id (id, name_masculine),
-        specialites_ref:specialites (id, nom, is_official) 
-      `)
-      .order('name');
+  const { data, error } = await supabase
+    .from('competences')
+    .select(`id, name, description, has_specialites, specialites, profil:profil_id (id, name_masculine)`)
+    .order('name');
+  
+  if (error) return { competences: {}, competencesParProfil: {} };
 
-    if (error) throw error;
+  const competences = {};
+  const competencesParProfil = {};
 
-    const competences = {};
-    const competencesParProfil = {};
+  data.forEach(comp => {
+    const competence = {
+      id: comp.id, nom: comp.name, description: comp.description,
+      hasSpecialites: comp.has_specialites, specialites: comp.specialites || [],
+      profil: comp.profil?.name_masculine
+    };
+    competences[comp.name] = competence;
+    const pName = comp.profil?.name_masculine;
+    if (pName) {
+      if (!competencesParProfil[pName]) competencesParProfil[pName] = [];
+      competencesParProfil[pName].push(competence);
+    }
+  });
 
-    data.forEach(comp => {
-      // Transformation des données pour l'app
-      // On trie : officielles d'abord, puis alphabétique
-      const rawSpecs = comp.specialites_ref || [];
-      const formattedSpecs = rawSpecs.sort((a, b) => {
-          if (a.is_official !== b.is_official) return a.is_official ? -1 : 1;
-          return a.nom.localeCompare(b.nom);
-      });
-
-      const competence = {
-        id: comp.id,
-        nom: comp.name,
-        description: comp.description,
-        hasSpecialites: comp.has_specialites,
-        // On garde la structure attendue par l'UI mais avec des objets
-        specialites: formattedSpecs, 
-        profil: comp.profil?.name_masculine
-      };
-
-      competences[comp.name] = competence;
-
-      const profilName = comp.profil?.name_masculine;
-      if (profilName) {
-        if (!competencesParProfil[profilName]) competencesParProfil[profilName] = [];
-        competencesParProfil[profilName].push(competence);
-      }
-    });
-
-    return { competences, competencesParProfil };
-
-  } catch (error) {
-    console.error('Erreur chargement compétences:', error);
-    return { competences: {}, competencesParProfil: {} };
-  }
+  return { competences, competencesParProfil };
 };
 
 // ============================================================================
 // TYPES DE FÉES (RÉSOLUTION ET CHOIX MULTIPLES)
 // ============================================================================
+
+/*
 export const loadFairyTypes = async () => {
   try {
-    // --- ÉTAPE PRÉLIMINAIRE : Charger le dictionnaire des compétences (ID -> Nom) ---
-    // Indispensable pour traduire les choice_ids en noms affichables
-    const { data: allCompsRef, error: compsRefError } = await supabase
-      .from('competences')
-      .select('id, name');
-    
-    if (compsRefError) throw compsRefError;
-
-    // Création d'un Map pour un accès rapide :  "uuid" => "Nom Compétence"
-    const compNameMap = {};
-    allCompsRef.forEach(c => {
-        compNameMap[c.id] = c.name;
-    });
-
-    // --------------------------------------------------------------------------------
-
     // 1. Charger les types de fées
     const { data, error } = await supabase
       .from('fairy_types')
@@ -177,108 +136,80 @@ export const loadFairyTypes = async () => {
 
     if (error) throw error;
 
-    // 2. Charger les compétences de prédilection (UTILES)
-    // CORRECTION : On récupère choice_ids (tableau d'UUIDs)
+    // 2. Charger TOUTES les compétences de prédilection (UTILES)
+    // MODIFICATION CRITIQUE : On récupère LES DEUX types de choix (Compétence ET Spécialité)
     const { data: allCompPred, error: compPredError } = await supabase
       .from('fairy_competences_predilection')
       .select(`
-        fairy_type_id,
+        fairy_type_id, 
         specialite,
-        is_choice,
-        is_specialite_choice,
-        choice_ids,      
-        choice_options,  
-        competence:competences ( name ) 
+        is_specialite_choix,
+        specialite_options,
+        is_choix,
+        choix_options,
+        competence:competence_id ( name )
       `);
 
-    if (compPredError) throw compPredError;
-
-    // 3. Charger les compétences de prédilection (FUTILES)
-    const { data: allCompFutPred, error: compFutPredError } = await supabase
+    // 3. Charger les compétences futiles (Code inchangé)
+    const { data: allCompFutPred } = await supabase
       .from('fairy_competences_futiles_predilection')
       .select(`
         fairy_type_id,
         is_choice,
         choice_options,
-        competence_futile:competence_futile_id ( name )
+        competence_futile:competence_futile_id (name)
       `);
 
-    if (compFutPredError) throw compFutPredError;
-
-    // --- Organisation des données ---
-
+    // 4. Organisation des données
     const compPredByFairy = {};
     const compFutPredByFairy = {};
 
-    // A. Traitement des Compétences UTILES
+    // Traitement des Compétences UTILES
     if (allCompPred) {
       allCompPred.forEach(cp => {
         if (!compPredByFairy[cp.fairy_type_id]) {
           compPredByFairy[cp.fairy_type_id] = [];
         }
-
-        // CAS A : Choix de Compétence (ex: Orc -> Mêlée OU Tir)
-        if (cp.is_choice) {
-            // CORRECTION MAJEURE : Traduction des IDs en Noms
-            let optionsNoms = [];
-            
-            if (cp.choice_ids && Array.isArray(cp.choice_ids)) {
-                // On mappe les IDs vers les noms grâce au dictionnaire chargé au début
-                optionsNoms = cp.choice_ids
-                    .map(uuid => compNameMap[uuid])
-                    .filter(Boolean); // On retire les éventuels nulls si ID non trouvé
-            } 
-            // Fallback : si choice_ids vide, on regarde choice_options (compatibilité)
-            else if (cp.choice_options && Array.isArray(cp.choice_options)) {
-                optionsNoms = cp.choice_options;
-            }
-
-            compPredByFairy[cp.fairy_type_id].push({
+        
+        // Cas A : C'est un CHOIX DE COMPÉTENCE (Ex: Ange "Mêlée ou Tir")
+        // Il n'y a pas de competence_id fixe, mais des options.
+        if (cp.is_choix) {
+             compPredByFairy[cp.fairy_type_id].push({
                 isChoix: true,
-                options: optionsNoms // Le front recevra bien ["Mêlée", "Tir"]
-            });
+                options: cp.choix_options, // ex: ['Mêlée', 'Tir']
+                nom: 'Choix' // Placeholder
+             });
         } 
-        // CAS B : Compétence Fixe (ex: Gargouille -> Art de la guerre)
+        // Cas B : C'est une compétence FIXE (Ex: Gargouille "Occultisme")
+        // Elle peut avoir une spécialité fixe OU un choix de spécialité
         else {
-            const nomCompetence = cp.competence?.name;
+            const nomCompetence = cp.competence?.name || 'Inconnue';
             
-            if (nomCompetence) {
-                // Pour les spécialités, on garde choice_options (souvent du texte simple)
-                // Sauf si vous utilisez aussi des IDs pour les spécialités, mais c'est rare ici
-                const specOptionsArray = Array.isArray(cp.choice_options) ? cp.choice_options : [];
-
-                compPredByFairy[cp.fairy_type_id].push({
-                    nom: nomCompetence,
-                    specialite: cp.specialite,
-                    isSpecialiteChoix: cp.is_specialite_choice,
-                    options: specOptionsArray 
-                });
-            }
+            compPredByFairy[cp.fairy_type_id].push({
+                nom: nomCompetence,
+                specialite: cp.specialite,
+                // Gestion du choix de spécialité (Gargouille)
+                isSpecialiteChoix: cp.is_specialite_choix,
+                optionsSpecialite: cp.specialite_options
+            });
         }
       });
     }
 
-    // B. Traitement des Compétences FUTILES
+    // Traitement des Compétences FUTILES (Code inchangé)
     if (allCompFutPred) {
       allCompFutPred.forEach(cfp => {
-        if (!compFutPredByFairy[cfp.fairy_type_id]) {
-          compFutPredByFairy[cfp.fairy_type_id] = [];
-        }
+        if (!compFutPredByFairy[cfp.fairy_type_id]) compFutPredByFairy[cfp.fairy_type_id] = [];
+        
         if (cfp.is_choice) {
-          compFutPredByFairy[cfp.fairy_type_id].push({
-            isChoix: true,
-            options: cfp.choice_options || []
-          });
+          compFutPredByFairy[cfp.fairy_type_id].push({ isChoix: true, options: cfp.choice_options });
         } else {
-          const nomCompFutile = cfp.competence_futile?.name;
-          if (nomCompFutile) {
-             compFutPredByFairy[cfp.fairy_type_id].push(nomCompFutile);
-          }
+          compFutPredByFairy[cfp.fairy_type_id].push(cfp.competence_futile?.name);
         }
       });
     }
 
-    // --- Construction de l'objet final (Reste inchangé) ---    // 6. Formatage final de l'objet fairyData
+    // 5. Formatage final
     const fairyData = {};
     const fairyTypesByAge = { traditionnelles: [], modernes: [] };
 
@@ -287,8 +218,144 @@ export const loadFairyTypes = async () => {
         id: fairy.id,
         anciennete: fairy.era,
         description: fairy.description,
-        avantages: fairy.avantages || [],       // Charge le tableau ou vide par défaut
-        desavantages: fairy.desavantages || [], // Charge le tableau ou vide par défaut
+        caracteristiques: {
+          agilite: { min: fairy.agilite_min, max: fairy.agilite_max },
+          constitution: { min: fairy.constitution_min, max: fairy.constitution_max },
+          force: { min: fairy.force_min, max: fairy.force_max },
+          precision: { min: fairy.precision_min, max: fairy.precision_max },
+          esprit: { min: fairy.esprit_min, max: fairy.esprit_max },
+          perception: { min: fairy.perception_min, max: fairy.perception_max },
+          prestance: { min: fairy.prestance_min, max: fairy.prestance_max },
+          sangFroid: { min: fairy.sang_froid_min, max: fairy.sang_froid_max }
+        },
+        competencesPredilection: compPredByFairy[fairy.id] || [],
+        competencesFutilesPredilection: compFutPredByFairy[fairy.id] || [],
+        capacites: { fixe1: null, fixe2: null, choix: [] },
+        pouvoirs: []
+      };
+
+      fairyData[fairy.name] = fairyInfo;
+      if (fairy.era === 'traditionnelle') fairyTypesByAge.traditionnelles.push(fairy.name);
+      else fairyTypesByAge.modernes.push(fairy.name);
+    });
+
+    return { fairyData, fairyTypes: [...fairyTypesByAge.traditionnelles, ...fairyTypesByAge.modernes], fairyTypesByAge };
+
+  } catch (error) {
+    console.error('Erreur chargement types de fées:', error);
+    return { fairyData: {}, fairyTypes: [], fairyTypesByAge: { traditionnelles: [], modernes: [] } };
+  }
+};
+*/
+
+export const loadFairyTypes = async () => {
+  try {
+    // 1. Charger les types de fées
+    const { data, error } = await supabase
+      .from('fairy_types')
+      .select('*')
+      .order('name');
+
+    if (error) throw error;
+
+    // 2. Charger une "Map" de référence (ID -> Nom) pour toutes les compétences
+    // C'est indispensable pour traduire les choice_ids de l'Ange
+    const { data: compList } = await supabase
+      .from('competences')
+      .select('id, name');
+    
+    const compMap = {};
+    if (compList) {
+        compList.forEach(c => compMap[c.id] = c.name);
+    }
+
+    // 3. Charger TOUTES les compétences de prédilection (UTILES)
+    // Notez bien les noms de colonnes qui correspondent à votre schéma SQL
+    const { data: allCompPred, error: compPredError } = await supabase
+      .from('fairy_competences_predilection')
+      .select(`
+        fairy_type_id, 
+        competence_id,
+        specialite,
+        is_choice,            
+        choice_ids,       
+        is_specialite_choix, 
+        specialite_options,  
+        competence:competence_id ( name )
+      `);
+
+    // 4. Charger les compétences futiles
+    const { data: allCompFutPred } = await supabase
+      .from('fairy_competences_futiles_predilection')
+      .select(`
+        fairy_type_id,
+        is_choice,
+        choice_options,
+        competence_futile:competence_futile_id (name)
+      `);
+
+    // 5. Organisation des données
+    const compPredByFairy = {};
+    const compFutPredByFairy = {};
+
+    // --- TRAITEMENT DES COMPÉTENCES UTILES ---
+    if (allCompPred) {
+      allCompPred.forEach(cp => {
+        if (!compPredByFairy[cp.fairy_type_id]) {
+          compPredByFairy[cp.fairy_type_id] = [];
+        }
+        
+        // CAS A : Choix de Compétence (ex: Ange -> Mêlée ou Tir)
+        // La BDD donne un tableau d'UUIDs (choice_ids). On les traduit en noms via compMap.
+        if (cp.is_choice && cp.choice_ids && cp.choice_ids.length > 0) {
+             const optionsNoms = cp.choice_ids.map(id => compMap[id]).filter(Boolean);
+             
+             compPredByFairy[cp.fairy_type_id].push({
+                isChoix: true,
+                options: optionsNoms, // On envoie ['Mêlée', 'Tir'] au front
+                nom: 'Choix' 
+             });
+        } 
+        // CAS B : Compétence Fixe (ex: Gargouille, Ondine)
+        // Peut avoir un choix de spécialité
+        else {
+            const nomCompetence = cp.competence?.name;
+            
+            if (nomCompetence) {
+                compPredByFairy[cp.fairy_type_id].push({
+                    nom: nomCompetence,
+                    specialite: cp.specialite,
+                    // Gestion du Choix de SPÉCIALITÉ (Gargouille)
+                    isSpecialiteChoix: cp.is_specialite_choix,
+                    optionsSpecialite: cp.specialite_options || []
+                });
+            }
+        }
+      });
+    }
+
+    // --- Traitement des Compétences FUTILES ---
+    if (allCompFutPred) {
+      allCompFutPred.forEach(cfp => {
+        if (!compFutPredByFairy[cfp.fairy_type_id]) compFutPredByFairy[cfp.fairy_type_id] = [];
+        
+        if (cfp.is_choice) {
+          compFutPredByFairy[cfp.fairy_type_id].push({ isChoix: true, options: cfp.choice_options });
+        } else {
+          compFutPredByFairy[cfp.fairy_type_id].push(cfp.competence_futile?.name);
+        }
+      });
+    }
+
+    // 6. Formatage final de l'objet fairyData
+    const fairyData = {};
+    const fairyTypesByAge = { traditionnelles: [], modernes: [] };
+
+    data.forEach(fairy => {
+      const fairyInfo = {
+        id: fairy.id,
+        anciennete: fairy.era,
+        description: fairy.description,
         caracteristiques: {
           agilite: { min: fairy.agilite_min, max: fairy.agilite_max },
           constitution: { min: fairy.constitution_min, max: fairy.constitution_max },
@@ -363,42 +430,4 @@ export const loadAllGameData = async (forceRefresh = false) => {
 
 export const invalidateAllCaches = () => {
   cachedProfils = null; cachedCompetences = null; cachedFairyTypes = null; cachedCompetencesFutiles = null;
-};
-
-/**
- * Ajoute une spécialité publique à une compétence existante
- * @param {string} competenceId - UUID de la compétence
- * @param {string} newSpeciality - Nom de la nouvelle spécialité
- * @returns {Promise<Array>} La nouvelle liste des spécialités
- */
-export const addGlobalSpeciality = async (competenceId, newSpeciality) => {
-  try {
-    // Insertion dans la nouvelle table
-    const { data, error } = await supabase
-      .from('specialites')
-      .insert([{
-        competence_id: competenceId,
-        nom: newSpeciality,
-        is_official: false // C'est une création communautaire
-      }])
-      .select()
-      .single();
-
-    if (error) {
-        // Gestion erreur doublon (code 23505 en postgre)
-        if (error.code === '23505') throw new Error("Cette spécialité existe déjà.");
-        throw error;
-    }
-
-    // On retourne l'objet formaté pour mise à jour locale immédiate
-    return {
-        id: data.id,
-        nom: data.nom,
-        is_official: data.is_official
-    };
-
-  } catch (error) {
-    console.error("Erreur ajout spécialité:", error);
-    throw error;
-  }
 };
