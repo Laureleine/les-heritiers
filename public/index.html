@@ -2,14 +2,26 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
+    
+    <!-- Configuration Mobile indispensable -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#d97706" />
+    
+    <!-- Icône dans l'onglet -->
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Les Héritiers - Création de Personnage" />
+    
+    <!-- Lien vers le Manifeste (pour l'installation PWA) -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Titre et Description -->
     <title>Les Héritiers</title>
+    <meta name="description" content="Générateur de personnages pour le jeu de rôle Les Héritiers" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
   </head>
   <body>
     <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
+    <!-- C'est ici que React va injecter votre App.js -->
     <div id="root"></div>
   </body>
 </html>

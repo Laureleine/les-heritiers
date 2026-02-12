@@ -26,7 +26,10 @@ import { saveCharacterToSupabase } from './utils/supabaseStorage'; // Corrigé :
 import { exportToPDF } from './utils/utils';
 
 // Icônes
-import { List, Save, FileText, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { 
+    List, Save, FileText, BookOpen, ChevronLeft, ChevronRight, // Existants
+    Home, PlusCircle, User, Settings // Nouveaux pour le mobile
+} from 'lucide-react';
 
 function App() {
   // --- CONFIGURATION ---
@@ -207,33 +210,38 @@ function App() {
   if (loading) return <div className="min-h-screen flex items-center justify-center font-serif text-amber-900">Chargement...</div>;
   if (!session) return <Auth />;
 
-  if (view === 'list') {
-    return (
-      <CharacterList 
-        onSelectCharacter={(c, readOnly = false) => {
-          setCharacter(c);
-          setIsReadOnly(readOnly);
-          setStep(1);
-          setView('creator');
-        }}
-        onNewCharacter={() => {
-          setCharacter(initialCharacterState);
-          setIsReadOnly(false);
-          setStep(1);
-          setView('creator');
-        }}
-        onSignOut={() => supabase.auth.signOut()}
-      />
-    );
-  }
-
-  if (view === 'changelog') {
-      return <Changelog onBack={() => setView('list')} />;
-  }
-
   return (
-    <div className="min-h-screen bg-stone-50 pb-20">
-      
+    <div className="min-h-screen bg-stone-50 text-gray-800 font-sans pb-24 md:pb-0 transition-colors duration-500">
+            {/* 1. VUE LISTE (Intégrée) */}
+            {view === 'list' && (
+                <CharacterList 
+                    onSelectCharacter={(c, readOnly = false) => {
+                        setCharacter(c);
+                        setIsReadOnly(readOnly);
+                        setStep(1);
+                        setView('creator');
+                    }}
+                    onNewCharacter={() => {
+                        setCharacter(initialCharacterState);
+                        setIsReadOnly(false);
+                        setStep(1);
+                        setView('creator');
+                    }}
+                    onSignOut={() => supabase.auth.signOut()}
+                />
+            )}
+
+            {/* 2. VUE CHANGELOG (Intégrée) */}
+            {view === 'changelog' && (
+                <div className="p-4 pt-8 max-w-3xl mx-auto">
+                    <Changelog onBack={() => setView('list')} />
+                </div>
+            )}
+
+            {/* 3. VUE CRÉATEUR (Affichée seulement si view === 'creator') */}
+            {view === 'creator' && (
+                <>
+      {/* ICI COMMENCE VOTRE ANCIEN CODE (Header, Titre, etc.) */}    
       {/* 1. CONTENEUR PRINCIPAL CENTRÉ */}
       <div className="max-w-4xl mx-auto p-4 md:p-8">
 
@@ -259,9 +267,8 @@ function App() {
                 </div>
             </div>
 
-            {/* B. BARRE D'ACTIONS */}
-            <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                
+            {/* B. BARRE D'ACTIONS (Version Desktop uniquement) */}
+            <div className="hidden md:flex flex-wrap justify-between items-center gap-4 mb-8">
                 <div className="flex gap-2">
                     <button 
                         onClick={() => setView('list')}
@@ -435,9 +442,89 @@ function App() {
 				</button>
 			)}
 		</div>
-      </div> 
-      {/* FIN DU CONTENEUR PRINCIPAL */}
+      </div>
+	  
+                    {/* Fin des boutons de navigation du créateur */}
+                </>
+            )} {/* <--- AJOUTEZ CECI POUR FERMER LE BLOC {view === 'creator' && ( */}
 
+            {/* === BARRE DE NAVIGATION MOBILE (Bottom Bar) === */}
+
+		<div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-amber-200 px-2 py-1 flex justify-around items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] pb-safe">
+			
+			{/* 1. Accueil / Liste */}
+			<button 
+				onClick={() => setView('list')}
+				className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all ${
+					view === 'list' ? 'text-amber-600' : 'text-gray-400 hover:text-amber-500'
+				}`}
+			>
+				<Home size={24} strokeWidth={view === 'list' ? 2.5 : 2} />
+				<span className="text-[10px] font-bold mt-1">Accueil</span>
+			</button>
+
+			{/* 2. Édition / Nouveau (Active l'étape en cours) */}
+			<button 
+				onClick={() => {
+					// Si on n'est pas en création, on initialise un nouveau perso (ou on reprend le dernier)
+					if (view !== 'creator') {
+						if (!character.id) {
+							// Pas de perso en cours -> Nouveau
+							setCharacter(initialCharacterState);
+							setIsReadOnly(false);
+							setStep(1);
+						}
+						setView('creator');
+					}
+				}}
+				className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all ${
+					view === 'creator' ? 'text-amber-600' : 'text-gray-400 hover:text-amber-500'
+				}`}
+			>
+				<PlusCircle size={24} strokeWidth={view === 'creator' ? 2.5 : 2} />
+				<span className="text-[10px] font-bold mt-1">
+					{character.id ? 'Édition' : 'Nouveau'}
+				</span>
+			</button>
+
+			{/* 3. Sauvegarder (Bouton d'action central) */}
+			{view === 'creator' && !isReadOnly && (
+				<button 
+					onClick={handleSave}
+					className="flex flex-col items-center justify-center p-2 -mt-6"
+				>
+					<div className="bg-amber-600 text-white p-3 rounded-full shadow-lg border-4 border-stone-50 hover:bg-amber-700 hover:scale-105 transition-all">
+						<Save size={24} />
+					</div>
+					<span className="text-[10px] font-bold mt-1 text-amber-600">Sauver</span>
+				</button>
+			)}
+
+			{/* 4. Changements / Infos */}
+			<button 
+				onClick={() => setView('changelog')}
+				className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all ${
+					view === 'changelog' ? 'text-purple-600' : 'text-gray-400 hover:text-purple-500'
+				}`}
+			>
+				<FileText size={24} strokeWidth={view === 'changelog' ? 2.5 : 2} />
+				<span className="text-[10px] font-bold mt-1">Infos</span>
+			</button>
+
+			{/* 5. Compte (Déconnexion ou paramètres) */}
+			<button 
+				onClick={() => {
+					// Logique simple pour l'instant : toggle ou alert
+					if (window.confirm("Se déconnecter ?")) {
+						supabase.auth.signOut();
+					}
+				}}
+				className="flex flex-col items-center justify-center p-2 rounded-lg text-gray-400 hover:text-red-500 transition-all"
+			>
+				<User size={24} />
+				<span className="text-[10px] font-bold mt-1">Compte</span>
+			</button>
+		</div>
     </div>
   );
 }
