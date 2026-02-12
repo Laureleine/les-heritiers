@@ -432,8 +432,8 @@ function App() {
 
 				{!isReadOnly && (
 				<button
-					onClick={() => {
-						if (step === LAST_STEP) { handleSave(); setView('list'); }
+					onClick={async () => {
+						if (step === LAST_STEP) { await handleSave(); setView('list'); }
 						else { setStep(step + 1); window.scrollTo(0, 0); }
 					}}
 					className="flex items-center space-x-2 px-6 py-3 rounded-lg font-serif transition-all bg-amber-600 text-white hover:bg-amber-700">
