@@ -214,6 +214,7 @@ export const saveCharacterToSupabase = async (character) => {
         const finalCache = getOfflineMirror().filter(c => c.id !== idTemp && c.id !== savedData.id);
         updateOfflineMirror([mapDatabaseToCharacter(savedData), ...finalCache]);
 
+        userCharactersCache = null; 
         return mapDatabaseToCharacter(savedData);
 
     } catch (error) {
