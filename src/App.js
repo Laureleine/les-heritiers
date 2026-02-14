@@ -9,6 +9,7 @@ import { getFairyAge } from './data/dataHelpers';
 import { APP_VERSION, BUILD_DATE } from './version';
 
 // Imports des composants (Chemins corrigés vers ./components/)
+import AccountSettings from './components/AccountSettings';
 import Step1 from './components/Step1';
 import StepCaracteristiques from './components/StepCaracteristiques';
 import StepProfils from './components/StepProfils';
@@ -25,16 +26,21 @@ import Auth from './components/Auth';
 import { saveCharacterToSupabase } from './utils/supabaseStorage'; // Corrigé : utilise saveCharacterToSupabase
 import { exportToPDF } from './utils/utils';
 
+// Hooks
+import { useAutoUpdate } from './hooks/useAutoUpdate'; 
+
 // Icônes
 import { 
     List, Save, FileText, BookOpen, ChevronLeft, ChevronRight, // Existants
-    Home, PlusCircle, User, Settings // Nouveaux pour le mobile
+    Home, PlusCircle, User, Settings, RefreshCw // Nouveaux pour le mobile
 } from 'lucide-react';
 
 function App() {
   // --- CONFIGURATION ---
   const LAST_STEP = 5; // Variable qui détermine la fin du formulaire (Mettre 8 quand tout sera codé)
+  const {updateAvailable, remoteVersion, applyUpdate } = useAutoUpdate();
   const [session, setSession] = useState(null);
+  const [userPseudo, setUserPseudo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [gameDataLoading, setGameDataLoading] = useState(true);
   const [view, setView] = useState('list'); // 'list', 'creator', 'changelog'
@@ -53,10 +59,12 @@ function App() {
   });
 
   const initialCharacterState = {
-    id: null,
-    nom: '',
-    sexe: '',
-    typeFee: '',
+	id: null,
+	nom: '', // Deviendra "Nom Humain"
+	nomFeerique: '', // NOUVEAU
+	genreHumain: '', // NOUVEAU (Masculin, Féminin, Androgyne)
+	sexe: '', // Reste le "Sexe Féérique" (biologique) pour les stats/noms
+	typeFee: '',
     anciennete: null,
     caracteristiques: {},
     profils: {
@@ -99,14 +107,31 @@ function App() {
 
   // --- 2. Gestion Session ---
   useEffect(() => {
+	const fetchProfile = async (userId) => {
+		try {
+			const { data } = await supabase
+				.from('profiles')
+				.select('username')
+				.eq('id', userId)
+				.single();
+			
+			if (data) setUserPseudo(data.username);
+		} catch (error) {
+			console.error("Erreur lecture profil:", error);
+		}
+	};
+	
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session?.user) fetchProfile(session.user.id);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+	const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+		setSession(session);
+		if (session?.user) fetchProfile(session.user.id);
+		else setUserPseudo(null);
+	});
 
     return () => subscription.unsubscribe();
   }, []);
@@ -143,6 +168,8 @@ function App() {
   // --- 4. Handlers Principaux ---
   const handleNomChange = (n) => !isReadOnly && setCharacter({ ...character, nom: n });
   const handleSexeChange = (s) => !isReadOnly && setCharacter({ ...character, sexe: s });
+  const handleNomFeeriqueChange = (n) => !isReadOnly && setCharacter({ ...character, nomFeerique: n });
+  const handleGenreHumainChange = (g) => !isReadOnly && setCharacter({ ...character, genreHumain: g });
   
   const handleTypeFeeChange = (t) => {
     if (isReadOnly) return;
@@ -212,7 +239,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-stone-50 text-gray-800 font-sans pb-24 md:pb-0 transition-colors duration-500">
-            {/* 1. VUE LISTE (Intégrée) */}
+            
+			{/* 1. VUE LISTE (Intégrée) */}
             {view === 'list' && (
                 <CharacterList 
                     onSelectCharacter={(c, readOnly = false) => {
@@ -222,12 +250,20 @@ function App() {
                         setView('creator');
                     }}
                     onNewCharacter={() => {
+                        // LE VERROU DE SÉCURITÉ
+                        if (!userPseudo) {
+                            alert("⚠️ Vous devez définir un Nom d'Utilisateur (Pseudo) avant de créer un personnage.");
+                            setView('account'); // On le redirige vers le compte
+                            return;
+                        }						
                         setCharacter(initialCharacterState);
                         setIsReadOnly(false);
                         setStep(1);
                         setView('creator');
                     }}
+                    onOpenAccount={() => setView('account')} 
                     onSignOut={() => supabase.auth.signOut()}
+                    profils={gameData.profils}
                 />
             )}
 
@@ -241,9 +277,50 @@ function App() {
             {/* 3. VUE CRÉATEUR (Affichée seulement si view === 'creator') */}
             {view === 'creator' && (
                 <>
-      {/* ICI COMMENCE VOTRE ANCIEN CODE (Header, Titre, etc.) */}    
-      {/* 1. CONTENEUR PRINCIPAL CENTRÉ */}
-      <div className="max-w-4xl mx-auto p-4 md:p-8">
+	  {/* ICI COMMENCE VOTRE ANCIEN CODE (Header, Titre, etc.) */}    
+
+	  {/* 1. CONTENEUR PRINCIPAL CENTRÉ */}
+	  <div className="max-w-4xl mx-auto p-4 md:p-8">
+
+            {/* --- AJOUT 4 : LE BANDEAU DE MISE À JOUR --- */}
+            {updateAvailable && (
+                <div className="fixed top-0 left-0 w-full z-50 bg-blue-600 text-white p-3 shadow-lg flex justify-between items-center px-4 animate-bounce-in">
+                    <div className="flex items-center gap-2">
+                        <RefreshCw className="animate-spin-slow" size={20} />
+                        <span className="font-bold">Mise à jour disponible (v{remoteVersion})</span>
+                        <span className="hidden sm:inline text-blue-100 text-sm">- Une nouvelle version est prête.</span>
+                    </div>
+                    <button 
+                        onClick={applyUpdate}
+                        className="bg-white text-blue-600 px-4 py-1 rounded-full font-bold text-sm hover:bg-blue-50 transition-colors shadow-sm"
+                    >
+                        Mettre à jour maintenant
+                    </button>
+                </div>
+            )}
+
+            {/* 4. VUE MON COMPTE */}
+            {view === 'account' && (
+                <div className="p-4 pt-8 max-w-lg mx-auto">
+                    <div className="bg-white p-6 rounded-xl shadow-lg border border-stone-200">
+                        <h2 className="text-2xl font-serif font-bold text-amber-900 mb-6 flex items-center gap-2">
+                            <User /> Mon Profil
+                        </h2>
+                        
+                        {/* On passe une fonction pour mettre à jour le pseudo dans App.js après sauvegarde */}
+                        <AccountSettings 
+                            key={session.user.id} 
+                            session={session} 
+                            onProfileUpdated={(newPseudo) => {
+                                setUserPseudo(newPseudo); // Met à jour l'état global
+                                setView('list'); // Revient à la liste
+                            }}
+                            onCancel={() => setView('list')}
+                        />
+                    </div>
+                </div>
+            )}
+            {/* ------------------------------------------- */}
 
             {/* Header v3.7.2 - Centrage Parfait via Grille 3 colonnes */}
             <div className="mb-8 border-b border-amber-200/50 pb-2">
@@ -350,9 +427,11 @@ function App() {
             <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-amber-100 min-h-[400px] animate-fade-in">
                 {step === 1 && (
 					<Step1 
-						character={character} 
-						onNomChange={handleNomChange} 
-						onSexeChange={handleSexeChange} 
+						character={character}
+						onNomChange={handleNomChange}
+						onNomFeeriqueChange={handleNomFeeriqueChange} // NOUVEAU
+						onGenreHumainChange={handleGenreHumainChange} // NOUVEAU
+						onSexeChange={handleSexeChange}
 						onTypeFeeChange={handleTypeFeeChange}
 						fairyTypes={gameData.fairyTypes}
 						fairyTypesByAge={gameData.fairyTypesByAge}

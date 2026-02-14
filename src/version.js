@@ -1,7 +1,8 @@
 // src/version.js
+import metadata from './metadata.json'; 
 
-export const APP_VERSION = '5.1.0';
-export const BUILD_DATE = '8 Février 2026';
+export const APP_VERSION = metadata.version;
+export const BUILD_DATE = metadata.buildDate;
 
 export const VERSION_HISTORY = [
     {
