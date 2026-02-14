@@ -3,7 +3,7 @@
 // Design : Harmonisation complète avec "Ok.png" (Titre centré, boutons styled, cartes épurées)
 
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe } from 'lucide-react';
+import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
 import { importCharacter } from '../utils/characterStorage'; // Assurez-vous d'avoir ce fichier ou retirez l'import si non utilisé
@@ -12,7 +12,7 @@ import { APP_VERSION, BUILD_DATE } from '../version';
 
 const ADMIN_EMAIL = 'amaranthe@free.fr';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAdmin, onOpenAccount }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAdmin, onOpenAccount, profils = [] }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
@@ -23,6 +23,11 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const getProfilIcon = (nom) => {
+	const p = profils.find(pr => pr.nom === nom);
+	return p?.icon || '👤';
+  };
+	
   useEffect(() => {
     loadCharacters();
   }, []);
@@ -91,97 +96,114 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   };
 
   // Rendu d'une carte personnage
-  const renderCharacterCard = (char, isMyCharacter = true) => (
-    <div key={char.id} className="bg-white rounded-xl shadow-sm border-2 border-amber-100 hover:border-amber-300 transition-all p-5 flex flex-col justify-between h-full group">
-      
-      {/* En-tête de la carte */}
-      <div className="mb-4">
-        <div className="flex justify-between items-start mb-1">
-            <h3 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
-                {char.nom || 'Sans nom'}
-            </h3>
-            {char.is_public && (
-                <Globe size={16} className="text-blue-400 flex-shrink-0 ml-2" title="Public" />
-            )}
-        </div>
-        <div className="text-sm text-amber-700 font-serif italic mb-2">
-            {char.typeFee || 'Inconnu'} • {char.sexe || '?'}
-        </div>
-        
-        {/* Résumé rapide */}
-        <div className="text-xs text-gray-500 space-y-1 bg-stone-50 p-2 rounded border border-stone-100">
-            <div className="flex justify-between">
-                <span>Majeur:</span> 
-                <span className="font-semibold">{char.profils?.majeur?.nom || '-'}</span>
+    const renderCharacterCard = (char, isMyCharacter = true) => (
+        <div key={char.id} className="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
+
+            {/* 1. EN-TÊTE : Nom et Type (Style plus classique) */}
+            <div className="p-4 pb-2 border-b border-stone-100">
+                <div className="flex justify-between items-start mb-1">
+					<h3 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
+						{char.nom || 'Sans nom'}
+					</h3>
+					{char.is_public && (
+						<Globe size={16} className="text-blue-400 flex-shrink-0 ml-2" title="Public" />
+					)}
+				</div>
+				<div className="text-sm text-amber-700 font-serif italic mb-2">
+					{char.typeFee || 'Inconnu'} • {char.sexe || '?'}
+				</div>
             </div>
-            <div className="flex justify-between">
-                <span>Mineur:</span> 
-                <span className="font-semibold">{char.profils?.mineur?.nom || '-'}</span>
-            </div>
-        </div>
-        
-        <div className="text-[10px] text-gray-400 mt-2 text-right">
-            Modifié : {new Date(char.updated_at || char.created_at).toLocaleDateString('fr-FR')}
-        </div>
-      </div>
 
-      {/* Actions de la carte */}
-      <div className="pt-4 border-t border-gray-100 flex gap-2 flex-wrap">
-        {isMyCharacter ? (
-            <>
-                <button 
-                    onClick={() => onSelectCharacter(char)} 
-                    className="flex-1 px-3 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-all font-serif text-sm flex justify-center items-center gap-2 shadow-sm"
-                >
-                    <Edit size={14} /> Modifier
-                </button>
-                
-                <button 
-                    onClick={() => exportToPDF(char)} 
-                    className="px-3 py-2 bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-50 transition-all" 
-                    title="PDF"
-                >
-                    <Download size={14} />
-                </button>
-
-                <button 
-                    onClick={() => handleToggleVisibility(char.id, char.is_public)} 
-                    className={`px-3 py-2 rounded border transition-all ${char.is_public ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white border-gray-200 text-gray-400'}`}
-                    title={char.is_public ? "Rendre privé" : "Rendre public"}
-                >
-                    {char.is_public ? <Eye size={14} /> : <EyeOff size={14} />}
-                </button>
-
-                {showDeleteConfirm === char.id ? (
-                    <div className="flex flex-col gap-1 w-full mt-2 animate-fade-in">
-                        <span className="text-xs text-red-600 text-center font-bold">Confirmer ?</span>
-                        <div className="flex gap-2">
-                            <button onClick={() => handleDelete(char.id)} className="flex-1 bg-red-600 text-white text-xs py-1 rounded">Oui</button>
-                            <button onClick={() => setShowDeleteConfirm(null)} className="flex-1 bg-gray-200 text-gray-700 text-xs py-1 rounded">Non</button>
+            {/* 2. PROFILS (Alignés sur une ligne) */}
+            <div className="px-4 py-3">
+                <div className="flex gap-2">
+                    {/* Majeur (Ambre) */}
+                    <div className="flex-1 bg-amber-50 border border-amber-100 rounded-lg p-2 flex items-center gap-2 min-w-0">
+                        <div className="text-xl shrink-0">{getProfilIcon(char.profils?.majeur?.nom)}</div>
+                        <div className="overflow-hidden">
+                            {/*<div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider leading-none mb-0.5">Majeur</div>*/}
+                            <div className="font-serif font-bold text-amber-900 truncate text-sm leading-tight">
+                                {char.profils?.majeur?.nom || '-'}
+                            </div>
                         </div>
                     </div>
+
+                    {/* Mineur (Bleu) */}
+                    <div className="flex-1 bg-blue-50 border border-blue-100 rounded-lg p-2 flex items-center gap-2 min-w-0">
+                        <div className="text-xl shrink-0">{getProfilIcon(char.profils?.mineur?.nom)}</div>
+                        <div className="overflow-hidden">
+                            {/*<div className="text-[10px] font-bold text-blue-600 uppercase tracking-wider leading-none mb-0.5">Mineur</div>*/}
+                            <div className="font-serif font-bold text-blue-900 truncate text-sm leading-tight">
+                                {char.profils?.mineur?.nom || '-'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. ACTIONS (Boutons plus discrets) */}
+            <div className="px-4 pb-3 flex gap-2">
+                {isMyCharacter ? (
+                    <>
+                        <button 
+                            onClick={() => onSelectCharacter(char)}
+                            className="flex-1 py-1.5 bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-800 rounded border border-stone-200 text-sm font-bold transition-colors flex justify-center items-center gap-2"
+                        >
+                            <Edit size={14}/> Modifier
+                        </button>
+                        <button 
+                            onClick={() => exportToPDF(char)}
+                            className="p-1.5 text-stone-400 hover:text-stone-600 hover:bg-stone-50 rounded border border-transparent transition-all"
+                            title="PDF"
+                        >
+                            <FileText size={16}/>
+                        </button>
+                        <button 
+                            onClick={() => handleToggleVisibility(char.id, char.is_public)}
+                            className={`p-1.5 rounded transition-all ${
+                                char.is_public 
+                                ? 'text-blue-500 hover:bg-blue-50' 
+                                : 'text-stone-300 hover:text-stone-500 hover:bg-stone-50'
+                            }`}
+                            title={char.is_public ? "Rendre privé" : "Rendre public"}
+                        >
+                            {char.is_public ? <Globe size={16}/> : <EyeOff size={16}/>}
+                        </button>
+                        {showDeleteConfirm === char.id ? (
+                            <button onClick={() => handleDelete(char.id)} className="p-1.5 bg-red-50 text-red-600 rounded border border-red-100 animate-pulse"><Trash2 size={16}/></button>
+                        ) : (
+                            <button onClick={() => setShowDeleteConfirm(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded"><Trash2 size={16}/></button>
+                        )}
+                    </>
                 ) : (
                     <button 
-                        onClick={() => setShowDeleteConfirm(char.id)} 
-                        className="px-3 py-2 bg-white border border-red-100 text-red-400 rounded hover:bg-red-50 hover:text-red-600 transition-all"
-                        title="Supprimer"
+                        onClick={() => onSelectCharacter(char, true)}
+                        className="w-full py-2 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2"
                     >
-                        <Trash2 size={14} />
+                        <Eye size={16}/> Voir la fiche
                     </button>
                 )}
-            </>
-        ) : (
-            <button 
-                onClick={() => onSelectCharacter(char, true)} // true = ReadOnly
-                className="w-full px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all font-serif text-sm flex justify-center items-center gap-2 shadow-sm"
-            >
-                <Eye size={14} /> Voir la fiche
-            </button>
-        )}
-      </div>
-    </div>
-  );
+            </div>
 
+            {/* 4. FOOTER (Option A intégrée discrètement) */}
+            <div className="bg-stone-50 px-4 py-2 border-t border-stone-100 flex justify-between items-center text-[10px] text-stone-400">
+                <div className="flex items-center gap-1.5">
+                    {!isMyCharacter && (
+                        <>
+                            <User size={10} className="text-blue-400"/>
+                            <span className="text-blue-900 font-bold">{char.ownerUsername || 'Inconnu'}</span>
+                        </>
+                    )}
+                    {isMyCharacter && <span className="italic">Mon personnage</span>}
+                </div>
+                <div className="flex items-center gap-1" title="Modifié le">
+                    <Calendar size={10}/>
+                    {new Date(char.updated_at || char.created_at).toLocaleDateString('fr-FR')}
+                </div>
+            </div>
+        </div>
+    );
+	
   return (
     <div className="min-h-screen bg-stone-50 pb-20 font-sans text-gray-800">
       

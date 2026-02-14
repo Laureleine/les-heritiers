@@ -285,6 +285,9 @@ export const loadFairyTypes = async () => {
     data.forEach(fairy => {
       const fairyInfo = {
         id: fairy.id,
+		nameMasculine: fairy.name_masculine || fairy.name, // Fallback sur le nom de base
+        nameFeminine: fairy.name_feminine || fairy.name,   // Fallback sur le nom de base
+        allowedGenders: fairy.allowed_genders || ['Homme', 'Femme'],		
         anciennete: fairy.era,
         description: fairy.description,
         avantages: fairy.avantages || [],       // Charge le tableau ou vide par défaut

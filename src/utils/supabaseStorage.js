@@ -78,7 +78,9 @@ const mapDatabaseToCharacter = (char) => {
     pouvoirs: source.pouvoirs || [],
     
     isPublic: source.is_public || source.isPublic || false,
-    
+
+    ownerUsername: source.profiles?.username || 'Inconnu', 
+
     // Dates : Gestion souple
     created_at: source.created_at || new Date().toISOString(),
     updated_at: source.updated_at || new Date().toISOString()
@@ -137,7 +139,7 @@ export const getPublicCharacters = async () => {
   try {
     const { data, error } = await supabase
       .from('characters')
-      .select('*')
+      .select('*, profiles(username)') 
       .eq('is_public', true)
       .order('updated_at', { ascending: false });
 
@@ -239,7 +241,7 @@ export const getAllCharactersAdmin = async () => {
   try {
     const { data, error } = await supabase
       .from('characters')
-      .select('*') // Pas de filtre user_id ou is_public
+      .select('*, profiles(username)') 
       .order('updated_at', { ascending: false });
 
     if (error) throw error;
@@ -259,6 +261,7 @@ export const getAllCharactersAdmin = async () => {
       pouvoirs: char.pouvoirs,
       isPublic: char.is_public,
       userId: char.user_id, // Important pour vérifier la propriété
+	  ownerUsername: char.profiles?.username || 'Inconnu',
       created_at: char.created_at,
       updated_at: char.updated_at
     }));
