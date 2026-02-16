@@ -86,10 +86,24 @@ export const addCompetenceFutile = async (name, description) => {
 
 export const loadProfils = async () => {
   const { data, error } = await supabase.from('profils').select('*').order('name_masculine');
-  if (error) return [];
+
+  if (error) {
+      console.error("🔥 [Erreur Critique] Impossible de charger la table 'profils':", error);
+      return [];
+  }
+
+  if (!data || data.length === 0) {
+      console.warn("⚠️ [Attention] La table 'profils' existe mais elle est VIDE !");
+      return [];
+  }
+
   return data.map(p => ({
-    id: p.id, nom: p.name_masculine, nomFeminin: p.name_feminine,
-    description: p.description, traits: p.traits || [], icon: p.icon || '👤'
+    id: p.id, 
+    nom: p.name_masculine, 
+    nomFeminin: p.name_feminine,
+    description: p.description, 
+    traits: p.traits || [], 
+    icon: p.icon || '👤'
   }));
 };
 
@@ -172,8 +186,17 @@ export const loadFairyTypes = async () => {
     // 1. Charger les types de fées
     const { data, error } = await supabase
       .from('fairy_types')
-      .select('*')
-      .order('name');
+		.select(`
+			*,
+			fairy_capacites (
+				id,
+				capacite_type,
+				nom,
+				description,
+				bonus
+			)
+		`)
+		.order('name');
 
     if (error) throw error;
 
@@ -283,6 +306,17 @@ export const loadFairyTypes = async () => {
     const fairyTypesByAge = { traditionnelles: [], modernes: [] };
 
     data.forEach(fairy => {
+		
+ // --- NOUVELLE LOGIQUE DE TRAITEMENT DES CAPACITÉS ---
+        const rawCapacites = fairy.fairy_capacites || [];
+        
+        // On restructure le tableau plat en objet utilisable par Step2.js
+        const capacitesStruct = {
+            fixe1: rawCapacites.find(c => c.capacite_type === 'fixe1') || { nom: 'Inconnu', description: '' },
+            fixe2: rawCapacites.find(c => c.capacite_type === 'fixe2') || { nom: 'Inconnu', description: '' },
+            choix: rawCapacites.filter(c => c.capacite_type === 'choix')
+        };
+		
       const fairyInfo = {
         id: fairy.id,
 		nameMasculine: fairy.name_masculine || fairy.name, // Fallback sur le nom de base
@@ -290,6 +324,8 @@ export const loadFairyTypes = async () => {
         allowedGenders: fairy.allowed_genders || ['Homme', 'Femme'],		
         anciennete: fairy.era,
         description: fairy.description,
+		traits: fairy.traits,
+		taille: fairy.taille_categorie || 'Moyenne', 
         avantages: fairy.avantages || [],       // Charge le tableau ou vide par défaut
         desavantages: fairy.desavantages || [], // Charge le tableau ou vide par défaut
         caracteristiques: {
@@ -304,8 +340,8 @@ export const loadFairyTypes = async () => {
         },
         competencesPredilection: compPredByFairy[fairy.id] || [],
         competencesFutilesPredilection: compFutPredByFairy[fairy.id] || [],
-        capacites: { fixe1: null, fixe2: null, choix: [] },
-        pouvoirs: []
+		capacites: capacitesStruct, 
+		pouvoirs: []
       };
 
       fairyData[fairy.name] = fairyInfo;

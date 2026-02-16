@@ -1,6 +1,6 @@
 // src/components/Step1.js
 import React, { useState, useEffect, useMemo } from 'react';
-import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling } from 'lucide-react';
 
 export default function Step1({ 
     character, 
@@ -8,11 +8,19 @@ export default function Step1({
     onNomFeeriqueChange, 
     onGenreHumainChange, 
     onSexeChange,        
-    onTypeFeeChange, 
+    onTypeFeeChange,
+    onTraitsFeeriquesChange,
+	onCharacterChange,
     fairyTypesByAge, 
     fairyData = {} 
 }) {
     
+    // Helper pour mettre à jour si onCharacterChange n'est pas encore câblé partout
+    const updateField = (field, value) => {
+        if (onCharacterChange) {
+            onCharacterChange({ [field]: value });
+        }
+    };
     const [activeCategory, setActiveCategory] = useState('traditionnelles');
     const [selectedPreview, setSelectedPreview] = useState(character.typeFee || null);
 
@@ -54,6 +62,16 @@ export default function Step1({
         return previewData.name || selectedPreview;
     };
 
+	// Fonction utilitaire pour le texte du modificateur
+	const getTailleDisplay = (taille) => {
+		switch(taille) {
+			case 'Petite': return { text: 'Petite Taille', mod: '+1 Esquive', color: 'text-green-600 bg-green-50 border-green-200' };
+			case 'Grande': return { text: 'Grande Taille', mod: '-1 Esquive', color: 'text-orange-600 bg-orange-50 border-orange-200' };
+			case 'Très Grande': return { text: 'Très Grande Taille', mod: '-2 Esquive', color: 'text-red-600 bg-red-50 border-red-200' };
+			default: return { text: 'Taille Moyenne', mod: 'Aucun modificateur', color: 'text-gray-600 bg-gray-50 border-gray-200' };
+		}
+	};
+
     // Auto-correction du sexe si incompatible lors du changement de fée
     useEffect(() => {
         if (previewData && character.sexe && !isGenderAllowed(character.sexe)) {
@@ -62,6 +80,21 @@ export default function Step1({
         }
     }, [selectedPreview, previewData]);
 
+    // --- LOGIQUE DE SÉLECTION DES TRAITS ---
+    const handleTraitToggle = (trait) => {
+        const currentTraits = character.traitsFeeriques || [];
+        
+        if (currentTraits.includes(trait)) {
+            // Désélectionner
+            onTraitsFeeriquesChange(currentTraits.filter(t => t !== trait));
+        } else {
+            // Sélectionner (Max 2)
+            if (currentTraits.length < 2) {
+                onTraitsFeeriquesChange([...currentTraits, trait]);
+            }
+        }
+    };
+	
     // --- Rendu Panneau Détails (Droite) ---
     const renderDetails = () => {
         if (!previewData) return (
@@ -70,6 +103,11 @@ export default function Step1({
                 <p>Sélectionnez un héritage à gauche</p>
             </div>
         );
+
+        const tailleInfo = getTailleDisplay(previewData.taille);
+
+        // Récupération sécurisée des traits (Fallback si pas encore en DB)
+        const availableTraits = previewData.traits || ["Trait A", "Trait B", "Trait C", "Trait D"]; 
 
         return (
             <div className="bg-white p-6 rounded-2xl shadow-xl border border-stone-200 h-full flex flex-col relative overflow-hidden">
@@ -89,11 +127,22 @@ export default function Step1({
                 {/* Corps du texte (Scrollable) */}
                 <div className="flex-1 overflow-y-auto pr-2 space-y-6 custom-scrollbar mb-4">
                     
-                    {/* Description Textuelle */}
-                    <div className="text-gray-600 italic text-sm leading-relaxed border-l-4 border-amber-200 pl-4">
+                    {/* Description Textuelle - FIXE pour éviter le "saut" de mise en page */}
+                    <div className="h-24 overflow-y-auto text-gray-700 text-sm italic leading-relaxed border-l-4 border-amber-300 pl-4 py-2 bg-amber-50 rounded-r pr-2 custom-scrollbar">
                         {previewData.description || "Aucune description disponible."}
                     </div>
 
+					{/* --- NOUVEAU BLOC : INFO TAILLE --- */}
+					<div className="mt-4 mb-6">
+						<div className={`px-4 py-2 rounded-lg border inline-flex items-center gap-3 ${tailleInfo.color}`}>
+							<Scaling size={18} /> 
+							<div className="flex items-center gap-2">
+								<span className="text-xs font-bold uppercase tracking-wider">{tailleInfo.text}</span>
+								<span className="text-sm font-serif font-bold opacity-80">• {tailleInfo.mod}</span>
+							</div>
+						</div>
+					</div>
+				
 					{/* Statistiques */}
 					<div className="mb-6">
 						<h4 className="flex items-center gap-2 font-bold text-amber-900 mb-3 border-b border-amber-100 pb-1">
@@ -109,149 +158,153 @@ export default function Step1({
 						</div>
 					</div>
 
-					{/* Avantages & Désavantages */}
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-						<div>
-							<h4 className="flex items-center gap-2 font-bold text-green-700 mb-2 text-sm">
-								<ThumbsUp size={14} /> Avantages
+					{/* Avantages & Désavantages - BLOC FIXE SCROLLABLE (Agrandit à h-40) */}
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-xs">
+						<div className="h-40 overflow-y-auto custom-scrollbar p-2 border border-green-100 rounded bg-green-50/30">
+							<h4 className="font-bold text-green-700 mb-1 flex items-center gap-1 sticky top-0 bg-green-50/90 w-full pb-1 border-b border-green-200">
+								<ThumbsUp size={12}/> Avantages
 							</h4>
-							<ul className="text-xs space-y-1 text-gray-600">
+							<ul className="list-disc list-inside text-gray-600 space-y-1 mt-1">
 								{previewData?.avantages && previewData.avantages.length > 0 ? (
-									previewData.avantages.map((adv, i) => <li key={i}>- {adv}</li>)
-								) : (
-									<li>- Aucun avantage listé</li>
-								)}
+									previewData.avantages.map((adv, i) => <li key={i}>{adv}</li>)
+								) : ( <li>Aucun avantage listé</li> )}
 							</ul>
 						</div>
-						<div>
-							<h4 className="flex items-center gap-2 font-bold text-red-700 mb-2 text-sm">
-								<ThumbsDown size={14} /> Désavantages
+						<div className="h-40 overflow-y-auto custom-scrollbar p-2 border border-red-100 rounded bg-red-50/30">
+							<h4 className="font-bold text-red-700 mb-1 flex items-center gap-1 sticky top-0 bg-red-50/90 w-full pb-1 border-b border-red-200">
+								<ThumbsDown size={12}/> Désavantages
 							</h4>
-							<ul className="text-xs space-y-1 text-gray-600">
+							<ul className="list-disc list-inside text-gray-600 space-y-1 mt-1">
 								{previewData?.desavantages && previewData.desavantages.length > 0 ? (
-									previewData.desavantages.map((dis, i) => <li key={i}>- {dis}</li>)
-								) : (
-									<li>- Aucun désavantage listé</li>
-								)}
+									previewData.desavantages.map((dis, i) => <li key={i}>{dis}</li>)
+								) : ( <li>Aucun désavantage listé</li> )}
 							</ul>
 						</div>
 					</div>
 					
                 </div>
 
-                {/* SÉLECTEUR SEXE BIOLOGIQUE (FÉÉRIQUE) */}
-                <div className="mb-4 p-4 bg-stone-50 rounded-xl border border-stone-200">
-                    <h3 className="text-xs font-bold text-gray-400 uppercase mb-2 flex items-center gap-2">
-                        <Users size={14} /> Sexe Féérique (Biologique)
-                    </h3>
-                    <div className="flex gap-3">
-                        {['Homme', 'Femme'].map((g) => {
-                            const allowed = isGenderAllowed(g);
-                            const isSelected = character.sexe === g;
-                            return (
-                                <button
-                                    key={g}
-                                    onClick={() => allowed && onSexeChange(g)}
-                                    disabled={!allowed}
-                                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-bold border transition-all flex items-center justify-center gap-2 ${
-                                        isSelected
-                                        ? 'bg-amber-600 text-white border-amber-600 shadow-md'
-                                        : allowed
-                                            ? 'bg-white text-gray-600 border-gray-300 hover:border-amber-400 hover:bg-amber-50'
-                                            : 'bg-gray-100 text-gray-300 border-gray-200 cursor-not-allowed opacity-60'
-                                    }`}
-                                >
-                                    <span>{g === 'Homme' ? '♂️' : '♀️'}</span>
-                                    {g}
-                                </button>
-                            );
-                        })}
+                {/* --- ZONE D'INTERACTION (BAS DE FICHE) --- */}
+                <div className="mt-6 pt-4 border-t border-gray-100 space-y-5">
+                    
+                    {/* 1. Sélecteur Sexe Féérique */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="font-bold text-xs uppercase text-gray-400 font-sans">Sexe Féérique (Biologique)</label>
+                            {!isGenderAllowed('Homme') && <span className="text-xs text-amber-600 italic flex items-center gap-1"><Info size={10}/> Femelle uniquement</span>}
+                            {!isGenderAllowed('Femme') && <span className="text-xs text-amber-600 italic flex items-center gap-1"><Info size={10}/> Mâle uniquement</span>}
+                        </div>
+                        <div className="flex gap-3 font-sans">
+                            {['Homme', 'Femme'].map((g) => {
+                                const allowed = isGenderAllowed(g);
+                                return (
+                                    <button
+                                        key={g}
+                                        onClick={() => allowed && onSexeChange(g)}
+                                        disabled={!allowed}
+                                        className={`flex-1 py-2 px-4 border rounded-lg font-bold text-sm transition-all ${
+                                            character.sexe === g
+                                            ? 'border-amber-600 bg-amber-600 text-white shadow-md'
+                                            : allowed
+                                                ? 'border-gray-300 text-gray-600 hover:border-amber-400 hover:bg-amber-50'
+                                                : 'border-gray-100 text-gray-200 cursor-not-allowed bg-stone-50'
+                                        }`}
+                                    >
+                                        {g}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
-                    {/* Messages d'erreur si restriction */}
-                    {!isGenderAllowed('Homme') && <div className="mt-2 text-xs text-amber-600 flex items-center gap-1"><Info size={12}/> Exclusivement féminin.</div>}
-                    {!isGenderAllowed('Femme') && <div className="mt-2 text-xs text-amber-600 flex items-center gap-1"><Info size={12}/> Exclusivement masculin.</div>}
-                </div>
 
-                {/* Bouton Validation */}
-                <button 
-                    onClick={() => onTypeFeeChange(selectedPreview)}
-                    disabled={character.typeFee === selectedPreview || !character.sexe}
-                    className={`w-full py-4 rounded-xl font-serif text-lg font-bold shadow-md transition-all flex justify-center items-center gap-2 ${
-                        character.typeFee === selectedPreview
-                        ? 'bg-green-600 text-white cursor-default ring-2 ring-green-200' 
-                        : character.sexe 
-                            ? 'bg-amber-600 text-white hover:bg-amber-700 hover:-translate-y-1'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                >
-                    {character.typeFee === selectedPreview ? (
-                        <><CheckCircle /> Héritage sélectionné</>
-                    ) : !character.sexe ? (
-                        <><AlertCircle size={18} /> Choisir sexe féérique</>
-                    ) : (
-                        <><Crown /> Choisir : {getDisplayName()}</>
-                    )}
-                </button>
+                    {/* 2. NOUVEAU : Traits de Caractère (Seulement si le type est validé ou sélectionné) */}
+                    {/* On affiche les traits du type sélectionné (selectedPreview) */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="font-bold text-xs uppercase text-gray-400 font-sans flex items-center gap-1">
+                                <Heart size={12} /> Traits Dominants (1 ou 2 max)
+                            </label>
+                            <span className={`text-xs font-bold ${character.traitsFeeriques?.length > 0 ? 'text-green-600' : 'text-amber-600'}`}>
+                                {character.traitsFeeriques?.length || 0} / 2
+                            </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2 font-sans">
+                            {availableTraits.map((trait) => {
+                                const isSelected = character.traitsFeeriques?.includes(trait);
+                                // Désactivé si déjà 2 sélectionnés et que ce n'est pas celui-ci
+                                const isDisabled = !isSelected && character.traitsFeeriques?.length >= 2;
+
+                                return (
+                                    <button
+                                        key={trait}
+                                        onClick={() => handleTraitToggle(trait)}
+                                        disabled={isDisabled}
+                                        className={`py-2 px-3 border rounded text-xs font-bold transition-all text-left flex justify-between items-center ${
+                                            isSelected
+                                            ? 'border-purple-500 bg-purple-50 text-purple-900 shadow-sm ring-1 ring-purple-200'
+                                            : isDisabled
+                                                ? 'border-gray-100 text-gray-300 bg-stone-50 cursor-not-allowed'
+                                                : 'border-gray-200 text-gray-600 hover:border-purple-300 hover:bg-purple-50/50'
+                                        }`}
+                                    >
+                                        {trait}
+                                        {isSelected && <CheckCircle size={14} className="text-purple-600"/>}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Bouton Validation */}
+                    <div className="font-sans">
+                        <button 
+                            onClick={() => onTypeFeeChange(selectedPreview)}
+                            disabled={character.typeFee === selectedPreview || !character.sexe}
+                            className={`w-full py-3 rounded-xl text-lg font-bold transition-all flex justify-center items-center gap-2 ${
+                                character.typeFee === selectedPreview
+                                ? 'bg-green-600 text-white cursor-default shadow-inner' 
+                                : character.sexe 
+                                    ? 'bg-amber-600 text-white hover:bg-amber-700 shadow-md hover:-translate-y-0.5'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            }`}
+                        >
+                            {character.typeFee === selectedPreview ? (
+                                <><CheckCircle size={20}/> Héritage sélectionné</>
+                            ) : (
+                                <>Choisir : {getDisplayName()}</>
+                            )}
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     };
-
+	
     return (
         <div className="flex flex-col gap-6 h-full min-h-[600px]">
             
-            {/* === 1. BLOC IDENTITÉ SOCIALE (PLEINE LARGEUR) === */}
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-stone-200">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    
-                    {/* Nom Humain */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1">
-                            <User size={12}/> Nom Humain (Masque)
-                        </label>
-                        <input 
-                            type="text" 
-                            value={character.nom} 
-                            onChange={(e) => onNomChange(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 outline-none font-serif text-lg bg-white shadow-inner"
-                            placeholder="Arthur Pendragon"
-                        />
-                    </div>
-
-                    {/* Nom Féérique */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1">
-                            <Feather size={12}/> Nom Féérique (Optionnel)
-                        </label>
-                        <input 
-                            type="text" 
-                            value={character.nomFeerique || ''} 
-                            onChange={(e) => onNomFeeriqueChange(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 outline-none font-serif text-lg bg-white text-purple-900 shadow-inner"
-                            placeholder="Oan Pervallon"
-                        />
-                    </div>
-
-                    {/* Genre Humain (Apparence sociale) */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Genre Humain (Apparence)</label>
-                        <div className="flex rounded-lg overflow-hidden border border-gray-300 h-[46px] shadow-sm">
-                            {['Masculin', 'Féminin', 'Androgyne'].map(genre => (
-                                <button
-                                    key={genre}
-                                    onClick={() => onGenreHumainChange(genre)}
-                                    className={`flex-1 text-xs font-bold transition-colors ${
-                                        character.genreHumain === genre
-                                        ? 'bg-amber-600 text-white'
-                                        : 'bg-white text-gray-600 hover:bg-gray-100 border-l first:border-l-0 border-gray-200'
-                                    }`}
-                                >
-                                    {genre}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
+			  {/* 1. NOM SEUL (Aligné sur une ligne) */}
+			  <div className="bg-white p-6 rounded-xl shadow-md border border-amber-100 mb-6">
+				 <div className="flex items-center gap-4">
+					 <div className="bg-amber-100 p-3 rounded-full text-amber-800">
+						 <Crown size={24} />
+					 </div>
+					 {/* Conteneur flex pour aligner Label et Input */}
+					 <div className="flex-1 flex items-center gap-6">
+						 <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">
+							Nom du Personnage
+						 </label>
+						 <input 
+							type="text" 
+							value={character.nom} 
+							onChange={(e) => onNomChange(e.target.value)}
+							className="w-full p-2 border-b-2 border-amber-200 focus:border-amber-600 outline-none font-serif text-2xl bg-transparent placeholder-gray-300 transition-colors"
+							placeholder="Ex: Arthur Pendragon"
+						 />
+					 </div>
+				 </div>
+			  </div>
 
             {/* === 2. GRILLE BASSE (LISTE + DÉTAILS) === */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 overflow-hidden">

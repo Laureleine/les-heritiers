@@ -67,7 +67,6 @@ export default function Auth() {
           <h1 className="text-4xl font-serif text-amber-900 mb-2 flex justify-center items-center gap-3">
              Les Héritiers
           </h1>
-          <p className="text-amber-700 italic font-serif">Belle Époque • Paris</p>
           <div className="text-[10px] text-gray-400 mt-2 uppercase tracking-widest">
             v{APP_VERSION} • {BUILD_DATE}
           </div>

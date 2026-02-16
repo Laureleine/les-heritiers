@@ -289,7 +289,6 @@ export const exportToPDF = (character, fairyData = {}) => {
         <div class="header">
           <div class="title">Les Héritiers</div>
           <div class="subtitle">Fiche de Personnage</div>
-          <div style="font-size: 14px; margin-top: 10px; color: #b45309;">Belle Époque • Paris</div>
         </div>
         
         <div class="character-name">${character.nom || 'Sans nom'}</div>
@@ -310,6 +309,18 @@ export const exportToPDF = (character, fairyData = {}) => {
               <div class="info-value">
                 ${character.anciennete === 'ancienne' ? '🏛️ Fée Ancienne' : '⚡ Fée Moderne'}
               </div>
+			${(character.taille || character.poids || character.apparence) ? `
+				<div class="section" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+					<div style="display: flex; gap: 20px; margin-bottom: 5px;">
+						<div><strong>Taille :</strong> ${character.taille || '-'}</div>
+						<div><strong>Poids :</strong> ${character.poids || '-'}</div>
+					</div>
+					<div>
+						<strong>Apparence / Genre Humain :</strong><br/>
+						<span style="font-style: italic;">${character.apparence || '-'}</span>
+					</div>
+				</div>
+			` : ''}			  
             </div>
             ` : ''}
           </div>

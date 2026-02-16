@@ -1,11 +1,30 @@
 // src/version.js
-import metadata from './metadata.json'; 
+import buildInfo from './build-info.json'; 
 
-export const APP_VERSION = metadata.version;
-export const BUILD_DATE = metadata.buildDate;
+export const APP_VERSION = buildInfo.version;
+export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
     {
+        version: '7.0.0',
+        date: '16 Février 2026',
+        changes: [
+            "🎭 ROLEPLAY : Ajout de la sélection des Traits de Caractère dominants (1 ou 2) à la création.",
+			"📏 RÈGLES : Intégration de la Taille (Petite/Grande/Très Grande) et application automatique du modificateur d'Esquive."
+        ]
+    },
+    {
+        version: '6.0.0',
+        date: '14 Février 2026',
+        changes: [
+            "✨ VERSION 6.0.0 MAJEURE",
+            "🛠 SYSTEME : La date de build est maintenant synchronisée automatiquement avec la date réelle du déploiement.",
+            "🔄 UPDATE : Système de mise à jour automatique actif.",
+            "👤 SOCIAL : Affichage du créateur sur les cartes publiques.",
+            "🔒 SÉCURITÉ : Pseudo obligatoire et protection des routes."
+        ]
+    },
+	{
         version: '5.1.0',
         date: '8 Février 2026',
         changes: [
@@ -17,6 +36,15 @@ export const VERSION_HISTORY = [
             '🛠️ Technique : Résolution du conflit lors des sauvegardes successives.'
         ]
     },
+    {
+        version: '5.0.0',
+        date: '7 Février 2026',
+        changes: [
+            "Refonte majeure de l'interface (Design 'Livre').",
+            "Intégration du système de notifications Push.",
+            "Ajout de la gestion des préférences utilisateur."
+        ]
+    },	
     {
         version: '4.8.0',
         date: '7 Février 2026',

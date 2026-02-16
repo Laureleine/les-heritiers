@@ -7,18 +7,17 @@
  * Trouve une capacité par son nom dans les données du jeu
  */
 const findCapacite = (nom, gameData, typeFee) => {
-  const feeData = gameData.fairyData?.[typeFee];
-  if (!feeData?.capacites) return null;
+    const feeData = gameData.fairyData?.[typeFee];
+    if (!feeData?.capacites) return null;
 
-  // Chercher dans les capacités fixes
-  if (feeData.capacites.fixe1?.nom === nom) return feeData.capacites.fixe1;
-  if (feeData.capacites.fixe2?.nom === nom) return feeData.capacites.fixe2;
+    // La logique reste valide car nous avons recréé la structure attendue :
+    if (feeData.capacites.fixe1?.nom === nom) return feeData.capacites.fixe1;
+    if (feeData.capacites.fixe2?.nom === nom) return feeData.capacites.fixe2;
+    
+    const capaciteChoix = feeData.capacites.choix?.find(c => c.nom === nom);
+    if (capaciteChoix) return capaciteChoix;
 
-  // Chercher dans les capacités à choix
-  const capaciteChoix = feeData.capacites.choix?.find(c => c.nom === nom);
-  if (capaciteChoix) return capaciteChoix;
-
-  return null;
+    return null;
 };
 
 /**
