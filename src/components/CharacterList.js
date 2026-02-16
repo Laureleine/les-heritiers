@@ -1,7 +1,6 @@
 // src/components/CharacterList.js
 // Version: 3.9.9
 // Design : Harmonisation complète avec "Ok.png" (Titre centré, boutons styled, cartes épurées)
-
 import React, { useState, useEffect } from 'react';
 import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar } from 'lucide-react';
 import { supabase } from '../config/supabase';
@@ -12,59 +11,120 @@ import { APP_VERSION, BUILD_DATE } from '../version';
 
 const ADMIN_EMAIL = 'amaranthe@free.fr';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAdmin, onOpenAccount, profils = [] }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, profils = []}) { 
+  
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [activeTab, setActiveTab] = useState('my'); // 'my', 'public', 'admin'
+  const [activeTab, setActiveTab] = useState('my'); 
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const getProfilIcon = (nom) => {
-	const p = profils.find(pr => pr.nom === nom);
-	return p?.icon || '👤';
+  // --- NOUVEAU HELPER (Version Propre) ---
+  const getProfilInfo = (nomBrut, sexe) => {
+    // Sécurité de base
+    if (!profils || profils.length === 0 || !nomBrut) return { icon: '👤', text: nomBrut || '-' };
+
+    // 1. Trouver le profil dans la liste de référence
+    const p = profils.find(pr => 
+      pr.nom === nomBrut || 
+      pr.nomFeminin === nomBrut || 
+      (typeof nomBrut === 'string' && pr.nom && nomBrut.includes(pr.nom))
+    );
+
+    // Si non trouvé, renvoi brut
+    if (!p) return { icon: '👤', text: nomBrut };
+
+    // 2. Appliquer l'accord féminin si nécessaire
+    const text = (sexe === 'Femme' && p.nomFeminin) ? p.nomFeminin : p.nom;
+
+    return { icon: p.icon || '👤', text };
   };
-	
+  
   useEffect(() => {
     loadCharacters();
   }, []);
 
   const loadCharacters = async () => {
+    console.log("🚀 START: loadCharacters démarre...");
     setLoading(true);
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Étape 1 : Utilisateur
+      console.log("👤 1. Récupération utilisateur Supabase...");
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) throw userError;
+      if (!user) {
+          console.warn("⚠️ Pas d'utilisateur connecté !");
+          return;
+      }
+      console.log("✅ Utilisateur trouvé :", user.email);
       setCurrentUser(user);
-      const adminStatus = user?.email === ADMIN_EMAIL;
-      setIsAdmin(adminStatus);
 
-      const promises = [getUserCharacters(), getPublicCharacters()];
-      if (adminStatus) promises.push(getAllCharactersAdmin());
+      // Étape 2 : Vérification du Profil (Le bloc critique)
+      console.log("🔎 2. Vérification du profil (pseudo)...");
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
 
-      const results = await Promise.all(promises);
-      let myCharsRaw = [], publicCharsRaw = [], adminCharsRaw = [];
-
-      if (adminStatus) {
-        [myCharsRaw, publicCharsRaw, adminCharsRaw] = results;
-      } else {
-        [myCharsRaw, publicCharsRaw] = results;
+      if (profileError && profileError.code !== 'PGRST116') { 
+          // PGRST116 = Pas de résultat (c'est normal si pas de profil)
+          console.error("❌ Erreur lecture profil:", profileError);
       }
 
-      const myUserId = user?.id;
+      console.log("📋 Profil reçu :", profile);
 
-      setMyCharacters(myCharsRaw);
-      setPublicCharacters(publicCharsRaw.filter(c => c.userId !== myUserId));
-      setAdminCharacters(adminCharsRaw.filter(c => c.userId !== myUserId && !c.isPublic));
+      if (!profile?.username) {
+         console.warn("⚠️ Pas de pseudo défini !");
+         if (window.confirm("Votre compte nécessite un nom d'utilisateur. Le définir maintenant ?")) {
+             console.log("🔄 Redirection vers AccountSettings...");
+             if (onOpenAccount) onOpenAccount(); 
+             // IMPORTANT : On force l'arrêt du chargement avant de partir
+             setLoading(false); 
+             return; 
+         }
+      }
+
+// Étape 3 : Chargement des personnages
+console.log("📚 3. Chargement des personnages...");
+
+const adminStatus = user.email === 'amaranthe@free.fr';  // ✅ DÉCLARÉ ICI
+console.log("👑 Admin ?", adminStatus);
+setIsAdmin(adminStatus);
+
+console.log("⏳ En attente des données...");
+const promises = [getUserCharacters(), getPublicCharacters()];
+if (adminStatus) promises.push(getAllCharactersAdmin());
+
+const results = await Promise.all(promises);  // ✅ DÉCLARÉ ICI
+
+console.log("📦 Données reçues (brutes) :", results);
+console.log("📊 Stats : Mes Persos", results[0]?.length || 0, "Publics", results[1]?.length || 0);
+
+const myUserId = user.id;  // ✅ DÉCLARÉ ICI
+
+// ✅ SET DIRECT : tes persos DÉJÀ MAPPÉS
+setMyCharacters(results[0] || []);
+setPublicCharacters((results[1] || []).filter(c => c.userId !== myUserId));
+setAdminCharacters(adminStatus ? (results[2] || []).filter(c => c.userId !== myUserId && !c.isPublic) : []);
+
+console.log("🎉 END: Chargement terminé avec succès !");
 
     } catch (error) {
-      console.error('Erreur chargement:', error);
+      console.error('🔥 CRASH dans loadCharacters:', error);
+      alert("Erreur technique : " + error.message);
     } finally {
+      console.log("🏁 FINALLY : Suppression de l'écran de chargement.");
       setLoading(false);
     }
   };
-
+  
   const handleDelete = async (id) => {
     try {
       await deleteCharacterFromSupabase(id);
@@ -114,32 +174,34 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 				</div>
             </div>
 
-            {/* 2. PROFILS (Alignés sur une ligne) */}
-            <div className="px-4 py-3">
-                <div className="flex gap-2">
-                    {/* Majeur (Ambre) */}
-                    <div className="flex-1 bg-amber-50 border border-amber-100 rounded-lg p-2 flex items-center gap-2 min-w-0">
-                        <div className="text-xl shrink-0">{getProfilIcon(char.profils?.majeur?.nom)}</div>
-                        <div className="overflow-hidden">
-                            {/*<div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider leading-none mb-0.5">Majeur</div>*/}
-                            <div className="font-serif font-bold text-amber-900 truncate text-sm leading-tight">
-                                {char.profils?.majeur?.nom || '-'}
-                            </div>
-                        </div>
-                    </div>
+      {/* 2. PROFILS (Correction : Utilisation de getProfilInfo) */}
+      <div className="flex items-center justify-center gap-4 text-sm text-gray-600 mb-4">
+        
+        {/* On calcule les infos avant l'affichage */}
+        {(() => {
+            const majeur = getProfilInfo(char.profils?.majeur?.nom, char.sexe);
+            const mineur = getProfilInfo(char.profils?.mineur?.nom, char.sexe);
 
-                    {/* Mineur (Bleu) */}
-                    <div className="flex-1 bg-blue-50 border border-blue-100 rounded-lg p-2 flex items-center gap-2 min-w-0">
-                        <div className="text-xl shrink-0">{getProfilIcon(char.profils?.mineur?.nom)}</div>
-                        <div className="overflow-hidden">
-                            {/*<div className="text-[10px] font-bold text-blue-600 uppercase tracking-wider leading-none mb-0.5">Mineur</div>*/}
-                            <div className="font-serif font-bold text-blue-900 truncate text-sm leading-tight">
-                                {char.profils?.mineur?.nom || '-'}
-                            </div>
-                        </div>
-                    </div>
+            return (
+              <>
+                {/* Profil Majeur */}
+                <div className="flex items-center gap-1.5" title="Profil Majeur">
+                   <span className="text-lg">{majeur.icon}</span>
+                   <span className="font-bold text-amber-900">{majeur.text}</span>
                 </div>
-            </div>
+
+                <span className="text-gray-300">|</span>
+
+                {/* Profil Mineur */}
+                <div className="flex items-center gap-1.5" title="Profil Mineur">
+                   <span className="text-lg">{mineur.icon}</span>
+                   <span className="text-blue-900">{mineur.text}</span>
+                </div>
+              </>
+            );
+        })()}
+
+      </div>
 
             {/* 3. ACTIONS (Boutons plus discrets) */}
             <div className="px-4 pb-3 flex gap-2">
@@ -210,7 +272,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       {/* 1. TITRE (Style Ok.png) */}
       <div className="pt-8 pb-6 text-center">
         <h1 className="text-5xl font-serif text-amber-900 mb-1">Les Héritiers</h1>
-        <div className="text-amber-700 italic font-serif text-lg">Belle Époque • Paris</div>
         <div className="text-xs text-gray-400 mt-2 uppercase tracking-widest font-bold">
             Version {APP_VERSION} • {BUILD_DATE}
         </div>
@@ -271,6 +332,17 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                     <Plus size={18}/> <span>Nouveau</span>
                 </button>
 
+				{/* --- AJOUT : BOUTON MON COMPTE --- */}
+				<button
+				  onClick={onOpenAccount}
+				  className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 hover:border-gray-300 transition-all"
+				  title="Mon Compte"
+				>
+				  <User size={20} />
+				  <span className="hidden md:inline">Compte</span>
+				</button>
+				{/* -------------------------------- */}
+				
                 <button 
                     onClick={onSignOut}
                     className="flex items-center space-x-2 px-3 py-2 bg-red-50 border-2 border-red-100 text-red-400 rounded-lg hover:bg-red-100 hover:text-red-600 transition-all"
@@ -281,57 +353,69 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
             </div>
         </div>
 
-        {/* 3. GRILLE DE CARTES */}
-        {loading ? (
-            <div className="text-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
-                <p className="font-serif text-amber-900">Consultation des archives...</p>
-            </div>
-        ) : (
-            <div className="min-h-[400px]">
-                {/* Vue Mes Personnages */}
-                {activeTab === 'my' && (
-                    myCharacters.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {myCharacters.map(char => renderCharacterCard(char, true))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-300">
-                            <p className="text-gray-500 font-serif mb-4">Vous n'avez pas encore créé de personnage.</p>
-                            <button onClick={onNewCharacter} className="text-amber-600 font-bold hover:underline">
-                                Créer mon premier Héritier
-                            </button>
-                        </div>
-                    )
-                )}
+            {/* 3. GRILLE DE CARTES */}
+            {loading ? (
+                <div className="text-center py-20">
+                    <p className="text-xl text-gray-500 font-serif animate-pulse">Consultation des archives...</p>
+                </div>
+            ) : (
+                <div className="p-6">
+                    {/* Vue Mes Personnages */}
+                    {activeTab === 'my' && (
+                        myCharacters.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {myCharacters.map((char, index) => (
+                                    // Sécurité : on utilise l'ID ou l'index si l'ID est manquant
+                                    <div key={char.id || `my-${index}`} className="h-full"> 
+                                       {renderCharacterCard(char, true)}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (							
+                            <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-300">
+                                <p className="text-gray-500 font-serif mb-4">Vous n'avez pas encore créé de personnage.</p>
+                                <button onClick={onNewCharacter} className="text-amber-600 font-bold hover:underline">
+                                    Créer mon premier Héritier
+                                </button>
+                            </div>
+                        )
+                    )}
 
-                {/* Vue Personnages Publics */}
-                {activeTab === 'public' && (
-                    publicCharacters.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {publicCharacters.map(char => renderCharacterCard(char, false))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-20 text-gray-500 font-serif italic">
-                            Aucun personnage public disponible pour le moment.
-                        </div>
-                    )
-                )}
+                    {/* Vue Personnages Publics */}
+                    {activeTab === 'public' && (
+                        publicCharacters.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {publicCharacters.map((char, index) => (
+                                    <div key={char.id || `pub-${index}`} className="h-full"> 
+                                       {renderCharacterCard(char, true)}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20 text-gray-500 font-serif italic">
+                                Aucun personnage public disponible pour le moment.
+                            </div>
+                        )
+                    )}
 
-                {/* Vue Admin */}
-                {activeTab === 'admin' && isAdmin && (
-                    adminCharacters.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {adminCharacters.map(char => renderCharacterCard(char, char.userId === currentUser?.id))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-20 text-gray-500 font-serif italic">
-                            Aucun personnage masqué à afficher.
-                        </div>
-                    )
-                )}
-            </div>
-        )}
+                    {/* Vue Admin */}
+                    {activeTab === 'admin' && isAdmin && (
+                        adminCharacters.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {adminCharacters.map((char, index) => (
+                                    <div key={char.id || `admin-${index}`} className="h-full"> 
+                                       {renderCharacterCard(char, char.userId === currentUser?.id)}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20 text-gray-500 font-serif italic">
+                                Aucun personnage masqué à afficher.
+                            </div>
+                        )
+                    )}
+                </div>
+            )}
 
       </div>
     </div>

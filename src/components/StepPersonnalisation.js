@@ -1,35 +1,29 @@
-// src/components/StepRecapitulatif.js
+// src/components/StepPersonnalisation.js
 import React from 'react';
-import { User, Star, Award, Sparkles, Feather } from 'lucide-react';
+import { User, Briefcase, Feather, Sparkles } from 'lucide-react';
 
-export default function StepRecapitulatif({ character, onCharacterChange, fairyData, competences, competencesParProfil }) {
-  const feeData = fairyData[character.typeFee];
-
-  // Helper pour mise à jour générique
+export default function StepPersonnalisation({ character, onCharacterChange }) {
+  
   const updateField = (field, value) => {
-    if (onCharacterChange) {
-      onCharacterChange({ [field]: value });
-    }
+    onCharacterChange({ [field]: value });
   };
-
-  // --- Calcul des Compétences (inchangé pour l'affichage) ---
-  // (Je simplifie ici pour la lisibilité, gardez votre logique de calcul existante)
-  const getCompetencesList = () => {
-      // ... Votre logique de calcul existante ...
-      return []; 
-  };
-  // ---------------------------------------------------------
 
   return (
     <div className="space-y-8 animate-fadeIn max-w-5xl mx-auto pb-12">
       
-      {/* 1. EN-TÊTE & IDENTITÉ SOCIALE (EDITABLE) */}
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-serif text-amber-900 flex items-center justify-center gap-3">
+            <Feather className="text-amber-600" /> Personnalisation du Masque
+        </h2>
+        <p className="text-gray-600 mt-2">Définissez l'identité sociale et l'apparence de votre personnage.</p>
+      </div>
+
+      {/* 1. BLOC IDENTITÉ SOCIALE & MASQUE (Déplacé de Step 1) */}
       <div className="bg-white rounded-xl shadow-md border border-amber-100 overflow-hidden">
-        <div className="bg-amber-900/5 p-4 border-b border-amber-100 flex justify-between items-center">
-            <h2 className="text-xl font-serif font-bold text-amber-900 flex items-center gap-2">
-                <Feather size={20} /> Identité Sociale & Masque
-            </h2>
-            <div className="text-xs text-amber-700 bg-amber-100 px-3 py-1 rounded-full">Dernière étape</div>
+        <div className="bg-amber-50 p-4 border-b border-amber-100">
+            <h3 className="font-serif font-bold text-lg text-amber-900 flex items-center gap-2">
+                <User size={20} /> Identité & Apparence
+            </h3>
         </div>
         
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -37,7 +31,7 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
             <div className="space-y-4">
                 <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nom Humain (Masque)</label>
-                    <input type="text" value={character.nom} disabled className="w-full p-2 bg-gray-50 border border-gray-200 rounded text-gray-700 font-serif" />
+                    <input type="text" value={character.nom} disabled className="w-full p-2 bg-gray-50 border border-gray-200 rounded text-gray-500 font-serif cursor-not-allowed" title="Modifiable à l'étape 1" />
                 </div>
                 <div>
                     <label className="block text-xs font-bold text-purple-600 uppercase mb-1">Nom Féérique (Vrai Nom)</label>
@@ -94,19 +88,19 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
         </div>
       </div>
 
-      {/* 2. RÉCAPITULATIF TECHNIQUE (LECTURE SEULE) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* ... (Ici, reprenez le code existant de StepRecapitulatif pour afficher les Caracs, Compétences, etc.) ... */}
-          {/* Je mets un placeholder pour l'exemple, mais gardez votre affichage actuel */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-             <h3 className="font-serif font-bold text-lg mb-4 text-amber-900 border-b pb-2">Caractéristiques & Profils</h3>
-             {/* ... */}
-          </div>
-          
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-             <h3 className="font-serif font-bold text-lg mb-4 text-amber-900 border-b pb-2">Compétences & Pouvoirs</h3>
-             {/* ... */}
-          </div>
+      {/* 2. BLOC RESSOURCES (Placeholder amélioré) */}
+      <div className="bg-white rounded-xl shadow-md border border-amber-100 overflow-hidden opacity-75">
+         <div className="bg-green-50 p-4 border-b border-green-100 flex justify-between items-center">
+            <h3 className="font-serif font-bold text-lg text-green-800 flex items-center gap-2">
+                <Briefcase size={20} /> Ressources & Fortune
+            </h3>
+            <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">À venir</span>
+         </div>
+         <div className="p-8 text-center text-gray-500 italic">
+            <Sparkles className="mx-auto mb-2 text-green-300" size={32} />
+            <p>La gestion de la Fortune, de l'Équipement et des Contacts sera disponible dans une prochaine mise à jour.</p>
+            <p className="text-sm mt-2">Pour l'instant, ces éléments sont gérés de manière narrative par votre Maître de Jeu.</p>
+         </div>
       </div>
 
     </div>

@@ -74,47 +74,95 @@ export const isCompetenceFutileChoix = (item) => {
 };
 
 /**
+ * Retourne le modificateur d'Esquive (et de SD Tir adverse) selon la taille.
+ * Règles : Petite (+1), Grande (-1), Très Grande (-2).
+ */
+export const getSizeModifier = (taille) => {
+    // Sécurisation de la chaîne
+    const t = (taille || 'Moyenne').trim(); 
+    
+    if (t === 'Petite') return 1;
+    if (t === 'Grande') return -1;
+    if (t === 'Très Grande') return -2;
+    
+    return 0; // Moyenne ou inconnu
+};
+
+/**
+ * Calcule les stats de combat (Masqué et Démasqué)
+ * Prend en compte le modificateur de Taille pour la forme Féérique.
+ */
+export const calculateCombatStats = (character, skills, fairyData) => {
+    const getS = (nom) => skills[nom] || 0;
+    
+    // 1. Caractéristiques de base (Masqué)
+    const agi = parseInt(character.caracteristiques?.agilite || 0);
+    const sf = parseInt(character.caracteristiques?.sangFroid || 0);
+    const esp = parseInt(character.caracteristiques?.esprit || 0);
+    const con = parseInt(character.caracteristiques?.constitution || 0);
+
+    // 2. Vérification des spécialités (Esquive / Parade)
+    const hasSpec = (compNom, specNom) => {
+        const data = character.competencesLibres?.[compNom];
+        // Vérifie si la spécialité est dans la liste ou est la spécialité de base
+        return data?.specialites?.includes(specNom) || data?.specialiteBase === specNom;
+    };
+
+    const specEsquive = hasSpec('Mouvement', 'Esquive') ? 1 : 0;
+    
+    // Parade : on suppose qu'avoir une spé en Mêlée aide (simplification)
+    // Idéalement, il faudrait vérifier l'arme, mais ici on check si une spé existe
+    const specParade = (character.competencesLibres?.['Mêlée']?.specialites?.length > 0 || character.competencesLibres?.['Mêlée']?.specialiteBase) ? 1 : 0;
+
+    // --- A. Stats MASQUÉ (Taille Humaine Moyenne = 0 mod) ---
+    const statsMasque = {
+        esquive: getS('Mouvement') + agi + 5 + specEsquive,
+        parade: getS('Mêlée') + agi + 5 + specParade,
+        resistancePhysique: getS('Ressort') + con + 5,
+        resistancePsychique: getS('Fortitude') + esp + 5,
+        initiative: getS('Art de la guerre') + sf
+    };
+
+    // --- B. Stats DÉMASQUÉ (Application Taille & Bonus) ---
+    
+    // Bonus de caractéristique (Capacité choisie)
+    const hasAccrue = (stat) => character.capaciteChoisie === `${stat} accrue`;
+    const agiD = agi + (hasAccrue('Agilité') ? 1 : 0);
+    const conD = con + (hasAccrue('Constitution') ? 1 : 0);
+    const sfD = sf + (hasAccrue('Sang-froid') ? 1 : 0);
+    
+    // Détermination de la Taille
+    // 1. Regarde si le perso a une taille spécifique enregistrée
+    // 2. Sinon, regarde dans les données génériques de la fée
+    // 3. Sinon, défaut 'Moyenne'
+    const typeFeeData = fairyData && fairyData[character.typeFee];
+    const tailleEffective = character.taille || typeFeeData?.taille || 'Moyenne';
+    
+    // Calcul du modificateur (-2, -1, 0, +1)
+    const modTaille = getSizeModifier(tailleEffective);
+
+    const statsDemasque = {
+        // Applique le modificateur de taille à l'Esquive démasquée
+        esquive: getS('Mouvement') + agiD + 5 + specEsquive + modTaille,
+        
+        // La taille n'affecte pas la Parade (règle p.116)
+        parade: getS('Mêlée') + agiD + 5 + specParade, 
+        
+        resistancePhysique: getS('Ressort') + conD + 5,
+        resistancePsychique: statsMasque.resistancePsychique, // L'Esprit ne change pas souvent
+        initiative: getS('Art de la guerre') + sfD,
+        
+        // On renvoie ces infos pour l'affichage (ex: dans le PDF ou l'UI)
+        taille: tailleEffective,
+        modTaille: modTaille 
+    };
+
+    return { masque: statsMasque, demasque: statsDemasque };
+};
+
+/**
  * Calcule les stats de combat (Masqué et Démasqué) selon p.115-116.
  */
-export const calculateCombatStats = (character, skills) => {
-  const getS = (nom) => skills[nom] || 0;
-  const agi = character.caracteristiques?.agilite || 0;
-  const sf = character.caracteristiques?.sangFroid || 0;
-  const esp = character.caracteristiques?.esprit || 0;
-  const con = character.caracteristiques?.constitution || 0;
-
-  const hasSpec = (compNom, specNom) => {
-    const data = character.competencesLibres?.[compNom];
-    return data?.specialites?.includes(specNom) || data?.specialiteBase === specNom;
-  };
-
-  const specEsquive = hasSpec('Mouvement', 'Esquive') ? 1 : 0;
-  const specParade = (character.competencesLibres?.['Mêlée']?.specialites?.length > 0 || 
-                      character.competencesLibres?.['Mêlée']?.specialiteBase) ? 1 : 0;
-
-  const statsMasque = {
-    esquive: getS('Mouvement') + agi + 5 + specEsquive,
-    parade: getS('Mêlée') + agi + 5 + specParade,
-    resistancePhysique: getS('Ressort') + con + 5,
-    resistancePsychique: getS('Fortitude') + esp + 5,
-    initiative: getS('Art de la guerre') + sf
-  };
-
-  const hasAccrue = (stat) => character.capaciteChoisie === `${stat} accrue`;
-  const agiD = agi + (hasAccrue('Agilité') ? 1 : 0);
-  const conD = con + (hasAccrue('Constitution') ? 1 : 0);
-  const sfD = sf + (hasAccrue('Sang-froid') ? 1 : 0);
-
-  const statsDemasque = {
-    esquive: getS('Mouvement') + agiD + 5 + specEsquive,
-    parade: getS('Mêlée') + agiD + 5 + specParade,
-    resistancePhysique: getS('Ressort') + conD + 5,
-    resistancePsychique: statsMasque.resistancePsychique,
-    initiative: getS('Art de la guerre') + sfD
-  };
-
-  return { masque: statsMasque, demasque: statsDemasque };
-};
 
 /**
  * Calcule les Points de Vie : (3 * Constitution) + 9 (Source p.128).
