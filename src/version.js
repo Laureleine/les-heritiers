@@ -6,6 +6,15 @@ export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
     {
+        version: '7.1.0',
+        date: '16 Février 2026',
+		changes: [
+		  '✨ Feat : Activation complète des Pouvoirs Féériques (Tri Masqué/Démasqué).',
+		  '🌟 Feat : Ajout de l\'étape "Atouts Féériques" (Universels et Spécifiques).',
+		  '🎨 UI : Amélioration visuelle des cartes de sélection avec badges dynamiques.'
+		]
+    },
+    {
         version: '7.0.1',
         date: '16 Février 2026',
 		changes: [
