@@ -1,6 +1,7 @@
 // src/components/CharacterList.js
 // Version: 3.9.9
 // Design : Harmonisation complète avec "Ok.png" (Titre centré, boutons styled, cartes épurées)
+
 import React, { useState, useEffect } from 'react';
 import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar } from 'lucide-react';
 import { supabase } from '../config/supabase';
@@ -163,11 +164,14 @@ console.log("🎉 END: Chargement terminé avec succès !");
             <div className="p-4 pb-2 border-b border-stone-100">
                 <div className="flex justify-between items-start mb-1">
 					<h3 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
-						{char.nom || 'Sans nom'}
+					  {char.nom || 'Sans nom'}
+					  {/* Le Globe en exposant sur la même ligne */}
+					  {char.isPublic && (
+						<sup className="ml-1 text-blue-500 inline-block" title="Visible par tous">
+						   <Globe size={12} />
+						</sup>
+					  )}
 					</h3>
-					{char.is_public && (
-						<Globe size={16} className="text-blue-400 flex-shrink-0 ml-2" title="Public" />
-					)}
 				</div>
 				<div className="text-sm text-amber-700 font-serif italic mb-2">
 					{char.typeFee || 'Inconnu'} • {char.sexe || '?'}
@@ -221,15 +225,15 @@ console.log("🎉 END: Chargement terminé avec succès !");
                             <FileText size={16}/>
                         </button>
                         <button 
-                            onClick={() => handleToggleVisibility(char.id, char.is_public)}
+                            onClick={() => handleToggleVisibility(char.id, char.isPublic)}
                             className={`p-1.5 rounded transition-all ${
-                                char.is_public 
+                                char.isPublic 
                                 ? 'text-blue-500 hover:bg-blue-50' 
                                 : 'text-stone-300 hover:text-stone-500 hover:bg-stone-50'
                             }`}
-                            title={char.is_public ? "Rendre privé" : "Rendre public"}
+                            title={char.isPublic ? "Rendre privé" : "Rendre public"}
                         >
-                            {char.is_public ? <Globe size={16}/> : <EyeOff size={16}/>}
+                            {char.isPublic ? <Globe size={16}/> : <EyeOff size={16}/>}
                         </button>
                         {showDeleteConfirm === char.id ? (
                             <button onClick={() => handleDelete(char.id)} className="p-1.5 bg-red-50 text-red-600 rounded border border-red-100 animate-pulse"><Trash2 size={16}/></button>
@@ -387,7 +391,7 @@ console.log("🎉 END: Chargement terminé avec succès !");
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {publicCharacters.map((char, index) => (
                                     <div key={char.id || `pub-${index}`} className="h-full"> 
-                                       {renderCharacterCard(char, true)}
+                                       {renderCharacterCard(char, char.userId === currentUser?.id)}
                                     </div>
                                 ))}
                             </div>
