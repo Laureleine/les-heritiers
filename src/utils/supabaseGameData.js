@@ -186,17 +186,19 @@ export const loadFairyTypes = async () => {
     // 1. Charger les types de fées
     const { data, error } = await supabase
       .from('fairy_types')
-		.select(`
-			*,
-			fairy_capacites (
-				id,
-				capacite_type,
-				nom,
-				description,
-				bonus
-			)
-		`)
-		.order('name');
+      .select(`
+        *,
+        fairy_capacites (
+          id, capacite_type, nom, description, bonus
+        ),
+        fairy_powers (
+          id, nom, description, type_pouvoir
+        ),
+        fairy_assets (
+          id, nom, description, effets
+        )
+      `)
+      .order('name');
 
     if (error) throw error;
 
@@ -306,8 +308,24 @@ export const loadFairyTypes = async () => {
     const fairyTypesByAge = { traditionnelles: [], modernes: [] };
 
     data.forEach(fairy => {
-		
- // --- NOUVELLE LOGIQUE DE TRAITEMENT DES CAPACITÉS ---
+
+		// Ajoutez ceci pour traiter les atouts
+		const rawAssets = fairy.fairy_assets || [];
+		// Tri alphabétique simple
+		const assetsTries = rawAssets.sort((a, b) => a.nom.localeCompare(b.nom));
+
+        // Traitement des Pouvoirs (C'est ici qu'on active Step 3)
+        const rawPouvoirs = fairy.fairy_powers || [];
+        const pouvoirsTries = rawPouvoirs.sort((a, b) => {
+            // Tri : Masqué (1) avant Démasqué (2), puis alphabétique
+            const order = { 'masque': 1, 'demasque': 2, 'profond': 3, 'legendaire': 4 };
+            const scoreA = order[a.type_pouvoir] || 99;
+            const scoreB = order[b.type_pouvoir] || 99;
+            if (scoreA !== scoreB) return scoreA - scoreB;
+            return a.nom.localeCompare(b.nom);
+        });
+
+        // Structure Capacités (votre code existant)		
         const rawCapacites = fairy.fairy_capacites || [];
         
         // On restructure le tableau plat en objet utilisable par Step2.js
@@ -341,7 +359,8 @@ export const loadFairyTypes = async () => {
         competencesPredilection: compPredByFairy[fairy.id] || [],
         competencesFutilesPredilection: compFutPredByFairy[fairy.id] || [],
 		capacites: capacitesStruct, 
-		pouvoirs: []
+		pouvoirs: pouvoirsTries,
+		atouts: assetsTries
       };
 
       fairyData[fairy.name] = fairyInfo;

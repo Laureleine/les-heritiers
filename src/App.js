@@ -16,6 +16,7 @@ import StepCompetencesLibres from './components/StepCompetencesLibres';
 import StepCompetencesFutiles from './components/StepCompetencesFutiles';
 import Step2 from './components/Step2'; // Capacité
 import Step3 from './components/Step3'; // Pouvoirs
+import StepAtouts from './components/StepAtouts';
 import StepPersonnalisation from './components/StepPersonnalisation'; // NOUVEAU COMPOSANT
 import StepRecapitulatif from './components/StepRecapitulatif';
 import CharacterList from './components/CharacterList';
@@ -181,19 +182,24 @@ function App() {
     setCharacter({ ...character, capaciteChoisie: capacite });
 
   const handlePouvoirToggle = (pouvoir) => {
+    // Calcul dynamique du max selon la Féérie (ou 3 par défaut)
+    const maxPouvoirs = character.caracteristiques?.feerie || 3;
+
     const pouvoirs = character.pouvoirs.includes(pouvoir)
       ? character.pouvoirs.filter(p => p !== pouvoir)
-      : character.pouvoirs.length < 3
-        ? [...character.pouvoirs, pouvoir]
-        : character.pouvoirs;
+      : character.pouvoirs.length < maxPouvoirs // <-- C'est ici la correction
+      ? [...character.pouvoirs, pouvoir]
+      : character.pouvoirs;
+
     setCharacter({ ...character, pouvoirs });
   };
 
   // --- 5. Validations (11 Étapes) ---
   const canProceedStep1 = character.nom.trim() && character.sexe && character.typeFee;
   const canProceedStep2 = character.capaciteChoisie;
-  const canProceedStep3 = true;
-  const canProceedStep4 = true; 
+  const maxPouvoirs = character.caracteristiques?.feerie || 3;
+  const canProceedStep3 = character.pouvoirs.length === maxPouvoirs;  
+  const canProceedStep4 = (character.atouts || []).length === 2;
   const canProceedStep5 = character.caracteristiques && Object.keys(character.caracteristiques).length > 0;
   const canProceedStep6 = character.profils?.majeur?.nom && character.profils?.majeur?.trait && character.profils?.mineur?.nom && character.profils?.mineur?.trait;
   const canProceedStep7 = () => {
@@ -246,6 +252,21 @@ function App() {
   const totalSteps = 11;
   const stepsArray = Array.from({length: totalSteps}, (_, i) => i + 1);
 
+  // Gestion des Atouts (Step 4)
+  const handleAtoutToggle = (atoutNom) => {
+    const currentAtouts = character.atouts || [];
+    const maxAtouts = 2; // Règle standard [Source 24]
+
+    let newAtouts;
+    if (currentAtouts.includes(atoutNom)) {
+      newAtouts = currentAtouts.filter(a => a !== atoutNom);
+    } else {
+      if (currentAtouts.length >= maxAtouts) return; // Bloquer si max atteint
+      newAtouts = [...currentAtouts, atoutNom];
+    }
+    setCharacter({ ...character, atouts: newAtouts });
+  };
+  
   return (
     <div className="min-h-screen bg-[#fdfbf7] p-4 md:p-8 font-sans text-gray-800">
       <div className="max-w-6xl mx-auto">
@@ -328,25 +349,8 @@ function App() {
           )}
           
           {step === 2 && <Step2 character={character} onCapaciteChoice={handleCapaciteChoice} fairyData={gameData.fairyData} />}
-          {step === 3 && (
-            <div className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-md border border-amber-100 text-center animate-fadeIn">
-              <h2 className="text-3xl font-serif text-amber-900 mb-6 flex items-center justify-center gap-3">
-                 Pouvoirs Féériques
-              </h2>
-              <p className="text-gray-600 italic text-lg mb-8">
-                Cette étape est pour le moment désactivée (Placeholder).
-                <br />
-                <span className="text-sm text-gray-400 block mt-2">(Cliquez sur Suivant pour passer aux Atouts)</span>
-              </p>
-            </div>
-          )}
-          {step === 4 && (
-            <div className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-md border border-amber-100 text-center">
-              <h2 className="text-3xl font-serif text-amber-900 mb-6 flex items-center justify-center gap-3"><Star className="text-amber-500" size={32} /> Atouts Féériques</h2>
-              <p className="text-gray-600 italic text-lg mb-8">Choix des Atouts Féériques (ex: Féal, Vilain petit canard, etc.).<br /><span className="text-sm text-gray-400 block mt-2">(Fonctionnalité à venir)</span></p>
-              <div className="flex justify-center"><div className="w-32 h-32 bg-amber-50 rounded-full flex items-center justify-center border-4 border-amber-100"><Star size={48} className="text-amber-200" /></div></div>
-            </div>
-          )}
+          {step === 3 && <Step3 character={character} onPouvoirToggle={handlePouvoirToggle}   fairyData={gameData.fairyData} />}		  
+          {step === 4 && <StepAtouts character={character} onAtoutToggle={handleAtoutToggle}  fairyData={gameData.fairyData} />}  
           {step === 5 && <StepCaracteristiques character={character} onCaracteristiquesChange={handleCaracteristiquesChange} fairyData={gameData.fairyData} />}
           {step === 6 && <StepProfils character={character} onProfilsChange={handleProfilsChange} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
           {step === 7 && <StepCompetencesLibres character={character} onCompetencesLibresChange={handleCompetencesLibresChange} profils={gameData.profils} fairyData={gameData.fairyData} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} />}
