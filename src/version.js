@@ -6,6 +6,14 @@ export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
     {
+        version: '7.0.1',
+        date: '16 Février 2026',
+		changes: [
+		  '🌍 UI : Ajout d\'une icône Globe pour identifier instantanément les personnages publics.',
+		  '👁️ Feat : Possibilité de basculer le statut Public/Privé directement depuis la liste des personnages.'
+		]
+    },
+    {
         version: '7.0.0',
         date: '16 Février 2026',
         changes: [
