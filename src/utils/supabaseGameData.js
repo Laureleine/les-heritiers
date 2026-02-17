@@ -195,7 +195,7 @@ export const loadFairyTypes = async () => {
           id, nom, description, type_pouvoir
         ),
         fairy_assets (
-          id, nom, description, effets
+          id, nom, description, effets, effets_techniques
         )
       `)
       .order('name');
@@ -309,13 +309,28 @@ export const loadFairyTypes = async () => {
 
     data.forEach(fairy => {
 
-		// Ajoutez ceci pour traiter les atouts
-		const rawAssets = fairy.fairy_assets || [];
-		// Tri alphabétique simple
-		const assetsTries = rawAssets.sort((a, b) => a.nom.localeCompare(b.nom));
+		// Liste des atouts à masquer pour le moment
+		const ATOUTS_MASQUES = [
+			'Anomalie féérique',
+			'Féal',
+			'Vilain petit canard',
+			'Marginal innocent',
+			'Ancrage humain fort'
+		];
 
-        // Traitement des Pouvoirs (C'est ici qu'on active Step 3)
-        const rawPouvoirs = fairy.fairy_powers || [];
+		// Traitement des Atouts (Step 8)
+		const rawAssets = fairy.fairy_assets || [];
+		
+		// On filtre pour exclure les universels, puis on trie
+		const assetsTries = rawAssets
+			.filter(a => !ATOUTS_MASQUES.includes(a.nom))
+			.sort((a, b) => a.nom.localeCompare(b.nom));		
+
+        // Traitement des Pouvoirs 
+        // On filtre d'abord pour exclure les Profonds et Légendaires
+        const rawPouvoirs = (fairy.fairy_powers || []).filter(p => 
+            p.type_pouvoir === 'masque' || p.type_pouvoir === 'demasque'
+        );
         const pouvoirsTries = rawPouvoirs.sort((a, b) => {
             // Tri : Masqué (1) avant Démasqué (2), puis alphabétique
             const order = { 'masque': 1, 'demasque': 2, 'profond': 3, 'legendaire': 4 };

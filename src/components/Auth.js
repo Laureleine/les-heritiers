@@ -52,8 +52,18 @@ export default function Auth() {
         });
         if (error) throw error;
       }
+
     } catch (error) {
-      setError(error.message);
+      console.error("Erreur Auth:", error); // Garder pour le debug
+
+      // Traduction des erreurs courantes Supabase
+      if (error.message.includes('Rate limit exceeded') || error.message.includes('Too many requests')) {
+        setError("Trop de tentatives d'envoi d'email. Veuillez attendre quelques minutes (ou vérifier vos spams) avant de réessayer.");
+      } else if (error.message.includes('User already registered')) {
+        setError("Cet email est déjà enregistré. Essayez de vous connecter.");
+      } else {
+        setError(error.message); // Fallback
+      }
     } finally {
       setLoading(false);
     }
