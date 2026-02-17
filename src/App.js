@@ -22,6 +22,7 @@ import StepRecapitulatif from './components/StepRecapitulatif';
 import CharacterList from './components/CharacterList';
 import Changelog from './components/Changelog';
 import Auth from './components/Auth';
+import StepVieSociale from './components/StepVieSociale';
 
 // Utilitaires
 import { saveCharacterToSupabase } from './utils/supabaseStorage';
@@ -82,11 +83,12 @@ function App() {
     },
     capaciteChoisie: '',
     pouvoirs: [],
+	vieSociale: {}, 
+    fortune: 0,
     
     // Champs Placeholder
     atouts: [],
     rangsProfil: {},
-    fortune: 0,
     equipement: [],
     contacts: [],
 
@@ -355,14 +357,7 @@ function App() {
           {step === 6 && <StepProfils character={character} onProfilsChange={handleProfilsChange} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
           {step === 7 && <StepCompetencesLibres character={character} onCompetencesLibresChange={handleCompetencesLibresChange} profils={gameData.profils} fairyData={gameData.fairyData} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} />}
           {step === 8 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={handleCompetencesFutilesChange} fairyData={gameData.fairyData} />}
-          {step === 9 && (
-            <div className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-md border border-amber-100 text-center">
-              <h2 className="text-3xl font-serif text-amber-900 mb-6 flex items-center justify-center gap-3"><TrendingUp className="text-blue-500" size={32} /> Rangs de Profil</h2>
-              <p className="text-gray-600 italic text-lg mb-8">Calcul des Rangs de Profil et Points de Personnage.<br /><span className="text-sm text-gray-400 block mt-2">(Fonctionnalité à venir)</span></p>
-              <div className="flex justify-center"><div className="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center border-4 border-blue-100"><TrendingUp size={48} className="text-blue-200" /></div></div>
-            </div>
-          )}
-
+          {step === 9 && (<StepVieSociale        character={character} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))}  />)}
           {/* STEP 10 : PERSONNALISATION (AVEC FORMULAIRE) */}
           {step === 10 && (
             <StepPersonnalisation 

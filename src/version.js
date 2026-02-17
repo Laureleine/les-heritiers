@@ -6,6 +6,18 @@ export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
     {
+        version: '7.2.0',
+        date: '18 Février 2026',
+		changes: [
+		  '🛍️ **Nouveau (Étape 9) :** "Vie Sociale & Équipement". Dépensez vos Points de Personnage (PP) dans des boutiques dédiées à chaque profil.',
+		  '💰 **Fortune Dynamique :** Jauge de Fortune en temps réel.',
+		  '✨ **Nouveau (Étape 8) :** "Atouts Féériques". Système complet avec gestion des atouts universels et spécifiques.',
+		  '🎁 **Bonus Intelligents :** Les Atouts débloquent automatiquement des spécialités "dorées" gratuites dans les compétences.',
+		  '⚡ **Pouvoirs :** Filtrage des pouvoirs accessibles à la création (Masqué/Démasqué uniquement).',
+		  '🎨 **UI/UX :** Nouveau design "Magasin" pour l\'équipement et badges distinctifs pour les bonus.'
+		]
+    },
+    {
         version: '7.1.0',
         date: '16 Février 2026',
 		changes: [
