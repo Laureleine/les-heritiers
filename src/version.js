@@ -5,6 +5,19 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
+ {
+    version: '8.0.0',
+    date: '21 Février 2026',
+    changes: [
+      '🛡️ **Conseil des Gardiens :** Nouvelle interface secrète permettant aux Gardiens du Savoir et Admins de valider ou rejeter les propositions de la communauté.',
+      '🛍️ **Vie Sociale (Étape 9) :** Fin des données de test ! Le catalogue est désormais connecté en temps réel à la base de données.',
+      '⚙️ **Métiers Intelligents :** Remplacement automatique de l\'ancien métier principal lors d\'un nouvel achat, et cumul possible pour les activités secondaires.',
+      '💰 **Fortune Dynamique :** La jauge de Fortune se calcule toute seule en prenant la valeur la plus haute et en y additionnant les bonus d\'objets (limite de 15).',
+      '📖 **Grimoire (Encyclopédie) :** Ajout des onglets Pouvoirs et Capacités. Possibilité d\'attacher/détacher ces éléments directement sur la fiche d\'une Fée.',
+      '🛡️ **Administration :** Activation de l\'interface de Rôles pour permettre au Super Admin de nommer les "Gardiens du Savoir".',
+      '🐛 **Stabilité Absolue :** Éradication des blocages de cache du navigateur et fluidité de connexion retrouvée.'
+    ]
+  },
     {
         version: '7.2.0',
         date: '18 Février 2026',

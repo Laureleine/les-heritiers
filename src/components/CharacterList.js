@@ -3,7 +3,7 @@
 // Design : Harmonisation complète avec "Ok.png" (Titre centré, boutons styled, cartes épurées)
 
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar } from 'lucide-react';
+import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
 import { importCharacter } from '../utils/characterStorage'; // Assurez-vous d'avoir ce fichier ou retirez l'import si non utilisé
@@ -12,7 +12,7 @@ import { APP_VERSION, BUILD_DATE } from '../version';
 
 const ADMIN_EMAIL = 'amaranthe@free.fr';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, profils = []}) { 
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdminUsers, profils = []}) { 
   
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
@@ -45,6 +45,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     return { icon: p.icon || '👤', text };
   };
   
+ // Lancement initial
   useEffect(() => {
     loadCharacters();
   }, []);
@@ -52,16 +53,24 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const loadCharacters = async () => {
     console.log("🚀 START: loadCharacters démarre...");
     setLoading(true);
-    
+
+    // --- 🛡️ TIMER DE SÉCURITÉ ANTI-BLOCAGE ---
+    // Si la requête tourne dans le vide (Service Worker ou réseau bloqué),
+    // on force la levée de l'écran de chargement après 4 secondes.
+    const safetyTimer = setTimeout(() => {
+      console.warn("⚠️ Délai réseau dépassé. Forçage de l'affichage depuis le cache.");
+      setLoading(false);
+    }, 10000);
+
     try {
       // Étape 1 : Utilisateur
       console.log("👤 1. Récupération utilisateur Supabase...");
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
       if (userError) throw userError;
+      
       if (!user) {
-          console.warn("⚠️ Pas d'utilisateur connecté !");
-          return;
+        console.warn("⚠️ Pas d'utilisateur connecté !");
+        return;
       }
       console.log("✅ Utilisateur trouvé :", user.email);
       setCurrentUser(user);
@@ -74,53 +83,65 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
         .eq('id', user.id)
         .single();
 
-      if (profileError && profileError.code !== 'PGRST116') { 
-          // PGRST116 = Pas de résultat (c'est normal si pas de profil)
-          console.error("❌ Erreur lecture profil:", profileError);
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error("❌ Erreur lecture profil:", profileError);
       }
-
       console.log("📋 Profil reçu :", profile);
 
-      if (!profile?.username) {
-         console.warn("⚠️ Pas de pseudo défini !");
-         if (window.confirm("Votre compte nécessite un nom d'utilisateur. Le définir maintenant ?")) {
-             console.log("🔄 Redirection vers AccountSettings...");
-             if (onOpenAccount) onOpenAccount(); 
-             // IMPORTANT : On force l'arrêt du chargement avant de partir
-             setLoading(false); 
-             return; 
-         }
+      // 🛡️ CORRECTION ICI : On ne lance le popup QUE si la lecture a réussi ET qu'il n'y a pas de pseudo
+      if (!profileError && !profile?.username) {
+        console.warn("⚠️ Pas de pseudo défini !");
+        if (window.confirm("Votre compte nécessite un nom d'utilisateur. Le définir maintenant ?")) {
+          console.log("🔄 Redirection vers AccountSettings...");
+          if (onOpenAccount) onOpenAccount();
+          setLoading(false);
+          return;
+        }
       }
 
-// Étape 3 : Chargement des personnages
-console.log("📚 3. Chargement des personnages...");
+      // Étape 3 : Chargement des personnages
+      console.log("📚 3. Chargement des personnages...");
+      const adminStatus = user.email === 'amaranthe@free.fr';
+      console.log("👑 Admin ?", adminStatus);
+      setIsAdmin(adminStatus);
 
-const adminStatus = user.email === 'amaranthe@free.fr';  // ✅ DÉCLARÉ ICI
-console.log("👑 Admin ?", adminStatus);
-setIsAdmin(adminStatus);
+      console.log("⏳ En attente des données...");
+      const promises = [getUserCharacters(), getPublicCharacters()];
+      if (adminStatus) promises.push(getAllCharactersAdmin());
 
-console.log("⏳ En attente des données...");
-const promises = [getUserCharacters(), getPublicCharacters()];
-if (adminStatus) promises.push(getAllCharactersAdmin());
+      // ✅ LA SOLUTION MAGIQUE : La destructuration (aucun chiffre, aucun crochet !)
+      const [mesPersos, persosPublics, persosAdmin] = await Promise.all(promises);
 
-const results = await Promise.all(promises);  // ✅ DÉCLARÉ ICI
+      const myUserId = user.id;
 
-console.log("📦 Données reçues (brutes) :", results);
-console.log("📊 Stats : Mes Persos", results[0]?.length || 0, "Publics", results[1]?.length || 0);
+      // ✅ ATTRIBUTION PROPRE
+      setMyCharacters(mesPersos || []);
+      setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
+      
+      if (adminStatus) {
+        setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
+      } else {
+        setAdminCharacters([]);
+      }
 
-const myUserId = user.id;  // ✅ DÉCLARÉ ICI
-
-// ✅ SET DIRECT : tes persos DÉJÀ MAPPÉS
-setMyCharacters(results[0] || []);
-setPublicCharacters((results[1] || []).filter(c => c.userId !== myUserId));
-setAdminCharacters(adminStatus ? (results[2] || []).filter(c => c.userId !== myUserId && !c.isPublic) : []);
-
-console.log("🎉 END: Chargement terminé avec succès !");
+      console.log("🎉 END: Chargement terminé avec succès !");
 
     } catch (error) {
-      console.error('🔥 CRASH dans loadCharacters:', error);
-      alert("Erreur technique : " + error.message);
+      // On ignore l'erreur AbortError classique
+      if (error.name !== 'AbortError' && !error.message?.includes('aborted')) {
+         console.error('🔥 CRASH ou ERREUR dans loadCharacters:', error);
+         
+         // 🛡️ GESTION DU JETON EXPIRÉ
+         if (error.message?.includes('JWT') || error.message?.includes('session') || error.status === 401) {
+            console.warn("🔒 Session expirée détectée. Déconnexion forcée.");
+            if (onSignOut) onSignOut(); // Renvoie le joueur à l'écran de connexion
+         } else {
+            alert("Erreur technique : " + error.message);
+         }
+      }
     } finally {
+      // On n'oublie pas de nettoyer le timer pour éviter les conflits si le chargement a été rapide
+      clearTimeout(safetyTimer);
       console.log("🏁 FINALLY : Suppression de l'écran de chargement.");
       setLoading(false);
     }
@@ -329,6 +350,17 @@ console.log("🎉 END: Chargement terminé avec succès !");
                     <input type="file" accept=".json" onChange={handleImport} className="hidden" />
                 </label>
 
+          {/* --- NOUVEAU BOUTON : ENCYCLOPÉDIE --- */}
+          <button
+            onClick={onOpenEncyclopedia}
+            className="flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm"
+            title="Accéder au Grimoire"
+          >
+            <Book size={18} />
+            <span className="hidden sm:inline">Encyclopédie</span>
+          </button>
+          {/* ------------------------------------ */}
+		  
                 <button 
                     onClick={onNewCharacter} 
                     className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm"
@@ -336,6 +368,19 @@ console.log("🎉 END: Chargement terminé avec succès !");
                     <Plus size={18}/> <span>Nouveau</span>
                 </button>
 
+			  {/* --- NOUVEAU BOUTON : GESTION DES RÔLES (ADMIN) --- */}
+			  {isAdmin && (
+				<button
+				  onClick={onOpenAdminUsers}
+				  className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm"
+				  title="Gérer les Gardiens du Savoir"
+				>
+				  <Shield size={18} />
+				  <span className="hidden sm:inline">Rôles</span>
+				</button>
+			  )}
+			  {/* ------------------------------------------------- */}
+		  
 				{/* --- AJOUT : BOUTON MON COMPTE --- */}
 				<button
 				  onClick={onOpenAccount}

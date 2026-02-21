@@ -1,315 +1,331 @@
-import React, { useState, useMemo } from 'react';
-import { ShoppingBag, Coins, Users, Shield, Book, Briefcase, Plus, Minus, Lock, AlertCircle } from 'lucide-react';
-
-// --- DONNÉES EN DUR (MOCK) POUR TEST UX/UI ---
-const MOCK_TABLEAUX = {
-  'Aventurier': {
-    metiers: [
-      { id: 'av_m1', nom: 'Guide / Éclaireur', cout: 2, fortune: 2, desc: 'Revenus modestes, connaît le terrain.' },
-      { id: 'av_m2', nom: 'Chasseur de trésor', cout: 4, fortune: 5, desc: 'Revenus confortables mais irréguliers.' }
-    ],
-    objets: [
-      { id: 'av_o1', nom: 'Arme de qualité', cout: 1, desc: '+1 aux dégâts ou à la précision.' },
-      { id: 'av_o2', nom: 'Cheval fidèle', cout: 2, desc: 'Monture dressée, ne panique pas.' },
-      { id: 'av_o3', nom: 'Carte au trésor', cout: 3, desc: 'Indique un lieu secret (Scénario).' }
-    ],
-    contacts: [
-      { id: 'av_c1', nom: 'Indics locaux', cout: 1, desc: 'Réseau de mendiants ou gamins.' },
-      { id: 'av_c2', nom: 'Compagnon d\'armes', cout: 2, desc: 'Allié combattant loyal.' }
-    ]
-  },
-  'Gentleman': {
-    metiers: [
-      { id: 'gt_m1', nom: 'Dandy / Rentier', cout: 2, fortune: 4, desc: 'Vit de ses rentes, oisif.' },
-      { id: 'gt_m2', nom: 'Mécène', cout: 5, fortune: 7, desc: 'Très riche, soutient les arts.' }
-    ],
-    objets: [
-      { id: 'gt_o1', nom: 'Garde-robe haute couture', cout: 1, desc: 'Bonus social dans la haute société.' },
-      { id: 'gt_o2', nom: 'Hôtel particulier', cout: 4, desc: 'Résidence luxueuse avec personnel.' },
-      { id: 'gt_o3', nom: 'Titre de Noblesse', cout: 3, desc: 'Ouvre les portes des cours royales.' }
-    ],
-    contacts: [
-      { id: 'gt_c1', nom: 'Valet de chambre', cout: 1, desc: 'Domestique discret et efficace.' },
-      { id: 'gt_c2', nom: 'Ami influent', cout: 3, desc: 'Ministre ou haut gradé.' }
-    ]
-  }
-};
+// src/components/StepVieSociale.js
+import React, { useState, useEffect, useMemo } from 'react';
+import { ShoppingBag, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle } from 'lucide-react';
+import { supabase } from '../config/supabase';
 
 export default function StepVieSociale({ character, onCharacterChange }) {
-  // Pour le test, on force deux profils actifs si le perso est vide
+  // Les profils auxquels le personnage a accès
   const profilsActifs = [
-    character.profils.majeur.nom || 'Gentleman', 
-    character.profils.mineur.nom || 'Aventurier'
+    character.profils?.majeur?.nom || 'Gentleman',
+    character.profils?.mineur?.nom || 'Aventurier'
   ];
 
   const [activeTab, setActiveTab] = useState(profilsActifs);
-  const [achats, setAchats] = useState(character.vieSociale || {}); // { 'Gentleman': ['id1', 'id2'], ... }
+  const [achats, setAchats] = useState(character.vieSociale || {}); // ex: { 'Gentleman': ['id1', 'id2'] }
+  
+  // NOUVEAU : États pour la base de données
+  const [socialItems, setSocialItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // 1. Récupération des vraies données depuis Supabase
+  useEffect(() => {
+    const fetchSocialItems = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('social_items')
+          .select(`
+            *,
+            profils ( name_masculine )
+          `)
+          .eq('is_official', true) // On prend les officiels par défaut
+          .order('cout', { ascending: true });
+
+        if (error) throw error;
+        setSocialItems(data || []);
+      } catch (error) {
+        console.error("Erreur chargement social_items :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSocialItems();
+  }, []);
+
+  // Helpers pour extraire les objets du bon profil
+  const getItemsForProfile = (profilName) => {
+    return socialItems.filter(item => item.profils?.name_masculine === profilName);
+  };
+
+  const getItemCost = (item) => {
+    // Si la fée est moderne et qu'il y a un coût spécifique, on l'applique
+    if (character.anciennete === 'moderne' && item.cout_moderne !== null) {
+      return Number(item.cout_moderne);
+    }
+    return Number(item.cout);
+  };
 
   // --- CALCUL DES BUDGETS (PP) ---
   const getBudget = (profilNom) => {
-    // Simulation du calcul de rang (Rank + Bonus Majeur/Mineur)
-    // Dans la vraie version, cela viendra de calculateTotalPP
-    let base = 0;
-    // Simulation : Rang calculé via compétences (ici fixé à 1 pour l'exemple) + Bonus
-    const rang = 1; 
-    
-    if (profilNom === character.profils.majeur.nom) base = rang + 8;
-    else if (profilNom === character.profils.mineur.nom) base = rang + 4;
-    else base = rang; // Profil secondaire
-
-    return base;
+    // Pour l'instant, estimation simple (vous pourrez lier cela à calculateTotalPP plus tard)
+    let rang = 1; 
+    if (profilNom === character.profils?.majeur?.nom) return rang + 8;
+    if (profilNom === character.profils?.mineur?.nom) return rang + 4;
+    return rang;
   };
 
   const getDepenses = (profilNom) => {
     const itemIds = achats[profilNom] || [];
-    const catalogue = MOCK_TABLEAUX[profilNom];
-    if (!catalogue) return 0;
-
     let total = 0;
     itemIds.forEach(id => {
-      // Cherche l'objet dans toutes les catégories
-      Object.values(catalogue).flat().forEach(item => {
-        if (item.id === id) total += item.cout;
-      });
+      const item = socialItems.find(i => i.id === id);
+      if (item) total += getItemCost(item);
     });
     return total;
   };
 
+  // --- CALCUL DE LA FORTUNE DYNAMIQUE ---
   const currentFortune = useMemo(() => {
-    let f = 1; // Base miséreux
-    // On scanne tous les achats pour trouver un métier
-    Object.keys(achats).forEach(pKey => {
-      const pIds = achats[pKey];
-      const catalogue = MOCK_TABLEAUX[pKey];
-      if (catalogue) {
-        catalogue.metiers.forEach(m => {
-          if (pIds.includes(m.id)) f = Math.max(f, m.fortune);
-        });
-      }
-    });
-    return f;
-  }, [achats]);
+    let baseFortune = 0;
+    let bonusFortune = 0;
+    let hasMetier = false;
 
-  // --- HANDLERS ---
+    Object.keys(achats).forEach(pKey => {
+      (achats[pKey] || []).forEach(id => {
+        const item = socialItems.find(i => i.id === id);
+        if (item) {
+          if (item.fortune_score !== null && item.fortune_score !== undefined) {
+            baseFortune = Math.max(baseFortune, item.fortune_score);
+            hasMetier = true;
+          }
+          if (item.fortune_bonus !== null && item.fortune_bonus !== undefined) {
+            bonusFortune += item.fortune_bonus;
+          }
+        }
+      });
+    });
+
+    if (!hasMetier) baseFortune = 1; // Miséreux par défaut
+    
+    return Math.min(15, baseFortune + bonusFortune); // Règle : Max 15
+  }, [achats, socialItems]);
+
+  // --- HANDLERS D'ACHAT/VENTE ---
   const toggleAchat = (profil, item) => {
     const currentIds = achats[profil] || [];
     const exists = currentIds.includes(item.id);
     const budget = getBudget(profil);
     const depense = getDepenses(profil);
+    const cost = getItemCost(item);
 
-    let newIds;
+    let newAchats = { ...achats };
+
     if (exists) {
-      // Vendre
-      newIds = currentIds.filter(id => id !== item.id);
+      // VENDRE (Retirer du panier)
+      newAchats[profil] = currentIds.filter(id => id !== item.id);
     } else {
-      // Acheter (Vérif budget)
-      if (depense + item.cout > budget) {
-        alert("Pas assez de Points de Personnage (PP) !");
+      // ACHETER (Vérification du budget)
+      if (depense + cost > budget) {
+        alert("Fonds insuffisants ! Vous n'avez pas assez de Points de Personnage.");
         return;
       }
-      // Règle métier unique (Simplification pour l'UX)
-      if (item.fortune) {
-        // On retire les autres métiers de ce profil pour éviter les cumuls absurdes
-        const metierIds = MOCK_TABLEAUX[profil].metiers.map(m => m.id);
-        newIds = currentIds.filter(id => !metierIds.includes(id));
-        newIds.push(item.id);
-      } else {
-        newIds = [...currentIds, item.id];
+
+      // 🛡️ RÈGLE DU MÉTIER PRIMAIRE
+      // "Si le métier cliqué a is_secondaire === false : On retire automatiquement l'ancien métier"
+      if (item.categorie === 'metier' && item.is_secondaire === false) {
+        Object.keys(newAchats).forEach(pKey => {
+          newAchats[pKey] = (newAchats[pKey] || []).filter(id => {
+            const i = socialItems.find(x => x.id === id);
+            // On conserve l'objet S'IL N'EST PAS un métier primaire
+            return !(i && i.categorie === 'metier' && i.is_secondaire === false);
+          });
+        });
       }
+
+      // Ajout du nouvel item
+      if (!newAchats[profil]) newAchats[profil] = [];
+      newAchats[profil].push(item.id);
     }
 
-    const newAchats = { ...achats, [profil]: newIds };
     setAchats(newAchats);
-    // Sauvegarde dans le state global (à prévoir dans App.js)
-    if (onCharacterChange) onCharacterChange({ vieSociale: newAchats, fortune: currentFortune });
+
+    // Sauvegarde en direct dans le personnage global
+    if (onCharacterChange) {
+      // On recalcule la fortune immédiate pour la sauvegarde
+      let fBase = 0, fBonus = 0, fHasMetier = false;
+      Object.keys(newAchats).forEach(pKey => {
+        (newAchats[pKey] || []).forEach(id => {
+          const i = socialItems.find(x => x.id === id);
+          if (i) {
+            if (i.fortune_score !== null) { fBase = Math.max(fBase, i.fortune_score); fHasMetier = true; }
+            if (i.fortune_bonus !== null) fBonus += i.fortune_bonus;
+          }
+        });
+      });
+      if (!fHasMetier) fBase = 1;
+      const fFinale = Math.min(15, fBase + fBonus);
+
+      onCharacterChange({ vieSociale: newAchats, fortune: fFinale });
+    }
   };
 
-  // --- RENDU CATALOGUE ---
+  // --- RENDU DU CATALOGUE ---
   const renderCatalogue = (profilNom) => {
-    const data = MOCK_TABLEAUX[profilNom];
-    if (!data) return <div className="p-8 text-center text-gray-400">Catalogue vide ou non défini pour ce test.</div>;
+    if (loading) return <div className="p-10 text-center text-amber-600 flex flex-col items-center justify-center"><Loader className="animate-spin mb-2" size={32} /> Installation des étals...</div>;
+
+    const itemsDuProfil = getItemsForProfile(profilNom);
+    if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;
+
+    const metiers = itemsDuProfil.filter(i => i.categorie === 'metier');
+    const objets = itemsDuProfil.filter(i => i.categorie === 'objet');
+    const contacts = itemsDuProfil.filter(i => i.categorie === 'contact');
 
     const budget = getBudget(profilNom);
     const depense = getDepenses(profilNom);
     const reste = budget - depense;
     const myItems = achats[profilNom] || [];
 
-    const renderSection = (title, icon, items) => (
-      <div className="mb-6">
-        <h4 className="font-bold text-amber-900 flex items-center gap-2 mb-3 border-b border-amber-100 pb-1">
-          {icon} {title}
-        </h4>
-        <div className="space-y-2">
-          {items.map(item => {
-            const isOwned = myItems.includes(item.id);
-            const canAfford = reste >= item.cout;
-            
-            return (
-              <div key={item.id} 
-                   onClick={() => (isOwned || canAfford) && toggleAchat(profilNom, item)}
-                   className={`
-                     p-3 rounded-lg border flex justify-between items-center cursor-pointer transition-all
-                     ${isOwned 
-                       ? 'bg-amber-100 border-amber-300 ring-1 ring-amber-300' 
-                       : canAfford 
-                         ? 'bg-white border-gray-200 hover:border-amber-300 hover:shadow-sm' 
-                         : 'bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed'}
-                   `}>
-                <div>
-                  <div className="font-bold text-sm text-gray-800">{item.nom}</div>
-                  <div className="text-xs text-gray-500">{item.desc}</div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {item.fortune && (
-                    <span className="text-[10px] bg-green-100 text-green-800 px-2 py-1 rounded font-bold">
-                      Fortune {item.fortune}
-                    </span>
-                  )}
-                  <div className={`font-bold text-sm ${isOwned ? 'text-amber-700' : 'text-gray-400'}`}>
-                    {item.cout} PP
+    const renderSection = (title, icon, items) => {
+      if (items.length === 0) return null;
+      return (
+        <div className="mb-6">
+          <h4 className="font-serif font-bold text-amber-900 mb-3 flex items-center gap-2 border-b border-amber-100 pb-1">
+            {icon} {title}
+          </h4>
+          <div className="space-y-2">
+            {items.map(item => {
+              const isOwned = myItems.includes(item.id);
+              const cost = getItemCost(item);
+              const canAfford = reste >= cost;
+
+              return (
+                <div 
+                  key={item.id}
+                  onClick={() => (isOwned || canAfford) && toggleAchat(profilNom, item)}
+                  className={`
+                    p-3 rounded-lg border flex justify-between items-center cursor-pointer transition-all
+                    ${isOwned 
+                      ? 'bg-amber-100 border-amber-400 ring-1 ring-amber-300 shadow-inner' 
+                      : canAfford 
+                        ? 'bg-white border-gray-200 hover:border-amber-400 hover:shadow-sm' 
+                        : 'bg-gray-50 border-gray-100 opacity-50 cursor-not-allowed'}
+                  `}>
+                  <div className="flex-1">
+                    <div className="font-bold text-sm text-gray-800 flex items-center flex-wrap gap-2">
+                      {item.nom}
+                      {item.fortune_score !== null && <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded uppercase tracking-wider">Fortune {item.fortune_score}</span>}
+                      {item.fortune_bonus !== null && <span className="text-[10px] bg-green-200 text-green-900 px-2 py-0.5 rounded uppercase tracking-wider">+ {item.fortune_bonus} Fortune</span>}
+                      {item.is_secondaire && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Secondaire</span>}
+                    </div>
+                    {item.description && <div className="text-xs text-gray-500 mt-1">{item.description}</div>}
                   </div>
-                  {isOwned ? <CheckCircleIcon /> : <PlusCircleIcon />}
+                  
+                  <div className="font-bold text-sm ml-4 whitespace-nowrap flex items-center gap-2">
+                    {cost} PP
+                    {isOwned ? <CheckCircle size={18} className="text-green-600" /> : <Plus size={18} className={canAfford ? "text-amber-600" : "text-gray-400"} />}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
-    );
+      );
+    };
 
     return (
-      <div className="animate-fade-in">
-        {/* Header du Magasin */}
-        <div className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 rounded-xl shadow-md mb-6 flex justify-between items-center">
-          <div>
-            <h3 className="font-serif font-bold text-xl">{profilNom}</h3>
-            <p className="text-amber-100 text-sm opacity-90">Dépensez vos Points de Personnage ici.</p>
-          </div>
-          <div className="text-right">
-            <div className="text-3xl font-bold">{reste}</div>
-            <div className="text-[10px] uppercase font-bold tracking-wider opacity-75">PP Restants</div>
-          </div>
+      <div>
+        <div className="mb-4 flex justify-between items-center bg-stone-100 p-3 rounded-xl border border-stone-200">
+          <h3 className="font-serif font-bold text-stone-800">{profilNom}</h3>
+          <span className="font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
+            {reste} PP Restants
+          </span>
         </div>
-
-        {renderSection("Métiers & Fortune", <Briefcase size={18}/>, data.metiers)}
-        {renderSection("Objets & Titres", <Shield size={18}/>, data.objets)}
-        {renderSection("Contacts & Alliés", <Users size={18}/>, data.contacts)}
+        {renderSection("Métiers & Sources de revenus", <Briefcase size={16} className="text-amber-700"/>, metiers)}
+        {renderSection("Objets & Possessions", <Package size={16} className="text-amber-700"/>, objets)}
+        {renderSection("Contacts & Réseau", <Users size={16} className="text-amber-700"/>, contacts)}
       </div>
     );
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20">
+    <div className="max-w-6xl mx-auto space-y-6">
       
-      {/* 1. SIDEBAR (Navigation Profils) - 3 colonnes */}
-      <div className="lg:col-span-3 space-y-4">
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="font-serif font-bold text-gray-700 mb-4 flex items-center gap-2">
-            <ShoppingBag size={20} /> Boutiques
-          </h3>
-          <div className="space-y-2">
-            {profilsActifs.map(pName => {
-              const budget = getBudget(pName);
-              const depense = getDepenses(pName);
-              const isFull = depense >= budget;
-              const isActive = activeTab === pName;
-
-              return (
-                <button
-                  key={pName}
-                  onClick={() => setActiveTab(pName)}
-                  className={`
-                    w-full text-left p-3 rounded-lg border-2 transition-all flex justify-between items-center
-                    ${isActive 
-                      ? 'border-amber-500 bg-amber-50 text-amber-900 shadow-sm' 
-                      : 'border-transparent hover:bg-gray-50 text-gray-600'}
-                  `}
-                >
-                  <span className="font-bold text-sm">{pName}</span>
-                  <span className={`text-xs px-2 py-1 rounded-full ${isFull ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                    {budget - depense} PP
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+      {/* HEADER & JAUGE FORTUNE */}
+      <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+          <h2 className="text-xl font-serif font-bold text-amber-900 flex items-center gap-2">
+            <ShoppingBag size={24} /> Équipement & Vie Sociale
+          </h2>
+          <p className="text-sm text-amber-700 mt-1">Dépensez les Points de Personnage de vos Profils.</p>
         </div>
-
-        {/* Jauge Globale Fortune */}
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="font-serif font-bold text-gray-700 mb-2 flex items-center gap-2">
-            <Coins size={20} className="text-amber-500" /> Fortune
-          </h3>
-          <div className="flex items-end gap-2 mb-2">
-            <span className="text-4xl font-bold text-amber-600">{currentFortune}</span>
-            <span className="text-sm text-gray-400 mb-1">/ 10</span>
+        
+        <div className="flex flex-col items-center bg-white py-2 px-6 rounded-lg border-2 border-amber-300 shadow-sm">
+          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Votre Fortune Actuelle</div>
+          <div className="text-2xl font-black text-amber-600 flex items-center gap-2">
+            <Coins size={24} className="text-amber-500" />
+            {currentFortune} <span className="text-sm text-gray-400 font-normal">/ 15</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div className="bg-amber-500 h-2.5 rounded-full transition-all duration-500" style={{ width: `${(currentFortune / 10) * 100}%` }}></div>
-          </div>
-          <p className="text-xs text-center mt-2 text-gray-500 italic">
-            Déterminé par votre activité la plus lucrative.
-          </p>
         </div>
       </div>
 
-      {/* 2. MAIN CONTENT (Magasin) - 6 colonnes */}
-      <div className="lg:col-span-6">
-        {renderCatalogue(activeTab)}
-      </div>
-
-      {/* 3. INVENTAIRE (Panier) - 3 colonnes */}
-      <div className="lg:col-span-3">
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm sticky top-4">
-          <h3 className="font-serif font-bold text-gray-700 mb-4 flex items-center gap-2">
-            <Book size={20} /> Inventaire
-          </h3>
-          
-          {Object.keys(achats).length === 0 ? (
-            <p className="text-sm text-gray-400 text-center italic py-4">Votre inventaire est vide.</p>
-          ) : (
-            <div className="space-y-4">
-              {Object.entries(achats).map(([profil, ids]) => {
-                if (ids.length === 0) return null;
-                const items = ids.map(id => Object.values(MOCK_TABLEAUX[profil] || {}).flat().find(i => i.id === id)).filter(Boolean);
-                
-                return (
-                  <div key={profil} className="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
-                    <div className="text-[10px] uppercase font-bold text-gray-400 mb-1">{profil}</div>
-                    <ul className="space-y-1">
-                      {items.map(item => (
-                        <li key={item.id} className="text-sm flex justify-between items-start group">
-                          <span className="text-gray-700">{item.nom}</span>
-                          <button 
-                            onClick={() => toggleAchat(profil, item)}
-                            className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Minus size={14} />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* 1. SIDEBAR : Navigation des Boutiques */}
+        <div className="lg:col-span-3 space-y-2">
+          <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider mb-3">Vos Boutiques</h3>
+          {profilsActifs.map(pName => {
+            const isActive = activeTab === pName;
+            return (
+              <button
+                key={pName}
+                onClick={() => setActiveTab(pName)}
+                className={`w-full text-left p-3 rounded-lg border-2 transition-all flex justify-between items-center ${
+                  isActive 
+                    ? 'border-amber-500 bg-amber-50 text-amber-900 shadow-sm' 
+                    : 'border-transparent hover:bg-gray-50 text-gray-600'
+                }`}
+              >
+                <span className="font-serif font-bold">{pName}</span>
+              </button>
+            );
+          })}
         </div>
-      </div>
 
+        {/* 2. ZONE PRINCIPALE : Catalogue */}
+        <div className="lg:col-span-6 bg-white p-4 rounded-xl shadow-sm border border-gray-200 min-h-[400px]">
+          {renderCatalogue(activeTab)}
+        </div>
+
+        {/* 3. INVENTAIRE (Panier) */}
+        <div className="lg:col-span-3">
+          <div className="bg-stone-50 rounded-xl p-4 border border-stone-200 sticky top-4">
+            <h3 className="font-serif font-bold text-stone-800 border-b border-stone-200 pb-2 mb-3">Votre Inventaire</h3>
+            
+            {Object.keys(achats).length === 0 || Object.values(achats).every(ids => ids.length === 0) ? (
+              <div className="text-center text-stone-400 text-sm italic py-4">Inventaire vide.</div>
+            ) : (
+              <div className="space-y-4">
+                {Object.entries(achats).map(([profil, ids]) => {
+                  if (ids.length === 0) return null;
+                  const itemsOfProfil = ids.map(id => socialItems.find(i => i.id === id)).filter(Boolean);
+                  
+                  return (
+                    <div key={profil}>
+                      <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">{profil}</h4>
+                      <ul className="space-y-1">
+                        {itemsOfProfil.map(item => (
+                          <li key={item.id} className="text-sm font-semibold text-stone-700 flex justify-between group">
+                            <span className="truncate">{item.nom}</span>
+                            <button 
+                              onClick={() => toggleAchat(profil, item)}
+                              className="text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Revendre"
+                            >
+                              <Minus size={14} />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
-
-// Icons simples pour l'UI
-const PlusCircleIcon = () => (
-  <div className="bg-gray-100 p-1 rounded-full text-gray-400 group-hover:bg-amber-100 group-hover:text-amber-600">
-    <Plus size={16} />
-  </div>
-);
-
-const CheckCircleIcon = () => (
-  <div className="bg-amber-600 p-1 rounded-full text-white">
-    <Lock size={12} />
-  </div>
-);

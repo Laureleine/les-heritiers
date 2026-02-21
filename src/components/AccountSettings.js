@@ -70,14 +70,15 @@ export default function AccountSettings({ session, onBack }) {
 
         {/* Username */}
         <div>
-          <label className="block text-sm text-gray-700 mb-1 font-bold">Nom d'utilisateur</label>
-          <input 
-            type="text" 
-            value={newUsername} 
-            onChange={(e) => setNewUsername(e.target.value)}
-            className="w-full p-2 border border-amber-300 rounded focus:border-amber-600"
-          />
-        </div>
+			<label className="block text-sm font-bold text-amber-900 mb-1">Nom d'utilisateur</label>
+			<input 
+			  type="text" 
+			  value={newUsername}
+			  onChange={(e) => setNewUsername(e.target.value)}
+			  autoComplete="off" // 🛡️ AJOUT : Bloque l'autocomplétion Chrome
+			  className="w-full p-2 border border-amber-300 rounded focus:border-amber-600"
+			/>
+		</div>
 
         {/* Password */}
         <div>
@@ -87,6 +88,7 @@ export default function AccountSettings({ session, onBack }) {
             value={newPassword} 
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="Laisser vide pour ne pas changer"
+            autoComplete="new-password" // 🛡️ AJOUT : Empêche le navigateur de coller le vieux mot de passe
             className="w-full p-2 border border-amber-300 rounded focus:border-amber-600"
           />
         </div>

@@ -114,16 +114,23 @@ export const checkForUpdates = async (currentVersion) => {
 
 
 /**
- * Service Worker pour notifications en arrière-plan
- */
+* Service Worker pour notifications en arrière-plan
+*/
 export const registerServiceWorker = async () => {
+  // NOUVEAU : On bloque le Service Worker si on est en local !
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.log('🚧 Mode Local détecté : Service Worker désactivé pour faciliter le développement.');
+    return;
+  }
+
+  // Le code normal s'exécutera uniquement en production
   if ('serviceWorker' in navigator) {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker enregistré:', registration);
+      console.log('✅ Service Worker enregistré:', registration);
       return registration;
     } catch (error) {
-      console.error('Erreur Service Worker:', error);
+      console.error('❌ Erreur Service Worker:', error);
     }
   }
 };
