@@ -1,2 +1,0 @@
- Remplace "Votre niveau de Féérie (3) détermine le nombre de pouvoirs que vous pouvez maîtriser. Choisissez judicieusement entre pouvoirs Masqués (discrets) et Démasqués (puissants)." par "Votre niveau de Féérie (3) détermine le nombre de pouvoirs que vous pouvez maîtriser.  Vous pouvez choisir parmi les Pouvoirs Masqués (utilisables sous forme masquée) et les Pouvoirs Démasquée (utilisables uniquement sous forme de Fée)."
- 

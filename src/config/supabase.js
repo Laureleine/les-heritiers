@@ -1,6 +1,6 @@
 // src/config/supabase.js
-// Version: 2.2
-// Description: Configuration Supabase sécurisée
+// Version: 2.3
+// Description: Configuration Supabase sécurisée (fix session)
 // Dernière modification: 2026-02-21
 
 import { createClient } from '@supabase/supabase-js';
@@ -14,10 +14,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: true,      // ✅ Renouvellement auto avant expiration
-    persistSession: true,        // ✅ Garde la session entre rechargements
-    detectSessionInUrl: true,    // ✅ NÉCESSAIRE pour "Mot de passe oublié"
-    storage: window.localStorage,// ✅ Stockage local forcé
-    storageKey: 'supabase.auth.token' // ✅ Clé prévisible
+    autoRefreshToken: true,           // ✅ Renouvellement automatique
+    persistSession: true,             // ✅ Garde la session
+    detectSessionInUrl: true,         // ✅ Pour "Mot de passe oublié"
+    storage: window.localStorage,     // ✅ Stockage explicite
+    // ❌ PAS de storageKey personnalisé !
+    // Laisse Supabase gérer ses propres clés
+    flowType: 'pkce'                  // ✅ Sécurité PKCE activée
   }
 });
