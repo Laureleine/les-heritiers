@@ -10,17 +10,28 @@ export default function StepVieSociale({ character, onCharacterChange }) {
     character.profils?.mineur?.nom || 'Aventurier'
   ];
 
-  const [activeTab, setActiveTab] = useState(profilsActifs);
+  const [activeTab, setActiveTab] = useState(profilsActifs[0]);
   const [achats, setAchats] = useState(character.vieSociale || {}); // ex: { 'Gentleman': ['id1', 'id2'] }
   
   // NOUVEAU : États pour la base de données
   const [socialItems, setSocialItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. Récupération des vraies données depuis Supabase
+  // 1. Récupération des vraies données depuis Supabase (Version Blindée)
   useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+
+    // 🛡️ TIMER DE SÉCURITÉ ANTI-BLOCAGE
+    // Force la fin du chargement si Supabase ou le Service Worker tourne dans le vide
+    const safetyTimer = setTimeout(() => {
+      if (isMounted && loading) {
+        console.warn("⚠️ Délai réseau dépassé. Forçage de l'ouverture des étals.");
+        setLoading(false);
+      }
+    }, 5000); // 5 secondes max
+
     const fetchSocialItems = async () => {
-      setLoading(true);
       try {
         const { data, error } = await supabase
           .from('social_items')
@@ -28,20 +39,29 @@ export default function StepVieSociale({ character, onCharacterChange }) {
             *,
             profils ( name_masculine )
           `)
-          .eq('is_official', true) // On prend les officiels par défaut
+          .eq('is_official', true)
           .order('cout', { ascending: true });
 
         if (error) throw error;
-        setSocialItems(data || []);
+        if (isMounted) setSocialItems(data || []);
       } catch (error) {
         console.error("Erreur chargement social_items :", error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          clearTimeout(safetyTimer); // On annule le timer si tout s'est bien passé
+          setLoading(false);
+        }
       }
     };
 
     fetchSocialItems();
-  }, []);
+
+    // Nettoyage si on quitte la page avant la fin
+    return () => {
+      isMounted = false;
+      clearTimeout(safetyTimer);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Helpers pour extraire les objets du bon profil
   const getItemsForProfile = (profilName) => {
