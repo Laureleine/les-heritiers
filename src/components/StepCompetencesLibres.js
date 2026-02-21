@@ -1,7 +1,7 @@
 // src/components/StepCompetencesLibres.js
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { Plus, Minus, Star, Target, ShieldCheck, Coins, UploadCloud, X, Users, Brain } from 'lucide-react';
+import { Plus, Minus, Star, Target, ShieldCheck, Coins, UploadCloud, X, Users, Brain, RotateCcw } from 'lucide-react';
 import { addGlobalSpeciality } from '../utils/supabaseGameData';
 
 const POINTS_TOTAUX = 15;
@@ -329,15 +329,36 @@ export default function StepCompetencesLibres({
     );
   }, [selectValue, creatingSpecFor, lib, getScoreBase, predFinales, pointsRestantsVerts, pointsRestantsViolets, bonusEspritMax, nextSpecCost, feeData, competences, atoutsBonuses, handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality]);
 
+  // --- Fonction de Réinitialisation ---
+  const handleReset = useCallback(() => {
+    if (window.confirm("Voulez-vous vraiment réinitialiser tous vos points investis et spécialités achetées ?")) {
+      onCompetencesLibresChange({
+        ...lib,
+        rangs: {}, // On vide les rangs investis
+        choixSpecialiteUser: {} // On vide les spécialités achetées
+      });
+    }
+  }, [lib, onCompetencesLibresChange]);
+
   return (
     <div className="space-y-6 animate-fade-in pb-20">
-        
-      {/* Header Sticky */}
+
+	  {/* Header Sticky */}
       <div className="sticky top-0 z-10 bg-white/95 backdrop-blur shadow-sm p-4 rounded-b-xl border-b border-gray-200 flex justify-between items-center">
         <div>
             <h3 className="font-serif font-bold text-amber-900 text-lg">Compétences Utiles</h3>
             <p className="text-xs text-gray-500">15 points à répartir. (Max 4, ou 5 en Prédilection).</p>
         </div>
+		
+		<button 
+		  onClick={handleReset}
+		  className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200"
+		  title="Réinitialiser les dépenses"
+		>
+		  <RotateCcw size={16} />
+		  <span className="hidden sm:inline">Réinitialiser</span>
+		</button>		
+		
         <div className="flex gap-2">
             {bonusEspritMax > 0 && (
                 <div className={`flex flex-col items-center px-3 py-1 rounded border ${
