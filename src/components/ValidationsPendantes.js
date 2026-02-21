@@ -31,8 +31,8 @@ export default function ValidationsPendantes({ session, onBack }) {
     setLoading(true);
     // On pointe sur la table utilisée par l'Encyclopédie
     const [pending, history] = await Promise.all([
-      supabase.from('dca_data_change_requests').select('*').eq('status', 'pending').order('created_at', { ascending: false }),
-      supabase.from('dca_data_change_requests').select('*').in('status', ['approved', 'rejected']).order('created_at', { ascending: false }).limit(50)
+      supabase.from('data_change_requests').select('*').eq('status', 'pending').order('created_at', { ascending: false }),
+      supabase.from('data_change_requests').select('*').in('status', ['approved', 'rejected']).order('created_at', { ascending: false }).limit(50)
     ]);
 
     if (pending.data) setPendingChanges(pending.data);
@@ -45,7 +45,7 @@ export default function ValidationsPendantes({ session, onBack }) {
     
     // Note : Dans une V2, c'est ici qu'on fera l'UPDATE réel dans la table des fées/pouvoirs.
     // Pour l'instant, on marque la requête comme validée.
-    const { error } = await supabase.from('dca_data_change_requests').update({ status: 'approved' }).eq('id', changeId);
+    const { error } = await supabase.from('data_change_requests').update({ status: 'approved' }).eq('id', changeId);
     if (!error) {
       alert('✓ Proposition validée ! (Pensez à mettre à jour la base principale manuellement pour l\'instant)');
       loadChanges();
@@ -54,7 +54,7 @@ export default function ValidationsPendantes({ session, onBack }) {
 
   const handleReject = async (changeId) => {
     if (!window.confirm("Rejeter cette proposition ?")) return;
-    const { error } = await supabase.from('dca_data_change_requests').update({ status: 'rejected' }).eq('id', changeId);
+    const { error } = await supabase.from('data_change_requests').update({ status: 'rejected' }).eq('id', changeId);
     if (!error) loadChanges();
   };
 

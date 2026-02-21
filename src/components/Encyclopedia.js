@@ -124,7 +124,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
       };
 
       const { error } = await supabase
-        .from('dca_data_change_requests')
+        .from('data_change_requests')
         .insert([payload]);
 
       if (error) throw error;
