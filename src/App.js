@@ -213,10 +213,12 @@ function App() {
         onOpenAccount={() => setView('account')}
 		onSignOut={async () => {
 		  try {
+			// On essaie de prévenir le serveur poliment
 			await supabase.auth.signOut();
 		  } catch (e) {
-			console.error("Erreur déconnexion:", e);
+			console.error("Supabase a bloqué la déconnexion, passage en force !");
 		  } finally {
+			// QUOI QU'IL ARRIVE, on lance la frappe nucléaire locale
 			localStorage.clear();
 			sessionStorage.clear();
 			window.location.reload();
