@@ -1,7 +1,7 @@
 // src/config/supabase.js
-// Version: 2.1
-// Description: Configuration Supabase
-// Dernière modification: 2026-01-30
+// Version: 2.2
+// Description: Configuration Supabase sécurisée
+// Dernière modification: 2026-02-21
 
 import { createClient } from '@supabase/supabase-js';
   
@@ -14,8 +14,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: false,
-    persistSession: true,
-    detectSessionInUrl: false
+    autoRefreshToken: true,      // ✅ Renouvellement auto avant expiration
+    persistSession: true,        // ✅ Garde la session entre rechargements
+    detectSessionInUrl: true,    // ✅ NÉCESSAIRE pour "Mot de passe oublié"
+    storage: window.localStorage,// ✅ Stockage local forcé
+    storageKey: 'supabase.auth.token' // ✅ Clé prévisible
   }
 });
