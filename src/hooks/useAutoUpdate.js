@@ -33,24 +33,41 @@ export const useAutoUpdate = (intervalMs = 60000) => { // Vérifie toutes les mi
         return () => clearInterval(interval);
     }, []);
 
-    // Fonction pour appliquer la mise à jour
-    const applyUpdate = () => {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then((registrations) => {
-                for (let registration of registrations) {
-                    registration.unregister(); // Supprime le vieux Service Worker
-                }
-                // Vide le cache local pour forcer le rechargement des nouveaux fichiers
-                caches.keys().then((names) => {
-                    for (let name of names) caches.delete(name);
-                });
-                // Recharge la page
-                window.location.reload(true);
-            });
-        } else {
-            window.location.reload(true);
+  // Fonction pour appliquer la mise à jour
+  const applyUpdate = async () => {
+    // 1. Destruction de l'ancien Service Worker
+    if ('serviceWorker' in navigator) {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let registration of registrations) {
+          await registration.unregister(); 
         }
-    };
+      } catch (e) {
+        console.error("Erreur unregister SW:", e);
+      }
+    }
 
-    return { updateAvailable, remoteVersion, applyUpdate };
+    // 2. Destruction des vieux fichiers en cache
+    if ('caches' in window) {
+      try {
+        const cacheNames = await caches.keys();
+        for (let name of cacheNames) {
+          await caches.delete(name);
+        }
+      } catch (e) {
+        console.error("Erreur suppression caches:", e);
+      }
+    }
+
+    // 3. ✨ LA SOLUTION ANTI-ZOMBIE ✨
+    // On détruit la mémoire locale pour forcer Supabase à recréer un jeton propre
+    // Cela effacera aussi l'ancien cache des personnages hors-ligne pour éviter les conflits
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // 4. On force le rechargement pur et dur de la page
+    window.location.reload(true);
+  };
+  
+  return { updateAvailable, remoteVersion, applyUpdate };
 };
