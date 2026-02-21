@@ -32,8 +32,7 @@ export default function Step3({ character, onPouvoirToggle, fairyData }) {
         <div>
           <h3 className="font-serif font-bold text-amber-900">Héritage Féérique</h3>
           <p className="text-sm text-amber-800">
-            Votre niveau de Féérie ({maxPouvoirs}) détermine le nombre de pouvoirs que vous pouvez maîtriser.
-            Choisissez judicieusement entre pouvoirs <strong>Masqués</strong> (discrets) et <strong>Démasqués</strong> (puissants).
+                  Votre niveau de Féérie ({maxPouvoirs}) détermine le nombre de pouvoirs que vous pouvez maîtriser. Vous pouvez choisir parmi les Pouvoirs <strong>Masqués</strong> (utilisables sous forme masquée) et les Pouvoirs <strong>Démasqués</strong> (utilisables uniquement sous forme de Fée).
           </p>
         </div>
         <div className="ml-auto bg-white px-3 py-1 rounded border border-amber-200 font-bold text-amber-900 whitespace-nowrap">

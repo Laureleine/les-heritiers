@@ -12,4 +12,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase URL ou Key manquante. Vérifiez votre fichier .env');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: true,
+    detectSessionInUrl: false
+  }
+});
