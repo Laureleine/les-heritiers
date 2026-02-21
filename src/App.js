@@ -8,6 +8,7 @@ import { getFairyAge } from './data/dataHelpers';
 import { APP_VERSION, BUILD_DATE } from './version';
 import { saveCharacterToSupabase } from './utils/supabaseStorage';
 import { exportToPDF } from './utils/utils';
+import { useAutoUpdate } from './hooks/useAutoUpdate';
 
 // --- IMPORTS DES COMPOSANTS ---
 import Auth from './components/Auth';
@@ -46,6 +47,17 @@ function App() {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
 
+  // --- SYSTÈME DE MISE À JOUR AUTOMATIQUE ---
+  const { updateAvailable, applyUpdate } = useAutoUpdate(60000);
+
+  useEffect(() => {
+    if (updateAvailable) {
+      console.log("Nouvelle version détectée ! Déclenchement de la purge...");
+      applyUpdate();
+    }
+  }, [updateAvailable, applyUpdate]);
+  // ------------------------------------------
+  
   // Données du jeu
   const [gameData, setGameData] = useState({
     profils: [],
