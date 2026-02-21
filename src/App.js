@@ -211,7 +211,17 @@ function App() {
         onNewCharacter={() => { setCharacter(initialCharacterState); setIsReadOnly(false); setStep(1); setView('creator'); }}
         onOpenEncyclopedia={() => setView('encyclopedia')}
         onOpenAccount={() => setView('account')}
-        onSignOut={() => supabase.auth.signOut()}
+		onSignOut={async () => {
+		  try {
+			await supabase.auth.signOut();
+		  } catch (e) {
+			console.error("Erreur déconnexion:", e);
+		  } finally {
+			localStorage.clear();
+			sessionStorage.clear();
+			window.location.reload();
+		  }
+		}}
 		onOpenAdminUsers={() => setView('admin_users')}
       />
     );
