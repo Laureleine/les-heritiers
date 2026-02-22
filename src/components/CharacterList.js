@@ -62,6 +62,7 @@ export default function CharacterList({
       // 1. SUPABASE AUTH DIRECT (50ms)
       console.log("👤 1. supabase.auth.getUser()...");
       const { data: { user }, error } = await supabase.auth.getUser();
+	  console.log('👤 APRES getUser() - user:', user);
       
       if (error || !user) {
         console.error("❌ Pas d'utilisateur:", error?.message);
