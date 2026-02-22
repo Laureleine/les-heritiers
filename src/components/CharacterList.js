@@ -113,15 +113,18 @@ const loadCharacters = async (isMounted = true) => {
     const promises = [getUserCharacters(), getPublicCharacters()];
     if (adminStatus) promises.push(getAllCharactersAdmin());
 
-    const [mesPersos, persosPublics, persosAdmin] = await Promise.all(promises);
-    const myUserId = user.id;
+	const [mesPersos, persosPublics] = await Promise.all([
+	  getUserCharacters(myUserId),
+	  getPublicCharacters()
+	]);
 
-    if (!isMounted) return;
+	setMyCharacters(mesPersos || []);
+	setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
+	console.log("🔍 DEBUG - Mes persos:", mesPersos?.length || 0, "Publics:", persosPublics?.length || 0);
 
-    setMyCharacters(mesPersos || []);
-    setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
-
-console.log("🔍 DEBUG - Mes persos:", mesPersos?.length || 0, "Publics:", persosPublics?.length || 0); // ← AJOUTE ÇA
+	// 🚀 FIX URGENT
+	setLoading(false);
+	console.log("✅ FORCE - Loading = false (", mesPersos?.length || 0, "+", persosPublics?.length || 0, "persos)");
 
     if (adminStatus) {
       setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
