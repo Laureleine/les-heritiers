@@ -13,29 +13,40 @@ jobs:
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install PostgreSQL client
+      - name: Install tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-      - name: Force IPv4 + backup
+          sudo apt-get update -y
+          sudo apt-get install -y postgresql-client dnsutils
+      - name: Backup Supabase (IPv4 forced)
         run: |
           mkdir -p backups
-          # Extraire host et forcer IPv4
-          HOST=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*@([^:]+):.*/\1/')
-          echo "Connecting to $HOST (IPv4 forced)"
           
-          # Résoudre IPv4 uniquement
-          IPV4_HOST=$(getent ahostsv4 "$HOST" | head -1 | awk '{print $1}')
-          echo "IPv4 host: $IPV4_HOST"
+          # Extraire les composants de l'URL
+          USER=$(echo "$SUPABASE_DB_URL" | sed -E 's/postgresql:\/\/([^:]+):.*/\1/')
+          PASS=$(echo "$SUPABASE_DB_URL" | sed -E 's/postgresql:\/\/[^:]+:([^@]+)@.*/\1/')
+          HOST=$(echo "$SUPABASE_DB_URL" | sed -E 's/postgresql:\/\/[^@]+@([^:]+):.*/\1/')
+          PORT=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*:([0-9]+)\/.*/\1/')
+          DB=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*\/([^?]*).*/\1/')
           
-          # Reconstruire URL avec IPv4
-          DB_URL=$(echo "$SUPABASE_DB_URL" | sed "s/$HOST/$IPV4_HOST/")
+          echo "USER: $USER, HOST: $HOST, PORT: $PORT, DB: $DB"
           
-          pg_dump "$DB_URL" -Fc -f "backups/full_backup_$(date +%Y%m%d_%H%M%S).dump"
+          # Forcer résolution IPv4 avec nslookup
+          IPV4=$(nslookup "$HOST" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1 | awk '{print $2}')
+          if [ -z "$IPV4" ]; then
+            echo "No IPv4 found, using original host"
+            IPV4="$HOST"
+          fi
+          echo "Using IPv4: $IPV4"
           
-      - name: List backups
+          # Nouvelle URL IPv4
+          NEW_URL="postgresql://${USER}:${PASS}@${IPV4}:${PORT}/${DB}"
+          
+          echo "Testing connection..."
+          PGPASSWORD="$PASS" pg_dump -h "$IPV4" -U "$USER" -d "$DB" --no-owner -Fc -f "backups/full_$(date +%Y%m%d_%H%M%S).dump"
+          
+      - name: Show backup files
         run: ls -la backups/
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "🤖 Supabase backup $(date +%Y-%m-%d)"
+          commit_message: "🤖 Backup Supabase $(date +%Y-%m-%d)"
           file_pattern: backups/*
