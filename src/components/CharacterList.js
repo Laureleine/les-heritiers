@@ -407,7 +407,7 @@ console.log("🔍 DEBUG - Mes persos:", mesPersos?.length || 0, "Publics:", pers
             {/* 3. GRILLE DE CARTES */}
             {loading ? (
                 <div className="text-center py-20">
-				      console.log("⏳ LOADING = true, écran bloqué"); // ← AJOUTE ÇA
+				      console.log("⏳ LOADING = true, écran bloqué");
                     <p className="text-xl text-gray-500 font-serif animate-pulse">Consultation des archives...</p>
                 </div>
             ) : (
