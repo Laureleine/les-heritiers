@@ -9,6 +9,7 @@ import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCh
 import { importCharacter } from '../utils/characterStorage'; // Assurez-vous d'avoir ce fichier ou retirez l'import si non utilisé
 import { exportToPDF } from '../utils/utils';
 import { APP_VERSION, BUILD_DATE } from '../version';
+import { getCurrentUserFast } from '../utils/authHelpers';
 
 const ADMIN_EMAIL = 'amaranthe@free.fr';
 
@@ -72,7 +73,10 @@ const loadCharacters = async (isMounted = true) => {
   try {
 	console.log("👤 1. Récupération utilisateur (FAST)...");
 	const user = await getCurrentUserFast();
-	if (!user) throw new Error("No user");
+	if (!user) {
+	  console.warn("⚠️ Pas d'utilisateur connecté !");
+	  throw new Error("No user");
+	}
 
     if (!isMounted) return;
     console.log("✅ Utilisateur trouvé :", user.email);

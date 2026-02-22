@@ -1,6 +1,8 @@
+import { supabase } from '../config/supabase';
+
 export const getCurrentUserFast = async () => {
-  // 1. Cache localStorage (ultra-rapide)
   try {
+    // 1. Cache localStorage (ultra-rapide ~10ms)
     const sessionData = localStorage.getItem('sb-uvckugcixiugysnsbekb-auth-token');
     if (sessionData) {
       const auth = JSON.parse(sessionData);
@@ -10,10 +12,11 @@ export const getCurrentUserFast = async () => {
       }
     }
   } catch (e) {
-    console.warn('Cache localStorage corrompu, fallback réseau');
+    console.warn('Cache localStorage corrompu, fallback session');
   }
 
-  // 2. Fallback getSession (100ms)
+  // 2. Fallback getSession (rapide ~100ms)
   const { data: { session } } = await supabase.auth.getSession();
+  console.log('⚡ User depuis getSession');
   return session?.user || null;
 };
