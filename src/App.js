@@ -100,27 +100,12 @@ function App() {
       }
     }, 10000);
 
-    const initializeApp = async () => {
-      try {
-		setLoadingStep("Authentification...");
-		const { data: { session: currentSession }, error: authError } = await supabase.auth.getSession(); // ← getSession !
-
-		if (authError && !authError.message.includes('Auth session missing')) {
-		  console.warn("Info Auth:", authError.message);
-		}
-        if (mounted) {
-          setSession(currentSession);
-          if (currentSession?.user) {
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentSession.user.id).single();
-            setUserProfile(profile);
-          }
-        }
-
-        setLoadingStep("Ouverture du Grimoire...");
-        const data = await loadAllGameData();
-        if (mounted) setGameData(data);
-
-      } catch (error) {
+	const initializeApp = async () => {
+	  try {
+		setLoadingStep("Ouverture du Grimoire...");
+		const data = await loadAllGameData();  // SEUL await nécessaire
+		if (mounted) setGameData(data);
+	  } catch (error) {
         if (error.name === 'AbortError' || error.message.includes('aborted')) {
           console.log("Initialisation interrompue - Ignoré.");
         } else {
