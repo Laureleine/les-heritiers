@@ -1,8 +1,8 @@
 name: Daily Supabase Backup
 on:
   schedule:
-    - cron: '0 2 * * *'  # 2h UTC quotidien
-  workflow_dispatch:  # Manuel
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   backup:
@@ -25,11 +25,11 @@ jobs:
           fi
       - run: mkdir -p backups
       - name: Backup roles
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" --roles -f backups/roles.sql
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f backups/roles.sql
       - name: Backup schema
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" --schema -f backups/schema.sql
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/schema.sql
       - name: Backup data
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" --data-only -f backups/data.sql
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f backups/data.sql
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Supabase backup $(date +%Y-%m-%d)"
