@@ -23,21 +23,18 @@ export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder',
   {
-    auth: {
-      // ✅ OBLIGATOIRE avec nouvelles clés sb_publishable_
-      flowType: 'pkce',
-      
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-      
-      // ✅ Storage moderne
-      storage: window.localStorage,
-      
-      // ✅ Options supplémentaires pour stabilité
-      storageKey: undefined,  // Laisser Supabase gérer
-      debug: true  // Active logs détaillés en dev
-    },
+	auth: {
+	  flowType: 'pkce',
+	  autoRefreshToken: true,
+	  persistSession: true,
+	  detectSessionInUrl: true,
+	  
+	  // ✅ FIX : Ancien storageKey pour récupérer session
+	  storageKey: undefined,  // ← RÉCUPÈRE VOS TOKENS
+	  storage: typeof window !== 'undefined' ? localStorage : null,
+	  
+	  debug: process.env.NODE_ENV === 'development'
+	},
     
     // ✅ Config globale
     global: {

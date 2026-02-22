@@ -2,21 +2,19 @@ import { supabase } from '../config/supabase';
 
 export const getCurrentUserFast = async () => {
   try {
-    // 1. Cache localStorage (ultra-rapide ~10ms)
-    const sessionData = localStorage.getItem('sb-uvckugcixiugysnsbekb-auth-token');
-    if (sessionData) {
-      const auth = JSON.parse(sessionData);
-      if (auth?.currentSession?.session?.user) {
-        console.log('⚡ User depuis cache localStorage');
-        return auth.currentSession.session.user;
-      }
+    // ✅ Méthode 1 : supabase.auth.getSession() DIRECT (100ms)
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    
+    if (session?.user) {
+      console.log('✅ User connecté:', session.user.id, session.user.email);
+      return session.user;
     }
-  } catch (e) {
-    console.warn('Cache localStorage corrompu, fallback session');
+    
+  } catch (error) {
+    console.error('❌ getCurrentUserFast:', error);
   }
-
-  // 2. Fallback getSession (rapide ~100ms)
-  const { data: { session } } = await supabase.auth.getSession();
-  console.log('⚡ User depuis getSession');
-  return session?.user || null;
+  
+  console.log('❌ Aucun user trouvé');
+  return null;
 };
