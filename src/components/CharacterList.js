@@ -66,12 +66,9 @@ const loadCharacters = async (isMounted = true) => {
 
   setLoading(true);
 
-  const safetyTimer = setTimeout(() => {
-    if (!isMounted) return;
-    console.warn("⚠️ Délai réseau dépassé. Forçage de l'affichage depuis le cache.");
-    setLoading(false);
-  }, 10000);
-
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s max
+  
   try {
     console.log("👤 1. Récupération utilisateur Supabase...");
     const { data: { user }, error: userError } = await supabase.auth.getUser();
