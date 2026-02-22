@@ -70,13 +70,9 @@ const loadCharacters = async (isMounted = true) => {
   const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s max
   
   try {
-    console.log("👤 1. Récupération utilisateur Supabase...");
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError) throw userError;
-    if (!user) {
-      console.warn("⚠️ Pas d'utilisateur connecté !");
-      throw new Error("No user");
-    }
+	console.log("👤 1. Récupération utilisateur (FAST)...");
+	const user = await getCurrentUserFast();
+	if (!user) throw new Error("No user");
 
     if (!isMounted) return;
     console.log("✅ Utilisateur trouvé :", user.email);
