@@ -184,7 +184,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         </h2>
         <div className="flex gap-3">
           {/* Bouton visible uniquement pour les Gardiens et Super Admin */}
-          {(userProfile?.role === 'gardien' || userProfile?.role === 'super_admin') && (
+          {(userProfile?.profile?.role === 'gardien' || userProfile?.profile?.role === 'super_admin') && (
             <button 
               onClick={onOpenValidations}
               className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-800 hover:bg-purple-200 font-bold rounded-xl transition-colors border border-purple-200"

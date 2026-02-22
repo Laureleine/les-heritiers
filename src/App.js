@@ -87,57 +87,69 @@ function App() {
 
   const [character, setCharacter] = useState(initialCharacterState);
 
-  // 🔥 FIX AUTHENTIFICATION COMPLÈTE
-  useEffect(() => {
-    let mounted = true;
-    const safetyTimer = setTimeout(() => {
-      if (mounted && globalLoading) {
-        console.warn("⚠️ Timeout 30s → Force UI");
-        setGlobalLoading(false);
-      }
-    }, 30000);
+	// 🔥 ÉTAT NOUVEAU
+	const [isInitialized, setIsInitialized] = useState(false);
 
-    const initializeApp = async () => {
-      try {
-        setLoadingStep("Vérification connexion...");
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
-          setLoadingStep("Connexion requise...");
-          if (mounted) setGlobalLoading(false);
-          return;
-        }
+	// 🔥 1. INITIALISATION (UNE SEULE FOIS)
+	useEffect(() => {
+	  if (isInitialized) return;
+	  
+	  let mounted = true;
+	  const safetyTimer = setTimeout(() => {
+		if (mounted && globalLoading) setGlobalLoading(false);
+	  }, 30000);
 
-        setLoadingStep("Chargement Grimoire...");
-        const data = await loadAllGameData();
-        
-        if (mounted) {
-          setGameData(data);
-          setSession(session);           // 🔥 FIX 1: Met à jour session state
-          setUserProfile(session.user);  // 🔥 FIX 2: Met à jour userProfile state
-          console.log("✅ Connecté:", session.user.email);
-          setGlobalLoading(false);       // ✅ Loading terminé
-        }
-      } catch (error) {
-        console.error("❌ Init failed:", error);
-        if (mounted) setGlobalLoading(false);
-      } finally {
-        if (mounted) {
-          clearTimeout(safetyTimer);
-        }
-      }
-    };
+	  const initializeApp = async () => {
+		try {
+		  setLoadingStep("Vérification connexion...");
+		  const { data: { session } } = await supabase.auth.getSession();
+		  
+		  if (!session) {
+			if (mounted) setGlobalLoading(false);
+			return;
+		  }
 
-    initializeApp();
-    
-    return () => {
-      mounted = false;
-      clearTimeout(safetyTimer);
-    };
-  }, []);
+		  setLoadingStep("Chargement Grimoire...");
+		  const data = await loadAllGameData();
+		  
+		  if (mounted) {
+			setGameData(data);
+			const { data: profile } = await supabase
+			  .from('profiles').select('role, username')
+			  .eq('id', session.user.id).single();
+			  
+			setSession(session);
+			setUserProfile({ ...session.user, profile });
+			console.log(`✅ Connecté: ${session.user.email} Rôle: ${profile?.role}`);
+			setGlobalLoading(false);
+			setIsInitialized(true);  // 🔥 FIN !
+		  }
+		} catch (error) {
+		  console.error("❌ Init failed:", error);
+		  if (mounted) setGlobalLoading(false);
+		} finally {
+		  if (mounted) clearTimeout(safetyTimer);
+		}
+	  };
 
-  // 🔥 SUPPRESSION DEBUG (plus besoin)
-  // useEffect debug supprimé - tout fonctionne !
+	  initializeApp();
+	  return () => { mounted = false; clearTimeout(safetyTimer); };
+	}, [isInitialized]);
+
+	// 🔥 2. AUTH LISTENER (SEULEMENT déconnexion)
+	useEffect(() => {
+	  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+		(event, newSession) => {
+		  if (event === 'SIGNED_OUT') {
+			setSession(null);
+			setUserProfile(null);
+			setGlobalLoading(false);
+			setIsInitialized(false);  // 🔥 Permet reconnexion
+		  }
+		}
+	  );
+	  return () => subscription.unsubscribe();
+	}, []);
 
   // --- 3. HANDLERS ---
   const handleSave = async () => {
@@ -180,22 +192,30 @@ function App() {
   const canProceedStep1 = character.nom && character.sexe && character.typeFee;
 
   // --- RENDU COMPLET ---
-  if (globalLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FDFBF7] text-amber-900 font-serif">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
-        <p className="text-lg animate-pulse">{loadingStep}</p>
-      </div>
-    );
-  }
+	if (globalLoading) {
+	  return (
+		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+		  <div className="text-center">
+			<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+			<p className="text-lg text-amber-900 font-serif">{loadingStep}</p>
+		  </div>
+		</div>
+	  );
+	}
 
-  if (!session) return <Auth />;
+	if (!session || !userProfile) {
+	  return (
+		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+		  <Auth />
+		</div>
+	  );
+	}
 
   if (view === 'encyclopedia') return <Encyclopedia userProfile={userProfile} onBack={() => setView('list')} onOpenValidations={() => setView('validations')} />;
   if (view === 'validations') return <ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} />;
   if (view === 'account') return <AccountSettings session={session} onBack={() => setView('list')} />;
   if (view === 'changelog') return <Changelog onBack={() => setView('list')} />;
-  if (view === 'admin_users') return <AdminUserList session={session} onBack={() => setView('list')} />;
+  if (view === 'admin_users') return <AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} />;
 
   if (view === 'list') {
     return (
@@ -207,17 +227,18 @@ function App() {
         onNewCharacter={() => { setCharacter(initialCharacterState); setIsReadOnly(false); setStep(1); setView('creator'); }}
         onOpenEncyclopedia={() => setView('encyclopedia')}
         onOpenAccount={() => setView('account')}
-        onSignOut={async () => {
-          try {
-            await supabase.auth.signOut();
-          } catch (e) {
-            console.error("Supabase a bloqué la déconnexion, passage en force !");
-          } finally {
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.reload();
-          }
-        }}
+		onSignOut={async () => {
+		  try {
+			console.log("🚪 Déconnexion demandée...");
+			const { error } = await supabase.auth.signOut();
+			if (error) throw error;
+			console.log("✅ Déconnexion Supabase OK");
+			// ← L'AUTH LISTENER va prendre le relais !
+		  } catch (error) {
+			console.error("❌ Erreur déconnexion:", error.message);
+			// Plus de reload brutal !
+		  }
+		}}
         onOpenAdminUsers={() => setView('admin_users')}
       />
     );
