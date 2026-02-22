@@ -62,6 +62,10 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 	}, []);
 
 const loadCharacters = async (isMounted = true) => {
+
+  const myUserId = user.id;  // ← DÉFINIR ICI en haut !
+  console.log("👤 myUserId:", myUserId);  // DEBUG
+	
   console.log("🚀 START: loadCharacters démarre...");
   if (!isMounted) return;
 
