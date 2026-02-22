@@ -380,7 +380,7 @@ const loadCharacters = async (isMounted = true) => {
 			  <div className="text-center py-20">
 				<p className="text-xl text-gray-500 font-serif animate-pulse">Consultation des archives...</p>
 			  </div>
-			) : : (
+			) : (
                 <div className="p-6">
                     {/* Vue Mes Personnages */}
                     {activeTab === 'my' && (
