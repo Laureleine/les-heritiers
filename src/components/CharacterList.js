@@ -121,6 +121,8 @@ const loadCharacters = async (isMounted = true) => {
     setMyCharacters(mesPersos || []);
     setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
 
+console.log("🔍 DEBUG - Mes persos:", mesPersos?.length || 0, "Publics:", persosPublics?.length || 0); // ← AJOUTE ÇA
+
     if (adminStatus) {
       setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
     } else {
@@ -405,6 +407,7 @@ const loadCharacters = async (isMounted = true) => {
             {/* 3. GRILLE DE CARTES */}
             {loading ? (
                 <div className="text-center py-20">
+				      console.log("⏳ LOADING = true, écran bloqué"); // ← AJOUTE ÇA
                     <p className="text-xl text-gray-500 font-serif animate-pulse">Consultation des archives...</p>
                 </div>
             ) : (
