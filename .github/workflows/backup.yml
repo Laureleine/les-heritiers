@@ -1,0 +1,36 @@
+name: Daily Supabase Backup
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 2h UTC quotidien
+  workflow_dispatch:  # Manuel
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Check backup enabled
+        run: |
+          if [ "$BACKUP_ENABLED" != "true" ]; then
+            echo "Backups disabled"
+            exit 0
+          fi
+      - run: mkdir -p backups
+      - name: Backup roles
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" --roles -f backups/roles.sql
+      - name: Backup schema
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" --schema -f backups/schema.sql
+      - name: Backup data
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" --data-only -f backups/data.sql
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Supabase backup $(date +%Y-%m-%d)"
+          file_pattern: backups/*
