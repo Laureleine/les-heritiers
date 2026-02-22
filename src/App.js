@@ -360,7 +360,7 @@ function App() {
               disabled={step === 1 && !canProceedStep1}
               className={`flex items-center space-x-2 px-4 py-2 md:px-6 md:py-3 rounded-lg font-serif transition-all ${step === 1 && !canProceedStep1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-amber-600 text-white hover:bg-amber-700'}`}
             >
-              <span className="font-bold">{step === 11 ? 'Terminer' : 'Suivant'}</span>
+              <span className="font-bold">{step === 11 ? 'Sauvegarder et Terminer' : 'Suivant'}</span>
               {step !== 11 && <ChevronRight size={20} />}
             </button>
           )}

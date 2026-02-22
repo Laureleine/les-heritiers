@@ -84,7 +84,11 @@ const mapDatabaseToCharacter = (char) => {
 
         capaciteChoisie: source.capacite_choisie || source.capaciteChoisie || '',
         pouvoirs: source.pouvoirs || [],
-        
+
+		atouts: source.atouts || [],
+		vieSociale: source.vie_sociale || source.vieSociale || {},
+		fortune: source.fortune || 0,
+
         isPublic: source.is_public || source.isPublic || false,
         ownerUsername: source.profiles?.username || 'Inconnu',
         
@@ -228,6 +232,10 @@ export const saveCharacterToSupabase = async (character) => {
             
             capacite_choisie: cleaned.capaciteChoisie,
             pouvoirs: cleaned.pouvoirs,
+ 		    
+			atouts: cleaned.atouts,
+			vie_sociale: cleaned.vieSociale,
+			fortune: cleaned.fortune,
             
             is_public: cleaned.isPublic || false,
             updated_at: new Date().toISOString()
