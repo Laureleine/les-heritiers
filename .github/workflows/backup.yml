@@ -17,13 +17,25 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-      - run: mkdir -p backups
-      - name: Backup schema + data (full)
+      - name: Force IPv4 + backup
         run: |
-          pg_dump "$SUPABASE_DB_URL" -Fc -f backups/full_backup_$(date +%Y%m%d_%H%M%S).dump
-      - name: List backup files
+          mkdir -p backups
+          # Extraire host et forcer IPv4
+          HOST=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*@([^:]+):.*/\1/')
+          echo "Connecting to $HOST (IPv4 forced)"
+          
+          # Résoudre IPv4 uniquement
+          IPV4_HOST=$(getent ahostsv4 "$HOST" | head -1 | awk '{print $1}')
+          echo "IPv4 host: $IPV4_HOST"
+          
+          # Reconstruire URL avec IPv4
+          DB_URL=$(echo "$SUPABASE_DB_URL" | sed "s/$HOST/$IPV4_HOST/")
+          
+          pg_dump "$DB_URL" -Fc -f "backups/full_backup_$(date +%Y%m%d_%H%M%S).dump"
+          
+      - name: List backups
         run: ls -la backups/
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "🤖 Supabase full backup $(date +%Y-%m-%d %H:%M)"
+          commit_message: "🤖 Supabase backup $(date +%Y-%m-%d)"
           file_pattern: backups/*
