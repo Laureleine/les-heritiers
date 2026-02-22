@@ -13,30 +13,34 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install pg_dump
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
-      - name: Backup via Session Pooler (TCP forced)
+      - name: Backup Supabase (TCP forced)
         run: |
           mkdir -p backups
-          # Extraire host de l'URL pooler
-          HOST=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*@([^:]+):.*/\1/')
-          PGPASSWORD=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*:([^@]+)@.*/\1/')
-          USER=$(echo "$SUPABASE_DB_URL" | sed -E 's/postgresql:\/\/([^:]+):.*/\1/')
-          DB=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*\/([^?]*).*/\1/')
           
-          echo "Connecting to $HOST with user $USER"
+          # Parse URL proprement
+          FULL_URL="$SUPABASE_DB_URL"
+          echo "Full URL: ${FULL_URL//?*/}"
           
-          PGPASSWORD="$PGPASSWORD" pg_dump \
-            -h "$HOST" \
-            -U "$USER" \
-            -d "$DB" \
-            --no-owner \
-            --no-privileges \
-            --disable-triggers \
-            -Fc \
-            -f "backups/backup_$(date +%Y%m%d_%H%M%S).dump"
+          # Extraire chaque partie
+          USER=$(echo "$FULL_URL" | sed -E 's/postgresql:\/\/([^:]+):.*/\1/')
+          PASS=$(echo "$FULL_URL" | sed -E 's/.*:([^@]*)@.*/\1/')
+          HOST=$(echo "$FULL_URL" | sed -E 's/.*@([^:\/]+).*/\1/')
+          PORT=$(echo "$FULL_URL" | sed -E 's/.*:([0-9]+)\/.*/\1/')
+          DB=$(echo "$FULL_URL" | sed -E 's/.*\/([^?]*).*/\1/')
+          
+          echo "USER: $USER"
+          echo "HOST: $HOST"
+          echo "PORT: $PORT"
+          echo "DB:   $DB"
+          
+          # Backup avec paramètres séparés + TCP forcé
+          export PGPASSWORD="$PASS"
+          pg_dump -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" \
+            --no-owner --no-privileges --disable-triggers \
+            -Fc -f "backups/backup_$(date +%Y%m%d_%H%M%S).dump"
             
-      - name: List files
-        run: ls -la backups/
-        if: always()
+      - name: List backups
+        run: ls -la backups/ || true
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Backup $(date +%Y-%m-%d)"
