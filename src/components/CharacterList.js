@@ -46,106 +46,109 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   };
   
  // Lancement initial
-  useEffect(() => {
-    loadCharacters();
-  }, []);
+	useEffect(() => {
+	  let isMounted = true;
 
-  const loadCharacters = async () => {
-    console.log("🚀 START: loadCharacters démarre...");
-    setLoading(true);
+	  const run = async () => {
+		await loadCharacters(isMounted);
+	  };
 
-    // --- 🛡️ TIMER DE SÉCURITÉ ANTI-BLOCAGE ---
-    // Si la requête tourne dans le vide (Service Worker ou réseau bloqué),
-    // on force la levée de l'écran de chargement après 4 secondes.
-    const safetyTimer = setTimeout(() => {
-      console.warn("⚠️ Délai réseau dépassé. Forçage de l'affichage depuis le cache.");
-      setLoading(false);
-    }, 10000);
+	  run();
 
-    try {
-      // Étape 1 : Utilisateur
-      console.log("👤 1. Récupération utilisateur Supabase...");
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-      
-      if (!user) {
-        console.warn("⚠️ Pas d'utilisateur connecté !");
+	  return () => {
+		isMounted = false;
+	  };
+	}, []);
+
+const loadCharacters = async (isMounted = true) => {
+  console.log("🚀 START: loadCharacters démarre...");
+  if (!isMounted) return;
+
+  setLoading(true);
+
+  const safetyTimer = setTimeout(() => {
+    if (!isMounted) return;
+    console.warn("⚠️ Délai réseau dépassé. Forçage de l'affichage depuis le cache.");
+    setLoading(false);
+  }, 10000);
+
+  try {
+    console.log("👤 1. Récupération utilisateur Supabase...");
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    if (!user) {
+      console.warn("⚠️ Pas d'utilisateur connecté !");
+      throw new Error("No user");
+    }
+
+    if (!isMounted) return;
+    console.log("✅ Utilisateur trouvé :", user.email);
+    setCurrentUser(user);
+
+    console.log("🔎 2. Vérification du profil (pseudo)...");
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.error("❌ Erreur lecture profil:", profileError);
+    }
+    console.log("📋 Profil reçu :", profile);
+
+    if (!profileError && !profile?.username) {
+      console.warn("⚠️ Pas de pseudo défini !");
+      if (window.confirm("Votre compte nécessite un nom d'utilisateur. Le définir maintenant ?")) {
+        console.log("🔄 Redirection vers AccountSettings...");
+        if (onOpenAccount) onOpenAccount();
+        if (isMounted) setLoading(false);
         return;
       }
-      console.log("✅ Utilisateur trouvé :", user.email);
-      setCurrentUser(user);
-
-      // Étape 2 : Vérification du Profil (Le bloc critique)
-      console.log("🔎 2. Vérification du profil (pseudo)...");
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError && profileError.code !== 'PGRST116') {
-        console.error("❌ Erreur lecture profil:", profileError);
-      }
-      console.log("📋 Profil reçu :", profile);
-
-      // 🛡️ CORRECTION ICI : On ne lance le popup QUE si la lecture a réussi ET qu'il n'y a pas de pseudo
-      if (!profileError && !profile?.username) {
-        console.warn("⚠️ Pas de pseudo défini !");
-        if (window.confirm("Votre compte nécessite un nom d'utilisateur. Le définir maintenant ?")) {
-          console.log("🔄 Redirection vers AccountSettings...");
-          if (onOpenAccount) onOpenAccount();
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Étape 3 : Chargement des personnages
-      console.log("📚 3. Chargement des personnages...");
-      const adminStatus = user.email === 'amaranthe@free.fr';
-      console.log("👑 Admin ?", adminStatus);
-      setIsAdmin(adminStatus);
-
-      console.log("⏳ En attente des données...");
-      const promises = [getUserCharacters(), getPublicCharacters()];
-      if (adminStatus) promises.push(getAllCharactersAdmin());
-
-      // ✅ LA SOLUTION MAGIQUE : La destructuration (aucun chiffre, aucun crochet !)
-      const [mesPersos, persosPublics, persosAdmin] = await Promise.all(promises);
-
-      const myUserId = user.id;
-
-      // ✅ ATTRIBUTION PROPRE
-      setMyCharacters(mesPersos || []);
-      setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
-      
-      if (adminStatus) {
-        setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
-      } else {
-        setAdminCharacters([]);
-      }
-
-      console.log("🎉 END: Chargement terminé avec succès !");
-
-    } catch (error) {
-      // On ignore l'erreur AbortError classique
-      if (error.name !== 'AbortError' && !error.message?.includes('aborted')) {
-         console.error('🔥 CRASH ou ERREUR dans loadCharacters:', error);
-         
-         // 🛡️ GESTION DU JETON EXPIRÉ
-         if (error.message?.includes('JWT') || error.message?.includes('session') || error.status === 401) {
-            console.warn("🔒 Session expirée détectée. Déconnexion forcée.");
-            if (onSignOut) onSignOut(); // Renvoie le joueur à l'écran de connexion
-         } else {
-            alert("Erreur technique : " + error.message);
-         }
-      }
-    } finally {
-      // On n'oublie pas de nettoyer le timer pour éviter les conflits si le chargement a été rapide
-      clearTimeout(safetyTimer);
-      console.log("🏁 FINALLY : Suppression de l'écran de chargement.");
-      setLoading(false);
     }
-  };
+
+    console.log("📚 3. Chargement des personnages...");
+    const adminStatus = user.email === 'amaranthe@free.fr';
+    console.log("👑 Admin ?", adminStatus);
+    if (isMounted) setIsAdmin(adminStatus);
+
+    console.log("⏳ En attente des données...");
+    const promises = [getUserCharacters(), getPublicCharacters()];
+    if (adminStatus) promises.push(getAllCharactersAdmin());
+
+    const [mesPersos, persosPublics, persosAdmin] = await Promise.all(promises);
+    const myUserId = user.id;
+
+    if (!isMounted) return;
+
+    setMyCharacters(mesPersos || []);
+    setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
+
+    if (adminStatus) {
+      setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
+    } else {
+      setAdminCharacters([]);
+    }
+
+    console.log("🎉 END: Chargement terminé avec succès !");
+  } catch (error) {
+    if (error.name !== 'AbortError' && !error.message?.includes('aborted')) {
+      console.error('🔥 CRASH ou ERREUR dans loadCharacters:', error);
+      if (error.message?.includes('JWT') || error.message?.includes('session') || error.status === 401) {
+        console.warn("🔒 Session expirée détectée. Déconnexion forcée.");
+        if (onSignOut) onSignOut();
+      } else {
+        alert("Erreur technique : " + error.message);
+      }
+    }
+  } finally {
+    clearTimeout(safetyTimer);
+    if (!isMounted) return;
+    console.log("🏁 FINALLY : Suppression de l'écran de chargement.");
+    setLoading(false);
+  }
+};
+
   
   const handleDelete = async (id) => {
     try {
