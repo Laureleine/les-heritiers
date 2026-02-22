@@ -45,6 +45,22 @@ export const supabase = createClient(
   }
 );
 
+// 🔥 FIX AUTO-LOGIN : Vider localStorage au démarrage
+if (process.env.NODE_ENV === 'development') {
+  try {
+    // Supprime TOUTES sessions Supabase du localStorage
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.includes('supabase') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+        console.log('🧹 Supabase localStorage CLEARED:', key);
+      }
+    });
+  } catch(e) {
+    console.log('localStorage clear skipped');
+  }
+}
+
 // Debug global (temporaire)
 if (typeof window !== 'undefined') {
   window.__supabase__ = supabase;
