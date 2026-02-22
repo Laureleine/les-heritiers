@@ -102,13 +102,12 @@ function App() {
 
     const initializeApp = async () => {
       try {
-        setLoadingStep("Authentification...");
-        const { data: { session: currentSession }, error: authError } = await supabase.auth.getSession();
-        
-        if (authError && !authError.message.includes('Auth session missing')) {
-          console.warn("Info Auth:", authError.message);
-        }
+		setLoadingStep("Authentification...");
+		const { data: { session: currentSession }, error: authError } = await supabase.auth.getSession(); // ← getSession !
 
+		if (authError && !authError.message.includes('Auth session missing')) {
+		  console.warn("Info Auth:", authError.message);
+		}
         if (mounted) {
           setSession(currentSession);
           if (currentSession?.user) {
