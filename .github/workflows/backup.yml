@@ -11,26 +11,19 @@ jobs:
       contents: write
     env:
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-      BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }}
     steps:
       - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - name: Check backup enabled
+      - name: Install PostgreSQL client
         run: |
-          if [ "$BACKUP_ENABLED" != "true" ]; then
-            echo "Backups disabled"
-            exit 0
-          fi
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
       - run: mkdir -p backups
-      - name: Backup roles
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f backups/roles.sql
-      - name: Backup schema
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/schema.sql
-      - name: Backup data
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f backups/data.sql
+      - name: Backup schema + data (full)
+        run: |
+          pg_dump "$SUPABASE_DB_URL" -Fc -f backups/full_backup_$(date +%Y%m%d_%H%M%S).dump
+      - name: List backup files
+        run: ls -la backups/
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "🤖 Supabase backup $(date +%Y-%m-%d)"
+          commit_message: "🤖 Supabase full backup $(date +%Y-%m-%d %H:%M)"
           file_pattern: backups/*
