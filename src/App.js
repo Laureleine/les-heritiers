@@ -98,7 +98,7 @@ function App() {
         console.warn("⚠️ Délai d'attente dépassé. Forçage de l'interface.");
         setGlobalLoading(false);
       }
-    }, 10000);
+    }, 30000);
 
 	const initializeApp = async () => {
 	  try {
