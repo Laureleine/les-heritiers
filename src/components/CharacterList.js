@@ -77,7 +77,8 @@ const loadCharacters = async (isMounted = true) => {
     
     console.log("✅ User:", user.email);
     setCurrentUser(user);
-    const myUserId = user.id; // ✅ MAINTENANT défini
+    const myUserId = user.id;
+	console.log("👤 User ID:", myUserId);
     
     // Admin check
     const isAdminUser = user.email === ADMIN_EMAIL;
@@ -90,6 +91,8 @@ const loadCharacters = async (isMounted = true) => {
       getPublicCharacters(),
       isAdminUser ? getAllCharactersAdmin() : Promise.resolve([])
     ]);
+	console.log("📊 RÉSULTAT getUserCharacters:", mesPersos);
+    console.log("📊 RÉSULTAT getPublicCharacters:", persosPublics);
 
     if (!isMounted) return;
 
