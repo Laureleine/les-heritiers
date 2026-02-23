@@ -144,9 +144,16 @@ export default function ValidationsPendantes({ session, onBack }) {
         const arraysEqual = (a, b) => JSON.stringify(Array.isArray(a) && a.length > 0 ? a : []) === JSON.stringify(Array.isArray(b) && b.length > 0 ? b : []);
 
         if (req.table_name === 'fairy_types') {
-          const newTraits = proposal.traits ? proposal.traits.split(',').map(t => t.trim()).filter(Boolean) : [];
-          const newAvantages = proposal.avantages ? proposal.avantages.split('\n').map(a => a.trim()).filter(Boolean) : [];
-          const newDesavantages = proposal.desavantages ? proposal.desavantages.split('\n').map(d => d.trim()).filter(Boolean) : [];
+			const formatList = (data, separator) => {
+			  if (!data) return [];
+			  if (Array.isArray(data)) return data; // Si c'est déjà un tableau, on ne touche à rien !
+			  if (typeof data === 'string') return data.split(separator).map(item => item.trim()).filter(Boolean);
+			  return [];
+			};
+
+			const newTraits = formatList(proposal.traits, ',');
+			const newAvantages = formatList(proposal.avantages, '\n');
+			const newDesavantages = formatList(proposal.desavantages, '\n');
 
           if (proposal.description !== originalItem.description && proposal.description !== undefined) surgicalData.description = proposal.description;
           if (proposal.taille !== (originalItem.taille_categorie || 'Moyenne') && proposal.taille !== undefined) surgicalData.taille_categorie = proposal.taille;

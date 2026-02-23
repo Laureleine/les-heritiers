@@ -1,38 +1,59 @@
 #!/bin/bash
-# release.sh - Automatise prebuild + git commit avec version + AUTO-PULL
+# release.sh - Automatise prebuild + SourcesTxt + git commit + AUTO-PULL
 
 set -e  # Arrête sur erreur
 
 echo "🚀 Début du release intelligent..."
 
 # 1. AUTO-PULL avec merge message automatique
-echo "🔄 Auto-pull origin main (backups GitHub Actions)..."
+echo "🔄 Auto-pull origin main..."
 git -c core.editor=true pull origin main 2>/dev/null || \
 git -c core.editor=true pull --rebase origin main
 echo "✅ Sync GitHub OK"
 
-# 2. Exécute prebuild et capture la sortie
+# 2. SOURCES TXT - Copie fichiers modifiés
+echo "📝 Archivage fichiers modifiés → SourcesTxt/"
+MODIFIED_FILES=$(git diff --name-only --cached || git diff --name-only)
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+mkdir -p SourcesTxt
+
+# Copie chaque fichier modifié → SourcesTxt/nomfichier_TIMESTAMP.txt
+echo "$MODIFIED_FILES" | while read -r file; do
+  if [ -f "$file" ]; then
+    FILENAME=$(basename "$file" | sed 's/\.[^.]*$//')  # Enlève extension
+    cp "$file" "SourcesTxt/${FILENAME}_${TIMESTAMP}.txt"
+    echo "  📄 $file → SourcesTxt/${FILENAME}_${TIMESTAMP}.txt"
+  fi
+done
+
+echo "✅ $(echo "$MODIFIED_FILES" | wc -l) fichiers archivés"
+
+# 3. Exécute prebuild et capture la sortie
 BUILD_OUTPUT=$(npm run prebuild 2>&1)
 echo "$BUILD_OUTPUT"
 
-# 3. Extrait la version (NOUVELLE REGEX)
+# 4. Extrait la version (regex corrigée)
 VERSION=$(echo "$BUILD_OUTPUT" | grep -oP 'v\K[0-9]+\.[0-9]+\.[0-9]+' || echo "UNKNOWN")
 
 if [ "$VERSION" = "UNKNOWN" ]; then
-  echo "❌ Erreur : version non trouvée dans le log prebuild"
+  echo "❌ Erreur : version non trouvée"
   exit 1
 fi
 
 echo "📦 Version détectée : v$VERSION"
 
-# 4. Git add des fichiers modifiés (scripts uniquement)
+# 5. Git add (scripts + SourcesTxt)
 git add .
 
-# 5. Commit avec message formaté
-git commit -m "Les Héritiers v$VERSION"
+# 6. Commit avec message complet
+git commit -m "Les Héritiers v$VERSION
 
-# 6. Push final
+SourcesTxt archivés ($(echo "$MODIFIED_FILES" | wc -l) fichiers):
+$(echo "$MODIFIED_FILES" | tr '\n' ', ')"
+
+# 7. Push final
 git push -u origin main
 
-echo "✅ Release terminé : v$VERSION poussée sur main"
+echo "✅ Release terminé : v$VERSION + SourcesTxt"
 echo "💾 Backups GitHub Actions préservés !"
