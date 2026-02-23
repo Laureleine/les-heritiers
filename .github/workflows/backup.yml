@@ -1,7 +1,7 @@
-name: Daily Supabase Backup
+name: Daily Supabase Backup + Schema
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * *'  # 2h UTC quotidien
   workflow_dispatch:
 
 jobs:
@@ -17,18 +17,15 @@ jobs:
       - name: Install PostgreSQL 17 client
         run: |
           sudo apt-get update
-          # Ajouter repo PostgreSQL 17
           sudo apt-get install -y wget ca-certificates
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
           echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update
           sudo apt-get install -y postgresql-client-17
       
-      - name: Backup Supabase
+      - name: Full DB Backup (données + structure)
         run: |
           mkdir -p backups
-          
-          # Parse URL
           FULL_URL="$SUPABASE_DB_URL"
           USER=$(echo "$FULL_URL" | sed -E 's/postgresql:\/\/([^:]+):.*/\1/')
           PASS=$(echo "$FULL_URL" | sed -E 's/.*:([^@]*)@.*/\1/')
@@ -36,20 +33,11 @@ jobs:
           PORT=$(echo "$FULL_URL" | sed -E 's/.*:([0-9]+)\/.*/\1/')
           DB=$(echo "$FULL_URL" | sed -E 's/.*\/([^?]*).*/\1/')
           
-          echo "pg_dump --version"
-          pg_dump --version
-          
           export PGPASSWORD="$PASS"
           pg_dump -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" \
             --no-owner --no-privileges --disable-triggers \
-            -Fc -f "backups/backup_$(date +%Y%m%d_%H%M%S).dump"
+            -Fc -f "backups/full_$(date +%Y%m%d_%H%M%S).dump"
           
-      - name: List backups
-        run: ls -la backups/
-        if: always()
-        
-      - name: Commit backup
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "🤖 Backup Supabase $(date +%Y-%m-%d)"
-          file_pattern: backups/*
+          echo "✅ Full backup créé"
+      
+      - name: Schema Backup + Comparaison
