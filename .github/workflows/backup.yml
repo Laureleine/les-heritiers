@@ -1,8 +1,8 @@
 name: Daily Supabase Backup
 on:
   schedule:
-    - cron: '0 2 * * *'  # 2h UTC quotidien
-  workflow_dispatch:    # Manuel
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   backup:
@@ -14,65 +14,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: DEBUG Secret Injection
+      - name: Install PostgreSQL 17 client
         run: |
-          echo "🔍 Secret length: ${#SUPABASE_DB_URL}"
-          echo "🔍 Secret preview: ${SUPABASE_DB_URL:0:30}..."
-          echo "🔍 Full URL length: ${#SUPABASE_DB_URL}"
-          if [ -z "$SUPABASE_DB_URL" ]; then
-            echo "❌ SECRET VIDE - Problème GitHub Secrets !"
-            exit 1
-          else
-            echo "✅ SECRET OK - Passage à pg_dump"
-          fi
+          sudo apt-get update
+          # Ajouter repo PostgreSQL 17
+          sudo apt-get install -y wget ca-certificates
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
       
-      - name: Install pg_dump
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-      
-      - name: Parse et Backup (TCP forcé)
+      - name: Backup Supabase
         run: |
           mkdir -p backups
           
-          # Parse URL avec debug complet
+          # Parse URL
           FULL_URL="$SUPABASE_DB_URL"
-          echo "📋 URL complète détectée: ${FULL_URL//?*/}"
-          
           USER=$(echo "$FULL_URL" | sed -E 's/postgresql:\/\/([^:]+):.*/\1/')
           PASS=$(echo "$FULL_URL" | sed -E 's/.*:([^@]*)@.*/\1/')
           HOST=$(echo "$FULL_URL" | sed -E 's/.*@([^:\/]+).*/\1/')
           PORT=$(echo "$FULL_URL" | sed -E 's/.*:([0-9]+)\/.*/\1/')
           DB=$(echo "$FULL_URL" | sed -E 's/.*\/([^?]*).*/\1/')
           
-          echo "👤 USER: '$USER'"
-          echo "🔐 PASS: '${PASS:0:3}...'"
-          echo "🌐 HOST: '$HOST'"
-          echo "🔌 PORT: '$PORT'"
-          echo "📊 DB:   '$DB'"
+          echo "pg_dump --version"
+          pg_dump --version
           
-          # Test connexion
           export PGPASSWORD="$PASS"
-          echo "🧪 Test pg_dump vers $HOST:$PORT..."
+          pg_dump -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" \
+            --no-owner --no-privileges --disable-triggers \
+            -Fc -f "backups/backup_$(date +%Y%m%d_%H%M%S).dump"
           
-          pg_dump \
-            -h "$HOST" \
-            -p "$PORT" \
-            -U "$USER" \
-            -d "$DB" \
-            --no-owner \
-            --no-privileges \
-            --disable-triggers \
-            -Fc \
-            -f "backups/backup_$(date +%Y%m%d_%H%M%S).dump"
-            
-          echo "✅ Backup créé !"
-          
-      - name: Vérifier fichiers
+      - name: List backups
         run: ls -la backups/
         if: always()
         
       - name: Commit backup
-        if: hashFiles('backups/*.dump') != ''
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "🤖 Backup Supabase $(date +%Y-%m-%d %H:%M)"
+          commit_message: "🤖 Backup Supabase $(date +%Y-%m-%d)"
           file_pattern: backups/*
