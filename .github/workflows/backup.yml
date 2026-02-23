@@ -40,4 +40,66 @@ jobs:
           
           echo "✅ Full backup créé"
       
-      - name: Schema Backup + Comparaison
+      - name: Schema Backup + Comparaison (structure tables)
+        run: |
+          mkdir -p db-schemas
+          
+          FULL_URL="$SUPABASE_DB_URL"
+          USER=$(echo "$FULL_URL" | sed -E 's/postgresql:\/\/([^:]+):.*/\1/')
+          PASS=$(echo "$FULL_URL" | sed -E 's/.*:([^@]*)@.*/\1/')
+          HOST=$(echo "$FULL_URL" | sed -E 's/.*@([^:\/]+).*/\1/')
+          PORT=$(echo "$FULL_URL" | sed -E 's/.*:([0-9]+)\/.*/\1/')
+          DB=$(echo "$FULL_URL" | sed -E 's/.*\/([^?]*).*/\1/')
+          
+          export PGPASSWORD="$PASS"
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          
+          # Schema actuel complet
+          pg_dump -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" \
+            --schema-only --no-owner --no-privileges \
+            -f "db-schemas/schema_current_${TIMESTAMP}.sql"
+          
+          # Comparaison avec précédent
+          if [ -f "db-schemas/schema_previous.sql" ]; then
+            echo "🔄 Comparaison schema précédent..."
+            diff db-schemas/schema_previous.sql "db-schemas/schema_current_${TIMESTAMP}.sql" > "db-schemas/changes_${TIMESTAMP}.diff" 2>/dev/null || true
+            
+            if [ -s "db-schemas/changes_${TIMESTAMP}.diff" ]; then
+              echo "🚨 CHANGEMENTS STRUCTURE détectés ($(wc -l < db-schemas/changes_${TIMESTAMP}.diff) lignes) !"
+              echo "Contenu changes:"
+              head -20 db-schemas/changes_${TIMESTAMP}.diff
+            else
+              echo "✅ Structure DB identique au précédent"
+            fi
+          else
+            echo "ℹ️  Premier schema dump (pas de comparaison)"
+          fi
+          
+          # Sauvegarde actuel → précédent
+          cp "db-schemas/schema_current_${TIMESTAMP}.sql" db-schemas/schema_previous.sql
+          
+          # Version TXT lisible
+          grep -E "(CREATE TABLE|Column|Indexes)" "db-schemas/schema_current_${TIMESTAMP}.sql" | \
+            sed 's/CREATE TABLE public\.//g' > "db-schemas/schema_${TIMESTAMP}.txt"
+          
+          echo "✅ Schema dump + comparaison terminé"
+      
+      - name: List backup files
+        run: |
+          echo "📁 Full backups:"
+          ls -la backups/ || true
+          echo ""
+          echo "📋 Schema backups:"
+          ls -la db-schemas/ || true
+      
+      - name: Commit backups
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: |
+            🤖 Daily Backup + Schema $(date +%Y-%m-%d %H:%M)
+            
+            📊 Full DB: backups/full_*.dump
+            📋 Schema: db-schemas/schema_*.txt
+          file_pattern: |
+            backups/*
+            db-schemas/*
