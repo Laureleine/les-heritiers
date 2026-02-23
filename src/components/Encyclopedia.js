@@ -112,19 +112,97 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
       return;
     }
 
+    // 🛠️ LE CHIRURGIEN : L'objet qui ne contiendra QUE les différences
+    const surgicalData = {};
+
+    // Helper pour comparer facilement les tableaux (ignore les différences entre null et [])
+    const arraysEqual = (a, b) => {
+      const arrA = Array.isArray(a) && a.length > 0 ? a : [];
+      const arrB = Array.isArray(b) && b.length > 0 ? b : [];
+      return JSON.stringify(arrA) === JSON.stringify(arrB);
+    };
+
+    if (activeTab === 'fairy_types') {
+      // 1. Reformatage des tableaux à partir des textes saisis
+      const newTraits = proposal.traits ? proposal.traits.split(',').map(t => t.trim()).filter(Boolean) : [];
+      const newAvantages = proposal.avantages ? proposal.avantages.split('\n').map(a => a.trim()).filter(Boolean) : [];
+      const newDesavantages = proposal.desavantages ? proposal.desavantages.split('\n').map(d => d.trim()).filter(Boolean) : [];
+
+      // 2. Comparaisons des champs simples
+      if (proposal.description !== editingItem.description) surgicalData.description = proposal.description;
+      if (proposal.taille !== (editingItem.taille_categorie || 'Moyenne')) surgicalData.taille_categorie = proposal.taille;
+      
+      // 3. Comparaison des tableaux
+      if (!arraysEqual(proposal.allowedGenders, editingItem.allowed_genders)) surgicalData.allowed_genders = proposal.allowedGenders;
+      if (!arraysEqual(newTraits, editingItem.traits)) surgicalData.traits = newTraits;
+      if (!arraysEqual(newAvantages, editingItem.avantages)) surgicalData.avantages = newAvantages;
+      if (!arraysEqual(newDesavantages, editingItem.desavantages)) surgicalData.desavantages = newDesavantages;
+
+      // 4. Comparaison des Caractéristiques (Min/Max)
+      const stats = [
+        { sql: 'agilite', ui: 'agilite' }, { sql: 'constitution', ui: 'constitution' },
+        { sql: 'force', ui: 'force' }, { sql: 'precision', ui: 'precision' },
+        { sql: 'esprit', ui: 'esprit' }, { sql: 'perception', ui: 'perception' },
+        { sql: 'prestance', ui: 'prestance' }, { sql: 'sang_froid', ui: 'sangFroid' }
+      ];
+
+      stats.forEach(stat => {
+        const newMin = proposal.caracteristiques?.[stat.ui]?.min || 1;
+        const newMax = proposal.caracteristiques?.[stat.ui]?.max || 6;
+        
+        if (newMin !== (editingItem[`${stat.sql}_min`] || 1)) surgicalData[`${stat.sql}_min`] = newMin;
+        if (newMax !== (editingItem[`${stat.sql}_max`] || 6)) surgicalData[`${stat.sql}_max`] = newMax;
+      });
+
+      // 5. Comparaison des Relations (IDs)
+      const oldCapacites = (editingItem.fairy_capacites || []).map(c => c.id).sort();
+      const newCapacites = [...(proposal.capacitesIds || [])].sort();
+      const oldPouvoirs = (editingItem.fairy_powers || []).map(p => p.id).sort();
+      const newPouvoirs = [...(proposal.pouvoirsIds || [])].sort();
+
+      const changedRelations = {};
+      if (!arraysEqual(newCapacites, oldCapacites)) changedRelations.capacites = newCapacites;
+      if (!arraysEqual(newPouvoirs, oldPouvoirs)) changedRelations.pouvoirs = newPouvoirs;
+
+      // 6. Comparaison des textes bruts (Compétences de prédilection JSON)
+      const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection, null, 2) : '';
+      if (proposal.competencesUtiles !== oldUtiles) changedRelations.competencesUtiles = proposal.competencesUtiles;
+
+      const oldFutiles = editingItem.competencesFutilesPredilection ? JSON.stringify(editingItem.competencesFutilesPredilection, null, 2) : '';
+      if (proposal.competencesFutiles !== oldFutiles) changedRelations.competencesFutiles = proposal.competencesFutiles;
+
+      // On n'intègre le sous-objet "relations" QUE s'il y a des modifications dedans
+      if (Object.keys(changedRelations).length > 0) {
+        surgicalData._relations = changedRelations;
+      }
+
+    } else {
+      // Pour les autres onglets plus simples (Compétences, Profils)
+      if (proposal.description !== (editingItem.description || editingItem.desc || '')) {
+        surgicalData.description = proposal.description;
+      }
+    }
+
+    // 🛡️ SÉCURITÉ : On bloque l'envoi si aucune modification n'a été détectée
+    if (Object.keys(surgicalData).length === 0) {
+      alert("Aucune modification n'a été détectée par rapport à la version actuelle.");
+      return;
+    }
+
     try {
       const payload = {
         user_id: userProfile.id,
         table_name: activeTab,
         record_id: editingItem.id,
         record_name: editingItem.name || editingItem.nom,
-        new_data: proposal, // JSON complet des changements (simple ou complexe)
+        new_data: surgicalData, // 🪄 Injection des données chirurgicales uniquement
         justification: justification,
         status: 'pending'
       };
 
+      // Note : Utilisez bien le vrai nom de votre table (data_change_requests)
       const { error } = await supabase
-        .from('data_change_requests')
+        .from('data_change_requests') 
         .insert([payload]);
 
       if (error) throw error;
@@ -135,7 +213,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
       alert("Erreur lors de l'envoi : " + error.message);
     }
   };
-
+  
   // --- RENDU DES CARTES (ADAPTATIF) ---
   const renderCard = (item) => {
     const title = item.name || item.nom;
