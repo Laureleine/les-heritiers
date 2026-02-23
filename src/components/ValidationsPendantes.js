@@ -51,11 +51,26 @@ export default function ValidationsPendantes({ session, onBack }) {
 
       // 2. Génération dynamique des clauses SET pour le SQL
       const setClauses = Object.entries(mainData).map(([key, value]) => {
-        if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
-        if (Array.isArray(value) || typeof value === 'object') return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+        // A. Les chaînes de caractères (text)
+        if (typeof value === 'string') {
+          return `${key} = '${value.replace(/'/g, "''")}'`;
+        }
+        
+        // B. Les tableaux (text[]) -> Utilisé pour avantages, traits, etc.
+        if (Array.isArray(value)) {
+          const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
+          return `${key} = ARRAY[${elements}]::text[]`;
+        }
+        
+        // C. Les objets complexes (jsonb)
+        if (typeof value === 'object' && value !== null) {
+          return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+        }
+        
+        // D. Les nombres et booléens
         return `${key} = ${value}`;
       }).join(',\n  ');
-
+	  
       // 3. Construction de la requête principale
       let sqlQuery = `UPDATE public.${change.table_name}\nSET\n  ${setClauses}\nWHERE id = '${change.record_id}';`;
 
