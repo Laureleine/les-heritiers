@@ -1,47 +1,78 @@
 name: Daily Supabase Backup
 on:
   schedule:
-    - cron: '0 2 * * *'
-  workflow_dispatch:
+    - cron: '0 2 * * *'  # 2h UTC quotidien
+  workflow_dispatch:    # Manuel
 
 jobs:
   backup:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
     steps:
       - uses: actions/checkout@v4
+      
+      - name: DEBUG Secret Injection
+        run: |
+          echo "🔍 Secret length: ${#SUPABASE_DB_URL}"
+          echo "🔍 Secret preview: ${SUPABASE_DB_URL:0:30}..."
+          echo "🔍 Full URL length: ${#SUPABASE_DB_URL}"
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "❌ SECRET VIDE - Problème GitHub Secrets !"
+            exit 1
+          else
+            echo "✅ SECRET OK - Passage à pg_dump"
+          fi
+      
       - name: Install pg_dump
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
-      - name: Backup Supabase (TCP forced)
+      
+      - name: Parse et Backup (TCP forcé)
         run: |
           mkdir -p backups
           
-          # Parse URL proprement
+          # Parse URL avec debug complet
           FULL_URL="$SUPABASE_DB_URL"
-          echo "Full URL: ${FULL_URL//?*/}"
+          echo "📋 URL complète détectée: ${FULL_URL//?*/}"
           
-          # Extraire chaque partie
           USER=$(echo "$FULL_URL" | sed -E 's/postgresql:\/\/([^:]+):.*/\1/')
           PASS=$(echo "$FULL_URL" | sed -E 's/.*:([^@]*)@.*/\1/')
           HOST=$(echo "$FULL_URL" | sed -E 's/.*@([^:\/]+).*/\1/')
           PORT=$(echo "$FULL_URL" | sed -E 's/.*:([0-9]+)\/.*/\1/')
           DB=$(echo "$FULL_URL" | sed -E 's/.*\/([^?]*).*/\1/')
           
-          echo "USER: $USER"
-          echo "HOST: $HOST"
-          echo "PORT: $PORT"
-          echo "DB:   $DB"
+          echo "👤 USER: '$USER'"
+          echo "🔐 PASS: '${PASS:0:3}...'"
+          echo "🌐 HOST: '$HOST'"
+          echo "🔌 PORT: '$PORT'"
+          echo "📊 DB:   '$DB'"
           
-          # Backup avec paramètres séparés + TCP forcé
+          # Test connexion
           export PGPASSWORD="$PASS"
-          pg_dump -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" \
-            --no-owner --no-privileges --disable-triggers \
-            -Fc -f "backups/backup_$(date +%Y%m%d_%H%M%S).dump"
+          echo "🧪 Test pg_dump vers $HOST:$PORT..."
+          
+          pg_dump \
+            -h "$HOST" \
+            -p "$PORT" \
+            -U "$USER" \
+            -d "$DB" \
+            --no-owner \
+            --no-privileges \
+            --disable-triggers \
+            -Fc \
+            -f "backups/backup_$(date +%Y%m%d_%H%M%S).dump"
             
-      - name: List backups
-        run: ls -la backups/ || true
-      - uses: stefanzweifel/git-auto-commit-action@v5
+          echo "✅ Backup créé !"
+          
+      - name: Vérifier fichiers
+        run: ls -la backups/
+        if: always()
+        
+      - name: Commit backup
+        if: hashFiles('backups/*.dump') != ''
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "🤖 Backup $(date +%Y-%m-%d)"
+          commit_message: "🤖 Backup Supabase $(date +%Y-%m-%d %H:%M)"
           file_pattern: backups/*
