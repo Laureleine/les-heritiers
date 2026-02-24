@@ -1,68 +1,56 @@
 #!/bin/bash
-# release.sh - Automatise prebuild + SourcesTxt + git commit + AUTO-PULL
 
-set -e  # Arrête sur erreur
+echo "🚀 Release Les Héritiers - Build + SourcesTxt"
 
-echo "🚀 Début du release intelligent..."
+# 1/ BUILD ET VERSION
+echo "📦 1. Build et livraison app..."
+npm run prebuild
+VERSION=$(grep -oP '✅ Build \K[v0-9]+\.[0-9]+\.[0-9]+' <(npm run prebuild) || echo "v$(date +%Y.%m.%d)")
 
-# 1. AUTO-PULL avec merge message automatique
-echo "🔄 Auto-pull origin main (backups GitHub Actions)..."
-git -c core.editor=true pull origin main 2>/dev/null || \
-git -c core.editor=true pull --rebase origin main
-echo "✅ Sync GitHub OK"
+echo "📤 Build OK - Version: $VERSION"
 
-# 2. SOURCES TXT - Copie fichiers MODIFIÉS (CORRIGÉ)
-echo "📝 Archivage fichiers modifiés → SourcesTxt/"
-MODIFIED_FILES=$(git diff --name-only HEAD || git status --porcelain | cut -c4- | sort -u)
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-
-# Copie chaque fichier modifié → SourcesTxt/nomfichier_TIMESTAMP.txt
-echo "$MODIFIED_FILES" | while read -r file; do
-  if [ -f "$file" ]; then
-    FILENAME=$(basename "$file" | sed 's/\.[^.]*$//')  # Enlève extension
-    cp "$file" "SourcesTxt/${FILENAME}_${TIMESTAMP}.txt"
-	cp "$file" "G:/Mon Drive/-=- JdR -=-/-=- Les héritiers -=-/-=- App -=-/${FILENAME}.txt"
-    echo "  📄 $file → SourcesTxt/${FILENAME}_${TIMESTAMP}.txt"
-  fi
-done
-
-echo "✅ $(echo "$MODIFIED_FILES" | grep -c .) fichiers archivés"
-
-# DB SCHEMA DUMP si tables modifiées
-echo "📋 Dump structure DB..."
-if pg_dump --version | grep -q "pg_dump (PostgreSQL) 17"; then
-  ./scripts/db-schema-dump.sh
-  git add db-schemas/
-  echo "✅ Schema DB archivé"
-else
-  echo "⚠️  pg_dump 17 manquant → skip DB schema"
-fi
-
-# 3. Exécute prebuild et capture la sortie
-BUILD_OUTPUT=$(npm run prebuild 2>&1)
-echo "$BUILD_OUTPUT"
-
-# 4. Extrait la version (REGEX CORRIGÉE)
-VERSION=$(echo "$BUILD_OUTPUT" | grep -oP 'v\K[0-9]+\.[0-9]+\.[0-9]+' || echo "UNKNOWN")
-
-if [ "$VERSION" = "UNKNOWN" ]; then
-  echo "❌ Erreur : version non trouvée dans le log prebuild"
-  exit 1
-fi
-
-echo "📦 Version détectée : v$VERSION"
-
-# 5. Git add des fichiers modifiés (scripts + SourcesTxt)
+# Git commit/push
 git add .
-
-# 6. Commit avec message formaté
-git commit -m "Les Héritiers v$VERSION
-
-SourcesTxt archivés ($(echo "$MODIFIED_FILES" | grep -c .) fichiers):
-$(echo "$MODIFIED_FILES" | tr '\n' ', ' | sed 's/,$//')"
-
-# 7. Push final
+git commit -m "Les Héritiers $VERSION" || echo "Aucun changement"
 git push -u origin main
 
-echo "✅ Release terminé : v$VERSION + SourcesTxt"
-echo "💾 Backups GitHub Actions préservés !"
+echo "✅ 1/ App déployée v$VERSION"
+
+# 2/ JS modifiés → SourcesTxt
+echo "☁️ 2. JS modifiés → SourcesTxt..."
+mkdir -p SourcesTxt
+rm -f SourcesTxt/*.txt
+
+# JS modifiés (git diff)
+for jsfile in $(git diff --name-only HEAD~1 | grep '\.js$'); do
+    if [ -f "$jsfile" ]; then
+        timestamp=$(date +%Y%m%d_%H%M%S)
+        cp "$jsfile" "SourcesTxt/$(basename "$jsfile")_$timestamp.txt"
+        echo "✅ $(basename "$jsfile") → SourcesTxt/"
+    fi
+done
+
+# 3+4/ Drive G: (ton chemin exact)
+echo "💾 3+4. SourcesTxt + Drive G:..."
+DRIVE_PATH="G:/Mon Drive/-=- JdR -=--=- Les héritiers -=--=- App -=-/"
+
+if [ -d "$DRIVE_PATH" ]; then
+    for src in SourcesTxt/*.txt; do
+        if [ -f "$src" ]; then
+            cleanname=$(basename "$src" | sed 's/_[0-9]\{14\}\.txt/.txt/')
+            cp "$src" "SourcesTxt/$cleanname"
+            cp "SourcesTxt/$cleanname" "$DRIVE_PATH$cleanname"
+            echo "✅ $cleanname → $DRIVE_PATH"
+        fi
+    done
+    git add SourcesTxt/
+    git commit -m "📚 SourcesTxt backup - v$VERSION" || echo "Pas de backup"
+    git push
+else
+    echo "⚠️ Drive G: non trouvé: $DRIVE_PATH"
+fi
+
+echo "🎉 RELEASE TERMINÉ v$VERSION !"
+echo "📱 App: GitHub v$VERSION"
+echo "📚 SourcesTxt/ + G:/Mon Drive/-=- JdR -=--=- Les héritiers -=--=- App -=-/"
+read -p "Appuyez sur Entrée pour fermer..."
