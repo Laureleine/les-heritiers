@@ -9,7 +9,8 @@ VERSION=$(grep -oP '✅ Build \K[v0-9]+\.[0-9]+\.[0-9]+' <(npm run prebuild) || 
 
 echo "📤 Build OK - Version: $VERSION"
 
-# Git commit/push
+# Git pull + commit + push
+git pull origin main --rebase || true
 git add .
 git commit -m "Les Héritiers $VERSION" || echo "Aucun changement"
 git push -u origin main
@@ -30,7 +31,7 @@ for jsfile in $(git diff --name-only HEAD~1 | grep '\.js$'); do
     fi
 done
 
-# 3+4/ Drive G: (ton chemin exact)
+# 3+4/ Drive G: (TON CHEMIN EXACT)
 echo "💾 3+4. SourcesTxt + Drive G:..."
 DRIVE_PATH="G:/Mon Drive/-=- JdR -=--=- Les héritiers -=--=- App -=-/"
 
@@ -47,10 +48,11 @@ if [ -d "$DRIVE_PATH" ]; then
     git commit -m "📚 SourcesTxt backup - v$VERSION" || echo "Pas de backup"
     git push
 else
-    echo "⚠️ Drive G: non trouvé: $DRIVE_PATH"
+    echo "⚠️ Drive G: non trouvé. Vérifie: $DRIVE_PATH"
+    echo "Alternative: SourcesTxt/ prêt pour upload manuel NotebookLM"
 fi
 
 echo "🎉 RELEASE TERMINÉ v$VERSION !"
 echo "📱 App: GitHub v$VERSION"
-echo "📚 SourcesTxt/ + G:/Mon Drive/-=- JdR -=--=- Les héritiers -=--=- App -=-/"
+echo "📚 SourcesTxt/ + Drive G: prêt pour NotebookLM"
 read -p "Appuyez sur Entrée pour fermer..."
