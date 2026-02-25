@@ -9,7 +9,6 @@ import { APP_VERSION, BUILD_DATE } from './version';
 import { saveCharacterToSupabase } from './utils/supabaseStorage';
 import { exportToPDF } from './utils/utils';
 import { useAutoUpdate } from './hooks/useAutoUpdate';
-import { logger, setLoggerRole } from './utils/logger'; // NOUVEAU
 
 // --- IMPORTS DES COMPOSANTS ---
 import Auth from './components/Auth';
@@ -19,6 +18,7 @@ import Encyclopedia from './components/Encyclopedia';
 import Changelog from './components/Changelog';
 import AdminUserList from './components/AdminUserList';
 import ValidationsPendantes from './components/ValidationsPendantes';
+import AlertSystem from './components/AlertSystem'; // 📡 NOUVEL IMPORT DU RADAR
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -42,7 +42,6 @@ function App() {
   const [userProfile, setUserProfile] = useState(null);
   const [globalLoading, setGlobalLoading] = useState(true);
   const [loadingStep, setLoadingStep] = useState('Démarrage...');
-  
   const [view, setView] = useState('list');
   const [step, setStep] = useState(1);
   const [isReadOnly, setIsReadOnly] = useState(false);
@@ -53,11 +52,11 @@ function App() {
 
   useEffect(() => {
     if (updateAvailable) {
-      logger.info("Nouvelle version détectée ! Déclenchement de la purge...");
+      console.log("Nouvelle version détectée ! Déclenchement de la purge...");
       applyUpdate();
     }
   }, [updateAvailable, applyUpdate]);
-  
+
   // Données du jeu
   const [gameData, setGameData] = useState({
     profils: [],
@@ -88,23 +87,22 @@ function App() {
 
   const [character, setCharacter] = useState(initialCharacterState);
 
-	// 🔥 ÉTAT NOUVEAU
-	const [isInitialized, setIsInitialized] = useState(false);
+  // 🔥 ÉTAT NOUVEAU
+  const [isInitialized, setIsInitialized] = useState(false);
 
-	// 🔥 1. INITIALISATION (UNE SEULE FOIS)
-	useEffect(() => {
-	  if (isInitialized) return;
-	  
-	  let mounted = true;
-	  const safetyTimer = setTimeout(() => {
-		if (mounted && globalLoading) setGlobalLoading(false);
-	  }, 30000);
+  // 🔥 1. INITIALISATION (UNE SEULE FOIS)
+  useEffect(() => {
+    if (isInitialized) return;
+    let mounted = true;
+
+    const safetyTimer = setTimeout(() => {
+      if (mounted && globalLoading) setGlobalLoading(false);
+    }, 30000);
 
     const initializeApp = async () => {
       try {
         setLoadingStep("Vérification connexion...");
         const { data: { session } } = await supabase.auth.getSession();
-        
         if (!session) {
           if (mounted) setGlobalLoading(false);
           return;
@@ -112,25 +110,20 @@ function App() {
 
         setLoadingStep("Chargement Grimoire...");
         const data = await loadAllGameData();
-
         if (mounted) {
           setGameData(data);
           const { data: profile } = await supabase
             .from('profiles').select('role, username')
             .eq('id', session.user.id).single();
-
+          
           setSession(session);
           setUserProfile({ ...session.user, profile });
-          
-          // 👇 TRANSMISSION DU RÔLE AU LOGGER
-          setLoggerRole(profile?.role || 'user');
-          logger.info(`✅ Connecté: ${session.user.email} Rôle: ${profile?.role}`);
-
+          console.log(`✅ Connecté: ${session.user.email} Rôle: ${profile?.role}`);
           setGlobalLoading(false);
           setIsInitialized(true);  // 🔥 FIN !
         }
       } catch (error) {
-        logger.error("❌ Init failed:", error); // Utilisation du logger
+        console.error("❌ Init failed:", error);
         if (mounted) setGlobalLoading(false);
       } finally {
         if (mounted) clearTimeout(safetyTimer);
@@ -148,7 +141,6 @@ function App() {
         if (event === 'SIGNED_OUT') {
           setSession(null);
           setUserProfile(null);
-          setLoggerRole('user'); // 👇 RÉINITIALISATION DU LOGGER
           setGlobalLoading(false);
           setIsInitialized(false);  // 🔥 Permet reconnexion
         }
@@ -156,7 +148,7 @@ function App() {
     );
     return () => subscription.unsubscribe();
   }, []);
-  
+
   // --- 3. HANDLERS ---
   const handleSave = async () => {
     if (isReadOnly) return;
@@ -198,55 +190,56 @@ function App() {
   const canProceedStep1 = character.nom && character.sexe && character.typeFee;
 
   // --- RENDU COMPLET ---
-	if (globalLoading) {
-	  return (
-		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
-		  <div className="text-center">
-			<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
-			<p className="text-lg text-amber-900 font-serif">{loadingStep}</p>
-		  </div>
-		</div>
-	  );
-	}
+  if (globalLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p className="text-lg text-amber-900 font-serif">{loadingStep}</p>
+        </div>
+      </div>
+    );
+  }
 
-	if (!session || !userProfile) {
-	  return (
-		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
-		  <Auth />
-		</div>
-	  );
-	}
+  if (!session || !userProfile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+        <Auth />
+      </div>
+    );
+  }
 
-  if (view === 'encyclopedia') return <Encyclopedia userProfile={userProfile} onBack={() => setView('list')} onOpenValidations={() => setView('validations')} />;
-  if (view === 'validations') return <ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} />;
-  if (view === 'account') return <AccountSettings session={session} onBack={() => setView('list')} />;
-  if (view === 'changelog') return <Changelog onBack={() => setView('list')} />;
-  if (view === 'admin_users') return <AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} />;
+  if (view === 'encyclopedia') return <><AlertSystem userProfile={userProfile} /><Encyclopedia userProfile={userProfile} onBack={() => setView('list')} onOpenValidations={() => setView('validations')} /></>;
+  if (view === 'validations') return <><AlertSystem userProfile={userProfile} /><ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} /></>;
+  if (view === 'account') return <><AlertSystem userProfile={userProfile} /><AccountSettings session={session} onBack={() => setView('list')} /></>;
+  if (view === 'changelog') return <><AlertSystem userProfile={userProfile} /><Changelog onBack={() => setView('list')} /></>;
+  if (view === 'admin_users') return <><AlertSystem userProfile={userProfile} /><AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} /></>;
 
   if (view === 'list') {
     return (
-      <CharacterList
-        session={session}
-        userProfile={userProfile}
-        profils={gameData.profils}
-        onSelectCharacter={(c, readOnly = false) => { setCharacter(c); setIsReadOnly(readOnly); setStep(1); setView('creator'); }}
-        onNewCharacter={() => { setCharacter(initialCharacterState); setIsReadOnly(false); setStep(1); setView('creator'); }}
-        onOpenEncyclopedia={() => setView('encyclopedia')}
-        onOpenAccount={() => setView('account')}
-		onSignOut={async () => {
-		  try {
-			logger.info("🚪 Déconnexion demandée...");
-			const { error } = await supabase.auth.signOut();
-			if (error) throw error;
-			logger.info("✅ Déconnexion Supabase OK");
-			// ← L'AUTH LISTENER va prendre le relais !
-		  } catch (error) {
-			console.error("❌ Erreur déconnexion:", error.message);
-			// Plus de reload brutal !
-		  }
-		}}
-        onOpenAdminUsers={() => setView('admin_users')}
-      />
+      <>
+        <AlertSystem userProfile={userProfile} />
+        <CharacterList
+          session={session}
+          userProfile={userProfile}
+          profils={gameData.profils}
+          onSelectCharacter={(c, readOnly = false) => { setCharacter(c); setIsReadOnly(readOnly); setStep(1); setView('creator'); }}
+          onNewCharacter={() => { setCharacter(initialCharacterState); setIsReadOnly(false); setStep(1); setView('creator'); }}
+          onOpenEncyclopedia={() => setView('encyclopedia')}
+          onOpenAccount={() => setView('account')}
+          onSignOut={async () => {
+            try {
+              console.log("🚪 Déconnexion demandée...");
+              const { error } = await supabase.auth.signOut();
+              if (error) throw error;
+              console.log("✅ Déconnexion Supabase OK");
+            } catch (error) {
+              console.error("❌ Erreur déconnexion:", error.message);
+            }
+          }}
+          onOpenAdminUsers={() => setView('admin_users')}
+        />
+      </>
     );
   }
 
@@ -256,9 +249,12 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-24 font-sans text-gray-900 pt-8">
+      
+      {/* 📡 LE SYSTÈME D'ALERTE (RADAR) */}
+      <AlertSystem userProfile={userProfile} />
+
       {/* CADRE PRINCIPAL */}
       <div className="max-w-4xl mx-auto px-4">
-        
         {/* BLOC EN-TÊTE + BOUTONS + CERCLES */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -266,7 +262,6 @@ function App() {
               <h1 className="text-3xl font-serif font-bold text-amber-900 leading-tight">Les Héritiers</h1>
               <div className="text-xs text-amber-700 opacity-60 font-serif">v{APP_VERSION} • {BUILD_DATE}</div>
             </div>
-            
             <div className="flex flex-wrap gap-2">
               <button onClick={() => setView('list')} className="flex items-center space-x-2 px-3 py-2 bg-white border border-amber-200 text-amber-900 rounded-lg hover:bg-amber-50 transition-all font-serif text-sm shadow-sm">
                 <List size={16} /> <span className="hidden sm:inline">Liste</span>
@@ -295,7 +290,7 @@ function App() {
           {/* BARRE DE PROGRESSION AVEC LIAISONS */}
           <div className="relative flex justify-between items-center w-full py-4 px-2 mb-4">
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-amber-100 z-0 rounded-full"></div>
-            <div 
+            <div
               className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-400 z-0 transition-all duration-500 ease-in-out rounded-full"
               style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
             ></div>
@@ -306,11 +301,11 @@ function App() {
                 disabled={step === 1 && !canProceedStep1 && s > 1}
                 className={`
                   relative z-10 flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-lg transition-all duration-300 border-4
-                  ${step === s 
-                    ? 'bg-amber-600 text-white border-white scale-110 shadow-md ring-2 ring-amber-200' 
-                    : step > s 
-                    ? 'bg-amber-400 text-white border-white' 
-                    : 'bg-white text-gray-400 border-amber-100 hover:border-amber-300'
+                  ${step === s
+                    ? 'bg-amber-600 text-white border-white scale-110 shadow-md ring-2 ring-amber-200'
+                    : step > s
+                      ? 'bg-amber-400 text-white border-white'
+                      : 'bg-white text-gray-400 border-amber-100 hover:border-amber-300'
                   }
                 `}
               >

@@ -72,13 +72,26 @@ export default function ValidationsPendantes({ session, onBack }) {
       else {
         // === MODE MODIFICATION (UPDATE) === (Code existant)
         if (Object.keys(mainData).length > 0) {
-           // ... (Gardez votre code existant pour le UPDATE ici) ...
-           const setClauses = Object.entries(mainData).map(([key, value]) => {
-              if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
-              // ... reste du code existant ...
-              if (typeof value === 'object' && value !== null) return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-              return `${key} = ${value}`;
-           }).join(',\n  ');
+        const setClauses = Object.entries(mainData).map(([key, value]) => {
+          // 1. Les chaînes de caractères classiques
+          if (typeof value === 'string') {
+            return `${key} = '${value.replace(/'/g, "''")}'`;
+          }
+          
+          // 2. ⚠️ LES TABLEAUX (Doit impérativement être placé AVANT la vérification "object")
+          if (Array.isArray(value)) {
+            const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
+            return `${key} = ARRAY[${elements}]::text[]`;
+          }
+          
+          // 3. Les objets complexes / Constructeur de Bonus (JSONB)
+          if (typeof value === 'object' && value !== null) {
+            return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+          }
+          
+          // 4. Les nombres ou booléens (fallback)
+          return `${key} = ${value}`;
+        }).join(',\n  ');
            sqlQuery += `UPDATE public.${change.table_name}\nSET\n  ${setClauses}\nWHERE id = '${change.record_id}';`;
         }
       }
