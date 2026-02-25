@@ -92,13 +92,12 @@ export default function ValidationsPendantes({ session, onBack }) {
         if (_relations.capacites !== undefined) {
           sqlQuery += `DELETE FROM public.fairy_type_capacites WHERE fairy_type_id = '${change.record_id}';\n`;
           if (_relations.capacites.length > 0) {
-            // NOUVEAU FORMAT : Extrait cap.id et cap.type de l'objet
             const capInserts = _relations.capacites.map(cap => `('${change.record_id}', '${cap.id}', '${cap.type}')`).join(', ');
-            // Ajout explicite de la colonne capacite_type dans le INSERT
             sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${capInserts};\n`;
           }
         }
 
+        // Traitement des Pouvoirs
         if (_relations.pouvoirs !== undefined) {
           sqlQuery += `DELETE FROM public.fairy_type_powers WHERE fairy_type_id = '${change.record_id}';\n`;
           if (_relations.pouvoirs.length > 0) {
@@ -106,7 +105,6 @@ export default function ValidationsPendantes({ session, onBack }) {
             sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${powInserts};\n`;
           }
         }
-      }
 
         // Traitement des Compétences Futiles
         if (_relations.competencesFutiles !== undefined) {
@@ -115,14 +113,22 @@ export default function ValidationsPendantes({ session, onBack }) {
             const futInserts = _relations.competencesFutiles.map(fut => {
               const isChoice = fut.is_choice ? 'true' : 'false';
               const compId = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
-			  // Formatage en JSONB pour correspondre au type de la colonne Supabase
-			  const options = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
+              const options = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
               return `('${change.record_id}', ${isChoice}, ${compId}, ${options})`;
             }).join(', ');
-            
             sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, is_choice, competence_futile_id, choice_options) VALUES ${futInserts};\n`;
           }
         }
+
+        // Traitement des Atouts
+        if (_relations.atouts !== undefined) {
+          sqlQuery += `DELETE FROM public.fairy_type_assets WHERE fairy_type_id = '${change.record_id}';\n`;
+          if (_relations.atouts.length > 0) {
+            const atoutInserts = _relations.atouts.map(id => `('${change.record_id}', '${id}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${atoutInserts};\n`;
+          }
+        }
+      } // <--- TOUT est maintenant bien à l'intérieur de la sécurité !
 
       const { error } = await supabase
         .from(TABLE_NAME)
@@ -130,12 +136,13 @@ export default function ValidationsPendantes({ session, onBack }) {
         .eq('id', change.id);
 
       if (error) throw error;
+
       loadChanges();
 
-	  } catch (error) {
-		logger.error("❌ Erreur lors de la validation SQL :", error);
-		alert("Erreur lors de la validation : " + error.message);
-	  }
+    } catch (error) {
+      logger.error("❌ Erreur lors de la validation SQL :", error);
+      alert("Erreur lors de la validation : " + error.message);
+    }
   };
 
   // NOUVELLE FONCTION : Archiver une fois le SQL exécuté

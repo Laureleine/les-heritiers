@@ -1,6 +1,6 @@
 // src/components/EncyclopediaModal.js
 import React from 'react';
-import { X, Sparkles, Save } from 'lucide-react';
+import { X, Sparkles, Save, Star } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
 
@@ -16,6 +16,7 @@ export default function EncyclopediaModal({
   userProfile,
   allCapacites,
   allPouvoirs,
+  allAtouts,
   allCompFutiles
 }) {
 
@@ -34,13 +35,15 @@ export default function EncyclopediaModal({
       return JSON.stringify(arrA) === JSON.stringify(arrB);
     };
 
-    // 1. GESTION DU NOM (En création ou si modifié)
+    // 1. GESTION DU NOM (Adaptatif : name vs nom)
+    const nameColumn = activeTab === 'fairy_types' ? 'name' : 'nom';
+
     if (isCreating) {
       if (!proposal.name?.trim()) return alert("Le nom est obligatoire !");
-      surgicalData.name = proposal.name.trim(); 
+      surgicalData[nameColumn] = proposal.name.trim(); 
       if (activeTab === 'fairy_powers') surgicalData.type_pouvoir = proposal.type_pouvoir;
-    } else if (proposal.name && proposal.name !== editingItem.name) {
-       surgicalData.name = proposal.name;
+    } else if (proposal.name && proposal.name !== (editingItem.name || editingItem.nom)) {
+       surgicalData[nameColumn] = proposal.name;
     }
 
     if (activeTab === 'fairy_types') {
@@ -82,9 +85,13 @@ export default function EncyclopediaModal({
       const oldPouvoirs = (editingItem.fairy_type_powers || []).map(link => link.power?.id).filter(Boolean).sort();
       const newPouvoirs = [...(proposal.pouvoirsIds || [])].sort();
 
+      const oldAtouts = (editingItem.fairy_type_assets || []).map(link => link.asset?.id).filter(Boolean).sort();
+      const newAtouts = [...(proposal.atoutsIds || [])].sort();
+
       const changedRelations = {};
       if (!isCapacitesEqual) changedRelations.capacites = newCapacites;
       if (!arraysEqual(newPouvoirs, oldPouvoirs)) changedRelations.pouvoirs = newPouvoirs;
+      if (!arraysEqual(newAtouts, oldAtouts)) changedRelations.atouts = newAtouts;
 
       const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection, null, 2) : '';
       if (proposal.competencesUtiles !== oldUtiles) changedRelations.competencesUtiles = proposal.competencesUtiles;
@@ -338,6 +345,32 @@ export default function EncyclopediaModal({
                   ))}
                 </div>
               </div>
+			
+			  {/* NOUVEAU : SÉLECTION DES ATOUTS */}
+              <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-200 mt-4">
+                <label className="block text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
+                  <Star size={16} /> Atouts féériques attachés
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-amber-100 shadow-inner custom-scrollbar">
+                  {allAtouts.map(atout => (
+                    <label key={atout.id} className="flex items-center space-x-2 text-xs cursor-pointer hover:bg-amber-50 p-1 rounded transition-colors">
+                      <input 
+                        type="checkbox" 
+                        className="rounded text-amber-600 focus:ring-amber-500"
+                        checked={proposal.atoutsIds?.includes(atout.id)} 
+                        onChange={(e) => { 
+                          const newIds = e.target.checked 
+                            ? [...(proposal.atoutsIds || []), atout.id] 
+                            : (proposal.atoutsIds || []).filter(id => id !== atout.id); 
+                          setProposal({ ...proposal, atoutsIds: newIds }); 
+                        }} 
+                      />
+                      <span className="truncate font-medium text-gray-700">{atout.nom}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
             </div>
           ) : (
             /* === FORMULAIRE SIMPLE (Pour Compétences, Pouvoirs et Profils) === */
