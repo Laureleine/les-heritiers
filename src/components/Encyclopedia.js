@@ -21,18 +21,22 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
   const [allCapacites, setAllCapacites] = useState([]);
   const [allPouvoirs, setAllPouvoirs] = useState([]);
   const [allCompFutiles, setAllCompFutiles] = useState([]);
+  const [allAtouts, setAllAtouts] = useState([]); // 👈 NOUVEAU
   
   // Charger les listes de référence une seule fois au démarrage
   useEffect(() => {
     const fetchReferences = async () => {
-      const [{ data: caps }, { data: pows }, { data: futiles }] = await Promise.all([
+      const [{ data: caps }, { data: pows }, { data: futiles }, { data: atouts }] = await Promise.all([
         supabase.from('fairy_capacites').select('id, nom').order('nom'),
         supabase.from('fairy_powers').select('id, nom').order('nom'),
-        supabase.from('competences_futiles').select('id, name').order('name')
+        supabase.from('competences_futiles').select('id, name').order('name'),
+        supabase.from('fairy_assets').select('id, nom').order('nom') // 👈 NOUVEAU
       ]);
+
       if (caps) setAllCapacites(caps);
       if (pows) setAllPouvoirs(pows);
       if (futiles) setAllCompFutiles(futiles);
+      if (atouts) setAllAtouts(atouts); // 👈 NOUVEAU
     };
     fetchReferences();
   }, []);
@@ -47,12 +51,15 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
     try {
       let query;
       if (activeTab === 'fairy_types') {
-        query = supabase.from('fairy_types').select('*, fairy_type_capacites(capacite_type, capacite:fairy_capacites(id, nom)), fairy_type_powers(power:fairy_powers(id, nom)), fairy_competences_futiles_predilection(is_choice, choice_options, competence_futile_id)');
+        // NOUVEAU : On inclut fairy_type_assets au lieu de fairy_assets direct
+        query = supabase.from('fairy_types').select('*, fairy_type_capacites(capacite_type, capacite:fairy_capacites(id, nom)), fairy_type_powers(power:fairy_powers(id, nom)), fairy_type_assets(asset:fairy_assets(id, nom)), fairy_competences_futiles_predilection(is_choice, choice_options, competence_futile_id)');
       } else if (activeTab === 'fairy_capacites') {
         query = supabase.from('fairy_capacites').select('*, fairy_type_capacites(fairy_types(name))');
       } else if (activeTab === 'fairy_powers') {
-        // 👈 NOUVEAU : On récupère les fées liées aux pouvoirs
         query = supabase.from('fairy_powers').select('*, fairy_type_powers(fairy_types(name))');
+      } else if (activeTab === 'fairy_assets') {
+        // NOUVEAU : On passe par la table de jointure pour l'onglet Atouts
+        query = supabase.from('fairy_assets').select('*, fairy_type_assets(fairy_types(name))'); 
       } else {
         query = supabase.from(activeTab).select('*');
       }
@@ -124,6 +131,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         capaciteFixe2: item.fairy_type_capacites?.find(l => l.capacite_type === 'fixe2')?.capacite?.id || '',
         capacitesChoixIds: item.fairy_type_capacites?.filter(l => l.capacite_type === 'choix').map(l => l.capacite?.id).filter(Boolean) || [],
         pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
+		atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         competencesUtiles: item.competencesPredilection ? JSON.stringify(item.competencesPredilection, null, 2) : '',
          // --- NOUVEAU : Compétences Futiles (Avec les bons index  et [1]) ---
         futileFixe1: fixedFutiles?.competence_futile_id || '',
@@ -194,6 +202,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
           { id: 'fairy_types', label: 'Types de Fées' },
           { id: 'fairy_capacites', label: 'Capacités' },
           { id: 'fairy_powers', label: 'Pouvoirs' },
+		  { id: 'fairy_assets', label: 'Atouts' },
         ].map(tab => (
           <button
             key={tab.id}
@@ -227,8 +236,8 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
               />
             </div>
 
-            {/* Bouton CRÉER (Seulement pour Capacités et Pouvoirs) */}
-            {['fairy_capacites', 'fairy_powers'].includes(activeTab) && (
+            {/* Bouton CRÉER (Seulement pour Capacités, Atouts et Pouvoirs) */}
+            {['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
               <button
                 onClick={handleCreate}
                 className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-sm flex items-center gap-2 font-bold transition-all shrink-0"
@@ -278,6 +287,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
 		userProfile={userProfile}
 		allCapacites={allCapacites}
 		allPouvoirs={allPouvoirs}
+		allAtouts={allAtouts}
 		allCompFutiles={allCompFutiles}
 	  />
 	)}

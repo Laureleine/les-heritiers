@@ -1,6 +1,6 @@
 // src/components/EncyclopediaCard.js
 import React from 'react';
-import { Feather, Sparkles } from 'lucide-react';
+import { Feather, Sparkles, Star } from 'lucide-react';
 
 export default function EncyclopediaCard({ item, activeTab, onOpenEdit }) {
   const title = item.name || item.nom;
@@ -66,6 +66,26 @@ export default function EncyclopediaCard({ item, activeTab, onOpenEdit }) {
         </div>
       )}
 
+      {/* 🌟 LISTE DES FÉES COMPATIBLES (Onglet Atouts) */}
+      {activeTab === 'fairy_assets' && item.fairy_type_assets && item.fairy_type_assets.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-gray-100">
+           <div className="flex items-center gap-1 text-xs font-bold text-amber-800 mb-2">
+              <Star size={12} /> Fées possédant cet atout :
+           </div>
+           <div className="flex flex-wrap gap-1">
+             {item.fairy_type_assets
+               .map(link => link.fairy_types?.name)
+               .filter(Boolean)
+               .sort()
+               .map((fairyName, idx) => (
+                 <span key={idx} className="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200 font-medium shadow-sm">
+                   {fairyName}
+                 </span>
+             ))}
+           </div>
+        </div>
+      )}
+	  
       {/* BOUTON D'ÉDITION (Visible au survol) */}
       <div className="mt-4 pt-4 border-t border-gray-50 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
         <button

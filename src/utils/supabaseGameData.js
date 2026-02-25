@@ -195,9 +195,9 @@ export const loadFairyTypes = async () => {
 		  fairy_type_powers (
 			power:fairy_powers ( id, nom, description, type_pouvoir )
 		  ),
-		  fairy_assets (
-			id, nom, description, effets, effets_techniques
-		  )
+		  fairy_type_assets (
+            asset:fairy_assets ( id, nom, description, effets, effets_techniques )
+          )
 		`)
 		.order('name');
 		
@@ -320,7 +320,8 @@ export const loadFairyTypes = async () => {
 		];
 
 		// Traitement des Atouts (Step 8)
-		const rawAssets = fairy.fairy_assets || [];
+		const rawAssetsLinks = fairy.fairy_type_assets || [];
+		const rawAssets = rawAssetsLinks.map(link => link.asset).filter(Boolean);
 		
 		// On filtre pour exclure les universels, puis on trie
 		const assetsTries = rawAssets
