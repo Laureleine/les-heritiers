@@ -29,6 +29,10 @@ echo "📝 Git add..."
 git add .
 
 echo "💬 Git commit..."
+if git diff --cached --quiet && git diff --quiet; then
+  echo "   ✅ Rien à commiter, release annulée."
+  exit 0
+fi
 git commit -m "Les Héritiers v${VERSION}"
 
 echo "🚀 Git push..."
@@ -94,11 +98,11 @@ upload_to_drive() {
     fi
   fi
 
-  curl -s -X PATCH \
+  curl -s --max-time 30 -X PATCH \
     "https://www.googleapis.com/upload/drive/v3/files/${FILE_ID}?uploadType=media" \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
     -H "Content-Type: text/plain" \
-    --data-binary "@${FILE}" > /dev/null
+    --data-binary "@${FILE}" > /dev/null || echo "   ⚠️  Timeout, fichier ignoré."
 
   echo "   ✅ $DOC_TITLE"
   echo "   URL : $FILE_URL"

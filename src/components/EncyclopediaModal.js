@@ -1,6 +1,6 @@
 // src/components/EncyclopediaModal.js
 import React from 'react';
-import { X, Sparkles, Save, Star } from 'lucide-react';
+import { X, Sparkles, Save, Star, Settings } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
 
@@ -17,7 +17,8 @@ export default function EncyclopediaModal({
   allCapacites,
   allPouvoirs,
   allAtouts,
-  allCompFutiles
+  allCompFutiles,
+  allCompetences // 👈 NOUVELLE PROP
 }) {
 
   // --- LA FONCTION CHIRURGIEN ---
@@ -117,6 +118,37 @@ export default function EncyclopediaModal({
     } else {
       if (proposal.description !== (editingItem.description || editingItem.desc || '')) {
         surgicalData.description = proposal.description;
+      }
+    }
+
+    // 2. GESTION DES BONUS (Capacités, Pouvoirs, Atouts)
+    if (['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab)) {
+      const finalBonus = {};
+      
+      if (proposal.bonusCaracs && Object.keys(proposal.bonusCaracs).length > 0) finalBonus.caracteristiques = proposal.bonusCaracs;
+      if (proposal.bonusComps && Object.keys(proposal.bonusComps).length > 0) finalBonus.competences = proposal.bonusComps;
+
+      // Re-formatage des Spécialités
+      if (proposal.bonusSpecs && proposal.bonusSpecs.length > 0) {
+        const validSpecs = proposal.bonusSpecs.filter(s => s.nom && s.nom.trim() !== '');
+        if (validSpecs.length > 0) {
+          if (activeTab === 'fairy_assets') {
+            finalBonus.specialites = validSpecs; // Format Atout: [{competence: "x", nom: "y"}]
+          } else {
+            finalBonus.specialites = {}; // Format Capacité: {"x": ["y"]}
+            validSpecs.forEach(spec => {
+              if (!finalBonus.specialites[spec.competence]) finalBonus.specialites[spec.competence] = [];
+              finalBonus.specialites[spec.competence].push(spec.nom.trim());
+            });
+          }
+        }
+      }
+
+      // Comparaison avec l'existant
+      const originalBonus = editingItem.bonus || editingItem.effets_techniques || {};
+      if (JSON.stringify(finalBonus) !== JSON.stringify(originalBonus)) {
+        const targetCol = activeTab === 'fairy_assets' ? 'effets_techniques' : 'bonus';
+        surgicalData[targetCol] = finalBonus;
       }
     }
 
@@ -414,9 +446,148 @@ export default function EncyclopediaModal({
                 <textarea
                   value={proposal.description || ''}
                   onChange={(e) => setProposal({...proposal, description: e.target.value})}
-                  className="w-full h-40 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-200 focus:border-amber-400 outline-none font-serif text-gray-800"
+                  className="w-full h-40 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-200 outline-none font-serif text-gray-800"
                 />
               </div>
+
+              {/* 🛠️ NOUVEAU : CONSTRUCTEUR DE BONUS TECHNIQUES */}
+              {['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mt-6 space-y-5">
+                  <label className="block text-sm font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200 pb-2">
+                    <Settings size={16} className="text-slate-500" /> Effets Techniques (Mécaniques de jeu)
+                  </label>
+
+                  {/* 1. Bonus Caractéristiques */}
+                  <div>
+                    <span className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Caractéristiques (+1, +2...)</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-white p-2 rounded-lg border border-slate-100">
+                      {['agilite', 'constitution', 'force', 'precision', 'esprit', 'perception', 'prestance', 'sangFroid'].map(stat => (
+                        <div key={stat} className="flex items-center gap-2 text-xs">
+                          <input
+                            type="number" min="0" max="5"
+                            value={proposal.bonusCaracs?.[stat] || ''}
+                            placeholder="0"
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value);
+                              const newCaracs = { ...proposal.bonusCaracs };
+                              if (val > 0) newCaracs[stat] = val; else delete newCaracs[stat];
+                              setProposal({ ...proposal, bonusCaracs: newCaracs });
+                            }}
+                            className="w-10 p-1 border border-slate-200 rounded text-center text-amber-700 font-bold focus:ring-1 focus:ring-amber-400"
+                          />
+                          <span className="capitalize text-slate-700">{stat === 'sangFroid' ? 'Sang-Froid' : stat}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* 2. Bonus Compétences pures */}
+                    <div>
+                       <div className="flex justify-between items-center mb-2">
+                         <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Bonus Compétences</span>
+                         <button 
+                           type="button"
+                           onClick={(e) => {
+                             e.preventDefault();
+                             // Sécurité absolue : si la liste n'est pas chargée, on met 'Art de la guerre' par défaut
+                             const defaultComp = (allCompetences && allCompetences.length > 0 && allCompetences.name) 
+                               ? allCompetences.name 
+                               : 'Art de la guerre';
+                             
+                             setProposal(prev => ({ 
+                               ...prev, 
+                               bonusComps: { ...(prev.bonusComps || {}), [defaultComp]: 1 } 
+                             }));
+                           }} 
+                           className="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-bold hover:bg-slate-300 transition-colors"
+                         >
+                           + Rangs
+                         </button>
+                       </div>
+                       <div className="space-y-2 bg-white p-2 rounded-lg border border-slate-100 min-h-[60px]">
+                         {Object.entries(proposal.bonusComps || {}).map(([compName, val], idx) => (
+                           <div key={idx} className="flex gap-2 items-center">
+                             <select
+                               value={compName}
+                               onChange={(e) => {
+                                 const newComps = { ...proposal.bonusComps };
+                                 delete newComps[compName];
+                                 newComps[e.target.value] = val;
+                                 setProposal({ ...proposal, bonusComps: newComps });
+                               }}
+                               className="p-1 text-xs border border-slate-200 rounded flex-1 bg-slate-50"
+                             >
+                               {/* 👈 UTILISATION DES DONNÉES DE LA BDD (c.name) */}
+                               {allCompetences.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                             </select>
+                             <input
+                               type="number" min="1" max="5" value={val}
+                               onChange={(e) => setProposal({ ...proposal, bonusComps: { ...proposal.bonusComps, [compName]: parseInt(e.target.value) || 1 } })}
+                               className="w-10 p-1 text-xs border border-slate-200 rounded text-center font-bold text-amber-700"
+                             />
+                             <button onClick={() => { const newComps = { ...proposal.bonusComps }; delete newComps[compName]; setProposal({ ...proposal, bonusComps: newComps }); }} className="text-red-400 hover:text-red-600 font-bold px-1">×</button>
+                           </div>
+                         ))}
+                         {Object.keys(proposal.bonusComps || {}).length === 0 && <span className="text-xs text-slate-400 italic block mt-1">Aucun rang brut offert.</span>}
+                       </div>
+                    </div>
+
+                    {/* 3. Spécialités Gratuites */}
+                    <div>
+                       <div className="flex justify-between items-center mb-2">
+                         <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Spécialités Offertes</span>
+                         <button 
+                           type="button"
+                           onClick={(e) => {
+                             e.preventDefault();
+                             const defaultComp = (allCompetences && allCompetences.length > 0 && allCompetences.name) 
+                               ? allCompetences.name 
+                               : 'Art de la guerre';
+                               
+                             setProposal(prev => ({ 
+                               ...prev, 
+                               bonusSpecs: [...(prev.bonusSpecs || []), { competence: defaultComp, nom: '' }] 
+                             }));
+                           }} 
+                           className="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-bold hover:bg-slate-300 transition-colors"
+                         >
+                           + Spécialité
+                         </button>
+                       </div>
+                       <div className="space-y-2 bg-white p-2 rounded-lg border border-slate-100 min-h-[60px]">
+                         {(proposal.bonusSpecs || []).map((spec, idx) => (
+                           <div key={idx} className="flex gap-2 items-center">
+                             <select
+                               value={spec.competence}
+                               onChange={(e) => {
+                                 const newSpecs = [...proposal.bonusSpecs];
+                                 newSpecs[idx].competence = e.target.value;
+                                 setProposal({ ...proposal, bonusSpecs: newSpecs });
+                               }}
+                               className="p-1 text-[11px] border border-slate-200 rounded w-24 bg-slate-50 truncate"
+                             >
+                               {/* 👈 UTILISATION DES DONNÉES DE LA BDD (c.name) */}
+                               {allCompetences.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                             </select>
+                             <input
+                               type="text" placeholder="Ex: Politique..." value={spec.nom}
+                               onChange={(e) => {
+                                 const newSpecs = [...proposal.bonusSpecs];
+                                 newSpecs[idx].nom = e.target.value;
+                                 setProposal({ ...proposal, bonusSpecs: newSpecs });
+                               }}
+                               className="p-1 text-xs border border-slate-200 rounded flex-1 font-serif text-amber-900 placeholder:text-slate-300"
+                             />
+                             <button onClick={() => { const newSpecs = [...proposal.bonusSpecs]; newSpecs.splice(idx, 1); setProposal({ ...proposal, bonusSpecs: newSpecs }); }} className="text-red-400 hover:text-red-600 font-bold px-1">×</button>
+                           </div>
+                         ))}
+                         {(!proposal.bonusSpecs || proposal.bonusSpecs.length === 0) && <span className="text-xs text-slate-400 italic block mt-1">Aucune spécialité dorée.</span>}
+                       </div>
+                    </div>
+					</div>
+                </div>
+              )}
             </div>
           )}
 

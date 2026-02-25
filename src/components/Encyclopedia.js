@@ -22,21 +22,24 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
   const [allPouvoirs, setAllPouvoirs] = useState([]);
   const [allCompFutiles, setAllCompFutiles] = useState([]);
   const [allAtouts, setAllAtouts] = useState([]); // 👈 NOUVEAU
+  const [allCompetences, setAllCompetences] = useState([]); // 👈 NOUVEAU
   
   // Charger les listes de référence une seule fois au démarrage
   useEffect(() => {
     const fetchReferences = async () => {
-      const [{ data: caps }, { data: pows }, { data: futiles }, { data: atouts }] = await Promise.all([
+      const [{ data: caps }, { data: pows }, { data: futiles }, { data: atouts }, { data: comps }] = await Promise.all([
         supabase.from('fairy_capacites').select('id, nom').order('nom'),
         supabase.from('fairy_powers').select('id, nom').order('nom'),
         supabase.from('competences_futiles').select('id, name').order('name'),
-        supabase.from('fairy_assets').select('id, nom').order('nom') // 👈 NOUVEAU
+        supabase.from('fairy_assets').select('id, nom').order('nom'),
+        supabase.from('competences').select('id, name').order('name') // 👈 NOUVEAU
       ]);
 
       if (caps) setAllCapacites(caps);
       if (pows) setAllPouvoirs(pows);
       if (futiles) setAllCompFutiles(futiles);
-      if (atouts) setAllAtouts(atouts); // 👈 NOUVEAU
+      if (atouts) setAllAtouts(atouts); 
+      if (comps) setAllCompetences(comps); // 👈 NOUVEAU
     };
     fetchReferences();
   }, []);
@@ -139,13 +142,30 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         futileChoix1: choiceFutiles?.choice_options || [],
         futileChoix2: choiceFutiles[1]?.choice_options || []
       }); // <-- La fameuse fermeture !
-    } else {
-      // Pour les compétences et profils, on garde la forme simple (description uniquement pour l'instant)
-      setProposal({
-        description: item.description || item.desc || ''
-      });
-    }
-    
+      } else {
+        // --- CHARGEMENT DES BONUS TECHNIQUES (Capacités, Pouvoirs, Atouts) ---
+        let rawBonus = item.bonus || item.effets_techniques || {};
+        let loadedSpecs = [];
+        
+        // Les atouts et les capacités n'ont pas exactement le même format JSON en base, on uniformise pour l'UI
+        if (activeTab === 'fairy_assets' && rawBonus.specialites) {
+          loadedSpecs = [...rawBonus.specialites];
+        } else if (rawBonus.specialites) {
+          Object.entries(rawBonus.specialites).forEach(([comp, specs]) => {
+            if (Array.isArray(specs)) specs.forEach(s => loadedSpecs.push({ competence: comp, nom: s }));
+          });
+        }
+
+        setProposal({
+          name: item.name || item.nom,
+          description: item.description || item.desc || '',
+          type_pouvoir: item.type_pouvoir || 'masque',
+          bonusCaracs: rawBonus.caracteristiques || {}, // 👈 NOUVEAU
+          bonusComps: rawBonus.competences || {},       // 👈 NOUVEAU
+          bonusSpecs: loadedSpecs                       // 👈 NOUVEAU
+        });
+      }
+   
     setJustification('');
   };
 
@@ -158,7 +178,10 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
     setProposal({
       name: '', // Nouveau champ pour le nom
       description: '',
-      type_pouvoir: activeTab === 'fairy_powers' ? 'masque' : null // Défaut pour les pouvoirs
+      type_pouvoir: activeTab === 'fairy_powers' ? 'masque' : null, // Défaut pour les pouvoirs
+	  bonusCaracs: {}, // 👈 NOUVEAU
+      bonusComps: {},  // 👈 NOUVEAU
+      bonusSpecs: []   // 👈 NOUVEAU
     });
     setJustification('Nouvelle création');
   };
@@ -289,6 +312,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
 		allPouvoirs={allPouvoirs}
 		allAtouts={allAtouts}
 		allCompFutiles={allCompFutiles}
+        allCompetences={allCompetences} // 👈 NOUVEAU
 	  />
 	)}
 
