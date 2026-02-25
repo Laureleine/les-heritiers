@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Check, X, AlertTriangle, Clock, ArrowLeft, Shield, Copy, Archive } from 'lucide-react';
 import { supabase } from '../config/supabase';
+import { logger } from '../utils/logger'; // 👈 NOUVEL IMPORT
 
 export default function ValidationsPendantes({ session, onBack }) {
   const [pendingChanges, setPendingChanges] = useState([]);
@@ -52,19 +53,34 @@ export default function ValidationsPendantes({ session, onBack }) {
       const { _relations, ...mainData } = change.new_data;
       let sqlQuery = '';
 
-      // 1. GÉNÉRATION DE L'UPDATE
-      if (Object.keys(mainData).length > 0) {
-        const setClauses = Object.entries(mainData).map(([key, value]) => {
-          if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
-          if (Array.isArray(value)) {
-            const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
-            return `${key} = ARRAY[${elements}]::text[]`;
-          }
-          if (typeof value === 'object' && value !== null) return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-          return `${key} = ${value}`;
-        }).join(',\n  ');
+      // DÉTECTION : Est-ce une CRÉATION (Insert) ou une MODIFICATION (Update) ?
+      const isCreation = !change.record_id;
 
-        sqlQuery += `UPDATE public.${change.table_name}\nSET\n  ${setClauses}\nWHERE id = '${change.record_id}';`;
+      if (isCreation) {
+        // === MODE CRÉATION (INSERT) ===
+        if (Object.keys(mainData).length > 0) {
+          const columns = Object.keys(mainData).join(', ');
+          const values = Object.values(mainData).map(value => {
+             if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
+             if (typeof value === 'object' && value !== null) return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+             return value; // nombres, booléens
+          }).join(', ');
+
+          sqlQuery = `INSERT INTO public.${change.table_name} (${columns}) VALUES (${values});`;
+        }
+      } 
+      else {
+        // === MODE MODIFICATION (UPDATE) === (Code existant)
+        if (Object.keys(mainData).length > 0) {
+           // ... (Gardez votre code existant pour le UPDATE ici) ...
+           const setClauses = Object.entries(mainData).map(([key, value]) => {
+              if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
+              // ... reste du code existant ...
+              if (typeof value === 'object' && value !== null) return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+              return `${key} = ${value}`;
+           }).join(',\n  ');
+           sqlQuery += `UPDATE public.${change.table_name}\nSET\n  ${setClauses}\nWHERE id = '${change.record_id}';`;
+        }
       }
 
       // 2. L'AUTOMATISATION DES RELATIONS COMPLEXES
@@ -99,8 +115,8 @@ export default function ValidationsPendantes({ session, onBack }) {
             const futInserts = _relations.competencesFutiles.map(fut => {
               const isChoice = fut.is_choice ? 'true' : 'false';
               const compId = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
-              // Formatage strict du tableau text[] pour PostgreSQL
-              const options = fut.choice_options ? `ARRAY[${fut.choice_options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ')}]::text[]` : 'null';
+			  // Formatage en JSONB pour correspondre au type de la colonne Supabase
+			  const options = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
               return `('${change.record_id}', ${isChoice}, ${compId}, ${options})`;
             }).join(', ');
             
@@ -116,9 +132,10 @@ export default function ValidationsPendantes({ session, onBack }) {
       if (error) throw error;
       loadChanges();
 
-    } catch (error) {
-      alert("Erreur lors de la validation : " + error.message);
-    }
+	  } catch (error) {
+		logger.error("❌ Erreur lors de la validation SQL :", error);
+		alert("Erreur lors de la validation : " + error.message);
+	  }
   };
 
   // NOUVELLE FONCTION : Archiver une fois le SQL exécuté

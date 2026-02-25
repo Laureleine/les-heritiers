@@ -10,8 +10,7 @@ import { importCharacter } from '../utils/characterStorage'; // Assurez-vous d'a
 import { exportToPDF } from '../utils/utils';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { getCurrentUserFast } from '../utils/authHelpers';
-
-const ADMIN_EMAIL = 'amaranthe@free.fr';
+import { logger } from '../utils/logger';
 
 export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdminUsers, profils = [], userProfile}) { 
   
@@ -62,7 +61,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 	}, []);
 
 const loadCharacters = async (isMounted = true) => {
-  console.log("🚀 START: loadCharacters...");
+  logger.info("🚀 START: loadCharacters...");
   if (!isMounted) return;
   setLoading(true);
 
@@ -71,28 +70,28 @@ const loadCharacters = async (isMounted = true) => {
   
   try {
     // 1. Utilisateur AVANT tout
-    console.log("👤 1. Récupération utilisateur...");
+    logger.info("👤 1. Récupération utilisateur...");
     const user = await getCurrentUserFast();
     if (!user || !isMounted) return;
     
-    console.log("✅ User:", user.email);
+    logger.info("✅ User:", user.email);
     setCurrentUser(user);
     const myUserId = user.id;
-	console.log("👤 User ID:", myUserId);
+	logger.info("👤 User ID:", myUserId);
     
     // Admin check
-	const isAdminUser = userProfile?.profile?.role === 'super_admin' || user.email === ADMIN_EMAIL;    
+	const isAdminUser = userProfile?.profile?.role === 'super_admin';    
 	if (isMounted) setIsAdmin(isAdminUser);
 
     // 2. Chargement PARALLÈLE avec myUserId correct
-    console.log("📚 2. Chargement personnages...");
+    logger.info("📚 2. Chargement personnages...");
     const [mesPersos, persosPublics, persosAdmin] = await Promise.all([
       getUserCharacters(myUserId),
       getPublicCharacters(),
       isAdminUser ? getAllCharactersAdmin() : Promise.resolve([])
     ]);
-	console.log("📊 RÉSULTAT getUserCharacters:", mesPersos);
-    console.log("📊 RÉSULTAT getPublicCharacters:", persosPublics);
+	logger.info("📊 RÉSULTAT getUserCharacters:", mesPersos);
+    logger.info("📊 RÉSULTAT getPublicCharacters:", persosPublics);
 
     if (!isMounted) return;
 
@@ -104,7 +103,7 @@ const loadCharacters = async (isMounted = true) => {
       setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
     }
 
-    console.log("✅ Chargé:", mesPersos?.length, "persos");
+    logger.info("✅ Chargé:", mesPersos?.length, "persos");
     
   } catch (error) {
     if (error.name !== 'AbortError') {
@@ -117,7 +116,7 @@ const loadCharacters = async (isMounted = true) => {
     clearTimeout(timeoutId); // ✅ timeoutId correct
     if (isMounted) {
       setLoading(false); // ✅ TOUJOURS exécuté
-      console.log("🏁 Loading = false");
+      logger.info("🏁 Loading = false");
     }
   }
 };

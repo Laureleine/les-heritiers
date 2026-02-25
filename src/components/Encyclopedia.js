@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { Book, Feather, Search, Save, X, AlertCircle, Shield, Sparkles } from 'lucide-react';
+import { logger } from '../utils/logger'; // 👈 NOUVEL IMPORT
+import { Book, Feather, Search, Save, X, AlertCircle, Shield, Sparkles, Plus } from 'lucide-react';
+import EncyclopediaModal from './EncyclopediaModal'; // 👈 NOUVEL IMPORT
+import EncyclopediaCard from './EncyclopediaCard';
+
 
 export default function Encyclopedia({ userProfile, onBack, onOpenValidations }) {
   const [activeTab, setActiveTab] = useState('fairy_types'); // 'fairy_types', 'competences', 'profils'
@@ -12,6 +16,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
   const [editingItem, setEditingItem] = useState(null); // L'objet en cours de modif
   const [proposal, setProposal] = useState({}); // Les changements proposés
   const [justification, setJustification] = useState(''); // Le "pourquoi"
+  const [isCreating, setIsCreating] = useState(false); // Mode création vs modification
 
   const [allCapacites, setAllCapacites] = useState([]);
   const [allPouvoirs, setAllPouvoirs] = useState([]);
@@ -42,29 +47,37 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
     try {
       let query;
       if (activeTab === 'fairy_types') {
-        query = supabase.from('fairy_types').select('*, fairy_type_capacites(capacite:fairy_capacites(id, nom)), fairy_type_powers(power:fairy_powers(id, nom)), fairy_competences_futiles_predilection(is_choice, choice_options, competence_futile_id)');
+        query = supabase.from('fairy_types').select('*, fairy_type_capacites(capacite_type, capacite:fairy_capacites(id, nom)), fairy_type_powers(power:fairy_powers(id, nom)), fairy_competences_futiles_predilection(is_choice, choice_options, competence_futile_id)');
+      } else if (activeTab === 'fairy_capacites') {
+        query = supabase.from('fairy_capacites').select('*, fairy_type_capacites(fairy_types(name))');
+      } else if (activeTab === 'fairy_powers') {
+        // 👈 NOUVEAU : On récupère les fées liées aux pouvoirs
+        query = supabase.from('fairy_powers').select('*, fairy_type_powers(fairy_types(name))');
       } else {
         query = supabase.from(activeTab).select('*');
       }
-      
+	  
       // Tris spécifiques
       if (activeTab === 'fairy_types') query = query.order('name');
       else if (activeTab === 'competences') query = query.order('nom');
       else if (activeTab === 'profils') query = query.order('nom');
       else if (activeTab === 'fairy_capacites') query = query.order('nom');
       else if (activeTab === 'fairy_powers') query = query.order('nom');
-	  
+
       const { data: results, error } = await query;
       if (error) throw error;
       
+      // 👈 NOUVEAU LOGGER : On suit le nombre de résultats chargés silencieusement
+      logger.info(`📚 Encyclopédie [${activeTab}] chargée :`, results?.length, "éléments");
+
       setData(results || []);
     } catch (error) {
-      console.error("Erreur chargement Encyclopédie:", error);
+      logger.error("❌ Erreur chargement Encyclopédie:", error);
     } finally {
       setLoading(false);
     }
   };
-
+  
   // Filtrage recherche
   const filteredData = data.filter(item => {
     const searchStr = searchTerm.toLowerCase();
@@ -128,179 +141,21 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
     setJustification('');
   };
 
-  const handleSubmitProposal = async () => {
-    if (!justification.trim()) {
-      alert("Veuillez expliquer brièvement la raison de cette modification.");
-      return;
-    }
-
-    // 🛠️ LE CHIRURGIEN : L'objet qui ne contiendra QUE les différences
-    const surgicalData = {};
-
-    // Helper pour comparer facilement les tableaux (ignore les différences entre null et [])
-    const arraysEqual = (a, b) => {
-      const arrA = Array.isArray(a) && a.length > 0 ? a : [];
-      const arrB = Array.isArray(b) && b.length > 0 ? b : [];
-      return JSON.stringify(arrA) === JSON.stringify(arrB);
-    };
-
-    if (activeTab === 'fairy_types') {
-      // 1. Reformatage des tableaux à partir des textes saisis
-      const newTraits = proposal.traits ? proposal.traits.split(',').map(t => t.trim()).filter(Boolean) : [];
-      const newAvantages = proposal.avantages ? proposal.avantages.split('\n').map(a => a.trim()).filter(Boolean) : [];
-      const newDesavantages = proposal.desavantages ? proposal.desavantages.split('\n').map(d => d.trim()).filter(Boolean) : [];
-
-      // 2. Comparaisons des champs simples
-      if (proposal.description !== editingItem.description) surgicalData.description = proposal.description;
-      if (proposal.taille !== (editingItem.taille_categorie || 'Moyenne')) surgicalData.taille_categorie = proposal.taille;
-      
-      // 3. Comparaison des tableaux
-      if (!arraysEqual(proposal.allowedGenders, editingItem.allowed_genders)) surgicalData.allowed_genders = proposal.allowedGenders;
-      if (!arraysEqual(newTraits, editingItem.traits)) surgicalData.traits = newTraits;
-      if (!arraysEqual(newAvantages, editingItem.avantages)) surgicalData.avantages = newAvantages;
-      if (!arraysEqual(newDesavantages, editingItem.desavantages)) surgicalData.desavantages = newDesavantages;
-
-      // 4. Comparaison des Caractéristiques (Min/Max)
-      const stats = [
-        { sql: 'agilite', ui: 'agilite' }, { sql: 'constitution', ui: 'constitution' },
-        { sql: 'force', ui: 'force' }, { sql: 'precision', ui: 'precision' },
-        { sql: 'esprit', ui: 'esprit' }, { sql: 'perception', ui: 'perception' },
-        { sql: 'prestance', ui: 'prestance' }, { sql: 'sang_froid', ui: 'sangFroid' }
-      ];
-
-      stats.forEach(stat => {
-        const newMin = proposal.caracteristiques?.[stat.ui]?.min || 1;
-        const newMax = proposal.caracteristiques?.[stat.ui]?.max || 6;
-        
-        if (newMin !== (editingItem[`${stat.sql}_min`] || 1)) surgicalData[`${stat.sql}_min`] = newMin;
-        if (newMax !== (editingItem[`${stat.sql}_max`] || 6)) surgicalData[`${stat.sql}_max`] = newMax;
-      });
-
-	// 5. Comparaison des Relations (IDs et Types)
-	// Reconstruction de la nouvelle liste proposée
-	const newCapacites = [];
-	if (proposal.capaciteFixe1) newCapacites.push({ id: proposal.capaciteFixe1, type: 'fixe1' });
-	if (proposal.capaciteFixe2) newCapacites.push({ id: proposal.capaciteFixe2, type: 'fixe2' });
-	(proposal.capacitesChoixIds || []).forEach(id => newCapacites.push({ id, type: 'choix' }));
-	
-	// Comparaison avec l'existant
-	const oldCapacites = (editingItem.fairy_type_capacites || []).map(link => ({
-	  id: link.capacite?.id,
-	  type: link.capacite_type
-	}));
-	
-	const sortCaps = (a, b) => a.id.localeCompare(b.id);
-	const isCapacitesEqual = JSON.stringify(oldCapacites.sort(sortCaps)) === JSON.stringify(newCapacites.sort(sortCaps));
-
-	const oldPouvoirs = (editingItem.fairy_type_powers || []).map(link => link.power?.id).filter(Boolean).sort();
-	const newPouvoirs = [...(proposal.pouvoirsIds || [])].sort();
-
-	const changedRelations = {};
-	if (!isCapacitesEqual) changedRelations.capacites = newCapacites; // Envoie désormais un tableau d'objets {id, type}
-	if (!arraysEqual(newPouvoirs, oldPouvoirs)) changedRelations.pouvoirs = newPouvoirs;
-
-        // 6. Comparaison des Compétences de prédilection
-        const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection, null, 2) : '';
-        if (proposal.competencesUtiles !== oldUtiles) changedRelations.competencesUtiles = proposal.competencesUtiles;
-
-        // --- NOUVEAU : Traitement des Compétences Futiles ---
-        const newFutiles = [];
-        if (proposal.futileFixe1) newFutiles.push({ is_choice: false, competence_futile_id: proposal.futileFixe1 });
-        if (proposal.futileFixe2) newFutiles.push({ is_choice: false, competence_futile_id: proposal.futileFixe2 });
-
-        if (proposal.futileChoix1 && proposal.futileChoix1.length > 0) newFutiles.push({ is_choice: true, choice_options: proposal.futileChoix1 });
-        if (proposal.futileChoix2 && proposal.futileChoix2.length > 0) newFutiles.push({ is_choice: true, choice_options: proposal.futileChoix2 });
-
-        const oldFutiles = (editingItem.fairy_competences_futiles_predilection || []).map(f => ({
-          is_choice: f.is_choice,
-          competence_futile_id: f.competence_futile_id || null,
-          choice_options: f.choice_options || null
-        }));
-
-        const normalizeFutiles = (arr) => arr.map(a => JSON.stringify(a)).sort().join('|');
-        if (normalizeFutiles(newFutiles) !== normalizeFutiles(oldFutiles)) {
-          changedRelations.competencesFutiles = newFutiles;
-        }
-		
-      // On n'intègre le sous-objet "relations" QUE s'il y a des modifications dedans
-      if (Object.keys(changedRelations).length > 0) {
-        surgicalData._relations = changedRelations;
-      }
-
-    } else {
-      // Pour les autres onglets plus simples (Compétences, Profils)
-      if (proposal.description !== (editingItem.description || editingItem.desc || '')) {
-        surgicalData.description = proposal.description;
-      }
-    }
-
-    // 🛡️ SÉCURITÉ : On bloque l'envoi si aucune modification n'a été détectée
-    if (Object.keys(surgicalData).length === 0) {
-      alert("Aucune modification n'a été détectée par rapport à la version actuelle.");
-      return;
-    }
-
-    try {
-      const payload = {
-        user_id: userProfile.id,
-        table_name: activeTab,
-        record_id: editingItem.id,
-        record_name: editingItem.name || editingItem.nom,
-        new_data: surgicalData, // 🪄 Injection des données chirurgicales uniquement
-        justification: justification,
-        status: 'pending'
-      };
-
-      // Note : Utilisez bien le vrai nom de votre table (data_change_requests)
-      const { error } = await supabase
-        .from('data_change_requests') 
-        .insert([payload]);
-
-      if (error) throw error;
-
-      alert("Votre proposition a été envoyée aux Gardiens du Savoir !");
-      setEditingItem(null);
-    } catch (error) {
-      alert("Erreur lors de l'envoi : " + error.message);
-    }
+  // Ouvrir le modal en mode CRÉATION
+  const handleCreate = () => {
+    setIsCreating(true);
+    setEditingItem({ id: null, name: '', description: '' }); // Objet vide
+    
+    // Valeurs par défaut
+    setProposal({
+      name: '', // Nouveau champ pour le nom
+      description: '',
+      type_pouvoir: activeTab === 'fairy_powers' ? 'masque' : null // Défaut pour les pouvoirs
+    });
+    setJustification('Nouvelle création');
   };
   
   // --- RENDU DES CARTES (ADAPTATIF) ---
-  const renderCard = (item) => {
-    const title = item.name || item.nom;
-    const desc = item.description || item.desc;
-    const isRestricted = item.is_official === false;
-    
-    // Détection si c'est un pouvoir ou une capacité
-    const typeBadge = item.type_pouvoir 
-        ? (item.type_pouvoir === 'masque' ? '🎭 Masqué' : item.type_pouvoir === 'demasque' ? '🔥 Démasqué' : `✨ ${item.type_pouvoir}`)
-        : item.capacite_type ? `🌟 Capacité` : null;
-
-    return (
-      <div key={item.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow">
-        {activeTab === 'fairy_types' && <Feather className="text-amber-300 mb-3" size={24} />}
-        
-        <h3 className="font-serif font-bold text-lg text-amber-900 mb-2 flex items-center flex-wrap gap-2">
-          {title}
-          {isRestricted && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold tracking-wider uppercase">Community</span>}
-          {typeBadge && <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-bold">{typeBadge}</span>}
-        </h3>
-        
-        <p className="text-gray-600 text-sm mb-4 flex-1 whitespace-pre-wrap">
-          {desc || <span className="italic text-gray-400">Aucune description disponible.</span>}
-        </p>
-
-        <div className="border-t border-gray-100 pt-3 mt-auto">
-          <button 
-            onClick={() => handleOpenEdit(item)}
-            className="flex items-center gap-2 text-xs font-bold text-stone-500 hover:text-amber-700 transition-colors bg-stone-50 hover:bg-amber-50 px-3 py-2 rounded-lg border border-transparent hover:border-amber-200"
-          >
-            Suggérer une modification
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-gray-800 font-sans pb-20">
@@ -357,17 +212,31 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         {/* CONTENU PRINCIPAL */}
         <div className="space-y-6">
           
-          {/* Barre de recherche */}
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input 
-              type="text"
-              placeholder={`Rechercher dans ${activeTab.replace('_', ' ')}...`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 outline-none bg-white shadow-sm"
-            />
-          </div>
+          {/* CONTENU PRINCIPAL : Barre de Recherche + Bouton Créer */}
+          <div className="flex gap-3 mb-6">
+            
+            {/* Barre de recherche (Prend tout l'espace restant grâce à flex-1) */}
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder={`Rechercher dans ${activeTab.replace('_', ' ')}...`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 outline-none bg-white shadow-sm"
+              />
+            </div>
+
+            {/* Bouton CRÉER (Seulement pour Capacités et Pouvoirs) */}
+            {['fairy_capacites', 'fairy_powers'].includes(activeTab) && (
+              <button
+                onClick={handleCreate}
+                className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-sm flex items-center gap-2 font-bold transition-all shrink-0"
+              >
+                <Plus size={20} /> <span className="hidden md:inline">Créer</span>
+              </button>
+            )}
+          </div>	  
 
           {/* Grille de résultats */}
           {loading ? (
@@ -376,7 +245,14 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredData.map(renderCard)}
+              {filteredData.map(item => (
+				  <EncyclopediaCard 
+					key={item.id} 
+					item={item} 
+					activeTab={activeTab} 
+					onOpenEdit={handleOpenEdit} 
+				  />
+				))}			  
               {filteredData.length === 0 && (
                 <div className="col-span-full text-center py-10 text-gray-500 italic">
                   Aucune donnée trouvée pour cette recherche.
@@ -388,371 +264,24 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         </div>
       </div>
 
-     {/* MODAL DE PROPOSITION */}
-      {editingItem && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-fade-in">
+	{/* MODAL DE PROPOSITION (Composant séparé) */}
+	{editingItem && (
+	  <EncyclopediaModal
+		activeTab={activeTab}
+		editingItem={editingItem}
+		setEditingItem={setEditingItem}
+		isCreating={isCreating}
+		proposal={proposal}
+		setProposal={setProposal}
+		justification={justification}
+		setJustification={setJustification}
+		userProfile={userProfile}
+		allCapacites={allCapacites}
+		allPouvoirs={allPouvoirs}
+		allCompFutiles={allCompFutiles}
+	  />
+	)}
 
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-stone-50">
-              <div>
-                <h2 className="text-xl font-serif font-bold text-amber-900">Proposition de modification</h2>
-                <p className="text-sm text-gray-500 mt-1">Élément : <span className="font-bold text-gray-800">{editingItem.name || editingItem.nom}</span></p>
-              </div>
-              <button onClick={() => setEditingItem(null)} className="text-gray-400 hover:text-gray-600">
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
-
-              <div className="mb-6 p-4 bg-amber-50 text-amber-800 rounded-lg text-sm flex gap-3 items-start border border-amber-100">
-                <Sparkles className="flex-shrink-0 mt-0.5 text-amber-500" size={18} />
-                <p>Vos modifications ne seront pas immédiates. Elles seront soumises à la validation des <em>Gardiens du Savoir</em>. Soyez précis et respectueux du "Lore" du jeu.</p>
-              </div>
-
-              {/* === FORMULAIRE AVANCÉ POUR LES FÉES === */}
-              {activeTab === 'fairy_types' ? (
-                <div className="space-y-6">
-                  {/* 1. DESCRIPTION */}
-                  <div>
-                    <label className="block text-sm font-bold text-amber-900 mb-1">Description</label>
-                    <textarea
-                      value={proposal.description}
-                      onChange={(e) => setProposal({ ...proposal, description: e.target.value })}
-                      className="w-full p-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 font-serif text-sm min-h-[100px]"
-                      placeholder="Histoire et nature de la fée..."
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* 2. TAILLE */}
-                    <div>
-                      <label className="block text-sm font-bold text-amber-900 mb-1">Taille</label>
-                      <select
-                        value={proposal.taille}
-                        onChange={(e) => setProposal({ ...proposal, taille: e.target.value })}
-                        className="w-full p-2 border border-amber-200 rounded-lg bg-white"
-                      >
-                        <option value="Petite">Petite (+1 Esquive)</option>
-                        <option value="Moyenne">Moyenne</option>
-                        <option value="Grande">Grande (-1 Esquive)</option>
-                        <option value="Très Grande">Très Grande (-2 Esquive)</option>
-                      </select>
-                    </div>
-
-                    {/* 3. SEXE (Possibilités) */}
-                    <div>
-                      <label className="block text-sm font-bold text-amber-900 mb-1">Sexes possibles</label>
-                      <div className="flex gap-4 p-2 border border-amber-200 rounded-lg bg-amber-50/50">
-                        {['Homme', 'Femme', 'Androgyne'].map(genre => (
-                          <label key={genre} className="flex items-center gap-1 text-sm cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={proposal.allowedGenders?.includes(genre)}
-                              onChange={(e) => {
-                                const newGenders = e.target.checked
-                                  ? [...(proposal.allowedGenders || []), genre]
-                                  : (proposal.allowedGenders || []).filter(g => g !== genre);
-                                setProposal({ ...proposal, allowedGenders: newGenders });
-                              }}
-                              className="text-amber-600 focus:ring-amber-500"
-                            />
-                            {genre}
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 4. TRAITS DE CARACTÈRE */}
-                  <div>
-                    <label className="block text-sm font-bold text-amber-900 mb-1">Traits de caractère dominants (séparés par des virgules)</label>
-                    <input
-                      type="text"
-                      value={proposal.traits}
-                      onChange={(e) => setProposal({ ...proposal, traits: e.target.value })}
-                      className="w-full p-2 border border-amber-200 rounded-lg"
-                      placeholder="Ex: Élégant, orgueilleux, raffiné..."
-                    />
-                  </div>
-
-                  {/* 5. POTENTIELS (CARACTÉRISTIQUES MIN/MAX) */}
-                  <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
-                    <label className="block text-sm font-bold text-amber-900 mb-3">Potentiels (Min / Max)</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {['agilite', 'constitution', 'force', 'precision', 'esprit', 'perception', 'prestance', 'sangFroid'].map((stat) => (
-                        <div key={stat} className="bg-white p-2 rounded border border-amber-200 text-center shadow-sm">
-                          <span className="block text-xs font-bold uppercase text-stone-500 mb-1">
-                            {stat === 'sangFroid' ? 'Sang-Froid' : stat}
-                          </span>
-                          <div className="flex justify-center items-center gap-1">
-                            <input
-                              type="number" min="1" max="9"
-                              value={proposal.caracteristiques?.[stat]?.min || 1}
-                              onChange={(e) => setProposal({
-                                ...proposal,
-                                caracteristiques: {
-                                  ...proposal.caracteristiques,
-                                  [stat]: { ...proposal.caracteristiques?.[stat], min: parseInt(e.target.value) }
-                                }
-                              })}
-                              className="w-10 text-center border-b border-amber-300 focus:outline-none focus:border-amber-600 text-sm font-bold"
-                            />
-                            <span className="text-stone-300">/</span>
-                            <input
-                              type="number" min="1" max="9"
-                              value={proposal.caracteristiques?.[stat]?.max || 6}
-                              onChange={(e) => setProposal({
-                                ...proposal,
-                                caracteristiques: {
-                                  ...proposal.caracteristiques,
-                                  [stat]: { ...proposal.caracteristiques?.[stat], max: parseInt(e.target.value) }
-                                }
-                              })}
-                              className="w-10 text-center border-b border-amber-300 focus:outline-none focus:border-amber-600 text-sm font-bold text-amber-700"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 6. AVANTAGES & DÉSAVANTAGES */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-bold text-green-800 mb-1">Avantages (1 par ligne)</label>
-                      <textarea
-                        value={proposal.avantages}
-                        onChange={(e) => setProposal({ ...proposal, avantages: e.target.value })}
-                        className="w-full p-2 border border-green-200 bg-green-50/30 rounded-lg text-sm min-h-[80px]"
-                        placeholder="- Avantage 1 : description..."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-red-800 mb-1">Désavantages (1 par ligne)</label>
-                      <textarea
-                        value={proposal.desavantages}
-                        onChange={(e) => setProposal({ ...proposal, desavantages: e.target.value })}
-                        className="w-full p-2 border border-red-200 bg-red-50/30 rounded-lg text-sm min-h-[80px]"
-                        placeholder="- Désavantage 1 : description..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* 7. COMPÉTENCES DE PRÉDILECTION */}
-                  <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
-                    <label className="block text-sm font-bold text-purple-900 mb-1">Compétences Utiles (Reste en format texte provisoirement)</label>
-                    <textarea
-                      value={proposal.competencesUtiles}
-                      onChange={(e) => setProposal({ ...proposal, competencesUtiles: e.target.value })}
-                      className="w-full p-2 border border-purple-200 rounded-lg text-xs font-mono min-h-[80px] mb-4"
-                    />
-
-                    <label className="block text-sm font-bold text-emerald-900 mb-2 border-t border-purple-200 pt-4">🌟 Compétences Futiles (2 au total selon les règles)</label>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Côté Fixes */}
-                      <div className="space-y-3 bg-white p-3 rounded shadow-sm border border-emerald-100">
-                        <label className="block text-xs font-bold text-emerald-800 border-b pb-1">Spécifiques (Fixes)</label>
-                        <select value={proposal.futileFixe1 || ''} onChange={(e) => setProposal({ ...proposal, futileFixe1: e.target.value })} className="w-full p-2 border rounded text-sm bg-emerald-50/30">
-                          <option value="">-- Emplacement vide --</option>
-                          {allCompFutiles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                        </select>
-                        <select value={proposal.futileFixe2 || ''} onChange={(e) => setProposal({ ...proposal, futileFixe2: e.target.value })} className="w-full p-2 border rounded text-sm bg-emerald-50/30">
-                          <option value="">-- Emplacement vide --</option>
-                          {allCompFutiles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                        </select>
-                      </div>
-
-                      {/* Côté Choix (Sécurisé par la BDD) */}
-                      <div className="space-y-3 bg-white p-3 rounded shadow-sm border border-emerald-100">
-                        <label className="block text-xs font-bold text-emerald-800 border-b pb-1">Ou Choix multiples (Liés à la liste officielle)</label>
-
-                        {/* CHOIX 1 */}
-                        <div className="bg-emerald-50/30 p-2 rounded border border-emerald-100">
-                          <div className="flex flex-wrap gap-1 mb-2 min-h-[24px]">
-                            {(proposal.futileChoix1 || []).map(opt => (
-                              <span key={opt} className="bg-emerald-200 text-emerald-900 text-[10px] px-2 py-1 rounded-full flex items-center gap-1 font-bold shadow-sm">
-                                {opt}
-                                <button onClick={() => setProposal({...proposal, futileChoix1: proposal.futileChoix1.filter(o => o !== opt)})} className="hover:text-red-600 bg-emerald-100 rounded-full w-4 h-4 flex items-center justify-center ml-1">×</button>
-                              </span>
-                            ))}
-                            {(proposal.futileChoix1 || []).length === 0 && <span className="text-xs text-gray-400 italic mt-1">Aucune option (Vide)</span>}
-                          </div>
-                          <select 
-                            onChange={(e) => {
-                              if (!e.target.value) return;
-                              const current = proposal.futileChoix1 || [];
-                              if (!current.includes(e.target.value)) setProposal({ ...proposal, futileChoix1: [...current, e.target.value] });
-                            }}
-                            value=""
-                            className="w-full p-1.5 border border-emerald-200 rounded text-xs bg-white focus:ring-emerald-500"
-                          >
-                            <option value="">+ Ajouter au Choix 1...</option>
-                            {allCompFutiles.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                          </select>
-                        </div>
-
-                        {/* CHOIX 2 */}
-                        <div className="bg-emerald-50/30 p-2 rounded border border-emerald-100">
-                          <div className="flex flex-wrap gap-1 mb-2 min-h-[24px]">
-                            {(proposal.futileChoix2 || []).map(opt => (
-                              <span key={opt} className="bg-emerald-200 text-emerald-900 text-[10px] px-2 py-1 rounded-full flex items-center gap-1 font-bold shadow-sm">
-                                {opt}
-                                <button onClick={() => setProposal({...proposal, futileChoix2: proposal.futileChoix2.filter(o => o !== opt)})} className="hover:text-red-600 bg-emerald-100 rounded-full w-4 h-4 flex items-center justify-center ml-1">×</button>
-                              </span>
-                            ))}
-                            {(proposal.futileChoix2 || []).length === 0 && <span className="text-xs text-gray-400 italic mt-1">Aucune option (Vide)</span>}
-                          </div>
-                          <select 
-                            onChange={(e) => {
-                              if (!e.target.value) return;
-                              const current = proposal.futileChoix2 || [];
-                              if (!current.includes(e.target.value)) setProposal({ ...proposal, futileChoix2: [...current, e.target.value] });
-                            }}
-                            value=""
-                            className="w-full p-1.5 border border-emerald-200 rounded text-xs bg-white focus:ring-emerald-500"
-                          >
-                            <option value="">+ Ajouter au Choix 2...</option>
-                            {allCompFutiles.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 8. SÉLECTION DES CAPACITÉS (SÉPARÉES) */}
-                  <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                    <label className="block text-sm font-bold text-indigo-900 mb-4">Capacités attachées</label>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                      {/* FIXE 1 */}
-                      <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
-                        <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Innée 1 (Fixe)</label>
-                        <select
-                          value={proposal.capaciteFixe1 || ''}
-                          onChange={(e) => setProposal({ ...proposal, capaciteFixe1: e.target.value })}
-                          className="w-full p-2 border border-indigo-200 rounded text-sm focus:ring-indigo-500 bg-indigo-50/30"
-                        >
-                          <option value="">-- Sélectionner --</option>
-                          {allCapacites.map(cap => (
-                            <option key={cap.id} value={cap.id}>{cap.nom}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* FIXE 2 */}
-                      <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
-                        <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Innée 2 (Fixe)</label>
-                        <select
-                          value={proposal.capaciteFixe2 || ''}
-                          onChange={(e) => setProposal({ ...proposal, capaciteFixe2: e.target.value })}
-                          className="w-full p-2 border border-indigo-200 rounded text-sm focus:ring-indigo-500 bg-indigo-50/30"
-                        >
-                          <option value="">-- Sélectionner --</option>
-                          {allCapacites.map(cap => (
-                            <option key={cap.id} value={cap.id}>{cap.nom}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* CHOIX MULTIPLES */}
-                    <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
-                      <div className="flex justify-between items-center mb-3 border-b border-indigo-50 pb-2">
-                        <label className="block text-xs font-bold text-indigo-800">⭐ Capacités au Choix (3 suggérées)</label>
-                        <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold">
-                          {proposal.capacitesChoixIds?.length || 0} sélectionnées
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
-                        {allCapacites.map(cap => (
-                          <label key={cap.id} className="flex items-center space-x-2 text-xs cursor-pointer hover:bg-indigo-50 p-1.5 rounded transition-colors">
-                            <input
-                              type="checkbox"
-                              className="rounded text-indigo-600 focus:ring-indigo-500"
-                              checked={proposal.capacitesChoixIds?.includes(cap.id)}
-                              onChange={(e) => {
-                                const newIds = e.target.checked
-                                  ? [...(proposal.capacitesChoixIds || []), cap.id]
-                                  : (proposal.capacitesChoixIds || []).filter(id => id !== cap.id);
-                                setProposal({ ...proposal, capacitesChoixIds: newIds });
-                              }}
-                            />
-                            <span className="truncate">{cap.nom}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 9. SÉLECTION DES POUVOIRS */}
-                  <div className="bg-rose-50 p-4 rounded-xl border border-rose-100 mt-4">
-                    <label className="block text-sm font-bold text-rose-900 mb-3">Pouvoirs attachés</label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-rose-200">
-                      {allPouvoirs.map(pow => (
-                        <label key={pow.id} className="flex items-center space-x-2 text-xs cursor-pointer hover:bg-rose-50 p-1 rounded">
-                          <input
-                            type="checkbox"
-                            className="rounded text-rose-600 focus:ring-rose-500"
-                            checked={proposal.pouvoirsIds?.includes(pow.id)}
-                            onChange={(e) => {
-                              const newIds = e.target.checked
-                                ? [...(proposal.pouvoirsIds || []), pow.id]
-                                : (proposal.pouvoirsIds || []).filter(id => id !== pow.id);
-                              setProposal({ ...proposal, pouvoirsIds: newIds });
-                            }}
-                          />
-                          <span className="truncate">{pow.nom}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                /* === FORMULAIRE SIMPLE (Pour Compétences et Profils) === */
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Description / Contenu</label>
-                  <textarea
-                    value={proposal.description}
-                    onChange={(e) => setProposal({...proposal, description: e.target.value})}
-                    className="w-full h-40 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-200 focus:border-amber-400 outline-none font-serif text-gray-800"
-                  />
-                </div>
-              )}
-
-              {/* Justification Commune */}
-              <div className="mt-6 border-t border-gray-100 pt-6">
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Pourquoi cette modification ? <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={justification}
-                  onChange={(e) => setJustification(e.target.value)}
-                  placeholder="Ex: Erreur de frappe, rééquilibrage selon la page 112..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-xl flex justify-end gap-3">
-              <button
-                onClick={() => setEditingItem(null)}
-                className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleSubmitProposal}
-                className="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-sm flex items-center gap-2 transition-all"
-              >
-                <Save size={18} /> Soumettre la proposition
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { APP_VERSION, BUILD_DATE } from './version';
 import { saveCharacterToSupabase } from './utils/supabaseStorage';
 import { exportToPDF } from './utils/utils';
 import { useAutoUpdate } from './hooks/useAutoUpdate';
+import { logger, setLoggerRole } from './utils/logger'; // NOUVEAU
 
 // --- IMPORTS DES COMPOSANTS ---
 import Auth from './components/Auth';
@@ -52,7 +53,7 @@ function App() {
 
   useEffect(() => {
     if (updateAvailable) {
-      console.log("Nouvelle version détectée ! Déclenchement de la purge...");
+      logger.info("Nouvelle version détectée ! Déclenchement de la purge...");
       applyUpdate();
     }
   }, [updateAvailable, applyUpdate]);
@@ -99,58 +100,63 @@ function App() {
 		if (mounted && globalLoading) setGlobalLoading(false);
 	  }, 30000);
 
-	  const initializeApp = async () => {
-		try {
-		  setLoadingStep("Vérification connexion...");
-		  const { data: { session } } = await supabase.auth.getSession();
-		  
-		  if (!session) {
-			if (mounted) setGlobalLoading(false);
-			return;
-		  }
+    const initializeApp = async () => {
+      try {
+        setLoadingStep("Vérification connexion...");
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          if (mounted) setGlobalLoading(false);
+          return;
+        }
 
-		  setLoadingStep("Chargement Grimoire...");
-		  const data = await loadAllGameData();
-		  
-		  if (mounted) {
-			setGameData(data);
-			const { data: profile } = await supabase
-			  .from('profiles').select('role, username')
-			  .eq('id', session.user.id).single();
-			  
-			setSession(session);
-			setUserProfile({ ...session.user, profile });
-			console.log(`✅ Connecté: ${session.user.email} Rôle: ${profile?.role}`);
-			setGlobalLoading(false);
-			setIsInitialized(true);  // 🔥 FIN !
-		  }
-		} catch (error) {
-		  console.error("❌ Init failed:", error);
-		  if (mounted) setGlobalLoading(false);
-		} finally {
-		  if (mounted) clearTimeout(safetyTimer);
-		}
-	  };
+        setLoadingStep("Chargement Grimoire...");
+        const data = await loadAllGameData();
 
-	  initializeApp();
-	  return () => { mounted = false; clearTimeout(safetyTimer); };
-	}, [isInitialized]);
+        if (mounted) {
+          setGameData(data);
+          const { data: profile } = await supabase
+            .from('profiles').select('role, username')
+            .eq('id', session.user.id).single();
 
-	// 🔥 2. AUTH LISTENER (SEULEMENT déconnexion)
-	useEffect(() => {
-	  const { data: { subscription } } = supabase.auth.onAuthStateChange(
-		(event, newSession) => {
-		  if (event === 'SIGNED_OUT') {
-			setSession(null);
-			setUserProfile(null);
-			setGlobalLoading(false);
-			setIsInitialized(false);  // 🔥 Permet reconnexion
-		  }
-		}
-	  );
-	  return () => subscription.unsubscribe();
-	}, []);
+          setSession(session);
+          setUserProfile({ ...session.user, profile });
+          
+          // 👇 TRANSMISSION DU RÔLE AU LOGGER
+          setLoggerRole(profile?.role || 'user');
+          logger.info(`✅ Connecté: ${session.user.email} Rôle: ${profile?.role}`);
 
+          setGlobalLoading(false);
+          setIsInitialized(true);  // 🔥 FIN !
+        }
+      } catch (error) {
+        logger.error("❌ Init failed:", error); // Utilisation du logger
+        if (mounted) setGlobalLoading(false);
+      } finally {
+        if (mounted) clearTimeout(safetyTimer);
+      }
+    };
+
+    initializeApp();
+    return () => { mounted = false; clearTimeout(safetyTimer); };
+  }, [isInitialized]);
+
+  // 🔥 2. AUTH LISTENER (SEULEMENT déconnexion)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, newSession) => {
+        if (event === 'SIGNED_OUT') {
+          setSession(null);
+          setUserProfile(null);
+          setLoggerRole('user'); // 👇 RÉINITIALISATION DU LOGGER
+          setGlobalLoading(false);
+          setIsInitialized(false);  // 🔥 Permet reconnexion
+        }
+      }
+    );
+    return () => subscription.unsubscribe();
+  }, []);
+  
   // --- 3. HANDLERS ---
   const handleSave = async () => {
     if (isReadOnly) return;
@@ -229,10 +235,10 @@ function App() {
         onOpenAccount={() => setView('account')}
 		onSignOut={async () => {
 		  try {
-			console.log("🚪 Déconnexion demandée...");
+			logger.info("🚪 Déconnexion demandée...");
 			const { error } = await supabase.auth.signOut();
 			if (error) throw error;
-			console.log("✅ Déconnexion Supabase OK");
+			logger.info("✅ Déconnexion Supabase OK");
 			// ← L'AUTH LISTENER va prendre le relais !
 		  } catch (error) {
 			console.error("❌ Erreur déconnexion:", error.message);
