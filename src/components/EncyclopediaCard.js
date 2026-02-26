@@ -1,8 +1,10 @@
 // src/components/EncyclopediaCard.js
-import React from 'react';
-import { Feather, Sparkles, Star } from 'lucide-react';
+// 8.20.0
 
-export default function EncyclopediaCard({ item, activeTab, onOpenEdit }) {
+import React from 'react';
+import { Feather, Sparkles, Star, Lock } from 'lucide-react';
+
+export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked }) {
   const title = item.name || item.nom;
   const desc = item.description || item.desc;
   const isRestricted = item.is_official === false;
@@ -86,15 +88,22 @@ export default function EncyclopediaCard({ item, activeTab, onOpenEdit }) {
         </div>
       )}
 	  
-      {/* BOUTON D'ÉDITION (Visible au survol) */}
-      <div className="mt-4 pt-4 border-t border-gray-50 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          onClick={() => onOpenEdit(item)}
-          className="text-xs font-bold text-amber-600 hover:text-amber-800 flex items-center gap-1"
-        >
-          <Feather size={14} /> Suggérer une modification
-        </button>
+      {/* BOUTON D'ÉDITION (Visible au survol, ou fixe si verrouillé) */}
+      <div className={`mt-4 pt-4 border-t border-gray-50 flex justify-end transition-opacity ${isLocked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+        {isLocked ? (
+          <span className="text-xs font-bold text-gray-400 flex items-center gap-1 cursor-not-allowed bg-gray-100 px-2 py-1 rounded" title="Une proposition est déjà en cours d'examen par le Conseil.">
+            <Lock size={14} /> En cours de révision
+          </span>
+        ) : (
+          <button
+            onClick={() => onOpenEdit(item)}
+            className="text-xs font-bold text-amber-600 hover:text-amber-800 flex items-center gap-1"
+          >
+            <Feather size={14} /> Suggérer une modification
+          </button>
+        )}
       </div>
+
     </div>
   );
 }
