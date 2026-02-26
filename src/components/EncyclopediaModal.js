@@ -1,4 +1,6 @@
 // src/components/EncyclopediaModal.js
+//
+
 import React from 'react';
 import { X, Sparkles, Save, Star, Settings } from 'lucide-react';
 import { supabase } from '../config/supabase';
