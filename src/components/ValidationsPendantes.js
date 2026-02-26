@@ -1,9 +1,10 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0
+// 8.23.0 // 8.26.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
 import { supabase } from '../config/supabase';
+import { invalidateAllCaches } from '../utils/supabaseGameData';
 
 const TABLE_NAME = 'data_change_requests';
 
@@ -175,9 +176,14 @@ export default function ValidationsPendantes({ session, onBack }) {
   };
 
   const handleArchive = async (changeId) => {
-    if (!window.confirm("Avez-vous bien exécuté ce code SQL dans Supabase ? La proposition sera classée dans l'historique.")) return;
+    if (!window.confirm("Avez-vous bien exécuté ce code SQL dans Supabase ? L'application va se synchroniser automatiquement.")) return;
+    
     const { error } = await supabase.from(TABLE_NAME).update({ status: 'archived' }).eq('id', changeId);
-    if (!error) loadChanges();
+    
+    if (!error) {
+      invalidateAllCaches(); // 1. On purge la mémoire temporaire
+      window.location.reload(); // 2. On force l'application à se rafraîchir d'un coup !
+    }
   };
 
   const handleReject = async (changeId) => {

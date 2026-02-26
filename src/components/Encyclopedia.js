@@ -1,5 +1,5 @@
 // src/components/Encyclopedia.js
-// 8.20.0
+// 8.20.0 // 8.26.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -67,9 +67,15 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
     setLoading(true);
     try {
       let query;
-      if (activeTab === 'fairy_types') {
-        query = supabase.from('fairy_types').select('*, fairy_type_capacites(capacite_type, capacite:fairy_capacites(id, nom)), fairy_type_powers(power:fairy_powers(id, nom)), fairy_type_assets(asset:fairy_assets(id, nom)), fairy_competences_futiles_predilection(is_choice, choice_options, competence_futile_id)');
-      } else if (activeTab === 'fairy_capacites') {
+	if (activeTab === 'fairy_types') {
+	  query = supabase.from('fairy_types').select(`
+		*,
+		fairy_type_capacites(capacite_type, capacite:fairy_capacites(id, nom)),
+		fairy_type_powers(power:fairy_powers(id, nom)),
+		fairy_type_assets(asset:fairy_assets(id, nom)),
+		fairy_competences_futiles_predilection(is_choice, competence_futile_id, choice_options)
+	  `);
+	} else if (activeTab === 'fairy_capacites') {
         query = supabase.from('fairy_capacites').select('*, fairy_type_capacites(fairy_types(id, name))'); // 👈 Ajout de id
       } else if (activeTab === 'fairy_powers') {
         query = supabase.from('fairy_powers').select('*, fairy_type_powers(fairy_types(id, name))'); // 👈 Ajout de id
@@ -154,10 +160,12 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
     if (activeTab === 'fairy_types') {
       const futilesList = item.fairy_competences_futiles_predilection || [];
       const fixedFutiles = futilesList.filter(f => !f.is_choice);
+      const choiceFutiles = futilesList.filter(f => f.is_choice); // 👈 On isole les choix multiples !
 
       setProposal({
         description: item.description || item.desc || '',
         taille: item.taille || item.taille_categorie || 'Moyenne',
+        era: item.era || 'traditionnelle',
         allowedGenders: item.allowed_genders || item.allowedGenders || ['Homme', 'Femme'],
         traits: item.traits ? item.traits.join(', ') : '',
         avantages: item.avantages ? item.avantages.join('\n') : '',
@@ -178,11 +186,16 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
         atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         competencesUtiles: item.competencesPredilection ? JSON.stringify(item.competencesPredilection, null, 2) : '',
+        
+        // 👈 LA CORRECTION EST ICI : On lit le tableau avec l'index  et [1]
         futileFixe1: fixedFutiles?.competence_futile_id || '',
-        futileFixe2: fixedFutiles?.competence_futile_id || '',
+        futileFixe2: fixedFutiles[1]?.competence_futile_id || '',
+        futileChoix1: choiceFutiles?.choice_options || [],
+        futileChoix2: choiceFutiles[1]?.choice_options || []
       });
+
     } else {
-      // 👈 Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
+      // Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
       let existingFairyIds = [];
       if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
       if (activeTab === 'fairy_powers') existingFairyIds = item.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
@@ -194,9 +207,10 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         fairyIds: existingFairyIds
       });
     }
+
     setJustification('Mise à jour suite à...');
   };
-
+  
   // --- RENDU DES CARTES ---
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-gray-800 font-sans pb-20">
