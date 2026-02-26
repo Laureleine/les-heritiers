@@ -1,9 +1,8 @@
 // src/components/CharacterList.js
-// Version: 3.10.0
-// Design : Harmonisation complète avec "Ok.png" (Titre centré, boutons styled, cartes épurées)
+// 8.24.0
 
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown } from 'lucide-react';
+import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
 import { importCharacter } from '../utils/characterStorage'; // Assurez-vous d'avoir ce fichier ou retirez l'import si non utilisé
@@ -11,6 +10,15 @@ import { exportToPDF } from '../utils/utils';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { getCurrentUserFast } from '../utils/authHelpers';
 import { logger } from '../utils/logger';
+
+// 🏆 LISTE DES BADGES DISPONIBLES (Personnalisable à volonté !)
+const AVAILABLE_BADGES = [
+  { id: 'beta', label: 'Bêta-Testeur 🐛', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+  { id: 'lore', label: 'Archiviste 📚', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+  { id: 'creator', label: 'Créateur ✨', color: 'bg-amber-100 text-amber-800 border-amber-200' },
+  { id: 'vip', label: 'VIP 💎', color: 'bg-rose-100 text-rose-800 border-rose-200' },
+  { id: 'crash', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/><Bug size={12}/><Bomb size={12}/> Crash Testeuse</span>, color: 'bg-stone-900 text-red-400 border-stone-700 shadow-md animate-pulse' }  
+];
 
 export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdminUsers, profils = [], userProfile}) { 
   
@@ -269,19 +277,52 @@ const loadCharacters = async (isMounted = true) => {
   return (
     <div className="min-h-screen bg-stone-50 pb-20 font-sans text-gray-800">
       
-      {/* 1. TITRE (Style Ok.png) */}
-      <div className="pt-8 pb-6 text-center">
-        <h1 className="text-5xl font-serif text-amber-900 mb-1">Les Héritiers</h1>
-		{userProfile?.profile?.role === 'super_admin' && (
-		  <div className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full mt-2 mx-auto w-fit border border-purple-200 animate-pulse">
-			<Crown size={14} className="text-purple-600" />
-			<span>Super Admin</span>
-		  </div>
-		)}		
-        <div className="text-xs text-gray-400 mt-2 uppercase tracking-widest font-bold">
+        {/* 1. TITRE & BADGES */}
+        <div className="pt-8 pb-6 text-center">
+          <h1 className="text-5xl font-serif text-amber-900 mb-2">Les Héritiers</h1>
+
+          {/* ZONE DES RÔLES ET BADGES */}
+          <div className="flex flex-wrap justify-center items-center gap-2 mt-4 max-w-2xl mx-auto">
+            
+            {/* Rôle Super Admin */}
+            {userProfile?.profile?.role === 'super_admin' && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 animate-pulse shadow-sm">
+                <Crown size={14} className="text-purple-600" />
+                Super Admin
+              </span>
+            )}
+
+            {/* Rôle Gardien du Savoir */}
+            {userProfile?.profile?.role === 'gardien' && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full border border-blue-200 shadow-sm">
+                <Shield size={14} className="text-blue-600" />
+                Gardien du Savoir
+              </span>
+            )}
+
+            {/* Badges du Joueur */}
+            {userProfile?.profile?.badges && userProfile.profile.badges.length > 0 && (
+              <>
+                {(userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien') && (
+                   <span className="text-gray-300 mx-1">|</span>
+                )}
+                {userProfile.profile.badges.map(badgeId => {
+                  const badgeDef = AVAILABLE_BADGES.find(b => b.id === badgeId);
+                  if (!badgeDef) return null;
+                  return (
+                    <span key={badgeId} className={`inline-flex items-center text-[11px] px-3 py-1 rounded-full border font-bold ${badgeDef.color}`}>
+                      {badgeDef.label}
+                    </span>
+                  );
+                })}
+              </>
+            )}
+          </div>
+
+          <div className="text-xs text-gray-400 mt-4 uppercase tracking-widest font-bold">
             Version {APP_VERSION} • {BUILD_DATE}
+          </div>
         </div>
-      </div>
 
       <div className="max-w-5xl mx-auto px-4">
 
