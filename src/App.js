@@ -1,5 +1,5 @@
 // src/App.js
-// Version: 4.7.0 (FIXÉ - Authentification complète)
+// 8.24.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from './config/supabase';
@@ -112,8 +112,8 @@ function App() {
         const data = await loadAllGameData();
         if (mounted) {
           setGameData(data);
-          const { data: profile } = await supabase
-            .from('profiles').select('role, username')
+  		  const { data: profile } = await supabase
+			.from('profiles').select('role, username, badges') // 👈 On charge les badges ici !
             .eq('id', session.user.id).single();
           
           setSession(session);
