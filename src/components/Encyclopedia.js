@@ -1,5 +1,5 @@
 // src/components/Encyclopedia.js
-// 8.20.0 // 8.26.0
+// 8.20.0 // 8.26.0 // 8.27.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -187,11 +187,11 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         competencesUtiles: item.competencesPredilection ? JSON.stringify(item.competencesPredilection, null, 2) : '',
         
-        // 👈 LA CORRECTION EST ICI : On lit le tableau avec l'index  et [1]
+        // 👈 LA VRAIE CORRECTION : Les crochets  et [2] sont obligatoires !
         futileFixe1: fixedFutiles?.competence_futile_id || '',
-        futileFixe2: fixedFutiles[1]?.competence_futile_id || '',
+        futileFixe2: fixedFutiles[2]?.competence_futile_id || '',
         futileChoix1: choiceFutiles?.choice_options || [],
-        futileChoix2: choiceFutiles[1]?.choice_options || []
+        futileChoix2: choiceFutiles[2]?.choice_options || []
       });
 
     } else {
