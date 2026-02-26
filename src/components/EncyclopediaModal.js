@@ -1,5 +1,5 @@
 // src/components/EncyclopediaModal.js
-// 8.20.0 // 8.21.0
+// 8.20.0 // 8.21.0 // 8.29.0
 
 import React from 'react';
 import { X, Sparkles, Save, Star } from 'lucide-react';
@@ -23,6 +23,22 @@ export default function EncyclopediaModal({
   allFairyTypes,
   onSuccess // 👈 NOUVELLE PROP
 }) {
+
+  // 🌟 NOUVEAU : Liste dynamique depuis la base de données
+  const [usefulSkills, setUsefulSkills] = useState([]);
+
+  React.useEffect(() => {
+    // Si on édite une Fée, on va chercher le vrai nom de toutes les compétences utiles
+    if (activeTab === 'fairy_types') {
+      const fetchSkills = async () => {
+        const { data, error } = await supabase.from('competences').select('name').order('name');
+        if (!error && data) {
+          setUsefulSkills(data.map(c => c.name)); // 'name' est le nom de la colonne dans Supabase
+        }
+      };
+      fetchSkills();
+    }
+  }, [activeTab]);
 
   // --- LA FONCTION CHIRURGIEN ---
   const handleSubmitProposal = async () => {
@@ -210,6 +226,22 @@ export default function EncyclopediaModal({
     }
   };
 
+  // 🧠 NOUVEAU : PARSING DES COMPÉTENCES UTILES (Builder Visuel)
+  let parsedUtiles = [];
+  if (activeTab === 'fairy_types') {
+    try {
+      parsedUtiles = JSON.parse(proposal.competencesUtiles || '[]');
+      if (!Array.isArray(parsedUtiles)) parsedUtiles = [];
+    } catch(e) {
+      parsedUtiles = []; // Sécurité anti-crash
+    }
+  }
+
+  // Cette fonction met à jour le JSON caché à chaque clic sur l'interface
+  const updateUtiles = (newArray) => {
+    setProposal({ ...proposal, competencesUtiles: JSON.stringify(newArray, null, 2) });
+  };
+
   return (
     <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-fade-in">
@@ -363,8 +395,121 @@ export default function EncyclopediaModal({
               </div>
 
               <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
-                <label className="block text-sm font-bold text-purple-900 mb-1">Compétences Utiles (Format texte provisoire)</label>
-                <textarea value={proposal.competencesUtiles || ''} onChange={(e) => setProposal({ ...proposal, competencesUtiles: e.target.value })} className="w-full p-2 border border-purple-200 rounded-lg text-xs font-mono min-h-[80px] mb-4" />
+
+				{/* 🌟 NOUVEAU CONSTRUCTEUR DE COMPÉTENCES UTILES 🌟 */}
+				<div className="mb-6">
+				  <div className="flex justify-between items-center mb-3">
+					<label className="block text-sm font-bold text-purple-900">🌟 Compétences Utiles (Prédilection)</label>
+					<div className="flex gap-1">
+					  <button type="button" onClick={() => updateUtiles([...parsedUtiles, { nom: 'Observation', specialite: null }])} className="text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded font-bold shadow-sm">+ Fixe</button>
+					  <button type="button" onClick={() => updateUtiles([...parsedUtiles, { isChoix: true, options: [] }])} className="text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded font-bold shadow-sm">+ Choix Comp.</button>
+					  <button type="button" onClick={() => updateUtiles([...parsedUtiles, { nom: 'Conduite', isSpecialiteChoix: true, options: [] }])} className="text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded font-bold shadow-sm">+ Choix Spé.</button>
+					</div>
+				  </div>
+				  
+				  <div className="space-y-2 bg-white p-3 rounded shadow-inner border border-purple-100 min-h-[80px]">
+					{parsedUtiles.length === 0 && <div className="text-xs text-gray-400 italic text-center mt-4">Aucune compétence configurée...</div>}
+					
+					{parsedUtiles.map((item, idx) => (
+					  <div key={idx} className="relative p-2 bg-purple-50/50 rounded border border-purple-100 flex flex-col gap-2 transition-all">
+						<button type="button" onClick={() => updateUtiles(parsedUtiles.filter((_, i) => i !== idx))} className="absolute top-1 right-2 text-red-400 hover:text-red-600 font-bold text-lg leading-none" title="Supprimer">&times;</button>
+						
+						{item.isChoix ? (
+						  <>
+							<span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider">Choix de Compétence</span>
+							<div className="flex gap-2 items-center pr-6">
+							  <select 
+								onChange={(e) => {
+								  const val = e.target.value;
+								  if (val && !item.options?.includes(val)) {
+									const newArr = [...parsedUtiles];
+									newArr[idx] = { ...item, options: [...(item.options || []), val] };
+									updateUtiles(newArr);
+								  }
+								  e.target.value = "";
+								}} 
+								className="p-1.5 border border-purple-200 rounded text-xs flex-shrink-0 bg-white focus:ring-purple-500"
+							  >
+								<option value="">+ Ajouter au choix...</option>
+								{usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+							  </select>
+							  <div className="flex flex-wrap gap-1">
+								{(item.options || []).map(opt => (
+								  <span key={opt} className="bg-purple-200 text-purple-900 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 font-semibold">
+									{opt} 
+									<button type="button" onClick={() => {
+									  const newArr = [...parsedUtiles];
+									  newArr[idx] = { ...item, options: item.options.filter(o => o !== opt) };
+									  updateUtiles(newArr);
+									}} className="hover:text-red-600">&times;</button>
+								  </span>
+								))}
+							  </div>
+							</div>
+						  </>
+						) : item.isSpecialiteChoix ? (
+						  <>
+							<span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider">Choix de Spécialité</span>
+							<div className="flex gap-2 items-center pr-6">
+							  <select 
+								value={item.nom || ''} 
+								onChange={(e) => {
+								  const newArr = [...parsedUtiles];
+								  newArr[idx] = { ...item, nom: e.target.value };
+								  updateUtiles(newArr);
+								}} 
+								className="p-1.5 border border-purple-200 rounded text-xs font-bold bg-white text-purple-900"
+							  >
+								{usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+							  </select>
+							  <input 
+								type="text" 
+								placeholder="Ex: Arc, Arbalète (séparés par virgules)" 
+								value={item.options ? item.options.join(', ') : ''} 
+								onChange={(e) => {
+								  const newArr = [...parsedUtiles];
+								  newArr[idx] = { ...item, options: e.target.value.split(',').map(s => s.trim()).filter(Boolean) };
+								  updateUtiles(newArr);
+								}} 
+								className="p-1.5 border border-purple-200 rounded text-xs flex-1 placeholder-purple-300" 
+							  />
+							</div>
+						  </>
+						) : (
+						  <>
+							<span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider">Compétence Fixe</span>
+							<div className="flex gap-2 items-center pr-6">
+							  <select 
+								value={item.nom || ''} 
+								onChange={(e) => {
+								  const newArr = [...parsedUtiles];
+								  newArr[idx] = { ...item, nom: e.target.value };
+								  updateUtiles(newArr);
+								}} 
+								className="p-1.5 border border-purple-200 rounded text-xs font-bold bg-white text-purple-900"
+							  >
+								<option value="">-- Choisir --</option>
+								{usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+							  </select>
+							  <input 
+								type="text" 
+								placeholder="Spécialité imposée (optionnel)" 
+								value={item.specialite || ''} 
+								onChange={(e) => {
+								  const newArr = [...parsedUtiles];
+								  newArr[idx] = { ...item, specialite: e.target.value };
+								  updateUtiles(newArr);
+								}} 
+								className="p-1.5 border border-purple-200 rounded text-xs flex-1 placeholder-purple-300" 
+							  />
+							</div>
+						  </>
+						)}
+					  </div>
+					))}
+				  </div>
+				</div>
+				{/* 🌟 FIN DU CONSTRUCTEUR 🌟 */}
 
                 <label className="block text-sm font-bold text-emerald-900 mb-2 border-t border-purple-200 pt-4">🌟 Compétences Futiles</label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
