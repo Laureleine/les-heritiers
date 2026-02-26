@@ -259,8 +259,8 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
               />
             </div>
 
-            {/* Bouton CRÉER (Seulement pour Capacités, Atouts et Pouvoirs) */}
-            {['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
+            {/* Bouton CRÉER (Autorisé pour Fées, Capacités, Atouts et Pouvoirs) */}
+            {['fairy_types', 'fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
               <button
                 onClick={handleCreate}
                 className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-sm flex items-center gap-2 font-bold transition-all shrink-0"
@@ -268,6 +268,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
                 <Plus size={20} /> <span className="hidden md:inline">Créer</span>
               </button>
             )}
+
           </div>	  
 
           {/* Grille de résultats */}
