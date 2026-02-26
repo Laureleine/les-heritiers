@@ -1,25 +1,25 @@
 // src/components/ValidationsPendantes.js
+
 import React, { useState, useEffect } from 'react';
-import { Check, X, AlertTriangle, Clock, ArrowLeft, Shield, Copy, Archive } from 'lucide-react';
+import { Check, X, ArrowLeft, Shield, Copy } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { logger } from '../utils/logger'; // 👈 NOUVEL IMPORT
+
+const TABLE_NAME = 'data_change_requests';
 
 export default function ValidationsPendantes({ session, onBack }) {
   const [pendingChanges, setPendingChanges] = useState([]);
-  const [approvedChanges, setApprovedChanges] = useState([]); // NOUVEL ÉTAT : L'étape intermédiaire
+  const [approvedChanges, setApprovedChanges] = useState([]); 
   const [historyChanges, setHistoryChanges] = useState([]);
+  
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'approved', 'history'
   const [myRole, setMyRole] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
-
-  // Nom de la table utilisé
-  const TABLE_NAME = 'data_change_requests';
+  const [activeTab, setActiveTab] = useState('pending');
 
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-      const role = data?.role || 'user';
+      const role = data?.role;
       setMyRole(role);
 
       if (role === 'gardien' || role === 'super_admin') {
@@ -33,7 +33,6 @@ export default function ValidationsPendantes({ session, onBack }) {
 
   const loadChanges = async () => {
     setLoading(true);
-    // On sépare maintenant en 3 requêtes (En attente, Validé/À exécuter, Historique (Archivé ou Rejeté))
     const [pending, approved, history] = await Promise.all([
       supabase.from(TABLE_NAME).select('*').eq('status', 'pending').order('created_at', { ascending: false }),
       supabase.from(TABLE_NAME).select('*').eq('status', 'approved').order('created_at', { ascending: false }),
@@ -46,102 +45,121 @@ export default function ValidationsPendantes({ session, onBack }) {
     setLoading(false);
   };
 
+  // ----------------------------------------------------------------------
+  // LE CHIRURGIEN SQL (Générateur)
+  // ----------------------------------------------------------------------
   const handleApprove = async (change) => {
     if (!window.confirm("Valider cette modification et générer l'ordre SQL ?")) return;
 
     try {
-      const { _relations, ...mainData } = change.new_data;
-      let sqlQuery = '';
+      const proposedData = change.new_data || change.proposed_data || {};
+      const { _relations, ...mainData } = proposedData;
 
-      // DÉTECTION : Est-ce une CRÉATION (Insert) ou une MODIFICATION (Update) ?
-      const isCreation = !change.record_id;
+      // Détection de la création (Le Coup de Génie : l'ID est dans le payload)
+      const isInsert = !!mainData.id;
+      const targetId = isInsert ? mainData.id : change.record_id;
 
-      if (isCreation) {
-        // === MODE CRÉATION (INSERT) ===
-        if (Object.keys(mainData).length > 0) {
+      let sqlQuery = `-- Action pour ${change.record_name} (${change.table_name})\nBEGIN;\n\n`;
+
+      // 1. TABLE PRINCIPALE (Fées, Pouvoirs, etc.)
+      if (Object.keys(mainData).length > 0) {
+        if (isInsert) {
           const columns = Object.keys(mainData).join(', ');
           const values = Object.values(mainData).map(value => {
-             if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
-             if (typeof value === 'object' && value !== null) return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-             return value; // nombres, booléens
+            if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
+            if (Array.isArray(value)) {
+               const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
+               return `ARRAY[${elements}]::text[]`;
+            }
+            if (typeof value === 'object' && value !== null) return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+            return value;
           }).join(', ');
-
-          sqlQuery = `INSERT INTO public.${change.table_name} (${columns}) VALUES (${values});`;
-        }
-      } 
-      else {
-        // === MODE MODIFICATION (UPDATE) === (Code existant)
-        if (Object.keys(mainData).length > 0) {
-        const setClauses = Object.entries(mainData).map(([key, value]) => {
-          // 1. Les chaînes de caractères classiques
-          if (typeof value === 'string') {
-            return `${key} = '${value.replace(/'/g, "''")}'`;
-          }
-          
-          // 2. ⚠️ LES TABLEAUX (Doit impérativement être placé AVANT la vérification "object")
-          if (Array.isArray(value)) {
-            const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
-            return `${key} = ARRAY[${elements}]::text[]`;
-          }
-          
-          // 3. Les objets complexes / Constructeur de Bonus (JSONB)
-          if (typeof value === 'object' && value !== null) {
-            return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-          }
-          
-          // 4. Les nombres ou booléens (fallback)
-          return `${key} = ${value}`;
-        }).join(',\n  ');
-           sqlQuery += `UPDATE public.${change.table_name}\nSET\n  ${setClauses}\nWHERE id = '${change.record_id}';`;
+          sqlQuery += `INSERT INTO public.${change.table_name} (${columns}) VALUES (${values});\n`;
+        } else {
+          const setClauses = Object.entries(mainData).map(([key, value]) => {
+            if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
+            
+            // ⚠️ FIX : Tableaux AVANT les objets (pour postgres text[])
+            if (Array.isArray(value)) {
+              const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
+              return `${key} = ARRAY[${elements}]::text[]`;
+            }
+            if (typeof value === 'object' && value !== null) return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+            
+            return `${key} = ${value}`;
+          }).join(',\n  ');
+          sqlQuery += `UPDATE public.${change.table_name}\nSET ${setClauses}\nWHERE id = '${targetId}';\n`;
         }
       }
 
-      // 2. L'AUTOMATISATION DES RELATIONS COMPLEXES
-      if (_relations && Object.keys(_relations).length > 0) {
-        if (sqlQuery) sqlQuery += `\n\n`;
-        sqlQuery += `-- 🔄 MISE À JOUR DES RELATIONS :\n`;
-
-        // Traitement des Capacités
-        if (_relations.capacites !== undefined) {
-          sqlQuery += `DELETE FROM public.fairy_type_capacites WHERE fairy_type_id = '${change.record_id}';\n`;
+      // 2. RELATIONS (Tables de jointure)
+      if (_relations) {
+        
+        // A. RELATIONS DIRECTES (Depuis une Fée)
+        if (_relations.capacites) {
+          sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE fairy_type_id = '${targetId}';\n`;
           if (_relations.capacites.length > 0) {
-            const capInserts = _relations.capacites.map(cap => `('${change.record_id}', '${cap.id}', '${cap.type}')`).join(', ');
-            sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${capInserts};\n`;
+            const inserts = _relations.capacites.map(c => `('${targetId}', '${c.id}', '${c.type}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
           }
         }
-
-        // Traitement des Pouvoirs
-        if (_relations.pouvoirs !== undefined) {
-          sqlQuery += `DELETE FROM public.fairy_type_powers WHERE fairy_type_id = '${change.record_id}';\n`;
+        if (_relations.pouvoirs) {
+          sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE fairy_type_id = '${targetId}';\n`;
           if (_relations.pouvoirs.length > 0) {
-            const powInserts = _relations.pouvoirs.map(id => `('${change.record_id}', '${id}')`).join(', ');
-            sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${powInserts};\n`;
+            const inserts = _relations.pouvoirs.map(id => `('${targetId}', '${id}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
           }
         }
-
-        // Traitement des Compétences Futiles
+        if (_relations.atouts) {
+          sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE fairy_type_id = '${targetId}';\n`;
+          if (_relations.atouts.length > 0) {
+            const inserts = _relations.atouts.map(id => `('${targetId}', '${id}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
+          }
+        }
+        if (_relations.competencesUtiles !== undefined) {
+           sqlQuery += `\nUPDATE public.fairy_types SET "competencesPredilection" = '${_relations.competencesUtiles.replace(/'/g, "''")}'::jsonb WHERE id = '${targetId}';\n`;
+        }
         if (_relations.competencesFutiles !== undefined) {
-          sqlQuery += `DELETE FROM public.fairy_competences_futiles_predilection WHERE fairy_type_id = '${change.record_id}';\n`;
+          sqlQuery += `\nDELETE FROM public.fairy_competences_futiles_predilection WHERE fairy_type_id = '${targetId}';\n`;
           if (_relations.competencesFutiles.length > 0) {
             const futInserts = _relations.competencesFutiles.map(fut => {
               const isChoice = fut.is_choice ? 'true' : 'false';
               const compId = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
-              const options = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
-              return `('${change.record_id}', ${isChoice}, ${compId}, ${options})`;
-            }).join(', ');
-            sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, is_choice, competence_futile_id, choice_options) VALUES ${futInserts};\n`;
+              const choiceOptions = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
+              return `('${targetId}', ${compId}, ${isChoice}, ${choiceOptions})`;
+            }).join(',\n  ');
+            sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES ${futInserts};\n`;
           }
         }
 
-        // Traitement des Atouts
-        if (_relations.atouts !== undefined) {
-          sqlQuery += `DELETE FROM public.fairy_type_assets WHERE fairy_type_id = '${change.record_id}';\n`;
-          if (_relations.atouts.length > 0) {
-            const atoutInserts = _relations.atouts.map(id => `('${change.record_id}', '${id}')`).join(', ');
-            sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${atoutInserts};\n`;
+        // B. RELATIONS INVERSÉES (Depuis un Pouvoir, Capacité ou Atout vers des Fées)
+        if (_relations.fairyIds !== undefined) {
+          if (change.table_name === 'fairy_capacites') {
+            sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}';\n`;
+            if (_relations.fairyIds.length > 0) {
+              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}', 'choix')`).join(', ');
+              sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
+            }
+          }
+          if (change.table_name === 'fairy_powers') {
+            sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}';\n`;
+            if (_relations.fairyIds.length > 0) {
+              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}')`).join(', ');
+              sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
+            }
+          }
+          if (change.table_name === 'fairy_assets') {
+            sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}';\n`;
+            if (_relations.fairyIds.length > 0) {
+              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}')`).join(', ');
+              sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
+            }
           }
         }
-      } // <--- TOUT est maintenant bien à l'intérieur de la sécurité !
+      }
+
+      sqlQuery += `\nCOMMIT;`;
 
       const { error } = await supabase
         .from(TABLE_NAME)
@@ -149,16 +167,15 @@ export default function ValidationsPendantes({ session, onBack }) {
         .eq('id', change.id);
 
       if (error) throw error;
-
       loadChanges();
-
     } catch (error) {
-      logger.error("❌ Erreur lors de la validation SQL :", error);
       alert("Erreur lors de la validation : " + error.message);
     }
   };
 
-  // NOUVELLE FONCTION : Archiver une fois le SQL exécuté
+  // ----------------------------------------------------------------------
+  // AUTRES ACTIONS
+  // ----------------------------------------------------------------------
   const handleArchive = async (changeId) => {
     if (!window.confirm("Avez-vous bien exécuté ce code SQL dans Supabase ? La proposition sera classée dans l'historique.")) return;
     const { error } = await supabase.from(TABLE_NAME).update({ status: 'archived' }).eq('id', changeId);
@@ -166,17 +183,13 @@ export default function ValidationsPendantes({ session, onBack }) {
   };
 
   const handleReject = async (changeId) => {
-    if (!window.confirm("Rejeter cette proposition ?")) return;
+    if (!window.confirm("Rejeter définitivement cette proposition ?")) return;
     const { error } = await supabase.from(TABLE_NAME).update({ status: 'rejected' }).eq('id', changeId);
     if (!error) loadChanges();
   };
 
-  const handleResetPending = async (changeId) => {
-    if (!window.confirm("Repasser cette proposition en attente (et effacer son statut actuel) ?")) return;
-    const { error } = await supabase
-      .from(TABLE_NAME)
-      .update({ status: 'pending', generated_sql: null })
-      .eq('id', changeId);
+  const handleRestore = async (changeId) => {
+    const { error } = await supabase.from(TABLE_NAME).update({ status: 'pending', generated_sql: null }).eq('id', changeId);
     if (!error) loadChanges();
   };
 
@@ -186,21 +199,26 @@ export default function ValidationsPendantes({ session, onBack }) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Rendu adaptatif selon le statut de la proposition
+  // ----------------------------------------------------------------------
+  // RENDU UI
+  // ----------------------------------------------------------------------
   const renderChange = (change) => (
     <div key={change.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+      
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-bold text-amber-900">{change.record_name || 'Élément inconnu'}</h3>
-          <p className="text-sm text-gray-500">Table ciblée : {change.table_name}</p>
+          <h3 className="font-serif font-bold text-xl text-gray-800">Cible : {change.record_name || 'Inconnue'}</h3>
+          <p className="text-sm text-gray-500 uppercase tracking-wide mt-1 font-bold">
+            Table : {change.table_name} • Action : {change.new_data?.id ? 'Création 🌟' : 'Modification 📝'}
+          </p>
         </div>
         <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-          change.status === 'pending' ? 'bg-orange-100 text-orange-800' :
-          change.status === 'approved' ? 'bg-blue-100 text-blue-800 border border-blue-200 shadow-sm' :
+          change.status === 'pending' ? 'bg-amber-100 text-amber-800' :
+          change.status === 'approved' ? 'bg-blue-100 text-blue-800' :
           change.status === 'archived' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
         }`}>
-          {change.status === 'pending' ? 'En attente' : 
-           change.status === 'approved' ? 'À Exécuter (SQL)' : 
+          {change.status === 'pending' ? 'En attente' :
+           change.status === 'approved' ? 'À Exécuter (SQL)' :
            change.status === 'archived' ? 'Archivé (Appliqué)' : 'Rejeté'}
         </span>
       </div>
@@ -212,25 +230,13 @@ export default function ValidationsPendantes({ session, onBack }) {
         </p>
       </div>
 
-      {change.status !== 'approved' && (
-        <div>
-          <p className="text-sm font-bold text-gray-700">Modifications proposées :</p>
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg font-mono text-xs overflow-x-auto">
-            <pre>{JSON.stringify(change.new_data, null, 2)}</pre>
-          </div>
-        </div>
-      )}
-
-      {change.generated_sql && (
-        <div className="mt-4 p-4 bg-gray-900 text-green-400 font-mono text-sm rounded-lg overflow-x-auto whitespace-pre-wrap relative">
-          <div className="flex justify-between items-center mb-2 border-b border-gray-700 pb-2">
-            <p className="text-gray-400 select-none m-0">/* Ordre SQL généré */</p>
+      {change.status === 'approved' && change.generated_sql && (
+        <div className="mt-4 bg-stone-900 text-green-400 p-4 rounded-lg font-mono text-xs overflow-x-auto whitespace-pre-wrap relative shadow-inner">
+          <div className="absolute top-2 right-2">
             <button
               onClick={() => copyToClipboard(change.id, change.generated_sql)}
-              className={`flex items-center gap-1 px-3 py-1 rounded text-xs font-bold transition-all ${
-                copiedId === change.id 
-                  ? 'bg-green-600 text-white shadow-inner' 
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'
+              className={`px-3 py-1.5 rounded text-xs font-bold transition-all flex items-center gap-1 ${
+                copiedId === change.id ? 'bg-green-600 text-white' : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
               }`}
             >
               {copiedId === change.id ? <><Check size={14} /> Copié !</> : <><Copy size={14} /> Copier</>}
@@ -240,7 +246,6 @@ export default function ValidationsPendantes({ session, onBack }) {
         </div>
       )}
 
-      {/* BOUTONS D'ACTION DYNAMIQUES */}
       <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
         {change.status === 'pending' && (
           <>
@@ -256,16 +261,16 @@ export default function ValidationsPendantes({ session, onBack }) {
         {change.status === 'approved' && (
           <>
             <button onClick={() => handleArchive(change.id)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
-              <Archive size={18} /> ✅ SQL Exécuté (Archiver)
+              <Check size={18} /> J'ai exécuté le SQL (Archiver)
             </button>
-            <button onClick={() => handleResetPending(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors text-sm">
-              <ArrowLeft size={16} /> Annuler
+            <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+              <ArrowLeft size={16} /> Remettre en attente
             </button>
           </>
         )}
 
-        {(change.status === 'rejected' || change.status === 'archived') && (
-          <button onClick={() => handleResetPending(change.id)} className="px-4 py-2 bg-gray-50 text-gray-600 hover:bg-gray-200 rounded-lg font-bold flex items-center gap-2 transition-colors text-sm">
+        {(change.status === 'archived' || change.status === 'rejected') && (
+          <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
             <ArrowLeft size={16} /> Remettre en attente
           </button>
         )}
@@ -280,27 +285,23 @@ export default function ValidationsPendantes({ session, onBack }) {
       <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24 text-center">
         <Shield size={64} className="mx-auto text-red-400 mb-6 opacity-50" />
         <h2 className="text-3xl font-serif font-bold text-red-900 mb-4">Accès Restreint</h2>
-        <p className="text-gray-600 mb-8">Seuls les Gardiens du Savoir peuvent accéder à ce sanctuaire.</p>
-        <button onClick={onBack} className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors font-serif">
-          Retour
-        </button>
+        <button onClick={onBack} className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold">Retour à l'encyclopédie</button>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24">
-      <button onClick={onBack} className="flex items-center gap-2 mb-6 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all font-serif">
+      <button onClick={onBack} className="flex items-center gap-2 text-gray-500 hover:text-amber-700 font-serif mb-6 transition-colors">
         <ArrowLeft size={18} /> Retour
       </button>
 
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-serif font-bold text-amber-900">Conseil des Gardiens</h2>
+        <h2 className="text-2xl font-serif font-bold text-amber-900 flex items-center gap-2">
+          <Shield className="text-amber-600" /> Conseil des Gardiens
+        </h2>
       </div>
 
-      <p className="text-gray-600 mb-8">Validation des propositions de la communauté</p>
-
-      {/* LES 3 ONGLETS DE NAVIGATION */}
       <div className="flex gap-6 border-b border-gray-200 mb-6 overflow-x-auto hide-scrollbar">
         <button onClick={() => setActiveTab('pending')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'pending' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-400 hover:text-gray-600'}`}>
           1. En attente ({pendingChanges.length})
@@ -308,26 +309,25 @@ export default function ValidationsPendantes({ session, onBack }) {
         <button onClick={() => setActiveTab('approved')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'approved' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
           2. À Exécuter ({approvedChanges.length})
         </button>
-        <button onClick={() => setActiveTab('history')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'history' ? 'text-green-700 border-b-2 border-green-700' : 'text-gray-400 hover:text-gray-600'}`}>
+        <button onClick={() => setActiveTab('history')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'history' ? 'text-gray-800 border-b-2 border-gray-800' : 'text-gray-400 hover:text-gray-600'}`}>
           3. Historique ({historyChanges.length})
         </button>
       </div>
 
-      {/* LE CONTENU */}
       <div>
         {activeTab === 'pending' && (
-          pendingChanges.length > 0 ? pendingChanges.map(c => renderChange(c)) : 
-          <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl">Aucune nouvelle proposition.</p>
+          pendingChanges.length > 0 ? pendingChanges.map(c => renderChange(c)) :
+          <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-white/50">Aucune nouvelle proposition à valider.</p>
         )}
-        
+
         {activeTab === 'approved' && (
-          approvedChanges.length > 0 ? approvedChanges.map(c => renderChange(c)) : 
+          approvedChanges.length > 0 ? approvedChanges.map(c => renderChange(c)) :
           <p className="text-blue-500 italic p-6 text-center border-2 border-dashed border-blue-200 rounded-xl bg-blue-50/50">Aucun code SQL en attente d'exécution.</p>
         )}
 
         {activeTab === 'history' && (
-          historyChanges.length > 0 ? historyChanges.map(c => renderChange(c)) : 
-          <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl">L'historique est vide.</p>
+          historyChanges.length > 0 ? historyChanges.map(c => renderChange(c)) :
+          <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-white/50">L'historique est vide.</p>
         )}
       </div>
     </div>
