@@ -1,5 +1,5 @@
 // src/App.js
-// 8.25.0
+// 8.25.0 // 8.26.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from './config/supabase';
@@ -294,7 +294,7 @@ function App() {
             </div>
             <div className="flex flex-wrap gap-2">
               <button onClick={() => setView('list')} className="flex items-center space-x-2 px-3 py-2 bg-white border border-amber-200 text-amber-900 rounded-lg hover:bg-amber-50 transition-all font-serif text-sm shadow-sm">
-                <List size={16} /> <span className="hidden sm:inline">Liste</span>
+                <List size={16} /> <span className="hidden sm:inline">Menu Principal</span>
               </button>
               <button onClick={() => setView('changelog')} className="flex items-center space-x-2 px-3 py-2 bg-white border border-purple-200 text-purple-900 rounded-lg hover:bg-purple-50 transition-all font-serif text-sm shadow-sm">
                 <BookOpen size={16} /> <span className="hidden sm:inline">News</span>
@@ -304,7 +304,7 @@ function App() {
               </button>
               {!isReadOnly && (
                 <button onClick={handleSave} className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm">
-                  <Save size={16}/> <span className="hidden sm:inline">Sauver</span>
+                  <Save size={16}/> <span className="hidden sm:inline">Sauvegarder</span>
                 </button>
               )}
             </div>
