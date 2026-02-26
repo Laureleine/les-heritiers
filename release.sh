@@ -36,7 +36,7 @@ fi
 git commit -m "Les Héritiers v${VERSION}"
 
 echo "🚀 Git push..."
-git push -u origin main
+git push origin dev:main
 
 # ── 3. Récupérer les fichiers JS commités ─────────────────────────────────────
 echo ""
