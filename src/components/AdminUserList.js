@@ -1,5 +1,5 @@
 // src/components/AdminUserList.js
-// 8.21.0 // 8.22.0
+// 8.21.0 // 8.22.0 // 8.25.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -18,8 +18,6 @@ export default function AdminUserList({ session, onBack }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [myRole, setMyRole] = useState(null);
-  
-  // État pour savoir quel utilisateur on est en train d'éditer
   const [editingBadgesFor, setEditingBadgesFor] = useState(null);
 
   useEffect(() => {
@@ -28,38 +26,24 @@ export default function AdminUserList({ session, onBack }) {
 
   const fetchUsersAndRole = async () => {
     setLoading(true);
-    // 1. Vérifier mon propre rôle
+
     const { data: myProfile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session.user.id)
-      .single();
-      
+      .from('profiles').select('role').eq('id', session.user.id).single();
     setMyRole(myProfile?.role || 'user');
 
-    // 2. Récupérer la liste des utilisateurs AVEC la nouvelle colonne badges
+    // 👈 NOUVEAU : On demande la colonne last_seen
     const { data: profiles, error } = await supabase
       .from('profiles')
-      .select('id, username, created_at, role, badges') // 👈 NOUVEAU : badges
-      .order('created_at', { ascending: false });
+      .select('id, username, created_at, role, badges, last_seen') 
+      .order('last_seen', { ascending: false, nullsFirst: false }); // On trie par les plus récents connectés
 
-    if (!error) {
-      setUsers(profiles || []);
-    }
+    if (!error) setUsers(profiles || []);
     setLoading(false);
   };
 
   const handleToggleRole = async (userId, currentRole) => {
-    if (myRole !== 'super_admin') {
-      alert("Seul le Super Admin peut modifier les rangs.");
-      return;
-    }
-
+    if (myRole !== 'super_admin') return;
     const newRole = currentRole === 'gardien' ? 'user' : 'gardien';
-    const label = newRole === 'gardien' ? 'Gardien du Savoir' : 'Héritier standard';
-
-    if (!window.confirm(`Voulez-vous vraiment changer ce rôle en "${label}" ?`)) return;
-
     try {
       const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
       if (error) throw error;
@@ -69,24 +53,36 @@ export default function AdminUserList({ session, onBack }) {
     }
   };
 
-  // 👈 NOUVEAU : Fonction pour ajouter/retirer un badge
   const handleToggleBadge = async (userId, currentBadges, badgeId) => {
     if (myRole !== 'super_admin') return;
-
     let newBadges = [...(currentBadges || [])];
-    
     if (newBadges.includes(badgeId)) {
-      newBadges = newBadges.filter(b => b !== badgeId); // Retirer
+      newBadges = newBadges.filter(b => b !== badgeId); 
     } else {
-      newBadges.push(badgeId); // Ajouter
+      newBadges.push(badgeId); 
     }
-
     try {
       const { error } = await supabase.from('profiles').update({ badges: newBadges }).eq('id', userId);
       if (error) throw error;
       setUsers(users.map(u => u.id === userId ? { ...u, badges: newBadges } : u));
     } catch (error) {
       alert("Erreur d'attribution du badge : " + error.message);
+    }
+  };
+
+  // 🟢🟡🔴 NOUVEAU : Le Calculateur de Présence
+  const renderStatus = (lastSeen) => {
+    if (!lastSeen) return <span className="text-gray-400 text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-300"></span> Jamais connecté</span>;
+
+    const diffMinutes = (new Date() - new Date(lastSeen)) / (1000 * 60);
+
+    if (diffMinutes < 3) {
+      return <span className="text-green-600 text-xs font-bold flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_5px_rgba(34,197,94,0.7)]"></span> En ligne</span>;
+    } else if (diffMinutes < 15) {
+      return <span className="text-amber-600 text-xs font-bold flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Absent</span>;
+    } else {
+      const dateStr = new Date(lastSeen).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      return <span className="text-gray-400 text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400"></span> Vu le {dateStr.replace(':', 'h')}</span>;
     }
   };
 
@@ -119,19 +115,23 @@ export default function AdminUserList({ session, onBack }) {
               {users.map(u => {
                 const isSuperAdmin = u.role === 'super_admin';
                 const isGardien = u.role === 'gardien';
-                const isMe = u.id === session.user.id;
                 const userBadges = u.badges || [];
 
                 return (
                   <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                    
-                    {/* COLONNE 1 : INFOS */}
+                    {/* COLONNE 1 : INFOS & STATUT */}
                     <td className="p-4">
                       <div className="font-bold text-gray-800 flex items-center gap-2">
-                        <User size={16} className="text-gray-400" /> 
+                        <User size={16} className="text-gray-400" />
                         {u.username || <span className="text-gray-400 italic">Sans pseudo</span>}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      
+                      {/* L'affichage du radar d'activité */}
+                      <div className="mt-1.5 mb-1">
+                        {renderStatus(u.last_seen)}
+                      </div>
+
+                      <div className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
                         Inscrit le {new Date(u.created_at).toLocaleDateString('fr-FR')}
                       </div>
                     </td>
@@ -139,19 +139,17 @@ export default function AdminUserList({ session, onBack }) {
                     {/* COLONNE 2 : RÔLES & BADGES */}
                     <td className="p-4">
                       <div className="flex flex-col gap-2 items-start">
-                        {/* Affichage du Rôle */}
                         {isSuperAdmin && <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full border border-amber-200"><Crown size={12} /> Super Admin</span>}
                         {isGardien && <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full border border-blue-200"><Shield size={12} /> Gardien du Savoir</span>}
                         {u.role === 'user' && <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full">Héritier standard</span>}
 
-                        {/* Affichage des Badges */}
                         {userBadges.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">
                             {userBadges.map(badgeId => {
                               const badgeDef = AVAILABLE_BADGES.find(b => b.id === badgeId);
                               if (!badgeDef) return null;
                               return (
-                                <span key={badgeId} className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-bold shadow-sm ${badgeDef.color}`}>
+                                <span key={badgeId} className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-bold ${badgeDef.color}`}>
                                   {badgeDef.label}
                                 </span>
                               );
@@ -161,11 +159,9 @@ export default function AdminUserList({ session, onBack }) {
                       </div>
                     </td>
 
-                    {/* COLONNE 3 : ACTIONS (Rôle + Badges) */}
+                    {/* COLONNE 3 : ACTIONS */}
                     <td className="p-4 text-right">
                       <div className="flex flex-col items-end gap-2">
-                        
-                        {/* Bouton pour changer de rôle */}
                         {!isSuperAdmin && (
                           <button
                             onClick={() => handleToggleRole(u.id, u.role)}
@@ -176,8 +172,7 @@ export default function AdminUserList({ session, onBack }) {
                             {isGardien ? 'Rétrograder' : 'Promouvoir Gardien'}
                           </button>
                         )}
-                        
-                        {/* Gestion des Badges */}
+
                         <div className="relative">
                           <button
                             onClick={() => setEditingBadgesFor(editingBadgesFor === u.id ? null : u.id)}
@@ -186,33 +181,30 @@ export default function AdminUserList({ session, onBack }) {
                             <Award size={14} /> Badges
                           </button>
 
-                          {/* Petit menu déroulant pour cocher les badges */}
                           {editingBadgesFor === u.id && (
                             <div className="absolute right-0 top-8 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-10 p-2 text-left animate-fade-in">
                               <div className="flex justify-between items-center mb-2 px-1">
                                 <span className="text-xs font-bold text-gray-500 uppercase">Attribuer</span>
-                                <button onClick={() => setEditingBadgesFor(null)}><X size={14} className="text-gray-400 hover:text-gray-700"/></button>
+                                <button onClick={() => setEditingBadgesFor(null)} className="text-gray-400 hover:text-gray-600"><X size={14}/></button>
                               </div>
-                              <div className="flex flex-col gap-1">
+                              <div className="flex flex-col gap-1 max-h-48 overflow-y-auto custom-scrollbar">
                                 {AVAILABLE_BADGES.map(badge => (
-                                  <label key={badge.id} className="flex items-center gap-2 text-xs p-1.5 hover:bg-gray-50 rounded cursor-pointer">
-                                    <input 
-                                      type="checkbox" 
+                                  <label key={badge.id} className="flex items-center gap-2 p-1.5 hover:bg-gray-50 rounded cursor-pointer text-sm">
+                                    <input
+                                      type="checkbox"
                                       checked={userBadges.includes(badge.id)}
                                       onChange={() => handleToggleBadge(u.id, userBadges, badge.id)}
                                       className="text-amber-600 focus:ring-amber-500"
                                     />
-                                    <span className="font-medium">{badge.label}</span>
+                                    <span className="font-medium text-gray-700">{badge.label}</span>
                                   </label>
                                 ))}
                               </div>
                             </div>
                           )}
                         </div>
-
                       </div>
                     </td>
-
                   </tr>
                 );
               })}

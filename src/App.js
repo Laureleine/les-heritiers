@@ -1,5 +1,5 @@
 // src/App.js
-// 8.24.0
+// 8.25.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from './config/supabase';
@@ -149,6 +149,36 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // 🔥 2.5 NOUVEAU : Traqueur d'activité (En ligne / Absent)
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    let lastActivity = Date.now();
+
+    // 1. Détecter l'activité locale
+    const handleActivity = () => { lastActivity = Date.now(); };
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+    window.addEventListener('click', handleActivity);
+
+    // 2. Ping Supabase (toutes les 5 minutes)
+    const pingInterval = setInterval(async () => {
+      const now = Date.now();
+      // Si l'utilisateur a été actif dans les 5 dernières minutes
+      if (now - lastActivity < 300000) {
+        await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', session.user.id);
+      }
+    }, 300000); // 300 000 ms = 5 minutes
+
+    // 3. Nettoyage
+    return () => {
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+      window.removeEventListener('click', handleActivity);
+      clearInterval(pingInterval);
+    };
+  }, [session?.user?.id]);
+  
   // --- 3. HANDLERS ---
   const handleSave = async () => {
     if (isReadOnly) return;
