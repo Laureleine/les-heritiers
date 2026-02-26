@@ -1,4 +1,5 @@
 // src/components/Encyclopedia.js
+// 8.20.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -25,6 +26,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
   const [allCompFutiles, setAllCompFutiles] = useState([]);
   const [allAtouts, setAllAtouts] = useState([]); 
   const [allFairyTypes, setAllFairyTypes] = useState([]); // 👈 Liste des Fées pour la relation inversée
+  const [pendingLocks, setPendingLocks] = useState([]); // 👈 NOUVEAU
 
   // Charger les listes de référence une seule fois au démarrage
   useEffect(() => {
@@ -50,7 +52,16 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
   // Chargement des données selon l'onglet
   useEffect(() => {
     fetchData();
+    fetchPendingLocks(); // 👈 On charge aussi les verrous
   }, [activeTab]);
+
+  // 👈 NOUVELLE FONCTION : Va chercher les IDs des éléments en cours de modification
+  const fetchPendingLocks = async () => {
+    const { data } = await supabase.from('data_change_requests').select('record_id').eq('status', 'pending');
+    if (data) {
+      setPendingLocks(data.map(req => req.record_id).filter(Boolean));
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -275,6 +286,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
                 item={item}
                 activeTab={activeTab}
                 onOpenEdit={handleOpenEdit}
+                isLocked={pendingLocks.includes(item.id)} // 👈 NOUVEAU : Transmission du verrou
               />
             ))}
             {filteredData.length === 0 && (
@@ -303,6 +315,10 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
           allAtouts={allAtouts}
           allCompFutiles={allCompFutiles}
           allFairyTypes={allFairyTypes} // 👈 NOUVEAU ! Transmission vitale
+          onSuccess={() => {          // 👈 NOUVEAU
+            setEditingItem(null);
+            fetchPendingLocks();      // Rafraîchit les cadenas instantanément !
+          }}
         />
       )}
     </div>

@@ -1,4 +1,5 @@
 // src/components/EncyclopediaModal.js
+// 8.20.0
 
 import React from 'react';
 import { X, Sparkles, Save, Star } from 'lucide-react';
@@ -19,7 +20,8 @@ export default function EncyclopediaModal({
   allPouvoirs,
   allAtouts,
   allCompFutiles,
-  allFairyTypes // 👈 NOUVELLE PROP RÉCUPÉRÉE ICI
+  allFairyTypes,
+  onSuccess // 👈 NOUVELLE PROP
 }) {
 
   // --- LA FONCTION CHIRURGIEN ---
@@ -55,6 +57,8 @@ export default function EncyclopediaModal({
 
       if (proposal.description !== editingItem.description) surgicalData.description = proposal.description;
       if (proposal.taille !== (editingItem.taille_categorie || 'Moyenne')) surgicalData.taille_categorie = proposal.taille;
+      // 👈 NOUVEAU : On enregistre l'ancienneté (era)
+      if (proposal.era !== editingItem.era) surgicalData.era = proposal.era || 'traditionnelle';
       if (!arraysEqual(proposal.allowedGenders, editingItem.allowed_genders)) surgicalData.allowed_genders = proposal.allowedGenders;
       if (!arraysEqual(newTraits, editingItem.traits)) surgicalData.traits = newTraits;
       if (!arraysEqual(newAvantages, editingItem.avantages)) surgicalData.avantages = newAvantages;
@@ -70,10 +74,17 @@ export default function EncyclopediaModal({
       stats.forEach(stat => {
         const newMin = proposal.caracteristiques?.[stat.ui]?.min || 1;
         const newMax = proposal.caracteristiques?.[stat.ui]?.max || 6;
-        if (newMin !== (editingItem[`${stat.sql}_min`] || 1)) surgicalData[`${stat.sql}_min`] = newMin;
-        if (newMax !== (editingItem[`${stat.sql}_max`] || 6)) surgicalData[`${stat.sql}_max`] = newMax;
+        
+        // 👈 NOUVEAU : Si on crée une Fée, on force l'enregistrement de TOUTES les stats
+        if (isCreating) {
+          surgicalData[`${stat.sql}_min`] = newMin;
+          surgicalData[`${stat.sql}_max`] = newMax;
+        } else {
+          if (newMin !== (editingItem[`${stat.sql}_min`] || 1)) surgicalData[`${stat.sql}_min`] = newMin;
+          if (newMax !== (editingItem[`${stat.sql}_max`] || 6)) surgicalData[`${stat.sql}_max`] = newMax;
+        }
       });
-
+	  
       const newCapacites = [];
       if (proposal.capaciteFixe1) newCapacites.push({ id: proposal.capaciteFixe1, type: 'fixe1' });
       if (proposal.capaciteFixe2) newCapacites.push({ id: proposal.capaciteFixe2, type: 'fixe2' });
@@ -172,7 +183,13 @@ export default function EncyclopediaModal({
 
       logger.info("✅ Proposition envoyée :", payload.record_name);
       alert("Votre proposition a été envoyée aux Gardiens du Savoir !");
-      setEditingItem(null);
+    
+      // 👈 NOUVEAU : On utilise onSuccess s'il existe pour mettre à jour les cadenas
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        setEditingItem(null);
+      }
     } catch (error) {
       logger.error("❌ Erreur envoi proposition :", error);
       alert("Erreur lors de l'envoi : " + error.message);
@@ -232,7 +249,7 @@ export default function EncyclopediaModal({
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-amber-900 mb-1">Taille</label>
                   <select
@@ -246,6 +263,20 @@ export default function EncyclopediaModal({
                     <option value="Très Grande">Très Grande (-2 Esquive)</option>
                   </select>
                 </div>
+
+                {/* 👈 NOUVEAU : SÉLECTEUR D'ANCIENNETÉ */}
+                <div>
+                  <label className="block text-sm font-bold text-amber-900 mb-1">Ancienneté</label>
+                  <select
+                    value={proposal.era || 'traditionnelle'}
+                    onChange={(e) => setProposal({ ...proposal, era: e.target.value })}
+                    className="w-full p-2 border border-amber-200 rounded-lg bg-white"
+                  >
+                    <option value="traditionnelle">Traditionnelle</option>
+                    <option value="moderne">Moderne</option>
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-sm font-bold text-amber-900 mb-1">Sexes possibles</label>
                   <div className="flex gap-4 p-2 border border-amber-200 rounded-lg bg-amber-50/50">
@@ -268,6 +299,7 @@ export default function EncyclopediaModal({
                   </div>
                 </div>
               </div>
+
 
               <div>
                 <label className="block text-sm font-bold text-amber-900 mb-1">Traits de caractère (séparés par des virgules)</label>
@@ -375,10 +407,21 @@ export default function EncyclopediaModal({
                 <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
                   <label className="block text-xs font-bold text-indigo-800 mb-2">⭐ Capacités au Choix</label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-2">
-                    {allCapacites.map(cap => (
-                      <label key={cap.id} className="flex items-center space-x-2 text-xs cursor-pointer">
-                        <input type="checkbox" checked={proposal.capacitesChoixIds?.includes(cap.id)} onChange={(e) => { const newIds = e.target.checked ? [...(proposal.capacitesChoixIds || []), cap.id] : (proposal.capacitesChoixIds || []).filter(id => id !== cap.id); setProposal({ ...proposal, capacitesChoixIds: newIds }); }} />
-                        <span className="truncate">{cap.nom}</span>
+                    {[...allCapacites].sort((a, b) => {
+                      const aSel = proposal.capacitesChoixIds?.includes(a.id);
+                      const bSel = proposal.capacitesChoixIds?.includes(b.id);
+                      if (aSel && !bSel) return -1;
+                      if (!aSel && bSel) return 1;
+                      return a.nom.localeCompare(b.nom);
+                    }).map(cap => (
+                      <label key={cap.id} className="flex items-start space-x-2 text-xs cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={proposal.capacitesChoixIds?.includes(cap.id)} 
+                          onChange={(e) => { const newIds = e.target.checked ? [...(proposal.capacitesChoixIds || []), cap.id] : (proposal.capacitesChoixIds || []).filter(id => id !== cap.id); setProposal({ ...proposal, capacitesChoixIds: newIds }); }} 
+                          className="mt-0.5 shrink-0"
+                        />
+                        <span className="line-clamp-2 leading-tight">{cap.nom}</span>
                       </label>
                     ))}
                   </div>
@@ -388,10 +431,21 @@ export default function EncyclopediaModal({
               <div className="bg-rose-50 p-4 rounded-xl border border-rose-100 mt-4">
                 <label className="block text-sm font-bold text-rose-900 mb-3">Pouvoirs attachés</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-rose-200">
-                  {allPouvoirs.map(pow => (
-                    <label key={pow.id} className="flex items-center space-x-2 text-xs cursor-pointer">
-                      <input type="checkbox" checked={proposal.pouvoirsIds?.includes(pow.id)} onChange={(e) => { const newIds = e.target.checked ? [...(proposal.pouvoirsIds || []), pow.id] : (proposal.pouvoirsIds || []).filter(id => id !== pow.id); setProposal({ ...proposal, pouvoirsIds: newIds }); }} />
-                      <span className="truncate">{pow.nom}</span>
+                  {[...allPouvoirs].sort((a, b) => {
+                    const aSel = proposal.pouvoirsIds?.includes(a.id);
+                    const bSel = proposal.pouvoirsIds?.includes(b.id);
+                    if (aSel && !bSel) return -1;
+                    if (!aSel && bSel) return 1;
+                    return a.nom.localeCompare(b.nom);
+                  }).map(pow => (
+                    <label key={pow.id} className="flex items-start space-x-2 text-xs cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={proposal.pouvoirsIds?.includes(pow.id)} 
+                        onChange={(e) => { const newIds = e.target.checked ? [...(proposal.pouvoirsIds || []), pow.id] : (proposal.pouvoirsIds || []).filter(id => id !== pow.id); setProposal({ ...proposal, pouvoirsIds: newIds }); }} 
+                        className="mt-0.5 shrink-0"
+                      />
+                      <span className="line-clamp-2 leading-tight">{pow.nom}</span>
                     </label>
                   ))}
                 </div>
@@ -403,8 +457,14 @@ export default function EncyclopediaModal({
                   <Star size={16} /> Atouts féériques attachés
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-amber-100 shadow-inner custom-scrollbar">
-                  {allAtouts.map(atout => (
-                    <label key={atout.id} className="flex items-center space-x-2 text-xs cursor-pointer">
+                  {[...allAtouts].sort((a, b) => {
+                    const aSel = proposal.atoutsIds?.includes(a.id);
+                    const bSel = proposal.atoutsIds?.includes(b.id);
+                    if (aSel && !bSel) return -1;
+                    if (!aSel && bSel) return 1;
+                    return a.nom.localeCompare(b.nom);
+                  }).map(atout => (
+                    <label key={atout.id} className="flex items-start space-x-2 text-xs cursor-pointer">
                       <input
                         type="checkbox"
                         checked={proposal.atoutsIds?.includes(atout.id)}
@@ -414,8 +474,9 @@ export default function EncyclopediaModal({
                             : (proposal.atoutsIds || []).filter(id => id !== atout.id);
                           setProposal({ ...proposal, atoutsIds: newIds });
                         }}
+                        className="mt-0.5 shrink-0"
                       />
-                      <span className="truncate font-medium text-gray-700">{atout.nom}</span>
+                      <span className="line-clamp-2 leading-tight font-medium text-gray-700">{atout.nom}</span>
                     </label>
                   ))}
                 </div>
@@ -476,8 +537,14 @@ export default function EncyclopediaModal({
                     <Sparkles size={16} /> Fées possédant cet élément (Optionnel)
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-indigo-100 shadow-inner custom-scrollbar">
-                    {allFairyTypes?.map(fairy => (
-                      <label key={fairy.id} className="flex items-center gap-2 text-xs p-1 hover:bg-indigo-50 rounded cursor-pointer transition-colors">
+                    {[...(allFairyTypes || [])].sort((a, b) => {
+                      const aSel = proposal.fairyIds?.includes(a.id);
+                      const bSel = proposal.fairyIds?.includes(b.id);
+                      if (aSel && !bSel) return -1;
+                      if (!aSel && bSel) return 1;
+                      return a.name.localeCompare(b.name);
+                    }).map(fairy => (
+                      <label key={fairy.id} className="flex items-start gap-2 text-xs p-1 hover:bg-indigo-50 rounded cursor-pointer transition-colors">
                         <input
                           type="checkbox"
                           checked={proposal.fairyIds?.includes(fairy.id)}
@@ -487,9 +554,9 @@ export default function EncyclopediaModal({
                               : (proposal.fairyIds || []).filter(id => id !== fairy.id);
                             setProposal({ ...proposal, fairyIds: newIds });
                           }}
-                          className="text-indigo-600 focus:ring-indigo-500 rounded border-gray-300"
+                          className="text-indigo-600 focus:ring-indigo-500 rounded border-gray-300 mt-0.5 shrink-0"
                         />
-                        <span className="truncate font-medium text-gray-700">{fairy.name}</span>
+                        <span className="line-clamp-2 leading-tight font-medium text-gray-700">{fairy.name}</span>
                       </label>
                     ))}
                   </div>
