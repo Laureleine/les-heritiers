@@ -29,11 +29,9 @@ echo "📝 Git add..."
 git add .
 
 echo "💬 Git commit..."
-if git diff --cached --quiet && git diff --quiet; then
-  echo "   ✅ Rien à commiter, release annulée."
-  exit 0
+if ! git diff --cached --quiet || ! git diff --quiet; then
+  git commit -m "Les Héritiers v${VERSION}"
 fi
-git commit -m "Les Héritiers v${VERSION}"
 
 echo "🚀 Git push..."
 git push origin dev:main
