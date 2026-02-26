@@ -1,5 +1,5 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0
+// 8.23.0 // 8.26.0 // 8.29.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
@@ -122,7 +122,28 @@ export default function ValidationsPendantes({ session, onBack }) {
           }
         }
         if (_relations.competencesUtiles !== undefined) {
-           sqlQuery += `\nUPDATE public.fairy_types SET "competencesPredilection" = '${_relations.competencesUtiles.replace(/'/g, "''")}'::jsonb WHERE id = '${targetId}';\n`;
+          sqlQuery += `\nDELETE FROM public.fairy_competences_predilection WHERE fairy_type_id = '${targetId}';\n`;
+          try {
+            const utilesList = JSON.parse(_relations.competencesUtiles);
+            if (utilesList && utilesList.length > 0) {
+              const utilesInserts = utilesList.map(comp => {
+                const isChoice = comp.isChoix ? 'true' : 'false';
+                const isSpecChoice = comp.isSpecialiteChoix ? 'true' : 'false';
+                
+                // Sous-requête magique pour trouver l'ID de la compétence à partir de son nom
+                const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
+                
+                const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
+                const choiceOptions = comp.options && comp.options.length > 0 ? `'${JSON.stringify(comp.options).replace(/'/g, "''")}'::jsonb` : 'null';
+
+                return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceOptions})`;
+              }).join(',\n  ');
+
+              sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_options) VALUES \n  ${utilesInserts};\n`;
+            }
+          } catch (e) {
+            sqlQuery += `-- ERREUR PARSING JSON: ${e.message}\n`;
+          }
         }
         if (_relations.competencesFutiles !== undefined) {
           sqlQuery += `\nDELETE FROM public.fairy_competences_futiles_predilection WHERE fairy_type_id = '${targetId}';\n`;
