@@ -1,10 +1,20 @@
 // src/components/ValidationsPendantes.js
+// 8.23.0
 
 import React, { useState, useEffect } from 'react';
-import { Check, X, ArrowLeft, Shield, Copy } from 'lucide-react';
+import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
 import { supabase } from '../config/supabase';
 
 const TABLE_NAME = 'data_change_requests';
+
+// 🏆 LE CATALOGUE DES BADGES (Identique à l'Admin)
+const AVAILABLE_BADGES = [
+  { id: 'beta', label: 'Bêta-Testeur 🐛', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+  { id: 'lore', label: 'Archiviste 📚', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+  { id: 'creator', label: 'Créateur ✨', color: 'bg-amber-100 text-amber-800 border-amber-200' },
+  { id: 'vip', label: 'VIP 💎', color: 'bg-rose-100 text-rose-800 border-rose-200' },
+  { id: 'crash', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/><Bug size={12}/><Bomb size={12}/> Crash Testeuse</span>, color: 'bg-stone-900 text-red-400 border-stone-700 shadow-md animate-pulse' }  
+];
 
 export default function ValidationsPendantes({ session, onBack }) {
   const [pendingChanges, setPendingChanges] = useState([]);
@@ -33,10 +43,11 @@ export default function ValidationsPendantes({ session, onBack }) {
 
   const loadChanges = async () => {
     setLoading(true);
+    // 👈 NOUVEAU : On demande à Supabase de joindre les infos du profil (username et badges) !
     const [pending, approved, history] = await Promise.all([
-      supabase.from(TABLE_NAME).select('*').eq('status', 'pending').order('created_at', { ascending: false }),
-      supabase.from(TABLE_NAME).select('*').eq('status', 'approved').order('created_at', { ascending: false }),
-      supabase.from(TABLE_NAME).select('*').in('status', ['archived', 'rejected']).order('created_at', { ascending: false }).limit(50)
+      supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'pending').order('created_at', { ascending: false }),
+      supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'approved').order('created_at', { ascending: false }),
+      supabase.from(TABLE_NAME).select('*, profiles(username, badges)').in('status', ['archived', 'rejected']).order('created_at', { ascending: false }).limit(50)
     ]);
 
     if (pending.data) setPendingChanges(pending.data);
@@ -55,13 +66,11 @@ export default function ValidationsPendantes({ session, onBack }) {
       const proposedData = change.new_data || change.proposed_data || {};
       const { _relations, ...mainData } = proposedData;
 
-      // Détection de la création (Le Coup de Génie : l'ID est dans le payload)
       const isInsert = !!mainData.id;
       const targetId = isInsert ? mainData.id : change.record_id;
 
       let sqlQuery = `-- Action pour ${change.record_name} (${change.table_name})\nBEGIN;\n\n`;
 
-      // 1. TABLE PRINCIPALE (Fées, Pouvoirs, etc.)
       if (Object.keys(mainData).length > 0) {
         if (isInsert) {
           const columns = Object.keys(mainData).join(', ');
@@ -78,24 +87,18 @@ export default function ValidationsPendantes({ session, onBack }) {
         } else {
           const setClauses = Object.entries(mainData).map(([key, value]) => {
             if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
-            
-            // ⚠️ FIX : Tableaux AVANT les objets (pour postgres text[])
             if (Array.isArray(value)) {
               const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
               return `${key} = ARRAY[${elements}]::text[]`;
             }
             if (typeof value === 'object' && value !== null) return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-            
             return `${key} = ${value}`;
           }).join(',\n  ');
           sqlQuery += `UPDATE public.${change.table_name}\nSET ${setClauses}\nWHERE id = '${targetId}';\n`;
         }
       }
 
-      // 2. RELATIONS (Tables de jointure)
       if (_relations) {
-        
-        // A. RELATIONS DIRECTES (Depuis une Fée)
         if (_relations.capacites) {
           sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE fairy_type_id = '${targetId}';\n`;
           if (_relations.capacites.length > 0) {
@@ -132,8 +135,6 @@ export default function ValidationsPendantes({ session, onBack }) {
             sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES ${futInserts};\n`;
           }
         }
-
-        // B. RELATIONS INVERSÉES (Depuis un Pouvoir, Capacité ou Atout vers des Fées)
         if (_relations.fairyIds !== undefined) {
           if (change.table_name === 'fairy_capacites') {
             sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}';\n`;
@@ -173,9 +174,6 @@ export default function ValidationsPendantes({ session, onBack }) {
     }
   };
 
-  // ----------------------------------------------------------------------
-  // AUTRES ACTIONS
-  // ----------------------------------------------------------------------
   const handleArchive = async (changeId) => {
     if (!window.confirm("Avez-vous bien exécuté ce code SQL dans Supabase ? La proposition sera classée dans l'historique.")) return;
     const { error } = await supabase.from(TABLE_NAME).update({ status: 'archived' }).eq('id', changeId);
@@ -223,11 +221,36 @@ export default function ValidationsPendantes({ session, onBack }) {
         </span>
       </div>
 
+      {/* 🌟 NOUVEAU : AFFICHAGE DU PROFIL DU JOUEUR ET SES BADGES */}
       <div className="mb-4">
-        <p className="text-sm font-bold text-gray-700 mb-1">Justification du joueur :</p>
-        <p className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded border border-gray-100">
-          "{change.justification}"
-        </p>
+        <div className="flex items-center gap-2 mb-2">
+          <User size={16} className="text-gray-400" />
+          <span className="text-sm font-bold text-gray-700">
+            {change.profiles?.username || 'Héritier Anonyme'}
+          </span>
+          
+          {change.profiles?.badges && change.profiles.badges.length > 0 && (
+            <div className="flex flex-wrap gap-1 border-l border-gray-200 pl-2 ml-1">
+              {change.profiles.badges.map(badgeId => {
+                const badgeDef = AVAILABLE_BADGES.find(b => b.id === badgeId);
+                if (!badgeDef) return null;
+                return (
+                  <span key={badgeId} className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-bold shadow-sm ${badgeDef.color}`}>
+                    {badgeDef.label}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        
+        {/* LA JUSTIFICATION (La Bulle de dialogue) */}
+        <div className="relative">
+          <div className="absolute top-0 left-4 -mt-2 w-4 h-4 bg-gray-50 border-t border-l border-gray-100 transform rotate-45"></div>
+          <p className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded-lg border border-gray-100 relative z-10 shadow-sm">
+            "{change.justification}"
+          </p>
+        </div>
       </div>
 
       {change.status === 'approved' && change.generated_sql && (
