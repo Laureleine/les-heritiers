@@ -1,5 +1,5 @@
 // src/components/EncyclopediaModal.js
-// 8.20.0
+// 8.20.0 // 8.21.0
 
 import React from 'react';
 import { X, Sparkles, Save, Star } from 'lucide-react';
@@ -106,8 +106,22 @@ export default function EncyclopediaModal({
       if (!arraysEqual(newAtouts, oldAtouts)) changedRelations.atouts = newAtouts;
 
       const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection, null, 2) : '';
-      if (proposal.competencesUtiles !== oldUtiles) changedRelations.competencesUtiles = proposal.competencesUtiles;
-
+      
+      if (proposal.competencesUtiles !== oldUtiles) {
+        if (proposal.competencesUtiles && proposal.competencesUtiles.trim() !== '') {
+          try {
+            // 🛡️ On tente de lire le JSON. Si ça plante, c'est que c'est du simple texte !
+            JSON.parse(proposal.competencesUtiles);
+            changedRelations.competencesUtiles = proposal.competencesUtiles;
+          } catch (e) {
+            alert("❌ ERREUR : La case 'Compétences Utiles' doit être au format JSON valide (avec les crochets et accolades), pas du texte normal !");
+            return; // Bloque l'envoi au Conseil
+          }
+        } else {
+          changedRelations.competencesUtiles = "[]"; // Si le champ est vidé, on envoie un tableau JSON vide
+        }
+      }
+	  
       const newFutiles = [];
       if (proposal.futileFixe1) newFutiles.push({ is_choice: false, competence_futile_id: proposal.futileFixe1 });
       if (proposal.futileFixe2) newFutiles.push({ is_choice: false, competence_futile_id: proposal.futileFixe2 });
