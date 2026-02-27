@@ -1,5 +1,5 @@
 // src/App.js
-// 8.25.0 // 8.26.0 // 9.0.0
+// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from './config/supabase';
@@ -9,8 +9,7 @@ import { APP_VERSION, BUILD_DATE } from './version';
 import { saveCharacterToSupabase } from './utils/supabaseStorage';
 import { exportToPDF } from './utils/utils';
 import { useAutoUpdate } from './hooks/useAutoUpdate';
-
-// --- IMPORTS DES COMPOSANTS ---
+import { AVAILABLE_BADGES } from './data/badges';
 import Auth from './components/Auth';
 import CharacterList from './components/CharacterList';
 import AccountSettings from './components/AccountSettings';
@@ -35,7 +34,7 @@ import StepPersonnalisation from './components/StepPersonnalisation';
 import StepRecapitulatif from './components/StepRecapitulatif';
 
 // --- ICONS ---
-import { Save, ChevronRight, List, BookOpen, FileText } from 'lucide-react';
+import { Save, ChevronRight, List, BookOpen, FileText, Crown, Shield, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
 
 function App() {
   // --- 1. ÉTATS GLOBAUX ---
@@ -181,6 +180,17 @@ function App() {
   }, [session?.user?.id]);
   
   // --- 3. HANDLERS ---
+  const handleSignOut = async () => {
+    try {
+      console.log("🚪 Déconnexion demandée...");
+      await supabase.auth.signOut();
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
+    } catch (error) {
+      console.error("❌ Erreur déconnexion:", error.message);
+    }
+  };  
   const handleSave = async () => {
     if (isReadOnly) return;
     if (!character.nom.trim() || !character.sexe || !character.typeFee) {
@@ -221,9 +231,10 @@ function App() {
   const canProceedStep1 = character.nom && character.sexe && character.typeFee;
 
   // --- RENDU COMPLET ---
+
   if (globalLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
           <p className="text-lg text-amber-900 font-serif">{loadingStep}</p>
@@ -234,170 +245,237 @@ function App() {
 
   if (!session || !userProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
         <Auth />
       </div>
     );
   }
 
-  if (view === 'encyclopedia') return <><AlertSystem userProfile={userProfile} /><Encyclopedia userProfile={userProfile} onBack={() => setView('list')} onOpenValidations={() => setView('validations')} /></>;
-  if (view === 'validations') return <><AlertSystem userProfile={userProfile} /><ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} /></>;
-  if (view === 'account') return <><AlertSystem userProfile={userProfile} /><AccountSettings session={session} onBack={() => setView('list')} /></>;
-  if (view === 'changelog') return <><AlertSystem userProfile={userProfile} /><Changelog onBack={() => setView('list')} /></>;
-  if (view === 'admin_users') return <><AlertSystem userProfile={userProfile} /><AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} /></>;
-
-  if (view === 'list') {
-    return (
-      <>
-        <AlertSystem userProfile={userProfile} />
-        <CharacterList
-          session={session}
-          userProfile={userProfile}
-          profils={gameData.profils}
-          onSelectCharacter={(c, readOnly = false) => { setCharacter(c); setIsReadOnly(readOnly); setStep(1); setView('creator'); }}
-          onNewCharacter={() => { setCharacter(initialCharacterState); setIsReadOnly(false); setStep(1); setView('creator'); }}
-          onOpenEncyclopedia={() => setView('encyclopedia')}
-          onOpenAccount={() => setView('account')}
-          onSignOut={async () => {
-            try {
-              console.log("🚪 Déconnexion demandée...");
-              const { error } = await supabase.auth.signOut();
-              if (error) throw error;
-              console.log("✅ Déconnexion Supabase OK");
-            } catch (error) {
-              console.error("❌ Erreur déconnexion:", error.message);
-            }
-          }}
-          onOpenAdminUsers={() => setView('admin_users')}
-        />
-      </>
-    );
-  }
-
-  // --- VUE CRÉATEUR UNIFIÉE ---
   const totalSteps = 11;
   const stepsArray = Array.from({length: totalSteps}, (_, i) => i + 1);
 
+  // =========================================================================
+  // LE GABARIT GLOBAL : Gère le fond, le titre et les fameuses bandes latérales !
+  // =========================================================================
   return (
-    <div className="min-h-screen bg-[#FDFBF7] pb-24 font-sans text-gray-900 pt-8">
+    <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
       
-      {/* 📡 LE SYSTÈME D'ALERTE (RADAR) */}
       <AlertSystem userProfile={userProfile} />
 
-      {/* CADRE PRINCIPAL */}
-      <div className="max-w-4xl mx-auto px-4">
-        {/* BLOC EN-TÊTE + BOUTONS + CERCLES */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-            <div>
-              <h1 className="text-3xl font-serif font-bold text-amber-900 leading-tight">Les Héritiers</h1>
-              <div className="text-xs text-amber-700 opacity-60 font-serif">v{APP_VERSION} • {BUILD_DATE}</div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <button onClick={() => setView('list')} className="flex items-center space-x-2 px-3 py-2 bg-white border border-amber-200 text-amber-900 rounded-lg hover:bg-amber-50 transition-all font-serif text-sm shadow-sm">
-                <List size={16} /> <span className="hidden sm:inline">Menu Principal</span>
-              </button>
-              <button onClick={() => setView('changelog')} className="flex items-center space-x-2 px-3 py-2 bg-white border border-purple-200 text-purple-900 rounded-lg hover:bg-purple-50 transition-all font-serif text-sm shadow-sm">
-                <BookOpen size={16} /> <span className="hidden sm:inline">News</span>
-              </button>
-              <button onClick={() => exportToPDF(character, gameData.fairyData)} className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif text-sm shadow-sm" title="Exporter en PDF">
-                <FileText size={16} /> <span className="hidden sm:inline">PDF</span>
-              </button>
-              {!isReadOnly && (
-                <button onClick={handleSave} className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors shadow-sm">
-                  <Save size={16}/> <span className="hidden sm:inline">Sauvegarder</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Notification de sauvegarde */}
-          {showSaveNotification && (
-            <div className="mb-4 bg-green-100 border border-green-200 text-green-800 px-4 py-2 rounded-lg flex items-center gap-2 justify-center animate-fade-in shadow-sm">
-              <Save size={18} /> ✓ Sauvegardé avec succès !
-            </div>
-          )}
-
-          {/* BARRE DE PROGRESSION AVEC LIAISONS */}
-          <div className="relative flex justify-between items-center w-full py-4 px-2 mb-4">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-amber-100 z-0 rounded-full"></div>
-            <div
-              className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-400 z-0 transition-all duration-500 ease-in-out rounded-full"
-              style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
-            ></div>
-            {stepsArray.map(s => (
-              <button
-                key={s}
-                onClick={() => { setStep(s); window.scrollTo(0,0); }}
-                disabled={step === 1 && !canProceedStep1 && s > 1}
-                className={`
-                  relative z-10 flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-lg transition-all duration-300 border-4
-                  ${step === s
-                    ? 'bg-amber-600 text-white border-white scale-110 shadow-md ring-2 ring-amber-200'
-                    : step > s
-                      ? 'bg-amber-400 text-white border-white'
-                      : 'bg-white text-gray-400 border-amber-100 hover:border-amber-300'
-                  }
-                `}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+      {/* ================= DÉCORATIONS D'ANGLES (Esotérisme & Steampunk) ================= */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-[0.03] text-amber-950">
+        
+        {/* HAUT GAUCHE : Grand Pentacle & Cercle Magique */}
+        <div className="absolute -top-32 -left-32">
+          <svg width="500" height="500" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5" className="animate-[spin_200s_linear_infinite]">
+            <circle cx="50" cy="50" r="45"/>
+            <circle cx="50" cy="50" r="38"/>
+            <path d="M50 12 L61.75 38.08 L88.04 38.08 L66.75 54.91 L74.89 80.99 L50 64.16 L25.1 80.99 L33.24 54.91 L11.95 38.08 L38.24 38.08 Z"/>
+            <circle cx="50" cy="50" r="15"/>
+            <circle cx="50" cy="50" r="5"/>
+          </svg>
         </div>
 
-        {/* CONTENU DES ÉTAPES */}
-        <main className="bg-white/50 rounded-xl p-2 md:p-6 border border-amber-50 shadow-sm min-h-[500px]">
-          {step === 1 && <Step1 character={character} onNomChange={handleNomChange} onSexeChange={handleSexeChange} onTypeFeeChange={handleTypeFeeChange} onTraitsFeeriquesChange={(v) => setCharacter(prev => ({ ...prev, traitsFeeriques: v }))} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} fairyData={gameData.fairyData} fairyTypesByAge={gameData.fairyTypesByAge} />}
-          {step === 2 && <Step2 character={character} onCapaciteChoice={handleCapaciteChoice} fairyData={gameData.fairyData} />}
-          {step === 3 && <Step3 character={character} onPouvoirToggle={handlePouvoirToggle} fairyData={gameData.fairyData} />}
-          {step === 4 && <StepAtouts character={character} onAtoutToggle={handleAtoutToggle} fairyData={gameData.fairyData} />}
-          {step === 5 && <StepCaracteristiques character={character} onCaracteristiquesChange={(c) => setCharacter({ ...character, caracteristiques: c })} fairyData={gameData.fairyData} />}
-          {step === 6 && <StepProfils character={character} onProfilsChange={(p) => setCharacter({ ...character, profils: p })} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
-          {step === 7 && <StepCompetencesLibres character={character} onCompetencesLibresChange={(c) => setCharacter({ ...character, competencesLibres: c })} profils={gameData.profils} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} fairyData={gameData.fairyData} />}
-          {step === 8 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={(c) => setCharacter({ ...character, competencesFutiles: c })} fairyData={gameData.fairyData} />}
-          {step === 9 && <StepVieSociale character={character} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} />}
-          {step === 10 && <StepPersonnalisation character={character} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} />}
-          {step === 11 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} />}
-        </main>
+        {/* BAS GAUCHE : Grand Engrenage Industriel */}
+        <div className="absolute -bottom-32 -left-20">
+          <svg width="450" height="450" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.8" className="animate-[spin_120s_linear_infinite]">
+            <circle cx="50" cy="50" r="35"/>
+            <circle cx="50" cy="50" r="25"/>
+            <circle cx="50" cy="50" r="10"/>
+            <path d="M45 5 L55 5 L53 15 L47 15 Z M45 95 L55 95 L53 85 L47 85 Z M5 45 L5 55 L15 53 L15 47 Z M95 45 L95 55 L85 53 L85 47 Z M19.64 16.81 L26.71 23.88 L23.88 26.71 L16.81 19.64 Z M83.18 80.35 L76.11 73.28 L78.94 70.45 L86.01 77.52 Z M19.64 83.18 L26.71 76.11 L23.88 73.28 L16.81 80.35 Z M83.18 16.81 L76.11 23.88 L78.94 26.71 L86.01 19.64 Z"/>
+          </svg>
+        </div>
+        
+        {/* BAS GAUCHE : Petit Engrenage imbriqué */}
+        <div className="absolute bottom-40 left-32">
+          <svg width="200" height="200" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1" className="animate-[spin_80s_linear_infinite_reverse]">
+            <circle cx="50" cy="50" r="35"/>
+            <circle cx="50" cy="50" r="15"/>
+            <path d="M45 5 L55 5 L53 15 L47 15 Z M45 95 L55 95 L53 85 L47 85 Z M5 45 L5 55 L15 53 L15 47 Z M95 45 L95 55 L85 53 L85 47 Z M19.64 16.81 L26.71 23.88 L23.88 26.71 L16.81 19.64 Z M83.18 80.35 L76.11 73.28 L78.94 70.45 L86.01 77.52 Z M19.64 83.18 L26.71 76.11 L23.88 73.28 L16.81 80.35 Z M83.18 16.81 L76.11 23.88 L78.94 26.71 L86.01 19.64 Z"/>
+          </svg>
+        </div>
+
+        {/* HAUT DROIT : Astrolabe / Symbole Cosmique */}
+        <div className="absolute -top-48 -right-48">
+          <svg width="600" height="600" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.3" className="animate-[spin_300s_linear_infinite_reverse]">
+            <circle cx="50" cy="50" r="48"/>
+            <circle cx="50" cy="50" r="30"/>
+            <circle cx="50" cy="50" r="28"/>
+            <path d="M50 2 L50 98 M2 50 L98 50 M16 16 L84 84 M16 84 L84 16 M26 10 L74 90 M10 26 L90 74 M10 74 L90 26 M26 90 L74 10"/>
+          </svg>
+        </div>
+        
+        {/* Note pour plus tard : Si vous découpez les vraies images du PDF (en PNG transparent), 
+            vous pourrez les mettre ici à la place des SVG de cette façon : 
+            <img src="/engrenages.png" className="absolute bottom-0 left-0 w-96 opacity-10" alt="" />
+        */}
       </div>
-
-      {/* FOOTER NAVIGATION */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-30">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <button
-            onClick={() => { setStep(s => Math.max(1, s - 1)); window.scrollTo(0,0); }}
-            disabled={step === 1}
-            className="flex items-center space-x-2 px-4 py-2 md:px-6 md:py-3 rounded-lg font-serif transition-all bg-gray-100 hover:bg-gray-200 text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+      
+      {/* 1. L'EN-TÊTE GLOBAL FIXE (Le même pour tout le monde) */}
+      <div className="pt-6 pb-4 text-center animate-fade-in relative z-10">
+        
+        {/* LIGNE DU TITRE ET DE LA VERSION */}
+        <div className="flex flex-wrap justify-center items-baseline gap-4">
+          <h1 
+            className="text-5xl font-serif text-amber-900 cursor-pointer hover:text-amber-700 transition-colors m-0" 
+            onClick={() => setView('list')}
+            title="Retour à l'accueil"
           >
-            Précédent
-          </button>
-
-          {!isReadOnly && (
-            <button
-              onClick={async () => {
-                if (step === 11) {
-                  await handleSave();
-                  setView('list');
-                } else {
-                  setStep(s => Math.min(totalSteps, s + 1));
-                  window.scrollTo(0,0);
-                }
-              }}
-              disabled={step === 1 && !canProceedStep1}
-              className={`flex items-center space-x-2 px-4 py-2 md:px-6 md:py-3 rounded-lg font-serif transition-all ${step === 1 && !canProceedStep1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-amber-600 text-white hover:bg-amber-700'}`}
-            >
-              <span className="font-bold">{step === 11 ? 'Sauvegarder et Terminer' : 'Suivant'}</span>
-              {step !== 11 && <ChevronRight size={20} />}
-            </button>
+            Les Héritiers
+          </h1>
+          <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">
+            Version {APP_VERSION} • {BUILD_DATE}
+          </span>
+        </div>
+        
+        {/* ZONE DES RÔLES ET BADGES */}
+        <div className="flex flex-wrap justify-center items-center gap-2 mt-3 max-w-2xl mx-auto">
+          {userProfile?.profile?.role === 'super_admin' && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 shadow-sm">Super Admin</span>
           )}
+          {userProfile?.profile?.role === 'gardien' && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full border border-blue-200 shadow-sm">Gardien du Savoir</span>
+          )}
+          {userProfile?.profile?.badges?.map(badgeId => {
+            const badgeDef = AVAILABLE_BADGES?.find(b => b.id === badgeId);
+            if (!badgeDef) return null;
+            return (
+              <span key={badgeId} className={`inline-flex items-center text-[11px] px-3 py-1 rounded-full border font-bold shadow-sm ${badgeDef.color}`}>
+                {badgeDef.label}
+              </span>
+            );
+          })}
         </div>
       </div>
 	  
+      {/* 2. LE CONTENEUR CENTRAL (C'est lui qui crée les bandes sur TOUTES les vues !) */}
+      <div className="max-w-5xl mx-auto px-4 w-full animate-fade-in relative z-10">
+        
+        {/* VUE 1 : LA LISTE DES PERSONNAGES */}
+        {view === 'list' && (
+          <CharacterList
+            session={session}
+            userProfile={userProfile}
+            profils={gameData.profils}
+            onSelectCharacter={(c, readOnly = false) => { setCharacter(c); setIsReadOnly(readOnly); setStep(1); setView('creator'); }}
+            onNewCharacter={() => { setCharacter(initialCharacterState); setIsReadOnly(false); setStep(1); setView('creator'); }}
+            onOpenEncyclopedia={() => setView('encyclopedia')}
+            onOpenAccount={() => setView('account')}
+            onSignOut={handleSignOut}
+            onOpenAdminUsers={() => setView('admin_users')}
+          />
+        )}
+
+        {/* VUE 2 : ENCYCLOPÉDIE & CONSEIL */}
+        {view === 'encyclopedia' && <Encyclopedia userProfile={userProfile} onBack={() => setView('list')} onOpenValidations={() => setView('validations')} />}
+        {view === 'validations' && <ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} />}
+        
+        {/* VUE 3 : COMPTE & SYSTEME */}
+        {view === 'account' && <AccountSettings session={session} onBack={() => setView('list')} />}
+        {view === 'changelog' && <Changelog onBack={() => setView('list')} />}
+        {view === 'admin_users' && <AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} />}
+
+        {/* VUE 4 : LE CRÉATEUR DE PERSONNAGE */}
+        {view === 'creator' && (
+          <div className="max-w-4xl mx-auto pb-8">
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+              <button onClick={() => setView('list')} className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm shadow-sm">
+                <List size={16} /> <span className="hidden sm:inline">Retour aux Archives</span>
+              </button>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => exportToPDF(character, gameData.fairyData)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif font-bold text-sm shadow-sm" title="Exporter en PDF">
+                  <FileText size={16} /> <span className="hidden sm:inline">Exporter PDF</span>
+                </button>
+                {!isReadOnly && (
+                  <button onClick={handleSave} className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold text-sm shadow-sm">
+                    <Save size={16}/> <span className="hidden sm:inline">Sauvegarder</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {showSaveNotification && (
+              <div className="mb-4 bg-green-100 border border-green-200 text-green-800 px-4 py-2 rounded-lg flex items-center gap-2 justify-center animate-fade-in shadow-sm font-bold">
+                ✓ Sauvegardé avec succès !
+              </div>
+            )}
+
+            {/* BARRE DE PROGRESSION */}
+            <div className="relative flex justify-between items-center w-full py-4 px-2 mb-6">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 z-0 rounded-full"></div>
+              <div
+                className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-500 z-0 transition-all duration-500 ease-in-out rounded-full"
+                style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
+              ></div>
+              {stepsArray.map(s => (
+                <button
+                  key={s}
+                  onClick={() => { setStep(s); window.scrollTo(0,0); }}
+                  disabled={step === 1 && !canProceedStep1 && s > 1}
+                  className={`relative z-10 flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-lg transition-all duration-300 border-4
+                    ${step === s ? 'bg-amber-600 text-white border-white scale-110 shadow-md ring-2 ring-amber-200' : step > s ? 'bg-amber-400 text-white border-white' : 'bg-white text-gray-400 border-gray-200 hover:border-amber-300'}
+                  `}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
+            <main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
+              {step === 1 && <Step1 character={character} onNomChange={handleNomChange} onSexeChange={handleSexeChange} onTypeFeeChange={handleTypeFeeChange} onTraitsFeeriquesChange={(v) => setCharacter(prev => ({ ...prev, traitsFeeriques: v }))} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} fairyData={gameData.fairyData} fairyTypesByAge={gameData.fairyTypesByAge} />}
+              {step === 2 && <Step2 character={character} onCapaciteChoice={handleCapaciteChoice} fairyData={gameData.fairyData} />}
+              {step === 3 && <Step3 character={character} onPouvoirToggle={handlePouvoirToggle} fairyData={gameData.fairyData} />}
+              {step === 4 && <StepAtouts character={character} onAtoutToggle={handleAtoutToggle} fairyData={gameData.fairyData} />}
+              {step === 5 && <StepCaracteristiques character={character} onCaracteristiquesChange={(c) => setCharacter({ ...character, caracteristiques: c })} fairyData={gameData.fairyData} />}
+              {step === 6 && <StepProfils character={character} onProfilsChange={(p) => setCharacter({ ...character, profils: p })} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
+              {step === 7 && <StepCompetencesLibres character={character} onCompetencesLibresChange={(c) => setCharacter({ ...character, competencesLibres: c })} profils={gameData.profils} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} fairyData={gameData.fairyData} />}
+              {step === 8 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={(c) => setCharacter({ ...character, competencesFutiles: c })} fairyData={gameData.fairyData} />}
+              {step === 9 && <StepVieSociale character={character} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} />}
+              {step === 10 && <StepPersonnalisation character={character} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} />}
+              {step === 11 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} />}
+            </main>
+
+            {/* NAVIGATION INTÉGRÉE (Suivant / Précédent) */}
+            <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm mt-6 mb-8">
+              <button
+                onClick={() => { setStep(s => Math.max(1, s - 1)); window.scrollTo(0,0); }}
+                disabled={step === 1}
+                className="flex items-center space-x-2 px-4 py-2 md:px-6 md:py-3 rounded-lg font-serif transition-all bg-gray-100 hover:bg-gray-200 text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed font-bold"
+              >
+                Précédent
+              </button>
+              
+              {!isReadOnly && (
+                <button
+                  onClick={async () => {
+                    if (step === 11) {
+                      await handleSave();
+                      setView('list');
+                    } else {
+                      setStep(s => Math.min(totalSteps, s + 1));
+                      window.scrollTo(0,0);
+                    }
+                  }}
+                  disabled={step === 1 && !canProceedStep1}
+                  className={`flex items-center space-x-2 px-4 py-2 md:px-6 md:py-3 rounded-lg font-serif transition-all shadow-sm ${step === 1 && !canProceedStep1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-amber-600 text-white hover:bg-amber-700'}`}
+                >
+                  <span className="font-bold">{step === 11 ? 'Sauvegarder et Terminer' : 'Suivant'}</span>
+                  {step !== 11 && <ChevronRight size={20} />}
+                </button>
+              )}
+            </div>
+
+          </div>
+        )}
+
+      </div>
+
+      {/* 3. TÉLÉGRAPHE PNEUMATIQUE */}
       {session && userProfile && (
         <Telegraphe session={session} userProfile={userProfile} />
       )}
-    </div> // Fin de votre div principal
+      
+    </div>
   );
 }
 

@@ -1,5 +1,5 @@
 // src/components/CharacterList.js
-// 8.24.0 // 8.32.0
+// 8.24.0 // 8.32.0 // 9.1.0
 
 import React, { useState, useEffect } from 'react';
 import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
@@ -268,240 +268,107 @@ const loadCharacters = async (isMounted = true) => {
     );
 	
   return (
-    <div className="min-h-screen bg-stone-50 pb-20 font-sans text-gray-800">
-      
-        {/* 1. TITRE & BADGES */}
-        <div className="pt-8 pb-6 text-center">
-          <h1 className="text-5xl font-serif text-amber-900 mb-2">Les Héritiers</h1>
+    <div className="animate-fade-in w-full">
+      {/* BARRE D'ACTIONS & ONGLETS */}
+      <div className="flex flex-col gap-6 mb-8 mt-2">
+        {/* LIGNE 1 : LES BOUTONS D'ACTION */}
+        <div className="flex flex-wrap items-center gap-3">
+          <button onClick={onNewCharacter} className="mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
+            <Plus size={18} /> <span className="hidden sm:inline">Nouveau</span>
+          </button>
 
-          {/* ZONE DES RÔLES ET BADGES */}
-          <div className="flex flex-wrap justify-center items-center gap-2 mt-4 max-w-2xl mx-auto">
-            
-            {/* Rôle Super Admin */}
-            {userProfile?.profile?.role === 'super_admin' && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 animate-pulse shadow-sm">
-                <Crown size={14} className="text-purple-600" />
-                Super Admin
-              </span>
-            )}
+          <input type="file" id="import-upload" accept=".json" className="hidden" onChange={handleImport} />
+          <button onClick={() => document.getElementById('import-upload').click()} className="flex items-center space-x-2 px-3 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm shadow-sm" title="Importer depuis JSON">
+            <Upload size={16} /> <span className="hidden sm:inline">Importer</span>
+          </button>
 
-            {/* Rôle Gardien du Savoir */}
-            {userProfile?.profile?.role === 'gardien' && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full border border-blue-200 shadow-sm">
-                <Shield size={14} className="text-blue-600" />
-                Gardien du Savoir
-              </span>
-            )}
+          <button onClick={onOpenEncyclopedia} className="flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm shadow-sm" title="Accéder au Grimoire">
+            <Book size={16} /> <span className="hidden sm:inline">Encyclopédie</span>
+          </button>
 
-            {/* Badges du Joueur */}
-            {userProfile?.profile?.badges && userProfile.profile.badges.length > 0 && (
-              <>
-                {(userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien') && (
-                   <span className="text-gray-300 mx-1">|</span>
-                )}
-                {userProfile.profile.badges.map(badgeId => {
-                  const badgeDef = AVAILABLE_BADGES.find(b => b.id === badgeId);
-                  if (!badgeDef) return null;
-                  return (
-                    <span key={badgeId} className={`inline-flex items-center text-[11px] px-3 py-1 rounded-full border font-bold ${badgeDef.color}`}>
-                      {badgeDef.label}
-                    </span>
-                  );
-                })}
-              </>
-            )}
-          </div>
+          {isAdmin && (
+            <button onClick={onOpenAdminUsers} className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm" title="Gérer les Utilisateurs">
+              <Shield size={16} /> <span className="hidden sm:inline">Rôles</span>
+            </button>
+          )}
 
-          <div className="text-xs text-gray-400 mt-4 uppercase tracking-widest font-bold">
-            Version {APP_VERSION} • {BUILD_DATE}
-          </div>
+          <button onClick={onOpenAccount} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-sm shadow-sm">
+            <User size={16} /> <span className="hidden sm:inline">Compte</span>
+          </button>
+
+          <button onClick={onSignOut} className="flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-sm shadow-sm" title="Se déconnecter">
+            <LogOut size={16} /> <span className="hidden sm:inline">Déconnexion</span>
+          </button>
         </div>
 
-      <div className="max-w-5xl mx-auto px-4">
-
-        {/* 2. BARRE D'ACTIONS & ONGLETS (NOUVELLE DISPOSITION) */}
-        <div className="flex flex-col gap-6 mb-8 mt-4">
-
-          {/* LIGNE 1 : LES BOUTONS D'ACTION */}
-          <div className="flex flex-wrap items-center gap-3">
-            
-            {/* 🟢 NOUVEAU EN PREMIER (Cale le bouton à gauche grâce à mr-auto) */}
-            <button 
-              onClick={onNewCharacter}
-              className="mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm"
-            >
-              <Plus size={18} /> Nouveau
-            </button>
-
-            {/* Input caché pour l'import */}
-            <input 
-              type="file" 
-              id="import-upload" 
-              accept=".json" 
-              className="hidden" 
-              onChange={handleImport} 
-            />
-            <button 
-              onClick={() => document.getElementById('import-upload').click()}
-              className="flex items-center space-x-2 px-3 py-2 bg-white border-2 border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm"
-            >
-              <Download size={16} /> Importer
-            </button>
-
-            <button 
-              onClick={onOpenEncyclopedia}
-              className="flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm"
-              title="Accéder au Grimoire"
-            >
-              <Book size={16} /> Encyclopédie
-            </button>
-
-            {isAdmin && (
-              <button 
-                onClick={onOpenAdminUsers}
-                className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm"
-                title="Gérer les Gardiens du Savoir"
-              >
-                <Shield size={16} /> Rôles
-              </button>
-            )}
-
-            <button 
-              onClick={onOpenAccount}
-              className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 hover:border-gray-300 transition-all font-serif font-bold text-sm"
-              title="Mon Compte"
-            >
-              <User size={16} /> Compte
-            </button>
-
-            <button 
-              onClick={async () => {
-                // 🔥 DÉCO COMPLÈTE
-                await supabase.auth.signOut();
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.href = '/';
-              }}
-              className="flex items-center space-x-2 px-3 py-2 bg-red-100 border-2 border-red-200 text-red-600 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-sm"
-              title="Déconnexion"
-            >
-              <LogOut size={16} /> Déconnexion
-            </button>
-          </div>
-
-          {/* LIGNE 2 : LES ONGLETS PERSONNAGES (En dessous) */}
-          <div className="flex gap-8 border-b border-gray-200 overflow-x-auto hide-scrollbar">
-            <button 
-              onClick={() => setActiveTab('my')}
-              className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${
-                activeTab === 'my' 
-                  ? 'text-amber-900 border-amber-600' 
-                  : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Mes personnages
-              <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'my' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600'}`}>
-                {myCharacters.length}
+        {/* LIGNE 2 : LES ONGLETS PERSONNAGES */}
+        <div className="flex gap-8 border-b border-gray-200 overflow-x-auto hide-scrollbar">
+          <button onClick={() => setActiveTab('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+            Mes personnages
+            <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'my' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600'}`}>
+              {myCharacters.length}
+            </span>
+          </button>
+          
+          <button onClick={() => setActiveTab('public')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'public' ? 'text-blue-900 border-blue-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+            <Globe size={16} /> Publics
+            <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'public' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
+              {publicCharacters.length}
+            </span>
+          </button>
+          
+          {isAdmin && (
+            <button onClick={() => setActiveTab('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-red-900 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+              <Shield size={16} /> Admin
+              <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'admin' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
+                {adminCharacters.length}
               </span>
             </button>
-
-            <button 
-              onClick={() => setActiveTab('public')}
-              className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${
-                activeTab === 'public' 
-                  ? 'text-blue-900 border-blue-600' 
-                  : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Publics
-              <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'public' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
-                {publicCharacters.length}
-              </span>
-            </button>
-
-            {isAdmin && (
-              <button 
-                onClick={() => setActiveTab('admin')}
-                className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${
-                  activeTab === 'admin' 
-                    ? 'text-red-900 border-red-600' 
-                    : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Admin
-                <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'admin' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
-                  {adminCharacters.length}
-                </span>
-              </button>
-            )}
-          </div>
-
+          )}
         </div>
-            {/* 3. GRILLE DE CARTES */}
-			{loading ? (
-			  <div className="text-center py-20">
-				<p className="text-xl text-gray-500 font-serif animate-pulse">Consultation des archives...</p>
-			  </div>
-			) : (
-                <div className="p-6">
-                    {/* Vue Mes Personnages */}
-                    {activeTab === 'my' && (
-                        myCharacters.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {myCharacters.map((char, index) => (
-                                    // Sécurité : on utilise l'ID ou l'index si l'ID est manquant
-                                    <div key={char.id || `my-${index}`} className="h-full"> 
-                                       {renderCharacterCard(char, true)}
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (							
-                            <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-300">
-                                <p className="text-gray-500 font-serif mb-4">Vous n'avez pas encore créé de personnage.</p>
-                                <button onClick={onNewCharacter} className="text-amber-600 font-bold hover:underline">
-                                    Créer mon premier Héritier
-                                </button>
-                            </div>
-                        )
-                    )}
-
-                    {/* Vue Personnages Publics */}
-                    {activeTab === 'public' && (
-                        publicCharacters.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {publicCharacters.map((char, index) => (
-                                    <div key={char.id || `pub-${index}`} className="h-full"> 
-                                       {renderCharacterCard(char, char.userId === currentUser?.id)}
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-20 text-gray-500 font-serif italic">
-                                Aucun personnage public disponible pour le moment.
-                            </div>
-                        )
-                    )}
-
-                    {/* Vue Admin */}
-                    {activeTab === 'admin' && isAdmin && (
-                        adminCharacters.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {adminCharacters.map((char, index) => (
-                                    <div key={char.id || `admin-${index}`} className="h-full"> 
-                                       {renderCharacterCard(char, char.userId === currentUser?.id)}
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-20 text-gray-500 font-serif italic">
-                                Aucun personnage masqué à afficher.
-                            </div>
-                        )
-                    )}
-                </div>
-            )}
-
       </div>
+
+      {/* GRILLE DE CARTES */}
+      {loading ? (
+        <div className="text-center py-20">
+          <p className="text-xl text-gray-500 font-serif animate-pulse">Consultation des archives...</p>
+        </div>
+      ) : (
+        <div className="py-4">
+          {activeTab === 'my' && (
+            myCharacters.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {myCharacters.map((char, index) => <div key={char.id || `my-${index}`} className="h-full">{renderCharacterCard(char, true)}</div>)}
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-300">
+                <p className="text-gray-500 font-serif mb-4">Vous n'avez pas encore créé de personnage.</p>
+                <button onClick={onNewCharacter} className="text-amber-600 font-bold hover:underline">Créer mon premier Héritier</button>
+              </div>
+            )
+          )}
+
+          {activeTab === 'public' && (
+            publicCharacters.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {publicCharacters.map((char, index) => <div key={char.id || `pub-${index}`} className="h-full">{renderCharacterCard(char, char.userId === currentUser?.id)}</div>)}
+              </div>
+            ) : (
+              <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage public disponible pour le moment.</div>
+            )
+          )}
+
+          {activeTab === 'admin' && isAdmin && (
+            adminCharacters.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {adminCharacters.map((char, index) => <div key={char.id || `adm-${index}`} className="h-full">{renderCharacterCard(char, char.userId === currentUser?.id)}</div>)}
+              </div>
+            ) : (
+              <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage masqué à afficher.</div>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 }
