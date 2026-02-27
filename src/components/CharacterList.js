@@ -1,5 +1,5 @@
 // src/components/CharacterList.js
-// 8.24.0
+// 8.24.0 // 8.32.0
 
 import React, { useState, useEffect } from 'react';
 import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
@@ -10,15 +10,8 @@ import { exportToPDF } from '../utils/utils';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { getCurrentUserFast } from '../utils/authHelpers';
 import { logger } from '../utils/logger';
+import { AVAILABLE_BADGES } from '../data/badges';
 
-// 🏆 LISTE DES BADGES DISPONIBLES (Personnalisable à volonté !)
-const AVAILABLE_BADGES = [
-  { id: 'beta', label: 'Bêta-Testeur 🐛', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-  { id: 'lore', label: 'Archiviste 📚', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-  { id: 'creator', label: 'Créateur ✨', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  { id: 'vip', label: 'VIP 💎', color: 'bg-rose-100 text-rose-800 border-rose-200' },
-  { id: 'crash', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/><Bug size={12}/><Bomb size={12}/> Crash Testeuse</span>, color: 'bg-stone-900 text-red-400 border-stone-700 shadow-md animate-pulse' }  
-];
 
 export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdminUsers, profils = [], userProfile}) { 
   

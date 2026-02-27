@@ -1,8 +1,9 @@
 // src/components/StepRecapitulatif.js
-// 8.23.0
+// 8.23.0 // 8.32.0
 
 import React from 'react';
 import { User, Star, Award, Sparkles, Feather, Shield, Zap } from 'lucide-react';
+import { CARAC_LIST } from '../data/constants';
 
 export default function StepRecapitulatif({ character, onCharacterChange, fairyData }) {
   const feeData = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
@@ -34,14 +35,6 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
   };
 
   const uniqueFutiles = getFutilesList();
-
-  // Liste des caractéristiques classiques
-  const caracsList = [
-    { key: 'agilite', label: 'Agilité' }, { key: 'constitution', label: 'Constitution' },
-    { key: 'force', label: 'Force' }, { key: 'precision', label: 'Précision' },
-    { key: 'esprit', label: 'Esprit' }, { key: 'perception', label: 'Perception' },
-    { key: 'prestance', label: 'Prestance' }, { key: 'sangFroid', label: 'Sang-froid' }
-  ];
 
   return (
     <div className="space-y-8 animate-fade-in max-w-5xl mx-auto pb-12">
@@ -127,7 +120,7 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
               <Shield size={18} /> Caractéristiques
             </h3>
             <div className="grid grid-cols-4 gap-3">
-              {caracsList.map(c => (
+              {CARAC_LIST.map(c => (
                 <div key={c.key} className="bg-stone-50 p-2 rounded-lg border border-stone-100 text-center">
                   <div className="text-[10px] uppercase font-bold text-gray-500 tracking-wider truncate" title={c.label}>
                     {c.label.substring(0, 3)}

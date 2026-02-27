@@ -1,18 +1,10 @@
 // src/components/AdminUserList.js
-// 8.21.0 // 8.22.0 // 8.25.0
+// 8.21.0 // 8.22.0 // 8.25.0 // 8.32.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { Shield, User, Crown, Plus, X, Award, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
-
-// 🏆 LISTE DES BADGES DISPONIBLES (Personnalisable à volonté !)
-const AVAILABLE_BADGES = [
-  { id: 'beta', label: 'Bêta-Testeur 🐛', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-  { id: 'lore', label: 'Archiviste 📚', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-  { id: 'creator', label: 'Créateur ✨', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  { id: 'vip', label: 'VIP 💎', color: 'bg-rose-100 text-rose-800 border-rose-200' },
-  { id: 'crash', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/><Bug size={12}/><Bomb size={12}/> Crash Testeuse</span>, color: 'bg-stone-900 text-red-400 border-stone-700 shadow-md animate-pulse' }  
-];
+import { AVAILABLE_BADGES } from '../data/badges';
 
 export default function AdminUserList({ session, onBack }) {
   const [users, setUsers] = useState([]);

@@ -1,9 +1,8 @@
 // src/utils/utils.js
-// Version: 3.0.0
-// Build: 2026-02-04 01:10
-// Migration: Plus de data.js, fairyData passé en paramètre où nécessaire
+// 8.32.0
 
 import { supabase } from '../config/supabase';
+import { CARAC_LIST } from '../data/constants';
 
 export const exportCharacter = (character) => {
   const dataStr = JSON.stringify(character, null, 2);
@@ -291,14 +290,12 @@ export const exportToPDF = (character, fairyData = {}) => {
           <div class="section">
             <div class="section-title">Caractéristiques</div>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-              ${Object.entries(character.caracteristiques).map(([key, value]) => {
-                const labels = {
-                  agilite: '🤸 Agilité', constitution: '💪 Constitution', force: '⚡ Force', precision: '🎯 Précision',
-                  esprit: '🧠 Esprit', perception: '👁️ Perception', prestance: '👑 Prestance', sangFroid: '🧊 Sang-froid'
-                };
-                return `
-                  <div class="capacite-box">
-                    <div class="capacite-title">${labels[key] || key}</div>
+				${Object.entries(character.caracteristiques).map(([key, value]) => {
+				  const caracDef = CARAC_LIST.find(c => c.key === key);
+				  const label = caracDef ? `${caracDef.icon} ${caracDef.label}` : key;
+				  return `
+				  <div class="capacite-box">
+					<div class="capacite-title">${label}</div>
                     <div class="capacite-desc" style="font-size: 28px; font-weight: bold; color: #92400e;">${value}</div>
                   </div>
                 `;
