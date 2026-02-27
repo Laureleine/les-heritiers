@@ -1,21 +1,13 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0 // 8.29.0
+// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
+import { AVAILABLE_BADGES } from '../data/badges';
 
 const TABLE_NAME = 'data_change_requests';
-
-// 🏆 LE CATALOGUE DES BADGES (Identique à l'Admin)
-const AVAILABLE_BADGES = [
-  { id: 'beta', label: 'Bêta-Testeur 🐛', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-  { id: 'lore', label: 'Archiviste 📚', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-  { id: 'creator', label: 'Créateur ✨', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  { id: 'vip', label: 'VIP 💎', color: 'bg-rose-100 text-rose-800 border-rose-200' },
-  { id: 'crash', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/><Bug size={12}/><Bomb size={12}/> Crash Testeuse</span>, color: 'bg-stone-900 text-red-400 border-stone-700 shadow-md animate-pulse' }  
-];
 
 export default function ValidationsPendantes({ session, onBack }) {
   const [pendingChanges, setPendingChanges] = useState([]);
@@ -134,8 +126,8 @@ export default function ValidationsPendantes({ session, onBack }) {
                 // Sous-requête magique pour trouver l'ID de la compétence à partir de son nom
                 const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
                 
-                const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
-                const choiceOptions = comp.options && comp.options.length > 0 ? `'${JSON.stringify(comp.options).replace(/'/g, "''")}'::jsonb` : 'null';
+				const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
+				const choiceOptions = comp.options && comp.options.length > 0 ? `ARRAY[${comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ')}]::text[]` : 'null';
 
                 return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceOptions})`;
               }).join(',\n  ');
@@ -152,7 +144,7 @@ export default function ValidationsPendantes({ session, onBack }) {
             const futInserts = _relations.competencesFutiles.map(fut => {
               const isChoice = fut.is_choice ? 'true' : 'false';
               const compId = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
-              const choiceOptions = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
+			  const choiceOptions = fut.choice_options && fut.choice_options.length > 0 ? `ARRAY[${fut.choice_options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ')}]::text[]` : 'null';
               return `('${targetId}', ${compId}, ${isChoice}, ${choiceOptions})`;
             }).join(',\n  ');
             sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES ${futInserts};\n`;

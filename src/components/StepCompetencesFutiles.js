@@ -1,8 +1,8 @@
 // src/components/StepCompetencesFutiles.js
-// 8.23.0 // 8.31.0
+// 8.23.0 // 8.31.0 // 8.32.0
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle } from 'lucide-react';
+import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
 import { parseCompetencesFutilesPredilection } from '../data/dataHelpers';
 import { getCompetencesFutiles, addCompetenceFutile, invalidateCompetencesFutilesCache } from '../utils/supabaseGameData';
 
@@ -153,6 +153,19 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
     }
   };
 
+  // --- Fonction de Réinitialisation ---
+  const handleReset = () => {
+    if (window.confirm("Voulez-vous vraiment réinitialiser tous vos points investis et vos choix ?")) {
+      setChoixPredilection({}); // On vide l'affichage des menus déroulants
+      onCompetencesFutilesChange({
+        ...character.competencesFutiles,
+        rangs: {}, // On vide les points
+        choixPredilection: {}, // On vide les choix mémorisés
+        precisions: {} // On vide les textes tapés pour les arts "au choix"
+      });
+    }
+  };
+  
   // Rendu d'une ligne de compétence
   const renderCompetence = (comp) => {
     const isPredilection = competencesPredilection.includes(comp.nom);
@@ -220,20 +233,32 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
       {/* En-tête Sticky */}
       <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 flex flex-col md:flex-row justify-between items-center sticky top-20 z-20 shadow-sm">
         <div>
-            <h2 className="text-xl font-bold text-amber-900 font-serif flex items-center gap-2">
-                <Sparkles className="text-amber-600"/> Compétences Futiles
-            </h2>
-            <p className="text-sm text-amber-700">Loisirs, arts et passions (Max 4, ou 5 si prédilection)</p>
+          <h2 className="text-xl font-bold text-amber-900 font-serif flex items-center gap-2">
+            <Sparkles className="text-amber-600"/> Compétences Futiles
+          </h2>
+          <p className="text-sm text-amber-700">Loisirs, arts et passions (Max 4, ou 5 si prédilection)</p>
         </div>
-        <div className="flex items-center gap-2 mt-2 md:mt-0">
+        
+        <div className="flex items-center gap-4 mt-3 md:mt-0">
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200"
+            title="Réinitialiser les dépenses et les choix"
+          >
+            <RotateCcw size={16} />
+            <span className="hidden sm:inline">Réinitialiser</span>
+          </button>
+
+          <div className="flex items-center gap-2">
             <span className="text-sm text-amber-800 font-bold uppercase tracking-wider">Points restants:</span>
             <div className={`text-2xl font-bold font-serif w-12 h-12 flex items-center justify-center rounded-full border-2 ${
-                pointsRestants === 0 ? 'bg-green-100 text-green-700 border-green-300' : 
-                pointsRestants < 0 ? 'bg-red-100 text-red-700 border-red-300' : 
-                'bg-white text-amber-600 border-amber-300'
+              pointsRestants === 0 ? 'bg-green-100 text-green-700 border-green-300' :
+              pointsRestants < 0 ? 'bg-red-100 text-red-700 border-red-300' :
+              'bg-white text-amber-600 border-amber-300'
             }`}>
-                {pointsRestants}
+              {pointsRestants}
             </div>
+          </div>
         </div>
       </div>
 
