@@ -1,5 +1,5 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0
+// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
@@ -122,17 +122,27 @@ export default function ValidationsPendantes({ session, onBack }) {
               const utilesInserts = utilesList.map(comp => {
                 const isChoice = comp.isChoix ? 'true' : 'false';
                 const isSpecChoice = comp.isSpecialiteChoix ? 'true' : 'false';
-                
-                // Sous-requête magique pour trouver l'ID de la compétence à partir de son nom
-                const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
-                
-				const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
-				const choiceOptions = comp.options && comp.options.length > 0 ? `ARRAY[${comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ')}]::text[]` : 'null';
 
-                return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceOptions})`;
+                const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
+                const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
+
+                let choiceIds = 'null';
+                let choiceOptions = 'null';
+
+                if (comp.isChoix && comp.options && comp.options.length > 0) {
+                  // 🎯 C'est un choix de Compétences : on utilise choice_ids et on traduit les noms en UUIDs
+                  const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+                  choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
+                } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
+                  // 🎯 C'est un choix de Spécialités : on stocke le texte dans choice_options
+                  const textsList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+                  choiceOptions = `ARRAY[${textsList}]::text[]`;
+                }
+
+                return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
               }).join(',\n  ');
 
-              sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_options) VALUES \n  ${utilesInserts};\n`;
+              sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_ids, choice_options) VALUES \n  ${utilesInserts};\n`;
             }
           } catch (e) {
             sqlQuery += `-- ERREUR PARSING JSON: ${e.message}\n`;
