@@ -1,5 +1,5 @@
 // src/components/Telegraphe.js
-// 9.0.0
+// 9.0.0 // 9.0.1
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Plus, Inbox, CheckCircle, Clock, ShieldAlert } from 'lucide-react';
@@ -34,7 +34,7 @@ export default function Telegraphe({ session, userProfile }) {
 
   const fetchTickets = async () => {
     setLoading(true);
-    let query = supabase.from('support_tickets').select('*, user:auth.users(email)').order('updated_at', { ascending: false });
+	let query = supabase.from('support_tickets').select('*, profiles(username)').order('updated_at', { ascending: false });
     
     // Si pas admin, on ne charge que ses propres tickets
     if (!isAdmin) {
@@ -171,7 +171,7 @@ export default function Telegraphe({ session, userProfile }) {
                       className="p-3 bg-white border border-amber-300 rounded cursor-pointer hover:shadow-md transition-shadow relative"
                     >
                       <h4 className="font-bold text-amber-900 truncate pr-6">{t.sujet}</h4>
-                      {isAdmin && <p className="text-xs text-gray-500 truncate">{t.user?.email || 'Joueur inconnu'}</p>}
+                      {isAdmin && <p className="text-xs text-gray-500 truncate">{t.profiles?.username || 'Héritier Anonyme'}</p>}
                       <p className="text-xs text-amber-700 mt-1 flex items-center gap-1">
                         {t.status === 'nouveau' && <span className="text-red-600 font-bold flex items-center gap-1"><Clock size={12}/> En attente</span>}
                         {t.status === 'lu' && <span className="text-blue-600 flex items-center gap-1"><Inbox size={12}/> À l'étude</span>}
