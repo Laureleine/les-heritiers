@@ -1,10 +1,24 @@
 // src/version.js
+// 8.33.0
+
 import buildInfo from './build-info.json'; 
 
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
+  {
+    version: '8.33.0',
+    date: '27 Février 2026',
+    changes: [
+      '📖 **Encyclopédie Dynamique :** Remplacement de l\'ancien format texte par un magnifique Constructeur Visuel pour les Compétences Utiles, directement branché sur la base de données.',
+      '🛡️ **Conseil des Gardiens :** Réparation et sécurisation de la génération du code SQL pour les nouvelles tables relationnelles.',
+      '♻️ **Création de Personnage :** Ajout d\'un bouton de Réinitialisation rapide pour l\'étape des Compétences Futiles.',
+      '🎭 **Jokers Féériques :** Intégration transparente des compétences "Au choix" (ex: Compétence artistique) exclusives à certaines Fées avec champs de précision.',
+      '🛠️ **Optimisation (Refactoring) :** Centralisation globale pour un code plus propre et robuste.',
+      '🧹 **Nettoyage Sécurité :** Suppression définitive de vieilles données en dur.'
+    ]
+  },
  {
     version: '8.0.0',
     date: '21 Février 2026',

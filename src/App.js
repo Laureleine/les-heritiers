@@ -1,5 +1,5 @@
 // src/App.js
-// 8.25.0 // 8.26.0
+// 8.25.0 // 8.26.0 // 9.0.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from './config/supabase';
@@ -19,6 +19,7 @@ import Changelog from './components/Changelog';
 import AdminUserList from './components/AdminUserList';
 import ValidationsPendantes from './components/ValidationsPendantes';
 import AlertSystem from './components/AlertSystem'; // 📡 NOUVEL IMPORT DU RADAR
+import Telegraphe from './components/Telegraphe';
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -392,7 +393,11 @@ function App() {
           )}
         </div>
       </div>
-    </div>
+	  
+      {session && userProfile && (
+        <Telegraphe session={session} userProfile={userProfile} />
+      )}
+    </div> // Fin de votre div principal
   );
 }
 
