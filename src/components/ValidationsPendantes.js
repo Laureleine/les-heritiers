@@ -65,7 +65,8 @@ export default function ValidationsPendantes({ session, onBack }) {
 
     try {
       const proposedData = change.new_data || change.proposed_data || {};
-      const { _relations, ...mainData } = proposedData;
+	  // 🛡️ SÉCURITÉ ANTI-FANTÔMES : On filtre les vieilles colonnes supprimées pour qu'elles ne génèrent plus d'erreur SQL
+	  const { _relations, competencesPredilection, competencesFutilesPredilection, competencesUtiles, ...mainData } = proposedData;
 
       const isInsert = !!mainData.id;
       const targetId = isInsert ? mainData.id : change.record_id;
