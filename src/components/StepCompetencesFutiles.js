@@ -1,5 +1,5 @@
 // src/components/StepCompetencesFutiles.js
-// 8.23.0
+// 8.23.0 // 8.31.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle } from 'lucide-react';
@@ -295,11 +295,12 @@ export default function StepCompetencesFutiles({ character, onCompetencesFutiles
                 {loading ? (
                     <div className="text-center py-8 text-gray-500 italic">Chargement du catalogue...</div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {competencesFutilesBase
-                            .filter(comp => !competencesPredilection.includes(comp.nom))
-                            .map(renderCompetence)}
-                    </div>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+					  {competencesFutilesBase
+						.filter(comp => !competencesPredilection.includes(comp.nom))
+						.filter(comp => !comp.nom.toLowerCase().includes('au choix')) // 👈 LE FILTRE MAGIQUE : Cache les jokers au public !
+						.map(renderCompetence)}
+					</div>
                 )}
             </div>
 
