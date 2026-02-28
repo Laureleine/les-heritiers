@@ -1,5 +1,5 @@
 // src/App.js
-// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0
+// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from './config/supabase';
@@ -17,8 +17,9 @@ import Encyclopedia from './components/Encyclopedia';
 import Changelog from './components/Changelog';
 import AdminUserList from './components/AdminUserList';
 import ValidationsPendantes from './components/ValidationsPendantes';
-import AlertSystem from './components/AlertSystem'; // 📡 NOUVEL IMPORT DU RADAR
+import AlertSystem from './components/AlertSystem';
 import Telegraphe from './components/Telegraphe';
+import PixieAssistant from './components/PixieAssistant';
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -471,10 +472,11 @@ function App() {
       </div>
 
       {/* 3. TÉLÉGRAPHE PNEUMATIQUE */}
-      {session && userProfile && (
-        <Telegraphe session={session} userProfile={userProfile} />
-      )}
-      
+      {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
+
+      {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT (Seulement dans le créateur) */}
+      {view === 'creator' && <PixieAssistant character={character} step={step} />}
+
     </div>
   );
 }

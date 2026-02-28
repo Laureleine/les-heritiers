@@ -8,6 +8,24 @@ export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
   {
+    version: '9.2.0',
+    date: '28 Février 2026',
+    changes: [
+      '🧚 **Assistante Virtuelle :** Arrivée de Pixie, la petite fée interactive qui vole sur votre écran et réagit à vos choix de création de personnage !',
+      '🎖️ **Nouveau Badge :** Ajout du titre de "Pionnier Pneumatique 📠" pour récompenser les premiers testeurs du Télégraphe.',
+      '🎨 **Ergonomie :** Les boutons de navigation (Suivant/Précédent) ne flottent plus mais sont désormais élégamment intégrés au cœur du grimoire.',
+      '📱 **Interface :** Optimisation de l\'en-tête principal pour compacter le titre et gagner un maximum d\'espace de lecture sur tous les écrans.'
+    ]
+  },
+  {
+    version: '9.0.0',
+    date: '27 Février 2026',
+    changes: [
+      '📠 **Télégraphe Pneumatique :** Déploiement officiel du système de communication ! Échangez des dépêches avec les autres joueurs connectés et l\'équipe d\'administration.',
+      '📡 **Traqueur d\'Activité :** Détection automatique des Héritiers en ligne et de leur dernière connexion pour faciliter les échanges.'
+    ]
+  },  
+  {
     version: '8.33.0',
     date: '27 Février 2026',
     changes: [
