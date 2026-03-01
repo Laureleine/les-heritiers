@@ -1,5 +1,6 @@
 // src/components/Encyclopedia.js
 // 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 // 9.4.0
+//
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';

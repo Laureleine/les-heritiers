@@ -1,5 +1,6 @@
 // src/components/PixieAssistant.js
 // 9.4.0
+//
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, AlertCircle, CheckCircle2, Info } from 'lucide-react';

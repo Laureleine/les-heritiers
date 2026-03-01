@@ -1,5 +1,6 @@
 // src/components/StepCaracteristiques.js
 // 8.32.0 // 9.4.0
+//
 
 import React from 'react';
 import { Plus, Minus, Info, Sparkles } from 'lucide-react';

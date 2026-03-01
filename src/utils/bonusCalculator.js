@@ -1,5 +1,6 @@
 // src/utils/bonusCalculator.js
 // 9.0.4
+//
 
 /**
  * Trouve une capacité par son nom dans les données du jeu
