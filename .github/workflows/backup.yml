@@ -14,7 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: backup
+          fetch-depth: 0
 
       - name: Install PostgreSQL 17 client
         run: |
@@ -65,7 +66,7 @@ jobs:
             diff db-schemas/schema_previous.sql "db-schemas/schema_current_${TIMESTAMP}.sql" > "db-schemas/changes_${TIMESTAMP}.diff" 2>/dev/null || true
 
             if [ -s "db-schemas/changes_${TIMESTAMP}.diff" ]; then
-              echo "🚨 CHANGEMENTS STRUCTURE détectés ($(wc -l < db-schemas/changes_${TIMESTAMP}.diff) lignes) !"
+              echo "🚨 CHANGEMENTS STRUCTURE détectés !"
               head -20 db-schemas/changes_${TIMESTAMP}.diff
             else
               echo "✅ Structure DB identique au précédent"
@@ -85,7 +86,6 @@ jobs:
         run: |
           echo "📁 Full backups:"
           ls -la backups/ || true
-          echo ""
           echo "📋 Schema backups:"
           ls -la db-schemas/ || true
 
@@ -100,4 +100,4 @@ jobs:
           file_pattern: |
             backups/*
             db-schemas/*
-          branch: dev
+          branch: backup
