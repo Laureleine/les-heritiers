@@ -1,7 +1,5 @@
 // src/utils/bonusCalculator.js
-// Version: 3.0.6
-// Build: 2026-02-04 07:00
-// Description: Calcul des bonus apportés par les capacités et pouvoirs
+// 9.0.4
 
 /**
  * Trouve une capacité par son nom dans les données du jeu
@@ -75,6 +73,20 @@ export const calculateCharacterStats = (character, gameData) => {
     });
   }
 
+  // 👈 NOUVEAU : Bonus des Atouts Féériques
+  if (character.atouts && Array.isArray(character.atouts)) {
+    const feeData = gameData.fairyData?.[character.typeFee];
+    if (feeData && feeData.atouts) {
+      character.atouts.forEach(atoutNom => {
+        const atoutData = feeData.atouts.find(a => a.nom === atoutNom);
+        if (atoutData && atoutData.effets_techniques) {
+          // L'objet effets_techniques partage la même structure (caracteristiques, competences, specialites) !
+          activeBonusSources.push({ source: atoutData.nom, bonus: atoutData.effets_techniques });
+        }
+      });
+    }
+  }
+  
   // Appliquer tous les bonus (cumul)
   activeBonusSources.forEach(({ source, bonus }) => {
     // 1. BONUS CARACTÉRISTIQUES

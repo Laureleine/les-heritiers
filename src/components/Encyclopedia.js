@@ -1,5 +1,5 @@
 // src/components/Encyclopedia.js
-// 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0
+// 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 // 9.4.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -202,12 +202,15 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
       if (activeTab === 'fairy_assets') existingFairyIds = item.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
 
       setProposal({
+        name: item.name || item.nom || '', 
         description: item.description || item.desc || '',
         type_pouvoir: item.type_pouvoir || 'masque',
+        // 👇 NOUVEAU : Les champs spécifiques aux Atouts
+        effets: item.effets || '',
+        effets_techniques: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '',
         fairyIds: existingFairyIds
       });
     }
-
     setJustification('Mise à jour suite à...');
   };
   

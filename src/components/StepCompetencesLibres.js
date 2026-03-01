@@ -1,4 +1,5 @@
 // src/components/StepCompetencesLibres.js
+// 9.0.4
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Minus, Star, Target, ShieldCheck, Coins, UploadCloud, X, Users, Brain, RotateCcw } from 'lucide-react';
@@ -24,33 +25,39 @@ export default function StepCompetencesLibres({
   const feeData = fairyData[character.typeFee];
   const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} };
 
-  // --- 1. CALCUL DES BONUS D'ATOUTS (Nouvelle logique DB) ---
-  const atoutsBonuses = useMemo(() => {
+  // --- 1. CALCUL DES BONUS D'ATOUTS (Spécialités + Rangs) ---
+  const atoutsData = useMemo(() => {
     const activeAtoutsNames = character.atouts || [];
     const allFairyAtouts = feeData?.atouts || [];
     
-    const bonuses = [];
-    
+    const specs = [];
+    const rangs = {}; // Stocke les bonus de rangs bruts (ex: { 'Comédie': 1 })
+
     allFairyAtouts.forEach(atout => {
-      // Si l'atout est sélectionné par le joueur
       if (activeAtoutsNames.includes(atout.nom)) {
-        // Lecture du champ JSONB "effets_techniques"
-        const tech = atout.effets_techniques; 
-        if (tech && tech.specialites) {
-          tech.specialites.forEach(spec => {
-            bonuses.push({
-              comp: spec.competence, // ex: "Entregent"
-              nom: spec.nom,         // ex: "Politique"
-              source: atout.nom      // ex: "Vilain petit canard"
+        const tech = atout.effets_techniques;
+        if (tech) {
+          // A. Extraction des Spécialités gratuites
+          if (tech.specialites) {
+            tech.specialites.forEach(spec => {
+              specs.push({ comp: spec.competence, nom: spec.nom, source: atout.nom });
             });
-          });
+          }
+          // B. Extraction des Rangs gratuits (+1, +2...)
+          if (tech.competences) {
+            Object.entries(tech.competences).forEach(([comp, val]) => {
+              rangs[comp] = (rangs[comp] || 0) + val;
+            });
+          }
         }
       }
     });
-    
-    return bonuses;
+    return { specs, rangs };
   }, [character.atouts, feeData]);
 
+  const atoutsBonuses = atoutsData.specs; // Rétrocompatibilité avec vos badges dorés
+  const atoutsRangs = atoutsData.rangs;   // Le nouveau dictionnaire de bonus
+    
   // --- Logique Existant (Prédilections) ---
   const predFinales = useMemo(() => {
     if (!feeData?.competencesPredilection) return [];
@@ -65,8 +72,14 @@ export default function StepCompetencesLibres({
     if (predFinales.includes(nomComp)) base += 2;
     if (character.profils.majeur.competences?.includes(nomComp)) base += 2;
     if (character.profils.mineur.competences?.includes(nomComp)) base += 1;
+    
+    // 👈 NOUVEAU : Ajout direct des rangs offerts par les Atouts !
+    if (atoutsRangs[nomComp]) {
+      base += atoutsRangs[nomComp];
+    }
+
     return base;
-  }, [predFinales, character.profils]);
+  }, [predFinales, character.profils, atoutsRangs]);
 
   // --- Budget (Esprit / Libre) ---
   const budgetData = useMemo(() => {

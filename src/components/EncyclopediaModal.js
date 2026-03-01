@@ -1,10 +1,11 @@
 // src/components/EncyclopediaModal.js
-// 8.20.0 // 8.21.0 // 8.29.0
+// 8.20.0 // 8.21.0 // 8.29.0 // 9.4.0
 
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Save, Star } from 'lucide-react';
+import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
+import { addGlobalSpeciality } from '../utils/supabaseGameData';
 
 export default function EncyclopediaModal({
   activeTab,
@@ -24,22 +25,26 @@ export default function EncyclopediaModal({
   onSuccess // 👈 NOUVELLE PROP
 }) {
 
-  // 🌟 NOUVEAU : Liste dynamique depuis la base de données
+  // 🌟 NOUVEAU : Liste dynamique depuis la base (avec spécialités)
   const [usefulSkills, setUsefulSkills] = useState([]);
+  const [competencesData, setCompetencesData] = useState([]); // 👈 NOUVEAU
+  // 👈 AJOUT DE isCreatingSpec
+  const [techBuilder, setTechBuilder] = useState({ carac: '', valCarac: 1, comp: '', valComp: 1, specComp: '', specNom: '', isCreatingSpec: false }); 
 
   React.useEffect(() => {
-    // Si on édite une Fée, on va chercher le vrai nom de toutes les compétences utiles
-    if (activeTab === 'fairy_types') {
+    if (['fairy_types', 'fairy_assets'].includes(activeTab)) {
       const fetchSkills = async () => {
-        const { data, error } = await supabase.from('competences').select('name').order('name');
+        // 👈 MODIFIÉ : On récupère aussi l'ID et les spécialités liées !
+        const { data, error } = await supabase.from('competences').select('id, name, specialites(id, nom, is_official)').order('name');
         if (!error && data) {
-          setUsefulSkills(data.map(c => c.name)); // 'name' est le nom de la colonne dans Supabase
+          setCompetencesData(data);
+          setUsefulSkills(data.map(c => c.name));
         }
       };
       fetchSkills();
     }
   }, [activeTab]);
-
+  
   // --- LA FONCTION CHIRURGIEN ---
   const handleSubmitProposal = async () => {
     if (!justification.trim()) {
@@ -162,6 +167,28 @@ export default function EncyclopediaModal({
       if (proposal.description !== (editingItem.description || editingItem.desc || '')) {
         surgicalData.description = proposal.description;
       }
+
+      // 👇 NOUVEAU : Sauvegarde intelligente des champs Atouts
+      if (activeTab === 'fairy_assets') {
+        if (proposal.effets !== (editingItem.effets || '')) {
+          surgicalData.effets = proposal.effets;
+        }
+        
+        // Vérification et parsing du JSON
+        const oldTech = editingItem.effets_techniques ? JSON.stringify(editingItem.effets_techniques, null, 2) : '';
+        if (proposal.effets_techniques !== oldTech) {
+          if (proposal.effets_techniques && proposal.effets_techniques.trim() !== '') {
+            try {
+              surgicalData.effets_techniques = JSON.parse(proposal.effets_techniques);
+            } catch (e) {
+              alert("❌ ERREUR : Le champ 'Effets Techniques' doit être un format JSON valide !");
+              return; // On bloque l'envoi
+            }
+          } else {
+            surgicalData.effets_techniques = null; // Si on vide la case
+          }
+        }
+      }
       
       // 👈 NOUVEAU : Relations Inversées (Lier aux Fées directement)
       if (['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab)) {
@@ -227,6 +254,20 @@ export default function EncyclopediaModal({
   };
 
   // 🧠 NOUVEAU : PARSING DES COMPÉTENCES UTILES (Builder Visuel)
+  // ⚙️ NOUVEAU : PARSING DES EFFETS TECHNIQUES (Builder d'Atouts)
+  let parsedTech = {};
+  if (activeTab === 'fairy_assets') {
+    try {
+      parsedTech = JSON.parse(proposal.effets_techniques || '{}');
+    } catch(e) {
+      parsedTech = {};
+    }
+  }
+  
+  const updateTech = (newObj) => {
+    setProposal({ ...proposal, effets_techniques: JSON.stringify(newObj, null, 2) });
+  };
+  
   let parsedUtiles = [];
   if (activeTab === 'fairy_types') {
     try {
@@ -678,23 +719,227 @@ export default function EncyclopediaModal({
                 </div>
               )}
 
-              {/* Si vous aviez votre constructeur de Bonus ici, il sera toujours fonctionnel via le JSON, sinon ajoutez-le ici ! */}
-
+              {/* CHAMP DESCRIPTION NARRATIVE */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Description / Contenu</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  {activeTab === 'fairy_assets' ? 'Description narrative' : 'Description / Contenu'}
+                </label>
                 <textarea
                   value={proposal.description || ''}
                   onChange={(e) => setProposal({...proposal, description: e.target.value})}
-                  className="w-full h-40 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-200 focus:border-amber-400 outline-none font-serif text-gray-800"
+                  className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-200 outline-none font-serif text-gray-800 ${activeTab === 'fairy_assets' ? 'h-24' : 'h-40'}`}
                 />
               </div>
 
-              {/* 👈 NOUVEAU : SÉLECTION DES FÉES POUR L'ÉLÉMENT */}
+              {/* 👇 NOUVEAU : CHAMPS SPÉCIFIQUES AUX ATOUTS 👇 */}
+              {activeTab === 'fairy_assets' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-bold text-amber-800 mb-2 flex items-center gap-2">
+                      <Star size={16} /> Effets en jeu (Texte affiché au joueur)
+                    </label>
+                    <textarea
+                      value={proposal.effets || ''}
+                      onChange={(e) => setProposal({...proposal, effets: e.target.value})}
+                      className="w-full h-24 p-3 border border-amber-300 bg-amber-50/50 rounded-lg focus:ring-2 focus:ring-amber-400 outline-none text-sm text-gray-800"
+                      placeholder="Ex: +1 en Fortune. Débloque la spécialité Politique..."
+                    />
+                  </div>
+
+                  {/* 🌟 LE CONSTRUCTEUR DE BONUS VISUEL 🌟 */}
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner">
+                    <label className="block text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                      <TestTubeDiagonal size={18} className="text-slate-600" /> Constructeur de Bonus Techniques
+                    </label>
+
+                    {/* 1. Caractéristiques */}
+                    <div className="mb-4">
+                      <span className="block text-xs font-bold text-slate-500 uppercase mb-2">1. Augmenter une Caractéristique</span>
+                      <div className="flex gap-2">
+                        <select value={techBuilder.carac} onChange={e => setTechBuilder({...techBuilder, carac: e.target.value})} className="p-2 border border-slate-300 rounded-lg text-sm bg-white flex-1 outline-none focus:border-purple-400">
+                          <option value="">-- Sélectionner --</option>
+                          {['agilite', 'constitution', 'force', 'precision', 'esprit', 'perception', 'prestance', 'sangFroid'].map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                        <input type="number" min="1" max="5" value={techBuilder.valCarac} onChange={e => setTechBuilder({...techBuilder, valCarac: e.target.value})} className="p-2 border border-slate-300 rounded-lg text-sm w-16 text-center outline-none focus:border-purple-400" />
+                        <button type="button" onClick={() => {
+                          if(techBuilder.carac && techBuilder.valCarac) {
+                            const t = {...parsedTech};
+                            if(!t.caracteristiques) t.caracteristiques = {};
+                            t.caracteristiques[techBuilder.carac] = parseInt(techBuilder.valCarac);
+                            updateTech(t);
+                            setTechBuilder({...techBuilder, carac: '', valCarac: 1});
+                          }
+                        }} className="bg-slate-700 hover:bg-slate-800 text-white px-4 rounded-lg font-bold transition-colors">+</button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {Object.entries(parsedTech.caracteristiques || {}).map(([c, v]) => (
+                          <span key={c} className="bg-blue-100 text-blue-900 text-xs px-2 py-1 rounded-full font-semibold flex items-center gap-1 border border-blue-200 shadow-sm">
+                            {c}: +{v}
+                            <button type="button" onClick={() => { const t = {...parsedTech}; delete t.caracteristiques[c]; if(Object.keys(t.caracteristiques).length === 0) delete t.caracteristiques; updateTech(t); }} className="hover:text-red-600 font-black ml-1">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 2. Rangs de Compétences */}
+                    <div className="mb-4 border-t border-slate-200 pt-4">
+                      <span className="block text-xs font-bold text-slate-500 uppercase mb-2">2. Augmenter une Compétence Libre</span>
+                      <div className="flex gap-2">
+                        <select value={techBuilder.comp} onChange={e => setTechBuilder({...techBuilder, comp: e.target.value})} className="p-2 border border-slate-300 rounded-lg text-sm bg-white flex-1 outline-none focus:border-purple-400">
+                          <option value="">-- Sélectionner --</option>
+                          {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                        <input type="number" min="1" max="5" value={techBuilder.valComp} onChange={e => setTechBuilder({...techBuilder, valComp: e.target.value})} className="p-2 border border-slate-300 rounded-lg text-sm w-16 text-center outline-none focus:border-purple-400" />
+                        <button type="button" onClick={() => {
+                          if(techBuilder.comp && techBuilder.valComp) {
+                            const t = {...parsedTech};
+                            if(!t.competences) t.competences = {};
+                            t.competences[techBuilder.comp] = parseInt(techBuilder.valComp);
+                            updateTech(t);
+                            setTechBuilder({...techBuilder, comp: '', valComp: 1});
+                          }
+                        }} className="bg-slate-700 hover:bg-slate-800 text-white px-4 rounded-lg font-bold transition-colors">+</button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {Object.entries(parsedTech.competences || {}).map(([c, v]) => (
+                          <span key={c} className="bg-amber-100 text-amber-900 text-xs px-2 py-1 rounded-full font-semibold flex items-center gap-1 border border-amber-200 shadow-sm">
+                            {c}: +{v}
+                            <button type="button" onClick={() => { const t = {...parsedTech}; delete t.competences[c]; if(Object.keys(t.competences).length === 0) delete t.competences; updateTech(t); }} className="hover:text-red-600 font-black ml-1">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 3. Spécialités Gratuites */}
+                    <div className="border-t border-slate-200 pt-4">
+                      <span className="block text-xs font-bold text-slate-500 uppercase mb-2">3. Offrir une Spécialité</span>
+                      <div className="flex gap-2">
+                        <select value={techBuilder.specComp} onChange={e => setTechBuilder({...techBuilder, specComp: e.target.value, specNom: '', isCreatingSpec: false})} className="p-2 border border-slate-300 rounded-lg text-sm bg-white w-1/3 outline-none focus:border-purple-400">
+                          <option value="">-- Liée à --</option>
+                          {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+
+                        {techBuilder.specComp ? (
+                          <>
+                            {!techBuilder.isCreatingSpec ? (
+                              <select
+                                value={techBuilder.specNom}
+                                onChange={e => {
+                                  if (e.target.value === '__CREATE_NEW__') {
+                                    setTechBuilder({...techBuilder, isCreatingSpec: true, specNom: ''});
+                                  } else {
+                                    setTechBuilder({...techBuilder, specNom: e.target.value});
+                                  }
+                                }}
+                                className="p-2 border border-slate-300 rounded-lg text-sm bg-white flex-1 outline-none focus:border-purple-400"
+                              >
+                                <option value="">-- Choisir une spécialité --</option>
+                                <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
+                                {(() => {
+                                  const compData = competencesData.find(c => c.name === techBuilder.specComp);
+                                  const specs = compData ? (compData.specialites || []) : [];
+                                  const off = specs.filter(s => s.is_official);
+                                  const com = specs.filter(s => !s.is_official);
+                                  return (
+                                    <>
+                                      {off.length > 0 && <optgroup label="📚 Officielles">{off.map(s => <option key={s.id} value={s.nom}>{s.nom}</option>)}</optgroup>}
+                                      {com.length > 0 && <optgroup label="👥 Communauté">{com.map(s => <option key={s.id} value={s.nom}>{s.nom}</option>)}</optgroup>}
+                                    </>
+                                  );
+                                })()}
+                              </select>
+                            ) : (
+                              <div className="flex flex-1 gap-1 animate-fade-in">
+                                <input 
+                                  type="text" 
+                                  value={techBuilder.specNom} 
+                                  onChange={e => setTechBuilder({...techBuilder, specNom: e.target.value})} 
+                                  placeholder="Nom de la spécialité..." 
+                                  autoFocus 
+                                  className="p-2 border border-blue-300 rounded-lg text-sm flex-1 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200" 
+                                />
+                                <button type="button" onClick={() => setTechBuilder({...techBuilder, isCreatingSpec: false, specNom: ''})} className="bg-gray-200 hover:bg-gray-300 text-gray-600 px-3 rounded-lg text-xs font-bold transition-colors">Annuler</button>
+                              </div>
+                            )}
+
+                            <button type="button" onClick={async () => {
+                              if(techBuilder.specComp && techBuilder.specNom.trim()) {
+                                const specName = techBuilder.specNom.trim();
+                                
+                                if (techBuilder.isCreatingSpec) {
+                                  try {
+                                    const compData = competencesData.find(c => c.name === techBuilder.specComp);
+                                    if (compData && compData.id) {
+                                      const newSpecObj = await addGlobalSpeciality(compData.id, specName);
+                                      if (newSpecObj) {
+                                        const newData = [...competencesData];
+                                        const compIndex = newData.findIndex(c => c.id === compData.id);
+                                        if (compIndex !== -1) {
+                                          newData[compIndex].specialites = [...(newData[compIndex].specialites || []), newSpecObj];
+                                          setCompetencesData(newData);
+                                        }
+                                      }
+                                    }
+                                  } catch (e) {
+                                    console.warn("Spécialité existante ou erreur:", e.message);
+                                  }
+                                }
+
+                                const t = {...parsedTech};
+                                if(!t.specialites) t.specialites = [];
+                                
+                                if (!t.specialites.some(s => s.competence === techBuilder.specComp && s.nom === specName)) {
+                                  t.specialites.push({ competence: techBuilder.specComp, nom: specName });
+                                  updateTech(t);
+                                }
+                                
+                                setTechBuilder({...techBuilder, specComp: '', specNom: '', isCreatingSpec: false});
+                              }
+                            }} className="bg-slate-700 hover:bg-slate-800 text-white px-4 rounded-lg font-bold transition-colors">+</button>
+                          </>
+                        ) : (
+                          <div className="flex-1 p-2 border border-slate-200 rounded-lg text-sm bg-slate-50 text-slate-400 italic">
+                            Sélectionnez une compétence d'abord...
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {(parsedTech.specialites || []).map((s, idx) => (
+                          <span key={idx} className="bg-purple-100 text-purple-900 text-xs px-2 py-1 rounded-full font-semibold flex items-center gap-1 border border-purple-200 shadow-sm">
+                            {s.competence} ➔ {s.nom}
+                            <button type="button" onClick={() => { const t = {...parsedTech}; t.specialites.splice(idx, 1); if(t.specialites.length === 0) delete t.specialites; updateTech(t); }} className="hover:text-red-600 font-black ml-1">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* MODE AVANCÉ */}
+                  <details className="mt-4 group">
+                    <summary className="text-xs font-bold text-gray-400 hover:text-purple-600 cursor-pointer transition-colors list-none flex items-center gap-2">
+                      <span className="group-open:rotate-90 transition-transform">▶</span>
+                      Mode Expert : Modifier le code source brut
+                    </summary>
+                    <div className="mt-3">
+                      <textarea
+                        value={proposal.effets_techniques || ''}
+                        onChange={(e) => setProposal({...proposal, effets_techniques: e.target.value})}
+                        className="w-full h-32 p-3 border border-purple-300 bg-gray-900 text-green-400 font-mono text-xs rounded-lg focus:ring-2 focus:ring-purple-400 outline-none custom-scrollbar"
+                        placeholder={`{\n  "competences": { "Comédie": 1 }\n}`}
+                      />
+                    </div>
+                  </details>
+                </>
+              )}
+              {/* 👆 FIN DES CHAMPS ATOUTS 👆 */}
+
+              {/* SÉLECTION DES FÉES POUR L'ÉLÉMENT */}
               {['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
                 <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-200 mt-4">
                   <label className="block text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
                     <Sparkles size={16} /> Fées possédant cet élément (Optionnel)
                   </label>
+                  
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-indigo-100 shadow-inner custom-scrollbar">
                     {[...(allFairyTypes || [])].sort((a, b) => {
                       const aSel = proposal.fairyIds?.includes(a.id);
@@ -706,22 +951,23 @@ export default function EncyclopediaModal({
                       <label key={fairy.id} className="flex items-start gap-2 text-xs p-1 hover:bg-indigo-50 rounded cursor-pointer transition-colors">
                         <input
                           type="checkbox"
-                          checked={proposal.fairyIds?.includes(fairy.id)}
+                          checked={proposal.fairyIds?.includes(fairy.id) || false}
                           onChange={(e) => {
-                            const newIds = e.target.checked
-                              ? [...(proposal.fairyIds || []), fairy.id]
-                              : (proposal.fairyIds || []).filter(id => id !== fairy.id);
-                            setProposal({ ...proposal, fairyIds: newIds });
+                            const currentIds = proposal.fairyIds || [];
+                            if (e.target.checked) {
+                              setProposal({ ...proposal, fairyIds: [...currentIds, fairy.id] });
+                            } else {
+                              setProposal({ ...proposal, fairyIds: currentIds.filter(id => id !== fairy.id) });
+                            }
                           }}
-                          className="text-indigo-600 focus:ring-indigo-500 rounded border-gray-300 mt-0.5 shrink-0"
+                          className="mt-0.5 accent-indigo-600"
                         />
-                        <span className="line-clamp-2 leading-tight font-medium text-gray-700">{fairy.name}</span>
+                        <span className="font-medium text-indigo-900">{fairy.name}</span>
                       </label>
                     ))}
                   </div>
                 </div>
               )}
-
             </div>
           )}
 
@@ -737,7 +983,6 @@ export default function EncyclopediaModal({
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
             />
           </div>
-
         </div>
 
         <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-xl flex justify-end gap-3">

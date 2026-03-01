@@ -7,7 +7,18 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
-  {
+     {
+      version: '9.3.0',
+      date: '1er Mars 2026',
+      changes: [
+        '👑 **Titres & Statuts :** Création d\'une toute nouvelle catégorie dans la boutique de Vie Sociale (Étape 9) permettant d\'acquérir des titres de noblesse et d\'intégrer des factions secrètes (Monarchomaques, Sicaires, Technologues, etc.).',
+        '✨ **Titres de Prestige :** Intégration des titres ultimes d\'archétypes (Légende vivante, Polémarque, Technarque, Hiérophante...) octroyant un bonus direct de +1 en Fortune.',
+        '🛍️ **Inventaire Complet :** Ajout massif de tout l\'équipement avancé manquant (laboratoires, dirigeables, montgolfières, réseaux de contrebande) et des Contacts illustres de l\'univers (PNJs nommés).',
+        '⏳ **Économie Temporelle :** Le coût d\'achat des familles féériques nobles et de certains statuts s\'ajuste désormais dynamiquement si votre Fée est "Moderne".',
+        '🛠️ **Architecture :** Mise à jour des contraintes de la base de données Supabase pour supporter la nouvelle catégorie "titre".'
+      ]
+    },
+	{
     version: '9.2.0',
     date: '28 Février 2026',
     changes: [

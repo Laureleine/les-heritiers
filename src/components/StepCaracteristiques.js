@@ -1,5 +1,5 @@
 // src/components/StepCaracteristiques.js
-// 8.32.0
+// 8.32.0 // 9.4.0
 
 import React from 'react';
 import { Plus, Minus, Info, Sparkles } from 'lucide-react';
@@ -45,7 +45,28 @@ export default function StepCaracteristiques({ character, onCaracteristiquesChan
 
         return bonusTotal;
     };
-	
+
+  // --- 1.Bis Récupération des Bonus d'Atouts ---
+  const getBonusAtouts = (statKey) => {
+    let bonusTotal = 0;
+    const activeAtoutsNames = character.atouts || [];
+    const allFairyAtouts = feeData?.atouts || [];
+    
+    allFairyAtouts.forEach(atout => {
+      if (activeAtoutsNames.includes(atout.nom)) {
+        const tech = atout.effets_techniques;
+        if (tech && tech.caracteristiques && tech.caracteristiques[statKey]) {
+          // Gère le format simple (1) ou complexe ({value: 1, masque: true})
+          const val = typeof tech.caracteristiques[statKey] === 'number' 
+                      ? tech.caracteristiques[statKey] 
+                      : tech.caracteristiques[statKey].value || 0;
+          bonusTotal += val;
+        }
+      }
+    });
+    return bonusTotal;
+  };
+  
     // --- 2. Initialisation ---
     const currentCaracs = character.caracteristiques || {};
 
@@ -79,11 +100,11 @@ export default function StepCaracteristiques({ character, onCaracteristiquesChan
 	});
 };
 
-    // Calcul des PV : (Constitution TOTALE x 3) + 9
-    const baseCon = currentCaracs.constitution || feeData.caracteristiques.constitution?.min || 1;
-    const bonusCon = getBonusCapacite('constitution');
-    const totalCon = baseCon + bonusCon;
-    const pvMax = (totalCon * 3) + 9;
+  // Calcul des PV : (Constitution TOTALE x 3) + 9
+  const baseCon = currentCaracs.constitution || feeData.caracteristiques.constitution?.min || 1;
+  const bonusCon = getBonusCapacite('constitution') + getBonusAtouts('constitution'); // 👈 MODIFIÉ
+  const totalCon = baseCon + bonusCon;
+  const pvMax = (totalCon * 3) + 9;
 
     return (
         <div className="max-w-4xl mx-auto">
