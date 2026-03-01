@@ -1,11 +1,15 @@
+// src/components/PixieAssistant.js
+// 9.4.0
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, X } from 'lucide-react';
+import { Sparkles, AlertCircle, CheckCircle2, Info } from 'lucide-react';
 import { getPixieAdvice } from '../utils/pixieBrain';
 
 export default function PixieAssistant({ character, step }) {
   const [position, setPosition] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
   const [isTalking, setIsTalking] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState({ text: "", mood: "info" });
+  const [silentMood, setSilentMood] = useState("info"); // 👈 Pour l'Aura d'alerte
   const bubbleTimer = useRef(null);
 
   const volerAuHasard = () => {
@@ -22,21 +26,26 @@ export default function PixieAssistant({ character, step }) {
     return () => clearInterval(intervalId);
   }, [isTalking]);
 
-  // Durée d'attention courte (6 secondes)
+  // Durée d'attention courte
   useEffect(() => {
     if (isTalking) {
       bubbleTimer.current = setTimeout(() => {
         fermerBulleEtFuir();
-      }, 6000); // 6 secondes avant qu'elle ne s'ennuie
+      }, 7000); 
     }
     return () => clearTimeout(bubbleTimer.current);
   }, [isTalking]);
 
-  // L'action de fuite
+  // ✨ NOUVEAU : Pixie scrute le personnage en silence à chaque étape
+  useEffect(() => {
+    const analysis = getPixieAdvice(character || {}, step);
+    setSilentMood(analysis.mood);
+  }, [character, step]);
+
   const fermerBulleEtFuir = () => {
     setIsTalking(false);
     clearTimeout(bubbleTimer.current);
-    volerAuHasard(); // Elle s'enfuit immédiatement !
+    volerAuHasard(); 
   };
 
   const handleAttraperPixie = () => {
@@ -45,9 +54,35 @@ export default function PixieAssistant({ character, step }) {
     setIsTalking(true);
   };
 
+  // Couleurs de la bulle selon l'humeur
+  const getBubbleColors = (mood) => {
+    switch (mood) {
+      case 'warning': return 'bg-amber-100 border-amber-300 text-amber-900';
+      case 'error': return 'bg-red-100 border-red-300 text-red-900';
+      case 'success': return 'bg-green-100 border-green-300 text-green-900';
+      default: return 'bg-cyan-50 border-cyan-200 text-cyan-900';
+    }
+  };
+
+  const getMoodIcon = (mood) => {
+    switch (mood) {
+      case 'warning': return <AlertCircle size={16} className="text-amber-600 mt-0.5 shrink-0" />;
+      case 'error': return <AlertCircle size={16} className="text-red-600 mt-0.5 shrink-0" />;
+      case 'success': return <CheckCircle2 size={16} className="text-green-600 mt-0.5 shrink-0" />;
+      default: return <Info size={16} className="text-cyan-600 mt-0.5 shrink-0" />;
+    }
+  };
+
+  // Aura pulsante si Pixie a détecté une erreur (même fermée)
+  const getAuraClass = () => {
+    if (isTalking) return '';
+    if (silentMood === 'error') return 'ring-4 ring-red-400/50 animate-pulse';
+    if (silentMood === 'warning') return 'ring-4 ring-amber-400/50 animate-pulse';
+    return '';
+  };
+
   return (
     <>
-      {/* Moteur physique des ailes de libellule */}
       <style>
         {`
           @keyframes battementGauche {
@@ -61,56 +96,48 @@ export default function PixieAssistant({ character, step }) {
         `}
       </style>
 
-      {/* 
-        NOTE : pointer-events-none sur le parent pour que le carré "invisible" 
-        de la fée ne vous empêche pas de taper dans vos champs de texte !
-      */}
-      <div 
-        className="fixed z-50 pointer-events-none" 
-        style={{ 
-          left: position.x, 
-          top: position.y, 
-          transition: isTalking ? 'none' : 'all 3s cubic-bezier(0.25, 0.1, 0.25, 1)' 
+      <div
+        className="fixed z-50 pointer-events-none"
+        style={{
+          left: position.x,
+          top: position.y,
+          transition: isTalking ? 'none' : 'all 3s cubic-bezier(0.25, 0.1, 0.25, 1)'
         }}
       >
-        {/* BULLE DE DIALOGUE */}
         {isTalking && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-6 w-64 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl shadow-xl animate-fade-in text-sm font-serif text-amber-900 pointer-events-auto">
-            <button 
-              onClick={fermerBulleEtFuir} 
-              className="absolute top-2 right-2 text-amber-600 hover:text-red-500 transition-colors"
-            >
-              <X size={14} />
-            </button>
-            <p className="pr-4 leading-relaxed">{message}</p>
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-amber-50 border-b-2 border-r-2 border-amber-300 transform rotate-45"></div>
+          <div className={`absolute bottom-full mb-4 -left-32 w-64 p-3 rounded-2xl shadow-xl border-2 pointer-events-auto animate-fade-in-up ${getBubbleColors(message.mood)}`}>
+            <button onClick={fermerBulleEtFuir} className="absolute -top-2 -right-2 bg-gray-800 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs hover:bg-red-500">×</button>
+            <div className="flex gap-2">
+              {getMoodIcon(message.mood)}
+              <p className="text-sm font-medium leading-tight">{message.text}</p>
+            </div>
+            {/* Flèche de la bulle */}
+            <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 border-b-2 border-r-2 transform rotate-45 ${getBubbleColors(message.mood).split(' ')} ${getBubbleColors(message.mood).split(' ')[1]}`}></div>
           </div>
         )}
 
         {/* PIXIE ET SES AILES */}
-        <button 
+        <button
           onClick={handleAttraperPixie}
-          className={`relative flex items-center justify-center p-3 rounded-full hover:scale-125 transition-transform pointer-events-auto group ${isTalking ? 'bg-amber-100/50' : ''}`}
+          className={`relative flex items-center justify-center p-3 rounded-full hover:scale-125 transition-transform pointer-events-auto group ${isTalking ? 'bg-amber-100/50' : ''} ${getAuraClass()}`}
           title="Attraper Pixie !"
         >
           {/* Aile Gauche */}
-          <div 
+          <div
             className="absolute top-1 -left-5 w-8 h-3 rounded-[50%] border border-cyan-200 bg-cyan-100/60 backdrop-blur-sm origin-right"
             style={{ animation: !isTalking ? 'battementGauche 0.05s infinite alternate' : 'none', transform: isTalking ? 'rotate(-20deg)' : 'none' }}
           ></div>
           
           {/* Aile Droite */}
-          <div 
+          <div
             className="absolute top-1 -right-5 w-8 h-3 rounded-[50%] border border-cyan-200 bg-cyan-100/60 backdrop-blur-sm origin-left"
             style={{ animation: !isTalking ? 'battementDroit 0.05s infinite alternate' : 'none', transform: isTalking ? 'rotate(20deg)' : 'none' }}
           ></div>
 
-          {/* Corps lumineux */}
-          <Sparkles 
-            size={32} 
-            className={`text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)] relative z-10 ${!isTalking && 'animate-pulse'}`} 
-          />
-          <div className="absolute inset-0 bg-amber-300 rounded-full blur-md opacity-50 z-0"></div>
+          {/* Corps Brillant */}
+          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-300 to-fuchsia-300 shadow-[0_0_15px_rgba(34,211,238,0.6)] flex items-center justify-center z-10">
+            <Sparkles size={12} className="text-white" />
+          </div>
         </button>
       </div>
     </>
