@@ -1,5 +1,5 @@
 // src/App.js
-// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0
+// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0
 
 import React, { useState, useEffect, useReducer } from 'react';
 import { supabase } from './config/supabase';
@@ -20,6 +20,7 @@ import ValidationsPendantes from './components/ValidationsPendantes';
 import AlertSystem from './components/AlertSystem';
 import Telegraphe from './components/Telegraphe';
 import PixieAssistant from './components/PixieAssistant';
+import DiceRoller from './components/DiceRoller';
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -36,6 +37,7 @@ import StepRecapitulatif from './components/StepRecapitulatif';
 
 // --- ICONS ---
 import { Save, ChevronRight, List, BookOpen, FileText, Crown, Shield, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
+import { User, Sparkles, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from 'lucide-react';
 
 function App() {
   // --- 1. ÉTATS GLOBAUX ---
@@ -330,6 +332,22 @@ function App() {
   // =========================================================================
   // LE GABARIT GLOBAL : Gère le fond, le titre et les fameuses bandes latérales !
   // =========================================================================
+
+  // 🌟 NOUVELLE BARRE DE NAVIGATION RICHE
+  const STEP_CONFIG = [
+    { id: 1, label: "Héritage", icon: <User size={18} /> },
+    { id: 2, label: "Capacités", icon: <Sparkles size={18} /> },
+    { id: 3, label: "Pouvoirs", icon: <Zap size={18} /> },
+    { id: 4, label: "Atouts", icon: <Star size={18} /> },
+    { id: 5, label: "Attributs", icon: <Activity size={18} /> },
+    { id: 6, label: "Profils", icon: <Award size={18} /> },
+    { id: 7, label: "Utiles", icon: <BookOpen size={18} /> },
+    { id: 8, label: "Futiles", icon: <Feather size={18} /> },
+    { id: 9, label: "Social & Richesse", icon: <Briefcase size={18} /> },
+    { id: 10, label: "Masque", icon: <VenetianMask size={18} /> },
+    { id: 11, label: "Bilan", icon: <CheckCircle size={18} /> }
+  ];
+  
   return (
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
       
@@ -479,27 +497,60 @@ function App() {
               </div>
             )}
 
-            {/* BARRE DE PROGRESSION */}
-            <div className="relative flex justify-between items-center w-full py-4 px-2 mb-6">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 z-0 rounded-full"></div>
-              <div
-                className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-500 z-0 transition-all duration-500 ease-in-out rounded-full"
-                style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
-              ></div>
-              {stepsArray.map(s => (
-                <button
-                  key={s}
-                  onClick={() => { setStep(s); window.scrollTo(0,0); }}
-                  disabled={step === 1 && !canProceedStep1 && s > 1}
-                  className={`relative z-10 flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-lg transition-all duration-300 border-4
-                    ${step === s ? 'bg-amber-600 text-white border-white scale-110 shadow-md ring-2 ring-amber-200' : step > s ? 'bg-amber-400 text-white border-white' : 'bg-white text-gray-400 border-gray-200 hover:border-amber-300'}
-                  `}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
+          {/* BARRE DE PROGRESSION MAGIQUE ET CONNECTÉE */}
+          <div className="relative flex justify-between items-center w-full max-w-4xl mx-auto py-4 px-2 mb-10 mt-4">
+            
+            {/* 1. La ligne de fond (grise) */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-stone-200 z-0 rounded-full"></div>
+            
+            {/* 2. La ligne de progression animée (dorée) */}
+            <div
+              className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-500 z-0 transition-all duration-700 ease-in-out rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+              style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
+            ></div>
 
+            {/* 3. Les Cercles (Icônes) */}
+            {STEP_CONFIG.map((s) => {
+              const isActive = step === s.id;
+              const isPast = step > s.id;
+
+              return (
+                <div key={s.id} className="relative z-10 flex flex-col items-center group">
+                  
+                  {/* Le Cercle Cliquable */}
+                  <button
+                    onClick={() => {
+                      setStep(s.id);
+                      window.scrollTo(0,0);
+                    }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 shadow-sm
+                      ${isActive ? 'bg-amber-600 border-amber-600 text-white scale-110 shadow-md' : 
+                        isPast ? 'bg-amber-100 border-amber-400 text-amber-700 hover:bg-amber-200' : 
+                        'bg-white border-stone-300 text-stone-400 hover:border-amber-300 hover:text-amber-500'
+                      }`}
+                  >
+                    {s.icon}
+                  </button>
+
+                  {/* Le texte actif permanent (visible uniquement sur l'étape en cours) */}
+                  {isActive && (
+                    <span className="absolute -bottom-8 font-serif font-bold text-amber-900 text-[10px] md:text-xs uppercase tracking-wider whitespace-nowrap animate-fade-in-up">
+                      {s.label}
+                    </span>
+                  )}
+
+                  {/* L'infobulle au survol (visible pour les autres étapes) */}
+                  {!isActive && (
+                    <span className="absolute -bottom-8 bg-stone-800 text-amber-100 text-[10px] md:text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-lg">
+                      {s.label}
+                    </span>
+                  )}
+                  
+                </div>
+              );
+            })}
+          </div>
+		  
 			<main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
 			  {step === 1 && <Step1 character={character} onNomChange={handleNomChange} onSexeChange={handleSexeChange} onTypeFeeChange={handleTypeFeeChange} onTraitsFeeriquesChange={(v) => handleCharacterChange({ traitsFeeriques: v })} onCharacterChange={handleCharacterChange} fairyData={gameData.fairyData} fairyTypesByAge={gameData.fairyTypesByAge} />}
 			  {step === 2 && <Step2 character={character} onCapaciteChoice={handleCapaciteChoice} fairyData={gameData.fairyData} />}
@@ -551,6 +602,9 @@ function App() {
 
       {/* 3. TÉLÉGRAPHE PNEUMATIQUE */}
       {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
+
+      {/* 🎲 NOUVEAU : LA PISTE DE DÉ FLOTTANTE */}
+      <DiceRoller />
 
       {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT (Seulement dans le créateur) */}
       {view === 'creator' && <PixieAssistant character={character} step={step} />}
