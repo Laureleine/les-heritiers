@@ -41,7 +41,7 @@ git push -u origin dev
 # ── 3. Récupérer les fichiers JS commités ─────────────────────────────────────
 echo ""
 echo "📂 Récupération des fichiers JS modifiés..."
-JS_FILES=$(git diff-tree --no-commit-id -r --name-only HEAD | grep '\.js$')
+JS_FILES=$(git diff HEAD~1 HEAD --name-only | grep '\.js$')
 
 if [[ -z "$JS_FILES" ]]; then
   echo "⚠️  Aucun fichier .js modifié dans ce commit."
