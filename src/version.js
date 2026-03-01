@@ -1,5 +1,4 @@
 // src/version.js
-// 8.33.0
 
 import buildInfo from './build-info.json'; 
 
@@ -7,7 +6,28 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
-     {
+    {
+      version: '9.5.0',
+      date: '1er Mars 2026',
+      changes: [
+        '🎲 **Piste de Lancer 3D :** Intégration d\'un lanceur virtuel complet pour le Système 3D (D8 Prudent, D10 Aventureux, D12 Panache) avec calcul automatique des malus (-3 et -5).',
+        '👑 **Mécaniques de Tricherie :** Dépensez 1 point pour lancer les 3 dés d\'un coup (avec détection instantanée des Suites et des Triples) !',
+        '📐 **Topologie Réaliste :** La triche à 2 points permet de pivoter le dé. Le système utilise un moteur mathématique calqué sur les arêtes d\'un véritable set de dés physiques.',
+        '🌟 **Barre de Progression Magique :** L\'austère numérotation des étapes a été remplacée par de superbes icônes thématiques, des infobulles et une jauge dorée dynamique.'
+      ]
+    },
+    {
+      version: '9.4.0',
+      date: '1er Mars 2026',
+      changes: [
+        '🪄 **Constructeur Visuel d\'Atouts :** Refonte de l\'éditeur dans l\'Encyclopédie. Les Gardiens peuvent désormais configurer les bonus techniques (Caractéristiques, Compétences, Spécialités) via une interface intuitive sans taper de code JSON.',
+        '📚 **Spécialités Globales :** Le constructeur d\'Atouts est connecté à la base de données. Il permet de sélectionner des spécialités existantes ou d\'en créer de nouvelles à la volée pour toute la communauté.',
+        '⚙️ **Moteur de Jeu Amélioré :** Le calculateur intègre désormais de façon native les bonus de rangs bruts et de caractéristiques provenant des Atouts (ce qui ajuste automatiquement les Points de Vie maximums).',
+        '🧚‍♀️ **Pixie Intelligente :** L\'assistante Pixie est désormais dotée d\'un véritable "cerveau" (pixieBrain). Elle scrute vos choix à chaque étape (aura d\'alerte colorée) et fournit des conseils contextuels dynamiques.',
+        '🐛 **Stabilité :** Résolution de divers bugs de balisage JSX et optimisation du rendu de l\'Encyclopédie.'
+      ]
+    },
+    {
       version: '9.3.0',
       date: '1er Mars 2026',
       changes: [
