@@ -1,5 +1,6 @@
 // src/App.js
 // 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0
+//
 
 import React, { useState, useEffect, useReducer } from 'react';
 import { supabase } from './config/supabase';

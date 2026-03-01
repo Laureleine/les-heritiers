@@ -1,5 +1,6 @@
 // src/components/StepCompetencesLibres.js
 // 9.0.4
+//
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Minus, Star, Target, ShieldCheck, Coins, UploadCloud, X, Users, Brain, RotateCcw } from 'lucide-react';

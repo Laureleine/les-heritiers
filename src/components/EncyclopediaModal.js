@@ -1,5 +1,6 @@
 // src/components/EncyclopediaModal.js
 // 8.20.0 // 8.21.0 // 8.29.0 // 9.4.0
+//
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
