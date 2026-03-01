@@ -1,5 +1,5 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0
+// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 // 9.3.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
@@ -130,15 +130,13 @@ export default function ValidationsPendantes({ session, onBack }) {
                 let choiceOptions = 'null';
 
                 if (comp.isChoix && comp.options && comp.options.length > 0) {
-                  // 🎯 C'est un choix de Compétences : on utilise choice_ids et on traduit les noms en UUIDs
-                  const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
-                  choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
-                } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
-                  // 🎯 C'est un choix de Spécialités : on stocke le texte dans choice_options
-                  const textsList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
-                  choiceOptions = `ARRAY[${textsList}]::text[]`;
-                }
-
+					// 🎯 C'est un choix de Compétences : on utilise choice_ids et on traduit les noms en UUIDs
+					const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+					choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
+				  } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
+					// 🎯 C'est un choix de Spécialités : on stocke le texte dans choice_options (en JSONB)
+					choiceOptions = `'${JSON.stringify(comp.options).replace(/'/g, "''")}'::jsonb`;
+				  }
                 return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
               }).join(',\n  ');
 
@@ -154,7 +152,7 @@ export default function ValidationsPendantes({ session, onBack }) {
             const futInserts = _relations.competencesFutiles.map(fut => {
               const isChoice = fut.is_choice ? 'true' : 'false';
               const compId = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
-			  const choiceOptions = fut.choice_options && fut.choice_options.length > 0 ? `ARRAY[${fut.choice_options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ')}]::text[]` : 'null';
+			  const choiceOptions = fut.choice_options && fut.choice_options.length > 0 ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
               return `('${targetId}', ${compId}, ${isChoice}, ${choiceOptions})`;
             }).join(',\n  ');
             sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES ${futInserts};\n`;
@@ -199,16 +197,16 @@ export default function ValidationsPendantes({ session, onBack }) {
     }
   };
 
-  const handleArchive = async (changeId) => {
-    if (!window.confirm("Avez-vous bien exécuté ce code SQL dans Supabase ? L'application va se synchroniser automatiquement.")) return;
-    
-    const { error } = await supabase.from(TABLE_NAME).update({ status: 'archived' }).eq('id', changeId);
-    
-    if (!error) {
-      invalidateAllCaches(); // 1. On purge la mémoire temporaire
-      window.location.reload(); // 2. On force l'application à se rafraîchir d'un coup !
-    }
-  };
+	const handleArchive = async (changeId) => {
+	  if (!window.confirm("Avez-vous bien exécuté ce code SQL dans Supabase ? L'application va se synchroniser automatiquement.")) return;
+
+	  const { error } = await supabase.from(TABLE_NAME).update({ status: 'archived' }).eq('id', changeId);
+
+	  if (!error) {
+		invalidateAllCaches(); // 1. On purge la mémoire temporaire pour que l'Encyclopédie se mette à jour
+		loadChanges();         // 2. 🪄 On rafraîchit uniquement la liste du Conseil sans vous expulser de la page !
+	  }
+	};
 
   const handleReject = async (changeId) => {
     if (!window.confirm("Rejeter définitivement cette proposition ?")) return;

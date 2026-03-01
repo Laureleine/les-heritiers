@@ -1,7 +1,7 @@
 // src/App.js
-// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0
+// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { supabase } from './config/supabase';
 import { loadAllGameData } from './utils/supabaseGameData';
 import { getFairyAge } from './data/dataHelpers';
@@ -86,7 +86,68 @@ function App() {
     isPublic: false
   };
 
-  const [character, setCharacter] = useState(initialCharacterState);
+  // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
+	function characterReducer(state, action) {
+	  let newState = { ...state }; // On clone l'état pour pouvoir le modifier librement
+
+	  switch (action.type) {
+		case 'LOAD_CHARACTER':
+		case 'RESET_CHARACTER':
+		  newState = { ...action.payload };
+		  break;
+		case 'UPDATE_FIELD':
+		  newState[action.field] = action.value;
+		  break;
+		case 'UPDATE_MULTIPLE':
+		  newState = { ...newState, ...action.payload };
+		  break;
+		case 'TOGGLE_ARRAY_ITEM':
+		  const currentArray = newState[action.field] || [];
+		  if (currentArray.includes(action.value)) {
+			newState[action.field] = currentArray.filter(item => item !== action.value);
+		  } else if (currentArray.length < action.max) {
+			newState[action.field] = [...currentArray, action.value];
+		  }
+		  break;
+		default:
+		  return state;
+	  }
+
+	  // ⚙️ LE CALCULATEUR AUTOMATIQUE INTÉGRÉ
+	  // Si le jeu a bien chargé ses données, on déclenche les calculs :
+	  if (action.gameData && action.gameData.fairyData && newState.typeFee) {
+		const feeData = action.gameData.fairyData[newState.typeFee];
+
+		// --- A. Calcul de l'Entregent Total ---
+		let entregent = newState.competencesLibres?.rangs?.['Entregent'] || 0;
+
+		// 1. Bonus de Profil
+		if (newState.profils?.majeur?.nom === 'Gentleman') entregent += 2;
+		if (newState.profils?.mineur?.nom === 'Gentleman') entregent += 1;
+
+		// 2. Bonus de Prédilection (Si inné à la fée OU choisi par le joueur)
+		const hasEntregentPredilection = 
+		  feeData?.competencesPredilection?.some(p => p.nom === 'Entregent' && !p.isChoix) ||
+		  Object.values(newState.competencesLibres?.choixPredilection || {}).includes('Entregent');
+
+		if (hasEntregentPredilection) entregent += 2;
+
+		// --- B. Calcul des Bourses de Contacts Gratuits ---
+		const prestance = newState.caracteristiques?.prestance || 0;
+		const bonusPrestance = Math.max(0, prestance - 3);
+		const bonusEntregent = Math.max(0, entregent - 3);
+
+		// --- C. Enregistrement des Totaux ---
+		newState.computedStats = {
+		  entregentTotal: Math.min(8, entregent),
+		  contactsGratuits: bonusPrestance + bonusEntregent
+		};
+	  }
+
+	  return newState;
+	}
+
+  const [character, dispatchCharacter] = useReducer(characterReducer, initialCharacterState);
 
   // 🔥 ÉTAT NOUVEAU
   const [isInitialized, setIsInitialized] = useState(false);
@@ -200,7 +261,7 @@ function App() {
     }
     try {
       const saved = await saveCharacterToSupabase(character);
-      setCharacter(prev => ({ ...prev, id: saved.id }));
+      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'id', value: saved.id, gameData });
       setShowSaveNotification(true);
       setTimeout(() => setShowSaveNotification(false), 3000);
     } catch (e) {
@@ -208,26 +269,37 @@ function App() {
     }
   };
 
-  const handleNomChange = (n) => !isReadOnly && setCharacter({ ...character, nom: n });
-  const handleSexeChange = (s) => !isReadOnly && setCharacter({ ...character, sexe: s });
+  const handleNomChange = (n) => !isReadOnly && dispatchCharacter({ type: 'UPDATE_FIELD', field: 'nom', value: n, gameData });
+  const handleSexeChange = (s) => !isReadOnly && dispatchCharacter({ type: 'UPDATE_FIELD', field: 'sexe', value: s, gameData });
+  
   const handleTypeFeeChange = (t) => {
     if (isReadOnly) return;
     const anciennete = getFairyAge(t, 'traditionnelle', gameData.fairyData);
-    setCharacter({ ...initialCharacterState, nom: character.nom, sexe: character.sexe, typeFee: t, anciennete });
-  };
-  const handleCapaciteChoice = (c) => setCharacter({ ...character, capaciteChoisie: c });
-  const handlePouvoirToggle = (pouvoir) => {
-    const max = character.caracteristiques?.feerie || 3;
-    const current = character.pouvoirs || [];
-    if (current.includes(pouvoir)) setCharacter({ ...character, pouvoirs: current.filter(p => p !== pouvoir) });
-    else if (current.length < max) setCharacter({ ...character, pouvoirs: [...current, pouvoir] });
-  };
-  const handleAtoutToggle = (atout) => {
-    const current = character.atouts || [];
-    if (current.includes(atout)) setCharacter({ ...character, atouts: current.filter(a => a !== atout) });
-    else if (current.length < 2) setCharacter({ ...character, atouts: [...current, atout] });
+    dispatchCharacter({ 
+      type: 'UPDATE_MULTIPLE', 
+      payload: { ...initialCharacterState, nom: character.nom, sexe: character.sexe, typeFee: t, anciennete },
+      gameData
+    });
   };
 
+  const handleCapaciteChoice = (c) => !isReadOnly && dispatchCharacter({ type: 'UPDATE_FIELD', field: 'capaciteChoisie', value: c, gameData });
+  
+  const handlePouvoirToggle = (pouvoir) => {
+    if (isReadOnly) return;
+    const max = character.caracteristiques?.feerie || 3;
+    dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'pouvoirs', value: pouvoir, max, gameData });
+  };
+
+  const handleAtoutToggle = (atout) => {
+    if (isReadOnly) return;
+    dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'atouts', value: atout, max: 2, gameData });
+  };
+
+  const handleCharacterChange = (updates) => {
+    if (isReadOnly) return;
+    dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: updates, gameData });
+  };
+  
   // --- VALIDATIONS ---
   const canProceedStep1 = character.nom && character.sexe && character.typeFee;
 
@@ -358,9 +430,15 @@ function App() {
             session={session}
             userProfile={userProfile}
             profils={gameData.profils}
-            onSelectCharacter={(c, readOnly = false) => { setCharacter(c); setIsReadOnly(readOnly); setStep(1); setView('creator'); }}
-            onNewCharacter={() => { setCharacter(initialCharacterState); setIsReadOnly(false); setStep(1); setView('creator'); }}
-            onOpenEncyclopedia={() => setView('encyclopedia')}
+			onSelectCharacter={(c, readOnly = false) => { 
+			   dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c, gameData }); 
+			   setIsReadOnly(readOnly); setStep(1); setView('creator'); 
+			}}
+			onNewCharacter={() => { 
+			   dispatchCharacter({ type: 'RESET_CHARACTER', payload: initialCharacterState, gameData }); 
+			   setIsReadOnly(false); setStep(1); setView('creator'); 
+			}}
+			onOpenEncyclopedia={() => setView('encyclopedia')}
             onOpenAccount={() => setView('account')}
             onSignOut={handleSignOut}
             onOpenAdminUsers={() => setView('admin_users')}
@@ -422,19 +500,19 @@ function App() {
               ))}
             </div>
 
-            <main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
-              {step === 1 && <Step1 character={character} onNomChange={handleNomChange} onSexeChange={handleSexeChange} onTypeFeeChange={handleTypeFeeChange} onTraitsFeeriquesChange={(v) => setCharacter(prev => ({ ...prev, traitsFeeriques: v }))} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} fairyData={gameData.fairyData} fairyTypesByAge={gameData.fairyTypesByAge} />}
-              {step === 2 && <Step2 character={character} onCapaciteChoice={handleCapaciteChoice} fairyData={gameData.fairyData} />}
-              {step === 3 && <Step3 character={character} onPouvoirToggle={handlePouvoirToggle} fairyData={gameData.fairyData} />}
-              {step === 4 && <StepAtouts character={character} onAtoutToggle={handleAtoutToggle} fairyData={gameData.fairyData} />}
-              {step === 5 && <StepCaracteristiques character={character} onCaracteristiquesChange={(c) => setCharacter({ ...character, caracteristiques: c })} fairyData={gameData.fairyData} />}
-              {step === 6 && <StepProfils character={character} onProfilsChange={(p) => setCharacter({ ...character, profils: p })} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
-              {step === 7 && <StepCompetencesLibres character={character} onCompetencesLibresChange={(c) => setCharacter({ ...character, competencesLibres: c })} profils={gameData.profils} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} fairyData={gameData.fairyData} />}
-              {step === 8 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={(c) => setCharacter({ ...character, competencesFutiles: c })} fairyData={gameData.fairyData} />}
-              {step === 9 && <StepVieSociale character={character} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} />}
-              {step === 10 && <StepPersonnalisation character={character} onCharacterChange={(updates) => setCharacter(prev => ({ ...prev, ...updates }))} />}
-              {step === 11 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} />}
-            </main>
+			<main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
+			  {step === 1 && <Step1 character={character} onNomChange={handleNomChange} onSexeChange={handleSexeChange} onTypeFeeChange={handleTypeFeeChange} onTraitsFeeriquesChange={(v) => handleCharacterChange({ traitsFeeriques: v })} onCharacterChange={handleCharacterChange} fairyData={gameData.fairyData} fairyTypesByAge={gameData.fairyTypesByAge} />}
+			  {step === 2 && <Step2 character={character} onCapaciteChoice={handleCapaciteChoice} fairyData={gameData.fairyData} />}
+			  {step === 3 && <Step3 character={character} onPouvoirToggle={handlePouvoirToggle} fairyData={gameData.fairyData} />}
+			  {step === 4 && <StepAtouts character={character} onAtoutToggle={handleAtoutToggle} fairyData={gameData.fairyData} />}
+			  {step === 5 && <StepCaracteristiques character={character} onCaracteristiquesChange={(c) => handleCharacterChange({ caracteristiques: c })} fairyData={gameData.fairyData} />}
+			  {step === 6 && <StepProfils character={character} onProfilsChange={(p) => handleCharacterChange({ profils: p })} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
+			  {step === 7 && <StepCompetencesLibres character={character} onCompetencesLibresChange={(c) => handleCharacterChange({ competencesLibres: c })} profils={gameData.profils} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} fairyData={gameData.fairyData} />}
+			  {step === 8 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={(c) => handleCharacterChange({ competencesFutiles: c })} fairyData={gameData.fairyData} />}
+			  {step === 9 && <StepVieSociale character={character} onCharacterChange={handleCharacterChange} />}
+			  {step === 10 && <StepPersonnalisation character={character} onCharacterChange={handleCharacterChange} />}
+			  {step === 11 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} />}
+			</main>
 
             {/* NAVIGATION INTÉGRÉE (Suivant / Précédent) */}
             <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm mt-6 mb-8">
