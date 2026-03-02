@@ -1,5 +1,5 @@
 // src/App.js
-// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0
+// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0
 //
 
 import React, { useState, useEffect, useReducer } from 'react';
@@ -165,7 +165,8 @@ function App() {
       if (mounted && globalLoading) setGlobalLoading(false);
     }, 30000);
 
-    const initializeApp = async () => {
+ 
+   const initializeApp = async () => {
       try {
         setLoadingStep("Vérification connexion...");
         const { data: { session } } = await supabase.auth.getSession();
@@ -178,8 +179,8 @@ function App() {
         const data = await loadAllGameData();
         if (mounted) {
           setGameData(data);
-  		  const { data: profile } = await supabase
-			.from('profiles').select('role, username, badges') // 👈 On charge les badges ici !
+          const { data: profile } = await supabase
+            .from('profiles').select('role, username, badges, show_pixie') 
             .eq('id', session.user.id).single();
           
           setSession(session);
@@ -612,9 +613,18 @@ function App() {
       {/* 🎲 NOUVEAU : LA PISTE DE DÉ FLOTTANTE */}
       <DiceRoller />
 
-      {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT (Seulement dans le créateur) */}
-	  {view === 'creator' && <PixieAssistant character={character} step={step} fairyData={gameData.fairyData} />}
-    </div>
+        {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT */}
+        {view === 'creator' && userProfile?.profile?.show_pixie !== false && (
+          <PixieAssistant 
+            character={character} 
+            step={step} 
+            session={session}
+            onSleep={() => setUserProfile({ ...userProfile, profile: { ...userProfile.profile, show_pixie: false } })}
+			fairyData={gameData.fairyData} /* 👈 LA CORRECTION EST ICI */
+          />
+        )}
+
+	</div>
   );
 }
 

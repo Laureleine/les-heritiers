@@ -1,3 +1,6 @@
+// AccountSettings.js
+// 9.7.0
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { User, Lock, Mail } from 'lucide-react';
@@ -7,6 +10,7 @@ export default function AccountSettings({ session, onBack }) {
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPixie, setShowPixie] = useState(true); // 👈 NOUVEAU
 
   useEffect(() => {
     getProfile();
@@ -16,13 +20,15 @@ export default function AccountSettings({ session, onBack }) {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('username')
+        .select('username, show_pixie') // 👈 Modifié
         .eq('id', session.user.id)
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;
       setProfile(data);
       setNewUsername(data?.username || '');
+      setShowPixie(data?.show_pixie !== false); // 👈 NOUVEAU (true par défaut si null)
+
     } catch (error) {
       console.error('Erreur chargement profil', error);
     }
@@ -31,13 +37,11 @@ export default function AccountSettings({ session, onBack }) {
   const updateProfile = async () => {
     setLoading(true);
     try {
-      // 1. Mise à jour Username
-      if (newUsername !== profile?.username) {
-        const { error } = await supabase
-          .from('profiles')
-          .upsert({ id: session.user.id, username: newUsername });
-        if (error) throw error;
-      }
+		
+      // 1. Mise à jour Profil (Username et Pixie)
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({ id: session.user.id, username: newUsername, show_pixie: showPixie }); // 👈 Modifié
 
       // 2. Mise à jour Password (si rempli)
       if (newPassword) {
@@ -47,7 +51,7 @@ export default function AccountSettings({ session, onBack }) {
       }
 
       alert('Profil mis à jour !');
-      getProfile(); // Rafraîchir
+      window.location.reload(); // Rafraîchir
     } catch (error) {
       alert('Erreur : ' + error.message);
     } finally {
@@ -93,6 +97,25 @@ export default function AccountSettings({ session, onBack }) {
           />
         </div>
 
+        {/* ✨ NOUVEAU : Paramètres d'Accessibilité */}
+        <div className="pt-4 mt-2 border-t border-amber-200">
+          <h3 className="block text-sm font-bold text-amber-900 mb-3">Accessibilité & Préférences</h3>
+          
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <div className="relative">
+              <input type="checkbox" checked={showPixie} onChange={(e) => setShowPixie(e.target.checked)} className="sr-only" />
+              <div className={`block w-10 h-6 rounded-full transition-colors ${showPixie ? 'bg-amber-500' : 'bg-stone-300'}`}></div>
+              <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${showPixie ? 'translate-x-4' : ''}`}></div>
+            </div>
+            <div className="font-bold text-sm text-stone-700 group-hover:text-amber-900 transition-colors">
+              Afficher Pixie (Assistante de création)
+            </div>
+          </label>
+          <p className="text-xs text-stone-500 mt-2 ml-14 font-serif italic">
+            Si les animations vous déconcentrent, vous pouvez renvoyer l'assistante virtuelle dans sa lanterne.
+          </p>
+        </div>
+		
         <div className="flex gap-4 pt-4">
           <button onClick={onBack} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Retour</button>
           <button 

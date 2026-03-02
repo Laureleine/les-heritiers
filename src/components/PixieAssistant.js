@@ -1,12 +1,13 @@
 // src/components/PixieAssistant.js
-// 9.4.0 // 9.6.0
+// 9.4.0 // 9.6.0 // 9.7.0
 //
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, AlertCircle, CheckCircle2, Info } from 'lucide-react';
+import { Sparkles, AlertCircle, CheckCircle2, Info, Moon } from 'lucide-react';
 import { getPixieAdvice } from '../utils/pixieBrain';
+import { supabase } from '../config/supabase';
 
-export default function PixieAssistant({ character, step, fairyData }) {
+export default function PixieAssistant({ character, step, session, onSleep, fairyData }) {
   const [position, setPosition] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
   const [isTalking, setIsTalking] = useState(false);
   const [message, setMessage] = useState({ text: "", mood: "info" });
@@ -82,21 +83,33 @@ export default function PixieAssistant({ character, step, fairyData }) {
     return '';
   };
 
+  const handleSleep = () => {
+    setMessage({ text: "Je retourne dormir dans ma lanterne... Réveillez-moi dans vos paramètres !", mood: "info" });
+    setIsTalking(true);
+    
+    // On lui laisse 3 secondes pour dire au revoir
+    setTimeout(async () => {
+      if (session?.user?.id) {
+        await supabase.from('profiles').update({ show_pixie: false }).eq('id', session.user.id);
+      }
+      if (onSleep) onSleep(); // Disparaît de l'écran instantanément
+    }, 3000);
+  };
+  
   return (
     <>
       <style>
         {`
-          @keyframes battementGauche {
-            0% { transform: rotate(-10deg) translateY(0px) scaleY(1); opacity: 0.8; }
-            100% { transform: rotate(-40deg) translateY(6px) scaleY(0.5); opacity: 0.3; }
-          }
-          @keyframes battementDroit {
-            0% { transform: rotate(10deg) translateY(0px) scaleY(1); opacity: 0.8; }
-            100% { transform: rotate(40deg) translateY(6px) scaleY(0.5); opacity: 0.3; }
-          }
+        @keyframes battementGauche {
+          0% { transform: rotate(-10deg) translateY(0px) scaleY(1); opacity: 0.8; }
+          100% { transform: rotate(-40deg) translateY(6px) scaleY(0.5); opacity: 0.3; }
+        }
+        @keyframes battementDroit {
+          0% { transform: rotate(10deg) translateY(0px) scaleY(1); opacity: 0.8; }
+          100% { transform: rotate(40deg) translateY(6px) scaleY(0.5); opacity: 0.3; }
+        }
         `}
       </style>
-
       <div
         className="fixed z-50 pointer-events-none"
         style={{
@@ -107,11 +120,22 @@ export default function PixieAssistant({ character, step, fairyData }) {
       >
         {isTalking && (
           <div className={`absolute bottom-full mb-4 -left-32 w-64 p-3 rounded-2xl shadow-xl border-2 pointer-events-auto animate-fade-in-up ${getBubbleColors(message.mood)}`}>
-            <button onClick={fermerBulleEtFuir} className="absolute -top-2 -right-2 bg-gray-800 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs hover:bg-red-500">×</button>
+            
+            {/* ✨ LES NOUVEAUX BOUTONS D'ACTION ✨ */}
+            <div className="absolute -top-3 -right-2 flex gap-1">
+              <button onClick={handleSleep} className="bg-indigo-800 text-indigo-100 w-6 h-6 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors shadow-md" title="Renvoyer Pixie dormir (Désactiver l'assistant)">
+                <Moon size={12} />
+              </button>
+              <button onClick={fermerBulleEtFuir} className="bg-gray-800 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs hover:bg-red-500 transition-colors shadow-md" title="Fermer la bulle">
+                ×
+              </button>
+            </div>
+
             <div className="flex gap-2">
               {getMoodIcon(message.mood)}
               <p className="text-sm font-medium leading-tight">{message.text}</p>
             </div>
+            
             {/* Flèche de la bulle */}
             <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 border-b-2 border-r-2 transform rotate-45 ${getBubbleColors(message.mood).split(' ')} ${getBubbleColors(message.mood).split(' ')[1]}`}></div>
           </div>
@@ -128,13 +152,11 @@ export default function PixieAssistant({ character, step, fairyData }) {
             className="absolute top-1 -left-5 w-8 h-3 rounded-[50%] border border-cyan-200 bg-cyan-100/60 backdrop-blur-sm origin-right"
             style={{ animation: !isTalking ? 'battementGauche 0.05s infinite alternate' : 'none', transform: isTalking ? 'rotate(-20deg)' : 'none' }}
           ></div>
-          
           {/* Aile Droite */}
           <div
             className="absolute top-1 -right-5 w-8 h-3 rounded-[50%] border border-cyan-200 bg-cyan-100/60 backdrop-blur-sm origin-left"
             style={{ animation: !isTalking ? 'battementDroit 0.05s infinite alternate' : 'none', transform: isTalking ? 'rotate(20deg)' : 'none' }}
           ></div>
-
           {/* Corps Brillant */}
           <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-300 to-fuchsia-300 shadow-[0_0_15px_rgba(34,211,238,0.6)] flex items-center justify-center z-10">
             <Sparkles size={12} className="text-white" />

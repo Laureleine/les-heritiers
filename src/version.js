@@ -8,6 +8,16 @@ export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
     {
+      version: '9.6.0',
+      date: '2 Mars 2026',
+      changes: [
+        '🛡️ **Savoir Scellé (Grimoire) :** Les Gardiens du Savoir peuvent désormais "sceller" définitivement une entrée de l\'Encyclopédie, la protégeant ainsi contre toute proposition de modification future.',
+        '📜 **Modales Immersives :** Éradication définitive des vilaines fenêtres de confirmation grises du navigateur ("localhost indique..."). Chaque demande critique s\'affiche désormais sur un élégant parchemin (Conseil, Réinitialisations, etc.).',
+        '🪄 **Traducteur d\'Anomalies :** Fini les messages d\'erreur en anglais technique ! Les erreurs de la base de données et de connexion sont désormais traduites en alertes narratives intégrées à l\'univers.',
+        '⚡ **Sécurité Absolue :** Le scellage des savoirs traverse le bouclier de sécurité (RLS) de manière invisible grâce à l\'intégration de fonctions RPC directement sur le serveur.'
+      ]
+    },
+    {
       version: '9.5.0',
       date: '1er Mars 2026',
       changes: [
