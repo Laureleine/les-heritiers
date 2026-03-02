@@ -1,5 +1,5 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 // 9.3.0
+// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 // 9.3.0 // 9.6.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
@@ -50,14 +50,24 @@ export default function ValidationsPendantes({ session, onBack }) {
   };
 
   // ----------------------------------------------------------------------
-  // LE CHIRURGIEN SQL (Générateur)
+  // LE CHIRURGIEN SQL (Générateur) - AVEC SCELLAGE
   // ----------------------------------------------------------------------
-  const handleApprove = async (change) => {
-    if (!window.confirm("Valider cette modification et générer l'ordre SQL ?")) return;
+  const handleApprove = async (change, seal = false) => {
+    const msg = seal 
+      ? "🛡️ Valider et SCELLER DÉFINITIVEMENT cet élément ?" 
+      : "Valider cette modification et générer l'ordre SQL ?";
+      
+    if (!window.confirm(msg)) return;
 
     try {
       const proposedData = change.new_data || change.proposed_data || {};
-	  // 🛡️ SÉCURITÉ ANTI-FANTÔMES : On filtre les vieilles colonnes supprimées pour qu'elles ne génèrent plus d'erreur SQL
+      
+      // ✨ MAGIE : On injecte le sceau ! Le générateur SQL l'ajoutera tout seul à l'UPDATE !
+      if (seal) {
+        proposedData.is_sealed = true;
+      }
+
+      // 🛡️ SÉCURITÉ ANTI-FANTÔMES : On filtre les vieilles colonnes...
 	  const { _relations, competencesPredilection, competencesFutilesPredilection, competencesUtiles, ...mainData } = proposedData;
 
       const isInsert = !!mainData.id;
@@ -69,17 +79,25 @@ export default function ValidationsPendantes({ session, onBack }) {
         if (isInsert) {
           const columns = Object.keys(mainData).join(', ');
           const values = Object.values(mainData).map(value => {
+            // 🛡️ CORRECTION : On force l'écriture du mot "null" en texte pour le SQL
+            if (value === null || value === undefined) return 'null';
+            
             if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
             if (Array.isArray(value)) {
-               const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
-               return `ARRAY[${elements}]::text[]`;
+              const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
+              return `ARRAY[${elements}]::text[]`;
             }
             if (typeof value === 'object' && value !== null) return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-            return value;
+            
+            // 🛡️ CORRECTION : On s'assure que les nombres/booléens deviennent du texte
+            return String(value); 
           }).join(', ');
           sqlQuery += `INSERT INTO public.${change.table_name} (${columns}) VALUES (${values});\n`;
         } else {
           const setClauses = Object.entries(mainData).map(([key, value]) => {
+            // 🛡️ CORRECTION ICI AUSSI
+            if (value === null || value === undefined) return `${key} = null`;
+            
             if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
             if (Array.isArray(value)) {
               const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
@@ -298,17 +316,33 @@ export default function ValidationsPendantes({ session, onBack }) {
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
-        {change.status === 'pending' && (
-          <>
-            <button onClick={() => handleReject(change.id)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
-              <X size={18} /> Rejeter
-            </button>
-            <button onClick={() => handleApprove(change)} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
-              <Check size={18} /> Valider & Générer SQL
-            </button>
-          </>
-        )}
+          {/* BOUTONS D'ACTION */}
+          {change.status === 'pending' && (
+            <div className="flex flex-wrap gap-3 mt-4 animate-fade-in-up">
+              <button 
+                onClick={() => handleApprove(change, false)} 
+                className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 hover:bg-green-200 font-bold rounded-lg transition-colors border border-green-300 shadow-sm"
+              >
+                <Check size={18} /> Approuver
+              </button>
+              
+              <button 
+                onClick={() => handleApprove(change, true)} 
+                className="flex items-center gap-2 px-4 py-2 bg-amber-700 text-white hover:bg-amber-800 font-bold rounded-lg transition-colors shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-amber-900 group"
+              >
+                <Shield size={18} className="text-amber-300 group-hover:scale-110 transition-transform" /> 
+                Approuver & Sceller
+              </button>
 
+              <button 
+                onClick={() => handleReject(change)} 
+                className="flex items-center gap-2 px-4 py-2 bg-rose-100 text-rose-800 hover:bg-rose-200 font-bold rounded-lg transition-colors border border-rose-300 shadow-sm ml-auto"
+              >
+                <X size={18} /> Rejeter
+              </button>
+            </div>
+          )}
+		  
         {change.status === 'approved' && (
           <>
             <button onClick={() => handleArchive(change.id)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">

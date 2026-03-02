@@ -1,8 +1,8 @@
 // src/components/CharacterList.js
-// 8.24.0 // 8.32.0 // 9.1.0
+// 8.24.0 // 8.32.0 // 9.1.0 // 9.6.0
 
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
+import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2 } from 'lucide-react'; // 👈 Ajoutez BarChart2
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
 import { importCharacter } from '../utils/characterStorage'; // Assurez-vous d'avoir ce fichier ou retirez l'import si non utilisé
@@ -11,9 +11,10 @@ import { APP_VERSION, BUILD_DATE } from '../version';
 import { getCurrentUserFast } from '../utils/authHelpers';
 import { logger } from '../utils/logger';
 import { AVAILABLE_BADGES } from '../data/badges';
+import { showInAppNotification } from '../utils/notificationSystem';
+import { translateError } from '../utils/errorHandler';
 
-
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdminUsers, profils = [], userProfile}) { 
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdminUsers, onOpenAdminStats, profils = [], userProfile}) {
   
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
@@ -122,14 +123,15 @@ const loadCharacters = async (isMounted = true) => {
   }
 };
 
-  
   const handleDelete = async (id) => {
     try {
       await deleteCharacterFromSupabase(id);
       await loadCharacters();
       setShowDeleteConfirm(null);
+      showInAppNotification("Le personnage a été effacé de notre réalité.", "success");
     } catch (error) {
-      alert('Erreur : ' + error.message);
+      // ✨ La magie opère ici !
+      showInAppNotification(translateError(error), "error");
     }
   };
 
@@ -286,6 +288,12 @@ const loadCharacters = async (isMounted = true) => {
             <Book size={16} /> <span className="hidden sm:inline">Encyclopédie</span>
           </button>
 
+            {isAdmin && (
+              <button onClick={onOpenAdminStats} className="flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Statistiques">
+                <BarChart2 size={16} /> <span className="hidden sm:inline">Métriques</span>
+              </button>
+            )}
+			
           {isAdmin && (
             <button onClick={onOpenAdminUsers} className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm" title="Gérer les Utilisateurs">
               <Shield size={16} /> <span className="hidden sm:inline">Rôles</span>
