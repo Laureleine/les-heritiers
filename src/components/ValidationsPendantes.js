@@ -1,25 +1,25 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 // 9.3.0 // 9.6.0 // 9.7.0
+// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { AVAILABLE_BADGES } from '../data/badges';
-import ConfirmModal from './ConfirmModal';
+import ConfirmModal from './ConfirmModal'; // 👈 NOTRE NOUVELLE MODALE !
 
 const TABLE_NAME = 'data_change_requests';
 
 export default function ValidationsPendantes({ session, onBack }) {
   const [pendingChanges, setPendingChanges] = useState([]);
-  const [approvedChanges, setApprovedChanges] = useState([]); 
+  const [approvedChanges, setApprovedChanges] = useState([]);
   const [historyChanges, setHistoryChanges] = useState([]);
-  
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('pending');
   const [myRole, setMyRole] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
-  const [activeTab, setActiveTab] = useState('pending');
 
+  // 🛡️ MÉMOIRE DE LA MODALE DE CONFIRMATION
   const [confirmState, setConfirmState] = useState({ 
     isOpen: false, 
     action: null, 
@@ -27,7 +27,7 @@ export default function ValidationsPendantes({ session, onBack }) {
     message: '', 
     confirmText: '' 
   });
-  
+
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
@@ -45,7 +45,6 @@ export default function ValidationsPendantes({ session, onBack }) {
 
   const loadChanges = async () => {
     setLoading(true);
-    // 👈 NOUVEAU : On demande à Supabase de joindre les infos du profil (username et badges) !
     const [pending, approved, history] = await Promise.all([
       supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'pending').order('created_at', { ascending: false }),
       supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'approved').order('created_at', { ascending: false }),
@@ -58,9 +57,12 @@ export default function ValidationsPendantes({ session, onBack }) {
     setLoading(false);
   };
 
-  // ----------------------------------------------------------------------
-  // LE CHIRURGIEN SQL (Générateur) - AVEC SCELLAGE
-  // ----------------------------------------------------------------------
+  const copyToClipboard = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
   // ======================================================================
   // 🛡️ PRÉPARATION DES MODALES (Les Clics)
   // ======================================================================
@@ -98,168 +100,15 @@ export default function ValidationsPendantes({ session, onBack }) {
       action: () => executeReject(changeId)
     });
   };
-  
-  const executeApprove = async (change, seal = false) => {
-    setConfirmState({ isOpen: false }); // 👈 On ferme la modale
-    
-    // SUPPRIMEZ cette ligne : if (!window.confirm(msg)) return;
 
-    try {
-      // (Gardez tout le reste de votre gigantesque générateur SQL intact !)
-      const proposedData = change.new_data || change.proposed_data || {};
-      
-      // ✨ MAGIE : On injecte le sceau ! Le générateur SQL l'ajoutera tout seul à l'UPDATE !
-      if (seal) {
-        proposedData.is_sealed = true;
-      }
-
-      // 🛡️ SÉCURITÉ ANTI-FANTÔMES : On filtre les vieilles colonnes...
-	  const { _relations, competencesPredilection, competencesFutilesPredilection, competencesUtiles, ...mainData } = proposedData;
-
-      const isInsert = !!mainData.id;
-      const targetId = isInsert ? mainData.id : change.record_id;
-
-      let sqlQuery = `-- Action pour ${change.record_name} (${change.table_name})\nBEGIN;\n\n`;
-
-      if (Object.keys(mainData).length > 0) {
-        if (isInsert) {
-          const columns = Object.keys(mainData).join(', ');
-          const values = Object.values(mainData).map(value => {
-            // 🛡️ CORRECTION : On force l'écriture du mot "null" en texte pour le SQL
-            if (value === null || value === undefined) return 'null';
-            
-            if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
-            if (Array.isArray(value)) {
-              const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
-              return `ARRAY[${elements}]::text[]`;
-            }
-            if (typeof value === 'object' && value !== null) return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-            
-            // 🛡️ CORRECTION : On s'assure que les nombres/booléens deviennent du texte
-            return String(value); 
-          }).join(', ');
-          sqlQuery += `INSERT INTO public.${change.table_name} (${columns}) VALUES (${values});\n`;
-        } else {
-          const setClauses = Object.entries(mainData).map(([key, value]) => {
-            // 🛡️ CORRECTION ICI AUSSI
-            if (value === null || value === undefined) return `${key} = null`;
-            
-            if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
-            if (Array.isArray(value)) {
-              const elements = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
-              return `${key} = ARRAY[${elements}]::text[]`;
-            }
-            if (typeof value === 'object' && value !== null) return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-            return `${key} = ${value}`;
-          }).join(',\n  ');
-          sqlQuery += `UPDATE public.${change.table_name}\nSET ${setClauses}\nWHERE id = '${targetId}';\n`;
-        }
-      }
-
-      if (_relations) {
-        if (_relations.capacites) {
-          sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE fairy_type_id = '${targetId}';\n`;
-          if (_relations.capacites.length > 0) {
-            const inserts = _relations.capacites.map(c => `('${targetId}', '${c.id}', '${c.type}')`).join(', ');
-            sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
-          }
-        }
-        if (_relations.pouvoirs) {
-          sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE fairy_type_id = '${targetId}';\n`;
-          if (_relations.pouvoirs.length > 0) {
-            const inserts = _relations.pouvoirs.map(id => `('${targetId}', '${id}')`).join(', ');
-            sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
-          }
-        }
-        if (_relations.atouts) {
-          sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE fairy_type_id = '${targetId}';\n`;
-          if (_relations.atouts.length > 0) {
-            const inserts = _relations.atouts.map(id => `('${targetId}', '${id}')`).join(', ');
-            sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
-          }
-        }
-        if (_relations.competencesUtiles !== undefined) {
-          sqlQuery += `\nDELETE FROM public.fairy_competences_predilection WHERE fairy_type_id = '${targetId}';\n`;
-          try {
-            const utilesList = JSON.parse(_relations.competencesUtiles);
-            if (utilesList && utilesList.length > 0) {
-              const utilesInserts = utilesList.map(comp => {
-                const isChoice = comp.isChoix ? 'true' : 'false';
-                const isSpecChoice = comp.isSpecialiteChoix ? 'true' : 'false';
-
-                const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
-                const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
-
-                let choiceIds = 'null';
-                let choiceOptions = 'null';
-
-                if (comp.isChoix && comp.options && comp.options.length > 0) {
-					// 🎯 C'est un choix de Compétences : on utilise choice_ids et on traduit les noms en UUIDs
-					const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
-					choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
-				  } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
-					// 🎯 C'est un choix de Spécialités : on stocke le texte dans choice_options (en JSONB)
-					choiceOptions = `'${JSON.stringify(comp.options).replace(/'/g, "''")}'::jsonb`;
-				  }
-                return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
-              }).join(',\n  ');
-
-              sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_ids, choice_options) VALUES \n  ${utilesInserts};\n`;
-            }
-          } catch (e) {
-            sqlQuery += `-- ERREUR PARSING JSON: ${e.message}\n`;
-          }
-        }
-        if (_relations.competencesFutiles !== undefined) {
-          sqlQuery += `\nDELETE FROM public.fairy_competences_futiles_predilection WHERE fairy_type_id = '${targetId}';\n`;
-          if (_relations.competencesFutiles.length > 0) {
-            const futInserts = _relations.competencesFutiles.map(fut => {
-              const isChoice = fut.is_choice ? 'true' : 'false';
-              const compId = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
-			  const choiceOptions = fut.choice_options && fut.choice_options.length > 0 ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
-              return `('${targetId}', ${compId}, ${isChoice}, ${choiceOptions})`;
-            }).join(',\n  ');
-            sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES ${futInserts};\n`;
-          }
-        }
-        if (_relations.fairyIds !== undefined) {
-          if (change.table_name === 'fairy_capacites') {
-            sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}';\n`;
-            if (_relations.fairyIds.length > 0) {
-              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}', 'choix')`).join(', ');
-              sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
-            }
-          }
-          if (change.table_name === 'fairy_powers') {
-            sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}';\n`;
-            if (_relations.fairyIds.length > 0) {
-              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}')`).join(', ');
-              sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
-            }
-          }
-          if (change.table_name === 'fairy_assets') {
-            sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}';\n`;
-            if (_relations.fairyIds.length > 0) {
-              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}')`).join(', ');
-              sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
-            }
-          }
-        }
-      }
-
-      sqlQuery += `\nCOMMIT;`;
-
-      const { error } = await supabase
-        .from(TABLE_NAME)
-        .update({ status: 'approved', generated_sql: sqlQuery })
-        .eq('id', change.id);
-
-      if (error) throw error;
-      loadChanges();
-    } catch (error) {
-      alert("Erreur lors de la validation : " + error.message);
-    }
+  const handleRestore = async (changeId) => {
+    const { error } = await supabase.from(TABLE_NAME).update({ status: 'pending' }).eq('id', changeId);
+    if (!error) loadChanges();
   };
+
+  // ======================================================================
+  // ✨ EXÉCUTION DES ACTIONS (Après Confirmation)
+  // ======================================================================
 
   const executeArchive = async (changeId) => {
     setConfirmState({ isOpen: false });
@@ -276,23 +125,162 @@ export default function ValidationsPendantes({ session, onBack }) {
     if (!error) loadChanges();
   };
 
-  const handleRestore = async (changeId) => {
-    const { error } = await supabase.from(TABLE_NAME).update({ status: 'pending', generated_sql: null }).eq('id', changeId);
-    if (!error) loadChanges();
+  // LE CHIRURGIEN SQL (Générateur)
+  const executeApprove = async (change, seal = false) => {
+    setConfirmState({ isOpen: false });
+
+    try {
+      const proposedData = change.new_data || change.proposed_data || {};
+      const { _relations, competencesPredilection, competencesFutilesPredilection, competencesUtiles, ...mainData } = proposedData;
+      const isInsert = !!mainData.id;
+      const targetId = isInsert ? mainData.id : change.record_id;
+
+      let sqlQuery = `-- Action pour ${change.record_name} (${change.table_name})\nBEGIN;\n\n`;
+
+      if (Object.keys(mainData).length > 0) {
+        if (isInsert) {
+          const columns = Object.keys(mainData).join(', ');
+          const values = Object.values(mainData).map(value => {
+            if (value === null) return 'NULL';
+            if (typeof value === 'object') return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+            if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
+            return value;
+          }).join(', ');
+          sqlQuery += `INSERT INTO public.${change.table_name} (${columns}) VALUES (${values});\n`;
+        } else {
+          const setClauses = Object.entries(mainData).map(([key, value]) => {
+            if (value === null) return `${key} = NULL`;
+            if (typeof value === 'object') return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+            if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
+            return `${key} = ${value}`;
+          }).join(',\n  ');
+          sqlQuery += `UPDATE public.${change.table_name}\nSET ${setClauses}\nWHERE id = '${targetId}';\n`;
+        }
+      }
+
+      if (_relations) {
+        // ... Fées -> Relations sortantes ...
+        if (_relations.capacites) {
+          sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE fairy_type_id = '${targetId}';\n`;
+          if (_relations.capacites.length > 0) {
+            const inserts = _relations.capacites.map(c => `('${targetId}', '${c.id}', '${c.type}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
+          }
+        }
+
+        if (_relations.pouvoirs) {
+          sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE fairy_type_id = '${targetId}';\n`;
+          if (_relations.pouvoirs.length > 0) {
+            const inserts = _relations.pouvoirs.map(id => `('${targetId}', '${id}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
+          }
+        }
+
+        if (_relations.atouts) {
+          sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE fairy_type_id = '${targetId}';\n`;
+          if (_relations.atouts.length > 0) {
+            const inserts = _relations.atouts.map(id => `('${targetId}', '${id}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
+          }
+        }
+
+        if (_relations.competencesUtiles !== undefined) {
+          sqlQuery += `\nDELETE FROM public.fairy_competences_predilection WHERE fairy_type_id = '${targetId}';\n`;
+          try {
+            const utilesList = typeof _relations.competencesUtiles === 'string' ? JSON.parse(_relations.competencesUtiles) : _relations.competencesUtiles;
+            if (utilesList && utilesList.length > 0) {
+              const utilesInserts = utilesList.map(comp => {
+                const isChoice = comp.isChoix ? 'true' : 'false';
+                const isSpecChoice = comp.isSpecialiteChoix ? 'true' : 'false';
+                const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
+                const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
+                let choiceIds = 'null';
+                let choiceOptions = 'null';
+
+                if (comp.isChoix && comp.options && comp.options.length > 0) {
+                  const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+                  choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
+                } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
+                  choiceOptions = `'${JSON.stringify(comp.options).replace(/'/g, "''")}'::jsonb`;
+                }
+
+                return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
+              }).join(',\n  ');
+              sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_ids, choice_options) VALUES \n  ${utilesInserts};\n`;
+            }
+          } catch (e) {
+            sqlQuery += `-- ERREUR PARSING JSON: ${e.message}\n`;
+          }
+        }
+
+        if (_relations.competencesFutiles !== undefined) {
+          sqlQuery += `\nDELETE FROM public.fairy_competences_futiles_predilection WHERE fairy_type_id = '${targetId}';\n`;
+          if (_relations.competencesFutiles.length > 0) {
+            const futInserts = _relations.competencesFutiles.map(fut => {
+              const isChoice = fut.is_choice ? 'true' : 'false';
+              const compQuery = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
+              const choiceOptions = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
+              return `('${targetId}', ${compQuery}, ${isChoice}, ${choiceOptions})`;
+            }).join(',\n  ');
+            sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES \n  ${futInserts};\n`;
+          }
+        }
+
+        // 🔗 NOUVEAU : GESTION DES RELATIONS INVERSÉES (Lier à une Fée)
+        if (_relations.fairyIds !== undefined) {
+          if (change.table_name === 'fairy_capacites') {
+            sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}';\n`;
+            if (_relations.fairyIds.length > 0) {
+              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}', 'choix')`).join(', ');
+              sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
+            }
+          }
+
+          if (change.table_name === 'fairy_powers') {
+            sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}';\n`;
+            if (_relations.fairyIds.length > 0) {
+              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}')`).join(', ');
+              sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
+            }
+          }
+
+          if (change.table_name === 'fairy_assets') {
+            sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}';\n`;
+            if (_relations.fairyIds.length > 0) {
+              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}')`).join(', ');
+              sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
+            }
+          }
+        }
+      }
+
+      // 🛡️ Scellage de l'élément si demandé par le Conseil
+      if (seal) {
+        sqlQuery += `\n-- 🛡️ Scellage de l'élément par les Gardiens\nUPDATE public.${change.table_name} SET is_sealed = true WHERE id = '${targetId}';\n`;
+      }
+
+      sqlQuery += `\nCOMMIT;`;
+
+      const { error } = await supabase
+        .from(TABLE_NAME)
+        .update({ status: 'approved', generated_sql: sqlQuery })
+        .eq('id', change.id);
+
+      if (error) throw error;
+      
+      loadChanges();
+
+    } catch (error) {
+      alert("Erreur lors de la validation : " + error.message);
+    }
   };
 
-  const copyToClipboard = (id, text) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
+  // ======================================================================
+  // 🎨 AFFICHAGE (Rendu des propositions)
+  // ======================================================================
 
-  // ----------------------------------------------------------------------
-  // RENDU UI
-  // ----------------------------------------------------------------------
   const renderChange = (change) => (
     <div key={change.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
-      
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-serif font-bold text-xl text-gray-800">Cible : {change.record_name || 'Inconnue'}</h3>
@@ -311,21 +299,19 @@ export default function ValidationsPendantes({ session, onBack }) {
         </span>
       </div>
 
-      {/* 🌟 NOUVEAU : AFFICHAGE DU PROFIL DU JOUEUR ET SES BADGES */}
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-2">
           <User size={16} className="text-gray-400" />
           <span className="text-sm font-bold text-gray-700">
             {change.profiles?.username || 'Héritier Anonyme'}
           </span>
-          
           {change.profiles?.badges && change.profiles.badges.length > 0 && (
             <div className="flex flex-wrap gap-1 border-l border-gray-200 pl-2 ml-1">
               {change.profiles.badges.map(badgeId => {
-                const badgeDef = AVAILABLE_BADGES.find(b => b.id === badgeId);
+                const badgeDef = AVAILABLE_BADGES?.find(b => b.id === badgeId);
                 if (!badgeDef) return null;
                 return (
-                  <span key={badgeId} className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-bold shadow-sm ${badgeDef.color}`}>
+                  <span key={badgeId} className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-bold ${badgeDef.color}`}>
                     {badgeDef.label}
                   </span>
                 );
@@ -333,8 +319,7 @@ export default function ValidationsPendantes({ session, onBack }) {
             </div>
           )}
         </div>
-        
-        {/* LA JUSTIFICATION (La Bulle de dialogue) */}
+
         <div className="relative">
           <div className="absolute top-0 left-4 -mt-2 w-4 h-4 bg-gray-50 border-t border-l border-gray-100 transform rotate-45"></div>
           <p className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded-lg border border-gray-100 relative z-10 shadow-sm">
@@ -344,12 +329,12 @@ export default function ValidationsPendantes({ session, onBack }) {
       </div>
 
       {change.status === 'approved' && change.generated_sql && (
-        <div className="mt-4 bg-stone-900 text-green-400 p-4 rounded-lg font-mono text-xs overflow-x-auto whitespace-pre-wrap relative shadow-inner">
-          <div className="absolute top-2 right-2">
-            <button
-              onClick={() => copyToClipboard(change.id, change.generated_sql)}
-              className={`px-3 py-1.5 rounded text-xs font-bold transition-all flex items-center gap-1 ${
-                copiedId === change.id ? 'bg-green-600 text-white' : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
+        <div className="mt-4 p-4 bg-gray-900 text-green-400 font-mono text-sm rounded-lg overflow-x-auto relative group">
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button 
+              onClick={() => copyToClipboard(change.generated_sql, change.id)}
+              className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1 transition-colors ${
+                copiedId === change.id ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
               {copiedId === change.id ? <><Check size={14} /> Copié !</> : <><Copy size={14} /> Copier</>}
@@ -359,35 +344,40 @@ export default function ValidationsPendantes({ session, onBack }) {
         </div>
       )}
 
+      {/* BOUTONS D'ACTION AVEC MODALES */}
       <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
-          {/* BOUTONS D'ACTION */}
-          {/* Si En Attente */}
-          {change.status === 'pending' && (
-            <>
-              <button onClick={() => handleRejectClick(change.id)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
-                <X size={18} /> Rejeter
-              </button>
-              <button onClick={() => handleApproveClick(change, false)} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
-                <Check size={18} /> Valider
-              </button>
-              <button onClick={() => handleApproveClick(change, true)} className="flex items-center gap-2 px-4 py-2 bg-amber-700 text-white hover:bg-amber-800 font-bold rounded-lg transition-colors shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-amber-900 group">
-                <Shield size={18} className="text-amber-300 group-hover:scale-110 transition-transform" /> 
-                Approuver & Sceller
-              </button>
-            </>
-          )}
+        
+        {change.status === 'pending' && (
+          <>
+            <button onClick={() => handleRejectClick(change.id)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
+              <X size={18} /> Rejeter
+            </button>
+            <button onClick={() => handleApproveClick(change, false)} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
+              <Check size={18} /> Valider
+            </button>
+            <button onClick={() => handleApproveClick(change, true)} className="flex items-center gap-2 px-4 py-2 bg-amber-700 text-white hover:bg-amber-800 font-bold rounded-lg transition-colors shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-amber-900 group">
+              <Shield size={18} className="text-amber-300 group-hover:scale-110 transition-transform" /> 
+              Approuver & Sceller
+            </button>
+          </>
+        )}
 
-          {/* Si Approuvé (SQL Généré) */}
-          {change.status === 'approved' && (
-            <>
-              <button onClick={() => handleArchiveClick(change.id)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
-                <Check size={18} /> J'ai exécuté le SQL (Archiver)
-              </button>
-              <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
-                <ArrowLeft size={16} /> Remettre en attente
-              </button>
-            </>
-          )}		  
+        {change.status === 'approved' && (
+          <>
+            <button onClick={() => handleArchiveClick(change.id)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
+              <Check size={18} /> J'ai exécuté le SQL (Archiver)
+            </button>
+            <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+              <ArrowLeft size={16} /> Remettre en attente
+            </button>
+          </>
+        )}
+
+        {(change.status === 'archived' || change.status === 'rejected') && (
+          <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
+            <ArrowLeft size={16} /> Remettre en attente
+          </button>
+        )}
       </div>
     </div>
   );
@@ -399,18 +389,18 @@ export default function ValidationsPendantes({ session, onBack }) {
       <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24 text-center">
         <Shield size={64} className="mx-auto text-red-400 mb-6 opacity-50" />
         <h2 className="text-3xl font-serif font-bold text-red-900 mb-4">Accès Restreint</h2>
-        <button onClick={onBack} className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold">Retour à l'encyclopédie</button>
+        <p className="text-gray-600 mb-8">Seuls les Gardiens du Savoir peuvent statuer sur l'évolution de l'Encyclopédie.</p>
+        <button onClick={onBack} className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors font-bold">Retour aux Archives</button>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24">
-      <button onClick={onBack} className="flex items-center gap-2 text-gray-500 hover:text-amber-700 font-serif mb-6 transition-colors">
-        <ArrowLeft size={18} /> Retour
-      </button>
-
-      <div className="mb-6 flex justify-between items-center">
+      <div className="flex justify-between items-center mb-6">
+        <button onClick={onBack} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+          <ArrowLeft size={18} /> Retour
+        </button>
         <h2 className="text-2xl font-serif font-bold text-amber-900 flex items-center gap-2">
           <Shield className="text-amber-600" /> Conseil des Gardiens
         </h2>
@@ -444,8 +434,8 @@ export default function ValidationsPendantes({ session, onBack }) {
           <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-white/50">L'historique est vide.</p>
         )}
       </div>
-	  
-      {/* LA MODALE DE CONFIRMATION DES GARDIENS */}
+
+      {/* ✨ LA MODALE DE CONFIRMATION DES GARDIENS */}
       <ConfirmModal 
         isOpen={confirmState.isOpen}
         title={confirmState.title}
@@ -455,6 +445,6 @@ export default function ValidationsPendantes({ session, onBack }) {
         confirmText={confirmState.confirmText}
         cancelText="Finalement, non"
       />
-    </div> // Fin du return
+    </div>
   );
 }
