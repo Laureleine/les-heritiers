@@ -1,92 +1,227 @@
 // src/utils/pixieBrain.js
-// 9.4.0
-//
+// 9.4.0// 9.6.0
 
+// ============================================================================
+// 🧠 1. DICTIONNAIRES DE VOCABULAIRE GENRÉ
+// ============================================================================
 const dico = {
-  exclamations: ["Oooh !", "Dis dis !", "Hihi !", "Regarde !", "Waouh !"],
-  noms: ["humain grand et chauve", "gros singe habillé", "marchand de cailloux"],
-  gadgets: ["rouage rouillé", "dé à coudre", "vieux bouton", "bout de ficelle", "caillou pointu"]
+  exclamations: ["Oooh !", "Dis dis !", "Hihi !", "Regarde !", "Waouh !", "Psst !", "Eh oh !", "Bzzzt !", "Youpi !", "Sapristi !", "Misère !"],
+  noms_M: ["grand dadais", "visage pâle", "marchand de cailloux", "chasseur d'ombres", "grand machin", "tête de pioche", "l'ami", "l'échalas"],
+  noms_F: ["grande bringue", "visage pâle", "marchande de cailloux", "chasseuse d'ombres", "grande asperge", "la belle plante", "tête de pioche", "l'amie"],
+  gadgets: ["rouage rouillé", "dé à coudre", "vieux bouton", "bout de ficelle", "caillou pointu", "clou tordu", "bille en verre", "plume de pigeon", "morceau de craie"],
+  actions: ["tourner en rond", "voler à l'envers", "manger des miettes", "me cacher dans ton cou", "faire des grimaces", "chercher des trucs brillants"],
 };
 
+// ============================================================================
+// 🧠 2. LA GRANDE BIBLIOTHÈQUE DES CARACTÉRISTIQUES (Avec balises genrées)
+// ============================================================================
+const statsDico = {
+  force: {
+    low: ["Tes bras ressemblent à des brindilles !", "Ne porte pas ce {gadget}, c'est bien trop lourd pour toi !", "Attention, un coup de vent et tu t'envoles !"],
+    high: ["{excl} Tu es tellement musclé{e} !", "Tu es mon garde du corps officiel, {nom} !", "Tu as mangé de l'acier au petit-déjeuner ?"]
+  },
+  agilite: {
+    low: ["Attention ! Tu trébuches tout le temps !", "Tu as la grâce gracieuse d'une brique qui tombe !", "Tu as deux pieds gauches, {nom} !"],
+    high: ["Waouh, {un} vrai{e} félin{e} !", "Tu sautes tellement haut ! Prends-moi avec toi !", "Vif{ve} comme l'éclair, {nom} !"]
+  },
+  constitution: {
+    low: ["Tu as mauvaise mine... Tu as l'air si fragile.", "Un simple rhume pourrait te terrasser !", "Tu es pâle comme un fantôme de l'Opéra !"],
+    high: ["Tu es littéralement increvable !", "Même le poison a un goût de sirop à la fraise pour toi !", "Tu es un roc, {nom} !"]
+  },
+  precision: {
+    low: ["Oups ! Tu as encore fait tomber quelque chose !", "C'est dangereux de te laisser des objets pointus entre les mains !", "Tu as du beurre sur les doigts ?"],
+    high: ["Dans le mille ! Comme toujours !", "Tu pourrais attraper une mouche en vol avec tes deux doigts !", "Ton adresse me fascine, tu es magicien{ne} des mains ?"]
+  },
+  esprit: {
+    low: ["C'est dur de réfléchir hein, {nom} ?", "Tu as oublié ton cerveau dans ton autre pantalon ?", "Ne force pas trop, tu vas avoir de la fumée qui sort des oreilles !"],
+    high: ["{excl} Ton cerveau fait du bruit quand tu penses !", "Tu as lu tous les livres de la bibliothèque d'Avalon ou quoi ?", "Rien ne t'échappe, grand{e} savant{e} !"]
+  },
+  perception: {
+    low: ["{excl} Eh oh ! Je suis là, juste sous ton nez !", "Tu as les sens d'un caillou mouillé !", "Ouvre les yeux, le monde est grand et rempli de couleurs !"],
+    high: ["Rien ne t'échappe, tu vois même dans le noir comme une chouette ?", "Tu as un radar intégré dans la tête !", "Tu es {le} meilleur{e} détective de tout Paris !"]
+  },
+  prestance: {
+    low: ["Pourquoi les gens s'enfuient quand on passe ?", "Tu as un charme... très intérieur on va dire !", "Je resterai ton amie, même si tu es atrocement laid{e} !"],
+    high: ["{excl} Tu es absolument éblouissant{e} !", "Si tu clignes des yeux, des gens s'évanouissent de bonheur !", "Tu es le soleil de ma journée, {nom} !"]
+  },
+  sangFroid: {
+    low: ["{excl} Tu as peur de ton ombre aujourd'hui !", "Tu es prêt{e} à fuir en permanence, ça doit être épuisant !", "Cache-toi derrière moi, je te protégerai avec ce {gadget} !"],
+    high: ["Tu es un véritable bloc de glace !", "Rien ne te fait peur, même pas un troll enragé des cavernes !", "Moi je panique, mais toi tu ne bouges pas d'un seul cil !"]
+  }
+};
+
+const nomStatsFormate = { force: 'Force', agilite: 'Agilité', constitution: 'Constitution', precision: 'Précision', esprit: 'Esprit', perception: 'Perception', prestance: 'Prestance', sangFroid: 'Sang-froid' };
+
+// ============================================================================
+// 🧠 3. GESTION DES NOMS DE FÉES GENRÉS
+// ============================================================================
+const getFairyName = (type, sexe) => {
+  if (!type) return "fée";
+  const isF = sexe === 'Femme';
+  switch(type) {
+      case 'Farfadet': return isF ? 'Farfadette' : 'Farfadet';
+      case 'Gobelin': return isF ? 'Gobeline' : 'Gobelin';
+      case 'Fouinard': return isF ? 'Fouinarde' : 'Fouinard';
+      case 'Gremelin': return isF ? 'Gremeline' : 'Gremelin';
+      case 'Korrigan': return isF ? 'Korrigane' : 'Korrigan';
+      case 'Loup-Garou': return isF ? 'Louve-Garou' : 'Loup-Garou';
+      case 'Ogre': return isF ? 'Ogresse' : 'Ogre';
+      case 'Ondine': return isF ? 'Ondine' : 'Ondin';
+      case 'Orc': return isF ? 'Orque' : 'Orc';
+      case 'Succube/Incube': return isF ? 'Succube' : 'Incube';
+      case 'Sylve': return isF ? 'Dryade' : 'Sylve';
+      case 'Troll': return isF ? 'Trollesse' : 'Troll';
+      case 'Vampyr': return isF ? 'Vampyre' : 'Vampyr';
+      default: return type;
+  }
+};
+
+// ============================================================================
+// 🧠 4. MÉMOIRE ET MOTEUR GRAMMATICAL
+// ============================================================================
+const MEMORY_SIZE = 25;
+let spokenMemory = [];
+
+const addToMemory = (text) => {
+  spokenMemory.unshift(text);
+  if (spokenMemory.length > MEMORY_SIZE) spokenMemory.pop();
+};
+const isInMemory = (text) => spokenMemory.includes(text);
 const tirer = (liste) => liste[Math.floor(Math.random() * liste.length)];
 
-let pixieMemory = {
-  hasGadget: false,
-  gadgetName: "",
+// Le Moteur Grammatical Infaillible
+const parseTemplate = (template, char) => {
+  const isF = char?.sexe === 'Femme';
+
+  let result = template
+    .replace(/{excl}/g, () => tirer(dico.exclamations))
+    .replace(/{nom}/g, () => tirer(isF ? dico.noms_F : dico.noms_M))
+    .replace(/{gadget}/g, () => tirer(dico.gadgets))
+    .replace(/{action}/g, () => tirer(dico.actions));
+
+  // Accords grammaticaux magiques
+  result = result
+    .replace(/{e}/g, isF ? 'e' : '')
+    .replace(/{ne}/g, isF ? 'ne' : '')
+    .replace(/{ve}/g, isF ? 've' : 'f')
+    .replace(/{le}/g, isF ? 'la' : 'le')
+    .replace(/{un}/g, isF ? 'une' : 'un')
+    .replace(/{il}/g, isF ? 'elle' : 'il')
+    .replace(/{Il}/g, isF ? 'Elle' : 'Il')
+    .replace(/{eux}/g, isF ? 'euse' : 'eux')
+    .replace(/{teur}/g, isF ? 'trice' : 'teur');
+
+  // Identité féérique précise
+  if (char && char.typeFee) {
+    const nomFee = getFairyName(char.typeFee, char.sexe);
+    result = result.replace(/{Type}/g, nomFee);
+    result = result.replace(/{type}/g, nomFee.toLowerCase());
+  }
+  return result;
 };
 
-export const getPixieAdvice = (character = {}, step) => {
-  // 1. LA PREMIÈRE RENCONTRE
-  if (!pixieMemory.hasGadget) {
-    pixieMemory.hasGadget = true;
-    pixieMemory.gadgetName = tirer(dico.gadgets);
-    return { 
-      text: `Hihi ! Tu cherches quoi ? Oh ! Tu me donnes un ${pixieMemory.gadgetName} ? C'est super rigolo ! Je m'appelle Pixie !`, 
-      mood: 'info' 
-    };
-  }
-
-  // 2. ANALYSE CONTEXTUELLE (Par Étape)
-  // (Adaptez les numéros de 'case' si votre ordre d'étapes dans App.js est différent)
-  switch (step) {
-    case 1: // Identité & Type de Fée
-      if (!character.typeFee) return { text: "Coucou ! Il faut choisir ton type de fée pour commencer. C'est magique !", mood: 'warning' };
-      if (!character.traitsFeeriques || character.traitsFeeriques.length === 0) return { text: `Un(e) ${character.typeFee} ! Super choix ! N'oublie pas de cocher 1 ou 2 traits de caractère en bas.`, mood: 'warning' };
-      return { text: "Ton identité est parfaite ! On passe à la suite ?", mood: 'success' };
-
-    case 3: // Caractéristiques (en supposant que c'est l'étape 3)
-      const baseInvestie = Object.values(character.caracteristiques || {}).reduce((a, b) => a + b, 0);
-      if (baseInvestie > 0 && baseInvestie < 26) return { text: "Tu as fait tomber des points par terre ! Il t'en reste à distribuer dans tes caractéristiques !", mood: 'warning' };
-      if (character.caracteristiques?.sangFroid === 1) return { text: "Hihi, tu as 1 en Sang-froid ! Tu vas avoir peur de ton ombre !", mood: 'info' };
-      if (baseInvestie >= 26) return { text: "Parfait ! N'oublie pas que chaque point au-dessus de 3 en Esprit te donne des compétences gratuites !", mood: 'success' };
-      break;
-
-    case 7: // Pouvoirs (Step3.js dans votre code correspond souvent à l'étape 7 visuelle)
-      const maxPouvoirs = character.caracteristiques?.feerie || 3;
-      const currentPouvoirs = character.pouvoirs?.length || 0;
-      if (currentPouvoirs < maxPouvoirs) return { text: `Ta Féérie te donne droit à ${maxPouvoirs} pouvoirs. Il t'en manque ${maxPouvoirs - currentPouvoirs} !`, mood: 'warning' };
-      if (currentPouvoirs > maxPouvoirs) return { text: `Oups ! Tu as pris trop de pouvoirs (${currentPouvoirs}/${maxPouvoirs}) ! Range-en un dans ta poche.`, mood: 'error' };
-      return { text: "Tes pouvoirs sont prêts ! Ça va faire des étincelles !", mood: 'success' };
-
-    case 8: // Atouts
-      const atoutsCount = character.atouts?.length || 0;
-      if (atoutsCount < 2) return { text: `Les Héritiers ont droit à 2 Atouts ! Choisis bien !`, mood: 'warning' };
-      if (atoutsCount > 2) return { text: `Tricheur ! Tu ne peux avoir que 2 Atouts maximum !`, mood: 'error' };
-      return { text: "Super Atouts ! Tu es paré !", mood: 'success' };
-
-    case 9: // Vie Sociale / Boutique
-      if (character.fortune >= 7) return { text: `Dis dis, tu as plein de belles pièces d'or ! Tu pourrais m'acheter une montagne de vieux boutons avec tout ça ?`, mood: 'info' };
-      return { text: "C'est l'heure des emplettes ! Utilise tes PP pour acheter de l'équipement ou un réseau.", mood: 'info' };
-      
-    default:
-      break;
-  }
-
-  // 3. REMARQUES LORE & GÉNÉRIQUES (Si tout va bien sur l'étape en cours)
-  let advices = [];
+// ============================================================================
+// 🧠 5. LE CERVEAU CENTRAL
+// ============================================================================
+export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
   
-  if (character.typeFee === 'Gobelin') advices.push(`Un Gobelin ? Pouah ! Fais attention, ils mangent n'importe quoi et ils sentent les vieux choux !`);
-  if (character.typeFee === 'Phénix') advices.push(`Waouh, un gros oiseau tout chaud ! S'il te plaît, ne brûle pas mes jolies ailes !`);
-  if (character.typeFee === 'Bastet') advices.push(`Oh un gros minou ! Tu as des moustaches rigolotes ! Tu veux jouer avec mon ${pixieMemory.gadgetName} ?`);
-  if (character.typeFee === 'Fleur de métal') advices.push(`Tu es toute en métal ? Tu ressembles à une grosse horloge qui marche toute seule ! Ça fait tic-tac dedans ?`);
+  const generateUnique = (templates, mood = 'info') => {
+    let attempts = 0;
+    let finalPhrase = "";
+    if (!templates || templates.length === 0) return { text: "...", mood: 'info' };
 
-  if (character.caracteristiques?.force >= 4) advices.push(`Tu es drôlement musclé ! Tu pourrais soulever un gros caillou sans transpirer !`);
-  if (character.caracteristiques.sangFroid === 1) advices.push(`Hihi, tu as peur de tout ! Si un méchant arrive, je volerai me cacher dans tes cheveux !`);
+    do {
+      const template = tirer(templates);
+      finalPhrase = parseTemplate(template, character);
+      attempts++;
+    } while (isInMemory(finalPhrase) && attempts < 15);
+
+    addToMemory(finalPhrase);
+    return { text: finalPhrase, mood };
+  };
+
+  const c = character;
+  const caracs = c.caracteristiques || {};
+
+  // ---------------------------------------------------------
+  // A. RÉACTIONS D'URGENCE (Progression & Erreurs)
+  // ---------------------------------------------------------
+  if (step === 1 && !c.typeFee) {
+    return generateUnique([
+      "{excl} Tu n'as pas encore choisi qui tu es ! C'est le plus important !",
+      "{excl} Sans ton Héritage, tu n'es qu'un humain banal ! Choisis vite !"
+    ], 'warning');
+  }
+
+  // ---------------------------------------------------------
+  // B. ANALYSE RACIALE ET CARACTÉRISTIQUES (Le Cœur du Système)
+  // ---------------------------------------------------------
+  let pool = [];
+
+  // Lecture de la base de données des Fées
+  const typeData = fairyData[c.typeFee];
+
+  if (typeData && typeData.caracteristiques) {
+    // Boucle sur les 8 Caractéristiques
+    Object.keys(nomStatsFormate).forEach(stat => {
+      const score = caracs[stat];
+      const min = typeData.caracteristiques[stat]?.min || 1;
+      const max = typeData.caracteristiques[stat]?.max || 5;
+
+      if (score !== undefined) {
+        // 1. LIMITES RACIALES (Min/Max de l'espèce)
+        if (score === min) {
+          pool.push(`Dis donc, pour {un} {Type}, tu n'es vraiment pas très doué{e} en ${nomStatsFormate[stat]} !`);
+          pool.push(`C'est le grand minimum syndical en ${nomStatsFormate[stat]} pour {un} {Type}, hein ?`);
+          pool.push(`Même parmi les {type}s, tu fais pitié avec ta ${nomStatsFormate[stat]} si basse !`);
+        }
+        if (score === max) {
+          pool.push(`Waouh ! Atteindre le maximum en ${nomStatsFormate[stat]} pour {un} {Type}, c'est exceptionnel !`);
+          pool.push(`Les autres {type}s doivent être jal{eux} de ta ${nomStatsFormate[stat]} !`);
+          pool.push(`{excl} Une ${nomStatsFormate[stat]} poussée à son maximum racial ! Quel talent !`);
+        }
+
+        // 2. LIMITES ABSOLUES (Les tares universelles et l'excellence)
+        if (score === 1 && statsDico[stat]) pool.push(...statsDico[stat].low);
+        if (score >= 4 && statsDico[stat]) pool.push(...statsDico[stat].high);
+      }
+    });
+  }
 
   // La Fortune (Richesse)
-  if (character.fortune >= 7) {
-     advices.push(`Dis dis, tu as plein de belles pièces d'or ! Tu pourrais m'acheter une montagne de vieux boutons avec tout ça ?`);
+  if (c.fortune >= 6) {
+    pool.push("{excl} Tu as tellement d'argent ! Tu vas m'acheter une montagne de {gadget}s ?");
+  } else if (c.fortune <= 2 && c.typeFee) {
+    pool.push("On a les poches vides hein ? Je peux voler un {gadget} pour toi si tu veux !");
   }
 
-  if (character.atouts?.some(a => a && a.includes('Ami des pixies'))) advices.push(`Waouh ! Tu es un 'Ami des pixies' ! Tu as des rouages cachés dans tes poches pour nous ?`);
-
-  if (advices.length === 0) {
-    advices.push(`${tirer(dico.exclamations)} Qu'est-ce que tu fais de beau, le ${tirer(dico.noms)} ?`);
-    advices.push(`J'aime bien mon ${pixieMemory.gadgetName}. Tu veux que je te le prête ? Non, c'est une blague !`);
+  // LORE SPÉCIFIQUE (Accords genrés natifs)
+  switch (c.typeFee) {
+    case 'Ange': pool.push("Tes plumes sont toutes douces ! Je peux m'asseoir sur ton épaule ?"); break;
+    case 'Bastet': pool.push("{excl} J'adore tes moustaches de chat ! Si je te lance un {gadget}, tu vas courir après ?"); break;
+    case 'Fleur de métal': pool.push("{excl} Tu fais tic-tac quand tu respires ! Je peux utiliser un {gadget} pour te réparer ?"); break;
+    case 'Fouinard': pool.push("Tu fabriques toujours des trucs super bizarres ! J'adore ton odeur de fumée !"); break;
+    case 'Gobelin': pool.push("Pouah ! Tu sens le vieux chou et la boue ! Mais je t'aime bien quand même !"); break;
+    case 'Léporide': pool.push("{excl} Tu as de grandes oreilles ! C'est pour mieux m'entendre voler ?"); break;
+    case 'Ogre': pool.push("S'il te plaît, grand{e} {type}, ne me mange pas ! Je n'ai pas très bon goût !"); break;
+    case 'Ondine': pool.push("Tu sens la pluie d'été ! Fais attention de ne pas mouiller mes ailes !"); break;
+    case 'Orc': pool.push("{excl} Tes défenses sont pointues ! Tu as l'air grognon, {nom} !"); break;
+    case 'Phénix': pool.push("Waouh ! T'es tout chaud ! Fais attention de ne pas brûler mes jolies ailes !"); break;
+    case 'Protys': pool.push("Tu changes tout le temps de visage, j'ai le vertige en te regardant !"); break;
+    case 'Troll': pool.push("Même si tu es {un} grand{e} {Type} brutal{e}, je sais que tu aimes les petits animaux... comme moi !"); break;
+    case 'Succube/Incube': pool.push("Ton charme est démoniaque... Fais attention à qui tu croises avec ton Masque !"); break;
+    case 'Vampyr': pool.push("Tes dents brillent dans le noir ! Tu as mangé des chauves-souris ?"); break;
   }
 
-  return { 
-    text: advices[Math.floor(Math.random() * advices.length)], 
-    mood: 'info' 
-  };
+  if (c.atouts?.some(a => a && a.includes('Ami des pixies'))) {
+    pool.push("{excl} Tu es {un} Ami{e} des Pixies ! C'est pour ça que je suis venue te voir !");
+  }
+
+  // Fallback si le pool est vide
+  if (pool.length === 0) {
+    pool.push("{excl} Je m'ennuie... Je vais {action} pour passer le temps !");
+    pool.push("Dis, {nom}, tu crois qu'on aura bientôt fini de remplir tout ça ?");
+  }
+
+  return generateUnique(pool, 'info');
 };

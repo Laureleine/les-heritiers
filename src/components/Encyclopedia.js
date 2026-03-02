@@ -1,5 +1,5 @@
 // src/components/Encyclopedia.js
-// 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 // 9.4.0
+// 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 // 9.4.0 // 9.6.0
 //
 
 import React, { useState, useEffect } from 'react';
@@ -8,6 +8,10 @@ import { logger } from '../utils/logger';
 import { Book, Search, X, Shield, Sparkles, Plus } from 'lucide-react';
 import EncyclopediaModal from './EncyclopediaModal'; 
 import EncyclopediaCard from './EncyclopediaCard';
+import { invalidateAllCaches } from '../utils/supabaseGameData';
+import ConfirmModal from './ConfirmModal';
+import { showInAppNotification } from '../utils/notificationSystem'; // On importe vos belles notifications
+
 
 export default function Encyclopedia({ userProfile, onBack, onOpenValidations }) {
   const [activeTab, setActiveTab] = useState('fairy_types'); // 'fairy_types', 'fairy_capacites', etc.
@@ -28,6 +32,8 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
   const [allAtouts, setAllAtouts] = useState([]); 
   const [allFairyTypes, setAllFairyTypes] = useState([]); // 👈 Liste des Fées pour la relation inversée
   const [pendingLocks, setPendingLocks] = useState([]); // 👈 NOUVEAU
+
+  const [confirmState, setConfirmState] = useState({ isOpen: false, action: null, message: '' });
 
   // Charger les listes de référence une seule fois au démarrage
   useEffect(() => {
@@ -110,6 +116,47 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
     return name.toLowerCase().includes(searchStr) || desc.toLowerCase().includes(searchStr);
   });
 
+  // ----------------------------------------------------------------------
+  // 🛡️ LE MARTEAU DES GARDIENS (Préparation de la modale)
+  // ----------------------------------------------------------------------
+  const handleToggleSealClick = (item, tabName) => {
+    const action = item.is_sealed ? 'briser le sceau de' : 'sceller définitivement';
+    
+    // Au lieu du laid window.confirm, on ouvre notre modale magique :
+    setConfirmState({
+      isOpen: true,
+      message: `En tant que Gardien, voulez-vous vraiment ${action} "${item.name || item.nom}" ?`,
+      action: () => executeToggleSeal(item, tabName) // On mémorise le sortilège à lancer
+    });
+  };
+
+  // ----------------------------------------------------------------------
+  // ✨ L'EXÉCUTION (Si le Gardien confirme)
+  // ----------------------------------------------------------------------
+  const executeToggleSeal = async (item, tabName) => {
+    setConfirmState({ isOpen: false }); // On ferme la modale
+
+    try {
+      const { error } = await supabase.rpc('toggle_item_seal', {
+        p_table_name: tabName,
+        p_record_id: item.id,
+        p_new_status: !item.is_sealed
+      });
+
+      if (error) throw error;
+
+      // Adieu le vilain alert() ! Bonjour la jolie notification glissante !
+      showInAppNotification(`✨ Le savoir a été ${item.is_sealed ? 'libéré' : 'cristallisé'} avec succès !`, 'success');
+      
+      invalidateAllCaches();
+      fetchData(); 
+      
+    } catch (err) {
+      console.error("Erreur lors du scellage :", err);
+      showInAppNotification("Une interférence magique a empêché le scellage : " + err.message, "error");
+    }
+  };
+  
   // 🌟 Ouvrir le modal en mode CRÉATION 
   const handleCreate = () => {
     setIsCreating(true);
@@ -305,6 +352,8 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
                 activeTab={activeTab}
                 onOpenEdit={handleOpenEdit}
                 isLocked={pendingLocks.includes(item.id)} // 👈 NOUVEAU : Transmission du verrou
+                onToggleSeal={handleToggleSealClick} /* ✅ La bonne fonction ! */
+                userProfile={userProfile} 
               />
             ))}
             {filteredData.length === 0 && (
@@ -334,11 +383,22 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
           allCompFutiles={allCompFutiles}
           allFairyTypes={allFairyTypes} // 👈 NOUVEAU ! Transmission vitale
           onSuccess={() => {          // 👈 NOUVEAU
-            setEditingItem(null);
-            fetchPendingLocks();      // Rafraîchit les cadenas instantanément !
+          setEditingItem(null);
+          fetchPendingLocks();      // Rafraîchit les cadenas instantanément !
           }}
         />
       )}
+	  
+	  {/* LA MODALE DE CONFIRMATION DES GARDIENS */}
+      <ConfirmModal 
+        isOpen={confirmState.isOpen}
+        title="Apposer le Sceau"
+        message={confirmState.message}
+        onConfirm={confirmState.action}
+        onCancel={() => setConfirmState({ isOpen: false })}
+        confirmText="Que ma volonté soit faite"
+        cancelText="Finalement, non"
+      />
     </div>
   );
 }

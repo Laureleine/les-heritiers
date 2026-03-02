@@ -1,10 +1,10 @@
 // src/components/EncyclopediaCard.js
-// 8.20.0
+// 8.20.0 // 9.6.0
 
 import React from 'react';
-import { Feather, Sparkles, Star, Lock } from 'lucide-react';
+import { Feather, Sparkles, Star, Lock, ShieldCheck, ShieldAlert, Unlock } from 'lucide-react';
 
-export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked }) {
+export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked, onToggleSeal, userProfile }) {
   const title = item.name || item.nom;
   const desc = item.description || item.desc;
   const isRestricted = item.is_official === false;
@@ -16,7 +16,14 @@ export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group flex flex-col h-full">
-      <div className="flex justify-between items-start mb-3">
+      {/* LE SCEAU VISUEL EN HAUT DE LA CARTE */}
+      {item.is_sealed && (
+        <div className="absolute top-3 right-3 text-amber-700/80 z-10" title="Savoir cristallisé par les Gardiens">
+           <ShieldCheck size={28} className="drop-shadow-md" />
+        </div>
+      )}
+	  
+	  <div className="flex justify-between items-start mb-3">
         <h3 className="font-serif font-bold text-lg text-amber-900">{title}</h3>
         <div className="flex gap-2">
           {typeBadge && <span className="text-[10px] bg-purple-100 text-purple-800 px-2 py-1 rounded-full uppercase font-bold tracking-wider">{typeBadge}</span>}
@@ -88,22 +95,40 @@ export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked
         </div>
       )}
 	  
-      {/* BOUTON D'ÉDITION (Visible au survol, ou fixe si verrouillé) */}
-      <div className={`mt-4 pt-4 border-t border-gray-50 flex justify-end transition-opacity ${isLocked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-        {isLocked ? (
-          <span className="text-xs font-bold text-gray-400 flex items-center gap-1 cursor-not-allowed bg-gray-100 px-2 py-1 rounded" title="Une proposition est déjà en cours d'examen par le Conseil.">
-            <Lock size={14} /> En cours de révision
-          </span>
+      {/* GESTION DES ÉTATS (Scellé / En révision / Éditable) */}
+      <div className="mt-6">
+        {item.is_sealed ? (
+          <div className="text-sm font-serif font-bold text-amber-900/70 flex items-center justify-center gap-2 py-3 rounded-lg border border-amber-900/20 bg-gradient-to-r from-amber-50 to-orange-50 shadow-inner">
+            <ShieldCheck size={18} className="text-amber-700" /> Savoir scellé par le Conseil
+          </div>
+        ) : isLocked ? (
+          <div className="text-sm font-serif italic text-stone-500 flex items-center justify-center gap-2 py-3 rounded-lg border border-stone-200 bg-stone-50">
+            <Lock size={16} /> En cours de révision par un Héritier
+          </div>
         ) : (
-          <button
+          <button 
             onClick={() => onOpenEdit(item)}
-            className="text-xs font-bold text-amber-600 hover:text-amber-800 flex items-center gap-1"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-stone-100 text-stone-700 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-sm shadow-sm"
           >
-            <Feather size={14} /> Suggérer une modification
+            <Feather size={16} /> Suggérer une modification
           </button>
         )}
       </div>
 
+      {/* 3. LE PRIVILÈGE DES GARDIENS (Pour Briser ou Apposer le sceau manuellement) */}
+      {(userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien') && (
+        <button
+          onClick={() => onToggleSeal(item, activeTab)} /* 👈 LA MAGIE OPÈRE ICI */
+          className={`flex items-center gap-2 px-4 py-2 mt-3 text-xs font-bold font-serif uppercase tracking-wider rounded-lg transition-all border w-full justify-center
+            ${item.is_sealed 
+              ? 'bg-stone-900 text-amber-400 border-amber-700 hover:bg-stone-800' 
+              : 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'}`}
+        >
+          {item.is_sealed ? <Unlock size={14}/> : <Lock size={14}/>}
+          {item.is_sealed ? 'Briser le Sceau' : 'Apposer le Sceau'}
+        </button>
+      )}	  
+	  
     </div>
   );
 }

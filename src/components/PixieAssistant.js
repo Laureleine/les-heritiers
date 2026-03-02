@@ -1,12 +1,12 @@
 // src/components/PixieAssistant.js
-// 9.4.0
+// 9.4.0 // 9.6.0
 //
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, AlertCircle, CheckCircle2, Info } from 'lucide-react';
 import { getPixieAdvice } from '../utils/pixieBrain';
 
-export default function PixieAssistant({ character, step }) {
+export default function PixieAssistant({ character, step, fairyData }) {
   const [position, setPosition] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
   const [isTalking, setIsTalking] = useState(false);
   const [message, setMessage] = useState({ text: "", mood: "info" });
@@ -39,9 +39,9 @@ export default function PixieAssistant({ character, step }) {
 
   // ✨ NOUVEAU : Pixie scrute le personnage en silence à chaque étape
   useEffect(() => {
-    const analysis = getPixieAdvice(character || {}, step);
+    const analysis = getPixieAdvice(character || {}, step, fairyData); // 👈 Ajout ici
     setSilentMood(analysis.mood);
-  }, [character, step]);
+  }, [character, step, fairyData]); // 👈 Ajout ici
 
   const fermerBulleEtFuir = () => {
     setIsTalking(false);
@@ -50,7 +50,7 @@ export default function PixieAssistant({ character, step }) {
   };
 
   const handleAttraperPixie = () => {
-    const advice = getPixieAdvice(character || {}, step);
+    const advice = getPixieAdvice(character || {}, step, fairyData); // 👈 Ajout ici
     setMessage(advice);
     setIsTalking(true);
   };

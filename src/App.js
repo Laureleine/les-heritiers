@@ -1,5 +1,5 @@
 // src/App.js
-// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0
+// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0
 //
 
 import React, { useState, useEffect, useReducer } from 'react';
@@ -22,6 +22,7 @@ import AlertSystem from './components/AlertSystem';
 import Telegraphe from './components/Telegraphe';
 import PixieAssistant from './components/PixieAssistant';
 import DiceRoller from './components/DiceRoller';
+import AdminStats from './components/AdminStats';
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -461,6 +462,8 @@ function App() {
             onOpenAccount={() => setView('account')}
             onSignOut={handleSignOut}
             onOpenAdminUsers={() => setView('admin_users')}
+            onOpenAdminStats={() => setView('admin_stats')} /* 👈 NOUVELLE LIGNE */
+
           />
         )}
 
@@ -471,7 +474,9 @@ function App() {
         {/* VUE 3 : COMPTE & SYSTEME */}
         {view === 'account' && <AccountSettings session={session} onBack={() => setView('list')} />}
         {view === 'changelog' && <Changelog onBack={() => setView('list')} />}
-        {view === 'admin_users' && <AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} />}
+		{view === 'admin_users' && <AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} />}
+		{/* 👇 NOUVELLE LIGNE 👇 */}
+		{view === 'admin_stats' && <AdminStats onBack={() => setView('list')} />}
 
         {/* VUE 4 : LE CRÉATEUR DE PERSONNAGE */}
         {view === 'creator' && (
@@ -608,8 +613,7 @@ function App() {
       <DiceRoller />
 
       {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT (Seulement dans le créateur) */}
-      {view === 'creator' && <PixieAssistant character={character} step={step} />}
-
+	  {view === 'creator' && <PixieAssistant character={character} step={step} fairyData={gameData.fairyData} />}
     </div>
   );
 }

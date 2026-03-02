@@ -1,11 +1,11 @@
 // src/components/Auth.js
-// Version: 4.1.0 - FIX LOGIN REDIRECT
-// Ajout : Redirection garantie après login
+// 9.6.0
 
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { translateError } from '../utils/errorHandler';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -63,16 +63,7 @@ export default function Auth() {
 
     } catch (error) {
       console.error("❌ Erreur Auth:", error);
-      
-      if (error.message.includes('Rate limit exceeded') || error.message.includes('Too many requests')) {
-        setError("Trop de tentatives. Attendez ou vérifiez vos spams.");
-      } else if (error.message.includes('User already registered')) {
-        setError("Email déjà utilisé. Connectez-vous.");
-      } else if (error.message.includes('Invalid login credentials')) {
-        setError("Email ou mot de passe incorrect.");
-      } else {
-        setError(error.message);
-      }
+      setError(translateError(error)); // 👈 Utilisation du traducteur
     } finally {
       setLoading(false);
     }
@@ -157,10 +148,23 @@ export default function Auth() {
               </div>
             )}
 
-            {/* Erreur */}
+            {/* L'Encart d'Erreur "Sceau Brisé" */}
             {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center gap-2">
-                <AlertCircle size={16} /> {error}
+              <div className="relative overflow-hidden bg-[#2a1313] text-red-100 p-4 rounded-xl border border-red-900/50 shadow-[0_0_15px_rgba(153,27,27,0.4)] animate-fade-in-up">
+                {/* Petit effet de fumée / texture de fond */}
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
+                
+                <div className="flex items-start gap-3 relative z-10">
+                  <div className="bg-red-950/50 p-1.5 rounded-lg border border-red-800/50 shrink-0">
+                    <AlertCircle size={20} className="text-red-400" />
+                  </div>
+                  <div className="pt-0.5">
+                    <h4 className="text-red-400 font-bold font-serif text-sm uppercase tracking-wider mb-0.5">Avertissement</h4>
+                    <p className="text-sm font-serif italic text-red-200/90 leading-snug">
+                      {error}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
