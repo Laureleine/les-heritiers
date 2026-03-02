@@ -1,11 +1,12 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 // 9.3.0 // 9.6.0
+// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 // 9.3.0 // 9.6.0 // 9.7.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { AVAILABLE_BADGES } from '../data/badges';
+import ConfirmModal from './ConfirmModal';
 
 const TABLE_NAME = 'data_change_requests';
 
@@ -19,6 +20,14 @@ export default function ValidationsPendantes({ session, onBack }) {
   const [copiedId, setCopiedId] = useState(null);
   const [activeTab, setActiveTab] = useState('pending');
 
+  const [confirmState, setConfirmState] = useState({ 
+    isOpen: false, 
+    action: null, 
+    title: '', 
+    message: '', 
+    confirmText: '' 
+  });
+  
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
@@ -52,14 +61,51 @@ export default function ValidationsPendantes({ session, onBack }) {
   // ----------------------------------------------------------------------
   // LE CHIRURGIEN SQL (Générateur) - AVEC SCELLAGE
   // ----------------------------------------------------------------------
-  const handleApprove = async (change, seal = false) => {
+  // ======================================================================
+  // 🛡️ PRÉPARATION DES MODALES (Les Clics)
+  // ======================================================================
+
+  const handleApproveClick = (change, seal = false) => {
     const msg = seal 
-      ? "🛡️ Valider et SCELLER DÉFINITIVEMENT cet élément ?" 
+      ? "🛡️ Voulez-vous vraiment valider et SCELLER DÉFINITIVEMENT cet élément ?" 
       : "Valider cette modification et générer l'ordre SQL ?";
-      
-    if (!window.confirm(msg)) return;
+
+    setConfirmState({
+      isOpen: true,
+      title: seal ? "Apposer le Sceau" : "Valider la proposition",
+      message: msg,
+      confirmText: seal ? "Approuver et Sceller" : "Générer SQL",
+      action: () => executeApprove(change, seal)
+    });
+  };
+
+  const handleArchiveClick = (changeId) => {
+    setConfirmState({
+      isOpen: true,
+      title: "Archiver la proposition",
+      message: "Avez-vous bien exécuté ce code SQL dans Supabase ? L'application va se synchroniser automatiquement.",
+      confirmText: "Oui, c'est exécuté",
+      action: () => executeArchive(changeId)
+    });
+  };
+
+  const handleRejectClick = (changeId) => {
+    setConfirmState({
+      isOpen: true,
+      title: "Rejeter la proposition",
+      message: "Voulez-vous rejeter définitivement cette proposition ?",
+      confirmText: "Rejeter sans pitié",
+      action: () => executeReject(changeId)
+    });
+  };
+  
+  const executeApprove = async (change, seal = false) => {
+    setConfirmState({ isOpen: false }); // 👈 On ferme la modale
+    
+    // SUPPRIMEZ cette ligne : if (!window.confirm(msg)) return;
 
     try {
+      // (Gardez tout le reste de votre gigantesque générateur SQL intact !)
       const proposedData = change.new_data || change.proposed_data || {};
       
       // ✨ MAGIE : On injecte le sceau ! Le générateur SQL l'ajoutera tout seul à l'UPDATE !
@@ -215,19 +261,17 @@ export default function ValidationsPendantes({ session, onBack }) {
     }
   };
 
-	const handleArchive = async (changeId) => {
-	  if (!window.confirm("Avez-vous bien exécuté ce code SQL dans Supabase ? L'application va se synchroniser automatiquement.")) return;
+  const executeArchive = async (changeId) => {
+    setConfirmState({ isOpen: false });
+    const { error } = await supabase.from(TABLE_NAME).update({ status: 'archived' }).eq('id', changeId);
+    if (!error) {
+      invalidateAllCaches(); 
+      loadChanges();         
+    }
+  };
 
-	  const { error } = await supabase.from(TABLE_NAME).update({ status: 'archived' }).eq('id', changeId);
-
-	  if (!error) {
-		invalidateAllCaches(); // 1. On purge la mémoire temporaire pour que l'Encyclopédie se mette à jour
-		loadChanges();         // 2. 🪄 On rafraîchit uniquement la liste du Conseil sans vous expulser de la page !
-	  }
-	};
-
-  const handleReject = async (changeId) => {
-    if (!window.confirm("Rejeter définitivement cette proposition ?")) return;
+  const executeReject = async (changeId) => {
+    setConfirmState({ isOpen: false });
     const { error } = await supabase.from(TABLE_NAME).update({ status: 'rejected' }).eq('id', changeId);
     if (!error) loadChanges();
   };
@@ -317,48 +361,33 @@ export default function ValidationsPendantes({ session, onBack }) {
 
       <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
           {/* BOUTONS D'ACTION */}
+          {/* Si En Attente */}
           {change.status === 'pending' && (
-            <div className="flex flex-wrap gap-3 mt-4 animate-fade-in-up">
-              <button 
-                onClick={() => handleApprove(change, false)} 
-                className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 hover:bg-green-200 font-bold rounded-lg transition-colors border border-green-300 shadow-sm"
-              >
-                <Check size={18} /> Approuver
+            <>
+              <button onClick={() => handleRejectClick(change.id)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                <X size={18} /> Rejeter
               </button>
-              
-              <button 
-                onClick={() => handleApprove(change, true)} 
-                className="flex items-center gap-2 px-4 py-2 bg-amber-700 text-white hover:bg-amber-800 font-bold rounded-lg transition-colors shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-amber-900 group"
-              >
+              <button onClick={() => handleApproveClick(change, false)} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
+                <Check size={18} /> Valider
+              </button>
+              <button onClick={() => handleApproveClick(change, true)} className="flex items-center gap-2 px-4 py-2 bg-amber-700 text-white hover:bg-amber-800 font-bold rounded-lg transition-colors shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-amber-900 group">
                 <Shield size={18} className="text-amber-300 group-hover:scale-110 transition-transform" /> 
                 Approuver & Sceller
               </button>
-
-              <button 
-                onClick={() => handleReject(change)} 
-                className="flex items-center gap-2 px-4 py-2 bg-rose-100 text-rose-800 hover:bg-rose-200 font-bold rounded-lg transition-colors border border-rose-300 shadow-sm ml-auto"
-              >
-                <X size={18} /> Rejeter
-              </button>
-            </div>
+            </>
           )}
-		  
-        {change.status === 'approved' && (
-          <>
-            <button onClick={() => handleArchive(change.id)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
-              <Check size={18} /> J'ai exécuté le SQL (Archiver)
-            </button>
-            <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
-              <ArrowLeft size={16} /> Remettre en attente
-            </button>
-          </>
-        )}
 
-        {(change.status === 'archived' || change.status === 'rejected') && (
-          <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
-            <ArrowLeft size={16} /> Remettre en attente
-          </button>
-        )}
+          {/* Si Approuvé (SQL Généré) */}
+          {change.status === 'approved' && (
+            <>
+              <button onClick={() => handleArchiveClick(change.id)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
+                <Check size={18} /> J'ai exécuté le SQL (Archiver)
+              </button>
+              <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                <ArrowLeft size={16} /> Remettre en attente
+              </button>
+            </>
+          )}		  
       </div>
     </div>
   );
@@ -415,6 +444,17 @@ export default function ValidationsPendantes({ session, onBack }) {
           <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-white/50">L'historique est vide.</p>
         )}
       </div>
-    </div>
+	  
+      {/* LA MODALE DE CONFIRMATION DES GARDIENS */}
+      <ConfirmModal 
+        isOpen={confirmState.isOpen}
+        title={confirmState.title}
+        message={confirmState.message}
+        onConfirm={confirmState.action}
+        onCancel={() => setConfirmState({ isOpen: false })}
+        confirmText={confirmState.confirmText}
+        cancelText="Finalement, non"
+      />
+    </div> // Fin du return
   );
 }
