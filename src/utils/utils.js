@@ -1,5 +1,6 @@
 // src/utils/utils.js
-// 8.32.0 // 9.6.0
+// 8.32.0 
+// 9.6.0 // 9.11.0
 
 import { supabase } from '../config/supabase';
 import { CARAC_LIST } from '../data/constants';
@@ -403,11 +404,13 @@ export const exportToPDF = (character, fairyData = {}) => {
           <div class="section-title" style="background: #166534;">Détails & Inventaire</div>
           <div class="grid-2">
             <div class="box">
-              <span class="field-label">Compétences Futiles</span>
-              <ul class="list-items" style="margin-top: 5px; padding-left: 15px;">
-                ${Object.entries(character.competencesFutiles?.rangs || {}).map(([nom, val]) => `<li>${nom} <b>(${val})</b></li>`).join('') || '<li><i>Aucune</i></li>'}
-              </ul>
-              
+			  <span class="field-label">Compétences Futiles</span>
+				<ul class="list-items" style="margin-top: 5px; padding-left: 15px;">
+				  ${Object.entries(character.computedStats?.futilesTotal || {}).map(([nom, val]) => {
+					const displayNom = nom.toLowerCase().includes('au choix') ? (character.competencesFutiles?.precisions?.[nom] || nom) : nom;
+					return `<li>${displayNom} <b>(${val})</b></li>`;
+				  }).join('') || '<li><i>Aucune</i></li>'}
+				</ul>
               <span class="field-label" style="margin-top: 15px;">Langues maîtrisées</span>
               <div class="list-items" style="margin-top: 5px;">
                 Français (Maternelle)<br/>

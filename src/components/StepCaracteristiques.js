@@ -1,5 +1,6 @@
-// src/components/StepCaracteristiques.js
-// 8.32.0 // 9.4.0
+// src/compoents/StepCaracteristiques.js
+// 8.32.0 
+// 9.4.0 // 9.11.0
 //
 
 import React from 'react';
@@ -139,20 +140,22 @@ export default function StepCaracteristiques({ character, onCaracteristiquesChan
             {/* Grille des Caractéristiques (inchangée mais avec padding pour les gros doigts) */}
             {/* CORRECTION : 1 colonne sur mobile (grid-cols-1), 2 colonnes sur PC (md:grid-cols-2) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {CARAC_LIST.map((carac) => {
-                    const min = feeData.caracteristiques[carac.key]?.min || 1;
-                    const current = currentCaracs[carac.key] || min;
-                    const investis = current - min;
+ 				{CARAC_LIST.map((carac) => {
+				  const min = feeData.caracteristiques[carac.key]?.min || 1;
+				  const max = feeData.caracteristiques[carac.key]?.max || 6; // 👈 NOUVEAU : Récupération du Max
+				  const current = currentCaracs[carac.key] || min;
+				  const investis = current - min;
 
-                    return (
-                        <div key={carac.key} className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
-                            <div className="flex items-center gap-3">
-                                <span className="text-2xl">{carac.icon}</span>
-                                <div>
-                                    <div className="font-bold text-gray-800">{carac.label}</div>
-                                    <div className="text-xs text-gray-400">Min {min}</div>
-                                </div>
-                            </div>
+				  return (
+					<div key={carac.key} className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+					  <div className="flex items-center gap-3">
+						<span className="text-2xl">{carac.icon}</span>
+						<div>
+						  <div className="font-bold text-gray-800">{carac.label}</div>
+						  {/* 👈 NOUVEAU : Affichage du Min et du Max */}
+						  <div className="text-xs font-bold text-gray-400">Min {min} <span className="text-gray-300 font-normal">/</span> Max {max}</div>
+						</div>
+					  </div>
 
                             <div className="flex items-center gap-1">
                                 {/* BOUTONS PLUS GROS POUR LE MOBILE (h-10 w-10) */}
