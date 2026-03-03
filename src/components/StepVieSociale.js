@@ -1,5 +1,5 @@
 // src/components/StepVieSociale.js
-// 9.3.0 // 9.9.0
+// 9.3.0 // 9.9.0 // 9.11.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';
@@ -176,38 +176,11 @@ export default function StepVieSociale({ character, onCharacterChange, fairyData
   }, [feeData, character.competencesLibres]);
 
   // 3. Le Calculateur de Budget Parfait
+  // 🧠 NOUVEAU : Lecture ultra-rapide du Budget PP calculé depuis App.js !
   const getBudgetInitial = (profilNom) => {
-    const compsMap = {
-      'Aventurier': ['Conduite', 'Mouvement', 'Ressort', 'Survie'],
-      'Combattant': ['Art de la guerre', 'Autorité', 'Mêlée', 'Tir'],
-      'Érudit': ['Culture', 'Fortitude', 'Occultisme', 'Rhétorique'],
-      'Gentleman': ['Classe', 'Entregent', 'Séduction', 'Sensibilité'],
-      'Roublard': ['Comédie', 'Larcin', 'Discrétion', 'Monde du crime'],
-      'Savant': ['Habiletés', 'Médecine', 'Observation', 'Sciences']
-    };
-
-    let sommeScores = 0;
-    const isMajeur = character.profils?.majeur?.nom === profilNom;
-    const isMineur = character.profils?.mineur?.nom === profilNom;
-    const bonusProfil = isMajeur ? 2 : isMineur ? 1 : 0;
-
-    (compsMap[profilNom] || []).forEach(nomComp => {
-      const investis = character.competencesLibres?.rangs?.[nomComp] || 0;
-      const bonusPred = predFinales.includes(nomComp) ? 2 : 0;
-      const bonusAtout = atoutsRangs[nomComp] || 0;
-
-      // 🎯 La somme totale RÉELLE de la compétence (comme dans le livre de base !)
-      sommeScores += (bonusProfil + bonusPred + bonusAtout + investis);
-    });
-
-    const rang = Math.floor(sommeScores / 4);
-
-    // Ajout des bonus fixes de Profils Majeur (+8) et Mineur (+4)
-    if (isMajeur) return rang + 8;
-    if (isMineur) return rang + 4;
-    return Math.max(0, rang); // Un profil non sélectionné donne quand même PP = Rang
+    return character.computedStats?.budgetsPP?.[profilNom] || 0;
   };
-
+  
   const budgetsInfo = useMemo(() => {
     let freeContactsTotal = character.computedStats?.contactsGratuits || 0;
     if (freeContactsTotal === 0 && !character.computedStats) {

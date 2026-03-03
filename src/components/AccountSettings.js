@@ -1,9 +1,9 @@
 // AccountSettings.js
-// 9.7.0
+// 9.7.0 // 9.11.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { User, Lock, Mail } from 'lucide-react';
+import { User, Lock, Mail, Gem, ExternalLink } from 'lucide-react';
 
 export default function AccountSettings({ session, onBack }) {
   const [profile, setProfile] = useState(null);
@@ -114,6 +114,43 @@ export default function AccountSettings({ session, onBack }) {
           <p className="text-xs text-stone-500 mt-2 ml-14 font-serif italic">
             Si les animations vous déconcentrent, vous pouvez renvoyer l'assistante virtuelle dans sa lanterne.
           </p>
+        </div>
+
+        {/* ✨ L'ENCART DU MÉCÉNAT ✨ */}
+        <div className="pt-6 mt-6 border-t border-amber-200">
+          <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-5 shadow-sm group">
+            
+            {/* Filigrane de fond */}
+            <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+              <Gem size={100} />
+            </div>
+
+            <div className="relative z-10">
+              <h3 className="text-lg font-serif font-bold text-amber-900 mb-2 flex items-center gap-2">
+                <Gem className="text-amber-600" size={20} /> 
+                Devenir Mécène du Grimoire
+              </h3>
+              
+              <p className="text-sm text-amber-800/80 mb-4 leading-relaxed font-serif">
+                L'entretien de ces archives pneumatiques et la rémunération de Pixie demandent beaucoup d'efforts. 
+                Si cet outil vous est utile, vous pouvez soutenir son créateur en laissant quelques francs. 
+                <br/><br/>
+                <span className="italic font-bold text-amber-900">
+                  🎁 Indiquez votre pseudo "{profile?.username || "VotrePseudo"}" lors de votre don pour recevoir le titre honorifique de "Mécène" sur votre profil !
+                </span>
+              </p>
+
+              {/* Remplacer le href par votre vrai lien Ko-Fi, Tipeee, etc. */}
+              <a 
+                href="https://ko-fi.com/azghal" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors text-sm"
+              >
+                Soutenir le projet <ExternalLink size={16} />
+              </a>
+            </div>
+          </div>
         </div>
 		
         <div className="flex gap-4 pt-4">

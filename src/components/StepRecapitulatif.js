@@ -1,13 +1,12 @@
 // src/components/StepRecapitulatif.js
 // 8.23.0 // 8.32.0
+// 9.11.0
 
 import React from 'react';
 import { User, Star, Award, Sparkles, Feather, Shield, Zap } from 'lucide-react';
 import { CARAC_LIST } from '../data/constants';
 
-export default function StepRecapitulatif({ character, onCharacterChange, fairyData }) {
-  const feeData = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
-
+export default function StepRecapitulatif({ character, onCharacterChange }) {
   // Helper pour mise à jour générique de l'identité
   const updateField = (field, value) => {
     if (onCharacterChange) {
@@ -15,30 +14,11 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
     }
   };
 
-  // --- CALCUL DES COMPÉTENCES FUTILES (La magie Hybride !) ---
-  const getFutilesList = () => {
-    const futilesList = [];
-    
-    // 1. Prédilections fixes de la fée
-    if (feeData?.competencesFutilesPredilection) {
-      feeData.competencesFutilesPredilection.forEach(p => {
-        if (typeof p === 'string') futilesList.push(p);
-      });
-    }
-    // 2. Prédilections choisies dans les menus déroulants
-    Object.values(character.competencesFutiles?.choixPredilection || {}).forEach(c => futilesList.push(c));
-    // 3. Compétences où des points ont été investis
-    Object.keys(character.competencesFutiles?.rangs || {}).forEach(c => futilesList.push(c));
-
-    // Déduplication
-    return Array.from(new Set(futilesList)).filter(Boolean);
-  };
-
-  const uniqueFutiles = getFutilesList();
+  // ✨ DRY : On récupère simplement les clés du dictionnaire des totaux
+  const uniqueFutiles = Object.keys(character.computedStats?.futilesTotal || {}).sort((a, b) => a.localeCompare(b));
 
   return (
     <div className="space-y-8 animate-fade-in max-w-5xl mx-auto pb-12">
-      
       {/* 1. EN-TÊTE & IDENTITÉ SOCIALE (EDITABLE) */}
       <div className="bg-white rounded-xl shadow-md border border-amber-100 overflow-hidden">
         <div className="bg-amber-900/5 p-4 border-b border-amber-100 flex justify-between items-center">
@@ -113,7 +93,7 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
       {/* 2. RÉCAPITULATIF TECHNIQUE (LECTURE SEULE) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* === COLONNE GAUCHE (Caracs & Profils) === */}
+        {/* === COLONNE GAUCHE (Caracs, Profils & Futiles) === */}
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
             <h3 className="font-serif font-bold text-lg mb-4 text-amber-900 border-b border-amber-100 pb-2 flex items-center gap-2">
@@ -163,21 +143,21 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
             {uniqueFutiles.length > 0 ? (
               <ul className="space-y-2">
                 {uniqueFutiles.map(nomComp => {
-                  // 👈 LE TOUR DE MAGIE EST ICI : Le remplacement conditionnel
                   const isChoiceRelated = nomComp.toLowerCase().includes('au choix');
                   const displayNom = isChoiceRelated 
-                    ? (character.competencesFutiles?.precisions?.[nomComp] || nomComp) 
+                    ? (character.competencesFutiles?.precisions?.[nomComp] || nomComp)
                     : nomComp;
-
-                  const rangs = character.competencesFutiles?.rangs?.[nomComp] || 0;
                   
+                  // ✨ On affiche le VRAI total calculé par App.js
+                  const total = character.computedStats?.futilesTotal?.[nomComp] || 0;
+
                   return (
                     <li key={nomComp} className="flex justify-between items-center bg-emerald-50/30 p-2 rounded border border-emerald-100 text-sm">
-                      <span className="font-semibold text-gray-700">
+                      <span className="font-semibold text-emerald-900 truncate pr-2">
                         {displayNom}
                         {isChoiceRelated && <span className="text-[10px] text-emerald-500 ml-2 italic">(Personnalisé)</span>}
                       </span>
-                      {rangs > 0 && <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">+{rangs} pts</span>}
+                      <span className="text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200">{total}</span>
                     </li>
                   );
                 })}
@@ -194,7 +174,6 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
             <h3 className="font-serif font-bold text-lg mb-4 text-purple-900 border-b border-purple-100 pb-2 flex items-center gap-2">
               <Zap size={18} className="text-purple-600" /> Magie & Héritage ({character.typeFee || 'Fée'})
             </h3>
-            
             <div className="space-y-4">
               {/* Capacité Choisie */}
               {character.capaciteChoisie && (
@@ -238,21 +217,26 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
 
           <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
             <h3 className="font-serif font-bold text-lg mb-4 text-blue-900 border-b border-blue-100 pb-2 flex items-center gap-2">
-              <User size={18} className="text-blue-600" /> Compétences Utiles (Investies)
+              <User size={18} className="text-blue-600" /> Compétences Utiles
             </h3>
-            {character.competencesLibres?.rangs && Object.keys(character.competencesLibres.rangs).length > 0 ? (
+            
+            {/* ✨ DRY : On lit le score TOTAL de chaque compétence utile */}
+            {character.computedStats?.competencesTotal && Object.values(character.computedStats.competencesTotal).some(v => v > 0) ? (
               <div className="grid grid-cols-2 gap-2">
-                {Object.entries(character.competencesLibres.rangs).map(([nom, val]) => (
-                  <div key={nom} className="flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200 text-sm">
+                {Object.entries(character.computedStats.competencesTotal)
+                  .filter(([nom, total]) => total > 0)
+                  .sort(([nomA], [nomB]) => nomA.localeCompare(nomB))
+                  .map(([nom, total]) => (
+                  <div key={nom} className="flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200 text-sm shadow-sm">
                     <span className="font-semibold text-gray-700 truncate pr-2" title={nom}>{nom}</span>
-                    <span className="text-blue-800 font-bold bg-blue-100 px-2 py-0.5 rounded">+{val}</span>
+                    <span className="text-blue-800 font-bold bg-blue-100 px-2 py-0.5 rounded border border-blue-200">{total}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-400 italic text-center">Aucun point libre investi.</p>
+              <p className="text-sm text-gray-400 italic text-center">Aucune compétence utile acquise.</p>
             )}
-            
+
             {/* Affichage des spécialités si existantes */}
             {character.competencesLibres?.choixSpecialiteUser && Object.keys(character.competencesLibres.choixSpecialiteUser).length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-100">
@@ -270,7 +254,6 @@ export default function StepRecapitulatif({ character, onCharacterChange, fairyD
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

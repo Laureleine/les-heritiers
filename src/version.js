@@ -7,6 +7,34 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
+	  {
+		version: '9.11.0',
+		date: '3 Mars 2026',
+		changes: [
+		  '🧠 **Super-Calculateur (DRY) :** Centralisation absolue des mathématiques du jeu (Scores de compétences, Rangs, Budgets PP). Le moteur principal calcule tout, garantissant une cohérence parfaite sur tous les écrans.',
+		  '🧚 **Le Cerveau de Pixie :** Pixie prend vie ! Elle possède désormais plus d\'une centaine de répliques intelligentes, réagit à vos erreurs, s\'émerveille de vos atouts et papote sur le lore de la Belle Époque.',
+		  '📄 **Fiche PDF Intelligente :** Les statistiques de combat imprimées (Esquive, Parade, Initiative) prennent désormais en compte *tous* vos modificateurs magiques (Atouts, Prédilections, Profils).',
+		  '🛠️ **Constructeur Universel :** Le puissant Constructeur Visuel de Bonus de l\'Encyclopédie a été modularisé et étendu aux Pouvoirs et aux Capacités.',
+		  '✨ **Ergonomie :** Affichage immédiat des potentiels (Min/Max) lors de la répartition des caractéristiques, et utilisation de votre vrai pseudo dans l\'interface de compte.'
+		]
+	  },
+	  {
+		version: '9.10.0',
+		date: '2 Mars 2026',
+		changes: [
+		  '🐛 **Correctifs (Hotfix) :** Résolution d\'erreurs de syntaxe, nettoyage de variables orphelines et correction de chevauchements lors de la navigation.',
+		  '⚙️ **Stabilité :** Optimisation des imports et consolidation des composants React pour éviter les plantages d\'interface.'
+		]
+	  },
+   {
+      version: '9.7.0',
+      date: '2 Mars 2026',
+      changes: [
+        ' La Lanterne de Pixie : Pour les Héritiers ayant besoin de calme et de concentration, il est désormais possible de renvoyer Pixie dormir dans sa lanterne ! Un bouton d\'action rapide a été ajouté sur sa bulle.',
+        ' Accessibilité & Préférences : Ajout d\'une section dédiée dans les Paramètres du Compte pour réveiller ou rendormir Pixie. Votre choix est sauvegardé sur votre profil.',
+        ' Nouveaux Honneurs : La société féérique s\'enrichit de nouveaux badges honorifiques et personnalisés (Tricheuse, Gardien de la Lanterne...) pour récompenser les faits d\'armes et l\'implication des joueurs.'
+      ]
+    },
     {
       version: '9.6.0',
       date: '2 Mars 2026',
