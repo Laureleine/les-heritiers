@@ -1,5 +1,6 @@
 // src/App.js
-// 8.25.0 // 8.26.0 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0
+// 8.25.0 // 8.26.0 
+// 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0
 //
 
 import React, { useState, useEffect, useReducer } from 'react';
@@ -567,7 +568,7 @@ function App() {
 			  {step === 6 && <StepProfils character={character} onProfilsChange={(p) => handleCharacterChange({ profils: p })} profils={gameData.profils} competencesParProfil={gameData.competencesParProfil} />}
 			  {step === 7 && <StepCompetencesLibres character={character} onCompetencesLibresChange={(c) => handleCharacterChange({ competencesLibres: c })} profils={gameData.profils} competences={gameData.competences} competencesParProfil={gameData.competencesParProfil} fairyData={gameData.fairyData} />}
 			  {step === 8 && <StepCompetencesFutiles character={character} onCompetencesFutilesChange={(c) => handleCharacterChange({ competencesFutiles: c })} fairyData={gameData.fairyData} />}
-			  {step === 9 && <StepVieSociale character={character} onCharacterChange={handleCharacterChange} />}
+			  {step === 9 && <StepVieSociale character={character} onCharacterChange={handleCharacterChange} fairyData={gameData.fairyData} />}
 			  {step === 10 && <StepPersonnalisation character={character} onCharacterChange={handleCharacterChange} />}
 			  {step === 11 && <StepRecapitulatif character={character} fairyData={gameData.fairyData} />}
 			</main>
