@@ -1,5 +1,5 @@
 // src/components/StepVieSociale.js
-// 9.3.0
+// 9.3.0 // 9.9.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';
@@ -83,7 +83,7 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
   );
 };
 
-export default function StepVieSociale({ character, onCharacterChange }) {
+export default function StepVieSociale({ character, onCharacterChange, fairyData }) {
   // 👈 On affiche TOUTES les boutiques !
   const tousLesProfils = useMemo(() => [
     'Aventurier', 'Combattant', 'Érudit', 'Gentleman', 'Roublard', 'Savant'
@@ -141,7 +141,41 @@ export default function StepVieSociale({ character, onCharacterChange }) {
     return Number(item.cout);
   };
 
-  // 👈 NOUVEAU : CALCULATEUR EXACT DU BUDGET PAR PROFIL
+  // ---------------------------------------------------------
+  // 🧠 NOUVEAU : CALCUL COMPLET DES SCORES (Prédilections + Atouts)
+  // ---------------------------------------------------------
+  const feeData = fairyData?.[character.typeFee];
+
+  // 1. Extraction des Rangs offerts par les Atouts
+  const atoutsRangs = useMemo(() => {
+    const rangs = {};
+    if (!character.atouts || !feeData?.atouts) return rangs;
+    character.atouts.forEach(atoutId => {
+      const atout = feeData.atouts.find(a => a.id === atoutId);
+      if (atout && atout.effets_techniques) {
+        try {
+          const tech = JSON.parse(atout.effets_techniques);
+          if (tech.competences) {
+            Object.entries(tech.competences).forEach(([comp, val]) => {
+              rangs[comp] = (rangs[comp] || 0) + val;
+            });
+          }
+        } catch(e) {}
+      }
+    });
+    return rangs;
+  }, [character.atouts, feeData]);
+
+  // 2. Extraction des Prédilections finales de la fée
+  const predFinales = useMemo(() => {
+    if (!feeData?.competencesPredilection) return [];
+    return feeData.competencesPredilection.map((p, i) => {
+      if (p.isChoix) return character.competencesLibres?.choixPredilection?.[i];
+      return p.nom;
+    }).filter(Boolean);
+  }, [feeData, character.competencesLibres]);
+
+  // 3. Le Calculateur de Budget Parfait
   const getBudgetInitial = (profilNom) => {
     const compsMap = {
       'Aventurier': ['Conduite', 'Mouvement', 'Ressort', 'Survie'],
@@ -151,7 +185,7 @@ export default function StepVieSociale({ character, onCharacterChange }) {
       'Roublard': ['Comédie', 'Larcin', 'Discrétion', 'Monde du crime'],
       'Savant': ['Habiletés', 'Médecine', 'Observation', 'Sciences']
     };
-    
+
     let sommeScores = 0;
     const isMajeur = character.profils?.majeur?.nom === profilNom;
     const isMineur = character.profils?.mineur?.nom === profilNom;
@@ -159,14 +193,19 @@ export default function StepVieSociale({ character, onCharacterChange }) {
 
     (compsMap[profilNom] || []).forEach(nomComp => {
       const investis = character.competencesLibres?.rangs?.[nomComp] || 0;
-      sommeScores += (bonusProfil + investis);
+      const bonusPred = predFinales.includes(nomComp) ? 2 : 0;
+      const bonusAtout = atoutsRangs[nomComp] || 0;
+
+      // 🎯 La somme totale RÉELLE de la compétence (comme dans le livre de base !)
+      sommeScores += (bonusProfil + bonusPred + bonusAtout + investis);
     });
 
     const rang = Math.floor(sommeScores / 4);
 
+    // Ajout des bonus fixes de Profils Majeur (+8) et Mineur (+4)
     if (isMajeur) return rang + 8;
     if (isMineur) return rang + 4;
-    return Math.max(0, rang); // Les profils non sélectionnés donnent un budget égal à leur rang !
+    return Math.max(0, rang); // Un profil non sélectionné donne quand même PP = Rang
   };
 
   const budgetsInfo = useMemo(() => {
