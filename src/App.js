@@ -1,7 +1,7 @@
 // src/App.js
 // 8.25.0 // 8.26.0 
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
-//
+// 10.2.0
 
 import React, { useState, useEffect, useReducer } from 'react';
 import { supabase } from './config/supabase';
@@ -24,6 +24,8 @@ import Telegraphe from './components/Telegraphe';
 import PixieAssistant from './components/PixieAssistant';
 import DiceRoller from './components/DiceRoller';
 import AdminStats from './components/AdminStats';
+import PWAPrompt from './components/PWAPrompt';
+import DisclaimerModal from './components/DisclaimerModal';
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -39,7 +41,7 @@ import StepPersonnalisation from './components/StepPersonnalisation';
 import StepRecapitulatif from './components/StepRecapitulatif';
 
 // --- ICONS ---
-import { Save, ChevronRight, List, BookOpen, FileText, Crown, Shield, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
+import { Save, ChevronRight, List, BookOpen, FileText, Crown, Shield } from 'lucide-react';
 import { User, Sparkles, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from 'lucide-react';
 
 function App() {
@@ -279,8 +281,8 @@ function App() {
         const data = await loadAllGameData();
         if (mounted) {
           setGameData(data);
-          const { data: profile } = await supabase
-            .from('profiles').select('role, username, badges, show_pixie') 
+		  const { data: profile } = await supabase
+			.from('profiles').select('role, username, badges, show_pixie, active_badge, dice_theme')
             .eq('id', session.user.id).single();
           
           setSession(session);
@@ -430,7 +432,6 @@ function App() {
   }
 
   const totalSteps = 11;
-  const stepsArray = Array.from({length: totalSteps}, (_, i) => i + 1);
 
   // =========================================================================
   // LE GABARIT GLOBAL : Gère le fond, le titre et les fameuses bandes latérales !
@@ -455,6 +456,10 @@ function App() {
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
       
       <AlertSystem userProfile={userProfile} />
+
+      <PWAPrompt /> {/* 👈 AJOUTEZ-LE ICI */}
+	  
+      <DisclaimerModal /> {/* 👈 AJOUTEZ-LE ICI */}
 
       {/* ================= DÉCORATIONS D'ANGLES (Esotérisme & Steampunk) ================= */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-[0.03] text-amber-950">
@@ -522,26 +527,51 @@ function App() {
           </span>
         </div>
         
-        {/* ZONE DES RÔLES ET BADGES */}
-        <div className="flex flex-wrap justify-center items-center gap-2 mt-3 max-w-2xl mx-auto">
-          {userProfile?.profile?.role === 'super_admin' && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 shadow-sm">Super Admin</span>
-          )}
-          {userProfile?.profile?.role === 'gardien' && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full border border-blue-200 shadow-sm">Gardien du Savoir</span>
-          )}
-          {userProfile?.profile?.badges?.map(badgeId => {
-            const badgeDef = AVAILABLE_BADGES?.find(b => b.id === badgeId);
-            if (!badgeDef) return null;
-            return (
-              <span key={badgeId} className={`inline-flex items-center text-[11px] px-3 py-1 rounded-full border font-bold shadow-sm ${badgeDef.color}`}>
-                {badgeDef.label}
-              </span>
-            );
-          })}
-        </div>
-      </div>
-	  
+          {/* ZONE DES RÔLES ET BADGES */}
+          <div className="flex flex-wrap justify-center items-center gap-2 mt-3 max-w-2xl mx-auto">
+            {userProfile?.profile?.role === 'super_admin' && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 shadow-sm">Super Admin</span>
+            )}
+            {userProfile?.profile?.role === 'gardien' && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full border border-blue-200 shadow-sm">Gardien du Savoir</span>
+            )}
+            
+            {/* ✨ AFFICHAGE DE TOUS LES BADGES (ACTIF EN PREMIER ET PLUS GROS) ✨ */}
+            {(() => {
+              const userBadges = userProfile?.profile?.badges || [];
+              const activeBadgeId = userProfile?.profile?.active_badge;
+
+              // On trie le tableau pour forcer le badge actif à se mettre en première position
+              const sortedBadges = [...userBadges].sort((a, b) => {
+                if (a === activeBadgeId) return -1;
+                if (b === activeBadgeId) return 1;
+                return 0;
+              });
+
+              return sortedBadges.map((badgeId, index) => {
+                const badgeDef = AVAILABLE_BADGES?.find(b => b.id === badgeId);
+                if (!badgeDef) return null;
+
+                // On considère le badge comme actif si c'est celui choisi, OU si aucun n'est choisi mais que c'est le premier de la liste
+                const isActive = badgeId === activeBadgeId || (!activeBadgeId && index === 0);
+
+                return (
+                  <span 
+                    key={badgeId} 
+                    className={`inline-flex items-center border font-bold transition-all cursor-help ${badgeDef.color} ${
+                      isActive 
+                        ? 'text-sm px-3 py-1.5 rounded-full shadow-md ring-2 ring-offset-1 ring-amber-400 z-10 scale-105' 
+                        : 'text-[10px] px-2 py-0.5 rounded-full shadow-sm opacity-70 hover:opacity-100 hover:scale-105'
+                    }`}
+                    title={isActive ? "Titre honorifique actif (Modifiable dans le Grimoire)" : "Titre possédé"}
+                  >
+                    {badgeDef.label}
+                  </span>
+                );
+              });
+            })()}
+          </div>
+</div>
       {/* 2. LE CONTENEUR CENTRAL (C'est lui qui crée les bandes sur TOUTES les vues !) */}
       <div className="max-w-5xl mx-auto px-4 w-full animate-fade-in relative z-10">
         
@@ -573,7 +603,7 @@ function App() {
         {view === 'validations' && <ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} />}
         
         {/* VUE 3 : COMPTE & SYSTEME */}
-        {view === 'account' && <AccountSettings session={session} onBack={() => setView('list')} />}
+		{view === 'account' && <AccountSettings session={session} userProfile={userProfile} onUpdateProfile={() => window.location.reload()} onBack={() => setView('list')} />}
         {view === 'changelog' && <Changelog onBack={() => setView('list')} />}
 		{view === 'admin_users' && <AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} />}
 		{/* 👇 NOUVELLE LIGNE 👇 */}

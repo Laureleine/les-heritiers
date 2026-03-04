@@ -7,6 +7,29 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
+  {
+    version: '10.2.0',
+    date: '4 Mars 2026',
+    changes: [
+      '🎩 **Le Salon VIP "Mon Grimoire" :** Refonte totale de la page Compte transformée en un véritable tableau de bord (Identité, Immersion, Notifications, Mécénat).',
+      '🎖️ **Titres Honorifiques :** Sélectionnez votre Badge favori comme "Titre Actif". Il s\'affichera désormais en grand au sommet de l\'application pour asseoir votre prestige !',
+      '🎲 **Immersion 3D :** Personnalisez l\'esthétique de vos jets de dés (Laiton Steampunk, Ivoire Ancien, Améthyste, Sang) directement depuis vos préférences.',
+      '💎 **Soutien & Mécénat :** Intégration d\'un encart dédié au soutien du projet (Ko-Fi) avec la possibilité de débloquer le titre exclusif de "Mécène".',
+      '💾 **Sauvegarde Unifiée :** Les préférences de Profil et du Corbeau Messager (Notifications) sont désormais synchronisées de façon transparente sous un seul grand bouton de sauvegarde.',
+      '🛡️ **Administration & Sécurité :** Mise en évidence du titre actif des joueurs dans le registre des Gardiens et sécurisation complète (RLS) des préférences de notifications en base de données.'
+    ]
+  },
+ {
+    version: '10.1.0',
+    date: '4 Mars 2026',
+    changes: [
+      '📱 **Application Native (PWA) :** Intégration d\'une invitation intelligente et non-intrusive incitant les joueurs à installer le Grimoire sur leur appareil (PC, Android, iOS) pour une immersion hors-ligne optimale.',
+      '📝 **Moteur Grammatical Universel :** L\'application accorde désormais magiquement les textes (Traits, Noms de Profils, Métiers) en fonction du sexe biologique de votre personnage grâce à une norme pragmatique côté base de données.',
+      '🛡️ **Chirurgie SQL (Gardiens) :** L\'éditeur de l\'Encyclopédie ne réécrit plus tout l\'historique d\'une Fée. Il calcule désormais un "Delta" ultra-précis des relations (Ajouts/Retraits) pour une sécurité absolue de la base.',
+      '👁️ **Audit Visuel :** Le Conseil des Gardiens profite d\'un nouvel encart générant des badges verts (+) et rouges (-) pour comprendre les intentions de requêtes communautaires en un clin d\'œil.',
+      '✨ **Clarification du Flux :** L\'Étape du Masque (Identité) et l\'Étape du Bilan (Tableau de bord final en lecture seule) ont été proprement scindées pour rendre l\'expérience utilisateur encore plus limpide.'
+    ]
+  },
 	  {
 		version: '9.11.0',
 		date: '3 Mars 2026',

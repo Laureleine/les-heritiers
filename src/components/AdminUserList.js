@@ -1,9 +1,10 @@
 // src/components/AdminUserList.js
 // 8.21.0 // 8.22.0 // 8.25.0 // 8.32.0
+// 10.2.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { Shield, User, Crown, Plus, X, Award, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
+import { Shield, User, Crown, Plus, X, Award } from 'lucide-react';
 import { AVAILABLE_BADGES } from '../data/badges';
 
 export default function AdminUserList({ session, onBack }) {
@@ -26,7 +27,7 @@ export default function AdminUserList({ session, onBack }) {
     // 👈 NOUVEAU : On demande la colonne last_seen
     const { data: profiles, error } = await supabase
       .from('profiles')
-      .select('id, username, created_at, role, badges, last_seen') 
+      .select('id, username, created_at, role, badges, active_badge, last_seen')
       .order('last_seen', { ascending: false, nullsFirst: false }); // On trie par les plus récents connectés
 
     if (!error) setUsers(profiles || []);
@@ -137,15 +138,23 @@ export default function AdminUserList({ session, onBack }) {
 
                         {userBadges.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {userBadges.map(badgeId => {
-                              const badgeDef = AVAILABLE_BADGES.find(b => b.id === badgeId);
-                              if (!badgeDef) return null;
-                              return (
-                                <span key={badgeId} className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-bold ${badgeDef.color}`}>
-                                  {badgeDef.label}
-                                </span>
-                              );
-                            })}
+                      {userBadges.map(badgeId => {
+                        const badgeDef = AVAILABLE_BADGES.find(b => b.id === badgeId);
+                        if (!badgeDef) return null;
+                        
+                        // 👈 On vérifie si c'est le badge actif du joueur
+                        const isActive = badgeId === u.active_badge; 
+
+                        return (
+                          <span 
+                            key={badgeId} 
+                            className={`inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-bold transition-all ${badgeDef.color} ${isActive ? 'ring-2 ring-offset-1 ring-amber-400 scale-105' : 'opacity-60'}`}
+                            title={isActive ? "Titre actuellement affiché par le joueur" : "Possédé par le joueur"}
+                          >
+                            {badgeDef.label}
+                          </span>
+                        );
+                      })}
                           </div>
                         )}
                       </div>
