@@ -1,7 +1,7 @@
 // src/components/EncyclopediaModal.js
 // 8.20.0 // 8.21.0 // 8.29.0 
 // 9.4.0 // 9.10.0
-// 10.0.0 // 10.2.0
+// 10.0.0 // 10.2.0 // 10.3.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -32,7 +32,7 @@ export default function EncyclopediaModal({
   const [competencesData, setCompetencesData] = useState([]); // 👈 NOUVEAU
 
   React.useEffect(() => {
-    if (['fairy_types', 'fairy_assets'].includes(activeTab)) {
+    if (['fairy_types', 'fairy_assets', 'fairy_powers', 'fairy_capacites'].includes(activeTab)) {
       const fetchSkills = async () => {
         // 👈 MODIFIÉ : On récupère aussi l'ID et les spécialités liées !
         const { data, error } = await supabase.from('competences').select('id, name, specialites(id, nom, is_official)').order('name');
