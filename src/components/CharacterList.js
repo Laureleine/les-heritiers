@@ -1,11 +1,12 @@
 // src/components/CharacterList.js
 // 8.24.0 // 8.32.0 // 9.1.0 // 9.6.0
+// 10.2.0
 
 import React, { useState, useEffect } from 'react';
 import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2 } from 'lucide-react'; // 👈 Ajoutez BarChart2
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
-import { importCharacter } from '../utils/characterStorage'; // Assurez-vous d'avoir ce fichier ou retirez l'import si non utilisé
+import { importCharacter } from '../utils/utils';
 import { exportToPDF } from '../utils/utils';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { getCurrentUserFast } from '../utils/authHelpers';
