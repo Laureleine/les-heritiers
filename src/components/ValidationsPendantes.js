@@ -1,8 +1,10 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
+// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 
+// 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
+// 10.0.0
 
 import React, { useState, useEffect } from 'react';
-import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb } from 'lucide-react';
+import { Check, X, ArrowLeft, Shield, Copy, User, TestTubeDiagonal, Bug, Bomb, Plus, Minus } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { AVAILABLE_BADGES } from '../data/badges';
@@ -168,22 +170,48 @@ export default function ValidationsPendantes({ session, onBack }) {
           }
         }
 
-        if (_relations.pouvoirs) {
+      if (_relations.pouvoirs) {
+        if (Array.isArray(_relations.pouvoirs)) {
+          // VIEUX FORMAT (Rétrocompatibilité) : Annule et remplace
           sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE fairy_type_id = '${targetId}';\n`;
           if (_relations.pouvoirs.length > 0) {
             const inserts = _relations.pouvoirs.map(id => `('${targetId}', '${id}')`).join(', ');
             sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
           }
+        } else {
+          // NOUVEAU FORMAT CHIRURGICAL : On ajoute et on retire uniquement ce qu'il faut !
+          if (_relations.pouvoirs.removed && _relations.pouvoirs.removed.length > 0) {
+            const removedIds = _relations.pouvoirs.removed.map(id => `'${id}'`).join(', ');
+            sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE fairy_type_id = '${targetId}' AND power_id IN (${removedIds});\n`;
+          }
+          if (_relations.pouvoirs.added && _relations.pouvoirs.added.length > 0) {
+            const inserts = _relations.pouvoirs.added.map(id => `('${targetId}', '${id}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
+          }
         }
+      }
 
-        if (_relations.atouts) {
+      if (_relations.atouts) {
+        if (Array.isArray(_relations.atouts)) {
+          // VIEUX FORMAT
           sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE fairy_type_id = '${targetId}';\n`;
           if (_relations.atouts.length > 0) {
             const inserts = _relations.atouts.map(id => `('${targetId}', '${id}')`).join(', ');
             sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
           }
+        } else {
+          // NOUVEAU FORMAT CHIRURGICAL
+          if (_relations.atouts.removed && _relations.atouts.removed.length > 0) {
+            const removedIds = _relations.atouts.removed.map(id => `'${id}'`).join(', ');
+            sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE fairy_type_id = '${targetId}' AND asset_id IN (${removedIds});\n`;
+          }
+          if (_relations.atouts.added && _relations.atouts.added.length > 0) {
+            const inserts = _relations.atouts.added.map(id => `('${targetId}', '${id}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
+          }
         }
-
+      }
+	  
         if (_relations.competencesUtiles !== undefined) {
           sqlQuery += `\nDELETE FROM public.fairy_competences_predilection WHERE fairy_type_id = '${targetId}';\n`;
           try {
@@ -227,33 +255,42 @@ export default function ValidationsPendantes({ session, onBack }) {
         }
 
         // 🔗 NOUVEAU : GESTION DES RELATIONS INVERSÉES (Lier à une Fée)
-        if (_relations.fairyIds !== undefined) {
-          if (change.table_name === 'fairy_capacites') {
-            sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}';\n`;
-            if (_relations.fairyIds.length > 0) {
-              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}', 'choix')`).join(', ');
-              sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
-            }
-          }
+      if (_relations.fairyIds !== undefined) {
+        const isArray = Array.isArray(_relations.fairyIds);
+        const removed = isArray ? [] : (_relations.fairyIds.removed || []);
+        const added = isArray ? _relations.fairyIds : (_relations.fairyIds.added || []);
 
-          if (change.table_name === 'fairy_powers') {
-            sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}';\n`;
-            if (_relations.fairyIds.length > 0) {
-              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}')`).join(', ');
-              sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
-            }
+        if (change.table_name === 'fairy_capacites') {
+          if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}';\n`;
+          else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
+          
+          if (added.length > 0) {
+            const inserts = added.map(fId => `('${fId}', '${targetId}', 'choix')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
           }
+        }
 
-          if (change.table_name === 'fairy_assets') {
-            sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}';\n`;
-            if (_relations.fairyIds.length > 0) {
-              const inserts = _relations.fairyIds.map(fId => `('${fId}', '${targetId}')`).join(', ');
-              sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
-            }
+        if (change.table_name === 'fairy_powers') {
+          if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}';\n`;
+          else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
+          
+          if (added.length > 0) {
+            const inserts = added.map(fId => `('${fId}', '${targetId}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
+          }
+        }
+
+        if (change.table_name === 'fairy_assets') {
+          if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}';\n`;
+          else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
+          
+          if (added.length > 0) {
+            const inserts = added.map(fId => `('${fId}', '${targetId}')`).join(', ');
+            sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
           }
         }
       }
-
+    }
       // 🛡️ Scellage de l'élément si demandé par le Conseil
       if (seal) {
         sqlQuery += `\n-- 🛡️ Scellage de l'élément par les Gardiens\nUPDATE public.${change.table_name} SET is_sealed = true WHERE id = '${targetId}';\n`;
@@ -326,7 +363,54 @@ export default function ValidationsPendantes({ session, onBack }) {
             "{change.justification}"
           </p>
         </div>
+		
+        {/* 🌟 NOUVEAU : AFFICHAGE VISUEL DU DELTA POUR LES GARDIENS 🌟 */}
+        {(() => {
+          const pData = change.new_data || change.proposed_data || {};
+          if (!pData._relations) return null;
+
+          return (
+            <div className="mt-4 bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-inner">
+              <h4 className="text-xs font-bold text-slate-500 uppercase mb-2 flex items-center gap-1">
+                <TestTubeDiagonal size={14} /> Différences relationnelles (Delta)
+              </h4>
+              {['pouvoirs', 'atouts', 'capacites', 'fairyIds'].map(relKey => {
+                const relData = pData._relations[relKey];
+                // On ignore si c'est vide ou si c'est l'ancien format "Nuke & Pave" (tableau simple)
+                if (!relData || Array.isArray(relData)) return null;
+
+                const added = relData.added || [];
+                const removed = relData.removed || [];
+                if (added.length === 0 && removed.length === 0) return null;
+
+                // Formatage du nom de la catégorie
+                const label = relKey === 'fairyIds' ? 'Fées liées' : relKey;
+
+                return (
+                  <div key={relKey} className="mb-2 last:mb-0">
+                    <span className="text-xs font-bold text-slate-700 capitalize">{label} :</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {added.map(id => (
+                        <span key={`add-${id}`} className="bg-green-100 text-green-800 border border-green-300 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-mono shadow-sm cursor-help" title={`ID: ${id}`}>
+                          <Plus size={10} /> {id.substring(0, 8)}...
+                        </span>
+                      ))}
+                      {removed.map(id => (
+                        <span key={`rem-${id}`} className="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-mono shadow-sm cursor-help" title={`ID: ${id}`}>
+                          <Minus size={10} /> {id.substring(0, 8)}...
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}		
       </div>
+	  
+	  
+	  
 
       {change.status === 'approved' && change.generated_sql && (
         <div className="mt-4 p-4 bg-gray-900 text-green-400 font-mono text-sm rounded-lg overflow-x-auto relative group">

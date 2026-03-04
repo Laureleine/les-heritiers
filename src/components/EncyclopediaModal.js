@@ -1,7 +1,7 @@
 // src/components/EncyclopediaModal.js
 // 8.20.0 // 8.21.0 // 8.29.0 
 // 9.4.0 // 9.10.0
-//
+// 10.0.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -54,6 +54,12 @@ export default function EncyclopediaModal({
     }
 
     const surgicalData = {};
+
+    // 🧠 NOUVEAU : Helper pour calculer le "Delta" (ce qu'on ajoute, ce qu'on retire)
+    const getDiff = (oldArr, newArr) => ({
+      added: newArr.filter(x => !oldArr.includes(x)),
+      removed: oldArr.filter(x => !newArr.includes(x))
+    });
 
     const arraysEqual = (a, b) => {
       const arrA = Array.isArray(a) && a.length > 0 ? a : [];
@@ -116,16 +122,21 @@ export default function EncyclopediaModal({
       const sortCaps = (a, b) => a.id.localeCompare(b.id);
       const isCapacitesEqual = JSON.stringify(oldCapacites.sort(sortCaps)) === JSON.stringify(newCapacites.sort(sortCaps));
 
-      const oldPouvoirs = (editingItem.fairy_type_powers || []).map(link => link.power?.id).filter(Boolean).sort();
-      const newPouvoirs = [...(proposal.pouvoirsIds || [])].sort();
 
-      const oldAtouts = (editingItem.fairy_type_assets || []).map(link => link.asset?.id).filter(Boolean).sort();
-      const newAtouts = [...(proposal.atoutsIds || [])].sort();
+    const oldPouvoirs = (editingItem.fairy_type_powers || []).map(link => link.power?.id).filter(Boolean).sort();
+    const newPouvoirs = [...(proposal.pouvoirsIds || [])].sort();
 
-      const changedRelations = {};
-      if (!isCapacitesEqual) changedRelations.capacites = newCapacites;
-      if (!arraysEqual(newPouvoirs, oldPouvoirs)) changedRelations.pouvoirs = newPouvoirs;
-      if (!arraysEqual(newAtouts, oldAtouts)) changedRelations.atouts = newAtouts;
+    const oldAtouts = (editingItem.fairy_type_assets || []).map(link => link.asset?.id).filter(Boolean).sort();
+    const newAtouts = [...(proposal.atoutsIds || [])].sort();
+
+    const changedRelations = {};
+
+    // Pour les capacités, on garde l'ancien système car il gère aussi les notions de "fixe1", "fixe2", etc.
+    if (!isCapacitesEqual) changedRelations.capacites = newCapacites;
+
+    // ✨ MAGIE : On n'envoie plus tout le tableau, on envoie uniquement les Différences !
+    if (!arraysEqual(newPouvoirs, oldPouvoirs)) changedRelations.pouvoirs = getDiff(oldPouvoirs, newPouvoirs);
+    if (!arraysEqual(newAtouts, oldAtouts)) changedRelations.atouts = getDiff(oldAtouts, newAtouts);
 
       const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection, null, 2) : '';
       
@@ -199,13 +210,14 @@ export default function EncyclopediaModal({
             if (activeTab === 'fairy_powers') oldIds = editingItem.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
             if (activeTab === 'fairy_assets') oldIds = editingItem.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
          }
-         const newIds = [...(proposal.fairyIds || [])].sort();
-         oldIds = oldIds.sort();
+        const newIds = [...(proposal.fairyIds || [])].sort();
+        oldIds = oldIds.sort();
 
-         if (JSON.stringify(oldIds) !== JSON.stringify(newIds)) {
-             if (!surgicalData._relations) surgicalData._relations = {};
-             surgicalData._relations.fairyIds = newIds;
-         }
+        if (JSON.stringify(oldIds) !== JSON.stringify(newIds)) {
+          if (!surgicalData._relations) surgicalData._relations = {};
+          // ✨ MAGIE : On utilise aussi le Delta ici !
+          surgicalData._relations.fairyIds = getDiff(oldIds, newIds);
+        }
       }
     }
 

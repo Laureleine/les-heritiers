@@ -1,7 +1,20 @@
 // src/data/dataHelpers.js
-// Version: 3.5.1
-// Build: 2026-02-05 14:30
-// Correction: Restauration des fonctions pour les compétences futiles (Fix import error).
+// 10.1.0
+
+/**
+ * 🌟 Formateur universel de texte selon le genre (Masculin/Féminin)
+ * Coupe les chaînes contenant un "/" pour renvoyer la bonne partie.
+ */
+export const accorderTexte = (texte, sexe) => {
+  if (!texte) return '';
+  const isFemme = sexe === 'Femme' || sexe === 'Féminin';
+
+  if (texte.includes('/')) {
+    const parts = texte.split('/');
+    return isFemme && parts.length > 1 ? parts[11].trim() : parts.trim();
+  }
+  return texte.trim();
+};
 
 /**
  * Calcule l'âge d'une fée selon son ancienneté.
