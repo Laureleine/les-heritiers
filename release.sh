@@ -23,7 +23,24 @@ if [[ -z "$VERSION" ]]; then
 fi
 echo "📦 Version détectée : $VERSION"
 
-# ── 2. Git ────────────────────────────────────────────────────────────────────
+# ── 2. Token Google Drive (test anticipé) ─────────────────────────────────────
+echo ""
+echo "🔑 Vérification du token Drive..."
+RESPONSE=$(curl -s -X POST https://oauth2.googleapis.com/token \
+  -d "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&refresh_token=${REFRESH_TOKEN}&grant_type=refresh_token")
+
+if echo "$RESPONSE" | grep -q '"error"'; then
+  ERROR_MSG=$(echo "$RESPONSE" | tr -d '\n\r ' | sed 's/.*"error":"\([^"]*\)".*/\1/')
+  echo "❌ Token Google Drive expiré : $ERROR_MSG"
+  echo "👉 Régénère le refresh token et mets à jour GOOGLE_REFRESH_TOKEN dans .env"
+  echo "⛔ Release annulée avant tout commit."
+  exit 1
+fi
+
+ACCESS_TOKEN=$(echo "$RESPONSE" | tr -d '\n\r ' | sed 's/.*"access_token":"\([^"]*\)".*/\1/')
+echo "✅ Token Drive OK."
+
+# ── 3. Git ────────────────────────────────────────────────────────────────────
 echo ""
 echo "📝 Git add..."
 git add .
@@ -36,7 +53,7 @@ fi
 echo "🚀 Git push..."
 git push origin dev:main
 
-# ── 3. Récupérer les fichiers JS commités ─────────────────────────────────────
+# ── 4. Récupérer les fichiers JS commités ─────────────────────────────────────
 echo ""
 echo "📂 Récupération des fichiers JS modifiés..."
 JS_FILES=$(git diff-tree --no-commit-id -r --name-only HEAD | grep '\.js$')
@@ -48,18 +65,6 @@ fi
 
 echo "Fichiers JS détectés :"
 echo "$JS_FILES"
-
-# ── 4. Token Google Drive ─────────────────────────────────────────────────────
-echo ""
-echo "🔑 Récupération du token Drive..."
-RESPONSE=$(curl -s -X POST https://oauth2.googleapis.com/token \
-  -d "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&refresh_token=${REFRESH_TOKEN}&grant_type=refresh_token")
-
-ACCESS_TOKEN=$(echo "$RESPONSE" | tr -d '\n\r ' | sed 's/.*"access_token":"\([^"]*\)".*/\1/')
-if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "$RESPONSE" ]]; then
-  echo "❌ Erreur token : $RESPONSE"; exit 1
-fi
-echo "Token OK."
 
 # ── 5. Upload chaque fichier JS en Google Doc (écrasement si existant) ────────
 upload_to_drive() {
