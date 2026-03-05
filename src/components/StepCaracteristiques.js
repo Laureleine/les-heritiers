@@ -1,11 +1,11 @@
 // src/compoents/StepCaracteristiques.js
 // 8.32.0 
 // 9.4.0 // 9.11.0
-//
+// 10.4.0
 
 import React from 'react';
 import { Plus, Minus, Info, Sparkles } from 'lucide-react';
-import { CARAC_LIST } from '../data/constants';
+import { CARAC_LIST } from '../data/DictionnaireJeu';
 
 const POINTS_A_REPARTIR = 10;
 const MAX_SCORE_INVESTISSEMENT = 5;

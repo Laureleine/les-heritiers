@@ -1,4 +1,6 @@
 // src/components/Step1.js
+// 10.4.0
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling } from 'lucide-react';
 
@@ -341,7 +343,17 @@ export default function Step1({
                         {fairyTypesByAge[activeCategory]?.map((fairyName) => (
                             <button
                                 key={fairyName}
-                                onClick={() => setSelectedPreview(fairyName)}
+                                onClick={() => {
+								  // Si le joueur clique sur une NOUVELLE fée dans le menu de gauche
+								  if (selectedPreview !== fairyName) {
+									setSelectedPreview(fairyName);
+									
+									// S'il avait déjà coché des traits pour l'ancienne fée, on donne un coup de balai !
+									if (character.traitsFeeriques && character.traitsFeeriques.length > 0) {
+									  onCharacterChange({ traitsFeeriques: [] });
+									}
+								  }
+								}}
                                 className={`w-full text-left px-4 py-3 border-b border-gray-50 transition-all flex items-center justify-between group ${
                                     selectedPreview === fairyName 
                                     ? 'bg-amber-100 text-amber-900 border-l-4 border-l-amber-600 pl-3' 

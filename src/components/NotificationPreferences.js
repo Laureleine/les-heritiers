@@ -1,10 +1,10 @@
 // src/components/NotificationPreferences.js
-// 10.2.0
+// 10.2.0 // 10.4.0
 
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Bell, BellOff, Mail, Smartphone } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { requestNotificationPermission } from '../utils/notificationSystem';
+import { requestNotificationPermission } from '../utils/SystemeServices';
 
 // ✨ NOUVEAU : forwardRef permet au composant parent de le contrôler
 const NotificationPreferences = forwardRef(({ session }, ref) => {

@@ -1,17 +1,16 @@
 // src/components/Encyclopedia.js
-// 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 // 9.4.0 // 9.6.0
-//
+// 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 
+// 9.4.0 // 9.6.0
+// 10.4.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { logger } from '../utils/logger'; 
 import { Book, Search, X, Shield, Sparkles, Plus } from 'lucide-react';
 import EncyclopediaModal from './EncyclopediaModal'; 
 import EncyclopediaCard from './EncyclopediaCard';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';
-import { showInAppNotification } from '../utils/notificationSystem'; // On importe vos belles notifications
-
+import { logger, showInAppNotification } from '../utils/SystemeServices';
 
 export default function Encyclopedia({ userProfile, onBack, onOpenValidations }) {
   const [activeTab, setActiveTab] = useState('fairy_types'); // 'fairy_types', 'fairy_capacites', etc.

@@ -1,10 +1,10 @@
 // src/components/BonusBuilder.js
-// 10.2.0 // 10.3.0
+// 10.2.0 // 10.3.0 // 10.4.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles } from 'lucide-react';
-import { CARAC_LIST } from '../data/constants';
 import { addGlobalSpeciality } from '../utils/supabaseGameData';
+import { CARAC_LIST } from '../data/DictionnaireJeu';
 
 export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData }) {
   const [showMenu, setShowMenu] = useState(false);

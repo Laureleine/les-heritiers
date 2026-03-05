@@ -1,11 +1,11 @@
 // src/components/AdminUserList.js
 // 8.21.0 // 8.22.0 // 8.25.0 // 8.32.0
-// 10.2.0
+// 10.2.0 // 10.4.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { Shield, User, Crown, Plus, X, Award } from 'lucide-react';
-import { AVAILABLE_BADGES } from '../data/badges';
+import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 
 export default function AdminUserList({ session, onBack }) {
   const [users, setUsers] = useState([]);
