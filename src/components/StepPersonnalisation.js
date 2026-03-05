@@ -1,14 +1,18 @@
 // src/components/StepPersonnalisation.js
-// 10.1.0
+// 10.1.0 // 10.6.0
 
 import React from 'react';
 import { User, Feather } from 'lucide-react';
+import { useCharacter } from '../context/CharacterContext'; // 👈 1. ON IMPORTE LE NUAGE
 
-export default function StepPersonnalisation({ character, onCharacterChange }) {
+export default function StepPersonnalisation() { // 👈 2. PLUS AUCUN PARAMÈTRE ICI !
+  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter(); // 👈 3. ON SE SERT DANS LE NUAGE
+
   const updateField = (field, value) => {
-    onCharacterChange({ [field]: value });
+    if (isReadOnly) return;
+    dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { [field]: value }, gameData });
   };
-
+  
   return (
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-12">
       <div className="text-center mb-8">

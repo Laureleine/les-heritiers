@@ -4,6 +4,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Minus, Star, Brain, RotateCcw, Users } from 'lucide-react';
 import { addGlobalSpeciality } from '../utils/supabaseGameData';
+import { useCharacter } from '../context/CharacterContext'; // 👈 L'IMPORT DU NUAGE (À mettre avec vos autres imports)
 
 const POINTS_TOTAUX = 15;
 const SKILLS_ESPRIT = [
@@ -11,15 +12,16 @@ const SKILLS_ESPRIT = [
   'Habiletés', 'Médecine', 'Observation', 'Sciences'
 ];
 
-export default function StepCompetencesLibres({
-  character,
-  onCompetencesLibresChange,
-  profils,
-  competences,
-  competencesParProfil,
-  fairyData
-}) {
-  const [creatingSpecFor, setCreatingSpecFor] = useState(null);
+export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
+  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const { profils, competences, competencesParProfil, fairyData } = gameData;
+
+  // Le remplaçant local :
+  const onCompetencesLibresChange = (c) => {
+    if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: c }, gameData });
+  };
+
+  const [creatingSpecFor, setCreatingSpecFor] = useState(null); // 👈 VOUS GARDEZ CECI ET LA SUITE INTACTE
   const [selectValue, setSelectValue] = useState('');
   const feeData = fairyData[character.typeFee];
   const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} };

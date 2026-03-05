@@ -1,16 +1,24 @@
 // src/components/StepProfils.js
-// Version: 3.0.3
-// Build: 2026-02-04 04:00
-// Migration: Import depuis props au lieu de data.js - Interface préservée
+// 10.6.0
+
 import React from 'react';
 import { Info, Star, Award } from 'lucide-react';
+import { useCharacter } from '../context/CharacterContext'; // 👈 L'IMPORT DU NUAGE
 
-export default function StepProfils({ character, onProfilsChange, profils, competencesParProfil }) {
+export default function StepProfils() { // 👈 PLUS DE PARAMÈTRES !
+  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter(); // 👈 ON SE SERT DANS LE NUAGE
+  const { profils, competencesParProfil } = gameData;
+
+  const onProfilsChange = (p) => {
+    if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { profils: p }, gameData });
+  };
+
   // Créer un objet indexé par nom pour compatibilité avec le code existant
   const profilsObj = {};
   const profilNames = [];
-  
-  profils.forEach(p => {
+
+  // 🛡️ SÉCURITÉ : On s'assure que "profils" existe bien avant de boucler dessus
+  (profils || []).forEach(p => {
     profilsObj[p.nom] = {
       nom: p.nom,
       nomFeminin: p.nomFeminin,
@@ -26,7 +34,6 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
   const getProfilDisplayName = (profilName) => {
     const profil = profilsObj[profilName];
     if (!profil) return profilName;
-    
     if (character.sexe === 'Femme') {
       return profil.nomFeminin || profilName;
     }
@@ -83,7 +90,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
   const renderProfilCard = (profilName, isSelected, isMajeur, onSelect) => {
     const profilData = profilsObj[profilName];
     const isDisabled = isMajeur ? profilName === profilMineur : profilName === profilMajeur;
-    
+
     return (
       <button
         key={profilName}
@@ -110,11 +117,9 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
             isMajeur ? <Star className="text-amber-600" size={20} fill="currentColor" /> : <Award className="text-blue-600" size={20} />
           )}
         </div>
-        
         <p className="text-sm text-amber-700 mb-3 italic">
           {profilData.description}
         </p>
-
         <div className="space-y-1">
           <div className="text-xs text-amber-600 font-semibold mb-1">
             Compétences ({isMajeur ? '+2' : '+1'}) :
@@ -137,7 +142,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
         </h2>
         <div className="space-y-2 text-amber-800">
           <p>
-            Choisissez un <span className="font-bold text-amber-900">Profil majeur</span> (compétences +2) 
+            Choisissez un <span className="font-bold text-amber-900">Profil majeur</span> (compétences +2)
             et un <span className="font-bold text-blue-900">Profil mineur</span> (compétences +1).
           </p>
           <div className="flex items-start gap-2 text-sm">
@@ -160,7 +165,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-          {profilNames.map(name => 
+          {profilNames.map(name =>
             renderProfilCard(name, profilMajeur === name, true, handleProfilMajeurChange)
           )}
         </div>
@@ -202,7 +207,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-          {profilNames.map(name => 
+          {profilNames.map(name =>
             renderProfilCard(name, profilMineur === name, false, handleProfilMineurChange)
           )}
         </div>
@@ -249,6 +254,7 @@ export default function StepProfils({ character, onProfilsChange, profils, compe
                 </div>
               </div>
             </div>
+
             <div className="flex items-start gap-3">
               <Award className="text-blue-600 flex-shrink-0 mt-1" size={20} />
               <div>

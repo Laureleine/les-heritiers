@@ -1,9 +1,11 @@
 // src/components/StepVieSociale.js
 // 9.3.0 // 9.9.0 // 9.11.0
+// 10.6.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';
 import { supabase } from '../config/supabase';
+import { useCharacter } from '../context/CharacterContext'; 
 
 const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, freeContactsRemaining = 0 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,7 +85,15 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
   );
 };
 
-export default function StepVieSociale({ character, onCharacterChange, fairyData }) {
+export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
+  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const fairyData = gameData.fairyData;
+
+  // Le remplaçant local :
+  const onCharacterChange = (payload) => {
+    if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload, gameData });
+  };
+
   // 👈 On affiche TOUTES les boutiques !
   const tousLesProfils = useMemo(() => [
     'Aventurier', 'Combattant', 'Érudit', 'Gentleman', 'Roublard', 'Savant'

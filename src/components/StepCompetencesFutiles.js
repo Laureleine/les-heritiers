@@ -1,24 +1,34 @@
 // src/components/StepCompetencesFutiles.js
 // 8.23.0 // 8.31.0 // 8.32.0
 // 9.11.0
-// 10.4.0
+// 10.4.0 // 10.6.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
 import { getCompetencesFutiles, addCompetenceFutile, invalidateCompetencesFutilesCache } from '../utils/supabaseGameData';
 import { parseCompetencesFutilesPredilection } from '../data/DictionnaireJeu';
+import { useCharacter } from '../context/CharacterContext'; // 👈 L'IMPORT (En haut du fichier)
 
 const POINTS_TOTAUX = 10;
 
-export default function StepCompetencesFutiles({ character, onCompetencesFutilesChange, fairyData }) {
-  const [competencesFutilesBase, setCompetencesFutilesBase] = useState([]);
+export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
+  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const fairyData = gameData.fairyData;
+
+  // Le remplaçant local :
+  const onCompetencesFutilesChange = (c) => {
+    if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesFutiles: c }, gameData });
+  };
+
+  const [competencesFutilesBase, setCompetencesFutilesBase] = useState([]); 
   const [loading, setLoading] = useState(true);
+  
+  // 👇 LES 3 LIGNES QUI AVAIENT DISPARU SONT LÀ :
   const [newCompetenceName, setNewCompetenceName] = useState('');
   const [newCompetenceDesc, setNewCompetenceDesc] = useState('');
   const [choixPredilection, setChoixPredilection] = useState({});
 
   const feeData = fairyData[character.typeFee];
-
   // 1. Charger la liste complète des compétences futiles depuis Supabase
   useEffect(() => {
     const loadCompetences = async () => {

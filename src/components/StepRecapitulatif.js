@@ -1,14 +1,16 @@
 // src/components/StepRecapitulatif.js
 // 8.23.0 // 8.32.0
 // 9.11.0
-// 10.1.0 // 10.4.0
+// 10.1.0 // 10.4.0 // 10.6.0
 
 import React from 'react';
 import { User, Star, Award, Sparkles, Shield, Zap, CheckCircle } from 'lucide-react';
 import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
+import { useCharacter } from '../context/CharacterContext'; // 👈 1. ON IMPORTE LE NUAGE
 
-export default function StepRecapitulatif({ character }) {
-  
+export default function StepRecapitulatif() { // 👈 2. PLUS AUCUN PARAMÈTRE ICI !
+  const { character } = useCharacter(); // 👈 3. ON APPELLE JUSTE LE PERSONNAGE
+
   // ✨ DRY : On récupère simplement les clés du dictionnaire des totaux
   const uniqueFutiles = Object.keys(character.computedStats?.futilesTotal || {}).sort((a, b) => a.localeCompare(b));
 
