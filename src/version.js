@@ -7,6 +7,16 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
+{
+    version: '10.6.0',
+    date: '5 Mars 2026',
+    changes: [
+      '☁️ **Le Nuage de Données (Context API) :** Création du `CharacterContext`. Le Grimoire possède désormais un esprit centralisé accessible de partout. Adieu le "Composant Dieu" !',
+      '🧹 **Purge Architecturale :** Nettoyage massif d\'`App.js` et de toutes les étapes de création (`Step1` à `Step11`). Suppression de l\'envoi manuel des données (Prop Drilling).',
+      '🧠 **Étapes Autonomes :** Chaque page du créateur de personnage est désormais indépendante, intelligente, et puise directement sa magie dans le Nuage.',
+      '🛡️ **Stabilité Renforcée :** Sécurisation du rendu des Profils, des Caractéristiques et des Compétences Futiles contre les erreurs de chargement à vide.'
+    ]
+  },
   {
     version: '10.5.0',
     date: '5 Mars 2026',
