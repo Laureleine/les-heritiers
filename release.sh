@@ -85,7 +85,7 @@ upload_to_drive() {
   if [[ -n "$EXISTING_ID" && "$EXISTING_ID" != "$SEARCH_RESP" ]]; then
     echo "   ♻️  Fichier existant trouvé, écrasement..."
     FILE_ID="$EXISTING_ID"
-    FILE_URL=$(echo "$SEARCH_RESP" | tr -d '\n\r ' | sed 's/.*"webViewLink":"\([^"]*\)".*/\1/')
+	FILE_URL="https://drive.google.com/open?id=${FILE_ID}"
   else
     CREATE_RESP=$(curl -s -X POST \
       "https://www.googleapis.com/drive/v3/files?fields=id,webViewLink" \
@@ -101,7 +101,8 @@ upload_to_drive() {
     fi
   fi
 
-  curl -s --max-time 30 -X PATCH \
+	# Augmenter le timeout (30 → 60)
+	curl -s --max-time 60 -X PATCH \
     "https://www.googleapis.com/upload/drive/v3/files/${FILE_ID}?uploadType=media" \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
     -H "Content-Type: text/plain" \
