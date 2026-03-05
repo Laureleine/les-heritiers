@@ -12,7 +12,7 @@ import { APP_VERSION, BUILD_DATE } from '../version';
 import { logger, getCurrentUserFast, translateError, showInAppNotification } from '../utils/SystemeServices';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdminUsers, onOpenAdminStats, profils = [], userProfile}) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, profils = [], userProfile}) {
   
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
@@ -285,18 +285,12 @@ const loadCharacters = async (isMounted = true) => {
           <button onClick={onOpenEncyclopedia} className="flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={16} /> <span className="hidden sm:inline">Encyclopédie</span>
           </button>
-
-            {isAdmin && (
-              <button onClick={onOpenAdminStats} className="flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Statistiques">
-                <BarChart2 size={16} /> <span className="hidden sm:inline">Métriques</span>
-              </button>
-            )}
-			
-          {isAdmin && (
-            <button onClick={onOpenAdminUsers} className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm" title="Gérer les Utilisateurs">
-              <Shield size={16} /> <span className="hidden sm:inline">Rôles</span>
-            </button>
-          )}
+		
+		  {isAdmin && (
+		    <button onClick={onOpenAdmin} className="flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Administration">
+			  <Shield size={16} /> <span className="hidden sm:inline">Administration</span>
+		    </button>
+		  )}
 
           <button onClick={onOpenAccount} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-sm shadow-sm">
             <User size={16} /> <span className="hidden sm:inline">Compte</span>
