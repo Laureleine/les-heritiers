@@ -1,31 +1,24 @@
 // src/components/Step1.js
-// 10.4.0
+// 10.4.0 // 10.6.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling } from 'lucide-react';
+import { useCharacter } from '../context/CharacterContext'; // 👈 L'IMPORT (En haut du fichier)
 
-export default function Step1({ 
-    character, 
-    onNomChange, 
-    onNomFeeriqueChange, 
-    onGenreHumainChange, 
-    onSexeChange,        
-    onTypeFeeChange,
-    onTraitsFeeriquesChange,
-	onCharacterChange,
-    fairyTypesByAge, 
-    fairyData = {} 
-}) {
+export default function Step1() { // 👈 PLUS AUCUN PARAMÈTRE ICI !
+  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const { fairyData, fairyTypesByAge } = gameData;
+
+  // Les remplaçants locaux :
+  const onNomChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_FIELD', field: 'nom', value: val, gameData }); };
+  const onSexeChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_FIELD', field: 'sexe', value: val, gameData }); };
+  const onTypeFeeChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'CHANGE_FAIRY_TYPE', typeFee: val, gameData }); };
+  const onCharacterChange = (payload) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload, gameData }); };
+  const onTraitsFeeriquesChange = (v) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { traitsFeeriques: v }, gameData }); };
+
+  const [activeCategory, setActiveCategory] = useState('traditionnelles'); // 👈 VOUS GARDEZ CECI INTACT
+  const [selectedPreview, setSelectedPreview] = useState(character.typeFee || null);
     
-    // Helper pour mettre à jour si onCharacterChange n'est pas encore câblé partout
-    const updateField = (field, value) => {
-        if (onCharacterChange) {
-            onCharacterChange({ [field]: value });
-        }
-    };
-    const [activeCategory, setActiveCategory] = useState('traditionnelles');
-    const [selectedPreview, setSelectedPreview] = useState(character.typeFee || null);
-
     // Synchronisation initiale
     useEffect(() => {
         if (character.typeFee) {

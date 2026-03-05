@@ -1,5 +1,7 @@
+// 10.6.0
+
 import React from 'react';
-import { Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices } from 'lucide-react';
+import { Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from 'lucide-react';
 
 // ============================================================================
 // 1. LES CONSTANTES ET CARACTÉRISTIQUES (Ancien constants.js)
@@ -96,3 +98,20 @@ export const getSizeModifier = (taille) => {
   if (t === 'Très Grande') return -2;
   return 0;
 };
+
+// ============================================================================
+// 4. CONFIGURATION DE LA NAVIGATION
+// ============================================================================
+export const STEP_CONFIG = [
+  { id: 1, label: "Héritage", icon: <User size={18} /> },
+  { id: 2, label: "Capacités", icon: <Sparkles size={18} /> },
+  { id: 3, label: "Pouvoirs", icon: <Zap size={18} /> },
+  { id: 4, label: "Atouts", icon: <Star size={18} /> },
+  { id: 5, label: "Attributs", icon: <Activity size={18} /> },
+  { id: 6, label: "Profils", icon: <Award size={18} /> },
+  { id: 7, label: "Utiles", icon: <BookOpen size={18} /> },
+  { id: 8, label: "Futiles", icon: <Feather size={18} /> },
+  { id: 9, label: "Social & Richesse", icon: <Briefcase size={18} /> },
+  { id: 10, label: "Masque", icon: <VenetianMask size={18} /> },
+  { id: 11, label: "Bilan", icon: <CheckCircle size={18} /> }
+];

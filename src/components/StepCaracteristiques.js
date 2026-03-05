@@ -1,17 +1,21 @@
 // src/compoents/StepCaracteristiques.js
 // 8.32.0 
 // 9.4.0 // 9.11.0
-// 10.4.0
+// 10.4.0 // 10.6.0
 
 import React from 'react';
 import { Plus, Minus, Info, Sparkles } from 'lucide-react';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
+import { useCharacter } from '../context/CharacterContext'; // 👈 NOUVEAU
 
 const POINTS_A_REPARTIR = 10;
 const MAX_SCORE_INVESTISSEMENT = 5;
 
-export default function StepCaracteristiques({ character, onCaracteristiquesChange, fairyData }) {
-	const feeData = fairyData[character.typeFee];
+export default function StepCaracteristiques() { // 👈 PLUS DE PARAMÈTRES
+  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter(); // 👈 NOUVEAU
+  const fairyData = gameData.fairyData; // 👈 NOUVEAU
+
+  const feeData = fairyData[character.typeFee];
 
 	// Sécurité en cas de données manquantes
 	if (!feeData || !feeData.caracteristiques) {
@@ -93,14 +97,16 @@ export default function StepCaracteristiques({ character, onCaracteristiquesChan
 	// Règle 2 : Ne pas dépasser 5 en investissement pur
 	if (newValue > MAX_SCORE_INVESTISSEMENT) return;
 
-	// Règle 3 : Budget
-	if (delta > 0 && pointsRestants <= 0) return;
+    // Règle 3 : Budget
+    if (delta > 0 && pointsRestants <= 0) return;
 
-	onCaracteristiquesChange({
-		...currentCaracs,
-		[key]: newValue
-	});
-};
+    // 👇 LA CORRECTION EST ICI (On utilise currentCaracs et key) :
+    const newCaracs = { ...currentCaracs, [key]: newValue };
+    
+    if (!isReadOnly) {
+      dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
+    }
+  };
 
   // Calcul des PV : (Constitution TOTALE x 3) + 9
   const baseCon = currentCaracs.constitution || feeData.caracteristiques.constitution?.min || 1;
