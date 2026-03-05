@@ -8,6 +8,17 @@ export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
   {
+    version: '10.5.0',
+    date: '5 Mars 2026',
+    changes: [
+      '👑 **Administration Unifiée :** Fusion élégante des registres d\'utilisateurs et des métriques du Grimoire au sein d\'un unique Tableau de Bord interactif (système d\'onglets).',
+      '📖 **Registre Magique :** Le Journal des Mises à jour s\'ouvre désormais sous forme d\'une magnifique modale superposée d\'un simple clic sur le numéro de version (Adieu l\'ancienne page dédiée !).',
+      '🛡️ **Chirurgie SQL :** L\'immense logique de génération des requêtes du Conseil des Gardiens a été extraite vers un moteur dédié (`sqlGenerator.js`), purifiant l\'interface visuelle.',
+      '🖼️ **Toile de Fond :** Allègement drastique du cœur de l\'application (`App.js`) en déplaçant les lourdes décorations vectorielles (engrenages, astrolabes) dans une toile indépendante.',
+      '🪶 **Corbeau Messager :** Le système de préférences de notifications a trouvé sa place naturelle en fusionnant définitivement au sein de la page "Mon Grimoire".'
+    ]
+  },
+  {
     version: '10.4.0',
     date: '5 Mars 2026',
     changes: [

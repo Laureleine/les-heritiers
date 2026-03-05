@@ -1,12 +1,11 @@
 // src/App.js
 // 8.25.0 // 8.26.0 
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
-// 10.2.0 // 10.4.0
+// 10.2.0 // 10.4.0 // 10.5.0
 
 import React, { useState, useEffect, useReducer } from 'react';
 import { supabase } from './config/supabase';
 import { loadAllGameData } from './utils/supabaseGameData';
-import { APP_VERSION, BUILD_DATE } from './version';
 import { saveCharacterToSupabase } from './utils/supabaseStorage';
 import { exportToPDF } from './utils/pdfGenerator';
 import { useAutoUpdate } from './hooks/useAutoUpdate';
@@ -14,16 +13,16 @@ import Auth from './components/Auth';
 import CharacterList from './components/CharacterList';
 import AccountSettings from './components/AccountSettings';
 import Encyclopedia from './components/Encyclopedia';
-import Changelog from './components/Changelog';
-import AdminUserList from './components/AdminUserList';
+import AdminDashboard from './components/AdminDashboard';
 import ValidationsPendantes from './components/ValidationsPendantes';
 import Telegraphe from './components/Telegraphe';
 import PixieAssistant from './components/PixieAssistant';
 import DiceRoller from './components/DiceRoller';
-import AdminStats from './components/AdminStats';
 import { AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
 import { AVAILABLE_BADGES, getFairyAge } from './data/DictionnaireJeu';
 import { characterReducer } from './utils/characterEngine';
+import BackgroundDecor from './components/BackgroundDecor';
+import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -37,7 +36,7 @@ import StepPersonnalisation from './components/StepPersonnalisation';
 import StepRecapitulatif from './components/StepRecapitulatif';
 
 // --- ICONS ---
-import { Save, ChevronRight, List, BookOpen, FileText, Crown, Shield } from 'lucide-react';
+import { X, Save, ChevronRight, List, BookOpen, FileText, Crown, Shield } from 'lucide-react';
 import { User, Sparkles, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from 'lucide-react';
 
 function App() {
@@ -50,6 +49,7 @@ function App() {
   const [step, setStep] = useState(1);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
+  const [showVersionModal, setShowVersionModal] = useState(false);
 
   // --- SYSTÈME DE MISE À JOUR AUTOMATIQUE ---
   const { updateAvailable, applyUpdate } = useAutoUpdate(60000);
@@ -300,59 +300,12 @@ function App() {
       
       <AlertSystem userProfile={userProfile} />
 
-      <PWAPrompt /> {/* 👈 AJOUTEZ-LE ICI */}
+      <PWAPrompt />
 	  
-      <DisclaimerModal /> {/* 👈 AJOUTEZ-LE ICI */}
+      <DisclaimerModal />
+	  
+	  <BackgroundDecor />
 
-      {/* ================= DÉCORATIONS D'ANGLES (Esotérisme & Steampunk) ================= */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-[0.03] text-amber-950">
-        
-        {/* HAUT GAUCHE : Grand Pentacle & Cercle Magique */}
-        <div className="absolute -top-32 -left-32">
-          <svg width="500" height="500" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5" className="animate-[spin_200s_linear_infinite]">
-            <circle cx="50" cy="50" r="45"/>
-            <circle cx="50" cy="50" r="38"/>
-            <path d="M50 12 L61.75 38.08 L88.04 38.08 L66.75 54.91 L74.89 80.99 L50 64.16 L25.1 80.99 L33.24 54.91 L11.95 38.08 L38.24 38.08 Z"/>
-            <circle cx="50" cy="50" r="15"/>
-            <circle cx="50" cy="50" r="5"/>
-          </svg>
-        </div>
-
-        {/* BAS GAUCHE : Grand Engrenage Industriel */}
-        <div className="absolute -bottom-32 -left-20">
-          <svg width="450" height="450" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.8" className="animate-[spin_120s_linear_infinite]">
-            <circle cx="50" cy="50" r="35"/>
-            <circle cx="50" cy="50" r="25"/>
-            <circle cx="50" cy="50" r="10"/>
-            <path d="M45 5 L55 5 L53 15 L47 15 Z M45 95 L55 95 L53 85 L47 85 Z M5 45 L5 55 L15 53 L15 47 Z M95 45 L95 55 L85 53 L85 47 Z M19.64 16.81 L26.71 23.88 L23.88 26.71 L16.81 19.64 Z M83.18 80.35 L76.11 73.28 L78.94 70.45 L86.01 77.52 Z M19.64 83.18 L26.71 76.11 L23.88 73.28 L16.81 80.35 Z M83.18 16.81 L76.11 23.88 L78.94 26.71 L86.01 19.64 Z"/>
-          </svg>
-        </div>
-        
-        {/* BAS GAUCHE : Petit Engrenage imbriqué */}
-        <div className="absolute bottom-40 left-32">
-          <svg width="200" height="200" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1" className="animate-[spin_80s_linear_infinite_reverse]">
-            <circle cx="50" cy="50" r="35"/>
-            <circle cx="50" cy="50" r="15"/>
-            <path d="M45 5 L55 5 L53 15 L47 15 Z M45 95 L55 95 L53 85 L47 85 Z M5 45 L5 55 L15 53 L15 47 Z M95 45 L95 55 L85 53 L85 47 Z M19.64 16.81 L26.71 23.88 L23.88 26.71 L16.81 19.64 Z M83.18 80.35 L76.11 73.28 L78.94 70.45 L86.01 77.52 Z M19.64 83.18 L26.71 76.11 L23.88 73.28 L16.81 80.35 Z M83.18 16.81 L76.11 23.88 L78.94 26.71 L86.01 19.64 Z"/>
-          </svg>
-        </div>
-
-        {/* HAUT DROIT : Astrolabe / Symbole Cosmique */}
-        <div className="absolute -top-48 -right-48">
-          <svg width="600" height="600" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.3" className="animate-[spin_300s_linear_infinite_reverse]">
-            <circle cx="50" cy="50" r="48"/>
-            <circle cx="50" cy="50" r="30"/>
-            <circle cx="50" cy="50" r="28"/>
-            <path d="M50 2 L50 98 M2 50 L98 50 M16 16 L84 84 M16 84 L84 16 M26 10 L74 90 M10 26 L90 74 M10 74 L90 26 M26 90 L74 10"/>
-          </svg>
-        </div>
-        
-        {/* Note pour plus tard : Si vous découpez les vraies images du PDF (en PNG transparent), 
-            vous pourrez les mettre ici à la place des SVG de cette façon : 
-            <img src="/engrenages.png" className="absolute bottom-0 left-0 w-96 opacity-10" alt="" />
-        */}
-      </div>
-      
       {/* 1. L'EN-TÊTE GLOBAL FIXE (Le même pour tout le monde) */}
       <div className="pt-6 pb-4 text-center animate-fade-in relative z-10">
         
@@ -365,9 +318,12 @@ function App() {
           >
             Les Héritiers
           </h1>
-          <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">
-            Version {APP_VERSION} • {BUILD_DATE}
-          </span>
+		  <button 
+			onClick={() => setShowVersionModal(true)}
+			className="text-xs text-amber-700 bg-amber-100/50 hover:bg-amber-200 hover:text-amber-900 border border-amber-200 px-3 py-1 rounded-full uppercase tracking-widest font-bold transition-all shadow-sm flex items-center gap-2"
+		  >
+			Version {APP_VERSION} • {BUILD_DATE} <BookOpen size={12} />
+		  </button>
         </div>
         
           {/* ZONE DES RÔLES ET BADGES */}
@@ -435,8 +391,7 @@ function App() {
 			onOpenEncyclopedia={() => setView('encyclopedia')}
             onOpenAccount={() => setView('account')}
             onSignOut={handleSignOut}
-            onOpenAdminUsers={() => setView('admin_users')}
-            onOpenAdminStats={() => setView('admin_stats')} /* 👈 NOUVELLE LIGNE */
+			onOpenAdmin={() => setView('admin_dashboard')}
 
           />
         )}
@@ -447,10 +402,7 @@ function App() {
         
         {/* VUE 3 : COMPTE & SYSTEME */}
 		{view === 'account' && <AccountSettings session={session} userProfile={userProfile} onUpdateProfile={() => window.location.reload()} onBack={() => setView('list')} />}
-        {view === 'changelog' && <Changelog onBack={() => setView('list')} />}
-		{view === 'admin_users' && <AdminUserList session={session} userProfile={userProfile} onBack={() => setView('list')} />}
-		{/* 👇 NOUVELLE LIGNE 👇 */}
-		{view === 'admin_stats' && <AdminStats onBack={() => setView('list')} />}
+		{view === 'admin_dashboard' && <AdminDashboard session={session} onBack={() => setView('list')} />}
 
         {/* VUE 4 : LE CRÉATEUR DE PERSONNAGE */}
         {view === 'creator' && (
@@ -596,6 +548,40 @@ function App() {
 			fairyData={gameData.fairyData} /* 👈 LA CORRECTION EST ICI */
           />
         )}
+
+      {/* ✨ 5. MODALE DU JOURNAL DES VERSIONS ✨ */}
+      {showVersionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-[#fdfbf7] max-w-2xl w-full max-h-[80vh] rounded-xl shadow-2xl border-2 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up">
+            <div className="bg-amber-900 text-amber-50 p-4 flex justify-between items-center shadow-md z-10">
+              <h3 className="font-serif font-bold text-lg flex items-center gap-2">
+                <BookOpen size={18} className="text-amber-300" /> Registre des Mises à jour
+              </h3>
+              <button onClick={() => setShowVersionModal(false)} className="hover:text-red-400 bg-amber-800/50 p-1.5 rounded-lg transition-colors">
+                <X size={20}/>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto custom-scrollbar space-y-6 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+              {VERSION_HISTORY.map((v, idx) => (
+                <div key={idx} className="border-b border-amber-200/50 pb-4 last:border-0 relative">
+                  <div className="flex justify-between items-baseline mb-2">
+                    <h4 className="font-bold text-amber-900 text-xl">v{v.version}</h4>
+                    <span className="text-xs text-amber-700 italic font-serif bg-amber-100/50 px-2 py-1 rounded-md">{v.date}</span>
+                  </div>
+                  <ul className="space-y-2">
+                    {v.changes.map((change, cIdx) => (
+                      <li key={cIdx} className="text-sm text-stone-700 flex items-start gap-2 leading-relaxed">
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0 shadow-sm" />
+                        <span>{change}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
 	</div>
   );
