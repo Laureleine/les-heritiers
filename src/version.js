@@ -8,6 +8,27 @@ export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
   {
+    version: '10.4.0',
+    date: '5 Mars 2026',
+    changes: [
+      '🧹 **Architecture Maîtresse (Refactoring) :** Le code du Grimoire a subi une purification majeure. Centralisation des services système et séparation stricte entre l\'interface visuelle et la logique pure.',
+      '🧠 **Cerveau Indépendant :** Le colossal moteur mathématique de calcul des statistiques (Entregent, PP, Rangs) a été extrait de l\'application principale vers son propre noyau dédié.',
+      '📄 **Forge PDF Isolée :** L\'immense machinerie générant les feuilles de personnages a été déplacée dans sa propre usine pour alléger drastiquement les utilitaires de base.',
+      '🪄 **Magie Unifiée :** Les étapes d\'Héritage Féérique (Capacités, Pouvoirs et Atouts) ont fusionné sous un seul et même toit pour une maintenance parfaite.',
+      '🐛 **Guérison de l\'Amnésie :** Les joueurs conservent désormais précieusement leurs Traits Dominants lorsqu\'ils explorent différentes fées dans le menu à l\'Étape 1.'
+    ]
+  },
+  {
+    version: '10.3.0',
+    date: '5 Mars 2026',
+    changes: [
+      '🧱 **Constructeur "Lego" Universel :** Refonte totale du moteur de règles de l\'Encyclopédie. Les Gardiens peuvent désormais configurer des effets techniques complexes en assemblant des briques visuelles colorées (Bonus, Compétences, Fortune).',
+      '🔀 **Règles Féériques Flexibles :** Intégration d\'un système d\'étiquettes (tags) pour gérer parfaitement les mécaniques de "Choix" de l\'univers (ex: "Mêlée OU Tir" ou "Spécialité au choix").',
+      '📚 **Spécialités Intelligentes :** Le nouveau constructeur trie automatiquement les spécialités (Officielles vs Communauté) et permet d\'en forger de nouvelles à la volée depuis la modale.',
+      '🐛 **Correctif Grimoire :** Rétablissement du chargement du catalogue des compétences lors de l\'édition des Pouvoirs et des Capacités.'
+    ]
+  },
+  {
     version: '10.2.0',
     date: '4 Mars 2026',
     changes: [

@@ -1,12 +1,11 @@
 // src/components/StepRecapitulatif.js
 // 8.23.0 // 8.32.0
 // 9.11.0
-// 10.1.0
+// 10.1.0 // 10.4.0
 
 import React from 'react';
 import { User, Star, Award, Sparkles, Shield, Zap, CheckCircle } from 'lucide-react';
-import { CARAC_LIST } from '../data/constants';
-import { accorderTexte } from '../data/dataHelpers'; // Pour gérer les accords de genre
+import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
 
 export default function StepRecapitulatif({ character }) {
   

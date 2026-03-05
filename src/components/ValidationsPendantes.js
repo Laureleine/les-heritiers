@@ -1,13 +1,13 @@
 // src/components/ValidationsPendantes.js
 // 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 
 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
-// 10.0.0 // 10.2.0
+// 10.0.0 // 10.2.0 // 10.4.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
-import { AVAILABLE_BADGES } from '../data/badges';
+import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 import ConfirmModal from './ConfirmModal'; // 👈 NOTRE NOUVELLE MODALE !
 
 const TABLE_NAME = 'data_change_requests';

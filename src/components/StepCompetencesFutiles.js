@@ -1,11 +1,12 @@
 // src/components/StepCompetencesFutiles.js
 // 8.23.0 // 8.31.0 // 8.32.0
 // 9.11.0
+// 10.4.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
-import { parseCompetencesFutilesPredilection } from '../data/dataHelpers';
 import { getCompetencesFutiles, addCompetenceFutile, invalidateCompetencesFutilesCache } from '../utils/supabaseGameData';
+import { parseCompetencesFutilesPredilection } from '../data/DictionnaireJeu';
 
 const POINTS_TOTAUX = 10;
 

@@ -1,12 +1,12 @@
 // src/components/AccountSettings.js :
 // 9.7.0 // 9.11.0
-// 10.2.0
+// 10.2.0 // 10.4.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { AVAILABLE_BADGES } from '../data/badges';
 import NotificationPreferences from './NotificationPreferences';
+import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 
 export default function AccountSettings({ session, userProfile, onBack, onUpdateProfile }) {
   const profile = userProfile?.profile || {};

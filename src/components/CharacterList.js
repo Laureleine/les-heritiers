@@ -1,19 +1,16 @@
 // src/components/CharacterList.js
 // 8.24.0 // 8.32.0 // 9.1.0 // 9.6.0
-// 10.2.0
+// 10.2.0 // 10.4.0
 
 import React, { useState, useEffect } from 'react';
 import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2 } from 'lucide-react'; // 👈 Ajoutez BarChart2
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
 import { importCharacter } from '../utils/utils';
-import { exportToPDF } from '../utils/utils';
+import { exportToPDF } from '../utils/pdfGenerator';
 import { APP_VERSION, BUILD_DATE } from '../version';
-import { getCurrentUserFast } from '../utils/authHelpers';
-import { logger } from '../utils/logger';
-import { AVAILABLE_BADGES } from '../data/badges';
-import { showInAppNotification } from '../utils/notificationSystem';
-import { translateError } from '../utils/errorHandler';
+import { logger, getCurrentUserFast, translateError, showInAppNotification } from '../utils/SystemeServices';
+import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 
 export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdminUsers, onOpenAdminStats, profils = [], userProfile}) {
   

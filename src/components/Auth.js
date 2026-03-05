@@ -1,11 +1,12 @@
 // src/components/Auth.js
 // 9.6.0
+// 10.4.0
 
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { Mail, Lock, User, AlertCircle } from 'lucide-react';
-import { translateError } from '../utils/errorHandler';
+import { translateError } from '../utils/SystemeServices';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
