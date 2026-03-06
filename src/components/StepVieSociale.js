@@ -1,6 +1,6 @@
 // src/components/StepVieSociale.js
 // 9.3.0 // 9.9.0 // 9.11.0
-// 10.6.0
+// 10.6.0 // 10.9.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';
@@ -87,7 +87,6 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
 
 export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
-  const fairyData = gameData.fairyData;
 
   // Le remplaçant local :
   const onCharacterChange = (payload) => {
@@ -102,45 +101,9 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
   // Par défaut, on ouvre l'onglet du Profil Majeur
   const [activeTab, setActiveTab] = useState(character.profils?.majeur?.nom || 'Gentleman');
   
+  // ✨ ON PUISE DIRECTEMENT DANS LE NUAGE
+  const { fairyData, socialItems } = gameData;
   const [achats, setAchats] = useState(character.vieSociale || {});
-  const [socialItems, setSocialItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let isMounted = true;
-    setLoading(true);
-
-    const safetyTimer = setTimeout(() => {
-      if (isMounted && loading) setLoading(false);
-    }, 5000);
-
-    const fetchSocialItems = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('social_items')
-          .select(`*, profils ( name_masculine )`)
-          .eq('is_official', true)
-          .order('cout', { ascending: true });
-
-        if (error) throw error;
-        if (isMounted) setSocialItems(data || []);
-      } catch (error) {
-        console.error("Erreur chargement social_items :", error);
-      } finally {
-        if (isMounted) {
-          clearTimeout(safetyTimer);
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchSocialItems();
-
-    return () => {
-      isMounted = false;
-      clearTimeout(safetyTimer);
-    };
-  }, []); 
 
   const getItemsForProfile = (profilName) => {
     return socialItems.filter(item => item.profils?.name_masculine === profilName);
@@ -305,7 +268,6 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
   };
 
   const renderCatalogue = (profilNom) => {
-    if (loading) return <div className="p-10 text-center text-amber-600 flex flex-col items-center justify-center"><Loader className="animate-spin mb-2" size={32} /> Installation des étals...</div>;
 
     const itemsDuProfil = getItemsForProfile(profilNom);
     if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;

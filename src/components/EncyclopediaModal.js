@@ -1,13 +1,14 @@
 // src/components/EncyclopediaModal.js
 // 8.20.0 // 8.21.0 // 8.29.0 
 // 9.4.0 // 9.10.0
-// 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0
+// 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0 // 10.9.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import BonusBuilder from './BonusBuilder';
 import { logger, showInAppNotification, translateError } from '../utils/SystemeServices';
+import { useCharacter } from '../context/CharacterContext';
 
 export default function EncyclopediaModal({
   activeTab,
@@ -27,23 +28,15 @@ export default function EncyclopediaModal({
   onSuccess // 👈 NOUVELLE PROP
 }) {
 
-  // 🌟 NOUVEAU : Liste dynamique depuis la base (avec spécialités)
-  const [usefulSkills, setUsefulSkills] = useState([]);
-  const [competencesData, setCompetencesData] = useState([]); // 👈 NOUVEAU
+  const { gameData } = useCharacter(); // ✨ CONNEXION AU NUAGE
 
-  React.useEffect(() => {
-    if (['fairy_types', 'fairy_assets', 'fairy_powers', 'fairy_capacites'].includes(activeTab)) {
-      const fetchSkills = async () => {
-        // 👈 MODIFIÉ : On récupère aussi l'ID et les spécialités liées !
-        const { data, error } = await supabase.from('competences').select('id, name, specialites(id, nom, is_official)').order('name');
-        if (!error && data) {
-          setCompetencesData(data);
-          setUsefulSkills(data.map(c => c.name));
-        }
-      };
-      fetchSkills();
-    }
-  }, [activeTab]);
+  // 🧠 On extrait et formate instantanément les données du Nuage pour le BonusBuilder
+  const competencesData = Object.values(gameData.competences || {}).map(c => ({
+    id: c.id,
+    name: c.nom, // On renomme 'nom' en 'name' pour la compatibilité
+    specialites: c.specialites
+  }));
+  const usefulSkills = Object.keys(gameData.competences || {});
   
   // --- LA FONCTION CHIRURGIEN ---
   const handleSubmitProposal = async () => {
@@ -435,14 +428,13 @@ export default function EncyclopediaModal({
                   <label className="block text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
                     <Star size={16} className="text-amber-500 fill-amber-500" /> Héritage & Compétences (Utiles et Futiles)
                   </label>
-                  <BonusBuilder
-                    parsedTech={parsedTech}
-                    updateTech={updateTech}
-                    competencesData={competencesData}
-                    setCompetencesData={setCompetencesData}
-                    usefulSkills={usefulSkills}
-                    futilesSkills={allCompFutiles.map(c => c.name)}
-                  />
+					<BonusBuilder
+					  parsedTech={parsedTech}
+					  updateTech={updateTech}
+					  competencesData={competencesData}
+					  usefulSkills={usefulSkills}
+					  futilesSkills={allCompFutiles.map(c => c.name)}
+					/>
                 </div>
 
                 <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
@@ -610,16 +602,15 @@ export default function EncyclopediaModal({
             {/* 🌟 LE CONSTRUCTEUR DE BONUS UNIFIÉ (Autonome & DRY) 🌟 */}
             {['fairy_assets', 'fairy_powers', 'fairy_capacites'].includes(activeTab) && (
               <div className="mt-4">
-                <BonusBuilder 
-                  parsedTech={parsedTech}
-                  updateTech={updateTech}
-                  rawJson={proposal.techData}
-                  onJsonChange={(val) => setProposal({...proposal, techData: val})}
-                  competencesData={competencesData}
-                  setCompetencesData={setCompetencesData}
-                  usefulSkills={usefulSkills}
-                />
-              </div>
+				<BonusBuilder
+				  parsedTech={parsedTech}
+				  updateTech={updateTech}
+				  rawJson={proposal.techData}
+				  onJsonChange={(val) => setProposal({...proposal, techData: val})}
+				  competencesData={competencesData}
+				  usefulSkills={usefulSkills}
+				/>
+			</div>
             )}
 
             {/* 👆 FIN DES CHAMPS ATOUTS 👆 */}

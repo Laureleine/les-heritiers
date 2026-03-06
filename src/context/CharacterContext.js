@@ -1,4 +1,4 @@
-// 10.6.0
+// 10.6.0 // 10.9.0
 
 import React, { createContext, useContext, useReducer, useState } from 'react';
 import { characterReducer } from '../utils/characterEngine';
@@ -26,7 +26,9 @@ export function CharacterProvider({ children }) {
   // L'état global du jeu (Données Supabase)
   const [gameData, setGameData] = useState({
     profils: [], competences: {}, competencesParProfil: {}, competencesFutiles: [],
-    fairyData: {}, fairyTypes: [], fairyTypesByAge: { traditionnelles: [], modernes: [] }
+    fairyData: {}, fairyTypes: [], fairyTypesByAge: { traditionnelles: [], modernes: [] },
+    socialItems: [],
+    encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] } // ✨ NOUVEAU
   });
   
   // L'état global du personnage en cours de création

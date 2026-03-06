@@ -1,4 +1,4 @@
-// 10.6.0
+// 10.6.0 // 10.9.0
 
 import React from 'react';
 import { Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from 'lucide-react';
@@ -41,12 +41,16 @@ export const AVAILABLE_BADGES = [
 export const accorderTexte = (texte, sexe) => {
   if (!texte) return '';
   const isFemme = sexe === 'Femme' || sexe === 'Féminin';
+  
   if (texte.includes('/')) {
     const parts = texte.split('/');
-    return isFemme && parts.length > 1 ? parts[1].trim() : parts.trim();
+    // ✨ CORRECTION : parts au lieu de parts tout court !
+    return isFemme && parts.length > 1 ? parts[1].trim() : parts.trim(); 
   }
+  
   return texte.trim();
 };
+
 
 export const getFairyAge = (typeFee, anciennete, fairyData = {}) => {
   const defaultAges = { traditionnelle: 'traditionnelle', moderne: 'moderne' };

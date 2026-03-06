@@ -14,7 +14,10 @@ export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked
   // Détection si c'est un pouvoir
   let typeBadge = null;
   if (activeTab === 'fairy_powers' && item.type_pouvoir) {
-    const isMasque = item.type_pouvoir.includes('masque');
+    // Détection corrigée pour éviter que "demasque" ne valide "masque"
+    const isDemasque = item.type_pouvoir.includes('demasque');
+    const isMasque = !isDemasque;
+    
     const isProfond = item.type_pouvoir.includes('profond');
     const isLegendaire = item.type_pouvoir.includes('legendaire');
     
