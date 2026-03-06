@@ -1,3 +1,5 @@
+// 10.7.0
+
 import React, { useState, useEffect } from 'react';
 import { Download, X, Smartphone, Share, AlertCircle, CheckCircle, Info, BookOpen, Check } from 'lucide-react';
 import { supabase } from '../config/supabase';
@@ -161,7 +163,7 @@ export function PWAPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:-translate-x-0 md:right-6 w-[90vw] md:w-80 bg-white p-5 rounded-2xl shadow-2xl border-2 border-amber-400 z-[6] animate-fade-in-up">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:-translate-x-0 md:right-6 w-[90vw] md:w-80 bg-white p-5 rounded-2xl shadow-2xl border-2 border-amber-400 z-50 animate-fade-in-up">
       <button onClick={handleDismiss} className="absolute top-2 right-2 text-gray-400 hover:text-red-500 bg-gray-50 rounded-full p-1" title="Fermer">
         <X size={16} />
       </button>

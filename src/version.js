@@ -7,6 +7,22 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 
 export const VERSION_HISTORY = [
+ {
+    version: '10.7.0',
+    date: '5 Mars 2026',
+    changes: [
+      '📱 **Accessibilité Mobile (iOS) :** La proposition d\'installation du Grimoire sur iPhone s\'affiche désormais fièrement au premier plan et n\'est plus bloquée par la toile de fond.',
+      '🛡️ **Sécurité Narrative :** Les mystérieuses erreurs techniques (RLS) dues à une expiration de session en arrière-plan sont désormais traduites en un message immersif guidant l\'Héritier.',
+      '🩹 **Stabilisation du Nuage :** Restauration des variables de mémorisation perdues lors de la grande migration pour la création de Compétences Futiles sur-mesure.',
+      '🧠 **Profils Indépendants :** L\'étape des Profils est désormais 100% autonome et blindée contre les crashs de chargement grâce à un filet de sécurité.',
+      '📖 **Pierre de Rosette (Gardiens) :** Le système de différences relationnelles (Delta) traduit désormais magiquement les codes informatiques complexes en noms lisibles (Fées, Atouts, Pouvoirs).',
+      '📱 **Fluidité Mobile :** Éradication des popups d\'alerte natives du navigateur lors de l\'édition de l\'Encyclopédie. Les messages bloquants s\'affichent désormais de manière élégante et visible sur téléphone.',
+      '🛡️ **Traduction Étendue :** Le traducteur d\'anomalies est désormais connecté aux propositions de l\'Encyclopédie, guidant mieux les joueurs si leur session expire en plein vol.',
+      '🛡️ **Fluidité du Conseil :** La modale de confirmation des Gardiens du Savoir se referme désormais avec élégance et instantanément après la validation d\'une requête.',
+      '🔍 **Audit Visuel Amélioré :** Le Conseil des Gardiens affiche désormais les différences de textes sous forme d\'un tableau à deux colonnes (Nouveau à gauche, Ancien rayé à droite) pour une relecture infiniment plus aisée !',
+      '✨ **Typographie Naturelle (Gardiens) :** Lors de la création d\'un élément, l\'encart du Delta affiche désormais les étiquettes et les textes "en ligne". Les paragraphes s\'écoulent naturellement avec un retour à la marge propre, façon livre.'
+    ]
+  },
 {
     version: '10.6.0',
     date: '5 Mars 2026',
