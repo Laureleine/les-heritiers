@@ -1,7 +1,7 @@
-// 10.6.0 // 10.9.0
+// 10.6.0 // 10.9.0 // 10.10.0
 
 import React from 'react';
-import { Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from 'lucide-react';
+import { Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle, Compass } from 'lucide-react';
 
 // ============================================================================
 // 1. LES CONSTANTES ET CARACTÉRISTIQUES (Ancien constants.js)
@@ -32,8 +32,12 @@ export const AVAILABLE_BADGES = [
   { id: 'lanterne', label: 'Gardien de la Lanterne 🏮', color: 'bg-indigo-900 text-amber-200 border-amber-500/50 shadow-sm' },
   { id: 'limpide', label: <span className="flex items-center gap-1"><Sparkles size={12}/> Esprit Limpide</span>, color: 'bg-cyan-50 text-cyan-800 border-cyan-200 shadow-sm' },
   { id: 'pragmatique', label: 'Esprit Pragmatique ⚙️', color: 'bg-slate-100 text-slate-700 border-slate-300 shadow-sm' },
-  { id: 'clarte', label: 'Architecte de la Clarté 📐', color: 'bg-stone-100 text-stone-800 border-stone-300 shadow-sm' }
+  { id: 'clarte', label: 'Architecte de la Clarté 📐', color: 'bg-stone-100 text-stone-800 border-stone-300 shadow-sm' },
+  { id: 'safari_guide', label: <span className="flex items-center gap-1"><Compass size={12}/> Guide de Safari</span>, color: 'bg-amber-100 text-amber-900 border-amber-400 shadow-sm'   },
+  { id: 'newton_apple', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/> La Pomme de Newton</span>,     color: 'bg-lime-100 text-lime-900 border-lime-400 shadow-sm'   },
+  { id: 'renard_renarde', label: <span className="flex items-center gap-1"><VenetianMask size={12}/> Le Renard de la Renarde</span>,     color: 'bg-orange-100 text-orange-900 border-orange-400 shadow-sm'   }  
 ];
+
 
 // ============================================================================
 // 3. LES OUTILS DE FORMATAGE (Ancien dataHelpers.js)
