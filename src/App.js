@@ -1,7 +1,7 @@
 // src/App.js
 // 8.25.0 // 8.26.0 
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
-// 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0
+// 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -9,6 +9,7 @@ import { supabase } from './config/supabase';
 import { loadAllGameData } from './utils/supabaseGameData';
 import { saveCharacterToSupabase, toggleCharacterVisibility } from './utils/supabaseStorage';
 import { useAutoUpdate } from './hooks/useAutoUpdate'; // Ajustez le chemin si nécessaire
+import { showInAppNotification } from './utils/SystemeServices'; // 👈 1. NOUVEL IMPORT ICI
 
 // --- IMPORTS DES COMPOSANTS ---
 import Auth from './components/Auth';
@@ -160,16 +161,19 @@ function App() {
   const handleSave = async () => {
     if (isReadOnly) return;
     if (!character.nom.trim() || !character.sexe || !character.typeFee) {
-      alert('Veuillez compléter les informations de base (Nom, Sexe, Type de Fée).');
+      // ✨ La nouvelle notification :
+      showInAppNotification("Impossible de sauvegarder : votre Héritier a besoin d'un Nom, d'un Sexe et d'un Héritage (Étape 1) !", "warning");
       return;
     }
+
     try {
       const saved = await saveCharacterToSupabase(character);
       dispatchCharacter({ type: 'UPDATE_FIELD', field: 'id', value: saved.id, gameData });
       setShowSaveNotification(true);
       setTimeout(() => setShowSaveNotification(false), 3000);
     } catch (e) {
-      alert('Erreur sauvegarde : ' + e.message);
+      // ✨ Et on n'oublie pas l'erreur de sauvegarde !
+      showInAppNotification("Les fluides éthérés refusent l'enregistrement : " + e.message, "error");
     }
   };
 
@@ -179,13 +183,14 @@ function App() {
 
   const nextStep = () => {
     if (step === 1 && !canProceedStep1) {
-      alert('Veuillez compléter les informations de base.');
+      // ✨ Une phrase plus lore-friendly
+      showInAppNotification("Les pages suivantes sont scellées. Renseignez d'abord votre Nom, Sexe et Héritage féérique !", "warning");
       return;
     }
     setStep(s => Math.min(totalSteps, s + 1));
     window.scrollTo(0, 0);
   };
-
+  
   const prevStep = () => {
     setStep(s => Math.max(1, s - 1));
     window.scrollTo(0, 0);
@@ -382,14 +387,15 @@ function App() {
                 return (
                   <div key={s.id} className="relative z-10 flex flex-col items-center group">
                     <button
-                      onClick={() => {
-                        if (s.id > 1 && !canProceedStep1) {
-                          alert('Veuillez compléter les informations de base (Étape 1).');
-                          return;
-                        }
-                        setStep(s.id);
-                        window.scrollTo(0, 0);
-                      }}
+						onClick={() => {
+						  if (s.id > 1 && !canProceedStep1) {
+							// ✨ L'avertissement de navigation
+							showInAppNotification("La magie bloque le passage. Terminez l'Étape 1 (Nom, Sexe, Fée) avant de sauter les pages.", "warning");
+							return;
+						  }
+						  setStep(s.id);
+						  window.scrollTo(0, 0);
+						}}
                       className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${
                         isActive
                           ? 'bg-amber-500 text-white scale-125 ring-4 ring-amber-200'

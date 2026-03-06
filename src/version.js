@@ -1,15 +1,27 @@
 // src/version.js
-//
 
 import buildInfo from './build-info.json'; 
 
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
-
 export const VERSION_HISTORY = [
- {
+   {
+    version: '10.8.0',
+    date: '6 Mars 2026',
+    changes: [
+      '🧱 **Le Grand Œuvre :** L\'interface de création des Fées dans l\'Encyclopédie utilise désormais le Constructeur Lego universel pour forger les Compétences Utiles et Futiles.',
+      '🧹 **Purification du Code :** Suppression de centaines de lignes d\'interfaces complexes "faites main" devenues obsolètes grâce à la puissance du `BonusBuilder`.',
+      '🤖 **Moteur de Traduction :** Le générateur des propositions traduit désormais intelligemment les noms des briques futiles en Identifiants (UUID) valides pour la base de données.',
+      '🐛 **Connexion Rétablie (Étape 1) :** Restauration des câblages permettant de sauvegarder l\'Héritage (Fée) et le Sexe, qui avaient disparu lors de la grande migration vers le Nuage de données.',
+      '📜 **Immersion Renforcée :** Éradication définitive des popups `alert()` natifs du navigateur lors de la création de personnage. Le Grimoire utilise désormais ses propres bannières magiques pour vous rappeler de remplir votre Nom, Sexe et Héritage !',
+      '🐛 **Synchronisation des Atouts (Étape 4) :** Résolution d\'une anomalie bloquant la sélection visuelle des Atouts Féériques en modification de personnage (l\'interface tentait de lire des UUID là où la mémoire de l\'Héritier conservait des Noms).',
+      '🔮 **Nuances Magiques :** Les Pouvoirs Profonds et Légendaires peuvent désormais être spécifiés comme "Masqués" ou "Démasqués", respectant scrupuleusement les règles du Livre de Base.',
+      '🏷️ **Badges Combinés :** L\'Encyclopédie génère des badges intelligents combinant le Niveau (Profond/Légendaire) et la Visibilité (Masqué/Démasqué) d\'un pouvoir.'
+    ]
+  },
+  {
     version: '10.7.0',
-    date: '5 Mars 2026',
+    date: '6 Mars 2026',
     changes: [
       '📱 **Accessibilité Mobile (iOS) :** La proposition d\'installation du Grimoire sur iPhone s\'affiche désormais fièrement au premier plan et n\'est plus bloquée par la toile de fond.',
       '🛡️ **Sécurité Narrative :** Les mystérieuses erreurs techniques (RLS) dues à une expiration de session en arrière-plan sont désormais traduites en un message immersif guidant l\'Héritier.',

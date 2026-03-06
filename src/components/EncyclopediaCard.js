@@ -1,5 +1,7 @@
 // src/components/EncyclopediaCard.js
-// 8.20.0 // 9.6.0
+// 8.20.0 
+// 9.6.0
+// 10.8.0
 
 import React from 'react';
 import { Feather, Sparkles, Star, Lock, ShieldCheck, ShieldAlert, Unlock } from 'lucide-react';
@@ -10,9 +12,25 @@ export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked
   const isRestricted = item.is_official === false;
   
   // Détection si c'est un pouvoir
-  const typeBadge = item.type_pouvoir 
-    ? (item.type_pouvoir === 'masque' ? '🎭 Masqué' : item.type_pouvoir === 'demasque' ? '🔥 Démasqué' : `✨ ${item.type_pouvoir}`)
-    : null;
+  let typeBadge = null;
+  if (activeTab === 'fairy_powers' && item.type_pouvoir) {
+    const isMasque = item.type_pouvoir.includes('masque');
+    const isProfond = item.type_pouvoir.includes('profond');
+    const isLegendaire = item.type_pouvoir.includes('legendaire');
+    
+    let label = isProfond ? '🔮 Profond' : isLegendaire ? '👑 Légendaire' : 'Standard';
+    label += isMasque ? ' (🎭 Masqué)' : ' (🔥 Démasqué)';
+    
+    const colorClass = isMasque 
+      ? 'bg-purple-100 text-purple-800 border-purple-200' 
+      : 'bg-rose-100 text-rose-800 border-rose-200';
+
+    typeBadge = (
+      <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${colorClass}`}>
+        {label}
+      </span>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group flex flex-col h-full">

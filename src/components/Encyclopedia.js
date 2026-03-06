@@ -1,7 +1,7 @@
 // src/components/Encyclopedia.js
 // 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 
 // 9.4.0 // 9.6.0
-// 10.4.0
+// 10.4.0 // 10.8.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -180,8 +180,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         capacitesChoixIds: [],
         pouvoirsIds: [],
         atoutsIds: [],
-        futileChoix1: [],
-        futileChoix2: []
+        techData: JSON.stringify({ predilections: [], futiles: [] }, null, 2)
       });
     } else {
       // 🔮 Structure par défaut pour les autres éléments (Pouvoirs, Capacités, Atouts)
@@ -232,15 +231,26 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
         capacitesChoixIds: item.fairy_type_capacites?.filter(l => l.capacite_type === 'choix').map(l => l.capacite?.id).filter(Boolean) || [],
         pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
         atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
-        competencesUtiles: item.competencesPredilection ? JSON.stringify(item.competencesPredilection, null, 2) : '',
+        pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
+        atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         
-        // 👈 LA PARADE ANTI-BUG : On utilise des espaces dans les crochets !
-        futileFixe1: fixedFutiles[ 0 ]?.competence_futile_id || '',
-        futileFixe2: fixedFutiles[ 1 ]?.competence_futile_id || '',
-        futileChoix1: choiceFutiles[ 0 ]?.choice_options || [],
-        futileChoix2: choiceFutiles[ 1 ]?.choice_options || []
+        // ✨ LE NOUVEAU JSON UNIFIÉ POUR LE BUILDER
+        techData: JSON.stringify({
+          predilections: (item.competencesPredilection || []).map(p => ({
+            nom: p.nom || null,
+            specialite: p.specialite || null,
+            isChoix: p.isChoix || false,
+            isSpecialiteChoix: p.isSpecialiteChoix || false,
+            options: p.options || p.choice_options || []
+          })),
+          futiles: (fixedFutiles.map(f => {
+            const compFound = allCompFutiles.find(c => c.id === f.competence_futile_id);
+            return compFound ? { isChoix: false, nom: compFound.name } : null;
+          }).filter(Boolean)).concat(choiceFutiles.map(f => ({
+            isChoix: true, options: f.choice_options || []
+          })))
+        }, null, 2)
       });
-
     } else {
       // Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
       let existingFairyIds = [];
