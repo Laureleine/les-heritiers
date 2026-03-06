@@ -1,3 +1,5 @@
+// 10.7.0
+
 import { supabase } from '../config/supabase';
 
 // ============================================================================
@@ -19,6 +21,7 @@ export const translateError = (error) => {
   if (code === '42601') return "La formule incantatoire est imparfaite (Erreur de syntaxe SQL). Les Gardiens ont été prévenus.";
   if (code === 'PGRST116') return "L'archive que vous cherchez s'est évaporée dans les limbes (Élément introuvable).";
   if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) return "Les fluides éthérés sont perturbés. Impossible de contacter les archives centrales (Erreur réseau).";
+  if (msg.includes('row-level security')) return "Les Gardiens vous refusent l'accès. Votre session a expiré en arrière-plan, veuillez vous déconnecter puis vous reconnecter.";
 
   return `Anomalie détectée : ${msg}`;
 };

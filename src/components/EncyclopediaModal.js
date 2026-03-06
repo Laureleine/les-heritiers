@@ -1,14 +1,13 @@
 // src/components/EncyclopediaModal.js
 // 8.20.0 // 8.21.0 // 8.29.0 
 // 9.4.0 // 9.10.0
-// 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0
+// 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import BonusBuilder from './BonusBuilder';
-import { logger } from '../utils/SystemeServices';
-
+import { logger, showInAppNotification, translateError } from '../utils/SystemeServices';
 
 export default function EncyclopediaModal({
   activeTab,
@@ -49,7 +48,7 @@ export default function EncyclopediaModal({
   // --- LA FONCTION CHIRURGIEN ---
   const handleSubmitProposal = async () => {
     if (!justification.trim()) {
-      alert("Veuillez expliquer brièvement la raison de cette modification.");
+      showInAppNotification("Veuillez expliquer brièvement la raison de cette modification.", "warning");
       return;
     }
 
@@ -71,7 +70,10 @@ export default function EncyclopediaModal({
     const nameColumn = activeTab === 'fairy_types' ? 'name' : 'nom';
 
     if (isCreating) {
-      if (!proposal.name?.trim()) return alert("Le nom est obligatoire !");
+      if (!proposal.name?.trim()) {
+        showInAppNotification("Le nom de l'élément est obligatoire !", "warning");
+        return;
+      }
       surgicalData[nameColumn] = proposal.name.trim();
       if (activeTab === 'fairy_powers') surgicalData.type_pouvoir = proposal.type_pouvoir;
     } else if (proposal.name && proposal.name !== (editingItem.name || editingItem.nom)) {
@@ -233,7 +235,7 @@ export default function EncyclopediaModal({
     }
 
     if (Object.keys(surgicalData).length === 0) {
-      alert("Aucune modification n'a été détectée par rapport à la version actuelle.");
+      showInAppNotification("Aucune modification n'a été détectée par rapport à la version actuelle.", "warning");
       return;
     }
 
@@ -252,7 +254,7 @@ export default function EncyclopediaModal({
       if (error) throw error;
 
       logger.info("✅ Proposition envoyée :", payload.record_name);
-      alert("Votre proposition a été envoyée aux Gardiens du Savoir !");
+      showInAppNotification("Votre proposition a été envoyée aux Gardiens du Savoir !", "success");
     
       // 👈 NOUVEAU : On utilise onSuccess s'il existe pour mettre à jour les cadenas
       if (onSuccess) {
@@ -262,7 +264,7 @@ export default function EncyclopediaModal({
       }
     } catch (error) {
       logger.error("❌ Erreur envoi proposition :", error);
-      alert("Erreur lors de l'envoi : " + error.message);
+      showInAppNotification(translateError(error), "error");
     }
   };
 

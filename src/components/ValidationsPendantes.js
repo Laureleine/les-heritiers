@@ -1,7 +1,7 @@
 // src/components/ValidationsPendantes.js
 // 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 
 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
-// 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0
+// 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal } from 'lucide-react';
@@ -22,7 +22,9 @@ export default function ValidationsPendantes({ session, onBack }) {
   const [activeTab, setActiveTab] = useState('pending');
   const [myRole, setMyRole] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
-
+  const [referenceNames, setReferenceNames] = useState({});
+  const [originalRecords, setOriginalRecords] = useState({});
+  
   // 🛡️ MÉMOIRE DE LA MODALE DE CONFIRMATION
   const [confirmState, setConfirmState] = useState({ 
     isOpen: false, 
@@ -40,6 +42,7 @@ export default function ValidationsPendantes({ session, onBack }) {
 
       if (role === 'gardien' || role === 'super_admin') {
         loadChanges();
+		loadDictionaries();
       } else {
         setLoading(false);
       }
@@ -47,6 +50,23 @@ export default function ValidationsPendantes({ session, onBack }) {
     init();
   }, [session.user.id]);
 
+  // 👇 3. LA NOUVELLE FONCTION QUI VA CHERCHER LES NOMS
+  const loadDictionaries = async () => {
+    const [fees, pouvoirs, atouts, capacites] = await Promise.all([
+      supabase.from('fairy_types').select('id, name'),
+      supabase.from('fairy_powers').select('id, nom'),
+      supabase.from('fairy_assets').select('id, nom'),
+      supabase.from('fairy_capacites').select('id, nom')
+    ]);
+
+    const map = {};
+    if (fees.data) fees.data.forEach(d => map[d.id] = d.name);
+    if (pouvoirs.data) pouvoirs.data.forEach(d => map[d.id] = d.nom);
+    if (atouts.data) atouts.data.forEach(d => map[d.id] = d.nom);
+    if (capacites.data) capacites.data.forEach(d => map[d.id] = d.nom);
+    setReferenceNames(map);
+  };
+  
   const loadChanges = async () => {
     setLoading(true);
     const [pending, approved, history] = await Promise.all([
@@ -54,6 +74,26 @@ export default function ValidationsPendantes({ session, onBack }) {
       supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'approved').order('created_at', { ascending: false }),
       supabase.from(TABLE_NAME).select('*, profiles(username, badges)').in('status', ['archived', 'rejected']).order('created_at', { ascending: false }).limit(50)
     ]);
+
+    // ✨ NOUVEAU : Récupération des données originales pour comparer (Le fameux AVANT / APRÈS)
+    const allActive = [...(pending.data || []), ...(approved.data || [])];
+    const grouped = {};
+    allActive.forEach(c => {
+      // On exclut les créations pures (qui n'ont pas d'ancien record)
+      if (c.record_id && !(c.new_data && c.new_data.id)) {
+        if (!grouped[c.table_name]) grouped[c.table_name] = [];
+        if (!grouped[c.table_name].includes(c.record_id)) grouped[c.table_name].push(c.record_id);
+      }
+    });
+
+    const recordsMap = {};
+    for (const [table, ids] of Object.entries(grouped)) {
+      if (ids.length > 0) {
+        const { data } = await supabase.from(table).select('*').in('id', ids);
+        if (data) data.forEach(item => recordsMap[item.id] = item);
+      }
+    }
+    setOriginalRecords(recordsMap);
 
     if (pending.data) setPendingChanges(pending.data);
     if (approved.data) setApprovedChanges(approved.data);
@@ -131,6 +171,7 @@ export default function ValidationsPendantes({ session, onBack }) {
 
   // LE CHIRURGIEN SQL (Générateur)
   const executeApprove = async (change, seal = false) => {
+	setConfirmState({ isOpen: false });
     try {
       // 1. On délègue toute la génération complexe au nouveau moteur
       const sqlQuery = generateApprovalSQL(change, seal);
@@ -202,49 +243,120 @@ export default function ValidationsPendantes({ session, onBack }) {
           </p>
         </div>
 		
-        {/* 🌟 NOUVEAU : AFFICHAGE VISUEL DU DELTA POUR LES GARDIENS 🌟 */}
-        {(() => {
-          const pData = change.new_data || change.proposed_data || {};
-          if (!pData._relations) return null;
+          {/* 🌟 NOUVEAU : AFFICHAGE VISUEL DU DELTA POUR LES GARDIENS 🌟 */}
+          {(() => {
+            const pData = change.new_data || change.proposed_data || {};
+            
+            // 1. Extraire les champs textes/nombres modifiés (on ignore les métadonnées)
+            const standardFields = Object.keys(pData).filter(k => k !== '_relations' && k !== 'id');
+            const hasStandardChanges = standardFields.length > 0;
+            
+            // 2. Extraire les relations complexes
+            const hasRelations = pData._relations && Object.keys(pData._relations).length > 0;
 
-          return (
-            <div className="mt-4 bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-inner">
-              <h4 className="text-xs font-bold text-slate-500 uppercase mb-2 flex items-center gap-1">
-                <TestTubeDiagonal size={14} /> Différences relationnelles (Delta)
-              </h4>
-              {['pouvoirs', 'atouts', 'capacites', 'fairyIds'].map(relKey => {
-                const relData = pData._relations[relKey];
-                // On ignore si c'est vide ou si c'est l'ancien format "Nuke & Pave" (tableau simple)
-                if (!relData || Array.isArray(relData)) return null;
+            // S'il n'y a absolument rien à montrer
+            if (!hasStandardChanges && !hasRelations) return null;
 
-                const added = relData.added || [];
-                const removed = relData.removed || [];
-                if (added.length === 0 && removed.length === 0) return null;
+            return (
+              <div className="mt-4 bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-inner space-y-3">
+                <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1">
+                  <TestTubeDiagonal size={14} /> Différences (Delta)
+                </h4>
 
-                // Formatage du nom de la catégorie
-                const label = relKey === 'fairyIds' ? 'Fées liées' : relKey;
+                {/* --- A. LES CHAMPS STANDARDS (Nom, Description, Effets...) --- */}
+                {hasStandardChanges && (
+                  <div className="mb-4">
+                    {/* ✨ LE TITRE INTELLIGENT EST ICI ✨ */}
+                    <span className="text-xs font-bold text-slate-700">
+                      {pData.id ? 'Contenu de la création :' : 'Champs textuels modifiés :'}
+                    </span>
+                    
+                    <ul className="mt-2 space-y-3">
+                      {standardFields.map(key => {
+                         const isCreation = !!pData.id;
+                         const originalItem = originalRecords[change.record_id] || {};
 
-                return (
-                  <div key={relKey} className="mb-2 last:mb-0">
-                    <span className="text-xs font-bold text-slate-700 capitalize">{label} :</span>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {added.map(id => (
-                        <span key={`add-${id}`} className="bg-green-100 text-green-800 border border-green-300 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-mono shadow-sm cursor-help" title={`ID: ${id}`}>
-                          <Plus size={10} /> {id.substring(0, 8)}...
-                        </span>
-                      ))}
-                      {removed.map(id => (
-                        <span key={`rem-${id}`} className="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-mono shadow-sm cursor-help" title={`ID: ${id}`}>
-                          <Minus size={10} /> {id.substring(0, 8)}...
-                        </span>
-                      ))}
-                    </div>
+                         // Formateur intelligent pour l'affichage
+                         const formatValue = (val) => {
+                           if (val === undefined || val === null || val === '') return "— vide —";
+                           if (typeof val === 'object') return JSON.stringify(val);
+                           const str = String(val);
+                           return str.length > 200 ? str.substring(0, 200) + '...' : str;
+                         };
+
+                         const displayNew = formatValue(pData[key]);
+                         const displayOld = formatValue(originalItem[key]);
+
+                         return (
+                           <li key={key} className="text-[11px] border border-gray-200 bg-white rounded-lg p-2.5 shadow-sm">
+                             
+                             {isCreation ? (
+                               /* ✨ RENDU "EN LIGNE NATUREL" (Uniquement pour la Création) */
+                               <div className="leading-relaxed">
+                                 <span className="font-mono bg-blue-50 border border-blue-200 px-2 py-0.5 rounded text-blue-800 font-bold mr-2">
+                                   {key}
+                                 </span>
+                                 <span className="font-medium text-green-900 whitespace-pre-wrap">"{displayNew}"</span>
+                               </div>
+                             ) : (
+                               /* 📊 RENDU "DEUX COLONNES" (Uniquement pour la Modification) */
+                               <>
+                                 <span className="font-mono bg-blue-50 border border-blue-200 px-2 py-0.5 rounded text-blue-800 font-bold mb-2 inline-block">
+                                   {key}
+                                 </span>
+                                 <div className="grid grid-cols-2 gap-3 mt-1">
+                                   <div className="bg-green-50/50 border border-green-200 text-green-900 p-2 rounded">
+                                     <span className="block text-[9px] uppercase font-bold text-green-600 mb-1 tracking-wider">Proposition (Nouveau)</span>
+                                     <span className="font-medium whitespace-pre-wrap leading-relaxed">"{displayNew}"</span>
+                                   </div>
+                                   <div className="bg-red-50/50 border border-red-200 text-red-900 p-2 rounded">
+                                     <span className="block text-[9px] uppercase font-bold text-red-600 mb-1 tracking-wider">Actuel (Ancien)</span>
+                                     <span className="italic opacity-80 whitespace-pre-wrap leading-relaxed line-through decoration-red-300">"{displayOld}"</span>
+                                   </div>
+                                 </div>
+                               </>
+                             )}
+                           </li>
+                         );
+                      })}
+                    </ul>
                   </div>
-                );
-              })}
-            </div>
-          );
-        })()}		
+                )}
+
+                {/* --- B. LES RELATIONS (Fées, Pouvoirs, Atouts...) --- */}
+                {hasRelations && ['pouvoirs', 'atouts', 'capacites', 'fairyIds'].map(relKey => {
+                  const relData = pData._relations[relKey];
+                  if (!relData || Array.isArray(relData)) return null;
+
+                  const added = relData.added || [];
+                  const removed = relData.removed || [];
+                  if (added.length === 0 && removed.length === 0) return null;
+
+                  const label = relKey === 'fairyIds' ? 'Fées liées' : relKey;
+
+                  return (
+                    <div key={relKey} className="border-t border-slate-200/60 pt-2 mt-2 first:border-0 first:pt-0 first:mt-0">
+                      <span className="text-xs font-bold text-slate-700 capitalize">{label} :</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {added.map(id => (
+                          <span key={`add-${id}`} className="bg-green-100 text-green-800 border border-green-300 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-bold shadow-sm cursor-help" title={`ID: ${id}`}>
+                            <Plus size={10} /> {referenceNames[id] || `${id.substring(0, 8)}...`}
+                          </span>
+                        ))}
+                        {removed.map(id => (
+                          <span key={`rem-${id}`} className="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-bold shadow-sm cursor-help" title={`ID: ${id}`}>
+                            <Minus size={10} /> {referenceNames[id] || `${id.substring(0, 8)}...`}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
+
       </div>
 	  
 	  
