@@ -327,23 +327,29 @@ export const loadFairyTypes = async () => {
 		const assetsTries = rawAssets
 			.filter(a => !ATOUTS_MASQUES.includes(a.nom))
 			.sort((a, b) => a.nom.localeCompare(b.nom));		
-
-        // Traitement des Pouvoirs 
-        // On filtre d'abord pour exclure les Profonds et Légendaires
 		
-        // Traitement des Pouvoirs
-        const rawPouvoirsLinks = fairy.fairy_type_powers || [];
-        const rawPouvoirs = rawPouvoirsLinks
-            .map(link => link.power)
-            .filter(p => p && (p.type_pouvoir === 'masque' || p.type_pouvoir === 'demasque'));
+		  // Traitement des Pouvoirs
+		  const rawPouvoirsLinks = fairy.fairy_type_powers || [];
+		  
+		  // On filtre pour ne garder QUE les standards pour l'Étape 3
+		  const rawPouvoirs = rawPouvoirsLinks
+			.map(link => link.power)
+			.filter(p => p && (p.type_pouvoir === 'masque' || p.type_pouvoir === 'demasque'));
 
-        const pouvoirsTries = rawPouvoirs.sort((a, b) => {
-            const order = { 'masque': 1, 'demasque': 2, 'profond': 3, 'legendaire': 4 };
-            const scoreA = order[a.type_pouvoir] || 99;
-            const scoreB = order[b.type_pouvoir] || 99;
-            if (scoreA !== scoreB) return scoreA - scoreB;
-            return a.nom.localeCompare(b.nom);
-        });
+		  const pouvoirsTries = rawPouvoirs.sort((a, b) => {
+			// ✨ NOUVEAU DICTIONNAIRE DE TRI
+			const order = { 
+			  'masque': 1, 
+			  'demasque': 2, 
+			  'profond_masque': 3, 
+			  'profond_demasque': 4, 
+			  'legendaire_masque': 5, 
+			  'legendaire_demasque': 6 
+			};
+			const orderA = order[a.type_pouvoir] || 99;
+			const orderB = order[b.type_pouvoir] || 99;
+			return orderA - orderB || a.nom.localeCompare(b.nom);
+		  });
 
         // Structure Capacités
         const rawCapacitesLinks = fairy.fairy_type_capacites || [];

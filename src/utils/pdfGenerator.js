@@ -352,7 +352,7 @@ export const exportToPDF = (character, fairyData = {}) => {
               <div style="margin-top: 5px;">
                 ${(character.pouvoirs || []).map(pName => {
                   const pData = feeData?.pouvoirs?.find(p => p.nom === pName);
-                  const type = pData?.type_pouvoir === 'masque' ? '🎭' : '🔥';
+                  const type = pData?.type_pouvoir?.includes('masque') ? '🎭' : '🔥';
                   return `
                   <div class="power-item">
                     <div class="power-title">${type} ${pName} <span class="checkboxes">□ □ □ □ □</span></div>

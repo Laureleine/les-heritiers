@@ -1,5 +1,5 @@
 // src/components/Step1.js
-// 10.4.0 // 10.6.0
+// 10.4.0 // 10.6.0 // 10.8.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling } from 'lucide-react';
@@ -12,7 +12,7 @@ export default function Step1() { // 👈 PLUS AUCUN PARAMÈTRE ICI !
   // Les remplaçants locaux :
   const onNomChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_FIELD', field: 'nom', value: val, gameData }); };
   const onSexeChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_FIELD', field: 'sexe', value: val, gameData }); };
-  const onTypeFeeChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'CHANGE_FAIRY_TYPE', typeFee: val, gameData }); };
+  const onTypeFeeChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_FIELD', field: 'typeFee', value: val, gameData }); };
   const onCharacterChange = (payload) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload, gameData }); };
   const onTraitsFeeriquesChange = (v) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { traitsFeeriques: v }, gameData }); };
 

@@ -1,4 +1,4 @@
-// 10.4.0 // 10.6.0
+// 10.4.0 // 10.6.0 // 10.8.0
 
 import React, { useState } from 'react';
 import { Star, Info, Check, Sparkles } from 'lucide-react';
@@ -148,11 +148,17 @@ export function Step3() {
                   {isSelected && <Check size={16} className="text-indigo-600" />}
                   {pouvoir.nom}
                 </div>
-                <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                  pouvoir.type_pouvoir === 'masque' ? 'bg-purple-100 text-purple-700' : 'bg-rose-100 text-rose-700'
-                }`}>
-                  {pouvoir.type_pouvoir === 'masque' ? '🎭 Masqué' : '🔥 Démasqué'}
-                </span>
+                  {/* ✨ Détection flexible avec includes() */}
+                  {(() => {
+                    const isMasque = pouvoir.type_pouvoir?.includes('masque');
+                    return (
+                      <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
+                        isMasque ? 'bg-purple-100 text-purple-700' : 'bg-rose-100 text-rose-700'
+                      }`}>
+                        {isMasque ? '🎭 Masqué' : '🔥 Démasqué'}
+                      </span>
+                    );
+                  })()}
               </div>
               <div className="text-sm text-gray-600 leading-relaxed mt-2">
                 {pouvoir.description || "Aucune description."}
@@ -209,13 +215,14 @@ export function StepAtouts() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {data.atouts.map((atout, idx) => {
-          const isSelected = character.atouts?.includes(atout.id);
+          // ✨ CORRECTION : On utilise le Nom de l'atout (et non son identifiant technique)
+          const isSelected = character.atouts?.includes(atout.nom);
           const isDisabled = !isSelected && countSelected >= MAX_ATOUTS;
 
           return (
             <div
               key={idx}
-              onClick={() => !isDisabled && handleAtoutToggle(atout.id)}
+              onClick={() => !isDisabled && handleAtoutToggle(atout.nom)}
               className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${
                 isSelected
                   ? 'border-yellow-500 bg-yellow-50 shadow-md ring-2 ring-yellow-200 ring-offset-2 cursor-pointer'

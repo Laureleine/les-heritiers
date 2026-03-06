@@ -1,7 +1,7 @@
 // src/components/EncyclopediaModal.js
 // 8.20.0 // 8.21.0 // 8.29.0 
 // 9.4.0 // 9.10.0
-// 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0
+// 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -87,7 +87,6 @@ export default function EncyclopediaModal({
 
       if (proposal.description !== editingItem.description) surgicalData.description = proposal.description;
       if (proposal.taille !== (editingItem.taille_categorie || 'Moyenne')) surgicalData.taille_categorie = proposal.taille;
-      // 👈 NOUVEAU : On enregistre l'ancienneté (era)
       if (proposal.era !== editingItem.era) surgicalData.era = proposal.era || 'traditionnelle';
       if (!arraysEqual(proposal.allowedGenders, editingItem.allowed_genders)) surgicalData.allowed_genders = proposal.allowedGenders;
       if (!arraysEqual(newTraits, editingItem.traits)) surgicalData.traits = newTraits;
@@ -105,7 +104,6 @@ export default function EncyclopediaModal({
         const newMin = proposal.caracteristiques?.[stat.ui]?.min || 1;
         const newMax = proposal.caracteristiques?.[stat.ui]?.max || 6;
         
-        // 👈 NOUVEAU : Si on crée une Fée, on force l'enregistrement de TOUTES les stats
         if (isCreating) {
           surgicalData[`${stat.sql}_min`] = newMin;
           surgicalData[`${stat.sql}_max`] = newMax;
@@ -140,38 +138,31 @@ export default function EncyclopediaModal({
     if (!arraysEqual(newPouvoirs, oldPouvoirs)) changedRelations.pouvoirs = getDiff(oldPouvoirs, newPouvoirs);
     if (!arraysEqual(newAtouts, oldAtouts)) changedRelations.atouts = getDiff(oldAtouts, newAtouts);
 
-      const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection, null, 2) : '';
-      
-      if (proposal.competencesUtiles !== oldUtiles) {
-        if (proposal.competencesUtiles && proposal.competencesUtiles.trim() !== '') {
-          try {
-            // 🛡️ On tente de lire le JSON. Si ça plante, c'est que c'est du simple texte !
-            JSON.parse(proposal.competencesUtiles);
-            changedRelations.competencesUtiles = proposal.competencesUtiles;
-          } catch (e) {
-            alert("❌ ERREUR : La case 'Compétences Utiles' doit être au format JSON valide (avec les crochets et accolades), pas du texte normal !");
-            return; // Bloque l'envoi au Conseil
-          }
-        } else {
-          changedRelations.competencesUtiles = "[]"; // Si le champ est vidé, on envoie un tableau JSON vide
-        }
-      }
+	  // --- C. COMPÉTENCES UTILES (Via le BonusBuilder) ---
+	  const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection) : '[]';
+	  const newUtiles = parsedTech.predilections ? JSON.stringify(parsedTech.predilections) : '[]';
 	  
-      const newFutiles = [];
-      if (proposal.futileFixe1) newFutiles.push({ is_choice: false, competence_futile_id: proposal.futileFixe1 });
-      if (proposal.futileFixe2) newFutiles.push({ is_choice: false, competence_futile_id: proposal.futileFixe2 });
-      if (proposal.futileChoix1 && proposal.futileChoix1.length > 0) newFutiles.push({ is_choice: true, choice_options: proposal.futileChoix1 });
-      if (proposal.futileChoix2 && proposal.futileChoix2.length > 0) newFutiles.push({ is_choice: true, choice_options: proposal.futileChoix2 });
+	  if (newUtiles !== oldUtiles) {
+		changedRelations.competencesUtiles = newUtiles;
+	  }
 
-      const oldFutiles = (editingItem.fairy_competences_futiles_predilection || []).map(f => ({
-        is_choice: f.is_choice, competence_futile_id: f.competence_futile_id || null, choice_options: f.choice_options || null
-      }));
+	  // --- D. COMPÉTENCES FUTILES (Via le BonusBuilder) ---
+	  const newFutiles = (parsedTech.futiles || []).map(f => {
+		if (f.isChoix) return { is_choice: true, choice_options: f.options || [], competence_futile_id: null };
+		const found = allCompFutiles.find(c => c.name === f.nom);
+		return { is_choice: false, choice_options: null, competence_futile_id: found ? found.id : null };
+	  });
 
-      const normalizeFutiles = (arr) => arr.map(a => JSON.stringify(a)).sort().join('|');
-      if (normalizeFutiles(newFutiles) !== normalizeFutiles(oldFutiles)) {
-        changedRelations.competencesFutiles = newFutiles;
-      }
+	  const oldFutiles = (editingItem.fairy_competences_futiles_predilection || []).map(f => ({
+		is_choice: f.is_choice, competence_futile_id: f.competence_futile_id || null, choice_options: f.choice_options || []
+	  }));
 
+	  const normalizeFutiles = (arr) => arr.map(a => JSON.stringify(a)).sort().join('|');
+
+	  if (normalizeFutiles(newFutiles) !== normalizeFutiles(oldFutiles)) {
+		changedRelations.competencesFutiles = newFutiles;
+	  }
+		  
       if (Object.keys(changedRelations).length > 0) {
         surgicalData._relations = changedRelations;
       }
@@ -268,34 +259,23 @@ export default function EncyclopediaModal({
     }
   };
 
-  // 🧠 NOUVEAU : PARSING DES COMPÉTENCES UTILES (Builder Visuel)
-  // ⚙️ NOUVEAU : PARSING DES EFFETS TECHNIQUES (Builder d'Atouts)
+  // 🧠 NOUVEAU : PARSING UNIFIÉ POUR LE BUILDER
   let parsedTech = {};
-  if (activeTab === 'fairy_assets') {
+  if (['fairy_assets', 'fairy_powers', 'fairy_capacites', 'fairy_types'].includes(activeTab)) {
     try {
-      parsedTech = JSON.parse(proposal.effets_techniques || '{}');
+      const sourceData = activeTab === 'fairy_assets' ? proposal.effets_techniques : proposal.techData;
+      parsedTech = JSON.parse(sourceData || '{}');
     } catch(e) {
       parsedTech = {};
     }
   }
-  
-  const updateTech = (newObj) => {
-    setProposal({ ...proposal, effets_techniques: JSON.stringify(newObj, null, 2) });
-  };
-  
-  let parsedUtiles = [];
-  if (activeTab === 'fairy_types') {
-    try {
-      parsedUtiles = JSON.parse(proposal.competencesUtiles || '[]');
-      if (!Array.isArray(parsedUtiles)) parsedUtiles = [];
-    } catch(e) {
-      parsedUtiles = []; // Sécurité anti-crash
-    }
-  }
 
-  // Cette fonction met à jour le JSON caché à chaque clic sur l'interface
-  const updateUtiles = (newArray) => {
-    setProposal({ ...proposal, competencesUtiles: JSON.stringify(newArray, null, 2) });
+  const updateTech = (newObj) => {
+    if (activeTab === 'fairy_assets') {
+      setProposal({ ...proposal, effets_techniques: JSON.stringify(newObj, null, 2) });
+    } else {
+      setProposal({ ...proposal, techData: JSON.stringify(newObj, null, 2) });
+    }
   };
 
   return (
@@ -439,186 +419,51 @@ export default function EncyclopediaModal({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-green-800 mb-1">Avantages</label>
-                  <textarea value={proposal.avantages || ''} onChange={(e) => setProposal({ ...proposal, avantages: e.target.value })} className="w-full p-2 border border-green-200 bg-green-50/30 rounded-lg text-sm min-h-[80px]" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-red-800 mb-1">Désavantages</label>
-                  <textarea value={proposal.desavantages || ''} onChange={(e) => setProposal({ ...proposal, desavantages: e.target.value })} className="w-full p-2 border border-red-200 bg-red-50/30 rounded-lg text-sm min-h-[80px]" />
-                </div>
-              </div>
-
-              <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
-
-				{/* 🌟 NOUVEAU CONSTRUCTEUR DE COMPÉTENCES UTILES 🌟 */}
-				<div className="mb-6">
-				  <div className="flex justify-between items-center mb-3">
-					<label className="block text-sm font-bold text-purple-900">🌟 Compétences Utiles (Prédilection)</label>
-					<div className="flex gap-1">
-					  <button type="button" onClick={() => updateUtiles([...parsedUtiles, { nom: 'Observation', specialite: null }])} className="text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded font-bold shadow-sm">+ Fixe</button>
-					  <button type="button" onClick={() => updateUtiles([...parsedUtiles, { isChoix: true, options: [] }])} className="text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded font-bold shadow-sm">+ Choix Comp.</button>
-					  <button type="button" onClick={() => updateUtiles([...parsedUtiles, { nom: 'Conduite', isSpecialiteChoix: true, options: [] }])} className="text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded font-bold shadow-sm">+ Choix Spé.</button>
-					</div>
-				  </div>
-				  
-				  <div className="space-y-2 bg-white p-3 rounded shadow-inner border border-purple-100 min-h-[80px]">
-					{parsedUtiles.length === 0 && <div className="text-xs text-gray-400 italic text-center mt-4">Aucune compétence configurée...</div>}
-					
-					{parsedUtiles.map((item, idx) => (
-					  <div key={idx} className="relative p-2 bg-purple-50/50 rounded border border-purple-100 flex flex-col gap-2 transition-all">
-						<button type="button" onClick={() => updateUtiles(parsedUtiles.filter((_, i) => i !== idx))} className="absolute top-1 right-2 text-red-400 hover:text-red-600 font-bold text-lg leading-none" title="Supprimer">&times;</button>
-						
-						{item.isChoix ? (
-						  <>
-							<span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider">Choix de Compétence</span>
-							<div className="flex gap-2 items-center pr-6">
-							  <select 
-								onChange={(e) => {
-								  const val = e.target.value;
-								  if (val && !item.options?.includes(val)) {
-									const newArr = [...parsedUtiles];
-									newArr[idx] = { ...item, options: [...(item.options || []), val] };
-									updateUtiles(newArr);
-								  }
-								  e.target.value = "";
-								}} 
-								className="p-1.5 border border-purple-200 rounded text-xs flex-shrink-0 bg-white focus:ring-purple-500"
-							  >
-								<option value="">+ Ajouter au choix...</option>
-								{usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
-							  </select>
-							  <div className="flex flex-wrap gap-1">
-								{(item.options || []).map(opt => (
-								  <span key={opt} className="bg-purple-200 text-purple-900 text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 font-semibold">
-									{opt} 
-									<button type="button" onClick={() => {
-									  const newArr = [...parsedUtiles];
-									  newArr[idx] = { ...item, options: item.options.filter(o => o !== opt) };
-									  updateUtiles(newArr);
-									}} className="hover:text-red-600">&times;</button>
-								  </span>
-								))}
-							  </div>
-							</div>
-						  </>
-						) : item.isSpecialiteChoix ? (
-						  <>
-							<span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider">Choix de Spécialité</span>
-							<div className="flex gap-2 items-center pr-6">
-							  <select 
-								value={item.nom || ''} 
-								onChange={(e) => {
-								  const newArr = [...parsedUtiles];
-								  newArr[idx] = { ...item, nom: e.target.value };
-								  updateUtiles(newArr);
-								}} 
-								className="p-1.5 border border-purple-200 rounded text-xs font-bold bg-white text-purple-900"
-							  >
-								{usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
-							  </select>
-							  <input 
-								type="text" 
-								placeholder="Ex: Arc, Arbalète (séparés par virgules)" 
-								value={item.options ? item.options.join(', ') : ''} 
-								onChange={(e) => {
-								  const newArr = [...parsedUtiles];
-								  newArr[idx] = { ...item, options: e.target.value.split(',').map(s => s.trim()).filter(Boolean) };
-								  updateUtiles(newArr);
-								}} 
-								className="p-1.5 border border-purple-200 rounded text-xs flex-1 placeholder-purple-300" 
-							  />
-							</div>
-						  </>
-						) : (
-						  <>
-							<span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider">Compétence Fixe</span>
-							<div className="flex gap-2 items-center pr-6">
-							  <select 
-								value={item.nom || ''} 
-								onChange={(e) => {
-								  const newArr = [...parsedUtiles];
-								  newArr[idx] = { ...item, nom: e.target.value };
-								  updateUtiles(newArr);
-								}} 
-								className="p-1.5 border border-purple-200 rounded text-xs font-bold bg-white text-purple-900"
-							  >
-								<option value="">-- Choisir --</option>
-								{usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
-							  </select>
-							  <input 
-								type="text" 
-								placeholder="Spécialité imposée (optionnel)" 
-								value={item.specialite || ''} 
-								onChange={(e) => {
-								  const newArr = [...parsedUtiles];
-								  newArr[idx] = { ...item, specialite: e.target.value };
-								  updateUtiles(newArr);
-								}} 
-								className="p-1.5 border border-purple-200 rounded text-xs flex-1 placeholder-purple-300" 
-							  />
-							</div>
-						  </>
-						)}
-					  </div>
-					))}
-				  </div>
-				</div>
-				{/* 🌟 FIN DU CONSTRUCTEUR 🌟 */}
-
-                <label className="block text-sm font-bold text-emerald-900 mb-2 border-t border-purple-200 pt-4">🌟 Compétences Futiles</label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-3 bg-white p-3 rounded shadow-sm border border-emerald-100">
-                    <label className="block text-xs font-bold text-emerald-800 border-b pb-1">Spécifiques (Fixes)</label>
-                    <select value={proposal.futileFixe1 || ''} onChange={(e) => setProposal({ ...proposal, futileFixe1: e.target.value })} className="w-full p-2 border rounded text-sm bg-emerald-50/30">
-                      <option value="">-- Emplacement vide --</option>
-                      {allCompFutiles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
-                    <select value={proposal.futileFixe2 || ''} onChange={(e) => setProposal({ ...proposal, futileFixe2: e.target.value })} className="w-full p-2 border rounded text-sm bg-emerald-50/30">
-                      <option value="">-- Emplacement vide --</option>
-                      {allCompFutiles.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
+                  <div>
+                    <label className="block text-sm font-bold text-green-800 mb-1">Avantages</label>
+                    <textarea value={proposal.avantages || ''} onChange={(e) => setProposal({ ...proposal, avantages: e.target.value })} className="w-full p-2 border border-green-200 bg-green-50/30 rounded-lg text-sm min-h-[80px]" />
                   </div>
-                  <div className="space-y-3 bg-white p-3 rounded shadow-sm border border-emerald-100">
-                    <label className="block text-xs font-bold text-emerald-800 border-b pb-1">Choix multiples</label>
-                    <div className="bg-emerald-50/30 p-2 rounded border border-emerald-100">
-                      <select onChange={(e) => { if (!e.target.value) return; const current = proposal.futileChoix1 || []; if (!current.includes(e.target.value)) setProposal({ ...proposal, futileChoix1: [...current, e.target.value] }); }} value="" className="w-full p-1.5 border border-emerald-200 rounded text-xs bg-white focus:ring-emerald-500 mb-1">
-                        <option value="">+ Ajouter au Choix 1...</option>
-                        {allCompFutiles.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                      </select>
-                      <div className="flex flex-wrap gap-1">{(proposal.futileChoix1 || []).map(opt => <span key={opt} className="bg-emerald-200 text-emerald-900 text-[10px] px-2 py-1 rounded-full flex items-center">{opt} <button onClick={() => setProposal({...proposal, futileChoix1: proposal.futileChoix1.filter(o => o !== opt)})} className="ml-1 font-bold">×</button></span>)}</div>
-                    </div>
-                    <div className="bg-emerald-50/30 p-2 rounded border border-emerald-100">
-                      <select onChange={(e) => { if (!e.target.value) return; const current = proposal.futileChoix2 || []; if (!current.includes(e.target.value)) setProposal({ ...proposal, futileChoix2: [...current, e.target.value] }); }} value="" className="w-full p-1.5 border border-emerald-200 rounded text-xs bg-white focus:ring-emerald-500 mb-1">
-                        <option value="">+ Ajouter au Choix 2...</option>
-                        {allCompFutiles.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                      </select>
-                      <div className="flex flex-wrap gap-1">{(proposal.futileChoix2 || []).map(opt => <span key={opt} className="bg-emerald-200 text-emerald-900 text-[10px] px-2 py-1 rounded-full flex items-center">{opt} <button onClick={() => setProposal({...proposal, futileChoix2: proposal.futileChoix2.filter(o => o !== opt)})} className="ml-1 font-bold">×</button></span>)}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                <label className="block text-sm font-bold text-indigo-900 mb-4">Capacités attachées</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
-                    <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Fixe 1</label>
-                    <select value={proposal.capaciteFixe1 || ''} onChange={(e) => setProposal({ ...proposal, capaciteFixe1: e.target.value })} className="w-full p-2 border border-indigo-200 rounded text-sm bg-indigo-50/30">
-                      <option value="">-- Sélectionner --</option>
-                      {allCapacites.map(cap => <option key={cap.id} value={cap.id}>{cap.nom}</option>)}
-                    </select>
-                  </div>
-                  <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
-                    <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Fixe 2</label>
-                    <select value={proposal.capaciteFixe2 || ''} onChange={(e) => setProposal({ ...proposal, capaciteFixe2: e.target.value })} className="w-full p-2 border border-indigo-200 rounded text-sm bg-indigo-50/30">
-                      <option value="">-- Sélectionner --</option>
-                      {allCapacites.map(cap => <option key={cap.id} value={cap.id}>{cap.nom}</option>)}
-                    </select>
+                  <div>
+                    <label className="block text-sm font-bold text-red-800 mb-1">Désavantages</label>
+                    <textarea value={proposal.desavantages || ''} onChange={(e) => setProposal({ ...proposal, desavantages: e.target.value })} className="w-full p-2 border border-red-200 bg-red-50/30 rounded-lg text-sm min-h-[80px]" />
                   </div>
                 </div>
 
+                {/* 🌟 LE GRAND CONSTRUCTEUR DE COMPÉTENCES (OPTION A) 🌟 */}
+                <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-200 my-4 shadow-sm">
+                  <label className="block text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
+                    <Star size={16} className="text-amber-500 fill-amber-500" /> Héritage & Compétences (Utiles et Futiles)
+                  </label>
+                  <BonusBuilder
+                    parsedTech={parsedTech}
+                    updateTech={updateTech}
+                    competencesData={competencesData}
+                    setCompetencesData={setCompetencesData}
+                    usefulSkills={usefulSkills}
+                    futilesSkills={allCompFutiles.map(c => c.name)}
+                  />
+                </div>
+
+                <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                  <label className="block text-sm font-bold text-indigo-900 mb-4">Capacités attachées</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
+                      <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Fixe 1</label>
+                      <select value={proposal.capaciteFixe1 || ''} onChange={(e) => setProposal({ ...proposal, capaciteFixe1: e.target.value })} className="w-full p-2 border border-indigo-200 rounded text-sm bg-indigo-50/30">
+                        <option value="">-- Sélectionner --</option>
+                        {allCapacites.map(cap => <option key={cap.id} value={cap.id}>{cap.nom}</option>)}
+                      </select>
+                    </div>
+                    <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
+                      <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Fixe 2</label>
+                      <select value={proposal.capaciteFixe2 || ''} onChange={(e) => setProposal({ ...proposal, capaciteFixe2: e.target.value })} className="w-full p-2 border border-indigo-200 rounded text-sm bg-indigo-50/30">
+                        <option value="">-- Sélectionner --</option>
+                        {allCapacites.map(cap => <option key={cap.id} value={cap.id}>{cap.nom}</option>)}
+                      </select>
+                    </div>
+                  </div>
+				  
                 <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
                   <label className="block text-xs font-bold text-indigo-800 mb-2">⭐ Capacités au Choix</label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-2">
@@ -718,20 +563,21 @@ export default function EncyclopediaModal({
               </div>
 
               {activeTab === 'fairy_powers' && (isCreating || editingItem.type_pouvoir) && (
-                <div>
-                  <label className="block text-sm font-bold text-rose-800 mb-1">Type de Pouvoir</label>
-                  <select
-                    value={proposal.type_pouvoir || editingItem.type_pouvoir || 'masque'}
-                    onChange={(e) => setProposal({ ...proposal, type_pouvoir: e.target.value })}
-                    className="w-full p-2 border border-rose-200 rounded-lg bg-rose-50 text-rose-900 font-medium"
-                    disabled={!isCreating}
-                  >
-                    <option value="masque">🎭 Masqué</option>
-                    <option value="demasque">🔥 Démasqué</option>
-                    <option value="profond">✨ Profond</option>
-                    <option value="legendaire">👑 Légendaire</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-xs font-bold text-rose-800 uppercase mb-1">Type de Pouvoir</label>
+                <select 
+                  value={proposal.type_pouvoir || 'masque'} 
+                  onChange={(e) => setProposal({ ...proposal, type_pouvoir: e.target.value })} 
+                  className="w-full p-2 border border-rose-200 bg-white rounded-lg text-sm"
+                >
+                  <option value="masque">🎭 Standard - Masqué</option>
+                  <option value="demasque">🔥 Standard - Démasqué</option>
+                  <option value="profond_masque">🔮 Profond - Masqué</option>
+                  <option value="profond_demasque">🌋 Profond - Démasqué</option>
+                  <option value="legendaire_masque">👑 Légendaire - Masqué</option>
+                  <option value="legendaire_demasque">☄️ Légendaire - Démasqué</option>
+                </select>
+              </div>
               )}
 
             {/* CHAMP DESCRIPTION NARRATIVE */}
