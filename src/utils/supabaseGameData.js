@@ -1,8 +1,5 @@
 // src/utils/supabaseGameData.js
-// Version: 3.5.2
-// Description: Moteur de données Supabase avec cache et résolution d'identifiants.
-// Correction: Déduplication stricte des prédilections pour éviter le bug "3x Mêlée ou Tir".
-// Correction: Restauration des exports 'getCompetencesFutiles' et 'invalidateCompetencesFutilesCache'.
+// 10.8.0 // 10.9.0
 
 import { supabase } from '../config/supabase';
 
@@ -418,9 +415,43 @@ export const loadFairyTypes = async () => {
 let cachedProfils = null;
 let cachedCompetences = null;
 let cachedFairyTypes = null;
+let cachedSocialItems = null;
+let cachedEncyclopediaRefs = null;
+
+// ✨ NOUVEAU : Récupération du catalogue
+export const loadSocialItems = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('social_items')
+      .select(`*, profils ( name_masculine )`)
+      .eq('is_official', true)
+      .order('cout', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Erreur chargement social_items :", error);
+    return [];
+  }
+};
+
+// ✨ NOUVEAU : Chargement des dictionnaires de référence
+export const loadEncyclopediaRefs = async () => {
+  try {
+    const [{ data: caps }, { data: pows }, { data: atouts }, { data: fairies }] = await Promise.all([
+      supabase.from('fairy_capacites').select('id, nom').order('nom'),
+      supabase.from('fairy_powers').select('id, nom').order('nom'),
+      supabase.from('fairy_assets').select('id, nom').order('nom'),
+      supabase.from('fairy_types').select('id, name').order('name')
+    ]);
+    return { capacites: caps || [], pouvoirs: pows || [], atouts: atouts || [], fairies: fairies || [] };
+  } catch (error) {
+    console.error("Erreur chargement références Encyclopédie:", error);
+    return { capacites: [], pouvoirs: [], atouts: [], fairies: [] };
+  }
+};
 
 export const loadAllGameData = async (forceRefresh = false) => {
-  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes && cachedCompetencesFutiles) {
+  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes && cachedCompetencesFutiles && cachedSocialItems && cachedEncyclopediaRefs) {
     return {
       profils: cachedProfils,
       competences: cachedCompetences.competences,
@@ -428,63 +459,50 @@ export const loadAllGameData = async (forceRefresh = false) => {
       competencesFutiles: cachedCompetencesFutiles,
       fairyData: cachedFairyTypes.fairyData,
       fairyTypes: cachedFairyTypes.fairyTypes,
-      fairyTypesByAge: cachedFairyTypes.fairyTypesByAge
+      fairyTypesByAge: cachedFairyTypes.fairyTypesByAge,
+      socialItems: cachedSocialItems,
+      encyclopediaRefs: cachedEncyclopediaRefs // 👈 NOUVEAU
     };
   }
 
-  const [p, c, f, fut] = await Promise.all([
-    loadProfils(), loadCompetences(), loadFairyTypes(), getCompetencesFutiles(forceRefresh)
+  const [p, c, f, fut, soc, refs] = await Promise.all([
+    loadProfils(), loadCompetences(), loadFairyTypes(), getCompetencesFutiles(forceRefresh), loadSocialItems(), loadEncyclopediaRefs()
   ]);
 
-  cachedProfils = p; cachedCompetences = c; cachedFairyTypes = f; 
+  cachedProfils = p; cachedCompetences = c; cachedFairyTypes = f; cachedSocialItems = soc; cachedEncyclopediaRefs = refs;
 
   return {
-    profils: p, 
-    competences: c.competences, 
+    profils: p,
+    competences: c.competences,
     competencesParProfil: c.competencesParProfil,
-    competencesFutiles: fut, 
-    fairyData: f.fairyData, 
+    competencesFutiles: fut,
+    fairyData: f.fairyData,
     fairyTypes: f.fairyTypes,
-    fairyTypesByAge: f.fairyTypesByAge
+    fairyTypesByAge: f.fairyTypesByAge,
+    socialItems: soc,
+    encyclopediaRefs: refs // 👈 NOUVEAU
   };
 };
 
 export const invalidateAllCaches = () => {
-  cachedProfils = null; cachedCompetences = null; cachedFairyTypes = null; cachedCompetencesFutiles = null;
+  cachedProfils = null; cachedCompetences = null; cachedFairyTypes = null; cachedCompetencesFutiles = null; cachedSocialItems = null; cachedEncyclopediaRefs = null;
 };
 
 /**
  * Ajoute une spécialité publique à une compétence existante
- * @param {string} competenceId - UUID de la compétence
- * @param {string} newSpeciality - Nom de la nouvelle spécialité
- * @returns {Promise<Array>} La nouvelle liste des spécialités
  */
 export const addGlobalSpeciality = async (competenceId, newSpeciality) => {
   try {
-    // Insertion dans la nouvelle table
     const { data, error } = await supabase
       .from('specialites')
-      .insert([{
-        competence_id: competenceId,
-        nom: newSpeciality,
-        is_official: false // C'est une création communautaire
-      }])
+      .insert([{ competence_id: competenceId, nom: newSpeciality, is_official: false }])
       .select()
       .single();
-
     if (error) {
-        // Gestion erreur doublon (code 23505 en postgre)
-        if (error.code === '23505') throw new Error("Cette spécialité existe déjà.");
-        throw error;
+      if (error.code === '23505') throw new Error("Cette spécialité existe déjà.");
+      throw error;
     }
-
-    // On retourne l'objet formaté pour mise à jour locale immédiate
-    return {
-        id: data.id,
-        nom: data.nom,
-        is_official: data.is_official
-    };
-
+    return { id: data.id, nom: data.nom, is_official: data.is_official };
   } catch (error) {
     console.error("Erreur ajout spécialité:", error);
     throw error;

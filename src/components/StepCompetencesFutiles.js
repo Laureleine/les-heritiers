@@ -1,7 +1,7 @@
 // src/components/StepCompetencesFutiles.js
 // 8.23.0 // 8.31.0 // 8.32.0
 // 9.11.0
-// 10.4.0 // 10.6.0
+// 10.4.0 // 10.6.0 // 10.9.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
@@ -20,30 +20,13 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
     if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesFutiles: c }, gameData });
   };
 
-  const [competencesFutilesBase, setCompetencesFutilesBase] = useState([]); 
-  const [loading, setLoading] = useState(true);
+  const [competencesFutilesBase, setCompetencesFutilesBase] = useState(gameData.competencesFutiles || []);
   
-  // 👇 LES 3 LIGNES QUI AVAIENT DISPARU SONT LÀ :
   const [newCompetenceName, setNewCompetenceName] = useState('');
   const [newCompetenceDesc, setNewCompetenceDesc] = useState('');
   const [choixPredilection, setChoixPredilection] = useState({});
 
   const feeData = fairyData[character.typeFee];
-  // 1. Charger la liste complète des compétences futiles depuis Supabase
-  useEffect(() => {
-    const loadCompetences = async () => {
-      try {
-        setLoading(true);
-        const comps = await getCompetencesFutiles();
-        setCompetencesFutilesBase(comps);
-      } catch (error) {
-        console.error('Erreur chargement compétences futiles:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadCompetences();
-  }, []);
 
   // 2. Gérer les compétences de prédilection
   const parsedPredilection = parseCompetencesFutilesPredilection(feeData?.competencesFutilesPredilection || []);
@@ -127,9 +110,11 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
         newCompetenceDesc.trim() || 'Compétence personnalisée'
       );
       if (newComp) {
-        invalidateCompetencesFutilesCache();
-        const refreshed = await getCompetencesFutiles(true);
-        setCompetencesFutilesBase(refreshed);
+        // ✨ Plus de requête redondante, on l'ajoute directement à la liste visuelle !
+        setCompetencesFutilesBase(prev => {
+          const newList = [...prev, newComp];
+          return newList.sort((a, b) => a.nom.localeCompare(b.nom));
+        });
         setNewCompetenceName('');
         setNewCompetenceDesc('');
       }
@@ -285,25 +270,23 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
         </div>
       )}
 
-      {/* 3. Liste Complète des Compétences Disponibles */}
-      {allChoicesMade ? (
-        <>
-          <div className="mt-8">
-            <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2 flex justify-between items-end">
-              <span>Compétences Disponibles</span>
-              <span className="text-xs font-sans text-gray-400 font-normal">Classées par ordre alphabétique</span>
-            </h3>
-            {loading ? (
-              <div className="text-center py-8 text-gray-500 italic">Chargement du catalogue...</div>
-            ) : (
+        {/* 3. Liste Complète des Compétences Disponibles */}
+        {allChoicesMade ? (
+          <>
+            <div className="mt-8">
+              <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2 flex justify-between items-end">
+                <span>Compétences Disponibles</span>
+                <span className="text-xs font-sans text-gray-400 font-normal">Classées par ordre alphabétique</span>
+              </h3>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {competencesFutilesBase
                   .filter(comp => !competencesPredilection.includes(comp.nom))
-                  .filter(comp => !comp.nom.toLowerCase().includes('au choix'))
+                  /* ✨ Sécurité anti-crash iOS avec (comp.nom || '') */
+                  .filter(comp => !(comp.nom || '').toLowerCase().includes('au choix'))
                   .map(renderCompetence)}
               </div>
-            )}
-          </div>
+            </div>
 
           {/* 4. Création Custom */}
           <div className="mt-8 bg-gray-50 p-6 rounded-xl border border-gray-200">

@@ -1,4 +1,4 @@
-// 10.4.0 // 10.6.0 // 10.8.0
+// 10.4.0 // 10.6.0 // 10.8.0 // 10.9.0
 
 import React, { useState } from 'react';
 import { Star, Info, Check, Sparkles } from 'lucide-react';
@@ -43,10 +43,41 @@ export function Step2() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+      </div>
+
+      {/* ✨ NOUVEAU : AFFICHAGE DES CAPACITÉS FIXES (INNÉES) */}
+      <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacités Innées (Acquises)</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[data.capacites?.fixe1, data.capacites?.fixe2].filter(c => c && c.nom && c.nom !== 'Inconnu').map((cap, idx) => (
+          <div key={`fixe-${idx}`} className="p-4 rounded-xl border-2 border-amber-200 bg-amber-100/50">
+            <div className="flex justify-between items-start">
+              <div className="font-bold font-serif text-amber-900 flex items-center gap-2">
+                <Check size={16} className="text-amber-600" />
+                {cap.nom}
+              </div>
+              {cap.description && (
+                <div
+                  onClick={(e) => { e.stopPropagation(); setShowInfo(showInfo === `fixe${idx}` ? null : `fixe${idx}`); }}
+                  className="text-amber-600 hover:text-amber-800 cursor-pointer"
+                >
+                  <Info size={18} />
+                </div>
+              )}
+            </div>
+            {showInfo === `fixe${idx}` && cap.description && (
+              <p className="text-sm text-amber-800 text-left mt-2 leading-relaxed">{cap.description}</p>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* 🎯 SÉPARATEUR POUR LES CAPACITÉS AU CHOIX */}
+      <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacité Optionnelle (À choisir)</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {data.capacites?.choix?.map((cap, idx) => (
           <div key={idx} className="flex flex-col gap-2">
             <button
-              disabled={isReadOnly}
+			disabled={isReadOnly}
               onClick={() => handleCapaciteChoice(cap.nom)}
               className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden group ${
                 character.capaciteChoisie === cap.nom
@@ -148,9 +179,11 @@ export function Step3() {
                   {isSelected && <Check size={16} className="text-indigo-600" />}
                   {pouvoir.nom}
                 </div>
-                  {/* ✨ Détection flexible avec includes() */}
+                  {/* ✨ Détection corrigée (Le mot démasqué contient "masque" !) */}
                   {(() => {
-                    const isMasque = pouvoir.type_pouvoir?.includes('masque');
+                    const isDemasque = pouvoir.type_pouvoir?.includes('demasque');
+                    const isMasque = !isDemasque;
+                    
                     return (
                       <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
                         isMasque ? 'bg-purple-100 text-purple-700' : 'bg-rose-100 text-rose-700'
@@ -159,7 +192,7 @@ export function Step3() {
                       </span>
                     );
                   })()}
-              </div>
+				</div>
               <div className="text-sm text-gray-600 leading-relaxed mt-2">
                 {pouvoir.description || "Aucune description."}
               </div>

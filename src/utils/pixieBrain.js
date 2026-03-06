@@ -1,6 +1,6 @@
 // src/utils/pixieBrain.js
 // 9.4.0// 9.6.0
-// 10.2.0
+// 10.2.0 // 10.9.0
 
 // ============================================================================
 // 🧠 1. DICTIONNAIRES DE VOCABULAIRE GENRÉ ET ALÉATOIRE
@@ -303,10 +303,41 @@ export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
   // ---------------------------------------------------------
   // D. RÉPLIQUES DE LORE ET D'ATOUTS
   // ---------------------------------------------------------
-  if (c.fortune >= 6) {
-    pool.push("{excl} Tu as tellement d'argent ! Tu vas m'acheter une montagne de {gadget}s ?");
-  } else if (c.fortune <= 2 && c.typeFee && step === 9) {
-    pool.push("On a les poches vides hein ? Je peux voler un {gadget} pour toi si tu veux !");
+  // ---------------------------------------------------------
+  // D. RÉPLIQUES DE LORE, PROFILS ET ÉQUIPEMENT
+  // ---------------------------------------------------------
+
+  // ✨ RÉPLIQUES SUR LES PROFILS (À partir de l'étape 6)
+  if (step >= 6 && c.profils?.majeur?.nom) {
+    switch (c.profils.majeur.nom) {
+      case 'Aventurier': pool.push("Un{e} Aventurier{e} ! J'espère qu'on va explorer des ruines secrètes pleines de {gadget}s !"); break;
+      case 'Combattant': pool.push("Ouh là là, un{e} Combattant{e} ! Je me cacherai derrière toi au premier coup de feu !"); break;
+      case 'Érudit': pool.push("Un{e} Érudit{e} ? Tu vas passer ton temps le nez dans les vieux bouquins d'Avalon ?"); break;
+      case 'Gentleman': pool.push("Quelle classe ! N'oublie pas de lever le petit doigt quand tu bois le thé !"); break;
+      case 'Roublard': pool.push("Un{e} Roublard{e}... Tu me promets de ne pas me voler mes trésors ?"); break;
+      case 'Savant': pool.push("Un{e} Savant{e} ! Tu vas inventer une machine à fabriquer des {gadget}s à l'infini ?"); break;
+    }
+  }
+
+  // ✨ RÉPLIQUES SUR L'ANCIENNETÉ (Lecture sécurisée via le Dictionnaire)
+  const feeAnciennete = typeData?.anciennete || fairyData[c.typeFee]?.anciennete;
+  if (feeAnciennete === 'moderne') {
+    pool.push("Une fée moderne ! Tu n'as pas peur de toutes ces grosses machines bruyantes ?");
+  } else if (feeAnciennete === 'traditionnelle') {
+    pool.push("Tu es de la vieille école, comme les arbres d'Avalon ! C'était mieux avant, pas vrai ?");
+  }
+
+  // ✨ RÉPLIQUES SUR L'ÉQUIPEMENT (Basé sur les Boutiques fréquentées !)
+  if (step >= 9 && c.vieSociale) {
+    if (c.vieSociale['Combattant']?.length > 0 || c.vieSociale['Roublard']?.length > 0) {
+      pool.push("{excl} Tu as fait des achats louches au marché noir ou chez l'armurier ? Ne tire pas sur mes ailes !");
+    }
+    if (c.vieSociale['Gentleman']?.length > 0) {
+      pool.push("Quelle élégance dans tes achats ! On va aux soirées mondaines avec tout ça ?");
+    }
+    if (c.vieSociale['Savant']?.length > 0) {
+      pool.push("Tu as acheté des trucs bizarres de savant ! C'est pour faire exploser un laboratoire ?");
+    }
   }
 
   switch (c.typeFee) {

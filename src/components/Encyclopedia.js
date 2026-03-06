@@ -1,7 +1,7 @@
 // src/components/Encyclopedia.js
 // 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 
 // 9.4.0 // 9.6.0
-// 10.4.0 // 10.8.0
+// 10.4.0 // 10.8.0 // 10.9.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -11,49 +11,23 @@ import EncyclopediaCard from './EncyclopediaCard';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';
 import { logger, showInAppNotification } from '../utils/SystemeServices';
+import { useCharacter } from '../context/CharacterContext';
 
 export default function Encyclopedia({ userProfile, onBack, onOpenValidations }) {
-  const [activeTab, setActiveTab] = useState('fairy_types'); // 'fairy_types', 'fairy_capacites', etc.
-  
+  // Charger les listes de référence une seule fois au démarrage
+  const { gameData } = useCharacter(); // ✨ CONNEXION AU NUAGE
+  const { encyclopediaRefs, competencesFutiles } = gameData;
+
+  const [activeTab, setActiveTab] = useState('fairy_types');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-
-  // État pour la modification
-  const [editingItem, setEditingItem] = useState(null); 
-  const [proposal, setProposal] = useState({}); 
-  const [justification, setJustification] = useState(''); 
-  const [isCreating, setIsCreating] = useState(false); 
-
-  const [allCapacites, setAllCapacites] = useState([]);
-  const [allPouvoirs, setAllPouvoirs] = useState([]);
-  const [allCompFutiles, setAllCompFutiles] = useState([]);
-  const [allAtouts, setAllAtouts] = useState([]); 
-  const [allFairyTypes, setAllFairyTypes] = useState([]); // 👈 Liste des Fées pour la relation inversée
-  const [pendingLocks, setPendingLocks] = useState([]); // 👈 NOUVEAU
-
+  const [editingItem, setEditingItem] = useState(null);
+  const [proposal, setProposal] = useState({});
+  const [justification, setJustification] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [pendingLocks, setPendingLocks] = useState([]);
   const [confirmState, setConfirmState] = useState({ isOpen: false, action: null, message: '' });
-
-  // Charger les listes de référence une seule fois au démarrage
-  useEffect(() => {
-    const fetchReferences = async () => {
-      const [{ data: caps }, { data: pows }, { data: futiles }, { data: atouts }, { data: fairies }] = await Promise.all([
-        supabase.from('fairy_capacites').select('id, nom').order('nom'),
-        supabase.from('fairy_powers').select('id, nom').order('nom'),
-        supabase.from('competences_futiles').select('id, name').order('name'),
-        supabase.from('fairy_assets').select('id, nom').order('nom'),
-        supabase.from('fairy_types').select('id, name').order('name') // 👈 Récupération des Fées
-      ]);
-
-      if (caps) setAllCapacites(caps);
-      if (pows) setAllPouvoirs(pows);
-      if (futiles) setAllCompFutiles(futiles);
-      if (atouts) setAllAtouts(atouts);
-      if (fairies) setAllFairyTypes(fairies); // 👈 Sauvegarde des Fées
-    };
-
-    fetchReferences();
-  }, []);
 
   // Chargement des données selon l'onglet
   useEffect(() => {
@@ -244,7 +218,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
             options: p.options || p.choice_options || []
           })),
           futiles: (fixedFutiles.map(f => {
-            const compFound = allCompFutiles.find(c => c.id === f.competence_futile_id);
+			const compFound = competencesFutiles.find(c => c.id === f.competence_futile_id);
             return compFound ? { isChoix: false, nom: compFound.name } : null;
           }).filter(Boolean)).concat(choiceFutiles.map(f => ({
             isChoix: true, options: f.choice_options || []
@@ -386,11 +360,11 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
           justification={justification}
           setJustification={setJustification}
           userProfile={userProfile}
-          allCapacites={allCapacites}
-          allPouvoirs={allPouvoirs}
-          allAtouts={allAtouts}
-          allCompFutiles={allCompFutiles}
-          allFairyTypes={allFairyTypes} // 👈 NOUVEAU ! Transmission vitale
+          allCapacites={encyclopediaRefs.capacites}
+          allPouvoirs={encyclopediaRefs.pouvoirs}
+          allAtouts={encyclopediaRefs.atouts}
+          allCompFutiles={competencesFutiles}
+          allFairyTypes={encyclopediaRefs.fairies} 
           onSuccess={() => {          // 👈 NOUVEAU
           setEditingItem(null);
           fetchPendingLocks();      // Rafraîchit les cadenas instantanément !

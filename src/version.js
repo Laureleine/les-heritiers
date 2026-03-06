@@ -5,6 +5,21 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
+  {
+    version: '10.9.0',
+    date: '7 Mars 2026',
+    changes: [
+      '🧚 **Éducation Féérique :** Pixie a appris de nouveaux tours ! Son cerveau cognitif analyse désormais l\'ancienneté de votre Fée, votre Profil Majeur, et scrute même votre équipement (armes à feu, véhicules, titres de noblesse) pour y réagir en direct !',
+      '📱 **Guérison Mobile (iOS) :** Le catalogue des Compétences Futiles s\'affiche désormais instantanément et sans bug sur iPhone (Safari/Chrome). L\'étape est désormais branchée directement sur le Nuage au lieu de subir les coupures réseau silencieuses d\'Apple.',
+      '📱 **Immunité Mobile (iOS) :** Le gigantesque catalogue de l\'Équipement (Étape 9) est désormais chargé à la racine de l\'application dans le Nuage. Finis les écrans blancs et les crashs de requêtes capricieuses sur iPhone et Safari !',
+      '⚡ **Vitesse Fulgurante :** L\'Étape 9 s\'affiche désormais instantanément sans le moindre temps de chargement des étals.',
+      '📱 **Bouclier iOS (Encyclopédie) :** Le Conseil des Gardiens et l\'éditeur de Fées sont désormais immunisés contre les pannes de chargement sur iPhone et Safari.',
+      '⚡ **Vitesse Absolue :** Les listes de Pouvoirs, Atouts, Capacités et Compétences n\'ont plus besoin d\'être téléchargées à l\'ouverture des modales. Elles sont directement propulsées par le Nuage Central !',
+      '🐛 **Clarté Féérique (Étape 2) :** L\'interface affiche désormais fièrement les deux Capacités Naturelles innées de votre Héritier (celles qui sont acquises d\'office), au-dessus de la troisième capacité à choisir.',
+      '🐛 **Illusion d\'Optique (Étape 3) :** Résolution d\'une faille linguistique hilarante où l\'ordinateur considérait les pouvoirs "Démasqués" comme "Masqués" (parce que le mot "dé-masqué" contient la racine "masque"). Les bonnes icônes 🎭 et 🔥 sont de retour !',
+      '🐛 **Guérison Fatale (Écran Blanc) :** Résolution d\'un crash critique empêchant les personnages masculins d\'accéder à l\'Étape du Bilan. Le moteur grammatical tentait de manipuler un tableau de mots comme s\'il s\'agissait d\'un texte unique.'
+    ]
+  },
    {
     version: '10.8.0',
     date: '6 Mars 2026',
