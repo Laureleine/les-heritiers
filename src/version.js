@@ -5,6 +5,13 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
+    {
+    version: '10.10.0',
+    date: '7 Mars 2026',
+    changes: [
+      '🛡️ **Chirurgie SQL (Générateur) :** Le moteur de validation des Gardiens du Savoir fait désormais la différence entre les Objets JSON et les Tableaux (Arrays) lors de la création d\'une nouvelle Fée, évitant ainsi l\'erreur PostgreSQL `42804` lors de l\'insertion des Traits ou Avantages.'
+    ]
+  },
   {
     version: '10.9.0',
     date: '7 Mars 2026',

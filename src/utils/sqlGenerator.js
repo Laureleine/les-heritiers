@@ -1,5 +1,5 @@
 // src/utils/sqlGenerator.js
-// 10.5.0
+// 10.5.0 // 10.10.0
 
 export const generateApprovalSQL = (change, seal = false) => {
   // ✨ L'OUBLI ÉTAIT ICI : On déballe toutes les variables nécessaires
@@ -11,24 +11,30 @@ export const generateApprovalSQL = (change, seal = false) => {
   let sqlQuery = `-- Action pour ${change.record_name} (${change.table_name})\nBEGIN;\n\n`;
 
   if (Object.keys(mainData).length > 0) {
-	if (isInsert) {
-	  const columns = Object.keys(mainData).join(', ');
-	  const values = Object.values(mainData).map(value => {
-		if (value === null) return 'NULL';
-		if (typeof value === 'object') return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-		if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
-		return value;
-	  }).join(', ');
-	  sqlQuery += `INSERT INTO public.${change.table_name} (${columns}) VALUES (${values});\n`;
-	} else {
-	  const setClauses = Object.entries(mainData).map(([key, value]) => {
-		if (value === null) return `${key} = NULL`;
-		if (typeof value === 'object') return `${key} = '${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-		if (typeof value === 'string') return `${key} = '${value.replace(/'/g, "''")}'`;
-		return `${key} = ${value}`;
-	  }).join(',\n  ');
-	  sqlQuery += `UPDATE public.${change.table_name}\nSET ${setClauses}\nWHERE id = '${targetId}';\n`;
-	}
+    
+    // ✨ NOUVEAU : Le formatteur intelligent qui distingue JSON et Tableaux SQL
+    const formatSQLValue = (value) => {
+      if (value === null) return 'NULL';
+      if (Array.isArray(value)) {
+        // Formatage spécifique pour les tableaux texte PostgreSQL (text[])
+        const arrayVals = value.map(v => `'${String(v).replace(/'/g, "''")}'`).join(', ');
+        return `ARRAY[${arrayVals}]::text[]`;
+      }
+      if (typeof value === 'object') return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
+      if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
+      return value;
+    };
+
+    if (isInsert) {
+      const columns = Object.keys(mainData).join(', ');
+      const values = Object.values(mainData).map(formatSQLValue).join(', ');
+      sqlQuery += `INSERT INTO public.${change.table_name} (${columns}) VALUES (${values});\n`;
+    } else {
+      const setClauses = Object.entries(mainData).map(([key, value]) => {
+        return `${key} = ${formatSQLValue(value)}`;
+      }).join(',\n  ');
+      sqlQuery += `UPDATE public.${change.table_name}\nSET ${setClauses}\nWHERE id = '${targetId}';\n`;
+    }
   }
 
   if (_relations) {
