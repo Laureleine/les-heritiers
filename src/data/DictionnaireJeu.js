@@ -35,9 +35,9 @@ export const AVAILABLE_BADGES = [
   { id: 'clarte', label: 'Architecte de la Clarté 📐', color: 'bg-stone-100 text-stone-800 border-stone-300 shadow-sm' },
   { id: 'safari_guide', label: <span className="flex items-center gap-1"><Compass size={12}/> Guide de Safari</span>, color: 'bg-amber-100 text-amber-900 border-amber-400 shadow-sm'   },
   { id: 'newton_apple', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/> La Pomme de Newton</span>,     color: 'bg-lime-100 text-lime-900 border-lime-400 shadow-sm'   },
-  { id: 'renard_renarde', label: <span className="flex items-center gap-1"><VenetianMask size={12}/> Le Renard de la Renarde</span>,     color: 'bg-orange-100 text-orange-900 border-orange-400 shadow-sm'   }  
+  { id: 'renard_renarde', label: <span className="flex items-center gap-1"><VenetianMask size={12}/> Le Renard de la Renarde</span>,     color: 'bg-orange-100 text-orange-900 border-orange-400 shadow-sm'   },
+  { id: 'mecene', label: <span className="flex items-center gap-1"><Gem size={12}/> Mécène</span>, color: 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-400 shadow-md'   }
 ];
-
 
 // ============================================================================
 // 3. LES OUTILS DE FORMATAGE (Ancien dataHelpers.js)

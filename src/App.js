@@ -8,8 +8,8 @@ import { useCharacter } from './context/CharacterContext';
 import { supabase } from './config/supabase';
 import { loadAllGameData } from './utils/supabaseGameData';
 import { saveCharacterToSupabase, toggleCharacterVisibility } from './utils/supabaseStorage';
-import { useAutoUpdate } from './hooks/useAutoUpdate'; // Ajustez le chemin si nécessaire
-import { showInAppNotification } from './utils/SystemeServices'; // 👈 1. NOUVEL IMPORT ICI
+import { useAutoUpdate } from './hooks/useAutoUpdate'; 
+import { showInAppNotification } from './utils/SystemeServices'; 
 
 // --- IMPORTS DES COMPOSANTS ---
 import Auth from './components/Auth';
@@ -39,7 +39,7 @@ import { exportToPDF } from './utils/pdfGenerator';
 import { AVAILABLE_BADGES, STEP_CONFIG } from './data/DictionnaireJeu';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
 
-import { List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X } from 'lucide-react';
+import { List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock } from 'lucide-react';
 
 function App() {
   // --- 1. ÉTATS GLOBAUX DU NUAGE (CONTEXT API) ---
@@ -91,7 +91,7 @@ function App() {
         if (mounted) {
           setGameData(data);
           const { data: profile } = await supabase
-            .from('profiles').select('role, username, badges, show_pixie, active_badge, dice_theme')
+            .from('profiles').select('role, username, badges, show_pixie, active_badge, dice_theme, is_joueur, is_docte')
             .eq('id', session.user.id).single();
           
           setSession(session);
@@ -323,7 +323,32 @@ function App() {
           />
         )}
 
-        {view === 'encyclopedia' && <Encyclopedia userProfile={userProfile} onBack={() => setView('list')} onOpenValidations={() => setView('validations')} />}
+        {view === 'encyclopedia' && (
+          userProfile?.profile?.is_docte ? (
+            <Encyclopedia userProfile={userProfile} onBack={() => setView('list')} onOpenValidations={() => setView('validations')} />
+          ) : (
+            <div className="max-w-2xl mx-auto p-8 mt-12 bg-[#2a1313] rounded-2xl border-2 border-red-900/50 shadow-2xl text-center animate-fade-in-up relative overflow-hidden">
+               <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
+               <div className="relative z-10 flex flex-col items-center">
+                 <Lock size={64} className="text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
+                 <h2 className="text-3xl font-serif text-red-100 mb-4">Savoir sous le Sceau du Silence</h2>
+                 <p className="text-red-200/80 mb-8 italic font-serif leading-relaxed">
+                   Ce pan de la Féérie échappe à votre compréhension et l'accès à ces archives vous est interdit.<br/>
+                   Seul un Docte peut vous y initier en vous invitant dans son Cercle.
+                 </p>
+                 <div className="bg-red-950/50 p-6 rounded-xl border border-red-900/50 w-full">
+                   <p className="text-sm text-red-300 mb-4 font-bold uppercase tracking-wider">Êtes-vous vous-même un Docte ?</p>
+                   <button onClick={() => setView('account')} className="bg-red-900 hover:bg-red-800 text-red-100 px-6 py-3 rounded-lg font-serif font-bold transition-colors shadow-md">
+                     Révélez votre Voie dans Mon Grimoire
+                   </button>
+                 </div>
+                 <button onClick={() => setView('list')} className="mt-8 text-gray-400 hover:text-white transition-colors text-sm">
+                   ← Retourner à l'accueil
+                 </button>
+               </div>
+            </div>
+          )
+        )}
         {view === 'validations' && <ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} />}
         {view === 'account' && <AccountSettings session={session} userProfile={userProfile} onUpdateProfile={() => window.location.reload()} onBack={() => setView('list')} />}
         {view === 'admin_dashboard' && <AdminDashboard session={session} onBack={() => setView('list')} />}
