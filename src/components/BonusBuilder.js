@@ -1,10 +1,12 @@
 // src/components/BonusBuilder.js
 // 10.2.0 // 10.3.0 // 10.4.0
+// 11.1.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles } from 'lucide-react';
 import { addGlobalSpeciality } from '../utils/supabaseGameData';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
+import { showInAppNotification } from '../utils/SystemeServices';
 
 export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -149,7 +151,7 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
       setCreatingSpecFor(null);
       setNewSpecName('');
     } catch (error) {
-      alert("❌ Erreur : " + error.message);
+      showInAppNotification("Erreur : " + error.message, "error");
     }
   };
 

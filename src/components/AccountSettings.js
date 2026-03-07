@@ -1,13 +1,13 @@
 // src/components/AccountSettings.js :
 // 9.7.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0
-// 11.0.0
+// 11.0.0 // 11.1.0
 
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
-import { requestNotificationPermission } from '../utils/SystemeServices';
+import { showInAppNotification, requestNotificationPermission } from '../utils/SystemeServices';
 
 export default function AccountSettings({ session, userProfile, onBack, onUpdateProfile }) {
   const profile = userProfile?.profile || {};
@@ -63,10 +63,10 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
       if (error) throw error;
       
       // ✨ 2. SAUVEGARDE DES NOTIFICATIONS (On appelle le composant enfant)
-      if (notifRef.current) {
+      if (notifRef.current && typeof notifRef.current.savePreferences === 'function') {
         await notifRef.current.savePreferences();
       }
-      
+
       setMessage('✅ Toutes vos préférences ont été sauvegardées avec succès !');
       if (onUpdateProfile) onUpdateProfile();
       
@@ -225,9 +225,9 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
           </div>
 
           {/* 4. Le Corbeau Messager (Composant existant) */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
-            <NotificationPreferences session={session} />
-          </div>
+			<div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+			  <NotificationPreferences ref={notifRef} session={session} />
+			</div>
 		</div>
 	 </div>
 
@@ -281,7 +281,7 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
         .from('user_notification_preferences')
         .select('*')
         .eq('user_id', session.user.id)
-        .maybesingle();
+        .maybeSingle(); // 👈 (J'en ai profité pour corriger la casse de maybeSingle)
 
       if (!error && data) {
         setPreferences({
@@ -302,7 +302,7 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
     if (!preferences.enable_push_notifications) {
       const granted = await requestNotificationPermission();
       if (!granted) {
-        alert('Permission de notification refusée. Activez-la dans les paramètres de votre navigateur.');
+        showInAppNotification("Permission de notification refusée. Activez-la dans les paramètres de votre navigateur.", "warning");
         return;
       }
     }
@@ -312,9 +312,10 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
     }));
   };
 
-  // ✨ NOUVEAU : On expose la fonction de sauvegarde au parent !
+  // ✨ LA MAGIE EST LÀ : L'ajout de [preferences, session] à la fin !
   useImperativeHandle(ref, () => ({
     savePreferences: async () => {
+      console.log("💾 Transmission au Nuage des notifs :", preferences);
       const { error } = await supabase
         .from('user_notification_preferences')
         .upsert({
@@ -327,7 +328,7 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
         });
       if (error) throw error;
     }
-  }));
+  }), [preferences, session]); // 👈 SANS CE TABLEAU, REACT SAUVEGARDE DE VIEILLES DONNÉES !
 
   const handleToggle = (field) => {
     setPreferences(prev => ({
@@ -423,7 +424,7 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
         )}
       </div>
 
-      {/* Info email (Le bouton sauvegarder a disparu d'ici !) */}
+      {/* Info email */}
       <div className="mt-6 pt-4 border-t border-blue-200 text-sm text-blue-800 flex items-center gap-2">
         <Mail size={16} /> Les emails seront envoyés à : <strong>{session.user.email}</strong>
       </div>

@@ -1,5 +1,6 @@
 // src/utils/supabaseGameData.js
 // 10.8.0 // 10.9.0
+// 11.1.0
 
 import { supabase } from '../config/supabase';
 
@@ -383,6 +384,8 @@ export const loadFairyTypes = async () => {
           prestance: { min: fairy.prestance_min, max: fairy.prestance_max },
           sangFroid: { min: fairy.sang_froid_min, max: fairy.sang_froid_max }
         },
+		id: fairy.id,
+        isSecret: fairy.is_secret,
         competencesPredilection: compPredByFairy[fairy.id] || [],
         competencesFutilesPredilection: compFutPredByFairy[fairy.id] || [],
 		capacites: capacitesStruct, 

@@ -2,6 +2,7 @@
 // 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 
 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
 // 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
+// 11.1.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal } from 'lucide-react';
@@ -10,7 +11,7 @@ import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 import ConfirmModal from './ConfirmModal';
 import { generateApprovalSQL } from '../utils/sqlGenerator';
-
+import { showInAppNotification } from '../utils/SystemeServices';
 
 const TABLE_NAME = 'data_change_requests';
 
@@ -187,7 +188,7 @@ export default function ValidationsPendantes({ session, onBack }) {
       loadChanges();
       
     } catch (error) {
-      alert("Erreur lors de la validation : " + error.message);
+      showInAppNotification("Erreur lors de la validation : " + error.message, "error");
     }
   };
 

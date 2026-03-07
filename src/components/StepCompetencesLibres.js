@@ -1,10 +1,12 @@
 // src/components/StepCompetencesLibres.js
 // 9.0.4 // 9.11.0
+// 11.1.0
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Minus, Star, Brain, RotateCcw, Users } from 'lucide-react';
 import { addGlobalSpeciality } from '../utils/supabaseGameData';
-import { useCharacter } from '../context/CharacterContext'; // 👈 L'IMPORT DU NUAGE (À mettre avec vos autres imports)
+import { useCharacter } from '../context/CharacterContext';
+import { showInAppNotification } from '../utils/SystemeServices';
 
 const POINTS_TOTAUX = 15;
 const SKILLS_ESPRIT = [
@@ -146,7 +148,7 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
       }
       handleAddSpecialiteUser(nomComp, specName);
       setCreatingSpecFor(null);
-    } catch (e) { alert("Erreur : " + e.message); }
+    } catch (e) { showInAppNotification("Erreur : " + e.message, "error"); }
   }, [competences, handleAddSpecialiteUser]);
 
   const handleReset = useCallback(() => {
