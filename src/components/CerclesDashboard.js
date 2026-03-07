@@ -1,15 +1,25 @@
-// 11.1.0
+// 11.1.0 // 11.2.1
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { Shield, Users, Plus, Key, X, ArrowLeft, EyeOff } from 'lucide-react';
+import { Shield, Users, Plus, Key, X, ArrowLeft, EyeOff, Eye, Check, LogOut } from 'lucide-react';
 import { showInAppNotification, getCurrentUserFast } from '../utils/SystemeServices';
+import ConfirmModal from './ConfirmModal';
 
 export default function CerclesDashboard({ session, onBack }) {
   const [cercles, setCercles] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ✨ NOUVEAU : Mémoire pour la modale de confirmation
+  const [confirmState, setConfirmState] = useState({
+    isOpen: false,
+    action: null,
+    title: '',
+    message: '',
+    confirmText: ''
+  });
+  
   // Modale d'ajout
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCircleName, setNewCircleName] = useState('');
@@ -42,7 +52,18 @@ export default function CerclesDashboard({ session, onBack }) {
   const loadMyCharacters = async () => {
     const user = await getCurrentUserFast();
     if (!user) return;
-    const { data } = await supabase.from('characters').select('id, nom, typeFee').eq('user_id', user.id);
+    
+    // ✨ LA CORRECTION EST ICI : typeFee:type_fee (Alias SQL)
+    // On a aussi ajouté une petite gestion d'erreur pour ne plus être aveugle à l'avenir !
+    const { data, error } = await supabase
+      .from('characters')
+      .select('id, nom, typeFee:type_fee')
+      .eq('user_id', user.id);
+      
+    if (error) {
+      console.error("Erreur lors de la récupération des Héritiers :", error.message);
+    }
+      
     if (data) setMyCharacters(data);
   };
 
@@ -51,15 +72,20 @@ export default function CerclesDashboard({ session, onBack }) {
       .from('cercle_membres')
       .select(`
         id,
+        user_id,
         joined_at,
-        profiles ( username ),
-        characters ( nom, apparence, genreHumain, typeFee )
+        profiles ( username, unlocked_fairies ),
+        characters ( nom, apparence, genreHumain:genre_humain, typeFee:type_fee )
       `)
       .eq('cercle_id', cercleId);
       
-    if (!error && data) setActiveMembers(data);
+    if (error) {
+      console.error("Erreur lors du chargement de la table :", error.message);
+    }
+      
+    if (data) setActiveMembers(data);
   };
-
+  
   // --- ACTIONS ---
 
   const handleCreateCercle = async () => {
@@ -108,6 +134,60 @@ export default function CerclesDashboard({ session, onBack }) {
     }
   };
 
+  // --- ACTIONS DE DÉPART ET DISSOLUTION (Avec Modale Immersive) ---
+
+  const handleLeaveCercle = (cercleId) => {
+    setConfirmState({
+      isOpen: true,
+      title: "Quitter la Table",
+      message: "Êtes-vous sûr de vouloir quitter cette campagne ? Votre place sera libérée.",
+      confirmText: "Oui, quitter la table",
+      action: () => executeLeaveCercle(cercleId)
+    });
+  };
+
+  const executeLeaveCercle = async (cercleId) => {
+    setConfirmState({ isOpen: false }); // On ferme le parchemin
+    const { error } = await supabase
+      .from('cercle_membres')
+      .delete()
+      .match({ cercle_id: cercleId, user_id: session.user.id });
+
+    if (error) {
+      showInAppNotification("Erreur lors du départ : " + error.message, "error");
+    } else {
+      showInAppNotification("Vous avez quitté la table avec succès.", "success");
+      setActiveTab(null);
+      loadCercles();
+    }
+  };
+
+  const handleDeleteCercle = (cercleId) => {
+    setConfirmState({
+      isOpen: true,
+      title: "Dissoudre le Cercle",
+      message: "Attention Docte ! Voulez-vous vraiment DISSOUDRE ce Cercle ? Cette action est irréversible pour tous les joueurs.",
+      confirmText: "Oui, dissoudre la campagne",
+      action: () => executeDeleteCercle(cercleId)
+    });
+  };
+
+  const executeDeleteCercle = async (cercleId) => {
+    setConfirmState({ isOpen: false }); // On ferme le parchemin
+    const { error } = await supabase
+      .from('cercles')
+      .delete()
+      .eq('id', cercleId);
+
+    if (error) {
+      showInAppNotification("Erreur lors de la dissolution : " + error.message, "error");
+    } else {
+      showInAppNotification("Le Cercle a été totalement dissous.", "success");
+      setActiveTab(null);
+      loadCercles();
+    }
+  };
+  
   // --- RENDU DU CERCLE ACTIF ---
   
   const renderActiveCercle = () => {
@@ -130,11 +210,26 @@ export default function CerclesDashboard({ session, onBack }) {
             </div>
           </div>
           
-          {isDocte && (
-            <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-center">
-              <div className="text-xs text-amber-700 font-bold uppercase tracking-wider mb-1">Code d'invitation</div>
-              <div className="font-mono text-xl text-amber-900 font-black tracking-widest">{cercle.code_invitation}</div>
+          {isDocte ? (
+            <div className="flex flex-col items-end gap-3">
+              <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-center shadow-sm">
+                <div className="text-xs text-amber-700 font-bold uppercase tracking-wider mb-1">Code d'invitation</div>
+                <div className="font-mono text-xl text-amber-900 font-black tracking-widest">{cercle.code_invitation}</div>
+              </div>
+              <button 
+                onClick={() => handleDeleteCercle(cercle.id)} 
+                className="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1 transition-colors"
+              >
+                <X size={14} /> Dissoudre le Cercle
+              </button>
             </div>
+          ) : (
+            <button 
+              onClick={() => handleLeaveCercle(cercle.id)} 
+              className="text-sm bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 shadow-sm"
+            >
+              <LogOut size={16} /> Quitter la table
+            </button>
           )}
         </div>
 
@@ -269,6 +364,15 @@ export default function CerclesDashboard({ session, onBack }) {
           </div>
         </div>
       )}
+      {/* --- MODALE DE CONFIRMATION IMMERSIVE --- */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        title={confirmState.title}
+        message={confirmState.message}
+        onConfirm={confirmState.action}
+        onCancel={() => setConfirmState({ isOpen: false, action: null })}
+        confirmText={confirmState.confirmText}
+      />
     </div>
   );
 }
