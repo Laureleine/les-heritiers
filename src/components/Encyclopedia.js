@@ -2,6 +2,7 @@
 // 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 
 // 9.4.0 // 9.6.0
 // 10.4.0 // 10.8.0 // 10.9.0
+// 11.2.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -20,6 +21,14 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
 
   const [activeTab, setActiveTab] = useState('fairy_types');
   const [data, setData] = useState([]);
+  const [selectedFairyFilter, setSelectedFairyFilter] = useState(''); 
+
+  useEffect(() => {
+    fetchData();
+    fetchPendingLocks(); 
+    setSelectedFairyFilter(''); 
+  }, [activeTab]);
+  
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingItem, setEditingItem] = useState(null);
@@ -81,14 +90,26 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
     }
   };
 
-  // Filtrage recherche
+  // 🧠 LE MOTEUR DE FILTRAGE COMBINÉ (Texte + Boutons)
   const filteredData = data.filter(item => {
-    const searchStr = searchTerm.toLowerCase();
-    const name = item.name || item.nom || '';
-    const desc = item.description || item.desc || '';
-    return name.toLowerCase().includes(searchStr) || desc.toLowerCase().includes(searchStr);
-  });
+    // 1. Le filtre textuel (ta recherche existante)
+    const matchesSearch = (item.name || item.nom || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (item.description || item.desc || '').toLowerCase().includes(searchTerm.toLowerCase());
 
+    // 2. ✨ Le nouveau filtre par Fée
+    let matchesFairy = true;
+    if (selectedFairyFilter !== '') {
+      if (activeTab === 'fairy_capacites') {
+        matchesFairy = item.fairy_type_capacites?.some(link => link.fairy_types?.name === selectedFairyFilter);
+      } else if (activeTab === 'fairy_powers') {
+        matchesFairy = item.fairy_type_powers?.some(link => link.fairy_types?.name === selectedFairyFilter);
+      } else if (activeTab === 'fairy_assets') {
+        matchesFairy = item.fairy_type_assets?.some(link => link.fairy_types?.name === selectedFairyFilter);
+      }
+    }
+
+    return matchesSearch && matchesFairy;
+  });
   // ----------------------------------------------------------------------
   // 🛡️ LE MARTEAU DES GARDIENS (Préparation de la modale)
   // ----------------------------------------------------------------------
@@ -310,16 +331,47 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
             />
           </div>
 
-          {/* Bouton CRÉER (Autorisé pour TOUT maintenant) */}
-          {['fairy_types', 'fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
-            <button
-              onClick={handleCreate}
-              className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-sm flex items-center gap-2 font-bold transition-all shrink-0"
+            {/* Bouton CRÉER (Autorisé pour TOUT maintenant) */}
+            {['fairy_types', 'fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
+              <button
+                onClick={handleCreate}
+                className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-sm flex items-center gap-2 font-bold transition-all shrink-0"
+              >
+                <Plus size={20} /> <span className="hidden md:inline">Créer</span>
+              </button>
+            )}
+          </div> 
+
+          {/* ✨ NOUVEAU : LE NUAGE D'ÉTIQUETTES (Scénario B) ✨ */}
+          {['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
+            <div className="flex flex-wrap gap-2 mb-6 animate-fade-in">
+              <button
+              onClick={() => setSelectedFairyFilter('')}
+              className={`px-3 py-1.5 text-xs font-bold rounded-full transition-all border shadow-sm ${
+                selectedFairyFilter === '' 
+                  ? 'bg-amber-600 text-white border-amber-700' 
+                  : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-100 hover:border-stone-300'
+              }`}
             >
-              <Plus size={20} /> <span className="hidden md:inline">Créer</span>
+              Toutes les fées
             </button>
-          )}
-        </div>
+            
+            {/* On boucle sur toutes les fées de la base de données */}
+            {gameData.encyclopediaRefs?.fairies?.map(fairy => (
+              <button
+                key={fairy.id}
+                onClick={() => setSelectedFairyFilter(fairy.name)}
+                className={`px-3 py-1.5 text-xs font-bold rounded-full transition-all border shadow-sm ${
+                  selectedFairyFilter === fairy.name 
+                    ? 'bg-amber-600 text-white border-amber-700' 
+                    : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-100 hover:border-stone-300'
+                }`}
+              >
+                {fairy.name}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Grille de résultats */}
         {loading ? (

@@ -2,7 +2,7 @@
 // 8.20.0 // 8.21.0 // 8.29.0 
 // 9.4.0 // 9.10.0
 // 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0 // 10.9.0
-// 11.1.0
+// 11.1.0 // 11.2.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -536,26 +536,20 @@ export default function EncyclopediaModal({
               </div>
             </div>
           ) : (
-            /* === FORMULAIRE SIMPLE (Pour Capacités, Pouvoirs, Atouts) === */
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Nom de l'élément</label>
-                {isCreating ? (
-                  <input
-                    type="text"
-                    value={proposal.name || ''}
-                    onChange={(e) => setProposal({ ...proposal, name: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 font-bold text-lg"
-                    placeholder="Ex: Vol incandescent..."
-                  />
-                ) : (
-                  <div className="p-3 bg-gray-100 rounded-lg text-gray-600 font-bold border border-gray-200">
-                    {editingItem.name || editingItem.nom}
-                  </div>
-                )}
-              </div>
+          /* === FORMULAIRE SIMPLE (Pour Capacités, Pouvoirs, Atouts) === */
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">Nom de l'élément</label>
+              <input
+                type="text"
+                value={proposal.name || ''}
+                onChange={(e) => setProposal({...proposal, name: e.target.value})}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 outline-none font-bold text-gray-800 bg-white"
+                placeholder="Ex: Vision nocturne..."
+              />
+            </div>
 
-              {activeTab === 'fairy_powers' && (isCreating || editingItem.type_pouvoir) && (
+            {activeTab === 'fairy_powers' && (isCreating || editingItem.type_pouvoir) && (
               <div>
                 <label className="block text-xs font-bold text-rose-800 uppercase mb-1">Type de Pouvoir</label>
                 <select 
