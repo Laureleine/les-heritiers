@@ -5,7 +5,16 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
-    {
+  {
+    version: '11.0.0',
+    date: '7 Mars 2026',
+    changes: [
+      '👑 **Le Choix des Voies :** Déclaration de votre statut ("Joueur" ou "Docte") dans les paramètres du compte. Les Doctes ont un accès total, tandis que les Joueurs se voient appliquer la Loi du Silence.',
+      '🔒 **Le Sceau du Silence :** L\'Encyclopédie est désormais majestueusement verrouillée pour les Joueurs afin de préserver les lourds secrets de l\'univers des Héritiers (Accessibilité réservée aux Doctes).',
+      '💎 **Titre de Noblesse (Mécène) :** Création d\'un badge honorifique étincelant pour remercier les premiers et généreux donateurs (Ko-Fi) qui soutiennent l\'entretien du Grimoire.'
+    ]
+  },
+  {
     version: '10.10.0',
     date: '7 Mars 2026',
     changes: [

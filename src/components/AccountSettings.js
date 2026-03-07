@@ -1,6 +1,7 @@
 // src/components/AccountSettings.js :
 // 9.7.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0
+// 11.0.0
 
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone } from 'lucide-react';
@@ -16,7 +17,8 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
   const [showPixie, setShowPixie] = useState(true);
   const [activeBadge, setActiveBadge] = useState('');
   const [diceTheme, setDiceTheme] = useState('laiton');
-  
+  const [isJoueur, setIsJoueur] = useState(true);
+  const [isDocte, setIsDocte] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -29,7 +31,8 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
     if (profile.username) setNewUsername(profile.username);
     if (profile.show_pixie !== undefined) setShowPixie(profile.show_pixie);
     if (profile.dice_theme) setDiceTheme(profile.dice_theme);
-    
+    if (profile.is_joueur !== undefined) setIsJoueur(profile.is_joueur);
+    if (profile.is_docte !== undefined) setIsDocte(profile.is_docte);    
     if (profile.active_badge) {
       setActiveBadge(profile.active_badge);
     } else if (profile.badges && profile.badges.length > 0) {
@@ -47,6 +50,8 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
         show_pixie: showPixie,
         active_badge: activeBadge,
         dice_theme: diceTheme,
+        is_joueur: isJoueur,
+        is_docte: isDocte,		
         updated_at: new Date()
       };
 
@@ -95,6 +100,31 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
         
         {/* COLONNE GAUCHE : IDENTITÉ & IMMERSION */}
         <div className="space-y-6">
+
+          {/* ✨ NOUVEL ENCART : LA VOIE */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+            <h3 className="text-lg font-serif font-bold text-stone-900 mb-4 border-b border-stone-100 pb-2 flex items-center gap-2">
+              <BookOpen size={18} className="text-stone-600" /> Votre Voie dans les Ombres
+            </h3>
+            <div className="space-y-4">
+               {/* Carte Joueur */}
+               <label className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${isJoueur ? 'border-amber-500 bg-amber-50' : 'border-stone-200 bg-stone-50 hover:bg-stone-100'}`}>
+                  <input type="checkbox" checked={isJoueur} onChange={(e) => setIsJoueur(e.target.checked)} className="mt-1 w-4 h-4 text-amber-600" />
+                  <div>
+                     <div className="font-bold font-serif text-amber-900 flex items-center gap-2">🃏 La Voie de l'Héritier (Joueur)</div>
+                     <p className="text-xs text-stone-600 mt-1 leading-relaxed">Vous cherchez à survivre à la Belle Époque. L'accès aux lourds secrets de l'univers vous est scellé pour préserver le mystère.</p>
+                  </div>
+               </label>
+               {/* Carte Docte */}
+               <label className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${isDocte ? 'border-purple-500 bg-purple-50' : 'border-stone-200 bg-stone-50 hover:bg-stone-100'}`}>
+                  <input type="checkbox" checked={isDocte} onChange={(e) => setIsDocte(e.target.checked)} className="mt-1 w-4 h-4 text-purple-600" />
+                  <div>
+                     <div className="font-bold font-serif text-purple-900 flex items-center gap-2">👁️ La Voie du Docte (Meneur)</div>
+                     <p className="text-xs text-stone-600 mt-1 leading-relaxed">Vous tirez les ficelles. Brisez les sceaux et obtenez un accès absolu à l'Encyclopédie et aux futurs secrets.</p>
+                  </div>
+               </label>
+            </div>
+          </div>
           
           {/* 1. Identité & Titres */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
