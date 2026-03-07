@@ -1,11 +1,13 @@
 // src/components/StepVieSociale.js
 // 9.3.0 // 9.9.0 // 9.11.0
 // 10.6.0 // 10.9.0
+// 11.1.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext'; 
+import { showInAppNotification } from '../utils/SystemeServices';
 
 const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, freeContactsRemaining = 0 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -231,8 +233,8 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
       newAchats[profil] = currentIds.filter(id => id !== item.id);
     } else {
       if (budgetsInfo.restes[profil] < effectiveCost) {
-        alert(`Fonds insuffisants dans la cagnotte ${profil} !`);
-        return;
+		showInAppNotification(`Fonds insuffisants dans la cagnotte ${profil} !`, "warning");
+		return;
       }
       
       if (item.categorie === 'metier' && item.is_secondaire === false) {

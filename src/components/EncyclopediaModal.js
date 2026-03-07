@@ -2,6 +2,7 @@
 // 8.20.0 // 8.21.0 // 8.29.0 
 // 9.4.0 // 9.10.0
 // 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0 // 10.9.0
+// 11.1.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -179,7 +180,7 @@ export default function EncyclopediaModal({
             try {
               surgicalData.effets_techniques = JSON.parse(proposal.effets_techniques);
             } catch (e) {
-              alert("❌ ERREUR : Le champ 'Effets Techniques' doit être un format JSON valide !");
+			  showInAppNotification("Le champ 'Effets Techniques' doit être un format JSON valide !", "error");
               return; // On bloque l'envoi
             }
           } else {

@@ -1,18 +1,18 @@
 // src/components/CharacterList.js
 // 8.24.0 // 8.32.0 // 9.1.0 // 9.6.0
 // 10.2.0 // 10.4.0
+// 11.1.0
 
 import React, { useState, useEffect } from 'react';
-import { User, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2 } from 'lucide-react'; // 👈 Ajoutez BarChart2
+import { User, Users, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2 } from 'lucide-react'; // 👈 Ajoutez BarChart2
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
-import { importCharacter } from '../utils/utils';
 import { exportToPDF } from '../utils/pdfGenerator';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { logger, getCurrentUserFast, translateError, showInAppNotification } from '../utils/SystemeServices';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, profils = [], userProfile}) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, profils = [], userProfile}) {
   
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
@@ -138,18 +138,7 @@ const loadCharacters = async (isMounted = true) => {
       await toggleCharacterVisibility(id, !currentlyPublic);
       await loadCharacters();
     } catch (error) {
-      alert('Erreur : ' + error.message);
-    }
-  };
-
-  const handleImport = async (e) => {
-    const file = e.target.files;
-    if (!file) return;
-    try {
-      const character = await importCharacter(file);
-      onSelectCharacter(character);
-    } catch (error) {
-      alert('Erreur import : ' + error.message);
+      showInAppNotification("Erreur : " + error.message, "error");
     }
   };
 
@@ -277,15 +266,15 @@ const loadCharacters = async (isMounted = true) => {
             <Plus size={18} /> <span className="hidden sm:inline">Nouveau</span>
           </button>
 
-          <input type="file" id="import-upload" accept=".json" className="hidden" onChange={handleImport} />
-          <button onClick={() => document.getElementById('import-upload').click()} className="flex items-center space-x-2 px-3 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm shadow-sm" title="Importer depuis JSON">
-            <Upload size={16} /> <span className="hidden sm:inline">Importer</span>
-          </button>
-
           <button onClick={onOpenEncyclopedia} className="flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={16} /> <span className="hidden sm:inline">Encyclopédie</span>
           </button>
-		
+
+          {/* ✨ NOTRE NOUVEAU BOUTON CERCLES ! */}
+          <button onClick={onOpenCercles} className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm shadow-sm" title="Gérer mes tables virtuelles">
+            <Users size={16} /> <span className="hidden sm:inline">Cercles</span>
+          </button>
+		  
 		  {isAdmin && (
 		    <button onClick={onOpenAdmin} className="flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Administration">
 			  <Shield size={16} /> <span className="hidden sm:inline">Administration</span>

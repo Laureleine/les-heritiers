@@ -1,14 +1,38 @@
 // src/components/Step1.js
 // 10.4.0 // 10.6.0 // 10.8.0
+// 11.1.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling } from 'lucide-react';
 import { useCharacter } from '../context/CharacterContext'; // 👈 L'IMPORT (En haut du fichier)
+import { supabase } from '../config/supabase';
 
 export default function Step1() { // 👈 PLUS AUCUN PARAMÈTRE ICI !
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const [unlockedFairies, setUnlockedFairies] = useState([]);
+  const [isUserDocte, setIsUserDocte] = useState(false);
   const { fairyData, fairyTypesByAge } = gameData;
 
+  useEffect(() => {
+    const verifierInitiation = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // On regarde si le joueur est un Docte (il a le droit de tout voir) ou s'il a des sceaux brisés
+        const { data } = await supabase
+          .from('profiles')
+          .select('unlocked_fairies, is_docte')
+          .eq('id', user.id)
+          .single();
+          
+        if (data) {
+          setUnlockedFairies(data.unlocked_fairies || []);
+          setIsUserDocte(data.is_docte || false);
+        }
+      }
+    };
+    verifierInitiation();
+  }, []);
+  
   // Les remplaçants locaux :
   const onNomChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_FIELD', field: 'nom', value: val, gameData }); };
   const onSexeChange = (val) => { if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_FIELD', field: 'sexe', value: val, gameData }); };
@@ -331,13 +355,21 @@ export default function Step1() { // 👈 PLUS AUCUN PARAMÈTRE ICI !
                         ))}
                     </div>
 
-                    {/* Liste des Fées */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar">
-                        {fairyTypesByAge[activeCategory]?.map((fairyName) => (
-                            <button
-                                key={fairyName}
-                                onClick={() => {
-								  // Si le joueur clique sur une NOUVELLE fée dans le menu de gauche
+					{/* Liste des Fées */}
+					<div className="flex-1 overflow-y-auto custom-scrollbar">
+					  {fairyTypesByAge[activeCategory]
+						?.filter(fairyName => {
+						  const fData = fairyData[fairyName];
+						  if (!fData) return false;
+						  // ✨ LA RÈGLE DU SECRET (Scénario A)
+						  // On affiche si : la fée n'est pas secrète OU le joueur est un Docte OU le joueur a été initié à cette fée
+						  return !fData.isSecret || isUserDocte || unlockedFairies.includes(fData.id);
+						})
+						.map((fairyName) => (
+						  <button
+							key={fairyName}
+							onClick={() => {
+								// Si le joueur clique sur une NOUVELLE fée dans le menu de gauche
 								  if (selectedPreview !== fairyName) {
 									setSelectedPreview(fairyName);
 									

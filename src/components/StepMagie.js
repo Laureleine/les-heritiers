@@ -1,4 +1,5 @@
 // 10.4.0 // 10.6.0 // 10.8.0 // 10.9.0
+// 11.1.0
 
 import React, { useState } from 'react';
 import { Star, Info, Check, Sparkles } from 'lucide-react';
@@ -10,7 +11,6 @@ import { useCharacter } from '../context/CharacterContext'; // 👈 Le Nuage !
 export function Step2() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
   const fairyData = gameData.fairyData;
-  const [showInfo, setShowInfo] = useState(null);
 
   const data = fairyData[character.typeFee];
 
@@ -50,34 +50,24 @@ export function Step2() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[data.capacites?.fixe1, data.capacites?.fixe2].filter(c => c && c.nom && c.nom !== 'Inconnu').map((cap, idx) => (
           <div key={`fixe-${idx}`} className="p-4 rounded-xl border-2 border-amber-200 bg-amber-100/50">
-            <div className="flex justify-between items-start">
-              <div className="font-bold font-serif text-amber-900 flex items-center gap-2">
-                <Check size={16} className="text-amber-600" />
-                {cap.nom}
-              </div>
-              {cap.description && (
-                <div
-                  onClick={(e) => { e.stopPropagation(); setShowInfo(showInfo === `fixe${idx}` ? null : `fixe${idx}`); }}
-                  className="text-amber-600 hover:text-amber-800 cursor-pointer"
-                >
-                  <Info size={18} />
-                </div>
-              )}
+            <div className="font-bold font-serif text-amber-900 flex items-center gap-2">
+              <Check size={16} className="text-amber-600" />
+              {cap.nom}
             </div>
-            {showInfo === `fixe${idx}` && cap.description && (
-              <p className="text-sm text-amber-800 text-left mt-2 leading-relaxed">{cap.description}</p>
-            )}
+            <p className="text-sm text-amber-800 text-left mt-2 leading-relaxed">
+              {cap.description || "Aucune description."}
+            </p>
           </div>
         ))}
       </div>
-
+	  
       {/* 🎯 SÉPARATEUR POUR LES CAPACITÉS AU CHOIX */}
       <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacité Optionnelle (À choisir)</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {data.capacites?.choix?.map((cap, idx) => (
           <div key={idx} className="flex flex-col gap-2">
             <button
-			disabled={isReadOnly}
+              disabled={isReadOnly}
               onClick={() => handleCapaciteChoice(cap.nom)}
               className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden group ${
                 character.capaciteChoisie === cap.nom
@@ -85,31 +75,18 @@ export function Step2() {
                   : 'border-stone-200 bg-white hover:border-amber-300 hover:bg-stone-50'
               }`}
             >
-              <div className="flex justify-between items-start">
-                <div className="font-bold font-serif text-gray-800 mb-1 flex items-center gap-2">
-                  {character.capaciteChoisie === cap.nom && <Check size={16} className="text-amber-600" />}
-                  {cap.nom}
-                </div>
-                {cap.description && (
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowInfo(showInfo === `choix${idx}` ? null : `choix${idx}`);
-                    }}
-                    className="text-amber-600 hover:text-amber-800 cursor-pointer"
-                  >
-                    <Info size={18} />
-                  </div>
-                )}
+              <div className="font-bold font-serif text-gray-800 mb-1 flex items-center gap-2">
+                {character.capaciteChoisie === cap.nom && <Check size={16} className="text-amber-600" />}
+                {cap.nom}
               </div>
-              {showInfo === `choix${idx}` && cap.description && (
-                <p className="text-sm text-amber-800 text-left mt-2 leading-relaxed">{cap.description}</p>
-              )}
+              <p className={`text-sm text-left mt-2 leading-relaxed ${character.capaciteChoisie === cap.nom ? 'text-amber-800' : 'text-gray-600'}`}>
+                {cap.description || "Aucune description."}
+              </p>
             </button>
           </div>
         ))}
       </div>
-    </div>
+	</div>
   );
 }
 
@@ -119,7 +96,6 @@ export function Step2() {
 export function Step3() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
   const fairyData = gameData.fairyData;
-  const [showInfo, setShowInfo] = useState(null);
 
   const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 

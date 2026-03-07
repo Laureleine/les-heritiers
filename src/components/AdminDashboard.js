@@ -1,7 +1,10 @@
+// 11.1.0
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { Shield, User, Crown, X, Award, BarChart2, Users, FileText, BookOpen, Activity, RefreshCcw, ArrowLeft } from 'lucide-react';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
+import { showInAppNotification } from '../utils/SystemeServices';
 
 // ============================================================================
 // --- 1. ONGLET : GESTION DES HÉRITIERS (Ancien AdminUserList) ---
@@ -35,7 +38,7 @@ function TabUsers({ session }) {
       const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
       if (error) throw error;
       setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
-    } catch (error) { alert("Erreur : " + error.message); }
+	} catch (error) { showInAppNotification("Erreur : " + error.message, "error"); }
   };
 
   const handleToggleBadge = async (userId, currentBadges, badgeId) => {
@@ -48,7 +51,7 @@ function TabUsers({ session }) {
       const { error } = await supabase.from('profiles').update({ badges: newBadges }).eq('id', userId);
       if (error) throw error;
       setUsers(users.map(u => u.id === userId ? { ...u, badges: newBadges } : u));
-    } catch (error) { alert("Erreur d'attribution du badge : " + error.message); }
+    } catch (error) { showInAppNotification("Erreur d'attribution du badge : " + error.message, "error"); }
   };
 
   const renderStatus = (lastSeen) => {

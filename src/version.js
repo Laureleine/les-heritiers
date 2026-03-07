@@ -6,6 +6,23 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '11.1.0',
+    date: '7 Mars 2026',
+    changes: [
+      '🐛 **Câblage du Corbeau Messager :** Rebranchement de la ligne télégraphique interne. Les préférences de notification (abonnements aux mises à jour) sont de nouveau correctement sauvegardées lors de la mise à jour du Grimoire.',
+      '♻️ **Ergonomie (Étape 5) :** Ajout d\'un bouton de réinitialisation rapide sur la page des Caractéristiques permettant de redistribuer facilement ses 10 points sans effacer le reste du personnage.',
+      '🎨 **Harmonie Visuelle (Étape 2) :** Les descriptions des Capacités Naturelles s\'affichent désormais en clair par défaut (comme pour les Pouvoirs et Atouts), évitant la confusion liée à l\'ancien bouton d\'information rétractable.',
+      '🗄️ **Fondations des Cercles :** Création de l\'architecture Supabase pour le Hub multijoueur (Cercles et Membres).',
+      '👁️ **L\'Éveil Permanent :** Le Docte peut initier ses joueurs aux fées secrètes (Orientales et/ou autres) de manière permanente sur leur profil.',
+      '🔒 **Loi du Silence :** L\'Encyclopédie reste pour le moment verrouillée pour les simples Héritiers.',
+      '🧹 **Épuration de l\'Interface :** Retrait de la fonction d\'importation de fiches JSON. L\'interface des personnages gagne en clarté, la sauvegarde dans le Nuage (Supabase) se suffisant désormais à elle-même.',
+      '🏛️ **Le Hub Multijoueur :** Déploiement de la grande interface "Mes Cercles" centrée sur les campagnes. Un onglet par aventure, s\'adaptant magiquement au rôle du joueur (Docte ou Héritier).',
+      '🎭 **L\'Illusion du Masque :** À la table virtuelle, les joueurs ne voient que l\'identité sociale des autres personnages pour préserver le mystère des Faux-Semblants (le Docte a une vue complète).',
+      '➕ **Ergonomie Naturelle :** Système de création et d\'invitation par code accessible via un bouton "+" très web-friendly.',
+      '🔒 **Le Sceau des Origines :** Fermeture par défaut de toutes les fées étendues. Seules les 24 fées (et le Faux-Semblant enfoui) issues du Livre de Base sont désormais accessibles publiquement à la création.'
+	]
+  },
+  {
     version: '11.0.0',
     date: '7 Mars 2026',
     changes: [

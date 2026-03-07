@@ -2,6 +2,7 @@
 // 8.25.0 // 8.26.0 
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
+// 11.0.0 // 11.1.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -10,6 +11,7 @@ import { loadAllGameData } from './utils/supabaseGameData';
 import { saveCharacterToSupabase, toggleCharacterVisibility } from './utils/supabaseStorage';
 import { useAutoUpdate } from './hooks/useAutoUpdate'; 
 import { showInAppNotification } from './utils/SystemeServices'; 
+import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
 
 // --- IMPORTS DES COMPOSANTS ---
 import Auth from './components/Auth';
@@ -22,7 +24,7 @@ import Telegraphe from './components/Telegraphe';
 import DiceRoller from './components/DiceRoller';
 import PixieAssistant from './components/PixieAssistant';
 import BackgroundDecor from './components/BackgroundDecor';
-import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
+import CerclesDashboard from './components/CerclesDashboard';
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -320,6 +322,7 @@ function App() {
             onOpenAccount={() => setView('account')}
             onOpenEncyclopedia={() => setView('encyclopedia')}
             onOpenAdmin={() => setView('admin_dashboard')}
+            onOpenCercles={() => setView('cercles')}
           />
         )}
 
@@ -352,6 +355,7 @@ function App() {
         {view === 'validations' && <ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} />}
         {view === 'account' && <AccountSettings session={session} userProfile={userProfile} onUpdateProfile={() => window.location.reload()} onBack={() => setView('list')} />}
         {view === 'admin_dashboard' && <AdminDashboard session={session} onBack={() => setView('list')} />}
+        {view === 'cercles' && <CerclesDashboard session={session} onBack={() => setView('list')} />}
 
         {/* VUE : LE CRÉATEUR DE PERSONNAGE */}
         {view === 'creator' && (

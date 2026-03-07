@@ -1,12 +1,13 @@
 // src/components/Auth.js
 // 9.6.0
 // 10.4.0
+// 11.1.0
 
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { Mail, Lock, User, AlertCircle } from 'lucide-react';
-import { translateError } from '../utils/SystemeServices';
+import { showInAppNotification, translateError } from '../utils/SystemeServices';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -27,8 +28,8 @@ export default function Auth() {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: window.location.origin,
         });
-        if (error) throw error;
-        alert('Si cet email existe, un lien de réinitialisation a été envoyé.');
+		if (error) throw error;
+		showInAppNotification("Si cet email existe, un lien de réinitialisation a été envoyé.", "info");
         setResetMode(false);
       } 
       else if (isSignUp) {
@@ -44,7 +45,7 @@ export default function Auth() {
           }
         });
         if (error) throw error;
-        alert('Inscription réussie ! Vérifiez votre email pour confirmer.');
+        showInAppNotification("Inscription réussie ! Vérifiez votre email pour confirmer.", "success");
       } 
       else {
         // 🔥 FIX ULTIME : Login + Vérification + REDIRECT

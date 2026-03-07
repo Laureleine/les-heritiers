@@ -2,12 +2,14 @@
 // 8.23.0 // 8.31.0 // 8.32.0
 // 9.11.0
 // 10.4.0 // 10.6.0 // 10.9.0
+// 11.1.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
 import { getCompetencesFutiles, addCompetenceFutile, invalidateCompetencesFutilesCache } from '../utils/supabaseGameData';
 import { parseCompetencesFutilesPredilection } from '../data/DictionnaireJeu';
-import { useCharacter } from '../context/CharacterContext'; // 👈 L'IMPORT (En haut du fichier)
+import { useCharacter } from '../context/CharacterContext';
+import { showInAppNotification } from '../utils/SystemeServices';
 
 const POINTS_TOTAUX = 10;
 
@@ -101,7 +103,7 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
   const handleAddCustomCompetence = async () => {
     if (!newCompetenceName.trim()) return;
     if (competencesFutilesBase.some(c => c.nom.toLowerCase() === newCompetenceName.trim().toLowerCase())) {
-      alert('Cette compétence existe déjà !');
+      showInAppNotification("Cette compétence existe déjà !", "warning");
       return;
     }
     try {
@@ -119,7 +121,7 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
         setNewCompetenceDesc('');
       }
     } catch (error) {
-      alert("Erreur lors de l'ajout : " + error.message);
+      showInAppNotification("Erreur lors de l'ajout : " + error.message, "error");
     }
   };
 
