@@ -6,6 +6,14 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '11.2.0',
+    date: '7 Mars 2026',
+    changes: [
+      '🔍 **Encyclopédie Intelligente :** Ajout d\'un filtre croisé permettant de trier instantanément les Capacités, Pouvoirs et Atouts selon l\'espèce féérique à laquelle ils appartiennent.',
+      '🔓 **Édition Libre :** Déverrouillage des champs de Titre dans l\'Encyclopédie. Il est désormais possible de suggérer une modification ou une correction orthographique sur le nom d\'une Fée, d\'une Capacité, d\'un Pouvoir ou d\'un Atout.'
+    ]
+  },
+  {
     version: '11.1.0',
     date: '7 Mars 2026',
     changes: [
