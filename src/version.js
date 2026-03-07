@@ -6,6 +6,15 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '11.2.2',
+    date: '7 Mars 2026',
+    changes: [
+      '🐛 **Hub Multijoueur :** Les joueurs voient désormais correctement la liste de leurs Héritiers pour rejoindre un Cercle.',
+      '🚪 **Sortie de Table :** Les Héritiers peuvent désormais quitter librement un Cercle de jeu. Les Doctes gagnent le pouvoir de dissoudre complètement une campagne terminée ou abandonnée.'
+
+    ]
+  },
+  {
     version: '11.2.0',
     date: '7 Mars 2026',
     changes: [

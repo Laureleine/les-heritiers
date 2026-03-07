@@ -301,19 +301,13 @@ export default function EncyclopediaModal({
               {/* 👈 LE CHAMP NOM (ENFIN !) */}
               <div>
                 <label className="block text-sm font-bold text-amber-900 mb-1">Nom de la Fée</label>
-                {isCreating ? (
-                  <input
-                    type="text"
-                    value={proposal.name || ''}
-                    onChange={(e) => setProposal({ ...proposal, name: e.target.value })}
-                    className="w-full p-3 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 font-bold text-lg bg-white"
-                    placeholder="Ex: Phénix, Salamandre, Automate..."
-                  />
-                ) : (
-                  <div className="p-3 bg-amber-100/50 rounded-lg text-amber-900 font-bold border border-amber-200">
-                    {editingItem.name || editingItem.nom}
-                  </div>
-                )}
+                <input
+                  type="text"
+                  value={proposal.name || ''}
+                  onChange={(e) => setProposal({...proposal, name: e.target.value})}
+                  className="w-full p-3 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 font-bold text-lg bg-white"
+                  placeholder="Ex: Phénix, Salamandre, Automate..."
+                />
               </div>
 
               <div>
