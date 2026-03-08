@@ -2,7 +2,7 @@
 // 8.25.0 // 8.26.0 
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
-// 11.0.0 // 11.1.0
+// 11.0.0 // 11.1.0 // 11.4.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -93,7 +93,7 @@ function App() {
         if (mounted) {
           setGameData(data);
           const { data: profile } = await supabase
-            .from('profiles').select('role, username, badges, show_pixie, active_badge, dice_theme, is_joueur, is_docte')
+          .from('profiles').select('role, username, badges, show_pixie, active_badge, dice_theme, is_joueur, is_docte, use_3d_dice')
             .eq('id', session.user.id).single();
           
           setSession(session);
@@ -479,8 +479,11 @@ function App() {
       {/* 3. TÉLÉGRAPHE PNEUMATIQUE */}
       {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
 
-      {/* 🎲 NOUVEAU : LA PISTE DE DÉ FLOTTANTE */}
-      <DiceRoller />
+        {/* 🎲 NOUVEAU : LA PISTE DE DÉ FLOTTANTE */}
+        <DiceRoller 
+          use3DDice={userProfile?.profile?.use_3d_dice} 
+          diceTheme={userProfile?.profile?.dice_theme} 
+        />
 
       {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT */}
       {view === 'creator' && userProfile?.profile?.show_pixie !== false && (
