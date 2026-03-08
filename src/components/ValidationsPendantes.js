@@ -2,7 +2,7 @@
 // 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 
 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
 // 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
-// 11.1.0 // 11.3.0
+// 11.1.0 // 11.3.0 // 11.4.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal } from 'lucide-react';
@@ -347,10 +347,10 @@ export default function ValidationsPendantes({ session, onBack }) {
                                      <span className="block text-[9px] uppercase font-bold text-green-600 mb-1 tracking-wider">Proposition (Nouveau)</span>
                                      <span className="font-medium whitespace-pre-wrap leading-relaxed">"{displayNew}"</span>
                                    </div>
-                                   <div className="bg-red-50/50 border border-red-200 text-red-900 p-2 rounded">
-                                     <span className="block text-[9px] uppercase font-bold text-red-600 mb-1 tracking-wider">Actuel (Ancien)</span>
-                                     <span className="italic opacity-80 whitespace-pre-wrap leading-relaxed line-through decoration-red-300">"{displayOld}"</span>
-                                   </div>
+									<div className="bg-red-50/50 border border-red-200 text-red-900 p-2 rounded">
+									  <span className="block text-[9px] uppercase font-bold text-red-600 mb-1 tracking-wider">Actuel (Ancien)</span>
+									  <span className="italic opacity-80 whitespace-pre-wrap leading-relaxed">"{displayOld}"</span>
+									</div>
                                  </div>
                                </>
                              )}

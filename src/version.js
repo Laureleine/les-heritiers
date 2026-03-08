@@ -6,6 +6,15 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '11.4.0',
+    date: '8 Mars 2026',
+    changes: [
+      '⚙️ **Performance et Accessibilité :** Ajout d\'une option "Physique 3D Expérimentale" dans les paramètres d\'Immersion. Cette option permettra de basculer vers un futur moteur de lancer de dés très gourmand, tout en préservant les anciens smartphones.',
+      '👁️ **Lisibilité des Gardiens :** Suppression du texte barré dans la colonne des anciennes valeurs du Delta (Conseil des Gardiens). Le code couleur rouge se suffit à lui-même et rend la relecture beaucoup plus agréable.',
+      '🎲 **La Forge Tridimensionnelle :** Intégration du moteur physique `3d-dice` permettant de véritables lancers de dés WebGL soumis à la gravité, avec des modèles polygonaux texturés.'
+  ]
+  },
+  {
     version: '11.3.0',
     date: '8 Mars 2026',
     changes: [

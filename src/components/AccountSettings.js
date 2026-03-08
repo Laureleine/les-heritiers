@@ -1,7 +1,7 @@
 // src/components/AccountSettings.js :
 // 9.7.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0
-// 11.0.0 // 11.1.0
+// 11.0.0 // 11.1.0 // 11.4.0
 
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone } from 'lucide-react';
@@ -17,6 +17,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
   const [showPixie, setShowPixie] = useState(true);
   const [activeBadge, setActiveBadge] = useState('');
   const [diceTheme, setDiceTheme] = useState('laiton');
+  const [use3DDice, setUse3DDice] = useState(false);
   const [isJoueur, setIsJoueur] = useState(true);
   const [isDocte, setIsDocte] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,6 +32,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
     if (profile.username) setNewUsername(profile.username);
     if (profile.show_pixie !== undefined) setShowPixie(profile.show_pixie);
     if (profile.dice_theme) setDiceTheme(profile.dice_theme);
+    if (profile.use_3d_dice !== undefined) setUse3DDice(profile.use_3d_dice);
     if (profile.is_joueur !== undefined) setIsJoueur(profile.is_joueur);
     if (profile.is_docte !== undefined) setIsDocte(profile.is_docte);    
     if (profile.active_badge) {
@@ -50,6 +52,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
         show_pixie: showPixie,
         active_badge: activeBadge,
         dice_theme: diceTheme,
+        use_3d_dice: use3DDice,
         is_joueur: isJoueur,
         is_docte: isDocte,		
         updated_at: new Date()
@@ -71,6 +74,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
       if (onUpdateProfile) onUpdateProfile();
       
       localStorage.setItem('heritiers_dice_theme', diceTheme);
+	  localStorage.setItem('heritiers_use_3d_dice', use3DDice);
       
     } catch (error) {
       setMessage('❌ Erreur lors de la sauvegarde : ' + error.message);
@@ -186,6 +190,26 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                 </select>
               </div>
 
+          {/* ✨ NOUVEAU : LE BOUTON PHYSIQUE 3D ✨ */}
+          <label className={`flex items-start gap-3 p-3 mt-4 rounded-lg border-2 cursor-pointer transition-all ${use3DDice ? 'border-purple-500 bg-purple-50' : 'border-stone-200 bg-white hover:bg-stone-50'}`}>
+            <input 
+              type="checkbox" 
+              checked={use3DDice} 
+              onChange={(e) => setUse3DDice(e.target.checked)} 
+              className="mt-1 w-4 h-4 text-purple-600 focus:ring-purple-500" 
+            />
+            <div>
+              <div className="font-bold text-sm text-stone-800 flex items-center gap-2">
+                Physique 3D Réaliste 
+                <span className="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">Expérimental</span>
+              </div>
+              <div className="text-xs text-stone-500 leading-tight mt-1">
+                Remplace l'illusion visuelle par un véritable moteur physique 3D pour le lancer de dés. <br/>
+                <span className="text-amber-600 font-bold">⚠️ Attention :</span> Peut ralentir considérablement les anciens téléphones.
+              </div>
+            </div>
+          </label>
+		  
               <div>
                 <label className="block text-sm font-bold text-stone-700 mb-2 flex items-center gap-2">
                   <Sparkles size={16} className="text-amber-500"/> Compagnon Virtuel
