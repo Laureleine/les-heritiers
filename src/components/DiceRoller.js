@@ -52,7 +52,7 @@ useEffect(() => {
     if (use3DDice && containerExists && !diceBoxRef.current) {
       try {
         diceBoxRef.current = new DiceBox("#dice-canvas-container", {
-          assetPath: "/assets/dice-box/",          
+		  assetPath: `${window.location.origin}/assets/dice-box/`,
 		  theme: diceTheme === 'sang' ? 'rust' : diceTheme === 'améthyste' ? 'purple' : 'default',
           themeColor: "#b45309",
           scale: 6,
