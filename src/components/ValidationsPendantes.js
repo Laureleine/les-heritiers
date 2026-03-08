@@ -2,7 +2,7 @@
 // 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 
 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
 // 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
-// 11.1.0
+// 11.1.0 // 11.3.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal } from 'lucide-react';
@@ -113,29 +113,38 @@ export default function ValidationsPendantes({ session, onBack }) {
   // ======================================================================
 
   const handleApproveClick = (change, seal = false) => {
-    const msg = seal 
-      ? "🛡️ Voulez-vous vraiment valider et SCELLER DÉFINITIVEMENT cet élément ?" 
+    // 🧠 NOUVEAU : On vérifie si le Gardien valide sa propre création
+    const isSelfApproval = change.user_id === session.user.id;
+
+    // Le message de base
+    let msg = seal
+      ? "🛡️ Voulez-vous vraiment valider et SCELLER DÉFINITIVEMENT cet élément ?"
       : "Valider cette modification et générer l'ordre SQL ?";
+
+    // ✨ On ajoute ton avertissement immersif si c'est le cas !
+    if (isSelfApproval) {
+      msg = "Vous vous apprêtez à valider votre propre proposition. Êtes-vous réellement pressé, ou ne préféreriez-vous pas qu'un autre Gardien relise votre requête pour avoir un second coup d'œil averti ?\n\n" + msg;
+    }
 
     setConfirmState({
       isOpen: true,
       title: seal ? "Apposer le Sceau" : "Valider la proposition",
       message: msg,
-      confirmText: seal ? "Approuver et Sceller" : "Générer SQL",
+      confirmText: seal ? "Je suis pressé, valider" : "Générer SQL",
       action: () => executeApprove(change, seal)
     });
   };
 
-  const handleArchiveClick = (changeId) => {
+  const handleArchiveClick = (change) => {
     setConfirmState({
       isOpen: true,
-      title: "Archiver la proposition",
-      message: "Avez-vous bien exécuté ce code SQL dans Supabase ? L'application va se synchroniser automatiquement.",
-      confirmText: "Oui, c'est exécuté",
-      action: () => executeArchive(changeId)
+      title: "Exécuter et Archiver",
+      message: "Voulez-vous lancer l'incantation SQL directement dans la base de données ? Si une erreur survient, la proposition restera en sécurité et ne sera pas archivée.",
+      confirmText: "Oui, exécuter l'incantation",
+      action: () => executeArchive(change.id, change.generated_sql)
     });
   };
-
+  
   const handleRejectClick = (changeId) => {
     setConfirmState({
       isOpen: true,
@@ -155,15 +164,43 @@ export default function ValidationsPendantes({ session, onBack }) {
   // ✨ EXÉCUTION DES ACTIONS (Après Confirmation)
   // ======================================================================
 
-  const executeArchive = async (changeId) => {
+  const executeArchive = async (changeId, sqlQuery) => {
     setConfirmState({ isOpen: false });
-    const { error } = await supabase.from(TABLE_NAME).update({ status: 'archived' }).eq('id', changeId);
-    if (!error) {
-      invalidateAllCaches(); 
-      loadChanges();         
+
+    try {
+      // 1. Nettoyage : Une fonction PL/pgSQL gère déjà sa propre transaction.
+      // On retire donc nos balises de transaction manuelles pour éviter un crash.
+      const cleanSQL = sqlQuery.replace('BEGIN;', '').replace('COMMIT;', '').trim();
+
+      // 2. On lance le sortilège SQL côté serveur
+      const { error: sqlError } = await supabase.rpc('execute_dynamic_sql', { sql_query: cleanSQL });
+
+      if (sqlError) throw sqlError; // 🛑 Le filet de sécurité : on s'arrête ici en cas d'erreur !
+
+      // 3. Si le SQL a fonctionné, on archive ET on garde la trace (Qui et Quand)
+      const { error: archiveError } = await supabase
+        .from('data_change_requests')
+        .update({ 
+          status: 'archived',
+          approved_by: session.user.id,              // Trace de l'Auteur
+          approved_at: new Date().toISOString()      // Trace Temporelle
+        })
+        .eq('id', changeId);
+
+      if (archiveError) throw archiveError;
+
+      // 4. Succès et rafraîchissement
+      invalidateAllCaches();
+      loadChanges();
+      invalidateAllCaches();
+      loadChanges();
+      showInAppNotification("L'incantation SQL a été exécutée et archivée avec succès !", "success");
+    } catch (error) {
+      console.error("Erreur lors de l'exécution SQL :", error);
+      showInAppNotification("La magie a échoué : " + error.message, "error");
     }
   };
-
+  
   const executeReject = async (changeId) => {
     setConfirmState({ isOpen: false });
     const { error } = await supabase.from(TABLE_NAME).update({ status: 'rejected' }).eq('id', changeId);
@@ -356,28 +393,18 @@ export default function ValidationsPendantes({ session, onBack }) {
               </div>
             );
           })()}
-
-
       </div>
-	  
-	  
-	  
 
-      {change.status === 'approved' && change.generated_sql && (
-        <div className="mt-4 p-4 bg-gray-900 text-green-400 font-mono text-sm rounded-lg overflow-x-auto relative group">
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button 
-              onClick={() => copyToClipboard(change.generated_sql, change.id)}
-              className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1 transition-colors ${
-                copiedId === change.id ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              {copiedId === change.id ? <><Check size={14} /> Copié !</> : <><Copy size={14} /> Copier</>}
+        {change.status === 'approved' && (
+          <>
+            <button onClick={() => handleArchiveClick(change)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
+              <Check size={18} /> Exécuter & Archiver
             </button>
-          </div>
-          {change.generated_sql}
-        </div>
-      )}
+            <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+              <ArrowLeft size={16} /> Remettre en attente
+            </button>
+          </>
+        )}
 
       {/* BOUTONS D'ACTION AVEC MODALES */}
       <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">

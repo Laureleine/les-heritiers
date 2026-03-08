@@ -6,6 +6,16 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '11.3.0',
+    date: '8 Mars 2026',
+    changes: [
+      '⚙️ **Automatisation des Requêtes (Gardiens) :** Les administrateurs n\'ont plus besoin d\'exécuter manuellement le code SQL. Un simple clic exécute désormais la transaction en toute sécurité !',
+      '🛡️ **Traçabilité du Conseil :** Le système mémorise de façon permanente l\'identité du Gardien ayant validé la proposition ainsi que l\'heure exacte de l\'approbation.',
+      '🛑 **Filet de Sécurité SQL :** En cas d\'erreur d\'exécution en base de données, la procédure s\'interrompt et la proposition est préservée (non archivée).',
+      '👁️ **Principe des Quatre Yeux :** Le Conseil des Gardiens détecte désormais si un membre tente de valider sa propre proposition. Un avertissement immersif lui est alors présenté pour l\'encourager à solliciter la relecture d\'un pair.'
+    ]
+  },
+  {
     version: '11.2.2',
     date: '7 Mars 2026',
     changes: [
