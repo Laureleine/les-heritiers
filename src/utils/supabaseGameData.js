@@ -1,6 +1,7 @@
 // src/utils/supabaseGameData.js
 // 10.8.0 // 10.9.0
 // 11.1.0
+// 12.5.0
 
 import { supabase } from '../config/supabase';
 
@@ -308,26 +309,17 @@ export const loadFairyTypes = async () => {
 
     data.forEach(fairy => {
 
-		// Liste des atouts à masquer pour le moment
-		const ATOUTS_MASQUES = [
-			'Anomalie féérique',
-			'Féal',
-			'Vilain petit canard',
-			'Marginal innocent',
-			'Ancrage humain fort'
-		];
+      // ✨ Traitement des Atouts (Le catalogue est 100% libre !)
+      // ⚠️ Architecte : remplace les ## par des crochets vides !
+      const rawAssetsLinks = fairy.fairy_type_assets || [];
+      const rawAssets = rawAssetsLinks.map(link => link.asset).filter(Boolean);
 
-		// Traitement des Atouts (Step 8)
-		const rawAssetsLinks = fairy.fairy_type_assets || [];
-		const rawAssets = rawAssetsLinks.map(link => link.asset).filter(Boolean);
-		
-		// On filtre pour exclure les universels, puis on trie
-		const assetsTries = rawAssets
-			.filter(a => !ATOUTS_MASQUES.includes(a.nom))
-			.sort((a, b) => a.nom.localeCompare(b.nom));		
-		
-		  // Traitement des Pouvoirs
-		  const rawPouvoirsLinks = fairy.fairy_type_powers || [];
+      // On trie simplement par ordre alphabétique, sans rien masquer
+      const assetsTries = rawAssets
+        .sort((a, b) => a.nom.localeCompare(b.nom));
+
+      // Traitement des Pouvoirs
+      const rawPouvoirsLinks = fairy.fairy_type_powers || [];
 		  
 		  // On filtre pour ne garder QUE les standards pour l'Étape 3
 		  const rawPouvoirs = rawPouvoirsLinks
