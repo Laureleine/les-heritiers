@@ -6,6 +6,16 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '12.4.0',
+    date: '10 Mars 2026',
+    changes: [
+      '🖨️ **Imprimerie Connectée :** Le générateur PDF a été solidement branché sur le catalogue de "Vie Sociale" du jeu. L\'équipement, les armes, les véhicules et les contacts s\'impriment désormais parfaitement dans leurs encarts respectifs en traduisant les ID du Nuage en noms lisibles.',
+      '🖨️ **Imprimerie Globale :** L\'exportation PDF depuis la page d\'accueil (Liste des Personnages) transmet désormais correctement l\'intégralité du catalogue du jeu à l\'imprimeur. Fini l\'équipement fantôme !',
+      '🔍 **Audit du Conseil :** Ajout d\'une sonde de débogage visuelle sur la fonction de rejet du Conseil des Gardiens pour intercepter et afficher les erreurs bloquant silencieusement les requêtes.',
+      '🐛 **Fluidité du Conseil :** Harmonisation des boutons de rejet (standards et escaladés) pour qu\'ils transmettent l\'intégralité des données de la proposition au Télégraphe Pneumatique, résolvant ainsi l\'erreur d\'identifiant UUID.'
+    ]
+  },
+  {
     version: '12.3.0',
     date: '10 Mars 2026',
     changes: [
