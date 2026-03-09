@@ -3,10 +3,11 @@
 // 9.4.0 // 9.6.0
 // 10.4.0 // 10.8.0 // 10.9.0
 // 11.2.0
+// 12.1.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { Book, Search, X, Shield, Sparkles, Plus } from 'lucide-react';
+import { Book, Search, X, Shield, Sparkles, Plus, FileText } from 'lucide-react';
 import EncyclopediaModal from './EncyclopediaModal'; 
 import EncyclopediaCard from './EncyclopediaCard';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
@@ -14,7 +15,7 @@ import ConfirmModal from './ConfirmModal';
 import { logger, showInAppNotification } from '../utils/SystemeServices';
 import { useCharacter } from '../context/CharacterContext';
 
-export default function Encyclopedia({ userProfile, onBack, onOpenValidations }) {
+export default function Encyclopedia({ userProfile, onBack, onOpenValidations, onOpenMesPropositions }) {
   // Charger les listes de référence une seule fois au démarrage
   const { gameData } = useCharacter(); // ✨ CONNEXION AU NUAGE
   const { encyclopediaRefs, competencesFutiles } = gameData;
@@ -277,15 +278,25 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations })
           Encyclopédie
         </h2>
         <div className="flex gap-3">
-          {(userProfile?.profile?.role === 'gardien' || userProfile?.profile?.role === 'super_admin') && (
+            {(userProfile?.profile?.role === 'gardien' || userProfile?.profile?.role === 'super_admin') && (
+              <button
+                onClick={onOpenValidations}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-800 hover:bg-purple-200 font-bold rounded-xl transition-colors border border-purple-200"
+              >
+                <Shield size={18} />
+                Conseil des Gardiens
+              </button>
+            )}
+
+            {/* ✨ NOUVEAU : LE BOUTON SUIVI UTILISATEUR */}
             <button
-              onClick={onOpenValidations}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-800 hover:bg-purple-200 font-bold rounded-xl transition-colors border border-purple-200"
+              onClick={onOpenMesPropositions}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 hover:bg-blue-200 font-bold rounded-xl transition-colors border border-blue-200"
             >
-              <Shield size={18} />
-              Conseil des Gardiens
+              <FileText size={18} />
+              <span className="hidden md:inline">Mes Propositions</span>
             </button>
-          )}
+
           <button
             onClick={onBack}
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors font-serif"

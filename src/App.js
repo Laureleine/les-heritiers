@@ -3,7 +3,7 @@
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
 // 11.0.0 // 11.1.0 // 11.4.0
-// 12.0.0
+// 12.0.0 .. 12.1.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -27,6 +27,7 @@ import DiceRoller from './components/DiceRoller';
 import PixieAssistant from './components/PixieAssistant';
 import BackgroundDecor from './components/BackgroundDecor';
 import CerclesDashboard from './components/CerclesDashboard';
+import MesPropositions from './components/MesPropositions';
 
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
@@ -332,7 +333,12 @@ function App() {
           {/* ROUTE 2 : ENCYCLOPÉDIE (Avec protection Docte) */}
           <Route path="/encyclopedia" element={
             userProfile?.profile?.is_docte ? (
-              <Encyclopedia userProfile={userProfile} onBack={() => navigate('/')} onOpenValidations={() => navigate('/validations')} />
+              <Encyclopedia 
+                userProfile={userProfile} 
+                onBack={() => navigate('/')} 
+                onOpenValidations={() => navigate('/validations')} 
+                onOpenMesPropositions={() => navigate('/mes_propositions')} // ✨ NOUVEAU
+              />
             ) : (
               <div className="max-w-2xl mx-auto p-8 mt-12 bg-[#2a1313] rounded-2xl border-2 border-red-900/50 shadow-2xl text-center animate-fade-in-up relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
@@ -362,6 +368,8 @@ function App() {
           <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={() => window.location.reload()} onBack={() => navigate('/')} />} />
           <Route path="/admin_dashboard" element={<AdminDashboard session={session} onBack={() => navigate('/')} />} />
           <Route path="/cercles" element={<CerclesDashboard session={session} onBack={() => navigate('/')} />} />
+		  <Route path="/mes_propositions" element={<MesPropositions session={session} onBack={() => navigate('/encyclopedia')} />} />
+
 
           {/* ROUTE 4 : CRÉATEUR DE PERSONNAGE */}
           <Route path="/creator" element={
