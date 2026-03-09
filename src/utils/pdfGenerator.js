@@ -1,6 +1,6 @@
 // src/utils/utils.js
 // 10.4.0
-// 12.3.0
+// 12.3.0 // 12.6.0
 
 // ============================================================================
 // PDF EXPORT (Fiche de Personnage Complète Recto/Verso)
@@ -362,7 +362,11 @@ export const exportToPDF = (character, gameData = {}) => {
               
               <span class="field-label" style="color: #d97706; margin-top: 15px;">Atouts Féériques</span>
               <ul class="list-items" style="margin-top: 5px; padding-left: 15px;">
-                ${(character.atouts || []).map(a => `<li><b>${a}</b></li>`).join('') || '<li><i>Aucun atout</i></li>'}
+                  ${(character.atouts || []).map(a => {
+                    const atoutObj = feeData?.atouts?.find(at => at.id === a || at.nom === a);
+                    const displayName = atoutObj ? atoutObj.nom : a;
+                    return `<li><b>${displayName}</b></li>`;
+                  }).join('') || '<li><i>Aucun atout</i></li>'}
               </ul>
             </div>
 
