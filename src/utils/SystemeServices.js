@@ -1,4 +1,5 @@
 // 10.7.0
+// 12.0.0
 
 import { supabase } from '../config/supabase';
 
@@ -90,10 +91,6 @@ export const notifyNewVersion = (version, changelog) => {
     ]
   });
   showInAppNotification(`Nouvelle version ${version} disponible ! Cliquez pour voir les changements.`, 'success');
-};
-
-export const checkForUpdates = async (currentVersion) => {
-  return;
 };
 
 export const registerServiceWorker = async () => {

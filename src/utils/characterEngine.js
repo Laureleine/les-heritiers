@@ -1,4 +1,5 @@
 // src/utils/characterEngine.js
+// 12.0.0
 
 // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
 export function characterReducer(state, action) {
@@ -22,12 +23,22 @@ export function characterReducer(state, action) {
           newState[action.field] = [...currentArray, action.value];
         }
         break;
-      default:
-        return state;
-    }
+    default:
+      return state;
+  }
 
-    // ⚙️ LE CALCULATEUR AUTOMATIQUE INTÉGRÉ
-    // Si le jeu a bien chargé ses données, on déclenche les calculs :
+  // ✨ LE BOUCLIER ANTI-LAG (SHORT-CIRCUIT) ✨
+  // On liste les champs purement narratifs qui n'ont aucun impact sur les statistiques
+  const textFields = ['nom', 'nomFeerique', 'sexe', 'genreHumain', 'taille', 'poids', 'apparence', 'isPublic'];
+  
+  // Si l'action est une simple mise à jour de texte, on retourne l'état immédiatement 
+  // en préservant les statistiques précédentes, sans relancer le lourd moteur mathématique !
+  if (action.type === 'UPDATE_FIELD' && textFields.includes(action.field)) {
+    return newState;
+  }
+
+  // ⚙️ LE CALCULATEUR AUTOMATIQUE INTÉGRÉ
+  // Si le jeu a bien chargé ses données, on déclenche les calculs :
     if (action.gameData && action.gameData.fairyData && newState.typeFee) {
       const feeData = action.gameData.fairyData[newState.typeFee];
 
