@@ -3,7 +3,7 @@
 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
 // 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
 // 11.1.0 // 11.3.0 // 11.4.0
-// 12.1.0 // 12.2.0 // 12.3.0
+// 12.1.0 // 12.2.0 // 12.3.0 // 12.4.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal, ShieldAlert } from 'lucide-react';
@@ -223,6 +223,9 @@ export default function ValidationsPendantes({ session, onBack }) {
       return;
     }
     
+    // On ferme la modale de confirmation générale au cas où elle serait ouverte
+    setConfirmState({ isOpen: false }); 
+    
     const targetChange = rejectState.change;
 
     // 1. On rejette la proposition dans la base de données
@@ -260,6 +263,10 @@ export default function ValidationsPendantes({ session, onBack }) {
       setRejectState({ isOpen: false, change: null, reason: '' });
       loadChanges();
       showInAppNotification("La proposition a été rejetée et une missive pneumatique expédiée !", "success");
+    } else {
+      // 🚨 NOTRE FAMEUX DÉTECTEUR EST ICI !
+      console.error("Erreur fatale de rejet :", error);
+      showInAppNotification("Le sortilège a échoué : " + error.message, "error");
     }
   };
 
@@ -468,7 +475,7 @@ export default function ValidationsPendantes({ session, onBack }) {
 
           {change.status === 'pending' && (
             <>
-              <button onClick={() => handleRejectClick(change.id)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
+              <button onClick={() => handleRejectClick(change)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
                 <X size={18} /> Rejeter
               </button>
               <button onClick={() => handleApproveClick(change, false)} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
@@ -498,7 +505,7 @@ export default function ValidationsPendantes({ session, onBack }) {
                <button onClick={() => handleArchiveClick(change)} className="px-6 py-2 bg-red-800 text-white hover:bg-red-900 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
                  <TestTubeDiagonal size={18} /> Retenter le SQL
                </button>
-               <button onClick={() => handleRejectClick(change.id)} className="px-4 py-2 bg-gray-100 text-red-600 hover:bg-red-50 rounded-lg font-bold flex items-center gap-2 transition-colors">
+               <button onClick={() => handleRejectClick(change)} className="px-4 py-2 bg-gray-100 text-red-600 hover:bg-red-50 rounded-lg font-bold flex items-center gap-2 transition-colors">
                  <X size={16} /> Rejeter définitivement
                </button>
                <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">

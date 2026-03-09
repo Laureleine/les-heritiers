@@ -10,18 +10,20 @@ import { supabase } from '../config/supabase';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 
 export const exportToPDF = (character, gameData = {}) => {
-  // On sécurise l'ancienne variable pour ne rien casser
-  const fairyData = gameData.fairyData || {};
+  // ✨ SÉCURITÉ : Rétrocompatibilité (au cas où le vieux code passerait encore par là)
+  const fairyData = gameData.fairyData ? gameData.fairyData : gameData;
   const feeData = fairyData[character.typeFee] || {};
 
-  // ✨ CORRECTION 2 : Le Traducteur Universel (UUID -> Noms)
+  // ✨ LE TRADUCTEUR UNIVERSEL (Identifiants -> Noms)
   const allBoughtIds = Object.values(character.vieSociale || {}).flat();
-  const boughtItems = (gameData.socialItems || []).filter(item => allBoughtIds.includes(item.id));
+  const socialItems = gameData.socialItems || [];
+  const boughtItems = socialItems.filter(item => allBoughtIds.includes(item.id));
   
-  // On sépare intelligemment les catégories
+  // On sépare intelligemment toutes les catégories pour les ranger dans les bonnes cases !
   const langues = boughtItems.filter(i => i.categorie === 'langue').map(i => i.nom);
   const equipements = boughtItems.filter(i => i.categorie !== 'langue' && i.categorie !== 'contact').map(i => i.nom);
-  
+  const contacts = boughtItems.filter(i => i.categorie === 'contact').map(i => i.nom);
+
   // 1. Calculs rapides des statistiques de combat et de santé
   const pvMax = (3 * (character.caracteristiques?.constitution || 1)) + 9;
   const skills = character.competencesLibres?.rangs || {};
@@ -382,50 +384,52 @@ export const exportToPDF = (character, gameData = {}) => {
             </div>
           </div>
         </div>
+<!-- COMPÉTENCES FUTILES & INVENTAIRE -->
+<div class="section">
+  <div class="section-title" style="background: #166534;">Détails & Inventaire</div>
+  <div class="grid-2">
+    <div class="box">
+      <span class="field-label">Compétences Futiles</span>
+      <ul class="list-items" style="margin-top: 5px; padding-left: 15px;">
+        ${Object.entries(character.computedStats?.futilesTotal || {}).map(([nom, val]) => {
+          const displayNom = nom.toLowerCase().includes('au choix') ? (character.competencesFutiles?.precisions?.[nom] || nom) : nom;
+          return `<li>${displayNom} <b>(${val})</b></li>`;
+        }).join('') || '<li><i>Aucune</i></li>'}
+      </ul>
 
-        <!-- COMPÉTENCES FUTILES & INVENTAIRE -->
-        <div class="section">
-          <div class="section-title" style="background: #166534;">Détails & Inventaire</div>
-          <div class="grid-2">
-            <div class="box">
-			  <span class="field-label">Compétences Futiles</span>
-				<ul class="list-items" style="margin-top: 5px; padding-left: 15px;">
-				  ${Object.entries(character.computedStats?.futilesTotal || {}).map(([nom, val]) => {
-					const displayNom = nom.toLowerCase().includes('au choix') ? (character.competencesFutiles?.precisions?.[nom] || nom) : nom;
-					return `<li>${displayNom} <b>(${val})</b></li>`;
-				  }).join('') || '<li><i>Aucune</i></li>'}
-				</ul>
-        <span class="field-label" style="margin-top: 15px;">Langues maîtrisées</span>
-        <div class="list-items" style="margin-top: 5px;">
-          Français (Maternelle)<br/>
-          ${langues.length > 0 ? langues.join('<br/>') + '<br/>' : ''}
-          <div class="empty-lines"></div>
-        </div>
+      <span class="field-label" style="margin-top: 15px;">Langues maîtrisées</span>
+      <div class="list-items" style="margin-top: 5px;">
+        Français (Maternelle)<br/>
+        ${langues.length > 0 ? langues.join('<br/>') + '<br/>' : ''}
+        <div class="empty-lines"></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <span class="field-label">Équipement & Possessions</span>
+      <div class="list-items" style="margin-top: 5px; line-height: 1.8;">
+        ${equipements.length > 0 ? equipements.map(e => `- ${e}`).join('<br/>') : '<div class="empty-lines"></div><div class="empty-lines"></div><div class="empty-lines"></div>'}
       </div>
 
-      <div class="box">
-        <span class="field-label">Équipement & Possessions</span>
-        <div class="list-items" style="margin-top: 5px; line-height: 1.8;">
-          ${equipements.length > 0 ? equipements.map(e => `- ${e}`).join('<br/>') : '<div class="empty-lines"></div><div class="empty-lines"></div><div class="empty-lines"></div>'}
-        </div>
+      <span class="field-label" style="margin-top: 15px;">Contacts & Alliés</span>
+      <div class="list-items" style="margin-top: 5px; line-height: 1.8;">
+        ${contacts.length > 0 ? contacts.map(c => `- ${c}`).join('<br/>') : '<div class="empty-lines"></div><div class="empty-lines"></div><div class="empty-lines"></div>'}
       </div>
     </div>
   </div>
 </div>
-<!-- ========================================== -->
-          </div>
-        </div>
+</div>
+</body>
+</html>
+`;
 
-      </div>
-    </body>
-    </html>
-  `;
-
+  // ✨ LES COMMANDES PERDUES SONT DE RETOUR ICI !
   printWindow.document.write(htmlContent);
   printWindow.document.close();
-  
+
   // Déclenchement automatique de la fenêtre d'impression après chargement des polices
   setTimeout(() => {
     printWindow.print();
   }, 500);
-};
+
+}; // 👈 LA FAMEUSE ACCOLADE MANQUANTE !

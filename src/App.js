@@ -3,7 +3,7 @@
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
 // 11.0.0 // 11.1.0 // 11.4.0
-// 12.0.0 // 12.1.0 // 12.3.0
+// 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -310,6 +310,7 @@ function App() {
               session={session}
               userProfile={userProfile}
               profils={gameData.profils}
+			  gameData={gameData}
               onSelectCharacter={(c, readOnly = false) => {
                 dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c });
                 setIsReadOnly(readOnly);

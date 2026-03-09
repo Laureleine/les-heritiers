@@ -2,6 +2,7 @@
 // 8.24.0 // 8.32.0 // 9.1.0 // 9.6.0
 // 10.2.0 // 10.4.0
 // 11.1.0
+// 12.4.0
 
 import React, { useState, useEffect } from 'react';
 import { User, Users, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2 } from 'lucide-react'; // 👈 Ajoutez BarChart2
@@ -12,7 +13,7 @@ import { APP_VERSION, BUILD_DATE } from '../version';
 import { logger, getCurrentUserFast, translateError, showInAppNotification } from '../utils/SystemeServices';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, profils = [], userProfile}) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, profils = [], userProfile, gameData }) { // ✨ NOUVEAU PARAMÈTRE À LA FIN
   
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
@@ -204,7 +205,7 @@ const loadCharacters = async (isMounted = true) => {
                             <Edit size={14}/> Modifier
                         </button>
                         <button 
-                            onClick={() => exportToPDF(char)}
+							onClick={() => exportToPDF(char, gameData)} 
                             className="p-1.5 text-stone-400 hover:text-stone-600 hover:bg-stone-50 rounded border border-transparent transition-all"
                             title="PDF"
                         >
