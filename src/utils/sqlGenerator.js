@@ -1,5 +1,6 @@
 // src/utils/sqlGenerator.js
 // 10.5.0 // 10.10.0
+// 12.1.0
 
 export const generateApprovalSQL = (change, seal = false) => {
   // ✨ L'OUBLI ÉTAIT ICI : On déballe toutes les variables nécessaires
@@ -89,48 +90,74 @@ export const generateApprovalSQL = (change, seal = false) => {
 	}
   }
   
-	if (_relations.competencesUtiles !== undefined) {
-	  sqlQuery += `\nDELETE FROM public.fairy_competences_predilection WHERE fairy_type_id = '${targetId}';\n`;
-	  try {
-		const utilesList = typeof _relations.competencesUtiles === 'string' ? JSON.parse(_relations.competencesUtiles) : _relations.competencesUtiles;
-		if (utilesList && utilesList.length > 0) {
-		  const utilesInserts = utilesList.map(comp => {
-			const isChoice = comp.isChoix ? 'true' : 'false';
-			const isSpecChoice = comp.isSpecialiteChoix ? 'true' : 'false';
-			const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
-			const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
-			let choiceIds = 'null';
-			let choiceOptions = 'null';
+    if (_relations.competencesUtiles !== undefined) {
+      sqlQuery += `\nDELETE FROM public.fairy_competences_predilection WHERE fairy_type_id = '${targetId}';\n`;
 
-			if (comp.isChoix && comp.options && comp.options.length > 0) {
-			  const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
-			  choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
-			} else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
-			  choiceOptions = `'${JSON.stringify(comp.options).replace(/'/g, "''")}'::jsonb`;
-			}
+      try {
+        const utilesList = typeof _relations.competencesUtiles === 'string' ? JSON.parse(_relations.competencesUtiles) : _relations.competencesUtiles;
 
-			return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
-		  }).join(',\n  ');
-		  sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_ids, choice_options) VALUES \n  ${utilesInserts};\n`;
-		}
-	  } catch (e) {
-		sqlQuery += `-- ERREUR PARSING JSON: ${e.message}\n`;
-	  }
-	}
+        if (utilesList && utilesList.length > 0) {
+          // ✨ 1. LE FILTRE ANTI-VIDE (On ignore les blocs non remplis)
+          const validUtiles = utilesList.filter(comp => {
+            if (!comp.isChoix && !comp.nom) return false;
+            if (comp.isChoix && (!comp.options || comp.options.length === 0)) return false;
+            if (comp.isSpecialiteChoix && (!comp.nom || !comp.options || comp.options.length === 0)) return false;
+            return true;
+          });
 
-	if (_relations.competencesFutiles !== undefined) {
-	  sqlQuery += `\nDELETE FROM public.fairy_competences_futiles_predilection WHERE fairy_type_id = '${targetId}';\n`;
-	  if (_relations.competencesFutiles.length > 0) {
-		const futInserts = _relations.competencesFutiles.map(fut => {
-		  const isChoice = fut.is_choice ? 'true' : 'false';
-		  const compQuery = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
-		  const choiceOptions = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
-		  return `('${targetId}', ${compQuery}, ${isChoice}, ${choiceOptions})`;
-		}).join(',\n  ');
-		sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES \n  ${futInserts};\n`;
-	  }
-	}
+          if (validUtiles.length > 0) {
+            const utilesInserts = validUtiles.map(comp => {
+              const isChoice = comp.isChoix ? 'true' : 'false';
+              const isSpecChoice = comp.isSpecialiteChoix ? 'true' : 'false';
+              const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
+              const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
 
+              let choiceIds = 'null';
+              let choiceOptions = 'null';
+
+              if (comp.isChoix && comp.options && comp.options.length > 0) {
+                const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+                choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
+              } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
+                // ✨ 2. CORRECTION DU FORMAT (Tableau de texte natif PostgreSQL au lieu de JSONB)
+                const opts = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+                choiceOptions = `ARRAY[${opts}]::text[]`;
+              }
+
+              return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
+            }).join(',\n  ');
+
+            sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_ids, choice_options) VALUES \n  ${utilesInserts};\n`;
+          }
+        }
+      } catch (e) {
+        sqlQuery += `-- ERREUR PARSING JSON: ${e.message}\n`;
+      }
+    }
+
+    if (_relations.competencesFutiles !== undefined) {
+      sqlQuery += `\nDELETE FROM public.fairy_competences_futiles_predilection WHERE fairy_type_id = '${targetId}';\n`;
+
+      // ✨ 3. LE FILTRE ANTI-VIDE POUR LES FUTILES
+      const validFutiles = _relations.competencesFutiles.filter(fut => {
+        if (!fut.is_choice && !fut.competence_futile_id) return false;
+        if (fut.is_choice && (!fut.choice_options || fut.choice_options.length === 0)) return false;
+        return true;
+      });
+
+      if (validFutiles.length > 0) {
+        const futInserts = validFutiles.map(fut => {
+          const isChoice = fut.is_choice ? 'true' : 'false';
+          const compQuery = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
+          const choiceOptions = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
+          
+          return `('${targetId}', ${compQuery}, ${isChoice}, ${choiceOptions})`;
+        }).join(',\n  ');
+
+        sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES \n  ${futInserts};\n`;
+      }
+    }
+	
 	// 🔗 NOUVEAU : GESTION DES RELATIONS INVERSÉES (Lier à une Fée)
   if (_relations.fairyIds !== undefined) {
 	const isArray = Array.isArray(_relations.fairyIds);

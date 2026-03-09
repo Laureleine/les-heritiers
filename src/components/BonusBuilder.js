@@ -1,6 +1,7 @@
 // src/components/BonusBuilder.js
 // 10.2.0 // 10.3.0 // 10.4.0
 // 11.1.0
+// 12.1.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles } from 'lucide-react';
@@ -405,24 +406,27 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
               );
             })()}
 
-            {/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
-            {block.type === 'pred_fixe' && (
-              <>
-                <div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200"><BookOpen size={18}/></div>
-                <span className="text-sm font-bold text-fuchsia-900">Utile imposée :</span>
-                <input 
-                  type="text" 
-                  value={block.key} 
-                  list="utiles-list"
-                  onChange={(e) => updateBlock(block.id, 'key', e.target.value)} 
-                  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
-                  placeholder="Ex: Conduite"
-                />
-                <span className="text-stone-400 font-bold">▶</span>
-                <input type="text" placeholder="Spécialité (Optionnelle)..." value={block.nom || ''} onChange={(e) => updateBlock(block.id, 'nom', e.target.value)} className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none" />
-              </>
-            )}
+			{/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
+			{block.type === 'pred_fixe' && (
+			  <>
+				<div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200"><BookOpen size={18}/></div>
+				<span className="text-sm font-bold text-fuchsia-900">Utile imposée :</span>
+				
+				{/* ✨ LA CORRECTION EST ICI : Un vrai Select strict */}
+				<select
+				  value={block.key}
+				  onChange={(e) => updateBlock(block.id, 'key', e.target.value)}
+				  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
+				>
+				  <option value="">Sélectionner...</option>
+				  {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+				</select>
 
+				<span className="text-stone-400 font-bold">▶</span>
+				<input type="text" placeholder="Spécialité (Optionnelle)..." value={block.nom || ''} onChange={(e) => updateBlock(block.id, 'nom', e.target.value)} className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none" />
+			  </>
+			)}
+			
             {/* ✨ NOUVEAU : Lego Choix de Futile (Teal/Cyan) ✨ */}
             {block.type === 'futile_choix' && (
               <>
@@ -453,21 +457,23 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
               </>
             )}
 
-            {/* ✨ NOUVEAU : Lego Prédilection Futile Fixe (Cyan) ✨ */}
-            {block.type === 'futile_fixe' && (
-              <>
-                <div className="bg-cyan-100 text-cyan-800 p-2 rounded border border-cyan-200"><Sparkles size={18}/></div>
-                <span className="text-sm font-bold text-cyan-900">Futile imposée :</span>
-                <input
-                  type="text"
-                  value={block.key}
-                  onChange={(e) => updateBlock(block.id, 'key', e.target.value)}
-                  list="futiles-list"
-                  placeholder="Ex: Peinture..."
-                  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-cyan-200 outline-none flex-1"
-                />
-              </>
-            )}
+			{/* ✨ NOUVEAU : Lego Prédilection Futile Fixe (Cyan) ✨ */}
+			{block.type === 'futile_fixe' && (
+			  <>
+				<div className="bg-cyan-100 text-cyan-800 p-2 rounded border border-cyan-200"><Sparkles size={18}/></div>
+				<span className="text-sm font-bold text-cyan-900">Futile imposée :</span>
+				
+				{/* ✨ LA CORRECTION EST ICI : Un vrai Select strict */}
+				<select
+				  value={block.key}
+				  onChange={(e) => updateBlock(block.id, 'key', e.target.value)}
+				  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-cyan-200 outline-none flex-1"
+				>
+				  <option value="">Sélectionner...</option>
+				  {futilesSkills.map(s => <option key={s} value={s}>{s}</option>)}
+				</select>
+			  </>
+			)}
 
             {/* Bouton Supprimer */}
             <button type="button" onClick={() => removeBlock(block.id)} className="ml-auto p-2 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Supprimer la règle">

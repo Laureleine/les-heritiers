@@ -3,6 +3,7 @@
 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
 // 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
 // 11.1.0 // 11.3.0 // 11.4.0
+// 12.1.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal } from 'lucide-react';
@@ -144,16 +145,6 @@ export default function ValidationsPendantes({ session, onBack }) {
       action: () => executeArchive(change.id, change.generated_sql)
     });
   };
-  
-  const handleRejectClick = (changeId) => {
-    setConfirmState({
-      isOpen: true,
-      title: "Rejeter la proposition",
-      message: "Voulez-vous rejeter définitivement cette proposition ?",
-      confirmText: "Rejeter sans pitié",
-      action: () => executeReject(changeId)
-    });
-  };
 
   const handleRestore = async (changeId) => {
     const { error } = await supabase.from(TABLE_NAME).update({ status: 'pending' }).eq('id', changeId);
@@ -201,10 +192,29 @@ export default function ValidationsPendantes({ session, onBack }) {
     }
   };
   
-  const executeReject = async (changeId) => {
-    setConfirmState({ isOpen: false });
-    const { error } = await supabase.from(TABLE_NAME).update({ status: 'rejected' }).eq('id', changeId);
-    if (!error) loadChanges();
+  // ✨ NOUVEAU : État pour la modale de rejet
+  const [rejectState, setRejectState] = useState({ isOpen: false, changeId: null, reason: '' });
+
+  const handleRejectClick = (changeId) => {
+    setRejectState({ isOpen: true, changeId, reason: '' });
+  };
+
+  const executeReject = async () => {
+    if (!rejectState.reason.trim()) {
+      showInAppNotification("Les Gardiens doivent justifier leur refus !", "warning");
+      return;
+    }
+    setConfirmState({ isOpen: false }); // Au cas où
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .update({ status: 'rejected', rejection_reason: rejectState.reason })
+      .eq('id', rejectState.changeId);
+
+    if (!error) {
+      setRejectState({ isOpen: false, changeId: null, reason: '' });
+      loadChanges();
+      showInAppNotification("La proposition a été rejetée et l'Héritier notifié.", "success");
+    }
   };
 
   // LE CHIRURGIEN SQL (Générateur)
@@ -496,6 +506,30 @@ export default function ValidationsPendantes({ session, onBack }) {
           <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-white/50">L'historique est vide.</p>
         )}
       </div>
+	  
+      {/* ✨ LA MODALE DE REJET DES GARDIENS */}
+      {rejectState.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 animate-fade-in-up border-2 border-red-900/20">
+            <h3 className="text-xl font-serif font-bold text-red-900 mb-4 flex items-center gap-2">
+              <X size={24} /> Rejeter la proposition
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">Expliquez à l'Héritier pourquoi sa proposition ne peut être intégrée aux archives (cette raison lui sera visible) :</p>
+            <textarea
+              value={rejectState.reason}
+              onChange={(e) => setRejectState({...rejectState, reason: e.target.value})}
+              className="w-full p-3 border border-red-200 rounded-lg focus:ring-2 focus:ring-red-500 outline-none mb-6 resize-none"
+              rows="4"
+              placeholder="Ex: Cette capacité existe déjà sous un autre nom, ou est trop puissante..."
+              autoFocus
+            />
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setRejectState({isOpen: false, changeId: null, reason: ''})} className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg transition-colors">Annuler</button>
+              <button onClick={executeReject} className="px-6 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 shadow-md transition-colors">Confirmer le Rejet</button>
+            </div>
+          </div>
+        </div>
+      )}	  
 
       {/* ✨ LA MODALE DE CONFIRMATION DES GARDIENS */}
       <ConfirmModal 

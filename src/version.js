@@ -6,6 +6,16 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '12.1.0',
+    date: '10 Mars 2026',
+    changes: [
+      '🛡️ **Stabilité du Conseil (Gardiens) :** Résolution d\'un crash SQL critique (`check_predilection_type`). Le générateur de requêtes filtre désormais intelligemment les blocs de compétences vides laissés par erreur dans le constructeur visuel avant de les envoyer à la base de données.',
+      '🛡️ **Protection des Saisies (Gardiens) :** L\'éditeur de fées de l\'Encyclopédie (BonusBuilder) utilise désormais des menus déroulants stricts pour l\'assignation des compétences de prédilection. Cela éradique définitivement les erreurs SQL causées par des fautes de frappe (ex: "Habilités" au lieu de "Habiletés").',
+      '👥 **Transparence Communautaire :** Création d\'un espace "Mes Propositions" dans l\'Encyclopédie. Les joueurs peuvent désormais suivre en temps réel l\'état de leurs requêtes (En attente, Pré-validé, En ligne, Rejeté).',
+      '⚖️ **Justice des Gardiens :** Lorsqu\'un Gardien du Savoir rejette une proposition, il doit désormais obligatoirement rédiger un motif de refus. Cette justification est directement visible par le joueur concerné dans son espace personnel.'
+    ]
+  },
+  {
     version: '12.0.0',
     date: '9 Mars 2026',
     changes: [
