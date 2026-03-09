@@ -1,5 +1,6 @@
 // src/components/Telegraphe.js
 // 9.0.0 // 9.0.1
+// 12.3.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Plus, Inbox, CheckCircle, Clock, ShieldAlert } from 'lucide-react';
@@ -59,9 +60,12 @@ export default function Telegraphe({ session, userProfile }) {
       setMessages(data);
       setView('chat');
       
-      // Si Admin ouvre un "nouveau" ticket, on le passe en "lu"
       if (isAdmin && ticket.status === 'nouveau') {
         updateTicketStatus(ticket.id, 'lu');
+      } 
+      // ✨ NOUVEAU : Le joueur efface sa pastille en ouvrant le message !
+      else if (!isAdmin && ticket.status === 'lu') {
+        updateTicketStatus(ticket.id, 'consulte'); 
       }
     }
     setLoading(false);
@@ -130,9 +134,10 @@ export default function Telegraphe({ session, userProfile }) {
           className="bg-amber-800 text-amber-50 p-4 rounded-full shadow-2xl hover:bg-amber-700 transition-transform transform hover:scale-110 border-2 border-amber-600 flex items-center gap-2"
         >
           <MessageCircle size={28} />
-          {isAdmin && tickets.some(t => t.status === 'nouveau') && (
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-bounce">!</span>
-          )}
+        {/* ✨ LA NOUVELLE LOGIQUE DE LA PASTILLE ROUGE */}
+        {((isAdmin && tickets.some(t => t.status === 'nouveau')) || (!isAdmin && tickets.some(t => t.status === 'lu'))) && (
+          <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-bounce">!</span>
+        )}		
         </button>
       )}
 
@@ -173,9 +178,9 @@ export default function Telegraphe({ session, userProfile }) {
                       <h4 className="font-bold text-amber-900 truncate pr-6">{t.sujet}</h4>
                       {isAdmin && <p className="text-xs text-gray-500 truncate">{t.profiles?.username || 'Héritier Anonyme'}</p>}
                       <p className="text-xs text-amber-700 mt-1 flex items-center gap-1">
-                        {t.status === 'nouveau' && <span className="text-red-600 font-bold flex items-center gap-1"><Clock size={12}/> En attente</span>}
-                        {t.status === 'lu' && <span className="text-blue-600 flex items-center gap-1"><Inbox size={12}/> À l'étude</span>}
-                        {t.status === 'resolu' && <span className="text-green-600 flex items-center gap-1"><CheckCircle size={12}/> Résolu</span>}
+              {t.status === 'nouveau' && <span className="text-red-600 font-bold flex items-center gap-1"><Clock size={12}/> En attente</span>}
+              {(t.status === 'lu' || t.status === 'consulte') && <span className="text-blue-600 flex items-center gap-1"><Inbox size={12}/> À l'étude</span>}
+              {t.status === 'resolu' && <span className="text-green-600 flex items-center gap-1"><CheckCircle size={12}/> Résolu</span>}
                       </p>
                     </div>
                   ))}

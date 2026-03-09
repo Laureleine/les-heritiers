@@ -5,6 +5,16 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
+  {
+    version: '12.3.0',
+    date: '10 Mars 2026',
+    changes: [
+      '📠 **Alertes Pneumatiques (Temps Réel) :** L\'application affiche désormais une notification volante instantanée lorsqu\'une nouvelle missive arrive dans votre Télégraphe, évitant de rater une réponse du Conseil.',
+      '🔴 **Pastille d\'Activité :** L\'icône du Télégraphe bénéficie désormais d\'une pastille rouge bondissante pour signaler les messages non lus aux Héritiers (et plus seulement aux Gardiens).',
+      '⚙️ **Contrôle Total :** Un nouvel interrupteur a été ajouté dans la page "Mon Grimoire" (Immersion) pour permettre aux joueurs de désactiver ces alertes volantes s\'ils préfèrent ne pas être dérangés.',
+      '🖨️ **Forge PDF (Imprimerie) :** Amélioration du moteur de rendu CSS pour l\'exportation PDF. Les textes longs (Apparence, Pouvoirs) sur la deuxième page s\'adaptent désormais intelligemment sans superposer les éléments visuels.'
+    ]
+  },
 {
     version: '12.2.0',
     date: '10 Mars 2026',

@@ -1,4 +1,5 @@
 // 10.7.0
+// 12.3.0
 
 import React, { useState, useEffect } from 'react';
 import { Download, X, Smartphone, Share, AlertCircle, CheckCircle, Info, BookOpen, Check } from 'lucide-react';
@@ -45,6 +46,20 @@ export function AlertSystem({ userProfile }) {
           }
         }
       )
+		// ✨ NOUVEAU : Écouteur du Télégraphe Pneumatique
+		.on(
+		  'postgres_changes',
+		  { event: 'INSERT', schema: 'public', table: 'support_messages' },
+		  (payload) => {
+			// 1. Si le joueur a décoché l'option dans ses paramètres, on ne fait rien !
+			if (userProfile.profile?.notify_telegraphe === false) return;
+			
+			// 2. Si le message vient de quelqu'un d'autre (Admin ou Joueur), on affiche l'alerte
+			if (payload.new.user_id !== userId) {
+			  showInAppNotification("📠 Une nouvelle missive pneumatique vient d'arriver !", 'info');
+			}
+		  }
+		)
       .subscribe();
 
     return () => {

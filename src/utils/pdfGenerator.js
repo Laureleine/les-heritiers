@@ -1,5 +1,6 @@
 // src/utils/utils.js
 // 10.4.0
+// 12.3.0
 
 // ============================================================================
 // PDF EXPORT (Fiche de Personnage Complète Recto/Verso)
@@ -8,8 +9,18 @@
 import { supabase } from '../config/supabase';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 
-export const exportToPDF = (character, fairyData = {}) => {
+export const exportToPDF = (character, gameData = {}) => {
+  // On sécurise l'ancienne variable pour ne rien casser
+  const fairyData = gameData.fairyData || {};
   const feeData = fairyData[character.typeFee] || {};
+
+  // ✨ CORRECTION 2 : Le Traducteur Universel (UUID -> Noms)
+  const allBoughtIds = Object.values(character.vieSociale || {}).flat();
+  const boughtItems = (gameData.socialItems || []).filter(item => allBoughtIds.includes(item.id));
+  
+  // On sépare intelligemment les catégories
+  const langues = boughtItems.filter(i => i.categorie === 'langue').map(i => i.nom);
+  const equipements = boughtItems.filter(i => i.categorie !== 'langue' && i.categorie !== 'contact').map(i => i.nom);
   
   // 1. Calculs rapides des statistiques de combat et de santé
   const pvMax = (3 * (character.caracteristiques?.constitution || 1)) + 9;
@@ -47,7 +58,8 @@ export const exportToPDF = (character, fairyData = {}) => {
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
         
-        @page { size: A4; margin: 0; }
+		@page { size: A4; margin: 0; }
+		body { margin: 0; padding: 0; font-family: 'Crimson Text', serif; color: #2b2824; background: #fdfbf7; }
         * { box-sizing: border-box; }
         
         body { 
@@ -59,18 +71,15 @@ export const exportToPDF = (character, fairyData = {}) => {
           print-color-adjust: exact;
         }
 
-        .page {
-          width: 210mm;
-          height: 297mm;
-          background: #fdfbf7;
-          background-image: radial-gradient(#f3eadd 1px, transparent 1px);
-          background-size: 20px 20px;
-          margin: 0 auto;
-          padding: 15mm;
-          position: relative;
-          page-break-after: always;
-          box-shadow: inset 0 0 50px rgba(139, 115, 85, 0.1);
-        }
+		.page { 
+		  width: 210mm; 
+		  min-height: 297mm; 
+		  padding: 15mm; 
+		  box-sizing: border-box; 
+		  page-break-after: always; 
+		  position: relative; 
+		  background: #fdfbf7; 
+		}
 
         /* Bordure ornementale Belle Époque */
         .page::before {
@@ -93,8 +102,11 @@ export const exportToPDF = (character, fairyData = {}) => {
         .logo-title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900; color: #4a3b2c; letter-spacing: 2px; text-transform: uppercase; margin: 0; line-height: 1; }
         .subtitle { font-size: 14px; letter-spacing: 5px; color: #8b7355; text-transform: uppercase; margin-bottom: 10px; }
 
-        .section { margin-bottom: 15px; position: relative; z-index: 10; }
-        .section-title { 
+		.section { 
+		  margin-bottom: 15px; 
+		  page-break-inside: avoid; 
+		}
+		.section-title { 
           font-family: 'Playfair Display', serif; 
           font-size: 16px; 
           font-weight: 700; 
@@ -113,8 +125,14 @@ export const exportToPDF = (character, fairyData = {}) => {
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         
-        .box { border: 1px solid #b5a287; padding: 10px; background: rgba(255,255,255,0.7); }
-        
+		.box { 
+		  background: #fff; 
+		  border: 1px solid #b5a287; 
+		  border-radius: 8px; 
+		  padding: 12px; 
+		  box-shadow: 2px 2px 0 rgba(139, 115, 85, 0.1); 
+		  page-break-inside: avoid; /* Magie anti-superposition ! */
+		}        
         .field { margin-bottom: 8px; font-size: 14px; }
         .field-label { font-weight: 600; color: #5a4b3c; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 2px;}
         .field-value { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: #2b2824; border-bottom: 1px dotted #b5a287; padding-bottom: 2px; min-height: 22px; }
@@ -377,26 +395,24 @@ export const exportToPDF = (character, fairyData = {}) => {
 					return `<li>${displayNom} <b>(${val})</b></li>`;
 				  }).join('') || '<li><i>Aucune</i></li>'}
 				</ul>
-              <span class="field-label" style="margin-top: 15px;">Langues maîtrisées</span>
-              <div class="list-items" style="margin-top: 5px;">
-                Français (Maternelle)<br/>
-                ${(character.vieSociale?.Érudit || []).join('<br/>')}
-                <div class="empty-lines"></div>
-              </div>
-            </div>
+        <span class="field-label" style="margin-top: 15px;">Langues maîtrisées</span>
+        <div class="list-items" style="margin-top: 5px;">
+          Français (Maternelle)<br/>
+          ${langues.length > 0 ? langues.join('<br/>') + '<br/>' : ''}
+          <div class="empty-lines"></div>
+        </div>
+      </div>
 
-            <div class="box">
-              <span class="field-label">Équipement & Possessions</span>
-              <div class="empty-lines"></div>
-              <div class="empty-lines"></div>
-              <div class="empty-lines"></div>
-              <div class="empty-lines"></div>
-              
-              <span class="field-label" style="margin-top: 15px;">Contacts & Alliés</span>
-              <div class="empty-lines"></div>
-              <div class="empty-lines"></div>
-              <div class="empty-lines"></div>
-            </div>
+      <div class="box">
+        <span class="field-label">Équipement & Possessions</span>
+        <div class="list-items" style="margin-top: 5px; line-height: 1.8;">
+          ${equipements.length > 0 ? equipements.map(e => `- ${e}`).join('<br/>') : '<div class="empty-lines"></div><div class="empty-lines"></div><div class="empty-lines"></div>'}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ========================================== -->
           </div>
         </div>
 
