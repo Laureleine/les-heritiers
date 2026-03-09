@@ -3,7 +3,7 @@
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
 // 11.0.0 // 11.1.0 // 11.4.0
-// 12.0.0 .. 12.1.0
+// 12.0.0 // 12.1.0 // 12.3.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -380,9 +380,9 @@ function App() {
                 </button>
 
                 <div className="flex flex-wrap gap-2">
-                  <button onClick={() => exportToPDF(character, gameData.fairyData)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif font-bold text-sm shadow-sm" title="Exporter en PDF">
-                    <FileText size={16} /> <span className="hidden sm:inline">Exporter PDF</span>
-                  </button>
+                    <button onClick={() => exportToPDF(character, gameData)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif font-bold text-sm shadow-sm" title="Exporter en PDF">
+                      <FileText size={16} /> <span className="hidden sm:inline">Exporter PDF</span>
+                    </button>
                   <button
                     onClick={async () => {
                       const wasPublic = character.isPublic;

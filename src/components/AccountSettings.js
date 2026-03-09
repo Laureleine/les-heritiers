@@ -2,10 +2,10 @@
 // 9.7.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0
 // 11.0.0 // 11.1.0 // 11.4.0
-// 12.0.0
+// 12.0.0 // 12.3.0
 
 import React, { useState, useEffect } from 'react';
-import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone } from 'lucide-react';
+import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone, MessageCircle } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 import { showInAppNotification, requestNotificationPermission } from '../utils/SystemeServices';
@@ -14,6 +14,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
   const profile = userProfile?.profile || {};
   const [newUsername, setNewUsername] = useState('');
   const [showPixie, setShowPixie] = useState(true);
+  const [notifyTelegraphe, setNotifyTelegraphe] = useState(true);
   const [activeBadge, setActiveBadge] = useState('');
   const [diceTheme, setDiceTheme] = useState('laiton');
   const [use3DDice, setUse3DDice] = useState(false);
@@ -37,6 +38,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
   useEffect(() => {
     if (profile.username) setNewUsername(profile.username);
     if (profile.show_pixie !== undefined) setShowPixie(profile.show_pixie);
+    if (profile.notify_telegraphe !== undefined) setNotifyTelegraphe(profile.notify_telegraphe);
     if (profile.dice_theme) setDiceTheme(profile.dice_theme);
     if (profile.use_3d_dice !== undefined) setUse3DDice(profile.use_3d_dice);
     if (profile.is_joueur !== undefined) setIsJoueur(profile.is_joueur);
@@ -80,6 +82,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
       const updates = {
         username: newUsername,
         show_pixie: showPixie,
+		notify_telegraphe: notifyTelegraphe,
         active_badge: activeBadge,
         dice_theme: diceTheme,
         use_3d_dice: use3DDice,
@@ -259,6 +262,23 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                   <span className="text-sm font-bold text-stone-700">Afficher Pixie l'assistante</span>
                 </label>
               </div>
+			  
+          {/* ✨ NOUVEAU : LE BOUTON TÉLÉGRAPHE ✨ */}
+          <div className="pt-4 border-t border-stone-100">
+            <label className="block text-sm font-bold text-stone-700 mb-2 flex items-center gap-2">
+              <MessageCircle size={16} className="text-amber-500"/> Alerte Pneumatique
+            </label>
+            <label className="flex items-center gap-3 p-3 bg-stone-50 rounded border border-stone-200 cursor-pointer hover:bg-stone-100 transition-colors">
+              <input 
+                type="checkbox" 
+                checked={notifyTelegraphe} 
+                onChange={(e) => setNotifyTelegraphe(e.target.checked)} 
+                className="w-4 h-4 text-amber-600 focus:ring-amber-500" 
+              />
+              <span className="text-sm font-bold text-stone-700">Alerte volante lors d'une nouvelle missive</span>
+            </label>
+          </div>
+		  
             </div>
           </div>
         </div>
