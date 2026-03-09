@@ -1,15 +1,50 @@
 // src/components/BonusBuilder.js
 // 10.2.0 // 10.3.0 // 10.4.0
 // 11.1.0
-// 12.1.0
+// 12.1.0 // 12.5.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles } from 'lucide-react';
-import { addGlobalSpeciality } from '../utils/supabaseGameData';
+import { addGlobalSpeciality, addCompetenceFutile } from '../utils/supabaseGameData';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { showInAppNotification } from '../utils/SystemeServices';
 
 export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData }) {
+  const [creatingFutileId, setCreatingFutileId] = useState(null);
+  const [newFutileName, setNewFutileName] = useState('');
+  const [localCreatedFutiles, setLocalCreatedFutiles] = useState([]); // Pour les afficher sans recharger la page
+  
+  // On fusionne les futiles du Nuage avec celles fraîchement créées !
+  const allFutiles = Array.from(new Set([...futilesSkills, ...localCreatedFutiles]));
+
+  // La fonction ouvrière
+  // La fonction ouvrière (Maintenant polyvalente !)
+  const handleCreateFutile = async (blockId, isArray = false) => {
+    if (!newFutileName.trim()) return;
+    try {
+      // 1. On sauvegarde dans le Nuage
+      const newComp = await addCompetenceFutile(newFutileName.trim(), 'Créée depuis le Constructeur de Lego');
+      
+      // 2. On l'ajoute au menu déroulant actuel
+      setLocalCreatedFutiles(prev => [...prev, newComp.nom]);
+      
+      // ✨ 3. LA MAGIE EST ICI : On s'adapte au type de bloc
+      if (isArray) {
+        const block = blocks.find(b => b.id === blockId);
+        updateBlock(blockId, 'options', [...(block.options || []), newComp.nom]);
+      } else {
+        updateBlock(blockId, 'key', newComp.nom);
+      }
+      
+      // 4. On referme et on nettoie
+      setCreatingFutileId(null);
+      setNewFutileName('');
+      showInAppNotification(`Compétence futile "${newComp.nom}" forgée avec succès !`, "success");
+    } catch (error) {
+      showInAppNotification("Erreur lors de la création : " + error.message, "error");
+    }
+  };
+  
   const [showMenu, setShowMenu] = useState(false);
   const [blocks, setBlocks] = useState([]);
   
@@ -433,26 +468,55 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
                 <div className="bg-teal-100 text-teal-800 p-2 rounded border border-teal-200"><Sparkles size={18}/></div>
                 <span className="text-sm font-bold text-teal-900">Choix (Futiles) :</span>
                 <div className="flex flex-wrap gap-1 flex-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[42px] shadow-inner">
+                  
+                  {/* L'affichage des compétences déjà choisies (Les petites bulles) */}
                   {(block.options || []).map(opt => (
                     <span key={opt} className="bg-teal-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm animate-fade-in">
                       {opt}
                       <button type="button" onClick={() => updateBlock(block.id, 'options', block.options.filter(o => o !== opt))} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
                     </span>
                   ))}
-                  <input
-                    type="text"
-                    placeholder="+ Ajouter (Entrée)"
-                    list="futiles-list"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.target.value.trim()) {
-                        e.preventDefault();
-                        const val = e.target.value.trim();
-                        if (!(block.options || []).includes(val)) updateBlock(block.id, 'options', [...(block.options || []), val]);
-                        e.target.value = '';
-                      }
-                    }}
-                    className="text-xs bg-transparent outline-none focus:ring-0 font-bold text-stone-500 placeholder-stone-400 flex-1 border-none min-w-[120px]"
-                  />
+
+                  {/* ✨ LE SELECT CRÉATIF ADAPTÉ AUX LISTES ✨ */}
+                  {creatingFutileId === block.id ? (
+                    <div className="flex gap-1 items-center animate-fade-in">
+                      <input
+                        autoFocus
+                        type="text"
+                        placeholder="Nouvelle futile..."
+                        value={newFutileName}
+                        onChange={(e) => setNewFutileName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleCreateFutile(block.id, true); // 👈 On précise que c'est une liste !
+                          if (e.key === 'Escape') { setCreatingFutileId(null); setNewFutileName(''); }
+                        }}
+                        className="p-1 text-xs border border-teal-300 rounded focus:ring-2 focus:ring-teal-200 outline-none w-32"
+                      />
+                      <button onClick={() => handleCreateFutile(block.id, true)} className="bg-teal-600 text-white rounded px-2 py-1 text-[10px] font-bold shadow-sm hover:bg-teal-700 transition-colors">Créer</button>
+                      <button onClick={() => { setCreatingFutileId(null); setNewFutileName(''); }} className="bg-gray-200 text-gray-600 rounded px-2 py-1 text-[10px] font-bold hover:bg-gray-300 transition-colors">Annuler</button>
+                    </div>
+                  ) : (
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '__CREATE__') {
+                          setCreatingFutileId(block.id);
+                          setNewFutileName('');
+                        } else if (val) {
+                          if (!(block.options || []).includes(val)) {
+                            updateBlock(block.id, 'options', [...(block.options || []), val]);
+                          }
+                        }
+                      }}
+                      className="text-xs bg-transparent outline-none focus:ring-0 font-bold text-stone-500 cursor-pointer flex-1 border-none min-w-[140px]"
+                    >
+                      <option value="">+ Ajouter (Futiles)...</option>
+                      {/* On filtre la liste pour ne pas proposer ce qui est déjà sélectionné ! */}
+                      {allFutiles.filter(f => !(block.options || []).includes(f)).map(s => <option key={s} value={s}>{s}</option>)}
+                      <option value="__CREATE__" className="font-bold text-teal-700">➕ Créer une nouvelle...</option>
+                    </select>
+                  )}
                 </div>
               </>
             )}
@@ -463,15 +527,42 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
 				<div className="bg-cyan-100 text-cyan-800 p-2 rounded border border-cyan-200"><Sparkles size={18}/></div>
 				<span className="text-sm font-bold text-cyan-900">Futile imposée :</span>
 				
-				{/* ✨ LA CORRECTION EST ICI : Un vrai Select strict */}
-				<select
-				  value={block.key}
-				  onChange={(e) => updateBlock(block.id, 'key', e.target.value)}
-				  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-cyan-200 outline-none flex-1"
-				>
-				  <option value="">Sélectionner...</option>
-				  {futilesSkills.map(s => <option key={s} value={s}>{s}</option>)}
-				</select>
+            {/* ✨ LA CORRECTION EST ICI : Le Select Créatif */}
+            {creatingFutileId === block.id ? (
+              <div className="flex gap-1 flex-1 animate-fade-in">
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="Nouvelle futile..."
+                  value={newFutileName}
+                  onChange={(e) => setNewFutileName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleCreateFutile(block.id);
+                    if (e.key === 'Escape') { setCreatingFutileId(null); setNewFutileName(''); }
+                  }}
+                  className="p-1.5 border border-cyan-300 rounded text-sm flex-1 focus:ring-2 focus:ring-cyan-200 outline-none"
+                />
+                <button onClick={() => handleCreateFutile(block.id)} className="bg-cyan-600 text-white rounded px-2 py-1 text-xs font-bold shadow-sm hover:bg-cyan-700 transition-colors">Créer</button>
+                <button onClick={() => { setCreatingFutileId(null); setNewFutileName(''); }} className="bg-gray-200 text-gray-600 rounded px-2 py-1 text-xs font-bold hover:bg-gray-300 transition-colors">Annuler</button>
+              </div>
+            ) : (
+              <select
+                value={block.key}
+                onChange={(e) => {
+                  if (e.target.value === '__CREATE__') {
+                    setCreatingFutileId(block.id);
+                    setNewFutileName('');
+                  } else {
+                    updateBlock(block.id, 'key', e.target.value);
+                  }
+                }}
+                className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-cyan-200 outline-none flex-1"
+              >
+                <option value="">Sélectionner...</option>
+                {allFutiles.map(s => <option key={s} value={s}>{s}</option>)}
+                <option value="__CREATE__" className="font-bold text-cyan-700">➕ Créer une nouvelle...</option>
+              </select>
+            )}
 			  </>
 			)}
 

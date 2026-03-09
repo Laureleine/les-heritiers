@@ -5,6 +5,16 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
+{
+    version: '12.5.0',
+    date: '10 Mars 2026',
+    changes: [
+      '🪄 **L\'Anomalie Féérique :** Refonte de l\'Étape 3 (Pouvoirs) avec l\'ajout d\'un encart secret permettant de déclencher le fameux atout "Anomalie Féérique". Il permet d\'assimiler de façon fluide et visuelle un pouvoir appartenant à une autre espèce.',
+      '👻 **Atout Fantôme :** L\'acquisition d\'une Anomalie déduit intelligemment et automatiquement un point dans la jauge des Atouts de l\'Étape 4 en arrière-plan, permettant de garder une interface parfaitement claire.',
+      '🐛 **Câblage de l\'Encyclopédie :** Résolution d\'une anomalie empêchant l\'affichage des Compétences Futiles dans le constructeur de bonus (Lego) lors de l\'édition des Atouts, Pouvoirs et Capacités.',
+      '✨ **Artisanat à la volée :** Intégration d\'un système de "Creatable Select" dans le constructeur de bonus (Lego). Il est désormais possible de forger une nouvelle Compétence Futile directement depuis le menu déroulant sans quitter l\'éditeur.'
+    ]
+  },
   {
     version: '12.4.0',
     date: '10 Mars 2026',

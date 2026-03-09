@@ -3,6 +3,7 @@
 // 9.4.0 // 9.10.0
 // 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 11.2.0
+// 12.5.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -428,7 +429,7 @@ export default function EncyclopediaModal({
 					  updateTech={updateTech}
 					  competencesData={competencesData}
 					  usefulSkills={usefulSkills}
-					  futilesSkills={allCompFutiles.map(c => c.name)}
+					  futilesSkills={allCompFutiles ? allCompFutiles.map(c => c.nom || c.name) : []}
 					/>
                 </div>
 
@@ -598,6 +599,7 @@ export default function EncyclopediaModal({
 				  onJsonChange={(val) => setProposal({...proposal, techData: val})}
 				  competencesData={competencesData}
 				  usefulSkills={usefulSkills}
+                  futilesSkills={allCompFutiles ? allCompFutiles.map(c => c.nom || c.name) : []}
 				/>
 			</div>
             )}
