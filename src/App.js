@@ -3,6 +3,7 @@
 // 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
 // 11.0.0 // 11.1.0 // 11.4.0
+// 12.0.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -12,6 +13,7 @@ import { saveCharacterToSupabase, toggleCharacterVisibility } from './utils/supa
 import { useAutoUpdate } from './hooks/useAutoUpdate'; 
 import { showInAppNotification } from './utils/SystemeServices'; 
 import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 // --- IMPORTS DES COMPOSANTS ---
 import Auth from './components/Auth';
@@ -52,7 +54,8 @@ function App() {
   const [userProfile, setUserProfile] = useState(null);
   const [globalLoading, setGlobalLoading] = useState(true);
   const [loadingStep, setLoadingStep] = useState('Démarrage...');
-  const [view, setView] = useState('list');
+  const navigate = useNavigate();
+  const location = useLocation();
   const [step, setStep] = useState(1);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
   const [showVersionModal, setShowVersionModal] = useState(false);
@@ -247,7 +250,7 @@ function App() {
         <div className="flex flex-wrap justify-center items-baseline gap-4">
           <h1
             className="text-5xl font-serif text-amber-900 cursor-pointer hover:text-amber-700 transition-colors m-0"
-            onClick={() => setView('list')}
+            onClick={() => navigate('/')}
             title="Retour à l'accueil"
           >
             Les Héritiers
@@ -268,7 +271,6 @@ function App() {
           {userProfile?.profile?.role === 'gardien' && (
             <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full border border-blue-200 shadow-sm">Gardien du Savoir</span>
           )}
-
           {(() => {
             const userBadges = userProfile?.profile?.badges || [];
             const activeBadgeId = userProfile?.profile?.active_badge;
@@ -284,9 +286,7 @@ function App() {
               return (
                 <span
                   key={badgeId}
-                  className={`inline-flex items-center border font-bold transition-all cursor-help ${badgeDef.color} ${
-                    isActive ? 'px-3 py-1 text-xs rounded-full shadow-sm ring-2 ring-offset-1 ring-amber-400 scale-105' : 'px-2 py-0.5 text-[10px] rounded-full opacity-60 hover:opacity-100'
-                  }`}
+                  className={`inline-flex items-center border font-bold transition-all cursor-help ${badgeDef.color} ${isActive ? 'px-3 py-1 text-xs rounded-full shadow-sm ring-2 ring-offset-1 ring-amber-400 scale-105' : 'px-2 py-0.5 text-[10px] rounded-full opacity-60 hover:opacity-100'}`}
                   title={isActive ? "Titre Actif" : "Titre Possédé"}
                 >
                   {badgeDef.label}
@@ -299,194 +299,185 @@ function App() {
 
       {/* 2. LE CONTENEUR CENTRAL */}
       <div className="max-w-5xl mx-auto px-4 w-full animate-fade-in relative z-10">
+        
+        {/* ✨ LE NOUVEAU MOTEUR DE ROUTAGE ✨ */}
+        <Routes>
+          
+          {/* ROUTE 1 : ACCUEIL (LISTE) */}
+          <Route path="/" element={
+            <CharacterList
+              session={session}
+              userProfile={userProfile}
+              profils={gameData.profils}
+              onSelectCharacter={(c, readOnly = false) => {
+                dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c });
+                setIsReadOnly(readOnly);
+                setStep(1);
+                navigate('/creator');
+              }}
+              onNewCharacter={() => {
+                dispatchCharacter({ type: 'RESET_CHARACTER', payload: initialCharacterState });
+                setIsReadOnly(false);
+                setStep(1);
+                navigate('/creator');
+              }}
+              onSignOut={() => supabase.auth.signOut()}
+              onOpenAccount={() => navigate('/account')}
+              onOpenEncyclopedia={() => navigate('/encyclopedia')}
+              onOpenAdmin={() => navigate('/admin_dashboard')}
+              onOpenCercles={() => navigate('/cercles')}
+            />
+          } />
 
-        {/* GESTIONNAIRE DE VUES PRINCIPALES */}
-        {view === 'list' && (
-          <CharacterList
-            session={session}
-            userProfile={userProfile}
-            profils={gameData.profils}
-            onSelectCharacter={(c, readOnly = false) => {
-              dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c });
-              setIsReadOnly(readOnly);
-              setStep(1);
-              setView('creator');
-            }}
-            onNewCharacter={() => {
-              dispatchCharacter({ type: 'RESET_CHARACTER', payload: initialCharacterState });
-              setIsReadOnly(false);
-              setStep(1);
-              setView('creator');
-            }}
-            onSignOut={() => supabase.auth.signOut()}
-            onOpenAccount={() => setView('account')}
-            onOpenEncyclopedia={() => setView('encyclopedia')}
-            onOpenAdmin={() => setView('admin_dashboard')}
-            onOpenCercles={() => setView('cercles')}
-          />
-        )}
-
-        {view === 'encyclopedia' && (
-          userProfile?.profile?.is_docte ? (
-            <Encyclopedia userProfile={userProfile} onBack={() => setView('list')} onOpenValidations={() => setView('validations')} />
-          ) : (
-            <div className="max-w-2xl mx-auto p-8 mt-12 bg-[#2a1313] rounded-2xl border-2 border-red-900/50 shadow-2xl text-center animate-fade-in-up relative overflow-hidden">
-               <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
-               <div className="relative z-10 flex flex-col items-center">
-                 <Lock size={64} className="text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
-                 <h2 className="text-3xl font-serif text-red-100 mb-4">Savoir sous le Sceau du Silence</h2>
-                 <p className="text-red-200/80 mb-8 italic font-serif leading-relaxed">
-                   Ce pan de la Féérie échappe à votre compréhension et l'accès à ces archives vous est interdit.<br/>
-                   Seul un Docte peut vous y initier en vous invitant dans son Cercle.
-                 </p>
-                 <div className="bg-red-950/50 p-6 rounded-xl border border-red-900/50 w-full">
-                   <p className="text-sm text-red-300 mb-4 font-bold uppercase tracking-wider">Êtes-vous vous-même un Docte ?</p>
-                   <button onClick={() => setView('account')} className="bg-red-900 hover:bg-red-800 text-red-100 px-6 py-3 rounded-lg font-serif font-bold transition-colors shadow-md">
-                     Révélez votre Voie dans Mon Grimoire
-                   </button>
-                 </div>
-                 <button onClick={() => setView('list')} className="mt-8 text-gray-400 hover:text-white transition-colors text-sm">
-                   ← Retourner à l'accueil
-                 </button>
-               </div>
-            </div>
-          )
-        )}
-        {view === 'validations' && <ValidationsPendantes session={session} onBack={() => setView('encyclopedia')} />}
-        {view === 'account' && <AccountSettings session={session} userProfile={userProfile} onUpdateProfile={() => window.location.reload()} onBack={() => setView('list')} />}
-        {view === 'admin_dashboard' && <AdminDashboard session={session} onBack={() => setView('list')} />}
-        {view === 'cercles' && <CerclesDashboard session={session} onBack={() => setView('list')} />}
-
-        {/* VUE : LE CRÉATEUR DE PERSONNAGE */}
-        {view === 'creator' && (
-          <div className="max-w-4xl mx-auto pb-8">
-            <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <button onClick={() => setView('list')} className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm shadow-sm">
-                <List size={16} /> <span className="hidden sm:inline">Retour aux Archives</span>
-              </button>
-
-              <div className="flex flex-wrap gap-2">
-                <button onClick={() => exportToPDF(character, gameData.fairyData)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif font-bold text-sm shadow-sm" title="Exporter en PDF">
-                  <FileText size={16} /> <span className="hidden sm:inline">Exporter PDF</span>
-                </button>
-
-                <button
-                  onClick={async () => {
-                    const wasPublic = character.isPublic;
-                    const newPublic = !wasPublic;
-                    dispatchCharacter({ type: 'UPDATE_FIELD', field: 'isPublic', value: newPublic, gameData });
-                    if (character.id && !character.id.toString().startsWith('temp_')) {
-                      await toggleCharacterVisibility(character.id, newPublic);
-                    }
-                  }}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all font-serif font-bold text-sm shadow-sm border ${
-                    character.isPublic ? 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'
-                  }`}
-                  title={character.isPublic ? "Rendre Privé" : "Rendre Public"}
-                >
-                  <Globe size={16} /> <span className="hidden sm:inline">{character.isPublic ? 'Public' : 'Privé'}</span>
-                </button>
-
-                {!isReadOnly && (
-                  <button onClick={handleSave} className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
-                    <Save size={18} /> <span className="hidden sm:inline">Sauvegarder</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {showSaveNotification && (
-              <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-center font-bold font-serif animate-fade-in border border-green-200">
-                ✓ Sauvegardé avec succès !
-              </div>
-            )}
-
-            {/* BARRE DE PROGRESSION MAGIQUE ET CONNECTÉE */}
-            <div className="relative flex justify-between items-center w-full max-w-4xl mx-auto py-4 px-2 mb-10 mt-4">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-stone-200 z-0 rounded-full"></div>
-              <div
-                className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-500 z-0 transition-all duration-700 ease-in-out rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]"
-                style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
-              ></div>
-
-              {STEP_CONFIG.map((s) => {
-                const isActive = step === s.id;
-                const isPast = step > s.id;
-
-                return (
-                  <div key={s.id} className="relative z-10 flex flex-col items-center group">
-                    <button
-						onClick={() => {
-						  if (s.id > 1 && !canProceedStep1) {
-							// ✨ L'avertissement de navigation
-							showInAppNotification("La magie bloque le passage. Terminez l'Étape 1 (Nom, Sexe, Fée) avant de sauter les pages.", "warning");
-							return;
-						  }
-						  setStep(s.id);
-						  window.scrollTo(0, 0);
-						}}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${
-                        isActive
-                          ? 'bg-amber-500 text-white scale-125 ring-4 ring-amber-200'
-                          : isPast
-                          ? 'bg-amber-100 text-amber-700 border-2 border-amber-300 hover:bg-amber-200'
-                          : 'bg-white border-stone-300 text-stone-400 hover:border-amber-300 hover:text-amber-500'
-                      }`}
-                    >
-                      {s.icon}
+          {/* ROUTE 2 : ENCYCLOPÉDIE (Avec protection Docte) */}
+          <Route path="/encyclopedia" element={
+            userProfile?.profile?.is_docte ? (
+              <Encyclopedia userProfile={userProfile} onBack={() => navigate('/')} onOpenValidations={() => navigate('/validations')} />
+            ) : (
+              <div className="max-w-2xl mx-auto p-8 mt-12 bg-[#2a1313] rounded-2xl border-2 border-red-900/50 shadow-2xl text-center animate-fade-in-up relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
+                <div className="relative z-10 flex flex-col items-center">
+                  <Lock size={64} className="text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
+                  <h2 className="text-3xl font-serif text-red-100 mb-4">Savoir sous le Sceau du Silence</h2>
+                  <p className="text-red-200/80 mb-8 italic font-serif leading-relaxed">
+                    Ce pan de la Féérie échappe à votre compréhension et l'accès à ces archives vous est interdit.<br/>
+                    Seul un Docte peut vous y initier en vous invitant dans son Cercle.
+                  </p>
+                  <div className="bg-red-950/50 p-6 rounded-xl border border-red-900/50 w-full">
+                    <p className="text-sm text-red-300 mb-4 font-bold uppercase tracking-wider">Êtes-vous vous-même un Docte ?</p>
+                    <button onClick={() => navigate('/account')} className="bg-red-900 hover:bg-red-800 text-red-100 px-6 py-3 rounded-lg font-serif font-bold transition-colors shadow-md">
+                      Révélez votre Voie dans Mon Grimoire
                     </button>
-                    {isActive && (
-                      <span className="absolute -bottom-8 font-serif font-bold text-amber-900 text-[10px] md:text-xs uppercase tracking-wider whitespace-nowrap animate-fade-in-up">
-                        {s.label}
-                      </span>
-                    )}
-                    {!isActive && (
-                      <span className="absolute -bottom-8 bg-stone-800 text-amber-100 text-[10px] md:text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-lg">
-                        {s.label}
-                      </span>
-                    )}
                   </div>
-                );
-              })}
-            </div>
+                  <button onClick={() => navigate('/')} className="mt-8 text-gray-400 hover:text-white transition-colors text-sm">
+                    ← Retourner à l'accueil
+                  </button>
+                </div>
+              </div>
+            )
+          } />
 
-            {/* LE CORPS DE L'ÉTAPE */}
-            <main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
-              {stepComponents[step]}
-            </main>
+          {/* ROUTE 3 : AUTRES PAGES */}
+          <Route path="/validations" element={<ValidationsPendantes session={session} onBack={() => navigate('/encyclopedia')} />} />
+          <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={() => window.location.reload()} onBack={() => navigate('/')} />} />
+          <Route path="/admin_dashboard" element={<AdminDashboard session={session} onBack={() => navigate('/')} />} />
+          <Route path="/cercles" element={<CerclesDashboard session={session} onBack={() => navigate('/')} />} />
 
-            {/* BOUTONS PRÉCÉDENT / SUIVANT */}
-            <div className="flex justify-between mt-8">
-              <button
-                onClick={prevStep}
-                disabled={step === 1}
-                className="flex items-center space-x-2 px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-serif font-bold shadow-sm"
-              >
-                <ArrowLeft size={18} /> <span>Précédent</span>
-              </button>
-              <button
-                onClick={nextStep}
-                disabled={step === totalSteps}
-                className="flex items-center space-x-2 px-6 py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-serif font-bold shadow-sm"
-              >
-                <span>Suivant</span> <ArrowRight size={18} />
-              </button>
+          {/* ROUTE 4 : CRÉATEUR DE PERSONNAGE */}
+          <Route path="/creator" element={
+            <div className="max-w-4xl mx-auto pb-8">
+              <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <button onClick={() => navigate('/')} className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm shadow-sm">
+                  <List size={16} /> <span className="hidden sm:inline">Retour aux Archives</span>
+                </button>
+
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => exportToPDF(character, gameData.fairyData)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif font-bold text-sm shadow-sm" title="Exporter en PDF">
+                    <FileText size={16} /> <span className="hidden sm:inline">Exporter PDF</span>
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const wasPublic = character.isPublic;
+                      const newPublic = !wasPublic;
+                      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'isPublic', value: newPublic, gameData });
+                      if (character.id && !character.id.toString().startsWith('temp_')) {
+                        await toggleCharacterVisibility(character.id, newPublic);
+                      }
+                    }}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all font-serif font-bold text-sm shadow-sm border ${character.isPublic ? 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}`}
+                    title={character.isPublic ? "Rendre Privé" : "Rendre Public"}
+                  >
+                    <Globe size={16} /> <span className="hidden sm:inline">{character.isPublic ? 'Public' : 'Privé'}</span>
+                  </button>
+                  {!isReadOnly && (
+                    <button onClick={handleSave} className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
+                      <Save size={18} /> <span className="hidden sm:inline">Sauvegarder</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {showSaveNotification && (
+                <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-center font-bold font-serif animate-fade-in border border-green-200">
+                  ✓ Sauvegardé avec succès !
+                </div>
+              )}
+
+              {/* BARRE DE PROGRESSION MAGIQUE ET CONNECTÉE */}
+              <div className="relative flex justify-between items-center w-full max-w-4xl mx-auto py-4 px-2 mb-10 mt-4">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-stone-200 z-0 rounded-full"></div>
+                <div
+                  className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-500 z-0 transition-all duration-700 ease-in-out rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+                  style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
+                ></div>
+                {STEP_CONFIG.map((s) => {
+                  const isActive = step === s.id;
+                  const isPast = step > s.id;
+                  return (
+                    <div key={s.id} className="relative z-10 flex flex-col items-center group">
+                      <button
+                        onClick={() => {
+                          if (s.id > 1 && !canProceedStep1) {
+                            showInAppNotification("La magie bloque le passage. Terminez l'Étape 1 (Nom, Sexe, Fée) avant de sauter les pages.", "warning");
+                            return;
+                          }
+                          setStep(s.id);
+                          window.scrollTo(0, 0);
+                        }}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${isActive ? 'bg-amber-500 text-white scale-125 ring-4 ring-amber-200' : isPast ? 'bg-amber-100 text-amber-700 border-2 border-amber-300 hover:bg-amber-200' : 'bg-white border-stone-300 text-stone-400 hover:border-amber-300 hover:text-amber-500'}`}
+                        title={s.label}
+                      >
+                        {s.icon}
+                      </button>
+                      {isActive && (
+                        <span className="absolute top-12 font-serif font-bold text-amber-900 text-xs uppercase tracking-widest whitespace-nowrap animate-fade-in-up">
+                          {s.label}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* LE CORPS DE L'ÉTAPE */}
+              <main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
+                {stepComponents[step]}
+              </main>
+
+              {/* BOUTONS PRÉCÉDENT / SUIVANT */}
+              <div className="flex justify-between mt-8">
+                <button
+                  onClick={prevStep}
+                  disabled={step === 1}
+                  className="flex items-center space-x-2 px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-serif font-bold shadow-sm"
+                >
+                  <ArrowLeft size={18} /> <span>Précédent</span>
+                </button>
+                <button
+                  onClick={nextStep}
+                  disabled={step === totalSteps}
+                  className="flex items-center space-x-2 px-6 py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-serif font-bold shadow-sm"
+                >
+                  <span>Suivant</span> <ArrowRight size={18} />
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          } />
+
+          {/* ROUTE DE SÉCURITÉ */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+
+        </Routes>
       </div>
 
       {/* 3. TÉLÉGRAPHE PNEUMATIQUE */}
       {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
 
-        {/* 🎲 NOUVEAU : LA PISTE DE DÉ FLOTTANTE */}
-        <DiceRoller 
-          use3DDice={userProfile?.profile?.use_3d_dice} 
-          diceTheme={userProfile?.profile?.dice_theme} 
-        />
+      {/* 🎲 PISTE DE DÉ FLOTTANTE */}
+      <DiceRoller use3DDice={userProfile?.profile?.use_3d_dice} diceTheme={userProfile?.profile?.dice_theme} />
 
       {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT */}
-      {view === 'creator' && userProfile?.profile?.show_pixie !== false && (
+      {location.pathname === '/creator' && userProfile?.profile?.show_pixie !== false && (
         <PixieAssistant
           character={character}
           step={step}
@@ -519,7 +510,6 @@ function App() {
                     {v.changes.map((change, cIdx) => (
                       <li key={cIdx} className="text-sm text-stone-700 flex items-start gap-2 leading-relaxed">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0 shadow-sm" />
-                        {/* Optionnel : Rendu Markdown rudimentaire pour afficher les étoiles en gras */}
                         <span dangerouslySetInnerHTML={{__html: change.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`(.*?)`/g, '<code class="bg-amber-100 text-amber-900 px-1 rounded">$1</code>')}} />
                       </li>
                     ))}

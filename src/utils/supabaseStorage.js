@@ -1,7 +1,5 @@
 // src/utils/supabaseStorage.js
-// Version: 3.4.0
-// Build: 2026-02-05 15:30
-// Correction: Ajout des champs nomFeerique, genreHumain, traitsFeeriques
+// 12.0.0
 
 import { supabase } from '../config/supabase';
 
@@ -140,22 +138,6 @@ export const getUserCharacters = async (forceRefresh = false) => {
         console.error("🔥 [STORAGE] Erreur Supabase :", error);
         throw error;
     }
-
-    // --- LE MOUCHARD (Version Corrigée) ---
-    if (data && data.length > 0) {
-        // C'est ici : on prend l'élément 0 pour voir l'intérieur du premier personnage
-        const premierPerso = data[0]; // <- ici
-        
-        console.log("📦 [STORAGE] Structure réelle du personnage :", premierPerso);
-        console.log("👉 Liste des colonnes (Clés) :", Object.keys(premierPerso));
-
-        // Test de présence des données
-        if (premierPerso.nom) console.log("✅ Colonne 'nom' détectée :", premierPerso.nom);
-        if (premierPerso.name) console.log("✅ Colonne 'name' détectée :", premierPerso.name);
-        if (premierPerso.data) console.log("✅ Colonne 'data' (JSON) détectée");
-        if (premierPerso.json) console.log("✅ Colonne 'json' détectée");
-    }
-    // ------------------------------------
 
     const mappedData = (data || []).map(mapDatabaseToCharacter);
     userCharactersCache = mappedData;

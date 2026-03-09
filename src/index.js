@@ -1,17 +1,24 @@
 // 10.6.0
+// 12.0.0
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App'
-import { CharacterProvider } from './context/CharacterContext'; // 👈 NOUVEL IMPORT
-import reportWebVitals from './reportWebVitals';
+import App from './App';
+import { CharacterProvider } from './context/CharacterContext';
+import { BrowserRouter } from 'react-router-dom'; 
+
+// ✨ LE VOILÀ, NOTRE DISPARU !
+import reportWebVitals from './reportWebVitals'; 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
-  <CharacterProvider>   {/* 👈 LE NUAGE ENVELOPPE L'APPLICATION */}
-    <App />
-  </CharacterProvider>
+  <BrowserRouter>
+    <CharacterProvider>
+      <App />
+    </CharacterProvider>
+  </BrowserRouter>
 );
 
 reportWebVitals();

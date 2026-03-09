@@ -6,6 +6,17 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '12.0.0',
+    date: '9 Mars 2026',
+    changes: [
+      '🧹 **Nettoyage de Printemps (Version Majeure) :** Purification des sources. Suppression des fonctions orphelines et des mouchards de débogage obsolètes dans la synchronisation du Nuage pour alléger la console du navigateur.',
+      '🧠 **Architecture Pure (React) :** Refonte de la page "Mon Grimoire" via le principe de "Lifting State Up". Éradication des "Refs" impératives complexes : le composant parent centralise désormais la mémoire globale et la sauvegarde des préférences.',
+      '🗺️ **Système de Navigation (React Router) :** Refonte totale du routage de l\'application. Abandon de la navigation par état ("God Component") au profit d\'un véritable système d\'URLs (`/encyclopedia`, `/creator`, etc.).',
+      '⏪ **Confort Utilisateur :** L\'utilisation des boutons "Précédent/Suivant" du navigateur et le rechargement de page (F5) fonctionnent désormais parfaitement sans éjecter le joueur à l\'accueil.',
+      '🏎️ **Fluidité Absolue (Anti-Lag) :** Optimisation majeure du moteur de jeu (`characterEngine`). Le super-calculateur ne se déclenche plus inutilement lors de la saisie des champs narratifs (Nom, Apparence, Taille, etc.), garantissant une frappe au clavier parfaitement fluide, même sur les anciens téléphones.'	  
+    ]
+  },
+  {
     version: '11.4.0',
     date: '8 Mars 2026',
     changes: [

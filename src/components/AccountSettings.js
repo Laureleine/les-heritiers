@@ -2,8 +2,9 @@
 // 9.7.0 // 9.11.0
 // 10.2.0 // 10.4.0 // 10.5.0
 // 11.0.0 // 11.1.0 // 11.4.0
+// 12.0.0
 
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
@@ -11,8 +12,6 @@ import { showInAppNotification, requestNotificationPermission } from '../utils/S
 
 export default function AccountSettings({ session, userProfile, onBack, onUpdateProfile }) {
   const profile = userProfile?.profile || {};
-  
-  // On initialise à vide (car les données n'arrivent qu'une fraction de seconde plus tard)
   const [newUsername, setNewUsername] = useState('');
   const [showPixie, setShowPixie] = useState(true);
   const [activeBadge, setActiveBadge] = useState('');
@@ -20,10 +19,17 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
   const [use3DDice, setUse3DDice] = useState(false);
   const [isJoueur, setIsJoueur] = useState(true);
   const [isDocte, setIsDocte] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const notifRef = useRef(null); // 👈 AJOUTEZ CETTE LIGNE
+  const [notifPrefs, setNotifPrefs] = useState({
+    subscribe_to_updates: false,
+    notify_major_versions: true,
+    notify_minor_versions: false,
+    enable_push_notifications: false
+  });
+  const [pushSupported, setPushSupported] = useState(false);
 
   const myBadges = AVAILABLE_BADGES.filter(b => profile.badges?.includes(b.id));
 
@@ -41,6 +47,30 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
       setActiveBadge(profile.badges); // Par défaut, on sélectionne son premier badge
     }
   }, [profile]);
+  
+  // ✨ NOUVEAU : Chargement des préférences de notifications isolé
+  useEffect(() => {
+    setPushSupported('Notification' in window);
+    
+    const loadNotifPrefs = async () => {
+      const { data, error } = await supabase
+        .from('user_notification_preferences')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (!error && data) {
+        setNotifPrefs({
+          subscribe_to_updates: data.subscribe_to_updates,
+          notify_major_versions: data.notify_major_versions,
+          notify_minor_versions: data.notify_minor_versions,
+          enable_push_notifications: data.enable_push_notifications
+        });
+      }
+    };
+    
+    loadNotifPrefs();
+  }, [session.user.id]);  
 
   const handleUpdate = async () => {
     setLoading(true);
@@ -58,17 +88,27 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
         updated_at: new Date()
       };
 
+      // ✨ 2. SAUVEGARDE DES NOTIFICATIONS (On appelle le composant enfant)
       const { error } = await supabase
         .from('profiles')
         .update(updates)
         .eq('id', userProfile.id);
 
       if (error) throw error;
-      
-      // ✨ 2. SAUVEGARDE DES NOTIFICATIONS (On appelle le composant enfant)
-      if (notifRef.current && typeof notifRef.current.savePreferences === 'function') {
-        await notifRef.current.savePreferences();
-      }
+
+      // ✨ NOUVEAU : Sauvegarde des Notifications directement par le Parent
+      const { error: notifError } = await supabase
+        .from('user_notification_preferences')
+        .upsert({
+          user_id: session.user.id,
+          email: session.user.email,
+          ...notifPrefs,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (notifError) throw notifError;
 
       setMessage('✅ Toutes vos préférences ont été sauvegardées avec succès !');
       if (onUpdateProfile) onUpdateProfile();
@@ -248,9 +288,14 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
             </div>
           </div>
 
-          {/* 4. Le Corbeau Messager (Composant existant) */}
+			{/* 4. Le Corbeau Messager (Composant pur) */}
 			<div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
-			  <NotificationPreferences ref={notifRef} session={session} />
+			  <NotificationPreferences 
+				session={session} 
+				preferences={notifPrefs} 
+				setPreferences={setNotifPrefs} 
+				pushSupported={pushSupported} 
+			  />
 			</div>
 		</div>
 	 </div>
@@ -281,46 +326,8 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
   );
 }
 
-// ✨ NOUVEAU : forwardRef permet au composant parent de le contrôler
-const NotificationPreferences = forwardRef(({ session }, ref) => {
-  const [preferences, setPreferences] = useState({
-    subscribe_to_updates: false,
-    notify_major_versions: true,
-    notify_minor_versions: false,
-    enable_push_notifications: false
-  });
-  const [loading, setLoading] = useState(true);
-  const [pushSupported, setPushSupported] = useState(false);
-
-  useEffect(() => {
-    setPushSupported('Notification' in window);
-    loadPreferences();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const loadPreferences = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('user_notification_preferences')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .maybeSingle(); // 👈 (J'en ai profité pour corriger la casse de maybeSingle)
-
-      if (!error && data) {
-        setPreferences({
-          subscribe_to_updates: data.subscribe_to_updates,
-          notify_major_versions: data.notify_major_versions,
-          notify_minor_versions: data.notify_minor_versions,
-          enable_push_notifications: data.enable_push_notifications
-        });
-      }
-    } catch (err) {
-      console.log('Pas de préférences existantes');
-    } finally {
-      setLoading(false);
-    }
-  };
+// ✨ NOUVEAU : Composant Enfant Pur (Il affiche et modifie, c'est tout !)
+const NotificationPreferences = ({ session, preferences, setPreferences, pushSupported }) => {
 
   const handleTogglePush = async () => {
     if (!preferences.enable_push_notifications) {
@@ -336,24 +343,6 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
     }));
   };
 
-  // ✨ LA MAGIE EST LÀ : L'ajout de [preferences, session] à la fin !
-  useImperativeHandle(ref, () => ({
-    savePreferences: async () => {
-      console.log("💾 Transmission au Nuage des notifs :", preferences);
-      const { error } = await supabase
-        .from('user_notification_preferences')
-        .upsert({
-          user_id: session.user.id,
-          email: session.user.email,
-          ...preferences,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id'
-        });
-      if (error) throw error;
-    }
-  }), [preferences, session]); // 👈 SANS CE TABLEAU, REACT SAUVEGARDE DE VIEILLES DONNÉES !
-
   const handleToggle = (field) => {
     setPreferences(prev => ({
       ...prev,
@@ -361,22 +350,17 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
     }));
   };
 
-  if (loading) {
-    return (
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-blue-800">Chargement du Corbeau Messager...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
-      <div className="flex items-center gap-3 mb-4">
-        <Bell className="text-blue-600" size={28} />
-        <h3 className="text-xl font-serif text-blue-900 font-bold">
+    <div className="animate-fade-in">
+      <div className="flex items-center gap-3 mb-4 border-b border-blue-100 pb-3">
+        <div className="p-2 bg-blue-100 text-blue-700 rounded-lg">
+          <Bell size={24} />
+        </div>
+        <h3 className="text-xl font-serif font-bold text-blue-900">
           Notifications des mises à jour
         </h3>
       </div>
+
       <p className="text-sm text-blue-700 mb-6">
         Recevez un email lors des nouvelles versions de l'application
       </p>
@@ -399,9 +383,7 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
                   <><BellOff size={18} className="inline mr-2" />Non abonné</>
                 )}
               </div>
-              <div className="text-sm text-blue-600">
-                Recevoir des emails lors des mises à jour
-              </div>
+              <div className="text-sm text-blue-600">Recevoir des emails lors des mises à jour</div>
             </div>
           </label>
         </div>
@@ -448,10 +430,9 @@ const NotificationPreferences = forwardRef(({ session }, ref) => {
         )}
       </div>
 
-      {/* Info email */}
       <div className="mt-6 pt-4 border-t border-blue-200 text-sm text-blue-800 flex items-center gap-2">
         <Mail size={16} /> Les emails seront envoyés à : <strong>{session.user.email}</strong>
       </div>
     </div>
   );
-});
+};
