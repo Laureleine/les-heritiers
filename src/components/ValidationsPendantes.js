@@ -3,10 +3,10 @@
 // 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
 // 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
 // 11.1.0 // 11.3.0 // 11.4.0
-// 12.1.0
+// 12.1.0 // 12.2.0 // 12.3.0
 
 import React, { useState, useEffect } from 'react';
-import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal } from 'lucide-react';
+import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal, ShieldAlert } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
@@ -20,6 +20,7 @@ export default function ValidationsPendantes({ session, onBack }) {
   const [pendingChanges, setPendingChanges] = useState([]);
   const [approvedChanges, setApprovedChanges] = useState([]);
   const [historyChanges, setHistoryChanges] = useState([]);
+  const [escalatedChanges, setEscalatedChanges] = useState([]); // ✨ NOUVEAU
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('pending');
   const [myRole, setMyRole] = useState(null);
@@ -71,14 +72,16 @@ export default function ValidationsPendantes({ session, onBack }) {
   
   const loadChanges = async () => {
     setLoading(true);
-    const [pending, approved, history] = await Promise.all([
+
+    const [pending, approved, history, escalated] = await Promise.all([
       supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'pending').order('created_at', { ascending: false }),
       supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'approved').order('created_at', { ascending: false }),
-      supabase.from(TABLE_NAME).select('*, profiles(username, badges)').in('status', ['archived', 'rejected']).order('created_at', { ascending: false }).limit(50)
+      supabase.from(TABLE_NAME).select('*, profiles(username, badges)').in('status', ['archived', 'rejected']).order('created_at', { ascending: false }).limit(50),
+      supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'escalated').order('created_at', { ascending: false }) // ✨ NOUVEAU
     ]);
 
-    // ✨ NOUVEAU : Récupération des données originales pour comparer (Le fameux AVANT / APRÈS)
-    const allActive = [...(pending.data || []), ...(approved.data || [])];
+    // ✨ On ajoute les escaladés dans la liste active pour le delta visuel
+    const allActive = [...(pending.data || []), ...(approved.data || []), ...(escalated.data || [])];
     const grouped = {};
     allActive.forEach(c => {
       // On exclut les créations pures (qui n'ont pas d'ancien record)
@@ -100,6 +103,7 @@ export default function ValidationsPendantes({ session, onBack }) {
     if (pending.data) setPendingChanges(pending.data);
     if (approved.data) setApprovedChanges(approved.data);
     if (history.data) setHistoryChanges(history.data);
+    if (escalated.data) setEscalatedChanges(escalated.data);
     setLoading(false);
   };
 
@@ -140,9 +144,9 @@ export default function ValidationsPendantes({ session, onBack }) {
     setConfirmState({
       isOpen: true,
       title: "Exécuter et Archiver",
-      message: "Voulez-vous lancer l'incantation SQL directement dans la base de données ? Si une erreur survient, la proposition restera en sécurité et ne sera pas archivée.",
+      message: "Voulez-vous lancer l'incantation SQL directement dans la base de données ? Si une erreur survient, la proposition sera escaladée au Super Admin.",
       confirmText: "Oui, exécuter l'incantation",
-      action: () => executeArchive(change.id, change.generated_sql)
+      action: () => executeArchive(change) // ✨ On transmet tout l'objet
     });
   };
 
@@ -155,48 +159,62 @@ export default function ValidationsPendantes({ session, onBack }) {
   // ✨ EXÉCUTION DES ACTIONS (Après Confirmation)
   // ======================================================================
 
-  const executeArchive = async (changeId, sqlQuery) => {
+  const executeArchive = async (change) => {
     setConfirmState({ isOpen: false });
 
     try {
-      // 1. Nettoyage : Une fonction PL/pgSQL gère déjà sa propre transaction.
-      // On retire donc nos balises de transaction manuelles pour éviter un crash.
-      const cleanSQL = sqlQuery.replace('BEGIN;', '').replace('COMMIT;', '').trim();
-
-      // 2. On lance le sortilège SQL côté serveur
+      const cleanSQL = change.generated_sql.replace('BEGIN;', '').replace('COMMIT;', '').trim();
       const { error: sqlError } = await supabase.rpc('execute_dynamic_sql', { sql_query: cleanSQL });
 
-      if (sqlError) throw sqlError; // 🛑 Le filet de sécurité : on s'arrête ici en cas d'erreur !
+      if (sqlError) throw sqlError; // 🛑 On jette l'erreur dans le "catch" !
 
-      // 3. Si le SQL a fonctionné, on archive ET on garde la trace (Qui et Quand)
       const { error: archiveError } = await supabase
         .from('data_change_requests')
-        .update({ 
-          status: 'archived',
-          approved_by: session.user.id,              // Trace de l'Auteur
-          approved_at: new Date().toISOString()      // Trace Temporelle
-        })
-        .eq('id', changeId);
+        .update({ status: 'archived', approved_by: session.user.id, approved_at: new Date().toISOString() })
+        .eq('id', change.id);
 
       if (archiveError) throw archiveError;
 
-      // 4. Succès et rafraîchissement
-      invalidateAllCaches();
-      loadChanges();
       invalidateAllCaches();
       loadChanges();
       showInAppNotification("L'incantation SQL a été exécutée et archivée avec succès !", "success");
+
     } catch (error) {
       console.error("Erreur lors de l'exécution SQL :", error);
-      showInAppNotification("La magie a échoué : " + error.message, "error");
+      showInAppNotification("La magie a échoué ! Escalade au Super Architecte en cours...", "error");
+
+      // 🚨 1. On passe la requête en ESCALADÉE et on stocke l'erreur
+      await supabase.from('data_change_requests').update({
+        status: 'escalated',
+        rejection_reason: error.message
+      }).eq('id', change.id);
+
+      // 💌 2. Missive à l'Auteur
+      if (change.user_id) {
+        const { data: tAuteur } = await supabase.from('support_tickets').insert({ user_id: change.user_id, sujet: `⚠️ Problème technique : ${change.record_name}` }).select().single();
+        if (tAuteur) {
+          await supabase.from('support_messages').insert({ ticket_id: tAuteur.id, user_id: session.user.id, is_admin: true, message: `Salutations.\nVotre proposition pour "${change.record_name}" a été acceptée par le Conseil, mais une puissante anomalie a empêché sa gravure finale dans les archives.\nLe Grand Architecte a été prévenu et va résoudre le problème manuellement. Vous serez notifié dès qu'il aura forcé le passage.` });
+        }
+      }
+
+      // 💌 3. Missive au Gardien (S'il n'est pas lui-même l'auteur)
+      if (session.user.id !== change.user_id) {
+        const { data: tGardien } = await supabase.from('support_tickets').insert({ user_id: session.user.id, sujet: `🚨 Échec SQL escaladé : ${change.record_name}` }).select().single();
+        if (tGardien) {
+          await supabase.from('support_messages').insert({ ticket_id: tGardien.id, user_id: session.user.id, is_admin: true, message: `Gardien, l'incantation SQL que vous avez tentée de lancer a échoué.\n\nErreur de la base : ${error.message}\n\nLa requête a été placée dans le sas d'escalade du Super Admin.` });
+        }
+      }
+
+      loadChanges();
     }
   };
   
   // ✨ NOUVEAU : État pour la modale de rejet
-  const [rejectState, setRejectState] = useState({ isOpen: false, changeId: null, reason: '' });
+  const [rejectState, setRejectState] = useState({ isOpen: false, change: null, reason: '' });
 
-  const handleRejectClick = (changeId) => {
-    setRejectState({ isOpen: true, changeId, reason: '' });
+  const handleRejectClick = (change) => {
+    // On sauvegarde toute l'enveloppe "change" dans la mémoire !
+    setRejectState({ isOpen: true, change: change, reason: '' });
   };
 
   const executeReject = async () => {
@@ -204,16 +222,44 @@ export default function ValidationsPendantes({ session, onBack }) {
       showInAppNotification("Les Gardiens doivent justifier leur refus !", "warning");
       return;
     }
-    setConfirmState({ isOpen: false }); // Au cas où
+    
+    const targetChange = rejectState.change;
+
+    // 1. On rejette la proposition dans la base de données
     const { error } = await supabase
       .from(TABLE_NAME)
       .update({ status: 'rejected', rejection_reason: rejectState.reason })
-      .eq('id', rejectState.changeId);
+      .eq('id', targetChange.id);
 
     if (!error) {
-      setRejectState({ isOpen: false, changeId: null, reason: '' });
+      // ✨ 2. LA MAGIE PNEUMATIQUE : Création du Ticket
+      const { data: ticketData, error: ticketError } = await supabase
+        .from('support_tickets')
+        .insert([
+          { 
+            user_id: targetChange.user_id, 
+            sujet: `Décision du Conseil : ${targetChange.record_name || 'Proposition'}` 
+          }
+        ])
+        .select().single();
+
+      // ✨ 3. ENVOI DE LA MISSIVE DU GARDIEN
+      if (!ticketError && ticketData) {
+        await supabase
+          .from('support_messages')
+          .insert([
+            {
+              ticket_id: ticketData.id,
+              user_id: session.user.id, // C'est le Gardien qui écrit !
+              message: `Salutations Héritier.\n\nVotre proposition a été examinée avec soin par le Conseil des Gardiens, mais n'a pas pu être retenue en l'état.\n\nMotif du Gardien :\n"${rejectState.reason}"\n\nN'hésitez pas à corriger votre archive et à nous la soumettre à nouveau !`,
+              is_admin: true
+            }
+          ]);
+      }
+
+      setRejectState({ isOpen: false, change: null, reason: '' });
       loadChanges();
-      showInAppNotification("La proposition a été rejetée et l'Héritier notifié.", "success");
+      showInAppNotification("La proposition a été rejetée et une missive pneumatique expédiée !", "success");
     }
   };
 
@@ -252,15 +298,19 @@ export default function ValidationsPendantes({ session, onBack }) {
             Table : {change.table_name} • Action : {change.new_data?.id ? 'Création 🌟' : 'Modification 📝'}
           </p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-          change.status === 'pending' ? 'bg-amber-100 text-amber-800' :
-          change.status === 'approved' ? 'bg-blue-100 text-blue-800' :
-          change.status === 'archived' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        }`}>
-          {change.status === 'pending' ? 'En attente' :
-           change.status === 'approved' ? 'À Exécuter (SQL)' :
-           change.status === 'archived' ? 'Archivé (Appliqué)' : 'Rejeté'}
-        </span>
+          <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+            change.status === 'pending' ? 'bg-amber-100 text-amber-800' :
+            change.status === 'approved' ? 'bg-blue-100 text-blue-800' :
+            change.status === 'archived' ? 'bg-green-100 text-green-800' :
+            change.status === 'escalated' ? 'bg-red-900 text-red-100 animate-pulse shadow-md' :
+            'bg-red-100 text-red-800'
+          }`}>
+            {change.status === 'pending' ? 'En attente' :
+             change.status === 'approved' ? 'À Exécuter (SQL)' :
+             change.status === 'archived' ? 'Archivé (Appliqué)' :
+             change.status === 'escalated' ? '🚨 Escaladé (Erreur SQL)' :
+             'Rejeté'}
+          </span>
       </div>
 
       <div className="mb-4">
@@ -405,54 +455,67 @@ export default function ValidationsPendantes({ session, onBack }) {
           })()}
       </div>
 
-        {change.status === 'approved' && (
-          <>
-            <button onClick={() => handleArchiveClick(change)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
-              <Check size={18} /> Exécuter & Archiver
-            </button>
-            <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+        {/* L'erreur SQL pour l'Admin */}
+        {change.status === 'escalated' && change.rejection_reason && (
+          <div className="mt-3 p-3 bg-red-50 border-l-4 border-red-600 rounded text-sm text-red-900 font-mono shadow-inner">
+            <strong className="flex items-center gap-2 mb-1"><ShieldAlert size={16}/> Rapport d'Anomalie :</strong>
+            {change.rejection_reason}
+          </div>
+        )}
+
+        {/* BOUTONS D'ACTION AVEC MODALES */}
+        <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
+
+          {change.status === 'pending' && (
+            <>
+              <button onClick={() => handleRejectClick(change.id)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                <X size={18} /> Rejeter
+              </button>
+              <button onClick={() => handleApproveClick(change, false)} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
+                <Check size={18} /> Valider
+              </button>
+              <button onClick={() => handleApproveClick(change, true)} className="flex items-center gap-2 px-4 py-2 bg-amber-700 text-white hover:bg-amber-800 font-bold rounded-lg transition-colors shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-amber-900 group">
+                <Shield size={18} className="text-amber-300 group-hover:scale-110 transition-transform" />
+                Approuver & Sceller
+              </button>
+            </>
+          )}
+
+          {change.status === 'approved' && (
+            <>
+              <button onClick={() => handleArchiveClick(change)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
+                <Check size={18} /> J'ai exécuté le SQL (Archiver)
+              </button>
+              <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                <ArrowLeft size={16} /> Remettre en attente
+              </button>
+            </>
+          )}
+
+          {/* ✨ NOUVEAU : LE BLOC SUPER ADMIN POUR LES ESCALADES */}
+          {change.status === 'escalated' && myRole === 'super_admin' && (
+             <>
+               <button onClick={() => handleArchiveClick(change)} className="px-6 py-2 bg-red-800 text-white hover:bg-red-900 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
+                 <TestTubeDiagonal size={18} /> Retenter le SQL
+               </button>
+               <button onClick={() => handleRejectClick(change.id)} className="px-4 py-2 bg-gray-100 text-red-600 hover:bg-red-50 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                 <X size={16} /> Rejeter définitivement
+               </button>
+               <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                 <ArrowLeft size={16} /> Remettre en attente
+               </button>
+             </>
+          )}
+
+          {(change.status === 'archived' || change.status === 'rejected') && (
+            <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
               <ArrowLeft size={16} /> Remettre en attente
             </button>
-          </>
-        )}
+          )}
 
-      {/* BOUTONS D'ACTION AVEC MODALES */}
-      <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
-        
-        {change.status === 'pending' && (
-          <>
-            <button onClick={() => handleRejectClick(change.id)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
-              <X size={18} /> Rejeter
-            </button>
-            <button onClick={() => handleApproveClick(change, false)} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
-              <Check size={18} /> Valider
-            </button>
-            <button onClick={() => handleApproveClick(change, true)} className="flex items-center gap-2 px-4 py-2 bg-amber-700 text-white hover:bg-amber-800 font-bold rounded-lg transition-colors shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-amber-900 group">
-              <Shield size={18} className="text-amber-300 group-hover:scale-110 transition-transform" /> 
-              Approuver & Sceller
-            </button>
-          </>
-        )}
-
-        {change.status === 'approved' && (
-          <>
-            <button onClick={() => handleArchiveClick(change.id)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
-              <Check size={18} /> J'ai exécuté le SQL (Archiver)
-            </button>
-            <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
-              <ArrowLeft size={16} /> Remettre en attente
-            </button>
-          </>
-        )}
-
-        {(change.status === 'archived' || change.status === 'rejected') && (
-          <button onClick={() => handleRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
-            <ArrowLeft size={16} /> Remettre en attente
-          </button>
-        )}
+        </div>
       </div>
-    </div>
-  );
+    );
 
   if (loading) return <div className="p-8 text-center text-gray-500 font-serif animate-pulse">Ouverture du Conseil...</div>;
 
@@ -488,6 +551,13 @@ export default function ValidationsPendantes({ session, onBack }) {
         <button onClick={() => setActiveTab('history')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'history' ? 'text-gray-800 border-b-2 border-gray-800' : 'text-gray-400 hover:text-gray-600'}`}>
           3. Historique ({historyChanges.length})
         </button>
+        
+        {/* ✨ NOUVEL ONGLET SUPER ADMIN */}
+        {myRole === 'super_admin' && (
+          <button onClick={() => setActiveTab('escalated')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'escalated' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-400 hover:text-gray-600'}`}>
+            🚨 Escalades ({escalatedChanges.length})
+          </button>
+        )}
       </div>
 
       <div>
@@ -504,6 +574,12 @@ export default function ValidationsPendantes({ session, onBack }) {
         {activeTab === 'history' && (
           historyChanges.length > 0 ? historyChanges.map(c => renderChange(c)) :
           <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-white/50">L'historique est vide.</p>
+        )}
+
+        {/* ✨ NOUVEAU CONTENU DE L'ONGLET ESCALADE */}
+        {activeTab === 'escalated' && myRole === 'super_admin' && (
+           escalatedChanges.length > 0 ? escalatedChanges.map(c => renderChange(c)) :
+           <p className="text-red-500 italic p-6 text-center border-2 border-dashed border-red-200 rounded-xl bg-red-50/50">Aucune anomalie magique à traiter, Architecte !</p>
         )}
       </div>
 	  
@@ -524,7 +600,7 @@ export default function ValidationsPendantes({ session, onBack }) {
               autoFocus
             />
             <div className="flex justify-end gap-3">
-              <button onClick={() => setRejectState({isOpen: false, changeId: null, reason: ''})} className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg transition-colors">Annuler</button>
+              <button onClick={() => setRejectState({isOpen: false, change: null, reason: ''})} className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg transition-colors">Annuler</button>
               <button onClick={executeReject} className="px-6 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 shadow-md transition-colors">Confirmer le Rejet</button>
             </div>
           </div>
@@ -544,3 +620,4 @@ export default function ValidationsPendantes({ session, onBack }) {
     </div>
   );
 }
+

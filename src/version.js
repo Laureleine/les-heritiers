@@ -5,6 +5,18 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
+{
+    version: '12.2.0',
+    date: '10 Mars 2026',
+    changes: [
+      '🎨 **Ergonomie Communautaire :** Le suivi des propositions personnelles ("Mes Propositions") est désormais scindé en 4 onglets dynamiques (En attente, Pré-validés, En ligne, Rejetés) pour une lecture infiniment plus claire.',
+      '📠 **Connexion Télégraphique :** Le rejet d\'une proposition par le Conseil des Gardiens génère désormais automatiquement un ticket et une missive détaillée dans le Télégraphe Pneumatique de l\'Héritier concerné.',
+      '💌 **Immersion Narrative :** La justification du refus est directement intégrée dans le message sous les traits d\'une réponse officielle de l\'administration féérique.',
+      '🪂 **Filet de Sécurité SQL :** Si une requête approuvée par les Gardiens échoue dans la base de données (ex: erreur de syntaxe), elle n\'est plus perdue. Elle passe désormais au statut "Escaladé".',
+      '🚨 **Sas d\'Intervention :** Création d\'un onglet "Escalades" réservé au Super Administrateur permettant de lire le rapport de crash SQL et d\'intervenir manuellement sur la proposition.',
+      '📠 **Dépêches d\'Urgence :** Lors d\'un crash d\'incantation, le Télégraphe Pneumatique alerte instantanément l\'auteur de la proposition, le Gardien qui a tenté la validation, ainsi que le Super Admin.'
+  ]
+  },
   {
     version: '12.1.0',
     date: '10 Mars 2026',
