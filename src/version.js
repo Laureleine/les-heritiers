@@ -5,6 +5,14 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
+  {
+    version: '12.6.0',
+    date: '10 Mars 2026',
+    changes: [
+      '🐛 **Traduction des Archives (Bilan & PDF) :** Les atouts sélectionnés affichent de nouveau leur nom lisible (et non plus leur code technique UUID) dans la page de récapitulatif et sur les fiches PDF générées, assurant la rétrocompatibilité parfaite entre les anciens et nouveaux personnages.',
+      '🐛 **Moteur Grammatical :** Résolution d\'un crash critique (TypeError) lié à la fonction d\'accord des textes. Le système tentait d\'appliquer un nettoyage de texte (.trim) sur un tableau entier au lieu de cibler la valeur masculine.'
+    ]
+  },
 {
     version: '12.5.0',
     date: '10 Mars 2026',

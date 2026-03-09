@@ -2,6 +2,7 @@
 // 8.23.0 // 8.32.0
 // 9.11.0
 // 10.1.0 // 10.4.0 // 10.6.0
+// 12.6.0
 
 import React from 'react';
 import { User, Star, Award, Sparkles, Shield, Zap, CheckCircle } from 'lucide-react';
@@ -9,7 +10,8 @@ import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext'; // 👈 1. ON IMPORTE LE NUAGE
 
 export default function StepRecapitulatif() { // 👈 2. PLUS AUCUN PARAMÈTRE ICI !
-  const { character } = useCharacter(); // 👈 3. ON APPELLE JUSTE LE PERSONNAGE
+  const { character, gameData } = useCharacter(); 
+  const feeData = gameData?.fairyData ? gameData.fairyData[character.typeFee] : null;
 
   // ✨ DRY : On récupère simplement les clés du dictionnaire des totaux
   const uniqueFutiles = Object.keys(character.computedStats?.futilesTotal || {}).sort((a, b) => a.localeCompare(b));
@@ -133,18 +135,24 @@ export default function StepRecapitulatif() { // 👈 2. PLUS AUCUN PARAMÈTRE I
                 </div>
               )}
 
-              {character.atouts && character.atouts.length > 0 && (
-                <div>
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Atouts Féériques</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {character.atouts.map((a, idx) => (
+            {character.atouts && character.atouts.length > 0 && (
+              <div>
+                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Atouts Féériques</h4>
+                <div className="flex flex-wrap gap-2">
+                  {character.atouts.map((a, idx) => {
+                    // 🔍 LE TRADUCTEUR : Cherche si c'est un ID (nouveau persos) ou un Nom (anciens persos)
+                    const atoutObj = feeData?.atouts?.find(at => at.id === a || at.nom === a);
+                    const displayName = atoutObj ? atoutObj.nom : a;
+
+                    return (
                       <span key={idx} className="bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1 rounded-full text-sm font-serif shadow-sm flex items-center gap-1">
-                        <Star size={12} className="fill-amber-600" /> {a}
+                        <Star size={12} className="fill-amber-600" /> {displayName}
                       </span>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
+            )}
             </div>
           </div>
 
