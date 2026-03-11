@@ -2,6 +2,7 @@
 // 10.8.0 // 10.9.0
 // 11.1.0
 // 12.5.0
+// 13.0.6
 
 import { supabase } from '../config/supabase';
 
@@ -265,23 +266,24 @@ export const loadFairyTypes = async () => {
         } 
         // CAS B : Compétence Fixe (ex: Gargouille -> Art de la guerre)
         else {
-            const nomCompetence = cp.competence?.name;
+          const nomCompetence = cp.competence?.name;
+          if (nomCompetence) {
+            const specOptionsArray = Array.isArray(cp.choice_options) ? cp.choice_options : [];
             
-            if (nomCompetence) {
-                // Pour les spécialités, on garde choice_options (souvent du texte simple)
-                // Sauf si vous utilisez aussi des IDs pour les spécialités, mais c'est rare ici
-                const specOptionsArray = Array.isArray(cp.choice_options) ? cp.choice_options : [];
+            // ✨ LECTURE DU DRAPEAU SECRET
+            const isPureSpec = specOptionsArray.includes('PURE_SPEC');
 
-                compPredByFairy[cp.fairy_type_id].push({
-                    nom: nomCompetence,
-                    specialite: cp.specialite,
-                    isSpecialiteChoix: cp.is_specialite_choice,
-                    options: specOptionsArray 
-                });
-            }
+            compPredByFairy[cp.fairy_type_id].push({
+              nom: nomCompetence,
+              specialite: cp.specialite,
+              isSpecialiteChoix: cp.is_specialite_choice,
+              isOnlySpecialty: isPureSpec, // 👈 ON RÉVEILLE LE DRAPEAU
+              options: specOptionsArray.filter(o => o !== 'PURE_SPEC')
+            });
+          }
         }
-      });
-    }
+      }); // ✨ 1. ON REFERME LA BOUCLE FOR_EACH ICI ! (C'est ça qui avait disparu)
+    } // ✨ 2. ON REFERME LA CONDITION IF ICI !
 
     // B. Traitement des Compétences FUTILES
     if (allCompFutPred) {

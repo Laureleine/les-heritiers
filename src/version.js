@@ -6,6 +6,21 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.0.3',
+    date: '11 Mars 2026',
+    changes: [
+      '🧠 **Spécialités Féériques (Livre de Base) :** L\'Encyclopédie permet désormais aux Gardiens d\'utiliser la brique dorée ("Spécialité Offerte") sur une Fée pour octroyer une spécialité hors-prédilection (ex: "Langue juive" pour le Golem ou "Nage" pour l\'Ondine).',
+      '🛡️ **Moteur de Jeu (Cheval de Troie) :** Le super-calculateur différencie désormais strictement les Prédilections (octroyant un bonus de base de +2) des Spécialités Pures inhérentes aux Fées, résolvant les incohérences de statistiques sur la feuille de personnage.'
+    ]
+  },
+  {
+    version: '13.0.2',
+    date: '11 Mars 2026',
+    changes: [
+      '📠 **Mécanique Pneumatique :** Résolution du défaut d\'affichage des très longues missives. Le Télégraphe force désormais le retour à la ligne des mots interminables et intègre un ascenseur vertical (barre de défilement) natif et permanent grâce à une structure Flexbox rigoureuse (`min-h-0`).'
+    ]
+  },
+  {
     version: '13.0.1',
     date: '11 Mars 2026',
     changes: [
