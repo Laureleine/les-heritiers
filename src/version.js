@@ -6,6 +6,20 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.0.0',
+    date: '10 Mars 2026',
+    changes: [
+      '🧬 **Système d\'Expérience (Phase 1) :** Ajout d\'une machine à états dans la base de données (`statut`, `xp_total`, `xp_depense`) pour préparer la transition entre la "Création de Personnage" et "L\'Évolution en Jeu".',
+      '🛡️ **Le Sceau de l\'Héritier :** Intégration d\'un monumental système de verrouillage à la fin du Récapitulatif. Les joueurs peuvent désormais "Sceller" leur personnage une fois la création terminée pour débloquer l\'affichage de leur jauge d\'XP.',
+      '🛡️ **La Douane du Cerbère :** Impossible de sceller un Héritier incomplet ! Le Récapitulatif scanne désormais mathématiquement l\'intégralité de la fiche (Caractéristiques, Utiles, Futiles, Bonus d\'Esprit). Tout oubli de dépense bloque le scellage et est signalé au joueur.',
+      '🎁 **Atout du Métier :** Intégration de la règle du Livre de Base offrant une Spécialité gratuite liée à l\'Activité Principale. Le joueur peut désormais définir son métier et choisir sa spécialité directement depuis la page de Personnalisation.',
+      '🖨️ **Imprimerie Connectée :** La fiche PDF imprime désormais le véritable texte saisi par le joueur pour son "Métier" (au lieu d\'une estimation), et inscrit clairement sa spécialité offerte avec la mention "(Métier)" à côté de la compétence.',
+      '🧠 **Métiers Intelligents :** Le choix de l\'Activité Principale à l\'Étape 10 (Personnalisation) lit désormais dynamiquement l\'inventaire du joueur pour proposer un menu déroulant des métiers réellement acquis lors de l\'Étape 9 (Vie Sociale).',
+      '✍️ **Précision Narrative :** Ajout d\'un champ "Texte Libre" permettant de colorer narrativement le métier sélectionné (ex: "Chirurgien" pour le domaine "Médecin"), parfaitement répercuté sur le Bilan et le PDF.',
+      '🐛 **Mémoire de l\'Encyclopédie :** Résolution d\'une anomalie qui vidait le constructeur de compétences (Utiles et Futiles) lors de l\'édition d\'une fée existante. La modale puise désormais directement ces informations dans la mémoire du jeu (Nuage) au lieu de faire une lecture incomplète de la base de données.'
+    ]
+  },
+  {
     version: '12.6.0',
     date: '10 Mars 2026',
     changes: [

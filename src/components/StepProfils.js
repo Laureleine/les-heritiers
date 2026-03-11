@@ -1,13 +1,17 @@
 // src/components/StepProfils.js
 // 10.6.0
+// 13.0.0
 
 import React from 'react';
-import { Info, Star, Award } from 'lucide-react';
-import { useCharacter } from '../context/CharacterContext'; // 👈 L'IMPORT DU NUAGE
+import { Info, Star, Award, Briefcase } from 'lucide-react';
+import { useCharacter } from '../context/CharacterContext';
 
-export default function StepProfils() { // 👈 PLUS DE PARAMÈTRES !
-  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter(); // 👈 ON SE SERT DANS LE NUAGE
-  const { profils, competencesParProfil } = gameData;
+export default function StepProfils() {
+  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const { profils, competencesParProfil, competences } = gameData;
+
+  // On extrait la liste de toutes les compétences existantes
+  const usefulSkills = Object.keys(competences || {}).sort();
 
   const onProfilsChange = (p) => {
     if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { profils: p }, gameData });

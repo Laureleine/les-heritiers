@@ -1,6 +1,7 @@
 // src/utils/utils.js
 // 10.4.0
 // 12.3.0 // 12.6.0
+// 13.0.0
 
 // ============================================================================
 // PDF EXPORT (Fiche de Personnage Complète Recto/Verso)
@@ -186,11 +187,7 @@ export const exportToPDF = (character, gameData = {}) => {
               <span class="field-label">Nom humain</span>
               <div class="field-value">${character.nom || ''}</div>
             </div>
-            <div class="field">
-              <span class="field-label">Activités / Métier</span>
-              <div class="field-value">${character.vieSociale?.Aventurier?.length ? 'Aventurier' : (character.vieSociale?.Gentleman?.length ? 'Gentleman' : 'Héritier')}</div>
-            </div>
-          </div>
+		  <div class="field-value">${character.profils?.activite || character.profils?.activiteDomaine || (character.vieSociale?.Aventurier?.length ? 'Aventurier' : (character.vieSociale?.Gentleman?.length ? 'Gentleman' : 'Héritier'))}</div>
           <div class="grid-3" style="margin-top: 10px;">
             <div class="field">
               <span class="field-label">Profil majeur</span>
@@ -255,6 +252,20 @@ export const exportToPDF = (character, gameData = {}) => {
                   const score = getS(comp);
                   const isPred = feeData?.competencesPredilection?.some(p => p.nom === comp) || Object.values(character.competencesLibres?.choixPredilection || {}).includes(comp);
                   const specs = character.competencesLibres?.choixSpecialiteUser?.[comp] || [];
+                  const finalSpecs = [...specs];
+
+                  // ✨ LE SCÉNARIO C : On l'ajoute à la liste des spécialités à imprimer !
+                  if (character.competencesLibres?.specialiteMetier?.comp === comp && character.competencesLibres?.specialiteMetier?.nom) {
+                    finalSpecs.push(`${character.competencesLibres.specialiteMetier.nom} (Métier)`);
+                  }
+
+                  return `
+                    <div class="skill-row">
+                      <span class="skill-name">${comp} ${isPred ? '<span style="font-size:10px; color:#d97706;">★</span>' : ''} ${finalSpecs.length > 0 ? `<span style="font-size:10px; color:#8b7355; font-style:italic;">(${finalSpecs.join(', ')})</span>` : ''}</span>
+                      <span class="skill-dots">${'.'.repeat(40)}</span>
+                      <span class="skill-score"><b>${score}</b></span>
+                    </div>
+                  `;
                   return `
                   <div class="skill-row">
                     <span class="skill-name ${isPred ? 'font-weight: bold;' : ''}">${comp}${isPred ? '*' : ''}</span>

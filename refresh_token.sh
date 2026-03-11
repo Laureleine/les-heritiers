@@ -47,7 +47,7 @@ if [[ -z "$NEW_REFRESH_TOKEN" || "$NEW_REFRESH_TOKEN" == "$RESPONSE" ]]; then
 fi
 
 # ── 4. Mettre à jour le .env ──────────────────────────────────────────────────
-sed -i "s/^GOOGLE_REFRESH_TOKEN=.*/GOOGLE_REFRESH_TOKEN=${NEW_REFRESH_TOKEN}/" .env
+sed -i 's|GOOGLE_REFRESH_TOKEN=.*|GOOGLE_REFRESH_TOKEN="'"$NEW_REFRESH_TOKEN"'"|' .env
 
 echo ""
 echo "✅ Nouveau refresh token enregistré dans .env !"
