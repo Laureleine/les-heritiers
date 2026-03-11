@@ -1,6 +1,7 @@
 // src/utils/sqlGenerator.js
 // 10.5.0 // 10.10.0
 // 12.1.0
+// 13.0.3
 
 export const generateApprovalSQL = (change, seal = false) => {
   // ✨ L'OUBLI ÉTAIT ICI : On déballe toutes les variables nécessaires
@@ -115,17 +116,19 @@ export const generateApprovalSQL = (change, seal = false) => {
               let choiceIds = 'null';
               let choiceOptions = 'null';
 
-              if (comp.isChoix && comp.options && comp.options.length > 0) {
-                const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
-                choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
-              } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
-                // ✨ 2. CORRECTION DU FORMAT (Tableau de texte natif PostgreSQL au lieu de JSONB)
-                const opts = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
-                choiceOptions = `ARRAY[${opts}]::text[]`;
-              }
+          if (comp.isChoix && comp.options && comp.options.length > 0) {
+            const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+            choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
+          } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
+            const opts = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+            choiceOptions = `ARRAY[${opts}]::text[]`;
+          } else if (comp.isOnlySpecialty) {
+            // ✨ LE DRAPEAU SECRET GRAVÉ DANS SUPABASE
+            choiceOptions = `ARRAY['PURE_SPEC']::text[]`;
+          }
 
-              return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
-            }).join(',\n  ');
+          return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
+		}).join(',\n  ');
 
             sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_ids, choice_options) VALUES \n  ${utilesInserts};\n`;
           }

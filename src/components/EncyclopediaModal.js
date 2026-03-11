@@ -4,6 +4,7 @@
 // 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 11.2.0
 // 12.5.0
+// 13.0.3
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -134,13 +135,26 @@ export default function EncyclopediaModal({
     if (!arraysEqual(newAtouts, oldAtouts)) changedRelations.atouts = getDiff(oldAtouts, newAtouts);
 
 	  // --- C. COMPÉTENCES UTILES (Via le BonusBuilder) ---
-	  const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection) : '[]';
-	  const newUtiles = parsedTech.predilections ? JSON.stringify(parsedTech.predilections) : '[]';
-	  
-	  if (newUtiles !== oldUtiles) {
-		changedRelations.competencesUtiles = newUtiles;
-	  }
-
+		const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection) : '[]';
+		
+		// ✨ MAGIE : On fusionne les briques fuchsia et dorées !
+		const newUtilesArray = [...(parsedTech.predilections || [])];
+		if (parsedTech.specialites) {
+		  parsedTech.specialites.forEach(s => {
+			newUtilesArray.push({
+			  nom: s.competence,
+			  specialite: s.nom,
+			  isChoix: false,
+			  isOnlySpecialty: true // 👈 LE DRAPEAU SECRET
+			});
+		  });
+		}
+		
+		const newUtiles = JSON.stringify(newUtilesArray);
+		if (newUtiles !== oldUtiles) {
+		  changedRelations.competencesUtiles = newUtiles;
+		}
+		
 	  // --- D. COMPÉTENCES FUTILES (Via le BonusBuilder) ---
 	  const newFutiles = (parsedTech.futiles || []).map(f => {
 		if (f.isChoix) return { is_choice: true, choice_options: f.options || [], competence_futile_id: null };

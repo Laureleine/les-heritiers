@@ -4,7 +4,7 @@
 // 10.4.0 // 10.8.0 // 10.9.0
 // 11.2.0
 // 12.1.0
-// 13.0.0 // 13.0.1
+// 13.0.0 // 13.0.1 // 13.0.3
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -201,8 +201,14 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
     if (activeTab === 'fairy_types') {
       
-      // On récupère juste les compétences futiles formatées depuis le Nuage pour le constructeur Lego
       const fairyCloudData = gameData.fairyData?.[item.name || item.nom];
+
+      // 🛡️ SÉPARATION DES PRÉDILECTIONS ET DES SPÉCIALITÉS PURES
+      const vraiesPredilections = (fairyCloudData?.competencesPredilection || []).filter(p => !p.isOnlySpecialty);
+      const specialitesPures = (fairyCloudData?.competencesPredilection || [])
+        .filter(p => p.isOnlySpecialty)
+        .map(p => ({ competence: p.nom, nom: p.specialite })); // Format attendu par la brique dorée
+
       const futilesFormatees = (fairyCloudData?.competencesFutilesPredilection || []).map(f => {
         if (typeof f === 'string') return { isChoix: false, nom: f }; 
         return { isChoix: true, options: f.options || [] };
@@ -236,8 +242,10 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
         atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         
+        // ✨ ON INJECTE LES BRIQUES DORÉES
         techData: JSON.stringify({
-          predilections: fairyCloudData?.competencesPredilection || [],
+          predilections: vraiesPredilections,
+          specialites: specialitesPures, 
           futiles: futilesFormatees
         }, null, 2)
       });

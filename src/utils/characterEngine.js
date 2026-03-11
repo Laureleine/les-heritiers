@@ -1,5 +1,6 @@
 // src/utils/characterEngine.js
 // 12.0.0
+// 13.0.3
 
 // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
 export function characterReducer(state, action) {
@@ -77,9 +78,10 @@ export function characterReducer(state, action) {
         }
       });
 
-      const predFinales = (feeData?.competencesPredilection || []).map((p, i) => 
-        p.isChoix ? newState.competencesLibres?.choixPredilection?.[i] : p.nom
-      ).filter(Boolean);
+    const predFinales = (feeData?.competencesPredilection || [])
+      .filter(p => !p.isOnlySpecialty) // ✨ L'INTERDIT : On ignore les Spécialités Pures pour le bonus +2 !
+      .map((p, i) => p.isChoix ? newState.competencesLibres?.choixPredilection?.[i] : p.nom )
+      .filter(Boolean);
 
       const compsMap = {
         'Aventurier': ['Conduite', 'Mouvement', 'Ressort', 'Survie'],
