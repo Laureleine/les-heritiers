@@ -214,7 +214,7 @@ export default function Telegraphe({ session, userProfile }) {
 
           {/* VUE : CHAT (CONVERSATION) */}
           {view === 'chat' && (
-            <div className="flex-1 flex flex-col bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+            <div className="flex-1 flex flex-col min-h-0 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
               <div className="bg-amber-100 border-b border-amber-300 p-2 flex justify-between items-center">
                 <button onClick={() => { setView('list'); setActiveTicket(null); }} className="text-sm text-amber-800 hover:underline">← Retour</button>
                 {isAdmin && activeTicket?.status !== 'resolu' && (
@@ -222,7 +222,7 @@ export default function Telegraphe({ session, userProfile }) {
                 )}
               </div>
               
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                 {messages.map((m, idx) => (
                   <div key={idx} className={`flex flex-col ${m.is_admin ? 'items-start' : 'items-end'}`}>
                     <span className="text-[10px] text-gray-500 mb-1">{m.is_admin ? 'Garde des Sceaux' : 'Vous'}</span>
