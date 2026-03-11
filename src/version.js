@@ -6,6 +6,13 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.0.4',
+    date: '11 Mars 2026',
+    changes: [
+      '🐛 **Hémorragie Mémorielle (Futiles) :** Résolution d\'une perte de données silencieuse lors de la sauvegarde d\'une Fée dans l\'Encyclopédie. Un conflit de nomenclature (franglais) entre `name` et `nom` provoquait la suppression des compétences futiles fixes dans la base de données.'
+    ]
+  },
+  {
     version: '13.0.3',
     date: '11 Mars 2026',
     changes: [
