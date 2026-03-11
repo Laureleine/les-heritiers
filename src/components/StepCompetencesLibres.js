@@ -1,9 +1,10 @@
 // src/components/StepCompetencesLibres.js
 // 9.0.4 // 9.11.0
 // 11.1.0
+// 13.0.0
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { Plus, Minus, Star, Brain, RotateCcw, Users } from 'lucide-react';
+import { Plus, Minus, Star, Brain, RotateCcw, Users, Info } from 'lucide-react'; // ✨ Info ajouté ici
 import { addGlobalSpeciality } from '../utils/supabaseGameData';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -14,25 +15,25 @@ const SKILLS_ESPRIT = [
   'Habiletés', 'Médecine', 'Observation', 'Sciences'
 ];
 
-export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
+export default function StepCompetencesLibres() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
   const { profils, competences, competencesParProfil, fairyData } = gameData;
 
-  // Le remplaçant local :
   const onCompetencesLibresChange = (c) => {
     if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: c }, gameData });
   };
 
-  const [creatingSpecFor, setCreatingSpecFor] = useState(null); // 👈 VOUS GARDEZ CECI ET LA SUITE INTACTE
+  const [creatingSpecFor, setCreatingSpecFor] = useState(null);
   const [selectValue, setSelectValue] = useState('');
+
   const feeData = fairyData[character.typeFee];
   const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} };
 
-  // --- 1. SPÉCIALITÉS ISSUES DES ATOUTS (Visuel Uniquement) ---
   const atoutsBonuses = useMemo(() => {
     const activeAtoutsNames = character.atouts || [];
     const allFairyAtouts = feeData?.atouts || [];
     const specs = [];
+
     allFairyAtouts.forEach(atout => {
       if (activeAtoutsNames.includes(atout.nom)) {
         const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques || '{}') : atout.effets_techniques;
@@ -46,18 +47,14 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
     return specs;
   }, [character.atouts, feeData]);
 
-  // ✨ DRY ABSOLU : On lit simplement ce que App.js a déjà calculé !
   const predFinales = character.computedStats?.predFinales || [];
-
   const getScoreBase = useCallback((nomComp) => {
     return character.computedStats?.competencesBase?.[nomComp] || 0;
   }, [character.computedStats]);
 
-  // --- Budget (Esprit / Libre) ---
   const budgetData = useMemo(() => {
     const esprit = Number(character.caracteristiques?.esprit || 0);
     const bonusEspritMax = Math.max(0, esprit - 3);
-
     let investissementEligibleEsprit = 0;
     let investissementStandard = 0;
 
@@ -70,7 +67,7 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
       let count = specs.length;
       if (nom === 'Conduite' && count > 0) {
         const rangTotal = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
-        if (rangTotal > 0) count -= 1; // Slot gratuit Conduite
+        if (rangTotal > 0) count -= 1;
       }
       if (SKILLS_ESPRIT.includes(nom)) investissementEligibleEsprit += count;
       else investissementStandard += count;
@@ -140,7 +137,6 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
   const handleCreateGlobalSpeciality = useCallback(async (nomComp, specName) => {
     const compData = competences[nomComp];
     if (!compData || !compData.id) return;
-
     try {
       const newSpecObj = await addGlobalSpeciality(compData.id, specName);
       if (competences[nomComp]) {
@@ -172,8 +168,8 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
       const pred = feeData.competencesPredilection[predIndex];
       return pred.specialite || (pred.isSpecialiteChoix ? lib.choixSpecialite?.[predIndex] : null);
     };
-    const fairySpecActuelle = getFairySpec();
 
+    const fairySpecActuelle = getFairySpec();
     const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
     const availableSpecs = competences[nomComp]?.specialites || [];
     const isCreating = creatingSpecFor === nomComp;
@@ -205,7 +201,6 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
             <button onClick={() => handleRangChange(nomComp, 1)} disabled={total >= (isPred ? 5 : 4) || !canAfford} className="px-2 py-1 hover:bg-green-100 text-amber-800 disabled:opacity-30 border-l border-stone-300 font-bold">+</button>
           </div>
         </div>
-
         <div className="pl-2 border-l-2 border-amber-100 mt-1">
           <div className="flex flex-wrap gap-1 mb-1">
             {fairySpecActuelle && (
@@ -213,20 +208,13 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
             )}
             {specsFromAtouts.map((spec, idx) => (
               <span key={`atout-${idx}`} className="text-[10px] px-2 py-1 bg-yellow-100 text-yellow-900 border border-yellow-300 ring-1 ring-yellow-200 rounded flex items-center gap-1 shadow-sm" title={`Offert par l'atout : ${spec.source}`}>
-                <Star size={10} className="fill-yellow-600 text-yellow-700" /><span className="font-medium font-serif">{spec.nom}</span>
+                ⭐ {spec.nom}
               </span>
             ))}
-            {userSpecs.map((specName, index) => {
-              if (specsFromAtouts.some(a => a.nom === specName)) return null;
-              const specData = availableSpecs.find(s => s.nom === specName);
-              const isCommunity = specData ? !specData.is_official : false;
-              const isFreeSlot = isFreeEligible && index === 0;
-              let badgeStyle = "bg-blue-50 text-blue-800 border-blue-200";
-              if (isFreeSlot) badgeStyle = "bg-green-50 text-green-800 border-green-200";
-              else if (isCommunity) badgeStyle = "bg-purple-100 text-purple-900 border-purple-300 ring-1 ring-purple-200";
+            {userSpecs.map(specName => {
+              const isFreeSlot = isFreeEligible && userSpecs.indexOf(specName) === 0;
               return (
-                <span key={specName} className={`text-[10px] px-2 py-1 rounded border flex items-center gap-1 group transition-all ${badgeStyle}`}>
-                  {isCommunity && !isFreeSlot && <Users size={10} className="opacity-70" />}
+                <span key={specName} className={`text-[10px] px-1.5 py-0.5 rounded border flex items-center shadow-sm animate-fade-in ${isFreeSlot ? 'bg-green-50 text-green-800 border-green-200' : 'bg-blue-50 text-blue-800 border-blue-200'}`}>
                   <span className="font-medium font-serif">{specName}</span>
                   {isFreeSlot && <span className="text-[8px] uppercase font-bold ml-0.5 opacity-80">(Gratuit)</span>}
                   <button onClick={() => handleRemoveSpecialiteUser(nomComp, specName)} className="font-bold ml-1.5 focus:outline-none hover:text-red-600">×</button>
@@ -234,7 +222,6 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
               );
             })}
           </div>
-
           <div className="mt-1">
             {!isCreating ? (
               <select value={selectValue} onChange={onSelectChange} disabled={!effectiveCanAffordSpec} className="w-full text-[11px] p-1 border rounded bg-gray-50 font-serif text-gray-700 outline-none focus:border-amber-400 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -264,6 +251,15 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
 
   return (
     <div className="space-y-6 animate-fade-in pb-20">
+
+      {/* ✨ NOUVEAU : LE MESSAGE INFORMATIF DU SCÉNARIO C ✨ */}
+      <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-start gap-3 shadow-sm animate-fade-in">
+        <Info size={20} className="text-blue-600 shrink-0 mt-0.5" />
+        <p className="text-sm text-blue-800 leading-relaxed">
+          <strong>Note :</strong> Vous pourrez choisir une Spécialité supplémentaire gratuite lors du choix d'un métier à l'étape de personnalisation.
+        </p>
+      </div>
+
       <div className="sticky top-0 z-10 bg-white/95 backdrop-blur shadow-sm p-4 rounded-b-xl border-b border-gray-200 flex justify-between items-center">
         <div>
           <h3 className="font-serif font-bold text-amber-900 text-lg">Compétences Utiles</h3>
@@ -317,16 +313,14 @@ export default function StepCompetencesLibres() { // 👈 PLUS DE PARAMÈTRES
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {profils.map(profil => {
-          const isMajeur = character.profils.majeur.nom === profil.nom;
-          const isMineur = character.profils.mineur.nom === profil.nom;
-          
-          // ✨ NOUVEAU DRY:
-          const rang = character.computedStats?.rangsProfils?.[profil.nom] || 0;
-          const totalPP = character.computedStats?.budgetsPP?.[profil.nom] || 0;
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {['Aventurier', 'Combattant', 'Érudit', 'Gentleman', 'Roublard', 'Savant'].map(profilNom => {
+          const profil = profils?.find(p => p.nom === profilNom) || { nom: profilNom };
+          const isMajeur = character.profils?.majeur?.nom === profil.nom;
+          const isMineur = character.profils?.mineur?.nom === profil.nom;
+          const rang = character.computedStats?.rangsProfils?.[profilNom] || 0;
+          const totalPP = character.computedStats?.budgetsPP?.[profilNom] || 0;
           const bonusFixe = isMajeur ? 8 : isMineur ? 4 : 0;
-
           const headerColor = isMajeur ? 'text-amber-900' : isMineur ? 'text-blue-900' : 'text-gray-500';
           const borderColor = isMajeur ? 'border-amber-400' : isMineur ? 'border-blue-300' : 'border-gray-200';
           const bgColor = isMajeur ? 'bg-amber-50/50' : isMineur ? 'bg-blue-50/30' : 'bg-gray-50/50';

@@ -4,6 +4,7 @@
 // 10.4.0 // 10.8.0 // 10.9.0
 // 11.2.0
 // 12.1.0
+// 13.0.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -200,19 +201,23 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
     setIsCreating(false);
 
     if (activeTab === 'fairy_types') {
-      const futilesList = item.fairy_competences_futiles_predilection || [];
-      const fixedFutiles = futilesList.filter(f => !f.is_choice);
-      const choiceFutiles = futilesList.filter(f => f.is_choice); // 👈 On isole les choix multiples !
+      
+      // ✨ LA MAGIE DU NUAGE : On récupère les données déjà parfaitement formatées !
+      const fairyCloudData = gameData.fairyData?.[item.name];
+
+      // On s'assure que les futiles sont sous forme d'objets pour que le constructeur Lego les comprenne
+      const futilesFormatees = (fairyCloudData?.competencesFutilesPredilection || []).map(f => {
+        if (typeof f === 'string') return { isChoix: false, nom: f };
+        return { isChoix: true, options: f.options || [] };
+      });
 
       setProposal({
         description: item.description || item.desc || '',
         taille: item.taille || item.taille_categorie || 'Moyenne',
-        era: item.era || 'traditionnelle',
-        allowedGenders: item.allowed_genders || item.allowedGenders || ['Homme', 'Femme'],
-        traits: item.traits ? item.traits.join(', ') : '',
+        traits: item.traits || '',
         avantages: item.avantages ? item.avantages.join('\n') : '',
         desavantages: item.desavantages ? item.desavantages.join('\n') : '',
-        caracteristiques: {
+        caracs: {
           agilite: { min: item.agilite_min || 1, max: item.agilite_max || 6 },
           constitution: { min: item.constitution_min || 1, max: item.constitution_max || 6 },
           force: { min: item.force_min || 1, max: item.force_max || 6 },
@@ -227,26 +232,14 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         capacitesChoixIds: item.fairy_type_capacites?.filter(l => l.capacite_type === 'choix').map(l => l.capacite?.id).filter(Boolean) || [],
         pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
         atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
-        pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
-        atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         
-        // ✨ LE NOUVEAU JSON UNIFIÉ POUR LE BUILDER
+        // ✨ L'INTERVENTION EST ICI : On injecte l'Héritage lu depuis le Nuage !
         techData: JSON.stringify({
-          predilections: (item.competencesPredilection || []).map(p => ({
-            nom: p.nom || null,
-            specialite: p.specialite || null,
-            isChoix: p.isChoix || false,
-            isSpecialiteChoix: p.isSpecialiteChoix || false,
-            options: p.options || p.choice_options || []
-          })),
-          futiles: (fixedFutiles.map(f => {
-			const compFound = competencesFutiles.find(c => c.id === f.competence_futile_id);
-            return compFound ? { isChoix: false, nom: compFound.name } : null;
-          }).filter(Boolean)).concat(choiceFutiles.map(f => ({
-            isChoix: true, options: f.choice_options || []
-          })))
+          predilections: fairyCloudData?.competencesPredilection || [],
+          futiles: futilesFormatees
         }, null, 2)
       });
+
     } else {
       // Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
       let existingFairyIds = [];
