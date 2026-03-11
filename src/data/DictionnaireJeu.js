@@ -38,7 +38,11 @@ export const AVAILABLE_BADGES = [
   { id: 'safari_guide', label: <span className="flex items-center gap-1"><Compass size={12}/> Guide de Safari</span>, color: 'bg-amber-100 text-amber-900 border-amber-400 shadow-sm'   },
   { id: 'newton_apple', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/> La Pomme de Newton</span>,     color: 'bg-lime-100 text-lime-900 border-lime-400 shadow-sm'   },
   { id: 'renard_renarde', label: <span className="flex items-center gap-1"><VenetianMask size={12}/> Le Renard de la Renarde</span>,     color: 'bg-orange-100 text-orange-900 border-orange-400 shadow-sm'   },
-  { id: 'mecene', label: <span className="flex items-center gap-1"><Gem size={12}/> Mécène</span>, color: 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-400 shadow-md'   }
+  { id: 'goblin_hunter', label: 'Chasseur de Gobelins 🏹', color: 'bg-green-900 text-amber-400 border-amber-500 shadow-md' },
+  { id: 'anomaly_tracker', label: 'Traqueur d\'Anomalies 🔍', color: 'bg-indigo-100 text-indigo-900 border-indigo-400 shadow-sm' },
+  { id: 'mecene', label: <span className="flex items-center gap-1"><Gem size={12}/> Mécène</span>, color: 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-400 shadow-md'   },
+  { id: 'pdf_inspector', label: 'Inspecteur des Rotatives 🖨️', color: 'bg-stone-800 text-stone-100 border-stone-500 shadow-sm' },
+  { id: 'typo_hunter', label: <span className="flex items-center gap-1"><Feather size={12}/> Traqueur de Coquilles</span>, color: 'bg-rose-50 text-rose-800 border-rose-300 shadow-sm' }
 ];
 
 // ============================================================================
