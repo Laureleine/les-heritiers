@@ -4,7 +4,7 @@
 // 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 11.2.0
 // 12.5.0
-// 13.0.3
+// 13.0.3 // 13.0.4
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -156,11 +156,14 @@ export default function EncyclopediaModal({
 		}
 		
 	  // --- D. COMPÉTENCES FUTILES (Via le BonusBuilder) ---
-	  const newFutiles = (parsedTech.futiles || []).map(f => {
-		if (f.isChoix) return { is_choice: true, choice_options: f.options || [], competence_futile_id: null };
-		const found = allCompFutiles.find(c => c.name === f.nom);
-		return { is_choice: false, choice_options: null, competence_futile_id: found ? found.id : null };
-	  });
+		const newFutiles = (parsedTech.futiles || []).map(f => {
+		  if (f.isChoix) return { is_choice: true, choice_options: f.options || [], competence_futile_id: null };
+		  
+		  // ✨ LE CORRECTIF EST ICI : Le Nuage parle français (c.nom), mais on garde c.name par sécurité !
+		  const found = allCompFutiles.find(c => c.nom === f.nom || c.name === f.nom);
+		  
+		  return { is_choice: false, choice_options: null, competence_futile_id: found ? found.id : null };
+		});
 
 	  const oldFutiles = (editingItem.fairy_competences_futiles_predilection || []).map(f => ({
 		is_choice: f.is_choice, competence_futile_id: f.competence_futile_id || null, choice_options: f.choice_options || []
