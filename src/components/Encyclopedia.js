@@ -4,7 +4,7 @@
 // 10.4.0 // 10.8.0 // 10.9.0
 // 11.2.0
 // 12.1.0
-// 13.0.0
+// 13.0.0 // 13.0.1
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -156,10 +156,9 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
   // 🌟 Ouvrir le modal en mode CRÉATION 
   const handleCreate = () => {
     setIsCreating(true);
-    setEditingItem({ id: null, name: '', description: '' }); 
+    setEditingItem({ id: null, name: '', description: '' });
 
     if (activeTab === 'fairy_types') {
-      // 🧚 STRUCTURE COMPLÈTE D'UNE FÉE VIDE
       setProposal({
         name: '',
         description: '',
@@ -168,7 +167,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         traits: '',
         avantages: '',
         desavantages: '',
-        caracs: {
+        caracteristiques: {
           agilite: {min:1, max:6}, constitution: {min:1, max:6}, force: {min:1, max:6}, precision: {min:1, max:6},
           esprit: {min:1, max:6}, perception: {min:1, max:6}, prestance: {min:1, max:6}, sangFroid: {min:1, max:6}
         },
@@ -202,22 +201,25 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
     if (activeTab === 'fairy_types') {
       
-      // ✨ LA MAGIE DU NUAGE : On récupère les données déjà parfaitement formatées !
-      const fairyCloudData = gameData.fairyData?.[item.name];
-
-      // On s'assure que les futiles sont sous forme d'objets pour que le constructeur Lego les comprenne
+      // On récupère juste les compétences futiles formatées depuis le Nuage pour le constructeur Lego
+      const fairyCloudData = gameData.fairyData?.[item.name || item.nom];
       const futilesFormatees = (fairyCloudData?.competencesFutilesPredilection || []).map(f => {
-        if (typeof f === 'string') return { isChoix: false, nom: f };
+        if (typeof f === 'string') return { isChoix: false, nom: f }; 
         return { isChoix: true, options: f.options || [] };
       });
 
       setProposal({
+        name: item.name || item.nom || '', 
         description: item.description || item.desc || '',
         taille: item.taille || item.taille_categorie || 'Moyenne',
-        traits: item.traits || '',
-        avantages: item.avantages ? item.avantages.join('\n') : '',
-        desavantages: item.desavantages ? item.desavantages.join('\n') : '',
-        caracs: {
+        era: item.era || 'traditionnelle',
+        allowedGenders: item.allowed_genders || item.allowedGenders || ['Homme', 'Femme'],
+        traits: item.traits ? (Array.isArray(item.traits) ? item.traits.join(', ') : item.traits) : '',
+        avantages: item.avantages ? (Array.isArray(item.avantages) ? item.avantages.join('\n') : item.avantages) : '',
+        desavantages: item.desavantages ? (Array.isArray(item.desavantages) ? item.desavantages.join('\n') : item.desavantages) : '',
+        
+        // ✨ CORRECTION : Le bon nom de variable, et on lit directement les colonnes SQL exactes !
+        caracteristiques: {
           agilite: { min: item.agilite_min || 1, max: item.agilite_max || 6 },
           constitution: { min: item.constitution_min || 1, max: item.constitution_max || 6 },
           force: { min: item.force_min || 1, max: item.force_max || 6 },
@@ -227,21 +229,20 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
           prestance: { min: item.prestance_min || 1, max: item.prestance_max || 6 },
           sangFroid: { min: item.sang_froid_min || 1, max: item.sang_froid_max || 6 }
         },
+        
         capaciteFixe1: item.fairy_type_capacites?.find(l => l.capacite_type === 'fixe1')?.capacite?.id || '',
         capaciteFixe2: item.fairy_type_capacites?.find(l => l.capacite_type === 'fixe2')?.capacite?.id || '',
         capacitesChoixIds: item.fairy_type_capacites?.filter(l => l.capacite_type === 'choix').map(l => l.capacite?.id).filter(Boolean) || [],
         pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
         atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         
-        // ✨ L'INTERVENTION EST ICI : On injecte l'Héritage lu depuis le Nuage !
         techData: JSON.stringify({
           predilections: fairyCloudData?.competencesPredilection || [],
           futiles: futilesFormatees
         }, null, 2)
       });
-
     } else {
-      // Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
+		// Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
       let existingFairyIds = [];
       if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
       if (activeTab === 'fairy_powers') existingFairyIds = item.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];

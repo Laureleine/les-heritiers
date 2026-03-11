@@ -6,6 +6,14 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.0.1',
+    date: '11 Mars 2026',
+    changes: [
+      '🧹 **L\'Affaire du Gobelin (Purification) :** Nettoyage majeur de l\'éditeur de Fées dans l\'Encyclopédie. Résolution des conflits de nommage qui empêchaient le constructeur visuel (Lego) de charger correctement les compétences complexes (ex: Conduite) et les compétences futiles.',
+      '✨ **Restructuration Mémorielle :** Suppression des adaptateurs de données complexes et obsolètes. Le système lit désormais la base de données de manière pure et directe, garantissant le chargement instantané de l\'identité de la fée et de ses potentiels (min/max) stricts.'
+    ]
+  },
+  {
     version: '13.0.0',
     date: '10 Mars 2026',
     changes: [
