@@ -10,7 +10,8 @@ export const VERSION_HISTORY = [
     date: '11 Mars 2026',
     changes: [
       '🧹 **L\'Affaire du Gobelin (Purification) :** Nettoyage majeur de l\'éditeur de Fées dans l\'Encyclopédie. Résolution des conflits de nommage qui empêchaient le constructeur visuel (Lego) de charger correctement les compétences complexes (ex: Conduite) et les compétences futiles.',
-      '✨ **Restructuration Mémorielle :** Suppression des adaptateurs de données complexes et obsolètes. Le système lit désormais la base de données de manière pure et directe, garantissant le chargement instantané de l\'identité de la fée et de ses potentiels (min/max) stricts.'
+      '✨ **Restructuration Mémorielle :** Suppression des adaptateurs de données complexes et obsolètes. Le système lit désormais la base de données de manière pure et directe, garantissant le chargement instantané de l\'identité de la fée et de ses potentiels (min/max) stricts.',
+      '📠 **Mécanique Pneumatique :** Résolution du défaut d\'affichage des très longues missives. Le Télégraphe force désormais le retour à la ligne des mots interminables et intègre un ascenseur vertical (barre de défilement) natif et permanent grâce à une structure Flexbox rigoureuse (`min-h-0`).'
     ]
   },
   {
