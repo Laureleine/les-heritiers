@@ -1,5 +1,6 @@
 // 10.4.0 // 10.6.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 12.5.0
+// 13.1.0
 
 import React, { useState } from 'react';
 import { Star, Info, Check, Sparkles, AlertCircle } from 'lucide-react';
@@ -121,19 +122,25 @@ export function Step3() {
   const exteriorPowers = React.useMemo(() => {
     if (!fairyData || !character.typeFee) return [];
     const others = [];
-    
-    // 🛡️ L'ANTI-BUG EST ICI : On liste les pouvoirs INNÉS de notre fée pour les exclure du catalogue extérieur !
+
+    // 🛡️ L'ANTI-BUG EST ICI : On liste les pouvoirs INNÉS de notre fée pour les exclure !
     const myFairyPowers = fairyData[character.typeFee]?.pouvoirs?.map(p => p.nom) || [];
 
     Object.keys(fairyData).forEach(fName => {
       if (fName !== character.typeFee) {
-        const fData = fairyData[fName]; 
+        const fData = fairyData[fName];
         if (fData && fData.pouvoirs) {
           fData.pouvoirs.forEach(p => {
+            
+            // ✨ LE BOUCLIER DE L'ARCHITECTE EST ICI ✨
+            // On vérifie que le pouvoir est strictement standard (pas profond ni légendaire)
+            const isStandard = p.type_pouvoir === 'masque' || p.type_pouvoir === 'demasque';
+
             // 🛡️ On s'assure que :
-            // 1. Ce n'est pas un pouvoir que l'on possède déjà naturellement
-            // 2. On ne l'a pas déjà ajouté (pour éviter les doublons si 3 fées partagent un même pouvoir)
-            if (!myFairyPowers.includes(p.nom) && !others.some(ex => ex.nom === p.nom)) {
+            // 1. C'est un pouvoir standard
+            // 2. Ce n'est pas un pouvoir que l'on possède déjà naturellement
+            // 3. On ne l'a pas déjà ajouté
+            if (isStandard && !myFairyPowers.includes(p.nom) && !others.some(ex => ex.nom === p.nom)) {
               others.push({ ...p, origine: fName });
             }
           });
@@ -143,7 +150,7 @@ export function Step3() {
 
     // On trie alphabétiquement pour que ce soit beau
     return others.sort((a, b) => a.nom.localeCompare(b.nom));
-  }, [fairyData, character.typeFee]);
+  }, [fairyData, character.typeFee]); 
 
   // ✨ NOUVEAU : Trouver si un pouvoir extérieur est déjà sélectionné par le joueur
   const selectedExterior = character.pouvoirs?.find(pNom => exteriorPowers.some(ep => ep.nom === pNom));

@@ -6,6 +6,17 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.1.0',
+    date: '12 Mars 2026',
+    changes: [
+      '🛡️ **Le Grand Bouclier d\'Aegis (Audit d\'Infrastructure) :** Renforcement total et purification de la base de données. Verrouillage absolu contre les failles d\'injection (Search Path Poisoning, incantations SQL du Conseil), nettoyage des reliques obsolètes, pose de contraintes mathématiques et temporelles (Cohérence de l\'XP, Statuts, Triggers), et blindage intelligent des portiques de sécurité communautaires (RLS).',
+      '⚖️ **Lois de la Magie (Anomalie Féérique) :** L\'encart de l\'Anomalie Féérique a été révisé par le Conseil. Il est désormais impossible pour un jeune Héritier de contourner les règles en s\'appropriant les dangereux Pouvoirs Profonds ou Légendaires appartenant aux autres espèces.',
+      '🔒 **Le Sceau des Héritiers :** Le statut de la fiche de personnage (brouillon, validé, scellé) est désormais parfaitement mémorisé et restitué par le système de sauvegarde du Nuage.',
+      '🛡️ **Verrouillage Automatique :** L\'ouverture d\'un personnage scellé ou validé active instantanément le bouclier de sécurité de l\'application (Mode Lecture Seule), figeant ainsi l\'intégralité des champs modifiables.',
+      '👁️ **Conseil des Gardiens :** Restauration de l\'interface visuelle pour le format "Chirurgical". Les Gardiens voient à nouveau précisément les ajouts (vert) et les retraits (rouge) concernant les Atouts, Pouvoirs et Capacités.'
+    ]
+  },
+  {
     version: '13.0.4',
     date: '11 Mars 2026',
     changes: [
