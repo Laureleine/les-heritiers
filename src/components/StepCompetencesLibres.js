@@ -1,7 +1,7 @@
 // src/components/StepCompetencesLibres.js
 // 9.0.4 // 9.11.0
 // 11.1.0
-// 13.0.0
+// 13.0.0 // 13.3.0
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Minus, Star, Brain, RotateCcw, Users, Info } from 'lucide-react'; // ✨ Info ajouté ici
@@ -316,6 +316,12 @@ export default function StepCompetencesLibres() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {['Aventurier', 'Combattant', 'Érudit', 'Gentleman', 'Roublard', 'Savant'].map(profilNom => {
           const profil = profils?.find(p => p.nom === profilNom) || { nom: profilNom };
+
+          // ✨ LE TRADUCTEUR DE GENRE S'INSÈRE LÀ :
+          const isFemme = character.genreHumain === 'Féminin' || character.sexe === 'Femme';
+          // On vérifie si c'est une femme ET si le profil a une version féminine enregistrée dans la base
+          const displayNom = isFemme && profil.nomFeminin ? profil.nomFeminin : profil.nom;
+
           const isMajeur = character.profils?.majeur?.nom === profil.nom;
           const isMineur = character.profils?.mineur?.nom === profil.nom;
           const rang = character.computedStats?.rangsProfils?.[profilNom] || 0;
@@ -331,7 +337,7 @@ export default function StepCompetencesLibres() {
                 <div className="flex items-center gap-2">
                   <span className="text-xl">{profil.icon || '👤'}</span>
                   <div>
-                    <h4 className={`font-bold font-serif leading-none ${headerColor}`}>{profil.nom}</h4>
+					<h4 className={`font-bold font-serif leading-none ${headerColor}`}>{displayNom}</h4>
                     <div className="flex gap-1 mt-1">
                       {isMajeur && <span className="text-[10px] bg-amber-600 text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Majeur (+2)</span>}
                       {isMineur && <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Mineur (+1)</span>}

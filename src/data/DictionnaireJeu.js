@@ -1,9 +1,10 @@
 // 10.6.0 // 10.9.0 // 10.10.0
 // 11.0.0
 // 12.6.0
+// 13.3.0
 
 import React from 'react';
-import { Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle, Compass } from 'lucide-react';
+import { Gift, Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle, Compass } from 'lucide-react';
 
 // ============================================================================
 // 1. LES CONSTANTES ET CARACTÉRISTIQUES (Ancien constants.js)
@@ -42,7 +43,8 @@ export const AVAILABLE_BADGES = [
   { id: 'anomaly_tracker', label: 'Traqueur d\'Anomalies 🔍', color: 'bg-indigo-100 text-indigo-900 border-indigo-400 shadow-sm' },
   { id: 'mecene', label: <span className="flex items-center gap-1"><Gem size={12}/> Mécène</span>, color: 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-400 shadow-md'   },
   { id: 'pdf_inspector', label: 'Inspecteur des Rotatives 🖨️', color: 'bg-stone-800 text-stone-100 border-stone-500 shadow-sm' },
-  { id: 'typo_hunter', label: <span className="flex items-center gap-1"><Feather size={12}/> Traqueur de Coquilles</span>, color: 'bg-rose-50 text-rose-800 border-rose-300 shadow-sm' }
+  { id: 'typo_hunter', label: <span className="flex items-center gap-1"><Feather size={12}/> Traqueur de Coquilles</span>, color: 'bg-rose-50 text-rose-800 border-rose-300 shadow-sm' },
+  { id: 'passeur_ames', label: <span className="flex items-center gap-1"><Gift size={12}/> Passeur d'Âmes</span>, color: 'bg-emerald-100 text-emerald-900 border-emerald-400 shadow-sm' }
 ];
 
 // ============================================================================

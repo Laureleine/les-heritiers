@@ -2,6 +2,7 @@
 // 9.3.0 // 9.9.0 // 9.11.0
 // 10.6.0 // 10.9.0
 // 11.1.0
+// 13.3.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';
@@ -105,6 +106,16 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
   
   // ✨ ON PUISE DIRECTEMENT DANS LE NUAGE
   const { fairyData, socialItems } = gameData;
+
+  // ✨ LE NOUVEAU TRADUCTEUR DE GENRE POUR LA BOUTIQUE
+  const getProfilDisplayName = (pName) => {
+    const isFemme = character.genreHumain === 'Féminin' || character.sexe === 'Femme';
+    if (!isFemme) return pName; // Si c'est un homme, on garde le nom normal
+    // On va chercher le nom féminin dans le Nuage
+    const pData = gameData.profils?.find(p => p.nom === pName);
+    return pData?.nomFeminin || pName;
+  };
+  
   const [achats, setAchats] = useState(character.vieSociale || {});
 
   const getItemsForProfile = (profilName) => {
@@ -289,7 +300,7 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
       <div>
         <div className="mb-4 flex flex-wrap justify-between items-center bg-stone-100 p-3 rounded-xl border border-stone-200 gap-2">
           <h3 className="font-serif font-bold text-stone-800 flex items-center gap-2">
-            {profilNom}
+            {getProfilDisplayName(profilNom)}
             {character.profils?.majeur?.nom === profilNom && <span className="text-[10px] bg-amber-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Majeur</span>}
             {character.profils?.mineur?.nom === profilNom && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Mineur</span>}
           </h3>
@@ -358,8 +369,8 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
                     : 'border-transparent hover:bg-gray-50 text-gray-600'
                 }`}
               >
-                <span className={`font-serif font-bold ${!hasBudget && !isActive ? 'opacity-50' : ''}`}>{pName}</span>
-                {character.profils?.majeur?.nom === pName && <Star size={16} className="text-amber-500" fill="currentColor"/>}
+			    <span className={`font-serif font-bold ${!hasBudget && !isActive ? 'opacity-50' : ''}`}>{getProfilDisplayName(pName)}</span>
+			    {character.profils?.majeur?.nom === pName && <Star size={16} className="text-amber-500" fill="currentColor"/>}
                 {character.profils?.mineur?.nom === pName && <Award size={16} className="text-blue-500"/>}
               </button>
             );
@@ -383,7 +394,7 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
                   
                   return (
                     <div key={profil}>
-                      <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">{profil}</h4>
+                      <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">{getProfilDisplayName(profil)}</h4>
                       <ul className="space-y-1">
                         {itemsOfProfil.map(item => (
                           <li key={item.id} className="text-sm font-semibold text-stone-700 flex justify-between group">

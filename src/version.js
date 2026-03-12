@@ -6,6 +6,15 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.3.0',
+    date: '12 Mars 2026',
+    changes: [
+      '👥 **Transparence Communautaire :** Le tableau de bord d\'administration est désormais publiquement accessible sous le nom de "Communauté". Tous les Héritiers peuvent y consulter la liste des membres, leurs titres honorifiques et les métriques d\'activité du serveur.',
+      '🛡️ **Privilèges Restreints :** Bien que l\'affichage soit public, les pouvoirs de promotion au rang de Gardien et l\'octroi de badges restent techniquement et visuellement verrouillés par le Super Administrateur.',
+      '📝 **Moteur Grammatical :** Le système d\'accord des textes reconnaît désormais parfaitement le sexe de votre Faux-Semblant dans l\'étape des Compétences Utiles et dans la Boutique (Équipements & Vie Sociale). Finis les Savants et les Aventuriers quand on incarne une Lady ou une Érudite !'
+    ]
+  },
+  {
     version: '13.2.0',
     date: '12 Mars 2026',
     changes: [
