@@ -3,7 +3,7 @@
 // 10.2.0 // 10.4.0
 // 11.1.0
 // 12.4.0
-// 13.2.0
+// 13.2.0 // 13.3.0
 
 import React, { useState, useEffect } from 'react';
 import { User, Users, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2, Copy, Gift, X } from 'lucide-react'; 
@@ -361,11 +361,9 @@ const loadCharacters = async (isMounted = true) => {
             <Users size={16} /> <span className="hidden sm:inline">Cercles</span>
           </button>
 		  
-		  {isAdmin && (
-		    <button onClick={onOpenAdmin} className="flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Administration">
-			  <Shield size={16} /> <span className="hidden sm:inline">Administration</span>
-		    </button>
-		  )}
+          <button onClick={onOpenAdmin} className="flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
+            <BarChart2 size={16} /> <span className="hidden sm:inline">Communauté</span>
+          </button>
 
           <button onClick={onOpenAccount} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-sm shadow-sm">
             <User size={16} /> <span className="hidden sm:inline">Compte</span>
