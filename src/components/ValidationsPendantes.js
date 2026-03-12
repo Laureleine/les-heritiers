@@ -4,6 +4,7 @@
 // 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
 // 11.1.0 // 11.3.0 // 11.4.0
 // 12.1.0 // 12.2.0 // 12.3.0 // 12.4.0
+// 13.1.0
 
 import React, { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft, Shield, Copy, User, Plus, Minus, TestTubeDiagonal, ShieldAlert } from 'lucide-react';
@@ -427,7 +428,57 @@ export default function ValidationsPendantes({ session, onBack }) {
                     </ul>
                   </div>
                 )}
+				
+      {/* --- B. LES RELATIONS MAGIQUES (Delta Chirurgical) --- */}
+      {hasRelations && (
+        <div className="mt-4 border-t border-dashed border-gray-200 pt-4">
+          <span className="text-xs font-bold text-slate-700 flex items-center gap-1">
+            <TestTubeDiagonal size={14} />
+            Relations modifiées (Atouts, Pouvoirs, Capacités...) :
+          </span>
+          <ul className="mt-2 space-y-2">
+            {Object.keys(pData._relations).map((relName) => {
+              const relData = pData._relations[relName];
 
+              // 1. L'ancien format (si de vieilles requêtes sont encore en attente dans la base)
+              if (Array.isArray(relData)) {
+                return (
+                  <li key={relName} className="text-sm p-2 bg-gray-50 rounded border border-gray-200">
+                    <span className="font-bold capitalize">{relName} :</span> Mise à jour complète (Ancien format)
+                  </li>
+                );
+              }
+
+              // 2. ✨ LE NOUVEAU FORMAT CHIRURGICAL ✨
+              const added = relData.added || [];
+              const removed = relData.removed || [];
+
+              if (added.length === 0 && removed.length === 0) return null;
+
+              return (
+                <li key={relName} className="text-sm p-2 bg-stone-50 rounded border border-stone-200 shadow-sm">
+                  <span className="block font-bold capitalize text-slate-800 mb-1">{relName.replace('Ids', '')} :</span>
+                  
+                  {added.length > 0 && (
+                    <div className="text-green-700 flex items-start gap-2 bg-green-50/70 p-1.5 rounded">
+                      <Plus size={14} className="mt-0.5 flex-shrink-0" />
+                      <span><strong className="text-[10px] uppercase">Ajout :</strong> {added.map(id => referenceNames[id] || id).join(', ')}</span>
+                    </div>
+                  )}
+                  
+                  {removed.length > 0 && (
+                    <div className="text-red-700 flex items-start gap-2 mt-1 bg-red-50/70 p-1.5 rounded">
+                      <Minus size={14} className="mt-0.5 flex-shrink-0" />
+                      <span className="line-through"><strong className="text-[10px] uppercase">Retrait :</strong> {removed.map(id => referenceNames[id] || id).join(', ')}</span>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}				
+				
                 {/* --- B. LES RELATIONS (Fées, Pouvoirs, Atouts...) --- */}
                 {hasRelations && ['pouvoirs', 'atouts', 'capacites', 'fairyIds'].map(relKey => {
                   const relData = pData._relations[relKey];
