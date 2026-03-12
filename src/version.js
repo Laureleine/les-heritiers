@@ -6,6 +6,16 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.2.0',
+    date: '12 Mars 2026',
+    changes: [
+      '👯 **Clonage d\'Héritiers :** Il est désormais possible de dupliquer n\'importe quel personnage depuis le tableau de bord en un clic. Idéal pour concevoir des variantes ou expérimenter sans risquer d\'altérer la fiche originale !',
+      '🛡️ **Intégrité de la Copie :** Lors du clonage, l\'Héritier généré perd automatiquement tout Sceau de validation pour reprendre le statut d\'un Brouillon modifiable.',
+      '🎁 **Le Don des Héritiers (Parchemin Scellé) :** Les joueurs (et particulièrement les Doctes) peuvent désormais céder la propriété d\'un de leurs personnages à un autre membre de la communauté.',
+      '💌 **Système de Codes Sécurisés :** Le transfert se fait via un code secret unique (ex: `DON-A7X9`), garantissant que seul le destinataire choisi puisse adopter le personnage dans son propre Grimoire.'
+    ]
+  },
+  {
     version: '13.1.0',
     date: '12 Mars 2026',
     changes: [

@@ -3,11 +3,12 @@
 // 10.2.0 // 10.4.0
 // 11.1.0
 // 12.4.0
+// 13.2.0
 
 import React, { useState, useEffect } from 'react';
-import { User, Users, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2 } from 'lucide-react'; // 👈 Ajoutez BarChart2
+import { User, Users, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2, Copy, Gift, X } from 'lucide-react'; 
 import { supabase } from '../config/supabase';
-import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility } from '../utils/supabaseStorage';
+import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { logger, getCurrentUserFast, translateError, showInAppNotification } from '../utils/SystemeServices';
@@ -25,6 +26,12 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // ✨ NOUVEAU : La mémoire des dons et des modales
+  const [hasGiftsWaiting, setHasGiftsWaiting] = useState(false);
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [claimCode, setClaimCode] = useState('');
+  const [giftCodeToShow, setGiftCodeToShow] = useState(null);
+  
   // --- NOUVEAU HELPER (Version Propre) ---
   const getProfilInfo = (nomBrut, sexe) => {
     // Sécurité de base
@@ -62,7 +69,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 	}, []);
 
 const loadCharacters = async (isMounted = true) => {
-  logger.info("🚀 START: loadCharacters...");
   if (!isMounted) return;
   setLoading(true);
 
@@ -75,7 +81,6 @@ const loadCharacters = async (isMounted = true) => {
     const user = await getCurrentUserFast();
     if (!user || !isMounted) return;
     
-    logger.info("✅ User:", user.email);
     setCurrentUser(user);
     const myUserId = user.id;
 	logger.info("👤 User ID:", myUserId);
@@ -85,15 +90,23 @@ const loadCharacters = async (isMounted = true) => {
 	if (isMounted) setIsAdmin(isAdminUser);
 
     // 2. Chargement PARALLÈLE avec myUserId correct
-    logger.info("📚 2. Chargement personnages...");
     const [mesPersos, persosPublics, persosAdmin] = await Promise.all([
       getUserCharacters(myUserId),
       getPublicCharacters(),
       isAdminUser ? getAllCharactersAdmin() : Promise.resolve([])
     ]);
-	logger.info("📊 RÉSULTAT getUserCharacters:", mesPersos);
-    logger.info("📊 RÉSULTAT getPublicCharacters:", persosPublics);
 
+      // 3. Mise à jour states
+      setMyCharacters(mesPersos || []);
+      setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
+      if (isAdminUser) {
+        setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
+      }
+
+      // ✨ NOUVEAU : Ping du Radar pour le bouton Recevoir
+      const { data: giftPing } = await supabase.rpc('check_pending_gifts');
+      if (isMounted) setHasGiftsWaiting(!!giftPing);
+	  
     if (!isMounted) return;
 
     // 3. Mise à jour states
@@ -104,7 +117,6 @@ const loadCharacters = async (isMounted = true) => {
       setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
     }
 
-    logger.info("✅ Chargé:", mesPersos?.length, "persos");
     
   } catch (error) {
     if (error.name !== 'AbortError') {
@@ -117,7 +129,6 @@ const loadCharacters = async (isMounted = true) => {
     clearTimeout(timeoutId); // ✅ timeoutId correct
     if (isMounted) {
       setLoading(false); // ✅ TOUJOURS exécuté
-      logger.info("🏁 Loading = false");
     }
   }
 };
@@ -134,6 +145,64 @@ const loadCharacters = async (isMounted = true) => {
     }
   };
 
+  const handleDuplicate = async (charToDuplicate) => {
+    try {
+      // 1. On crée une "copie profonde" déconnectée de l'original
+      const newChar = JSON.parse(JSON.stringify(charToDuplicate));
+      
+      // 2. On lave l'identité pour que le Nuage crée une nouvelle fiche
+      newChar.id = null;
+      newChar.nom = `${newChar.nom} (Copie)`;
+      
+      // 3. (Optionnel) On repasse le statut en brouillon par sécurité pour éviter de dupliquer un sceau !
+      newChar.statut = 'brouillon';
+      
+      // 4. On expédie au Nuage
+      await saveCharacterToSupabase(newChar);
+      
+      // 5. On recharge l'affichage
+      await loadCharacters();
+      
+      showInAppNotification("L'Héritier a été dupliqué avec succès !", "success");
+    } catch (error) {
+      showInAppNotification(translateError(error), "error");
+    }
+  };
+  
+  // ✨ LE DON (Création du Parchemin via Modale)
+  const handleCreateGiftCode = async (char) => {
+    try {
+      const code = 'DON-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+      const { error } = await supabase.from('characters').update({ transfer_code: code }).eq('id', char.id);
+      if (error) throw error;
+      
+      // On ouvre notre belle modale avec le code généré
+      setGiftCodeToShow({ nom: char.nom, code });
+      await loadCharacters();
+    } catch (error) {
+      showInAppNotification("Erreur lors de la création du don : " + error.message, "error");
+    }
+  };
+
+  // ✨ LA RÉCEPTION (Lecture du Parchemin via Modale)
+  const handleClaimGift = async () => {
+    if (!claimCode.trim()) {
+      showInAppNotification("Veuillez saisir un code !", "warning");
+      return;
+    }
+    try {
+      const { error } = await supabase.rpc('claim_character_by_code', { p_code: claimCode.trim().toUpperCase() });
+      if (error) throw error;
+
+      showInAppNotification("Un nouvel Héritier a rejoint vos rangs !", "success");
+      setShowClaimModal(false);
+      setClaimCode('');
+      await loadCharacters();
+    } catch (error) {
+      showInAppNotification(error.message, "error");
+    }
+  };
+  
   const handleToggleVisibility = async (id, currentlyPublic) => {
     try {
       await toggleCharacterVisibility(id, !currentlyPublic);
@@ -222,6 +291,22 @@ const loadCharacters = async (isMounted = true) => {
                         >
                             {char.isPublic ? <Globe size={16}/> : <EyeOff size={16}/>}
                         </button>
+						  {/* LE NOUVEAU BOUTON CLONAGE */}
+						  <button
+							onClick={(e) => { e.stopPropagation(); handleDuplicate(char); }}
+							className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+							title="Dupliquer le personnage"
+						  >
+							<Copy size={16}/>
+						  </button>			
+						  {/* LE NOUVEAU BOUTON OFFRIR */}
+						  <button
+							onClick={(e) => { e.stopPropagation(); handleCreateGiftCode(char); }}
+							className="p-2 text-stone-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+							title="Offrir ce personnage (Générer un code de don)"
+						  >
+							<Gift size={16}/>
+						  </button>						  
                         {showDeleteConfirm === char.id ? (
                             <button onClick={() => handleDelete(char.id)} className="p-1.5 bg-red-50 text-red-600 rounded border border-red-100 animate-pulse"><Trash2 size={16}/></button>
                         ) : (
@@ -306,7 +391,7 @@ const loadCharacters = async (isMounted = true) => {
               {publicCharacters.length}
             </span>
           </button>
-          
+  
           {isAdmin && (
             <button onClick={() => setActiveTab('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-red-900 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
               <Shield size={16} /> Admin
@@ -314,7 +399,16 @@ const loadCharacters = async (isMounted = true) => {
                 {adminCharacters.length}
               </span>
             </button>
-          )}
+          )}	
+
+          {/* ✨ LE BOUTON D'ADOPTION (PERMANENT) */}
+          <button
+            onClick={() => setShowClaimModal(true)}
+            className="ml-auto pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 text-emerald-600 border-b-2 border-transparent hover:border-emerald-600 hover:text-emerald-700 transition-colors"
+            title="Saisir le code d'un Parchemin Scellé"
+          >
+            <Gift size={16} className={hasGiftsWaiting ? "animate-pulse drop-shadow-md" : ""} /> Recevoir
+          </button>
         </div>
       </div>
 
@@ -359,6 +453,54 @@ const loadCharacters = async (isMounted = true) => {
           )}
         </div>
       )}
+
+      {/* 🎁 MODALE : SAISIE DU CODE (POUR LE RECEVEUR) */}
+      {showClaimModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-emerald-900/20 overflow-hidden transform animate-fade-in-up">
+            <div className="p-4 bg-emerald-50 border-b border-emerald-200 flex justify-between items-center">
+              <h3 className="font-serif font-bold text-lg text-emerald-900 flex items-center gap-2"><Gift size={20}/> Adopter un Héritier</h3>
+              <button onClick={() => setShowClaimModal(false)} className="text-emerald-400 hover:text-emerald-700"><X size={20}/></button>
+            </div>
+            <div className="p-6">
+              <p className="text-sm text-stone-600 mb-4 text-center">Saisissez le Parchemin Scellé fourni par le donneur pour intégrer ce personnage à votre compte.</p>
+              <input
+                type="text"
+                placeholder="Ex: DON-A7X9"
+                value={claimCode}
+                onChange={e => setClaimCode(e.target.value)}
+                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase font-mono font-bold text-center text-xl tracking-widest mb-6 bg-white shadow-inner"
+                autoFocus
+              />
+              <button onClick={handleClaimGift} className="w-full py-3 bg-emerald-600 text-white font-bold rounded-lg shadow-md hover:bg-emerald-700 transition-all flex justify-center items-center gap-2">
+                Briser le Sceau
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🎁 MODALE : AFFICHAGE DU CODE (POUR LE DONNEUR) */}
+      {giftCodeToShow && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-purple-900/20 overflow-hidden transform animate-fade-in-up">
+            <div className="p-4 bg-purple-50 border-b border-purple-200 flex justify-between items-center">
+              <h3 className="font-serif font-bold text-lg text-purple-900 flex items-center gap-2"><Gift size={20}/> Parchemin Scellé</h3>
+              <button onClick={() => setGiftCodeToShow(null)} className="text-purple-400 hover:text-purple-700"><X size={20}/></button>
+            </div>
+            <div className="p-6 text-center">
+              <p className="text-sm text-stone-600 mb-4">Le personnage <strong>{giftCodeToShow.nom}</strong> est prêt à être transféré. Transmettez ce code unique au destinataire :</p>
+              <div className="bg-white p-4 rounded-xl border-2 border-dashed border-purple-300 mb-6 shadow-sm">
+                 <span className="font-mono font-black text-3xl text-purple-800 tracking-widest">{giftCodeToShow.code}</span>
+              </div>
+              <button onClick={() => setGiftCodeToShow(null)} className="w-full py-3 bg-purple-600 text-white font-bold rounded-lg shadow-md hover:bg-purple-700 transition-all">
+                J'ai noté le code
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+	  
     </div>
   );
 }
