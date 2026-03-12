@@ -4,6 +4,7 @@
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
+// 13.1.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -313,10 +314,12 @@ function App() {
 			  gameData={gameData}
               onSelectCharacter={(c, readOnly = false) => {
                 dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c });
-                setIsReadOnly(readOnly);
-                setStep(1);
-                navigate('/creator');
-              }}
+				// ✨ LE BOUCLIER EST ICI : Si la fiche est scellée ou validée, on passe en Lecture Seule !
+				const isSealed = c.statut === 'scellé' || c.statut === 'scelle' || c.statut === 'validé';
+				setIsReadOnly(readOnly || isSealed);
+				setStep(1);
+				navigate('/creator');
+			  }}
               onNewCharacter={() => {
                 dispatchCharacter({ type: 'RESET_CHARACTER', payload: initialCharacterState });
                 setIsReadOnly(false);
