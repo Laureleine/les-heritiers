@@ -3,7 +3,7 @@
 // 9.4.0 // 9.11.0
 // 10.4.0 // 10.6.0
 // 11.1.0
-// 13.6.0 // 13.6.1
+// 13.6.0 // 13.6.1 // 13.7.0
 
 import React, { useState } from 'react';
 import { Plus, Minus, Info, Sparkles, RotateCcw } from 'lucide-react';
@@ -11,6 +11,7 @@ import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import ConfirmModal from './ConfirmModal';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { getCaracCost } from '../utils/xpCalculator';
 
 const POINTS_A_REPARTIR = 10;
 const MAX_SCORE_INVESTISSEMENT = 5;
@@ -80,6 +81,11 @@ export default function StepCaracteristiques() {
     // --- 2. Initialisation ---
     const currentCaracs = character.caracteristiques || {};
 
+  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+	  const xpTotal = character.xp_total || 0;
+	  const xpDepense = character.xp_depense || 0;
+	  const xpDispo = xpTotal - xpDepense;
+  
     // Calcul des points dépensés (basé uniquement sur l'investissement du joueur)
     const pointsDepenses = CARAC_LIST.reduce((sum, carac) => {
         const min = feeData.caracteristiques[carac.key]?.min || 1;
@@ -90,35 +96,85 @@ export default function StepCaracteristiques() {
     const pointsRestants = POINTS_A_REPARTIR - pointsDepenses;
   
     // --- 3. Handlers ---
-    const handleChange = (key, delta) => {
-          const min = feeData.caracteristiques[key]?.min || 1;
-          
-          // ✨ 1. ON LIT LE PLAFOND RACIAL DEPUIS LA BASE (Sans l'altérer !)
-          const maxRacial = feeData.caracteristiques[key]?.max || 6;
+  const handleChange = (key, delta) => {
+    const min = feeData.caracteristiques[key]?.min || 1;
+    const maxRacial = feeData.caracteristiques[key]?.max || 6;
+    const currentBase = currentCaracs[key] || min;
+    const newValue = currentBase + delta;
 
-          const currentBase = currentCaracs[key] || min;
-          const newValue = currentBase + delta;
+    // Règle absolue universelle
+    if (newValue < min) return;
 
-          // Règle 1 : Ne pas descendre sous le minimum racial
-          if (newValue < min) return;
+    // 🌟 COMPORTEMENT SI LE PERSONNAGE EST SCELLÉ (Mode Bac à Sable XP)
+    if (isScelle) {
+      const xpTotal = character.xp_total || 0;
+      const xpDepense = character.xp_depense || 0;
+      const xpDispo = xpTotal - xpDepense;
+      
+      // On lit le plancher d'origine (ou le min par défaut pour le test)
+      const valeurInitiale = character.stats_scellees?.caracteristiques?.[key] || min;
 
-          // Règle 2 : Ne pas dépasser le plafond strict à l'investissement
-          const plafondCreation = Math.min(MAX_SCORE_INVESTISSEMENT, maxRacial);
-          
-          if (newValue > plafondCreation) {
-             showInAppNotification(`Impossible d'investir plus : la physiologie de l'espèce limite l'investissement de base à ${plafondCreation}. (Vos éventuels bonus s'appliqueront par-dessus !)`, "warning");
-             return;
-          }
+      if (delta < 0) {
+        if (newValue < valeurInitiale) {
+          showInAppNotification("Impossible de descendre sous vos valeurs d'origine scellées !", "warning");
+          return;
+        }
+        const costToRefund = getCaracCost(newValue); 
+        const newCaracs = { ...currentCaracs, [key]: newValue };
+        
+        // ✨ On force la mise à jour (Même en ReadOnly !)
+        dispatchCharacter({ 
+          type: 'UPDATE_MULTIPLE', 
+          payload: { 
+            caracteristiques: newCaracs,
+            xp_depense: Math.max(0, xpDepense - costToRefund) 
+          }, 
+          gameData 
+        });
+        showInAppNotification(`Dépense annulée : +${costToRefund} XP récupérés !`, "success");
+        return;
+      }
 
-          // Règle 3 : Budget
-          if (delta > 0 && pointsRestants <= 0) {
-             showInAppNotification("Votre budget de points est épuisé !", "error");
-             return;
-          }
+      if (delta > 0) {
+        if (newValue > maxRacial) {
+          showInAppNotification(`Limites physiologiques atteintes (${maxRacial}).`, "warning");
+          return;
+        }
+        const cost = getCaracCost(currentBase);
+        if (xpDispo < cost) {
+          showInAppNotification(`Il vous faut ${cost} XP pour atteindre ce rang !`, "error");
+          return;
+        }
+        const newCaracs = { ...currentCaracs, [key]: newValue };
+        
+        // ✨ On force la mise à jour (Même en ReadOnly !)
+        dispatchCharacter({ 
+          type: 'UPDATE_MULTIPLE', 
+          payload: { 
+            caracteristiques: newCaracs,
+            xp_depense: xpDepense + cost 
+          }, 
+          gameData 
+        });
+        showInAppNotification(`Évolution acquise pour ${cost} XP !`, "success");
+        return;
+      }
+    }
 
-          // Mise à jour de l'état
-          const newCaracs = { ...currentCaracs, [key]: newValue };
+    // 🌟 COMPORTEMENT NORMAL (Création)
+    const plafondCreation = Math.min(MAX_SCORE_INVESTISSEMENT, maxRacial);
+    
+    if (newValue > plafondCreation) {
+       showInAppNotification(`Limité à ${plafondCreation} à la création.`, "warning");
+       return;
+    }
+    if (delta > 0 && pointsRestants <= 0) {
+       showInAppNotification("Votre budget de points est épuisé !", "error");
+       return;
+    }
 
+    // Mise à jour classique avec respect du mode ReadOnly
+    const newCaracs = { ...currentCaracs, [key]: newValue };
     if (!isReadOnly) {
       dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
     }
@@ -201,19 +257,18 @@ export default function StepCaracteristiques() {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleChange(carac.key, -1)}
-                  disabled={current <= min}
+				  disabled={!isScelle && current <= min} 
                   className="h-10 w-10 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-600 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
                 >
                   <Minus size={18} />
                 </button>
                 <div className="w-12 text-center">
                   <span className="text-xl font-bold text-amber-900">{current}</span>
-                  {/* ATTENTION : Remplacez les # par des crochets ici 👇 */}
-                  {investis > 0 && <div className="text-#10px# text-green-600 font-bold">+{investis} pts</div>}
+                  {investis > 0 && <div className="text-[10px] text-green-600 font-bold">+{investis} pts</div>}
                 </div>
                 <button
                   onClick={() => handleChange(carac.key, 1)}
-                  disabled={pointsRestants <= 0 || current >= MAX_SCORE_INVESTISSEMENT}
+				  disabled={!isScelle && (pointsRestants <= 0 || current >= MAX_SCORE_INVESTISSEMENT)} 
                   className="h-10 w-10 flex items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
                 >
                   <Plus size={18} />
