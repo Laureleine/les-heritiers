@@ -5,6 +5,13 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
+ {
+    version: '13.6.1',
+    date: '13 Mars 2026',
+    changes: [
+      '🐛 **Génétique Féérique (Correction) :** Rétropédalage sur la règle des limites. La capacité "Caractéristique accrue" ne repousse plus le plafond d\'investissement lors de la répartition des points. Elle redevient un pur "Bonus" appliqué post-création par le moteur de jeu, évitant ainsi le cumul (double bonus) qui permettait de briser l\'équilibrage.'
+    ]
+  },
   {
     version: '13.6.0',
     date: '13 Mars 2026',
