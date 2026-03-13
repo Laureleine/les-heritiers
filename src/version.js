@@ -6,6 +6,13 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.5.0',
+    date: '13 Mars 2026',
+    changes: [
+      '🧬 **Le Puits des Âmes (Évolution) :** Début du grand chantier de la Boutique d\'Expérience (XP). Création du moteur mathématique centralisant scrupuleusement tous les coûts d\'évolution prescrits par le Livre de Base (Caractéristiques, Masque, Féérie, Utiles, Futiles, Fortune, Atouts et Spécialités).'
+    ]
+  },
+  {
     version: '13.4.0',
     date: '12 Mars 2026',
     changes: [
