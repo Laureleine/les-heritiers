@@ -6,6 +6,14 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.6.0',
+    date: '13 Mars 2026',
+    changes: [
+      '🐛 **Génétique Féérique (Limites raciales) :** Correction d\'une faille permettant aux Héritiers de dépasser les plafonds physiologiques de leur espèce à la création (ex: Un Elfe est désormais strictement bloqué à 3 en Force).',
+      '🧬 **Caractéristiques accrues :** Le moteur de jeu détecte désormais si l\'Héritier possède une "Caractéristique accrue" pour repousser intelligemment son plafond racial de +1 point.'
+    ]
+  },
+  {
     version: '13.5.0',
     date: '13 Mars 2026',
     changes: [

@@ -3,12 +3,14 @@
 // 9.4.0 // 9.11.0
 // 10.4.0 // 10.6.0
 // 11.1.0
+// 13.6.0
 
 import React, { useState } from 'react';
 import { Plus, Minus, Info, Sparkles, RotateCcw } from 'lucide-react';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import ConfirmModal from './ConfirmModal';
+import { showInAppNotification } from '../utils/SystemeServices';
 
 const POINTS_A_REPARTIR = 10;
 const MAX_SCORE_INVESTISSEMENT = 5;
@@ -89,22 +91,56 @@ export default function StepCaracteristiques() {
   
     // --- 3. Handlers ---
     const handleChange = (key, delta) => {
-	const min = feeData.caracteristiques[key]?.min || 1;
-	const currentBase = currentCaracs[key] || min;
-	const newValue = currentBase + delta;
+          const min = feeData.caracteristiques[key]?.min || 1;
+          
+          // ✨ 1. ON LIT LE PLAFOND RACIAL DEPUIS LA BASE (Défaut 6)
+          let maxRacial = feeData.caracteristiques[key]?.max || 6;
 
-	// Règle 1 : Ne pas descendre sous le minimum racial
-	if (newValue < min) return;
+          // ✨ 2. DÉTECTION DE LA "CARACTÉRISTIQUE ACCRUE" (+1 au plafond)
+          // On capitalise la première lettre (ex: "force" -> "Force accrue")
+          const nomCapaciteAccrue = `${key.charAt(0).toUpperCase() + key.slice(1)} accrue`;
+          
+          // On liste toutes les capacités potentielles de la fée
+          const allCapacites = [
+            feeData.capacites?.fixe1,
+            feeData.capacites?.fixe2,
+            ...(feeData.capacites?.choix || [])
+          ];
+          
+          // On vérifie si le joueur possède activement cette capacité d'augmentation
+          const hasCapaciteAccrue = allCapacites.some(cap => 
+            cap && 
+            cap.nom === nomCapaciteAccrue && 
+            (cap.capacite_type === 'fixe1' || cap.capacite_type === 'fixe2' || cap.nom === character.capaciteChoisie)
+          );
 
-	// Règle 2 : Ne pas dépasser 5 en investissement pur
-	if (newValue > MAX_SCORE_INVESTISSEMENT) return;
+          if (hasCapaciteAccrue) {
+            maxRacial += 1;
+          }
 
-    // Règle 3 : Budget
-    if (delta > 0 && pointsRestants <= 0) return;
+          const currentBase = currentCaracs[key] || min;
+          const newValue = currentBase + delta;
 
-    // 👇 LA CORRECTION EST ICI (On utilise currentCaracs et key) :
-    const newCaracs = { ...currentCaracs, [key]: newValue };
-    
+          // Règle 1 : Ne pas descendre sous le minimum racial
+          if (newValue < min) return;
+
+          // Règle 2 : Ne pas dépasser le plafond (On prend le plus restrictif entre le jeu et l'espèce)
+          const plafondCreation = Math.min(MAX_SCORE_INVESTISSEMENT, maxRacial);
+          
+          if (newValue > plafondCreation) {
+             showInAppNotification(`Impossible : les limites physiologiques de cette fée bloquent cette caractéristique à ${plafondCreation} max.`, "warning");
+             return;
+          }
+
+          // Règle 3 : Budget
+          if (delta > 0 && pointsRestants <= 0) {
+             showInAppNotification("Votre budget de points est épuisé !", "error");
+             return;
+          }
+
+          // 👇 LA CORRECTION EST ICI (On utilise currentCaracs et key) :
+          const newCaracs = { ...currentCaracs, [key]: newValue };
+   
     if (!isReadOnly) {
       dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
     }
