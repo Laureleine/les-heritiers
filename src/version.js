@@ -5,6 +5,14 @@ import buildInfo from './build-info.json';
 export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
+  {
+    version: '13.7.0',
+    date: '13 Mars 2026',
+    changes: [
+      '🧪 **Laboratoire d\'Évolution (POC) :** Déploiement de deux prototypes simultanés pour tester la dépense d\'XP sur les Caractéristiques. Un modèle hybride (intégré à la création) et un modèle de boutique dédiée, afin de récolter les retours ergonomiques de la communauté.',
+      '🧪 **Simulateur d\'Évolution (Bac à Sable) :** Les interfaces de test d\'XP (Prototype A et B) fonctionnent désormais dans un environnement virtuel étanche. Les Héritiers scellés peuvent dépenser leurs faux XP à l\'écran sans aucun risque de corrompre leur véritable fiche dans la base de données (qui reste verrouillée par le mode Lecture Seule).'
+    ]
+  },
  {
     version: '13.6.1',
     date: '13 Mars 2026',
