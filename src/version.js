@@ -6,6 +6,18 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.4.0',
+    date: '12 Mars 2026',
+    changes: [
+      '🛠️ **Mémoire de la Vie Sociale :** Le système de chargement du Nuage a été corrigé. Le douanier laisse désormais passer la Spécialité gratuite offerte par le métier, qui était bien sauvegardée en base mais effacée de la mémoire au rechargement de la fiche.',
+      '👥 **Sociabilité Féérique :** Ajout d\'une interface de contact direct dans la liste de la Communauté. Les joueurs peuvent désormais initier l\'envoi d\'une missive pneumatique d\'un simple clic sur le profil d\'un autre Héritier.',
+      '📡 **Révolution Pneumatique :** Refonte totale de l\'architecture de communication du Grimoire. Le Télégraphe abandonne son statut de simple outil de support pour devenir un véritable Hub Social.',
+      '💬 **Canaux Universels :** Infrastructures permettant d\'héberger des salons globaux, des discussions privées par "Cercles" de jeu, et des correspondances directes entre Héritiers.',
+      '⚙️ **Tiroir Pneumatique :** Épuration de l\'interface du Télégraphe. L\'option permettant de basculer entre l\'affichage par "Onglets" et "Flux Unifié" est désormais rangée dans un élégant panneau de configuration interne, accessible via l\'engrenage de l\'en-tête.',
+      '🛠️ **Fondations Modulaires :** Ce nouveau panneau de réglages internes prépare le terrain pour de futures options de confort (comme la gestion des alertes sonores du Télégraphe).'	  
+    ]
+  },
+  {
     version: '13.3.0',
     date: '12 Mars 2026',
     changes: [
