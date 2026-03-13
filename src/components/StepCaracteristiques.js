@@ -3,7 +3,7 @@
 // 9.4.0 // 9.11.0
 // 10.4.0 // 10.6.0
 // 11.1.0
-// 13.6.0
+// 13.6.0 // 13.6.1
 
 import React, { useState } from 'react';
 import { Plus, Minus, Info, Sparkles, RotateCcw } from 'lucide-react';
@@ -93,30 +93,8 @@ export default function StepCaracteristiques() {
     const handleChange = (key, delta) => {
           const min = feeData.caracteristiques[key]?.min || 1;
           
-          // ✨ 1. ON LIT LE PLAFOND RACIAL DEPUIS LA BASE (Défaut 6)
-          let maxRacial = feeData.caracteristiques[key]?.max || 6;
-
-          // ✨ 2. DÉTECTION DE LA "CARACTÉRISTIQUE ACCRUE" (+1 au plafond)
-          // On capitalise la première lettre (ex: "force" -> "Force accrue")
-          const nomCapaciteAccrue = `${key.charAt(0).toUpperCase() + key.slice(1)} accrue`;
-          
-          // On liste toutes les capacités potentielles de la fée
-          const allCapacites = [
-            feeData.capacites?.fixe1,
-            feeData.capacites?.fixe2,
-            ...(feeData.capacites?.choix || [])
-          ];
-          
-          // On vérifie si le joueur possède activement cette capacité d'augmentation
-          const hasCapaciteAccrue = allCapacites.some(cap => 
-            cap && 
-            cap.nom === nomCapaciteAccrue && 
-            (cap.capacite_type === 'fixe1' || cap.capacite_type === 'fixe2' || cap.nom === character.capaciteChoisie)
-          );
-
-          if (hasCapaciteAccrue) {
-            maxRacial += 1;
-          }
+          // ✨ 1. ON LIT LE PLAFOND RACIAL DEPUIS LA BASE (Sans l'altérer !)
+          const maxRacial = feeData.caracteristiques[key]?.max || 6;
 
           const currentBase = currentCaracs[key] || min;
           const newValue = currentBase + delta;
@@ -124,11 +102,11 @@ export default function StepCaracteristiques() {
           // Règle 1 : Ne pas descendre sous le minimum racial
           if (newValue < min) return;
 
-          // Règle 2 : Ne pas dépasser le plafond (On prend le plus restrictif entre le jeu et l'espèce)
+          // Règle 2 : Ne pas dépasser le plafond strict à l'investissement
           const plafondCreation = Math.min(MAX_SCORE_INVESTISSEMENT, maxRacial);
           
           if (newValue > plafondCreation) {
-             showInAppNotification(`Impossible : les limites physiologiques de cette fée bloquent cette caractéristique à ${plafondCreation} max.`, "warning");
+             showInAppNotification(`Impossible d'investir plus : la physiologie de l'espèce limite l'investissement de base à ${plafondCreation}. (Vos éventuels bonus s'appliqueront par-dessus !)`, "warning");
              return;
           }
 
@@ -138,9 +116,9 @@ export default function StepCaracteristiques() {
              return;
           }
 
-          // 👇 LA CORRECTION EST ICI (On utilise currentCaracs et key) :
+          // Mise à jour de l'état
           const newCaracs = { ...currentCaracs, [key]: newValue };
-   
+
     if (!isReadOnly) {
       dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
     }
