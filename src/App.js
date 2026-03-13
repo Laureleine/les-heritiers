@@ -4,7 +4,7 @@
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
-// 13.1.0
+// 13.1.0 // 13.8.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -45,7 +45,7 @@ import { exportToPDF } from './utils/pdfGenerator';
 import { AVAILABLE_BADGES, STEP_CONFIG } from './data/DictionnaireJeu';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
 
-import { List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock } from 'lucide-react';
+import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock } from 'lucide-react';
 
 function App() {
   // --- 1. ÉTATS GLOBAUX DU NUAGE (CONTEXT API) ---
@@ -450,6 +450,30 @@ function App() {
                   );
                 })}
               </div>
+
+			  {/* ✨ LA JAUGE D'XP GLOBALE (RUBAN COMPACT) ✨ */}
+			  {(character.statut === 'scelle' || character.statut === 'scellé') && (
+				<div className="mb-4 bg-gradient-to-r from-stone-900 to-stone-800 rounded-lg px-4 py-2 shadow-md border border-amber-700 flex flex-row justify-between items-center text-amber-50 animate-fade-in">
+				  
+				  <div className="flex items-center gap-2">
+					<Sparkles className="text-amber-400 animate-pulse" size={18} />
+					<span className="font-serif font-bold text-amber-500">
+					  Le Puits des Âmes 
+					  <span className="hidden sm:inline text-stone-400 font-sans font-normal text-sm ml-2">
+						— Mode Évolution
+					  </span>
+					</span>
+				  </div>
+				  
+				  <div className="flex items-center gap-3 bg-stone-950 px-3 py-1.5 rounded-md border border-stone-700 shadow-inner">
+					<span className="text-xs uppercase tracking-widest font-bold text-stone-400">XP Disponible :</span>
+					<span className="text-2xl font-black font-serif text-amber-400 leading-none mt-0.5">
+					  {(character.xp_total || 0) - (character.xp_depense || 0)}
+					</span>
+				  </div>
+
+				</div>
+			  )}
 
               {/* LE CORPS DE L'ÉTAPE */}
               <main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">

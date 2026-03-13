@@ -94,35 +94,37 @@ export default function StepCaracteristiques() {
     }, 0);
 
     const pointsRestants = POINTS_A_REPARTIR - pointsDepenses;
+
+    const getCaracCost = (targetRank) => Math.max(12, targetRank * 4);
   
     // --- 3. Handlers ---
   const handleChange = (key, delta) => {
-    const min = feeData.caracteristiques[key]?.min || 1;
-    const maxRacial = feeData.caracteristiques[key]?.max || 6;
-    const currentBase = currentCaracs[key] || min;
+    const minGenetique = feeData.caracteristiques[key]?.min || 1;
+    const maxGenetique = feeData.caracteristiques[key]?.max || 6;
+    const currentBase = currentCaracs[key] || minGenetique;
     const newValue = currentBase + delta;
 
-    // Règle absolue universelle
-    if (newValue < min) return;
+    // Plancher absolu de l'espèce
+    if (newValue < minGenetique) return;
 
-    // 🌟 COMPORTEMENT SI LE PERSONNAGE EST SCELLÉ (Mode Bac à Sable XP)
+    // 🌟 COMPORTEMENT SI LE PERSONNAGE EST SCELLÉ (XP)
     if (isScelle) {
       const xpTotal = character.xp_total || 0;
       const xpDepense = character.xp_depense || 0;
       const xpDispo = xpTotal - xpDepense;
       
-      // On lit le plancher d'origine (ou le min par défaut pour le test)
-      const valeurInitiale = character.stats_scellees?.caracteristiques?.[key] || min;
+      // On lit le plancher sur la "photo" prise par le bouton God Mode
+      const plancherScelle = character.stats_scellees?.caracteristiques?.[key] || currentBase;
 
+      // 🔙 LE JOUEUR RÉTROGRADE (Remboursement)
       if (delta < 0) {
-        if (newValue < valeurInitiale) {
-          showInAppNotification("Impossible de descendre sous vos valeurs d'origine scellées !", "warning");
+        if (newValue < plancherScelle) {
+          showInAppNotification("Vos capacités passées sont figées, vous ne pouvez pas les désapprendre !", "warning");
           return;
         }
-        const costToRefund = getCaracCost(newValue); 
+        const costToRefund = getCaracCost(currentBase); // On rend le coût du rang qu'on quitte
         const newCaracs = { ...currentCaracs, [key]: newValue };
         
-        // ✨ On force la mise à jour (Même en ReadOnly !)
         dispatchCharacter({ 
           type: 'UPDATE_MULTIPLE', 
           payload: { 
@@ -135,19 +137,19 @@ export default function StepCaracteristiques() {
         return;
       }
 
+      // 📈 LE JOUEUR PROGRESSE (Achat sans limite de 5 !)
       if (delta > 0) {
-        if (newValue > maxRacial) {
-          showInAppNotification(`Limites physiologiques atteintes (${maxRacial}).`, "warning");
+        if (newValue > maxGenetique) {
+          showInAppNotification(`Limites physiologiques de votre espèce atteintes (${maxGenetique}).`, "warning");
           return;
         }
-        const cost = getCaracCost(currentBase);
+        const cost = getCaracCost(newValue); // Le coût du rang qu'on vise
         if (xpDispo < cost) {
           showInAppNotification(`Il vous faut ${cost} XP pour atteindre ce rang !`, "error");
           return;
         }
         const newCaracs = { ...currentCaracs, [key]: newValue };
         
-        // ✨ On force la mise à jour (Même en ReadOnly !)
         dispatchCharacter({ 
           type: 'UPDATE_MULTIPLE', 
           payload: { 
@@ -161,8 +163,8 @@ export default function StepCaracteristiques() {
       }
     }
 
-    // 🌟 COMPORTEMENT NORMAL (Création)
-    const plafondCreation = Math.min(MAX_SCORE_INVESTISSEMENT, maxRacial);
+    // 🌟 COMPORTEMENT NORMAL (CRÉATION)
+    const plafondCreation = Math.min(MAX_SCORE_INVESTISSEMENT, maxGenetique);
     
     if (newValue > plafondCreation) {
        showInAppNotification(`Limité à ${plafondCreation} à la création.`, "warning");
@@ -173,7 +175,6 @@ export default function StepCaracteristiques() {
        return;
     }
 
-    // Mise à jour classique avec respect du mode ReadOnly
     const newCaracs = { ...currentCaracs, [key]: newValue };
     if (!isReadOnly) {
       dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
@@ -197,85 +198,126 @@ export default function StepCaracteristiques() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Header avec Compteurs */}
+
+      {/* Header avec Compteurs (Adaptatif Création / XP) */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-amber-50 p-4 rounded-lg border border-amber-200 gap-4">
+        
         <div>
           <h2 className="text-2xl font-serif text-amber-900">Caractéristiques</h2>
-          <p className="text-sm text-amber-700">
-            Ajoutez 10 points aux minimums de votre fée. (Investissement max : 5).
-          </p>
+          {/* ✨ 1. LE TEXTE S'ADAPTE AU CONTEXTE */}
+          {isScelle ? (
+            <p className="text-sm text-amber-700 font-bold">
+              Améliorez vos caractéristiques physiologiques en dépensant de l'expérience (XP).
+            </p>
+          ) : (
+            <p className="text-sm text-amber-700">
+              Ajoutez 10 points aux minimums de votre fée. (Investissement max : 5).
+            </p>
+          )}
         </div>
+
         <div className="flex gap-4 items-center">
           
-          {/* ✨ NOTRE BOUTON DE RÉINITIALISATION */}
-          <button
-            onClick={handleResetClick}
-            className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200 shadow-sm"
-            title="Réinitialiser les caractéristiques"
-          >
-            <RotateCcw size={16} />
-            <span className="hidden sm:inline">Réinitialiser</span>
-          </button>
+          {/* ✨ 2. ON MASQUE LA RÉINITIALISATION ET LE BUDGET SI SCELLÉ */}
+          {!isScelle && (
+            <>
+              <button
+                onClick={handleResetClick}
+                className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200 shadow-sm"
+                title="Réinitialiser les caractéristiques"
+              >
+                <RotateCcw size={16} />
+                <span className="hidden sm:inline">Réinitialiser</span>
+              </button>
 
-          {/* ATTENTION : Remplacez les # par des crochets ici 👇 */}
-          <div className={`px-4 py-2 rounded-lg font-bold border-2 flex flex-col items-center min-w-#80px# ${
-            pointsRestants === 0
-              ? 'bg-green-100 text-green-700 border-green-300'
-              : pointsRestants < 0
-              ? 'bg-red-100 text-red-700 border-red-300'
-              : 'bg-white text-amber-600 border-amber-300'
-          }`}>
-            <span className="text-2xl">{pointsRestants}</span>
-            <span className="text-xs uppercase">Points</span>
-          </div>
-          
-          {/* ATTENTION : Remplacez les # par des crochets ici 👇 */}
-          <div className="px-4 py-2 rounded-lg font-bold border-2 border-red-800 bg-red-700 text-white flex flex-col items-center min-w-#80px#">
+              <div className={`px-4 py-2 rounded-lg font-bold border-2 flex flex-col items-center min-w-[80px] ${
+                pointsRestants === 0
+                  ? 'bg-green-100 text-green-700 border-green-300'
+                  : pointsRestants < 0
+                  ? 'bg-red-100 text-red-700 border-red-300'
+                  : 'bg-white text-amber-600 border-amber-300'
+              }`}>
+                <span className="text-2xl">{pointsRestants}</span>
+                <span className="text-xs uppercase">Points</span>
+              </div>
+            </>
+          )}
+
+          {/* ✨ 3. LE COMPTEUR DE PV RESTE VISIBLE TOUT LE TEMPS */}
+          <div className="px-4 py-2 rounded-lg font-bold border-2 border-red-800 bg-red-700 text-white flex flex-col items-center min-w-[80px]">
             <span className="text-2xl">{pvMax}</span>
             <span className="text-xs uppercase">PV Max</span>
           </div>
+
         </div>
       </div>
 
       {/* Grille des Caractéristiques */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {CARAC_LIST.map((carac) => {
-          const min = feeData.caracteristiques[carac.key]?.min || 1;
-          const max = feeData.caracteristiques[carac.key]?.max || 6;
-          const current = currentCaracs[carac.key] || min;
-          const investis = current - min;
+            const minGenetique = feeData?.caracteristiques?.[carac.key]?.min || 1;
+            const maxGenetique = feeData?.caracteristiques?.[carac.key]?.max || 6;
+            const current = currentCaracs[carac.key] || minGenetique;
+            const investis = current - minGenetique;
 
-          return (
-            <div key={carac.key} className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{carac.icon}</span>
-                <div>
-                  <div className="font-bold text-gray-800">{carac.label}</div>
-                  <div className="text-xs font-bold text-gray-400">Min {min} <span className="text-gray-300 font-normal">/</span> Max {max}</div>
+            // ✨ LE VÉRITABLE PLANCHER VISUEL
+            const plancher = isScelle 
+              ? (character.stats_scellees?.caracteristiques?.[carac.key] || minGenetique)
+              : minGenetique;
+
+            // ✨ LE VÉRITABLE PLAFOND VISUEL
+            const plafond = isScelle 
+              ? maxGenetique 
+              : Math.min(MAX_SCORE_INVESTISSEMENT, maxGenetique);
+
+            const isMinusDisabled = current <= plancher;
+            const isPlusDisabled = isScelle 
+              ? current >= plafond 
+              : (pointsRestants <= 0 || current >= plafond);
+
+            return (
+              <div key={carac.key} className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                
+                {/* 🌟 LA GAUCHE : Icône, Label, Min et Max restaurés ! */}
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{carac.icon}</span>
+                  <div>
+                    <div className="font-bold text-gray-800">{carac.label}</div>
+                    <div className="text-xs font-bold text-gray-400">
+                      Min {minGenetique} <span className="text-gray-300 font-normal">/</span> Max {maxGenetique}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => handleChange(carac.key, -1)}
-				  disabled={!isScelle && current <= min} 
-                  className="h-10 w-10 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-600 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
-                >
-                  <Minus size={18} />
-                </button>
-                <div className="w-12 text-center">
-                  <span className="text-xl font-bold text-amber-900">{current}</span>
-                  {investis > 0 && <div className="text-[10px] text-green-600 font-bold">+{investis} pts</div>}
+
+                {/* 🌟 LA DROITE : Le moteur d'évolution et les boutons */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleChange(carac.key, -1)}
+                    disabled={isMinusDisabled}
+                    className="h-10 w-10 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-600 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
+                  >
+                    <Minus size={18} />
+                  </button>
+
+                  <div className="flex flex-col items-center w-12 text-center">
+                    <span className="text-xl font-bold text-amber-900">{current}</span>
+                    {/* ATTENTION : Le #10px# ci-dessous protège ton parseur */}
+                    {!isScelle && investis > 0 && (
+                      <div className="text-#10px# text-green-600 font-bold">+{investis} pts</div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => handleChange(carac.key, 1)}
+                    disabled={isPlusDisabled}
+                    className="h-10 w-10 flex items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
+                  >
+                    <Plus size={18} />
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleChange(carac.key, 1)}
-				  disabled={!isScelle && (pointsRestants <= 0 || current >= MAX_SCORE_INVESTISSEMENT)} 
-                  className="h-10 w-10 flex items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
-                >
-                  <Plus size={18} />
-                </button>
+
               </div>
-            </div>
-          );
+            );
         })}
       </div>
 

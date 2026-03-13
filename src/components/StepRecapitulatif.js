@@ -125,10 +125,23 @@ export default function StepRecapitulatif() {
   const handleInjectXP = () => {
     const newTotal = (character.xp_total || 0) + 100;
     
-    // On met à jour l'écran, mais RIEN ne part dans le Nuage !
-    dispatchCharacter({ type: 'UPDATE_FIELD', field: 'xp_total', value: newTotal, gameData });
+    // 📸 LA MÉMOIRE PHOTOGRAPHIQUE : On fige les stats d'origine si ce n'est pas déjà fait !
+    const snapshot = character.stats_scellees || {
+      caracteristiques: { ...character.caracteristiques }
+      // Nous pourrons ajouter les compétences ici plus tard !
+    };
     
-    showInAppNotification("🪄 Mode Simulation : 100 XP virtuels injectés ! Rien ne sera sauvegardé dans le Nuage.", "success");
+    // On met à jour l'écran et le Snapshot, mais RIEN ne part dans le Nuage !
+    dispatchCharacter({ 
+      type: 'UPDATE_MULTIPLE', 
+      payload: { 
+        xp_total: newTotal,
+        stats_scellees: snapshot 
+      }, 
+      gameData 
+    });
+    
+    showInAppNotification("🪄 Mode Simulation : 100 XP injectés et Mémoire d'origine verrouillée !", "success");
   };
   
   return (

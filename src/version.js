@@ -6,6 +6,13 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.3.0',
+    date: '14 Mars 2026',
+    changes: [
+      '👁️ **HUD d\'Expérience (Puits des Âmes) :** Ajout d\'une bannière globale d\'expérience (XP) dans l\'en-tête de l\'application pour les personnages scellés. Le portefeuille d\'XP est désormais affiché en permanence au-dessus de la zone de travail, évitant au joueur les allers-retours vers la page Bilan.'
+    ]
+  },
+  {
     version: '13.7.0',
     date: '13 Mars 2026',
     changes: [
