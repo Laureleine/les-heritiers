@@ -2,7 +2,7 @@
 // 9.3.0 // 9.9.0 // 9.11.0
 // 10.6.0 // 10.9.0
 // 11.1.0
-// 13.3.0
+// 13.4.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';

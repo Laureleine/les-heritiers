@@ -1,6 +1,6 @@
 // src/utils/supabaseStorage.js
 // 12.0.0
-// 13.1.0
+// 13.1.0 // 13.3.0
 
 import { supabase } from '../config/supabase';
 
@@ -68,12 +68,19 @@ const mapDatabaseToCharacter = (char) => {
             mineur: { nom: '', trait: '', competences: [] } 
         },
 
-        competencesLibres: {
-            rangs: cLibres.rangs || {},
-            choixPredilection: cLibres.choixPredilection || {},
-            choixSpecialite: cLibres.choixSpecialite || {},
-            choixSpecialiteUser: cLibres.choixSpecialiteUser || {}
-        },
+		competencesLibres: {
+		  // ✨ LE BOUCLIER ULTIME : On utilise le Spread Operator pour attraper toutes les nouveautés
+		  ...cLibres,
+		  
+		  // Et on garde tes valeurs par défaut historiques de sécurité :
+		  rangs: cLibres.rangs || {},
+		  choixPredilection: cLibres.choixPredilection || {},
+		  choixSpecialite: cLibres.choixSpecialite || {},
+		  choixSpecialiteUser: cLibres.choixSpecialiteUser || {},
+		  
+		  // ✨ LE LAISSEZ-PASSER EXPLICITE EST LÀ :
+		  specialiteMetier: cLibres.specialite_metier || cLibres.specialiteMetier || null
+		},
 
         competencesFutiles: {
             rangs: cFutiles.rangs || {},

@@ -1,9 +1,9 @@
 // 11.1.0
-// 13.3.0
+// 13.3.0 // 13.4.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { Shield, User, Crown, X, Award, BarChart2, Users, FileText, BookOpen, Activity, RefreshCcw, ArrowLeft } from 'lucide-react';
+import { MessageCircle, Shield, User, Crown, X, Award, BarChart2, Users, FileText, BookOpen, Activity, RefreshCcw, ArrowLeft } from 'lucide-react';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 import { showInAppNotification } from '../utils/SystemeServices';
 
@@ -66,6 +66,12 @@ function TabUsers({ session }) {
     }
   };
 
+  const handleContactUser = (targetUser) => {
+    // 💡 L'Astuce React : On émet un événement global que le Télégraphe pourra écouter plus tard
+    window.dispatchEvent(new CustomEvent('open-telegraphe', { detail: { targetUser } }));
+    showInAppNotification(`Établissement de la connexion pneumatique vers ${targetUser.username}...`, "info");
+  };
+  
   if (loading) return <div className="p-8 text-center text-gray-500 font-serif animate-pulse">Chargement des registres...</div>;
 
   return (
@@ -86,9 +92,23 @@ function TabUsers({ session }) {
             const userBadges = u.badges || [];
             return (
               <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                <td className="p-4">
-                  <div className="font-bold text-gray-800 flex items-center gap-2"><User size={16} className="text-gray-400" />{u.username || <span className="text-gray-400 italic">Sans pseudo</span>}</div>
-                  <div className="mt-1.5 mb-1">{renderStatus(u.last_seen)}</div>
+              <td className="p-4">
+                <div className="font-bold text-gray-800 flex items-center gap-2">
+                  <User size={16} className="text-gray-400" />
+                  {u.username || <span className="text-gray-400 italic">Sans pseudo</span>}
+                  
+                  {/* ✨ LA NOUVELLE ICÔNE DE MESSAGERIE */}
+                  {u.id !== session.user.id && (
+                    <button 
+                      onClick={() => handleContactUser(u)} 
+                      className="text-amber-600 hover:text-amber-800 hover:bg-amber-100 p-1.5 rounded-full transition-colors ml-1"
+                      title={`Envoyer une missive à ${u.username}`}
+                    >
+                      <MessageCircle size={16} />
+                    </button>
+                  )}
+                </div>
+                <div className="mt-1.5 mb-1">{renderStatus(u.last_seen)}</div>
                   <div className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Inscrit le {new Date(u.created_at).toLocaleDateString('fr-FR')}</div>
                 </td>
                 <td className="p-4">
