@@ -6,7 +6,19 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
-    version: '14.3.0',
+    version: '13.9.0',
+    date: '14 Mars 2026',
+    changes: [
+      '🎨 **Épuration des Caractéristiques :** Suppression de l\'encart des Points de Vie (PV) sur l\'Étape 5. Afin de gagner en clarté, l\'ensemble des statistiques dérivées de combat et de santé seront regroupées ultérieurement sur un affichage dédié.',
+      '🐛 **Ergonomie Féérique (Hotfix) :** Correction du ruban des Atouts. Le composant respecte désormais la logique de l\'Atout Fantôme (Anomalie) pour son compteur, et masque intelligemment les instructions de sélection lorsque le Faux-Semblant est scellé (Mode XP / Lecture Seule).',
+      '🏗️ **Architecture Temporelle :** Validation du nouveau modèle hybride pour l\'évolution des Héritiers. Le système s\'appuiera sur des "Snapshots" (photographies temporelles de la fiche) validés à la fin de chaque scénario.',
+      '⏳ **Plancher de Verre & Clonage :** Chaque Snapshot définira le nouveau seuil inaliénable des statistiques (empêchant le remboursement abusif d\'XP). Ces archives pourront également être clonées pour générer des Faux-Semblants jouables issus du passé.',
+      '📸 **Album Spatio-Temporel :** Ajout de l\'interface d\'archivage sur la Fiche Bilan des Héritiers scellés. Les joueurs peuvent immortaliser leur progression à la fin d\'un scénario via un titre personnalisé.',
+      '🛡️ **Actualisation du Plancher de Verre :** Lorsqu\'une photographie est prise, l\'application enregistre instantanément les statistiques actuelles du Faux-Semblant comme étant son nouveau "Plancher Inaliénable", bloquant ainsi tout remboursement abusif des dépenses d\'XP antérieures.'
+      ]
+  },
+  {
+    version: '13.8.0',
     date: '14 Mars 2026',
     changes: [
       '👁️ **HUD d\'Expérience (Puits des Âmes) :** Ajout d\'une bannière globale d\'expérience (XP) dans l\'en-tête de l\'application pour les personnages scellés. Le portefeuille d\'XP est désormais affiché en permanence au-dessus de la zone de travail, évitant au joueur les allers-retours vers la page Bilan.'

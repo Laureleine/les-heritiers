@@ -3,7 +3,7 @@
 // 9.4.0 // 9.11.0
 // 10.4.0 // 10.6.0
 // 11.1.0
-// 13.6.0 // 13.6.1 // 13.7.0
+// 13.6.0 // 13.6.1 // 13.7.0 // 13.8.0 // 13.9.0
 
 import React, { useState } from 'react';
 import { Plus, Minus, Info, Sparkles, RotateCcw } from 'lucide-react';
@@ -190,12 +190,6 @@ export default function StepCaracteristiques() {
     setShowConfirm(false);
   };
 
-  // Calcul des PV : (Constitution TOTALE x 3) + 9
-  const baseCon = currentCaracs.constitution || feeData.caracteristiques.constitution?.min || 1;
-  const bonusCon = getBonusCapacite('constitution') + getBonusAtouts('constitution'); // 👈 MODIFIÉ
-  const totalCon = baseCon + bonusCon;
-  const pvMax = (totalCon * 3) + 9;
-
   return (
     <div className="max-w-4xl mx-auto">
 
@@ -204,7 +198,6 @@ export default function StepCaracteristiques() {
         
         <div>
           <h2 className="text-2xl font-serif text-amber-900">Caractéristiques</h2>
-          {/* ✨ 1. LE TEXTE S'ADAPTE AU CONTEXTE */}
           {isScelle ? (
             <p className="text-sm text-amber-700 font-bold">
               Améliorez vos caractéristiques physiologiques en dépensant de l'expérience (XP).
@@ -216,40 +209,32 @@ export default function StepCaracteristiques() {
           )}
         </div>
 
-        <div className="flex gap-4 items-center">
-          
-          {/* ✨ 2. ON MASQUE LA RÉINITIALISATION ET LE BUDGET SI SCELLÉ */}
-          {!isScelle && (
-            <>
-              <button
-                onClick={handleResetClick}
-                className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200 shadow-sm"
-                title="Réinitialiser les caractéristiques"
-              >
-                <RotateCcw size={16} />
-                <span className="hidden sm:inline">Réinitialiser</span>
-              </button>
+        {/* ✨ LA ZONE DE DROITE (Totalement masquée si le personnage est scellé !) */}
+        {!isScelle && (
+          <div className="flex gap-4 items-center">
+            
+            <button
+              onClick={handleResetClick}
+              className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200 shadow-sm"
+              title="Réinitialiser les caractéristiques"
+            >
+              <RotateCcw size={16} />
+              <span className="hidden sm:inline">Réinitialiser</span>
+            </button>
 
-              <div className={`px-4 py-2 rounded-lg font-bold border-2 flex flex-col items-center min-w-[80px] ${
-                pointsRestants === 0
-                  ? 'bg-green-100 text-green-700 border-green-300'
-                  : pointsRestants < 0
-                  ? 'bg-red-100 text-red-700 border-red-300'
-                  : 'bg-white text-amber-600 border-amber-300'
-              }`}>
-                <span className="text-2xl">{pointsRestants}</span>
-                <span className="text-xs uppercase">Points</span>
-              </div>
-            </>
-          )}
+            <div className={`px-4 py-2 rounded-lg font-bold border-2 flex flex-col items-center min-w-[80px] ${
+              pointsRestants === 0
+                ? 'bg-green-100 text-green-700 border-green-300'
+                : pointsRestants < 0
+                ? 'bg-red-100 text-red-700 border-red-300'
+                : 'bg-white text-amber-600 border-amber-300'
+            }`}>
+              <span className="text-2xl">{pointsRestants}</span>
+              <span className="text-xs uppercase">Points</span>
+            </div>
 
-          {/* ✨ 3. LE COMPTEUR DE PV RESTE VISIBLE TOUT LE TEMPS */}
-          <div className="px-4 py-2 rounded-lg font-bold border-2 border-red-800 bg-red-700 text-white flex flex-col items-center min-w-[80px]">
-            <span className="text-2xl">{pvMax}</span>
-            <span className="text-xs uppercase">PV Max</span>
           </div>
-
-        </div>
+        )}
       </div>
 
       {/* Grille des Caractéristiques */}

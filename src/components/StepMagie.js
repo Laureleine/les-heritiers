@@ -350,27 +350,46 @@ export function StepAtouts() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
-        <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
-        <div>
-          <h3 className="font-serif font-bold text-amber-900">Atouts Féériques</h3>
-          <p className="text-sm text-amber-800">
-            Votre nature vous octroie des avantages particuliers. Choisissez {MAX_ATOUTS} atouts parmi la liste ci-dessous.
-          </p>
-          <div className="mt-3 inline-block px-3 py-1 bg-white rounded-full border border-amber-200 text-sm font-bold text-amber-700">
-            Sélectionnés : {countSelected} / {MAX_ATOUTS}
+      {/* ✨ L'EN-TÊTE COMPACT DES ATOUTS (ADAPTATIF XP) ✨ */}
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-center bg-amber-50 px-4 py-2.5 rounded-lg border border-amber-200 shadow-sm gap-3">
+        
+        {/* LA GAUCHE : Titre et Description */}
+        <div className="flex items-center gap-3">
+          <div className="bg-white p-1.5 rounded border border-amber-200 shadow-sm">
+            <Sparkles className="text-amber-600 shrink-0" size={18} />
+          </div>
+          <div>
+            <h3 className="font-serif font-bold text-lg text-amber-900 leading-none mb-1">
+              Atouts Féériques
+            </h3>
+            {/* ✨ LE TEXTE S'ADAPTE SI LE PERSONNAGE EST SCELLÉ (XP) */}
+            {isReadOnly ? (
+              <p className="text-xs text-amber-700 font-bold">
+                Les avantages liés à votre nature sont définitivement scellés.
+              </p>
+            ) : (
+              <p className="text-xs text-amber-700">
+                Votre nature vous octroie des avantages particuliers. Choisissez {MAX_ATOUTS} atouts.
+              </p>
+            )}
           </div>
         </div>
+
+        {/* LA DROITE : Le Compteur Intelligent (Masqué si Scellé !) */}
+        {!isReadOnly && (
+          <div className={`px-3 py-1 rounded-md text-sm font-bold border-2 flex items-center gap-2 whitespace-nowrap transition-colors ${
+            countSelected >= MAX_ATOUTS
+              ? 'bg-green-100 text-green-700 border-green-300'
+              : 'bg-white text-amber-700 border-amber-300'
+          }`}>
+            <span>Sélectionnés :</span>
+            {/* ✨ ON UTILISE BIEN countSelected ICI ! */}
+            <span className="text-lg leading-none">{countSelected} / {MAX_ATOUTS}</span>
+          </div>
+        )}
+
       </div>
-
-      {/* ✨ L'ALERTE ROUGE DE DÉPASSEMENT ✨ */}
-      {countSelected > MAX_ATOUTS && (
-        <div className="mt-4 bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-sm font-bold animate-pulse flex items-center gap-2">
-          <AlertCircle size={18} className="shrink-0" />
-          Vous avez sélectionné trop d'atouts ({countSelected} / {MAX_ATOUTS}). Veuillez désélectionner un atout standard ci-dessous pour pouvoir continuer !
-        </div>
-      )}
-
+	  
       {/* LA GRILLE DES ATOUTS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {data.atouts.map((atout, idx) => {
