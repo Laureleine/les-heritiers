@@ -6,6 +6,22 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.10.0',
+    date: '14 Mars 2026',
+    changes: [
+      '🕰️ **Paradoxe Temporel :** Activation de la machine à cloner dans l\'Album Photo de l\'Héritier. Les joueurs peuvent désormais "Ressusciter" une archive photographique : l\'application générera une copie parfaite du personnage (Faux-Semblant jouable et autonome) tel qu\'il était exactement au moment de la sauvegarde.',
+      '🐛 **Boutique Féérique (Hotfix) :** Résolution d\'un conflit d\'identifiants qui verrouillait la sélection des Atouts en Mode Création. Le composant reconnaît à nouveau correctement les Atouts cochés, permettant aux Héritiers de les modifier librement tant que la fiche n\'est pas scellée.',
+      '🧹 **Refactoring Maître (Caractéristiques) :** Audit et nettoyage profond de l\'Étape 5. Éradication des fonctions orphelines, résolution du "shadowing" de la logique d\'XP, et séparation stricte des gestionnaires de clics (Création vs Évolution).',
+      '⚡ **Fluidité de l\'Interface :** Implémentation du hook React `useMemo` pour le calcul budgétaire des Caractéristiques, supprimant les re-calculs inutiles à chaque frappe au clavier ou rafraîchissement d\'écran.',
+      '🛡️ **Sécurité des Sceaux :** Colmatage d\'une brèche qui permettait de dépenser de l\'XP sur un personnage malgré la validation d\'un verrou de lecture seule (`isReadOnly`).',
+      '🛡️ **Architecture du Conseil (Refactoring) :** Audit majeur de l\'interface de validation des Gardiens. Éradication d\'une violation des lois de React (Hooks) et extraction de la logique d\'affichage des requêtes dans un composant pur (`ChangeCard`) pour garantir des performances optimales.',
+      '🐛 **Sécurité SQL (Hotfix) :** Amélioration du nettoyeur d\'incantation SQL qui utilise désormais `replaceAll` pour purger la totalité des balises parasites de transaction, et ajout d\'un bouclier contre les requêtes vides générées à tort par le système.',
+      '🧹 **Code Mort & Fuites Mémoire :** Suppression de la fonctionnalité fantôme de copie dans le presse-papier, éradication de l\'affichage redondant du Delta (Relations), et ajout de contrôles de cycle de vie (`isMounted`) pour bloquer les fuites mémoire lors du chargement des archives.',
+      '🛡️ **Extension du Plancher de Verre :** La logique des Snapshots (Sceau d\'Évolution) a été propagée aux Capacités Naturelles et aux Pouvoirs. Les choix magiques effectués à la création sont désormais verrouillés et marqués d\'un badge "🔒 Inné", empêchant toute falsification.',
+      '✨ **Évolution de la Féérie :** Les Héritiers peuvent désormais librement s\'équiper de nouveaux Pouvoirs (ou les purger) s\'ils obtiennent de nouveaux emplacements via l\'augmentation de leur Caractéristique "Féérie", tout en préservant leurs pouvoirs de naissance.'
+    ]
+  },
+  {
     version: '13.9.0',
     date: '14 Mars 2026',
     changes: [
