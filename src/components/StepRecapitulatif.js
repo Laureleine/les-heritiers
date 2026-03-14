@@ -3,10 +3,10 @@
 // 9.11.0
 // 10.1.0 // 10.4.0 // 10.6.0
 // 12.6.0
-// 13.0.O // 13.7.0
+// 13.0.O // 13.7.0 // 13.9.0
 
 import React, { useState } from 'react';
-import { User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert } from 'lucide-react';
+import { Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert } from 'lucide-react';
 import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { supabase } from '../config/supabase';
@@ -26,6 +26,89 @@ export default function StepRecapitulatif() {
 
   // L'état de scellage de l'Héritier
   const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+
+  // ========================================================================
+  // ✨ MÉMOIRES DE L'ALBUM PHOTO (SNAPSHOTS)
+  // ========================================================================
+  const [snapshots, setSnapshots] = useState([]);
+  const [loadingSnapshots, setLoadingSnapshots] = useState(false);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [photoTitle, setPhotoTitle] = useState('');
+
+  // Dès qu'on arrive sur la page, on charge les photos du personnage
+  useEffect(() => {
+    if (isScelle && character?.id && !character.id.toString().startsWith('temp_')) {
+      fetchSnapshots();
+    }
+  }, [isScelle, character?.id]);
+
+  const fetchSnapshots = async () => {
+    setLoadingSnapshots(true);
+    const { data, error } = await supabase
+      .from('character_snapshots')
+      .select('id, titre, created_at')
+      .eq('character_id', character.id)
+      .order('created_at', { ascending: false });
+    
+    if (!error && data) setSnapshots(data);
+    setLoadingSnapshots(false);
+  };
+
+  // ========================================================================
+  // 📸 DÉCLENCHER L'APPAREIL PHOTO (Et figer le Plancher de Verre)
+  // ========================================================================
+  const handleTakeSnapshot = async () => {
+    if (!photoTitle.trim()) return;
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      showInAppNotification("Erreur : Utilisateur non identifié.", "error");
+      return;
+    }
+
+    try {
+      // 1. On définit le nouveau "Plancher de Verre" avec les stats actuelles
+      const nouveauPlancher = {
+        caracteristiques: { ...character.caracteristiques },
+        atouts: [...(character.atouts || [])]
+        // On ajoutera les compétences utiles/futiles ici quand on fera leur mutation !
+      };
+
+      // 2. On prépare la copie intégrale du personnage pour l'archive
+      const snapshotData = {
+        ...character,
+        stats_scellees: nouveauPlancher
+      };
+
+      // 3. On sauvegarde la photo dans Supabase
+      const { error: snapError } = await supabase.from('character_snapshots').insert([{
+        character_id: character.id,
+        user_id: session.user.id,
+        titre: photoTitle.trim(),
+        character_data: snapshotData
+      }]);
+
+      if (snapError) throw snapError;
+
+      // 4. On met à jour la VRAIE fiche de l'Héritier pour verrouiller la rétrogradation
+      const { error: charError } = await supabase
+        .from('characters')
+        .update({ stats_scellees: nouveauPlancher })
+        .eq('id', character.id);
+
+      if (charError) throw charError;
+
+      // 5. On actualise l'écran
+      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'stats_scellees', value: nouveauPlancher, gameData });
+      showInAppNotification("📸 Clic clac ! L'archive est gravée et le Plancher de Verre est mis à jour.", "success");
+      setShowPhotoModal(false);
+      setPhotoTitle('');
+      fetchSnapshots();
+
+    } catch (err) {
+      showInAppNotification("Erreur lors de la capture temporelle : " + err.message, "error");
+    }
+  };
 
   // ========================================================================
   // ✨ LA LOGIQUE DU CERBÈRE (Le Scanner)
@@ -400,6 +483,87 @@ export default function StepRecapitulatif() {
             </div>
           </div>
         </div>
+
+        {/* ============================================================== */}
+        {/* ✨ L'ALBUM PHOTO (ARCHIVES SPATIO-TEMPORELLES) ✨              */}
+        {/* ============================================================== */}
+        {isScelle && (
+          <div className="lg:col-span-2 mt-8 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-stone-200 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-stone-100 pb-4 gap-4">
+              <div>
+                <h3 className="font-serif font-bold text-xl text-stone-800 flex items-center gap-2">
+                  <Camera className="text-amber-600" />
+                  Album Photo (Archives Temporelles)
+                </h3>
+                <p className="text-sm text-stone-500 mt-1">Immortalisez votre Faux-Semblant après une campagne. Cela verrouillera vos dépenses d'XP actuelles (Plancher de verre).</p>
+              </div>
+              <button
+                onClick={() => setShowPhotoModal(true)}
+                className="px-5 py-2.5 bg-stone-800 hover:bg-stone-900 text-white rounded-xl text-sm font-bold flex items-center gap-2 transition-colors shadow-sm shrink-0"
+              >
+                <Plus size={18} /> Prendre une photo
+              </button>
+            </div>
+
+            {loadingSnapshots ? (
+              <p className="text-stone-400 italic text-center py-6 animate-pulse">Développement des pellicules en cours...</p>
+            ) : snapshots.length === 0 ? (
+              <div className="text-stone-500 text-center py-10 bg-stone-50 rounded-xl border-2 border-dashed border-stone-200 flex flex-col items-center gap-2">
+                <Camera size={32} className="text-stone-300" />
+                <span>Aucune archive n'a encore été créée pour cet Héritier.</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {snapshots.map(snap => (
+                  <div key={snap.id} className="p-4 rounded-xl border border-stone-200 bg-stone-50 flex justify-between items-center hover:border-amber-300 hover:shadow-md transition-all group">
+                    <div>
+                      <h4 className="font-bold text-stone-800 font-serif text-lg group-hover:text-amber-900 transition-colors">{snap.titre}</h4>
+                      <p className="text-xs text-stone-500 flex items-center gap-1 mt-1 font-bold uppercase tracking-wider">
+                        <Clock size={12} />
+                        {new Date(snap.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })} • {new Date(snap.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}
+                      </p>
+                    </div>
+                    {/* Le bouton de clonage pour la future Étape 4 */}
+                    <button className="p-2 text-stone-400 hover:text-emerald-600 bg-white rounded-lg border border-stone-200 shadow-sm transition-colors" title="Ressusciter cette archive (Bientôt)">
+                      <Copy size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ✨ LA MODALE DE L'APPAREIL PHOTO ✨ */}
+        {showPhotoModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
+            <div className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-2 border-stone-300 overflow-hidden transform animate-fade-in-up">
+              <div className="p-4 bg-stone-100 border-b border-stone-200 flex justify-between items-center">
+                <h3 className="font-serif font-bold text-lg text-stone-800 flex items-center gap-2">
+                  <Camera size={20} className="text-amber-600" /> Tirer le portrait
+                </h3>
+              </div>
+              <div className="p-6">
+                <p className="text-sm text-stone-600 mb-6 leading-relaxed bg-amber-50 p-3 rounded-lg border border-amber-200">
+                  <strong className="text-amber-800">Attention :</strong> L'état actuel de votre Héritier sera gravé dans le marbre. Ses statistiques actuelles deviendront votre nouveau plancher inaliénable (impossible de récupérer les XP investis jusque-là).
+                </p>
+                <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Titre de l'archive (ex: Fin du scénario à Paris)</label>
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Inscrivez un souvenir..."
+                  value={photoTitle}
+                  onChange={e => setPhotoTitle(e.target.value)}
+                  className="w-full p-3 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none font-bold text-stone-800 bg-white"
+                />
+                <div className="flex justify-end gap-3 mt-6">
+                  <button onClick={() => setShowPhotoModal(false)} className="px-4 py-2 text-stone-500 font-bold hover:bg-stone-200 rounded-xl transition-colors">Annuler</button>
+                  <button onClick={handleTakeSnapshot} disabled={!photoTitle.trim()} className="px-6 py-2 bg-stone-800 text-white font-bold rounded-xl hover:bg-stone-900 transition-colors shadow-md disabled:opacity-50">Immortaliser</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ✨ LE RENDU DE LA BOUTIQUE EN DESSOUS ✨ */}
         {showShop && (
