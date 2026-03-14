@@ -1,6 +1,6 @@
 // src/utils/supabaseStorage.js
 // 12.0.0
-// 13.1.0 // 13.3.0
+// 13.1.0 // 13.3.0 // 13.10.0
 
 import { supabase } from '../config/supabase';
 
@@ -98,6 +98,8 @@ const mapDatabaseToCharacter = (char) => {
         isPublic: source.is_public || source.isPublic || false,
 	    statut: source.statut || 'brouillon',
         ownerUsername: source.profiles?.username || 'Inconnu',
+
+        data: source.data || {},
         
         // Dates : Gestion souple
         created_at: source.created_at || new Date().toISOString(),

@@ -3,9 +3,9 @@
 // 9.11.0
 // 10.1.0 // 10.4.0 // 10.6.0
 // 12.6.0
-// 13.0.O // 13.7.0 // 13.9.0
+// 13.0.O // 13.7.0 // 13.9.0 // 13.10.0
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert } from 'lucide-react';
 import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
@@ -111,6 +111,46 @@ export default function StepRecapitulatif() {
   };
 
   // ========================================================================
+  // ⏳ RESSUSCITER UNE ARCHIVE TEMPORELLE (Clonage)
+  // ========================================================================
+  const handleCloneSnapshot = async (snapshotId, snapshotTitre) => {
+    try {
+      // 1. On va chercher le gros bloc JSON du personnage à l'époque de la photo
+      const { data: snapData, error: snapError } = await supabase
+        .from('character_snapshots')
+        .select('character_data')
+        .eq('id', snapshotId)
+        .single();
+
+      if (snapError) throw snapError;
+
+      const archiveData = snapData.character_data;
+
+      // 2. On prépare le clone (On supprime l'ancien ID pour que Supabase en génère un nouveau !)
+      const clonedCharacter = {
+        ...archiveData,
+        nom: `${archiveData.nom} (Archive : ${snapshotTitre})`
+      };
+      
+      delete clonedCharacter.id;
+      delete clonedCharacter.created_at;
+      delete clonedCharacter.updated_at;
+
+      // 3. On l'insère comme un tout nouveau personnage dans le Nuage
+      const { error: insertError } = await supabase
+        .from('characters')
+        .insert([clonedCharacter]);
+
+      if (insertError) throw insertError;
+
+      showInAppNotification("🕰️ Paradoxe temporel réussi ! L'archive a été ramenée à la vie. Retournez à l'écran d'accueil pour la jouer.", "success");
+
+    } catch (err) {
+      showInAppNotification("Erreur lors de la résurrection temporelle : " + err.message, "error");
+    }
+  };
+  
+  // ========================================================================
   // ✨ LA LOGIQUE DU CERBÈRE (Le Scanner)
   // ========================================================================
   const handleSealCharacter = async () => {
@@ -180,23 +220,42 @@ export default function StepRecapitulatif() {
   };
 
   // ========================================================================
-  // ✨ L'EXÉCUTION DU SCELLAGE (Après validation Modale)
+  // ✨ L'EXÉCUTION DU SCELLAGE (Avec la création du Snapshot !)
   // ========================================================================
   const executeSeal = async () => {
     setShowConfirmSeal(false);
+
     try {
+      // 📸 LE PLANCHER DE VERRE : On prend la photo de ce qui est inné !
+      const snapshot = {
+        atouts: character.atouts || [],
+        pouvoirs: character.pouvoirs || [],
+        capaciteChoisie: character.capaciteChoisie || null,
+        caracteristiques: character.caracteristiques || {}
+      };
+
+      // On glisse cette photo dans l'objet "data" (qui est sauvegardé par Supabase)
+      const newData = { ...(character.data || {}), stats_scellees: snapshot };
+
       const { error } = await supabase
         .from('characters')
-        .update({ statut: 'scelle', xp_total: 0, xp_depense: 0 })
+        .update({ 
+          statut: 'scelle', 
+          xp_total: 0, 
+          xp_depense: 0,
+          data: newData 
+        })
         .eq('id', character.id);
 
       if (error) throw error;
 
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'statut', value: 'scelle', gameData });
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'xp_total', value: 0, gameData });
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'xp_depense', value: 0, gameData });
+      // On met à jour l'interface locale
+      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'statut', value: 'scelle' });
+      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'xp_total', value: 0 });
+      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'xp_depense', value: 0 });
+      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'data', value: newData });
 
-      showInAppNotification("L'Héritier est scellé ! Le Grimoire s'ouvre à l'expérience...", "success");
+      showInAppNotification("L'Héritier est scellé ! Le Sceau Originel a été gravé avec succès.", "success");
     } catch (err) {
       showInAppNotification("Erreur lors du scellage : " + err.message, "error");
     }
@@ -523,8 +582,12 @@ export default function StepRecapitulatif() {
                         {new Date(snap.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })} • {new Date(snap.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}
                       </p>
                     </div>
-                    {/* Le bouton de clonage pour la future Étape 4 */}
-                    <button className="p-2 text-stone-400 hover:text-emerald-600 bg-white rounded-lg border border-stone-200 shadow-sm transition-colors" title="Ressusciter cette archive (Bientôt)">
+                    {/* Le bouton de clonage Temporel */}
+                    <button 
+                      onClick={() => handleCloneSnapshot(snap.id, snap.titre)}
+                      className="p-2 text-stone-400 hover:text-emerald-600 bg-white rounded-lg border border-stone-200 shadow-sm transition-colors" 
+                      title="Ressusciter cette archive en tant que nouveau personnage"
+                    >
                       <Copy size={18} />
                     </button>
                   </div>

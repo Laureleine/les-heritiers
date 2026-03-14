@@ -1,20 +1,27 @@
 // 10.4.0 // 10.6.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 12.5.0
-// 13.1.0
+// 13.1.0 // 13.10.0
 
-import React, { useState } from 'react';
-import { Star, Info, Check, Sparkles, AlertCircle } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Star, Info, Check, Sparkles, AlertCircle, Plus, Minus } from 'lucide-react';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
+
+// 🧠 LES CONSTANTES CENTRALISÉES
+const MAX_ATOUTS_GLOBAL = 2;
+const ATOUT_XP_COST = 8;
 
 // ============================================================================
 // --- ÉTAPE 2 : CAPACITÉS ---
 // ============================================================================
+
 export function Step2() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
   const fairyData = gameData.fairyData;
-
   const data = fairyData[character.typeFee];
+
+  // 🛡️ LE PLANCHER DE VERRE
+  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
 
   if (!data) {
     return (
@@ -27,9 +34,12 @@ export function Step2() {
   }
 
   const handleCapaciteChoice = (c) => {
-    if (!isReadOnly) {
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'capaciteChoisie', value: c, gameData });
+    if (isReadOnly) return;
+    if (isScelle) {
+      showInAppNotification("Votre Capacité a été scellée à la création. Impossible d'en changer !", "warning");
+      return;
     }
+    dispatchCharacter({ type: 'UPDATE_FIELD', field: 'capaciteChoisie', value: c, gameData });
   };
 
   return (
@@ -40,21 +50,23 @@ export function Step2() {
           <h3 className="font-serif font-bold text-amber-900">Capacités Naturelles</h3>
           <p className="text-sm text-amber-800">
             Voici les capacités inhérentes à votre nature. Vous devez choisir une 3ème capacité spécifique.
+            {isScelle && " (Choix scellé)"}
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-      </div>
-
-      {/* ✨ NOUVEAU : AFFICHAGE DES CAPACITÉS FIXES (INNÉES) */}
       <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacités Innées (Acquises)</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[data.capacites?.fixe1, data.capacites?.fixe2].filter(c => c && c.nom && c.nom !== 'Inconnu').map((cap, idx) => (
           <div key={`fixe-${idx}`} className="p-4 rounded-xl border-2 border-amber-200 bg-amber-100/50">
-            <div className="font-bold font-serif text-amber-900 flex items-center gap-2">
-              <Check size={16} className="text-amber-600" />
-              {cap.nom}
+            <div className="flex items-center justify-between mb-2">
+              <div className="font-bold font-serif text-amber-900 flex items-center gap-2">
+                <Check size={16} className="text-amber-600" />
+                {cap.nom}
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200/50 text-amber-800 uppercase">
+                Fixe
+              </span>
             </div>
             <p className="text-sm text-amber-800 text-left mt-2 leading-relaxed">
               {cap.description || "Aucune description."}
@@ -62,33 +74,47 @@ export function Step2() {
           </div>
         ))}
       </div>
-	  
-      {/* 🎯 SÉPARATEUR POUR LES CAPACITÉS AU CHOIX */}
+
       <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacité Optionnelle (À choisir)</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data.capacites?.choix?.map((cap, idx) => (
-          <div key={idx} className="flex flex-col gap-2">
-            <button
-              disabled={isReadOnly}
-              onClick={() => handleCapaciteChoice(cap.nom)}
-              className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden group ${
-                character.capaciteChoisie === cap.nom
-                  ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200 ring-offset-2'
-                  : 'border-stone-200 bg-white hover:border-amber-300 hover:bg-stone-50'
-              }`}
-            >
-              <div className="font-bold font-serif text-gray-800 mb-1 flex items-center gap-2">
-                {character.capaciteChoisie === cap.nom && <Check size={16} className="text-amber-600" />}
-                {cap.nom}
-              </div>
-              <p className={`text-sm text-left mt-2 leading-relaxed ${character.capaciteChoisie === cap.nom ? 'text-amber-800' : 'text-gray-600'}`}>
-                {cap.description || "Aucune description."}
-              </p>
-            </button>
-          </div>
-        ))}
+        {data.capacites?.choix?.map((cap, idx) => {
+          const isSelected = character.capaciteChoisie === cap.nom;
+          // Si le personnage est scellé, les options non choisies sont grisées
+          const isDisabled = isScelle && !isSelected;
+
+          return (
+            <div key={idx} className="flex flex-col gap-2">
+              <button
+                disabled={isReadOnly || isScelle}
+                onClick={() => handleCapaciteChoice(cap.nom)}
+                className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden group ${
+                  isSelected
+                    ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200 ring-offset-2'
+                    : isDisabled
+                    ? 'border-stone-200 bg-stone-50 opacity-50 cursor-not-allowed'
+                    : 'border-stone-200 bg-white hover:border-amber-300 hover:bg-stone-50'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div className={`font-bold font-serif flex items-center gap-2 ${isSelected ? 'text-amber-900' : 'text-gray-800'}`}>
+                    {isSelected && <Check size={16} className="text-amber-600" />}
+                    {cap.nom}
+                  </div>
+                  {isSelected && isScelle && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 uppercase" title="Sceau de Création">
+                      🔒 Inné
+                    </span>
+                  )}
+                </div>
+                <p className={`text-sm text-left mt-2 leading-relaxed ${isSelected ? 'text-amber-800' : 'text-gray-600'}`}>
+                  {cap.description || "Aucune description."}
+                </p>
+              </button>
+            </div>
+          );
+        })}
       </div>
-	</div>
+    </div>
   );
 }
 
@@ -101,29 +127,103 @@ export function Step3() {
   const fairyData = gameData.fairyData;
   const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 
-  // ✨ NOUVEAU : Les états pour l'Anomalie
-  const [showAnomalie, setShowAnomalie] = React.useState(false);
-  const MAX_ATOUTS = 3;
+  const [showAnomalie, setShowAnomalie] = useState(false);
 
-  const maxPouvoirs = character.caracteristiques?.feerie || 3;
+  // 🛡️ LE PLANCHER DE VERRE ET LES VARIABLES XP
+  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+  const innatePouvoirs = character.data?.stats_scellees?.pouvoirs || [];
+  
+  const baseFeerie = character.data?.stats_scellees?.caracteristiques?.feerie || 3;
+  const baseMasque = character.data?.stats_scellees?.caracteristiques?.masque || 4;
+
+  const currentFeerie = character.caracteristiques?.feerie || 3;
+  const currentMasque = character.caracteristiques?.masque || 4;
+
+  const xpTotal = character.xp_total || 0;
+  const xpDepense = character.xp_depense || 0;
+  const xpDispo = xpTotal - xpDepense;
+
+  // Limites et compteurs
+  const maxPouvoirs = currentFeerie;
   const countSelected = character.pouvoirs?.length || 0;
   const countAtouts = character.atouts?.length || 0;
+
   const anomalieAtout = data?.atouts?.find(a => a.nom === 'Anomalie féérique');
   const anomalieId = anomalieAtout ? anomalieAtout.id : 'Anomalie féérique';
   const hasAnomalie = character.atouts?.includes(anomalieId) || character.atouts?.includes('Anomalie féérique');
 
-  const handlePouvoirToggle = (pouvoir) => {
-    if (!isReadOnly) {
-      dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'pouvoirs', value: pouvoir, max: maxPouvoirs, gameData });
+  // ✨ LA MATHÉMATIQUE DE L'EXPÉRIENCE (Livre de Base)
+  const getFeerieCost = (rank) => rank * 5;
+  const getMasqueCost = (rank) => Math.max(12, rank * 4);
+
+  const handleUpgradeStat = (stat) => {
+    if (!isScelle) return;
+    const currentRank = stat === 'feerie' ? currentFeerie : currentMasque;
+    const maxLimit = stat === 'feerie' ? 8 : 10;
+
+    if (currentRank >= maxLimit) {
+      showInAppNotification(`Votre ${stat === 'feerie' ? 'Féérie' : 'Masque'} a atteint le sommet de la puissance féérique !`, "warning");
+      return;
     }
+
+    const cost = stat === 'feerie' ? getFeerieCost(currentRank + 1) : getMasqueCost(currentRank + 1);
+
+    if (xpDispo < cost) {
+      showInAppNotification(`Il vous faut ${cost} XP pour augmenter cette caractéristique !`, "error");
+      return;
+    }
+
+    const newCaracs = { ...(character.caracteristiques || {}), [stat]: currentRank + 1 };
+    // Le Masque et la Féérie font évoluer mécaniquement la Tricherie
+    const newTricherie = Math.floor((newCaracs.feerie + newCaracs.masque) / 2);
+
+    dispatchCharacter({
+      type: 'UPDATE_MULTIPLE',
+      payload: {
+        caracteristiques: newCaracs,
+        tricherie: newTricherie,
+        xp_depense: xpDepense + cost
+      },
+      gameData
+    });
+    showInAppNotification(`${stat === 'feerie' ? 'Féérie' : 'Masque'} augmenté(e) à ${currentRank + 1} pour ${cost} XP !`, "success");
   };
 
-  // ✨ NOUVEAU : Calculer le catalogue de TOUS les autres pouvoirs (Mémoïsé pour la fluidité)
-  const exteriorPowers = React.useMemo(() => {
+  const handleDowngradeStat = (stat) => {
+    if (!isScelle) return;
+    const currentRank = stat === 'feerie' ? currentFeerie : currentMasque;
+    const baseRank = stat === 'feerie' ? baseFeerie : baseMasque;
+
+    if (currentRank <= baseRank) {
+      showInAppNotification("Le Sceau Originel (Plancher de Verre) protège vos caractéristiques de naissance !", "warning");
+      return;
+    }
+
+    // 🛡️ BOUCLIER ANTI-BUG : On ne réduit pas la Féérie si on a trop de pouvoirs
+    if (stat === 'feerie' && countSelected > currentRank - 1) {
+      showInAppNotification("Vous devez d'abord désapprendre un pouvoir avant de pouvoir réduire votre Féérie !", "error");
+      return;
+    }
+
+    const refund = stat === 'feerie' ? getFeerieCost(currentRank) : getMasqueCost(currentRank);
+    const newCaracs = { ...(character.caracteristiques || {}), [stat]: currentRank - 1 };
+    const newTricherie = Math.floor((newCaracs.feerie + newCaracs.masque) / 2);
+
+    dispatchCharacter({
+      type: 'UPDATE_MULTIPLE',
+      payload: {
+        caracteristiques: newCaracs,
+        tricherie: newTricherie,
+        xp_depense: Math.max(0, xpDepense - refund)
+      },
+      gameData
+    });
+    showInAppNotification(`Niveau annulé : +${refund} XP récupérés !`, "success");
+  };
+
+  const exteriorPowers = useMemo(() => {
     if (!fairyData || !character.typeFee) return [];
     const others = [];
-
-    // 🛡️ L'ANTI-BUG EST ICI : On liste les pouvoirs INNÉS de notre fée pour les exclure !
     const myFairyPowers = fairyData[character.typeFee]?.pouvoirs?.map(p => p.nom) || [];
 
     Object.keys(fairyData).forEach(fName => {
@@ -131,15 +231,7 @@ export function Step3() {
         const fData = fairyData[fName];
         if (fData && fData.pouvoirs) {
           fData.pouvoirs.forEach(p => {
-            
-            // ✨ LE BOUCLIER DE L'ARCHITECTE EST ICI ✨
-            // On vérifie que le pouvoir est strictement standard (pas profond ni légendaire)
             const isStandard = p.type_pouvoir === 'masque' || p.type_pouvoir === 'demasque';
-
-            // 🛡️ On s'assure que :
-            // 1. C'est un pouvoir standard
-            // 2. Ce n'est pas un pouvoir que l'on possède déjà naturellement
-            // 3. On ne l'a pas déjà ajouté
             if (isStandard && !myFairyPowers.includes(p.nom) && !others.some(ex => ex.nom === p.nom)) {
               others.push({ ...p, origine: fName });
             }
@@ -147,43 +239,53 @@ export function Step3() {
         }
       }
     });
-
-    // On trie alphabétiquement pour que ce soit beau
     return others.sort((a, b) => a.nom.localeCompare(b.nom));
-  }, [fairyData, character.typeFee]); 
+  }, [fairyData, character.typeFee]);
 
-  // ✨ NOUVEAU : Trouver si un pouvoir extérieur est déjà sélectionné par le joueur
   const selectedExterior = character.pouvoirs?.find(pNom => exteriorPowers.some(ep => ep.nom === pNom));
 
-  // ✨ NOUVEAU : La fonction Chirurgienne pour l'Anomalie
+  const handlePouvoirToggle = (pouvoir) => {
+    if (isReadOnly) return;
+
+    const isSelected = character.pouvoirs?.includes(pouvoir);
+
+    // ✨ BLOCAGE : Impossible de désélectionner un pouvoir d'origine
+    if (isScelle && isSelected && innatePouvoirs.includes(pouvoir)) {
+      showInAppNotification("Ce Pouvoir fait partie du Sceau originel de votre Héritier. Impossible de l'oublier !", "warning");
+      return;
+    }
+
+    dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'pouvoirs', value: pouvoir, max: maxPouvoirs, gameData });
+  };
+
   const handleAnomalieToggle = (pouvoirNom) => {
     if (isReadOnly) return;
+
+    const isSelected = selectedExterior === pouvoirNom;
+
+    if (isScelle && isSelected && innatePouvoirs.includes(pouvoirNom)) {
+      showInAppNotification("Cette Anomalie fait partie de votre Sceau originel. Impossible de la purger !", "warning");
+      return;
+    }
 
     let newPouvoirs = character.pouvoirs ? [...character.pouvoirs] : [];
     let newAtouts = character.atouts ? [...character.atouts] : [];
 
-    if (selectedExterior === pouvoirNom) {
-      // 1. DÉSÉLECTION : On enlève le pouvoir ET le vrai Atout
+    if (isSelected) {
       newPouvoirs = newPouvoirs.filter(p => p !== pouvoirNom);
       newAtouts = newAtouts.filter(a => a !== anomalieId && a !== 'Anomalie féérique');
     } else {
-      // 2. SÉLECTION
       if (selectedExterior) {
         newPouvoirs = newPouvoirs.filter(p => p !== selectedExterior);
       } else {
-        if (newPouvoirs.length >= maxPouvoirs) return; 
-        if (!hasAnomalie && countAtouts >= MAX_ATOUTS) return; 
+        if (newPouvoirs.length >= maxPouvoirs) return;
+        if (!hasAnomalie && countAtouts >= MAX_ATOUTS_GLOBAL) return;
       }
-
       newPouvoirs.push(pouvoirNom);
-      // ✨ On insère le véritable identifiant SQL !
-      if (!newAtouts.includes(anomalieId)) {
-        newAtouts.push(anomalieId);
-      }
-      setShowAnomalie(false); 
+      if (!newAtouts.includes(anomalieId)) newAtouts.push(anomalieId);
+      setShowAnomalie(false);
     }
 
-    // On expédie les deux modifications d'un coup dans le Nuage !
     dispatchCharacter({
       type: 'UPDATE_MULTIPLE',
       payload: { pouvoirs: newPouvoirs, atouts: newAtouts },
@@ -194,25 +296,88 @@ export function Step3() {
   if (!data) return null;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
+      
+      {/* ✨ NOUVEAU BLOC : FÉÉRIE & MASQUE */}
+      <div className="bg-indigo-50 border border-indigo-200 p-4 md:p-5 rounded-xl shadow-sm">
+        <h3 className="font-serif font-bold text-indigo-900 mb-4 flex items-center gap-2 text-lg">
+          <Star className="text-indigo-600" size={22} />
+          Attributs Féériques
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* JAUGE FÉÉRIE */}
+          <div className="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm">
+            <div className="flex items-baseline gap-2">
+              <span className="font-bold text-indigo-900 text-lg">Féérie</span>
+              <span className="text-xs text-indigo-500 font-medium">— Gouverne vos Pouvoirs</span>
+            </div>
+            <div className="flex items-center gap-3 self-end sm:self-auto">
+              {isScelle && currentFeerie > baseFeerie && (
+                <button onClick={() => handleDowngradeStat('feerie')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getFeerieCost(currentFeerie)} XP`}>
+                  <Minus size={18} />
+                </button>
+              )}
+              <span className="text-2xl font-serif font-bold text-indigo-900 w-8 text-center">{currentFeerie}</span>
+              {isScelle && currentFeerie < 8 && (
+                <button onClick={() => handleUpgradeStat('feerie')} className="p-1 text-emerald-600 hover:bg-emerald-50 rounded flex flex-col items-center transition-colors" title={`Coûte ${getFeerieCost(currentFeerie + 1)} XP`}>
+                  <Plus size={18} />
+                  <span className="text-[9px] font-bold mt-0.5">{getFeerieCost(currentFeerie + 1)} XP</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* JAUGE MASQUE */}
+          <div className="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm">
+            <div className="flex items-baseline gap-2">
+              <span className="font-bold text-indigo-900 text-lg">Masque</span>
+              <span className="text-xs text-indigo-500 font-medium">— Illusion & dissimulation</span>
+            </div>
+            <div className="flex items-center gap-3 self-end sm:self-auto">
+              {isScelle && currentMasque > baseMasque && (
+                <button onClick={() => handleDowngradeStat('masque')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getMasqueCost(currentMasque)} XP`}>
+                  <Minus size={18} />
+                </button>
+              )}
+              <span className="text-2xl font-serif font-bold text-indigo-900 w-8 text-center">{currentMasque}</span>
+              {isScelle && currentMasque < 10 && (
+                <button onClick={() => handleUpgradeStat('masque')} className="p-1 text-emerald-600 hover:bg-emerald-50 rounded flex flex-col items-center transition-colors" title={`Coûte ${getMasqueCost(currentMasque + 1)} XP`}>
+                  <Plus size={18} />
+                  <span className="text-[9px] font-bold mt-0.5">{getMasqueCost(currentMasque + 1)} XP</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+        </div>
+        {isScelle && (
+          <p className="text-xs text-indigo-800 mt-4 italic text-center">
+            Améliorer vos Attributs Féériques consomme de l'Expérience. Augmenter la Féérie débloquera immédiatement un nouvel emplacement de Pouvoir.
+          </p>
+        )}
+      </div>
+
+      {/* POUVOIRS */}
       <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
         <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
         <div>
           <h3 className="font-serif font-bold text-amber-900">Héritage Féérique</h3>
           <p className="text-sm text-amber-800">
-            Votre niveau de Féérie ({maxPouvoirs}) détermine le nombre de pouvoirs que vous pouvez maîtriser. Vous pouvez choisir parmi les Pouvoirs <strong>Masqués</strong> (utilisables sous forme masquée) et les Pouvoirs <strong>Démasqués</strong> (utilisables uniquement sous forme de Fée).
+            Votre niveau de Féérie (<strong>{maxPouvoirs}</strong>) détermine le nombre de pouvoirs que vous pouvez maîtriser. Vous pouvez choisir parmi les Pouvoirs Masqués et Démasqués.
           </p>
-          <div className="mt-3 inline-block px-3 py-1 bg-white rounded-full border border-amber-200 text-sm font-bold text-amber-700">
+          <div className={`mt-3 inline-block px-3 py-1 bg-white rounded-full border text-sm font-bold ${countSelected > maxPouvoirs ? 'border-red-400 text-red-700 animate-pulse' : 'border-amber-200 text-amber-700'}`}>
             Sélectionnés : {countSelected} / {maxPouvoirs}
           </div>
         </div>
       </div>
 
-      {/* RENDU DES POUVOIRS STANDARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {data.pouvoirs.map((pouvoir, idx) => {
           const isSelected = character.pouvoirs?.includes(pouvoir.nom);
           const isDisabled = !isSelected && countSelected >= maxPouvoirs;
+          const isInnate = isScelle && innatePouvoirs.includes(pouvoir.nom);
 
           return (
             <div
@@ -229,17 +394,24 @@ export function Step3() {
                   {isSelected && <Check size={16} className="text-indigo-600" />}
                   {pouvoir.nom}
                 </div>
-                {(() => {
-                  const isDemasque = pouvoir.type_pouvoir?.includes('demasque');
-                  const isMasque = !isDemasque;
-                  return (
-                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                      isMasque ? 'bg-purple-100 text-purple-700' : 'bg-rose-100 text-rose-700'
-                    }`}>
-                      {isMasque ? '🎭 Masqué' : '🔥 Démasqué'}
+                <div className="flex items-center gap-2">
+                  {isInnate && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 uppercase" title="Sceau de Création (Plancher de Verre)">
+                      🔒 Inné
                     </span>
-                  );
-                })()}
+                  )}
+                  {(() => {
+                    const isDemasque = pouvoir.type_pouvoir?.includes('demasque');
+                    const isMasque = !isDemasque;
+                    return (
+                      <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
+                        isMasque ? 'bg-purple-100 text-purple-700' : 'bg-rose-100 text-rose-700'
+                      }`}>
+                        {isMasque ? '🎭 Masqué' : '🔥 Démasqué'}
+                      </span>
+                    );
+                  })()}
+                </div>
               </div>
               <div className="text-sm text-gray-600 leading-relaxed mt-2">
                 {pouvoir.description || "Aucune description."}
@@ -249,7 +421,7 @@ export function Step3() {
         })}
       </div>
 
-      {/* ✨ NOUVEAU : LE BOUTON MAGIQUE (ANOMALIE) ✨ */}
+      {/* ANOMALIE FÉÉRIQUE */}
       <div className="mt-8 border-t-2 border-dashed border-amber-200 pt-6">
         <div className="bg-gradient-to-r from-fuchsia-50 to-purple-50 border border-fuchsia-200 p-5 rounded-xl shadow-sm">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -264,37 +436,48 @@ export function Step3() {
               </p>
             </div>
 
-            {selectedExterior ? (
-              <button
-                onClick={() => handleAnomalieToggle(selectedExterior)}
-                className="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-bold text-sm hover:bg-red-200 transition-colors border border-red-200 shrink-0"
-              >
-                Purger l'Anomalie
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowAnomalie(!showAnomalie)}
-                disabled={countSelected >= maxPouvoirs || (!hasAnomalie && countAtouts >= MAX_ATOUTS)}
-                className="px-5 py-2 bg-fuchsia-600 text-white rounded-lg font-bold text-sm hover:bg-fuchsia-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md shrink-0"
-              >
-                {showAnomalie ? 'Refermer le catalogue' : 'Déclencher l\'Anomalie'}
-              </button>
-            )}
+            {(() => {
+              const isAnomalieInnate = isScelle && innatePouvoirs.includes(selectedExterior);
+              
+              if (selectedExterior) {
+                return (
+                  <button
+                    onClick={() => handleAnomalieToggle(selectedExterior)}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors border shrink-0 ${isAnomalieInnate ? 'bg-gray-100 text-gray-500 border-gray-200 cursor-not-allowed' : 'bg-red-100 text-red-700 hover:bg-red-200 border-red-200'}`}
+                  >
+                    {isAnomalieInnate ? '🔒 Purge Impossible' : 'Purger l\'Anomalie'}
+                  </button>
+                );
+              } else {
+                return (
+                  <button
+                    onClick={() => setShowAnomalie(!showAnomalie)}
+                    disabled={countSelected >= maxPouvoirs || (!hasAnomalie && countAtouts >= MAX_ATOUTS_GLOBAL)}
+                    className="px-5 py-2 bg-fuchsia-600 text-white rounded-lg font-bold text-sm hover:bg-fuchsia-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md shrink-0"
+                  >
+                    {showAnomalie ? 'Refermer le catalogue' : 'Déclencher l\'Anomalie'}
+                  </button>
+                );
+              }
+            })()}
           </div>
 
-          {/* L'alerte silencieuse si le joueur n'a plus de place d'Atout */}
-          {!selectedExterior && !hasAnomalie && countAtouts >= MAX_ATOUTS && (
+          {!selectedExterior && !hasAnomalie && countAtouts >= MAX_ATOUTS_GLOBAL && (
             <div className="text-xs text-red-600 font-bold mt-3 bg-red-50 p-2 rounded border border-red-100">
-              Vous avez déjà sélectionné tous vos Atouts ({MAX_ATOUTS}/{MAX_ATOUTS}) à l'étape suivante. Libérez de la place pour pouvoir déclencher cette anomalie !
+              Vous avez déjà sélectionné tous vos Atouts ({MAX_ATOUTS_GLOBAL}/{MAX_ATOUTS_GLOBAL}) à l'étape suivante. Libérez de la place pour pouvoir déclencher cette anomalie !
             </div>
           )}
 
-          {/* Le pouvoir extérieur fièrement sélectionné */}
           {selectedExterior && (
             <div className="mt-4 p-4 bg-white rounded-xl border border-fuchsia-300 shadow-inner flex items-start gap-3 animate-fade-in">
               <div className="bg-fuchsia-100 p-2 rounded-lg text-fuchsia-600 shrink-0"><Check size={20}/></div>
               <div>
-                <div className="font-bold text-fuchsia-900 text-lg">{selectedExterior}</div>
+                <div className="font-bold text-fuchsia-900 text-lg flex items-center gap-2">
+                  {selectedExterior}
+                  {isScelle && innatePouvoirs.includes(selectedExterior) && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 uppercase" title="Sceau de Création">🔒 Inné</span>
+                  )}
+                </div>
                 <div className="text-xs text-fuchsia-600 font-bold uppercase tracking-wider mb-1">Pouvoir assimilé par Anomalie</div>
                 <div className="text-sm text-stone-600 leading-relaxed">
                   {exteriorPowers.find(p => p.nom === selectedExterior)?.description}
@@ -303,7 +486,6 @@ export function Step3() {
             </div>
           )}
 
-          {/* Le Tiroir Secret des Pouvoirs Extérieurs */}
           {showAnomalie && !selectedExterior && (
             <div className="mt-4 max-h-80 overflow-y-auto custom-scrollbar bg-white/60 rounded-xl border border-fuchsia-200 p-2 grid grid-cols-1 md:grid-cols-2 gap-3 shadow-inner animate-fade-in-up">
               {exteriorPowers.map((pow, idx) => (
@@ -330,7 +512,7 @@ export function Step3() {
 }
 
 // ============================================================================
-// --- ÉTAPE 4 : ATOUTS ---
+// --- ÉTAPE 4 : ATOUTS --- (Garder ton code actuel pour StepAtouts ci-dessous !)
 // ============================================================================
 
 export function StepAtouts() {
@@ -338,100 +520,148 @@ export function StepAtouts() {
   const fairyData = gameData.fairyData;
   const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 
-  const MAX_ATOUTS = 2; // Le maximum légal
   const countSelected = character.atouts?.length || 0;
+  
+  // Variables XP
+  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+  const xpTotal = character.xp_total || 0;
+  const xpDepense = character.xp_depense || 0;
+  const xpDispo = xpTotal - xpDepense;
 
-  const handleAtoutToggle = (atoutId) => {
-    if (isReadOnly) return;
-    dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'atouts', value: atoutId, max: MAX_ATOUTS, gameData });
+  const handleAtoutToggle = (atout) => {
+    const isSelectedByName = character.atouts?.includes(atout.nom);
+    const isSelectedById = character.atouts?.includes(atout.id);
+    const isCurrentlySelected = isSelectedByName || isSelectedById;
+    
+    const valueToToggle = isSelectedById ? atout.id : atout.nom;
+
+    // 🌟 COMPORTEMENT EN MODE ÉVOLUTION (XP)
+    if (isScelle) {
+      // 🛡️ LE PLANCHER DE VERRE (Lecture depuis le 'data' de Supabase)
+      const innateAtouts = character.data?.stats_scellees?.atouts || [];
+      const isInnate = innateAtouts.includes(atout.nom) || innateAtouts.includes(atout.id);
+
+      if (isCurrentlySelected) {
+        if (isInnate) {
+          showInAppNotification("Cet Atout fait partie du Sceau originel de votre Héritier. Impossible de l'oublier !", "warning");
+          return;
+        }
+        
+        // ✨ REVENTE DIRECTE ET INSTANTANÉE
+        const newAtouts = character.atouts.filter(a => a !== valueToToggle);
+        dispatchCharacter({
+          type: 'UPDATE_MULTIPLE',
+          payload: {
+            atouts: newAtouts,
+            xp_depense: Math.max(0, xpDepense - ATOUT_XP_COST)
+          },
+          gameData
+        });
+        showInAppNotification(`Atout désappris : +${ATOUT_XP_COST} XP récupérés !`, "success");
+        return;
+      } else {
+        // ✨ ACHAT DIRECT ET INSTANTANÉ
+        if (xpDispo < ATOUT_XP_COST) {
+          showInAppNotification(`Il vous faut ${ATOUT_XP_COST} XP pour débloquer cet Atout !`, "error");
+          return;
+        }
+        const newAtouts = [...(character.atouts || []), atout.nom];
+        dispatchCharacter({
+          type: 'UPDATE_MULTIPLE',
+          payload: {
+            atouts: newAtouts,
+            xp_depense: xpDepense + ATOUT_XP_COST
+          },
+          gameData
+        });
+        showInAppNotification(`L'Atout "${atout.nom}" a été acquis pour ${ATOUT_XP_COST} XP !`, "success");
+        return;
+      }
+    }
+
+    // 🌟 COMPORTEMENT NORMAL (CRÉATION)
+    if (!isReadOnly) {
+      dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'atouts', value: valueToToggle, max: MAX_ATOUTS_GLOBAL, gameData });
+    }
   };
 
   if (!data || !data.atouts) return null;
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* ✨ L'EN-TÊTE COMPACT DES ATOUTS (ADAPTATIF XP) ✨ */}
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-center bg-amber-50 px-4 py-2.5 rounded-lg border border-amber-200 shadow-sm gap-3">
-        
-        {/* LA GAUCHE : Titre et Description */}
-        <div className="flex items-center gap-3">
-          <div className="bg-white p-1.5 rounded border border-amber-200 shadow-sm">
-            <Sparkles className="text-amber-600 shrink-0" size={18} />
-          </div>
-          <div>
-            <h3 className="font-serif font-bold text-lg text-amber-900 leading-none mb-1">
-              Atouts Féériques
-            </h3>
-            {/* ✨ LE TEXTE S'ADAPTE SI LE PERSONNAGE EST SCELLÉ (XP) */}
-            {isReadOnly ? (
-              <p className="text-xs text-amber-700 font-bold">
-                Les avantages liés à votre nature sont définitivement scellés.
-              </p>
-            ) : (
-              <p className="text-xs text-amber-700">
-                Votre nature vous octroie des avantages particuliers. Choisissez {MAX_ATOUTS} atouts.
-              </p>
-            )}
-          </div>
+      <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
+        <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
+        <div>
+          <h3 className="font-serif font-bold text-amber-900">Atouts Féériques</h3>
+          {isScelle ? (
+            <p className="text-sm text-amber-800">
+              Dépensez votre Expérience ({ATOUT_XP_COST} XP) pour acquérir de nouveaux Atouts. Vous pouvez librement cliquer sur un Atout acquis pour le désapprendre et récupérer vos points.
+            </p>
+          ) : (
+            <p className="text-sm text-amber-800">
+              Votre nature vous octroie des avantages particuliers. Choisissez {MAX_ATOUTS_GLOBAL} atouts parmi la liste ci-dessous.
+            </p>
+          )}
+          {!isScelle && (
+            <div className="mt-3 inline-block px-3 py-1 bg-white rounded-full border border-amber-200 text-sm font-bold text-amber-700">
+              Sélectionnés : {countSelected} / {MAX_ATOUTS_GLOBAL}
+            </div>
+          )}
         </div>
-
-        {/* LA DROITE : Le Compteur Intelligent (Masqué si Scellé !) */}
-        {!isReadOnly && (
-          <div className={`px-3 py-1 rounded-md text-sm font-bold border-2 flex items-center gap-2 whitespace-nowrap transition-colors ${
-            countSelected >= MAX_ATOUTS
-              ? 'bg-green-100 text-green-700 border-green-300'
-              : 'bg-white text-amber-700 border-amber-300'
-          }`}>
-            <span>Sélectionnés :</span>
-            {/* ✨ ON UTILISE BIEN countSelected ICI ! */}
-            <span className="text-lg leading-none">{countSelected} / {MAX_ATOUTS}</span>
-          </div>
-        )}
-
       </div>
-	  
+
       {/* LA GRILLE DES ATOUTS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {data.atouts.map((atout, idx) => {
-          const isSelected = character.atouts?.includes(atout.id) || character.atouts?.includes(atout.nom);
-          const isDisabled = !isSelected && countSelected >= MAX_ATOUTS;
-          
-          // ✨ NOTRE CIBLE : L'ANOMALIE
+          const isSelected = character.atouts?.includes(atout.nom) || character.atouts?.includes(atout.id);
+          const isDisabled = !isScelle && !isSelected && countSelected >= MAX_ATOUTS_GLOBAL;
           const isAnomalie = atout.nom === 'Anomalie féérique';
+          
+          // 🛡️ Détection visuelle du Plancher de Verre
+          const innateAtouts = character.data?.stats_scellees?.atouts || [];
+          const isInnate = isScelle && (innateAtouts.includes(atout.nom) || innateAtouts.includes(atout.id));
 
           return (
             <div
               key={idx}
               onClick={() => {
                 if (isAnomalie) {
-                  // ✨ LE CADENAS : On bloque l'action et on prévient le joueur !
                   showInAppNotification("🪄 Le pouvoir lié à l'Anomalie doit être modifié ou retiré depuis l'Étape 3 (Pouvoirs).", "warning");
                   return;
                 }
-                if (!isDisabled) handleAtoutToggle(atout.id);
+                if (!isDisabled) handleAtoutToggle(atout);
               }}
-              className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${
-                isSelected 
-                  ? (isAnomalie ? 'border-fuchsia-600 bg-fuchsia-50 shadow-md ring-2 ring-fuchsia-400' : 'border-indigo-600 bg-indigo-50 shadow-md ring-2 ring-indigo-400') 
-                  : isDisabled 
-                    ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed' 
-                    : 'border-gray-200 bg-white hover:border-indigo-300 hover:shadow-sm cursor-pointer'
+              className={`relative p-4 rounded-xl border-2 text-left transition-all overflow-hidden ${
+                isSelected
+                  ? (isAnomalie ? 'border-fuchsia-600 bg-fuchsia-50 shadow-md ring-2 ring-fuchsia-400 cursor-pointer' : 'border-indigo-600 bg-indigo-50 shadow-md ring-2 ring-indigo-400 cursor-pointer')
+                  : isDisabled
+                  ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                  : 'border-gray-200 bg-white hover:border-indigo-300 hover:shadow-sm cursor-pointer'
               } ${isAnomalie && !isSelected ? 'opacity-80 cursor-not-allowed hover:border-gray-200' : ''}`}
             >
+              {/* Le prix en XP */}
+              {isScelle && !isSelected && !isAnomalie && (
+                <div className="absolute top-3 right-3 bg-amber-100 text-amber-800 text-[10px] uppercase font-bold px-2 py-1 rounded border border-amber-300 shadow-sm">
+                  {ATOUT_XP_COST} XP
+                </div>
+              )}
+
               <div className="flex items-center justify-between mb-2">
                 <div className={`font-bold font-serif flex items-center gap-2 ${isAnomalie ? 'text-fuchsia-900' : 'text-gray-800'}`}>
                   {isSelected && <Check size={16} className={isAnomalie ? "text-fuchsia-600" : "text-indigo-600"} />}
                   {atout.nom}
                 </div>
-                
-                {/* L'ÉTIQUETTE DE VERROUILLAGE */}
                 {isAnomalie && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-fuchsia-200 text-fuchsia-800 uppercase flex items-center gap-1">
                     🔒 Géré à l'Étape 3
                   </span>
                 )}
+                {isInnate && !isAnomalie && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 uppercase" title="Sceau de Création (Plancher de Verre)">
+                    🔒 Inné
+                  </span>
+                )}
               </div>
-              
               <div className="text-sm text-gray-600 leading-relaxed mt-2">
                 {atout.description || "Aucune description."}
               </div>
