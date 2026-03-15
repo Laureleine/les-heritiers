@@ -1,6 +1,6 @@
 // src/utils/supabaseStorage.js
 // 12.0.0
-// 13.1.0 // 13.3.0 // 13.10.0
+// 13.1.0 // 13.3.0 // 13.10.0 // 13.12.0
 
 import { supabase } from '../config/supabase';
 
@@ -97,7 +97,11 @@ const mapDatabaseToCharacter = (char) => {
 
         isPublic: source.is_public || source.isPublic || false,
 	    statut: source.statut || 'brouillon',
-        ownerUsername: source.profiles?.username || 'Inconnu',
+        
+		xp_total: source.xp_total || 0,
+        xp_depense: source.xp_depense || 0,
+
+	    ownerUsername: source.profiles?.username || 'Inconnu',
 
         data: source.data || {},
         
@@ -233,6 +237,10 @@ export const saveCharacterToSupabase = async (character) => {
             is_public: cleaned.isPublic || false,
 			statut: cleaned.statut || 'brouillon',
 
+            xp_total: character.xp_total || 0,
+            xp_depense: character.xp_depense || 0,
+            data: cleaned.data || {},
+	  
             updated_at: new Date().toISOString()
         };
 

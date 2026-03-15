@@ -6,6 +6,17 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.12.0',
+    date: '15 Mars 2026',
+    changes: [
+      '🚀 **Passage en Production (Expérience) :** Intégration définitive des données d\'expérience (`xp_total`, `xp_depense`) au moteur de sauvegarde Supabase (`supabaseStorage.js`). L\'évolution des personnages est désormais persistante dans le Nuage.',
+      '🧹 **Nettoyage des Prototypes :** Démantèlement complet du bac à sable (`PocShop`) et du mode triche d\'injection virtuelle d\'XP présents sur l\'écran du Récapitulatif.',
+      '🎯 **Ergonomie Cognitive (UX) :** Déplacement du contrôleur d\'Expérience (+1, +5, -1) depuis la page Bilan vers le bandeau global persistant "Le Puits des Âmes". Les Héritiers peuvent désormais gérer leur cagnotte en temps réel, sans jamais avoir à quitter la page de Caractéristiques ou de Compétences qu\'ils sont en train d\'étudier.',
+      '🧹 **Bilan Comptable :** L\'encart d\'XP de l\'Étape 11 a été épuré pour redevenir un simple registre de consultation en lecture seule (Total Acquis / Total Dépensé).',
+      '👁️ **HUD d\'Expérience (Tableau de bord) :** Affichage direct de la cagnotte d\'XP disponible sur les cartes des Héritiers scellés dans la liste d\'accueil. Les joueurs peuvent désormais consulter leur solde d\'un seul coup d\'œil sans avoir à ouvrir leurs fiches de personnages.'
+    ]
+  },
+  {
     version: '13.11.0',
     date: '15 Mars 2026',
     changes: [

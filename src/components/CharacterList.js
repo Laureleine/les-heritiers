@@ -3,10 +3,10 @@
 // 10.2.0 // 10.4.0
 // 11.1.0
 // 12.4.0
-// 13.2.0 // 13.3.0
+// 13.2.0 // 13.3.0 // 13.12.0
 
 import React, { useState, useEffect } from 'react';
-import { User, Users, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2, Copy, Gift, X } from 'lucide-react'; 
+import { Sparkles, User, Users, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2, Copy, Gift, X } from 'lucide-react'; 
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
@@ -229,10 +229,23 @@ const loadCharacters = async (isMounted = true) => {
 					  )}
 					</h3>
 				</div>
-				<div className="text-sm text-amber-700 font-serif italic mb-2">
+				<div className="flex justify-between items-center mb-2">
+				  <div className="text-sm text-amber-700 font-serif italic">
 					{char.typeFee || 'Inconnu'} • {char.sexe || '?'}
+				  </div>
+				  
+				  {/* ✨ NOUVEAU : Affichage de l'XP si l'Héritier est en mode Évolution */}
+				  {(char.statut === 'scelle' || char.statut === 'scellé') && (
+					<div 
+					  className="flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 shadow-sm" 
+					  title={`Acquis : ${char.xp_total || 0} XP | Dépensés : ${char.xp_depense || 0} XP`}
+					>
+					  <Sparkles size={12} className="text-amber-500" />
+					  {(char.xp_total || 0) - (char.xp_depense || 0)} XP
+					</div>
+				  )}
 				</div>
-            </div>
+			  </div>
 
       {/* 2. PROFILS (Correction : Utilisation de getProfilInfo) */}
       <div className="flex items-center justify-center gap-4 text-sm text-gray-600 mb-4">
