@@ -1,6 +1,6 @@
 // 10.4.0 // 10.6.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 12.5.0
-// 13.1.0 // 13.10.0
+// 13.1.0 // 13.10.0 // 13.11.0
 
 import React, { useState, useMemo } from 'react';
 import { Star, Info, Check, Sparkles, AlertCircle, Plus, Minus } from 'lucide-react';
@@ -174,7 +174,6 @@ export function Step3() {
     }
 
     const newCaracs = { ...(character.caracteristiques || {}), [stat]: currentRank + 1 };
-    // Le Masque et la Féérie font évoluer mécaniquement la Tricherie
     const newTricherie = Math.floor((newCaracs.feerie + newCaracs.masque) / 2);
 
     dispatchCharacter({
@@ -199,7 +198,6 @@ export function Step3() {
       return;
     }
 
-    // 🛡️ BOUCLIER ANTI-BUG : On ne réduit pas la Féérie si on a trop de pouvoirs
     if (stat === 'feerie' && countSelected > currentRank - 1) {
       showInAppNotification("Vous devez d'abord désapprendre un pouvoir avant de pouvoir réduire votre Féérie !", "error");
       return;
@@ -246,10 +244,8 @@ export function Step3() {
 
   const handlePouvoirToggle = (pouvoir) => {
     if (isReadOnly) return;
-
     const isSelected = character.pouvoirs?.includes(pouvoir);
 
-    // ✨ BLOCAGE : Impossible de désélectionner un pouvoir d'origine
     if (isScelle && isSelected && innatePouvoirs.includes(pouvoir)) {
       showInAppNotification("Ce Pouvoir fait partie du Sceau originel de votre Héritier. Impossible de l'oublier !", "warning");
       return;
@@ -258,6 +254,7 @@ export function Step3() {
     dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'pouvoirs', value: pouvoir, max: maxPouvoirs, gameData });
   };
 
+  // ✨ LE MOTEUR RÉPARÉ DE L'ANOMALIE
   const handleAnomalieToggle = (pouvoirNom) => {
     if (isReadOnly) return;
 
@@ -270,17 +267,52 @@ export function Step3() {
 
     let newPouvoirs = character.pouvoirs ? [...character.pouvoirs] : [];
     let newAtouts = character.atouts ? [...character.atouts] : [];
+    let newXpDepense = xpDepense; // 💰 On trace la dépense
 
     if (isSelected) {
+      // ♻️ PURGE ET REVENTE
       newPouvoirs = newPouvoirs.filter(p => p !== pouvoirNom);
       newAtouts = newAtouts.filter(a => a !== anomalieId && a !== 'Anomalie féérique');
+
+      // Remboursement XP de l'atout si on est Scellé (et que ce n'est pas un atout inné)
+      const innateAtouts = character.data?.stats_scellees?.atouts || [];
+      const isAtoutInnate = innateAtouts.includes(anomalieId) || innateAtouts.includes('Anomalie féérique');
+
+      if (isScelle && !isAtoutInnate) {
+        newXpDepense = Math.max(0, xpDepense - ATOUT_XP_COST);
+        showInAppNotification(`Anomalie purgée : +${ATOUT_XP_COST} XP récupérés !`, "success");
+      }
     } else {
+      // 🛒 SÉLECTION ET ACHAT
       if (selectedExterior) {
+        // Changement de pouvoir extérieur (gratuit car l'Atout est déjà possédé)
         newPouvoirs = newPouvoirs.filter(p => p !== selectedExterior);
       } else {
-        if (newPouvoirs.length >= maxPouvoirs) return;
-        if (!hasAnomalie && countAtouts >= MAX_ATOUTS_GLOBAL) return;
+        if (newPouvoirs.length >= maxPouvoirs) {
+          showInAppNotification("Vous avez atteint votre limite de pouvoirs maîtrisés.", "error");
+          return;
+        }
+        
+        // C'est une NOUVELLE anomalie
+        if (!hasAnomalie) {
+          if (isScelle) {
+            // 🌟 COMPORTEMENT ÉVOLUTION : On vérifie les finances
+            if (xpDispo < ATOUT_XP_COST) {
+              showInAppNotification(`L'Anomalie consomme un emplacement d'Atout. Il vous faut ${ATOUT_XP_COST} XP !`, "error");
+              return;
+            }
+            newXpDepense = xpDepense + ATOUT_XP_COST;
+            showInAppNotification(`Anomalie activée pour ${ATOUT_XP_COST} XP !`, "success");
+          } else {
+            // 🌟 COMPORTEMENT CRÉATION : On vérifie la limite de 2
+            if (countAtouts >= MAX_ATOUTS_GLOBAL) {
+              showInAppNotification(`Vous avez déjà ${MAX_ATOUTS_GLOBAL} Atouts.`, "error");
+              return;
+            }
+          }
+        }
       }
+      
       newPouvoirs.push(pouvoirNom);
       if (!newAtouts.includes(anomalieId)) newAtouts.push(anomalieId);
       setShowAnomalie(false);
@@ -288,7 +320,7 @@ export function Step3() {
 
     dispatchCharacter({
       type: 'UPDATE_MULTIPLE',
-      payload: { pouvoirs: newPouvoirs, atouts: newAtouts },
+      payload: { pouvoirs: newPouvoirs, atouts: newAtouts, xp_depense: newXpDepense },
       gameData
     });
   };
@@ -298,16 +330,15 @@ export function Step3() {
   return (
     <div className="space-y-8 animate-fade-in">
       
-      {/* ✨ NOUVEAU BLOC : FÉÉRIE & MASQUE */}
+      {/* FÉÉRIE & MASQUE */}
       <div className="bg-indigo-50 border border-indigo-200 p-4 md:p-5 rounded-xl shadow-sm">
         <h3 className="font-serif font-bold text-indigo-900 mb-4 flex items-center gap-2 text-lg">
           <Star className="text-indigo-600" size={22} />
           Attributs Féériques
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           
-          {/* JAUGE FÉÉRIE */}
           <div className="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm">
             <div className="flex items-baseline gap-2">
               <span className="font-bold text-indigo-900 text-lg">Féérie</span>
@@ -329,7 +360,6 @@ export function Step3() {
             </div>
           </div>
 
-          {/* JAUGE MASQUE */}
           <div className="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm">
             <div className="flex items-baseline gap-2">
               <span className="font-bold text-indigo-900 text-lg">Masque</span>
@@ -452,7 +482,8 @@ export function Step3() {
                 return (
                   <button
                     onClick={() => setShowAnomalie(!showAnomalie)}
-                    disabled={countSelected >= maxPouvoirs || (!hasAnomalie && countAtouts >= MAX_ATOUTS_GLOBAL)}
+                    // ✨ FIX : En mode XP, on ne bloque plus sur le nombre d'atouts !
+                    disabled={countSelected >= maxPouvoirs || (!isScelle && !hasAnomalie && countAtouts >= MAX_ATOUTS_GLOBAL)}
                     className="px-5 py-2 bg-fuchsia-600 text-white rounded-lg font-bold text-sm hover:bg-fuchsia-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md shrink-0"
                   >
                     {showAnomalie ? 'Refermer le catalogue' : 'Déclencher l\'Anomalie'}
@@ -462,9 +493,16 @@ export function Step3() {
             })()}
           </div>
 
-          {!selectedExterior && !hasAnomalie && countAtouts >= MAX_ATOUTS_GLOBAL && (
-            <div className="text-xs text-red-600 font-bold mt-3 bg-red-50 p-2 rounded border border-red-100">
+          {!selectedExterior && !hasAnomalie && !isScelle && countAtouts >= MAX_ATOUTS_GLOBAL && (
+            <div className="text-xs text-red-600 font-bold mt-3 bg-red-50 p-2 rounded border border-red-100 animate-fade-in">
               Vous avez déjà sélectionné tous vos Atouts ({MAX_ATOUTS_GLOBAL}/{MAX_ATOUTS_GLOBAL}) à l'étape suivante. Libérez de la place pour pouvoir déclencher cette anomalie !
+            </div>
+          )}
+
+          {/* ✨ FIX : Message indicatif pour le joueur en mode Évolution */}
+          {!selectedExterior && !hasAnomalie && isScelle && (
+            <div className="text-xs text-fuchsia-800 font-bold mt-3 bg-fuchsia-50 p-2 rounded border border-fuchsia-200 animate-fade-in">
+              🪄 L'activation de l'Anomalie consommera un nouvel emplacement d'Atout et coûtera {ATOUT_XP_COST} XP.
             </div>
           )}
 

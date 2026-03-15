@@ -6,6 +6,20 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '13.11.0',
+    date: '15 Mars 2026',
+    changes: [
+      '🐛 **Intégrité de la Base de Données :** Résolution d\'un crash SQL (Schema Cache) lors de la prise de Snapshot (Plancher de Verre). L\'empreinte est désormais correctement encapsulée dans la colonne JSONB `data` au lieu d\'être traitée comme une colonne orpheline.',
+      '🛡️ **Mémoire Persistante :** La fonction globale de sauvegarde (`supabaseStorage`) a été corrigée pour conserver la colonne `data`. Le Plancher de Verre ne s\'effacera plus silencieusement si un Héritier sauvegarde manuellement sa fiche après l\'avoir scellée.',
+      '🐛 **Le Paradoxe de l\'Anomalie (Hotfix) :** Résolution d\'un deadlock bloquant l\'achat d\'une "Anomalie Féérique" en mode Évolution. L\'Étape 3 autorise désormais l\'acquisition d\'une Anomalie moyennant une facturation de 8 XP, plutôt que de rejeter l\'action en appliquant la limite de Création stricte de 2 Atouts.',
+      '💰 **Économie Magique :** Le désapprentissage (la purge) d\'une Anomalie achetée avec de l\'Expérience rembourse désormais instantanément les 8 XP associés, tout en conservant la protection absolue du Plancher de Verre (les Anomalies innées ne peuvent être vendues).',
+      '🔒 **Sceau d\'Identité :** Restructuration complète de l\'Étape 1 (Nom, Sexe, Espèce) pour supporter le verrouillage en mode Évolution. L\'identité fondamentale du Faux-Semblant est désormais protégée par le Plancher de Verre contre toute modification accidentelle ou intentionnelle.',
+      '🎨 **Ergonomie & Immersion :** Ajout d\'une bannière visuelle de scellage et désactivation complète des champs de saisie (grisés) lorsque l\'Héritier est engagé dans la campagne.',
+      '🎨 **Accessibilité Visuelle (a11y) :** Le décor d\'arrière-plan (Pentacles, Engrenages) est désormais marqué avec l\'attribut `aria-hidden` pour ne plus parasiter la navigation des lecteurs d\'écran des utilisateurs malvoyants.',
+      '⚡ **Optimisation Mobile (Batterie & CPU) :** Les rotations vectorielles (SVG) infinies du décor de fond sont désormais automatiquement désactivées (`motion-reduce`) sur les appareils limités en puissance ou configurés pour réduire les animations.'
+    ]
+  },
+  {
     version: '13.10.0',
     date: '14 Mars 2026',
     changes: [
