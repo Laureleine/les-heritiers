@@ -2,6 +2,7 @@
 // 9.6.0
 // 10.4.0
 // 11.1.0
+// 13.11.0
 
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
@@ -26,15 +27,17 @@ export default function Auth() {
     try {
       if (resetMode) {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin,
+          redirectTo: window.location.origin,
         });
-		if (error) throw error;
-		showInAppNotification("Si cet email existe, un lien de réinitialisation a été envoyé.", "info");
+        if (error) throw error;
+        showInAppNotification("Si cet email existe, un lien de réinitialisation a été envoyé.", "info");
         setResetMode(false);
       } 
       else if (isSignUp) {
         if (!username.trim()) throw new Error("Le nom d'utilisateur est requis.");
-        
+        // ✨ FIX 3 : Validation côté client pour économiser une requête réseau !
+        if (password.length < 6) throw new Error("Le mot de passe doit contenir au moins 6 caractères.");
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -48,27 +51,30 @@ export default function Auth() {
         showInAppNotification("Inscription réussie ! Vérifiez votre email pour confirmer.", "success");
       } 
       else {
-        // 🔥 FIX ULTIME : Login + Vérification + REDIRECT
+        // ✨ FIX 1 & 2 : On fait confiance à React et Supabase !
+        // La fonction onAuthStateChange (dans App.js) écoute en permanence et fermera cet écran naturellement.
+        // Adieu le console.log bavard et le window.location.href destructeur !
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
+        
         if (error) throw error;
-        
-        // ✅ CONFIRMATION SESSION + REDIRECT IMMÉDIAT
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('✅ LOGIN SUCCÈS:', session?.user?.email);
-        
-        // 🚀 FORCE REDIRECT (ignore TOUS les bugs React/Supabase)
-        window.location.href = '/';
       }
-
     } catch (error) {
       console.error("❌ Erreur Auth:", error);
-      setError(translateError(error)); // 👈 Utilisation du traducteur
+      setError(translateError(error)); 
     } finally {
       setLoading(false);
     }
+  };
+
+  // ✨ FIX 4 : On rend le texte du bouton parfaitement cohérent avec l'action en cours
+  const getButtonText = () => {
+    if (loading) {
+      return resetMode ? 'Envoi en cours...' : isSignUp ? 'Inscription...' : 'Connexion...';
+    }
+    return resetMode ? 'Envoyer le lien' : isSignUp ? 'Créer mon compte' : 'Se connecter';
   };
 
   return (
@@ -87,16 +93,16 @@ export default function Auth() {
           {/* Onglets Connexion/Inscription */}
           {!resetMode && (
             <div className="flex mb-6 bg-gray-100 p-1 rounded-lg">
-              <button 
-                onClick={() => setIsSignUp(false)} 
+              <button
+                onClick={() => setIsSignUp(false)}
                 className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${
                   !isSignUp ? 'bg-white text-amber-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
                 Connexion
               </button>
-              <button 
-                onClick={() => setIsSignUp(true)} 
+              <button
+                onClick={() => setIsSignUp(true)}
                 className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${
                   isSignUp ? 'bg-white text-amber-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 }`}
@@ -153,9 +159,7 @@ export default function Auth() {
             {/* L'Encart d'Erreur "Sceau Brisé" */}
             {error && (
               <div className="relative overflow-hidden bg-[#2a1313] text-red-100 p-4 rounded-xl border border-red-900/50 shadow-[0_0_15px_rgba(153,27,27,0.4)] animate-fade-in-up">
-                {/* Petit effet de fumée / texture de fond */}
                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
-                
                 <div className="flex items-start gap-3 relative z-10">
                   <div className="bg-red-950/50 p-1.5 rounded-lg border border-red-800/50 shrink-0">
                     <AlertCircle size={20} className="text-red-400" />
@@ -170,30 +174,28 @@ export default function Auth() {
               </div>
             )}
 
-            {/* Bouton */}
-            <button 
-              type="submit" 
+            {/* Bouton Dynamique */}
+            <button
+              type="submit"
               disabled={loading}
               className="w-full bg-amber-600 text-white py-3 rounded-lg font-serif font-bold hover:bg-amber-700 transition-all shadow-md transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Connexion...' : 
-               resetMode ? 'Envoyer le lien' : 
-               isSignUp ? 'Créer mon compte' : 'Se connecter'}
+              {getButtonText()}
             </button>
           </form>
 
           {/* Mot de passe oublié */}
           <div className="mt-4 text-center">
             {!resetMode ? (
-              <button 
-                onClick={() => setResetMode(true)} 
+              <button
+                onClick={() => setResetMode(true)}
                 className="text-sm text-gray-500 hover:text-amber-700 underline"
               >
                 Mot de passe oublié ?
               </button>
             ) : (
-              <button 
-                onClick={() => setResetMode(false)} 
+              <button
+                onClick={() => setResetMode(false)}
                 className="text-sm text-gray-500 hover:text-amber-700 underline"
               >
                 Retour à la connexion
