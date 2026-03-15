@@ -4,7 +4,7 @@
 // 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
-// 13.1.0 // 13.8.0
+// 13.1.0 // 13.8.0 // 13.12.0
 
 import React, { useState, useEffect } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -239,6 +239,31 @@ function App() {
     );
   }
 
+  // ========================================================================
+  // ✨ GESTION MANUELLE DE L'EXPÉRIENCE (LE PUITS DES ÂMES)
+  // ========================================================================
+  const handleAdjustXP = (amount) => {
+    const currentTotal = character.xp_total || 0;
+    const depense = character.xp_depense || 0;
+    
+    const newTotal = Math.max(depense, currentTotal + amount); 
+
+    if (newTotal === currentTotal) {
+      if (amount < 0) showInAppNotification("Vous ne pouvez pas réduire votre Expérience en dessous des points déjà dépensés !", "warning");
+      return;
+    }
+
+    dispatchCharacter({
+      type: 'UPDATE_FIELD',
+      field: 'xp_total',
+      value: newTotal,
+      gameData
+    });
+
+    if (amount > 0) showInAppNotification(`Gling ! +${amount} XP ajoutés.`, "success");
+    else showInAppNotification(`Ajustement : ${amount} XP retirés.`, "info");
+  };
+  
   // --- RENDU DE L'APPLICATION ---
   return (
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
@@ -307,20 +332,23 @@ function App() {
           
           {/* ROUTE 1 : ACCUEIL (LISTE) */}
           <Route path="/" element={
-            <CharacterList
-              session={session}
-              userProfile={userProfile}
-              profils={gameData.profils}
+			<CharacterList
+			  session={session}
+			  userProfile={userProfile}
+			  profils={gameData.profils}
 			  gameData={gameData}
-              onSelectCharacter={(c, readOnly = false) => {
-                dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c });
-				// ✨ LE BOUCLIER EST ICI : Si la fiche est scellée ou validée, on passe en Lecture Seule !
-				const isSealed = c.statut === 'scellé' || c.statut === 'scelle' || c.statut === 'validé';
-				setIsReadOnly(readOnly || isSealed);
+			  onSelectCharacter={(c, readOnly = false) => {
+				dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c });
+				
+				// ✨ FIX : Le statut "Scellé" ne déclenche PLUS la lecture seule globale !
+				// La lecture seule n'est activée que par le paramètre readOnly (ex: vue d'un profil communautaire).
+				setIsReadOnly(readOnly);
+				
 				setStep(1);
-				navigate('/creator');
+				navigate('/creator'); // 👈 LA LIGNE VITALE QUE J'AVAIS EFFACÉE !
+				window.scrollTo(0, 0);
 			  }}
-              onNewCharacter={() => {
+			  onNewCharacter={() => {
                 dispatchCharacter({ type: 'RESET_CHARACTER', payload: initialCharacterState });
                 setIsReadOnly(false);
                 setStep(1);
@@ -451,27 +479,38 @@ function App() {
                 })}
               </div>
 
-			  {/* ✨ LA JAUGE D'XP GLOBALE (RUBAN COMPACT) ✨ */}
+			  {/* ✨ LA JAUGE D'XP GLOBALE INTERACTIVE (RUBAN COMPACT) ✨ */}
 			  {(character.statut === 'scelle' || character.statut === 'scellé') && (
-				<div className="mb-4 bg-gradient-to-r from-stone-900 to-stone-800 rounded-lg px-4 py-2 shadow-md border border-amber-700 flex flex-row justify-between items-center text-amber-50 animate-fade-in">
+				<div className="mb-4 bg-gradient-to-r from-stone-900 to-stone-800 rounded-lg px-3 py-2 shadow-md border border-amber-700 flex flex-col md:flex-row justify-between items-center gap-3 text-amber-50 animate-fade-in">
 				  
 				  <div className="flex items-center gap-2">
 					<Sparkles className="text-amber-400 animate-pulse" size={18} />
 					<span className="font-serif font-bold text-amber-500">
-					  Le Puits des Âmes 
+					  Le Puits des Âmes
 					  <span className="hidden sm:inline text-stone-400 font-sans font-normal text-sm ml-2">
 						— Mode Évolution
 					  </span>
 					</span>
 				  </div>
-				  
-				  <div className="flex items-center gap-3 bg-stone-950 px-3 py-1.5 rounded-md border border-stone-700 shadow-inner">
-					<span className="text-xs uppercase tracking-widest font-bold text-stone-400">XP Disponible :</span>
-					<span className="text-2xl font-black font-serif text-amber-400 leading-none mt-0.5">
-					  {(character.xp_total || 0) - (character.xp_depense || 0)}
-					</span>
-				  </div>
 
+				  {/* ✨ NOUVEAU : LES CONTRÔLES INTÉGRÉS AU RUBAN ! */}
+				  <div className="flex items-center gap-2 sm:gap-4 bg-stone-950 px-2 py-1.5 rounded-md border border-stone-700 shadow-inner">
+					
+					<button onClick={() => handleAdjustXP(-1)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-stone-400 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm" title="Retirer 1 XP">-1</button>
+					
+					<div className="flex items-baseline gap-2 px-2">
+					  <span className="hidden sm:inline text-xs uppercase tracking-widest font-bold text-stone-400">Disponible :</span>
+					  <span className="text-2xl font-black font-serif text-amber-400 leading-none mt-0.5">
+						{(character.xp_total || 0) - (character.xp_depense || 0)}
+					  </span>
+					</div>
+
+					<div className="flex gap-1.5">
+					  <button onClick={() => handleAdjustXP(1)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm" title="Ajouter 1 XP">+1</button>
+					  <button onClick={() => handleAdjustXP(5)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-amber-400 rounded transition-colors text-xs font-bold border border-amber-900 shadow-sm" title="Ajouter 5 XP">+5</button>
+					</div>
+
+				  </div>
 				</div>
 			  )}
 
