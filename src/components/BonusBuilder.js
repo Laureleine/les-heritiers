@@ -3,40 +3,39 @@
 // 11.1.0
 // 12.1.0 // 12.5.0
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles } from 'lucide-react';
 import { addGlobalSpeciality, addCompetenceFutile } from '../utils/supabaseGameData';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { showInAppNotification } from '../utils/SystemeServices';
 
-export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData }) {
+// ✨ Générateur d'ID robuste (remplace Math.random)
+const generateId = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substring(2);
+
+// ✨ FIX : Signature propre avec toutes les props et valeurs par défaut
+export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonChange, usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData = null }) {
+
   const [creatingFutileId, setCreatingFutileId] = useState(null);
   const [newFutileName, setNewFutileName] = useState('');
-  const [localCreatedFutiles, setLocalCreatedFutiles] = useState([]); // Pour les afficher sans recharger la page
-  
-  // On fusionne les futiles du Nuage avec celles fraîchement créées !
+  const [localCreatedFutiles, setLocalCreatedFutiles] = useState([]);
+
   const allFutiles = Array.from(new Set([...futilesSkills, ...localCreatedFutiles]));
 
-  // La fonction ouvrière
-  // La fonction ouvrière (Maintenant polyvalente !)
+  // La fonction ouvrière polyvalente
   const handleCreateFutile = async (blockId, isArray = false) => {
     if (!newFutileName.trim()) return;
+
     try {
-      // 1. On sauvegarde dans le Nuage
       const newComp = await addCompetenceFutile(newFutileName.trim(), 'Créée depuis le Constructeur de Lego');
-      
-      // 2. On l'ajoute au menu déroulant actuel
       setLocalCreatedFutiles(prev => [...prev, newComp.nom]);
-      
-      // ✨ 3. LA MAGIE EST ICI : On s'adapte au type de bloc
+
       if (isArray) {
         const block = blocks.find(b => b.id === blockId);
         updateBlock(blockId, 'options', [...(block.options || []), newComp.nom]);
       } else {
         updateBlock(blockId, 'key', newComp.nom);
       }
-      
-      // 4. On referme et on nettoie
+
       setCreatingFutileId(null);
       setNewFutileName('');
       showInAppNotification(`Compétence futile "${newComp.nom}" forgée avec succès !`, "success");
@@ -44,70 +43,71 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
       showInAppNotification("Erreur lors de la création : " + error.message, "error");
     }
   };
-  
+
   const [showMenu, setShowMenu] = useState(false);
   const [blocks, setBlocks] = useState([]);
-  
   const [creatingSpecFor, setCreatingSpecFor] = useState(null);
   const [newSpecName, setNewSpecName] = useState('');
 
   // 1. INITIALISATION DE LA MÉMOIRE (Rechargement depuis le JSON)
   useEffect(() => {
     const initialBlocks = [];
-    
+
     if (parsedTech?.caracteristiques) {
       Object.entries(parsedTech.caracteristiques).forEach(([key, val]) => {
-        initialBlocks.push({ id: Math.random().toString(), type: 'carac', key, val });
+        initialBlocks.push({ id: generateId(), type: 'carac', key, val });
       });
     }
     if (parsedTech?.competences) {
       Object.entries(parsedTech.competences).forEach(([key, val]) => {
-        initialBlocks.push({ id: Math.random().toString(), type: 'comp', key, val });
+        initialBlocks.push({ id: generateId(), type: 'comp', key, val });
       });
     }
     if (parsedTech?.fortune) {
-      initialBlocks.push({ id: Math.random().toString(), type: 'fortune', val: parsedTech.fortune });
+      initialBlocks.push({ id: generateId(), type: 'fortune', val: parsedTech.fortune });
     }
     if (parsedTech?.specialites) {
       parsedTech.specialites.forEach(spec => {
-        initialBlocks.push({ id: Math.random().toString(), type: 'spec', comp: spec.competence, nom: spec.nom });
+        initialBlocks.push({ id: generateId(), type: 'spec', comp: spec.competence, nom: spec.nom });
       });
     }
-    
-    // Prédilections des Fées (Utiles)
     if (parsedTech?.predilections) {
       parsedTech.predilections.forEach(p => {
         if (p.isChoix) {
-          initialBlocks.push({ id: Math.random().toString(), type: 'pred_choix', options: p.options || [] });
+          initialBlocks.push({ id: generateId(), type: 'pred_choix', options: p.options || [] });
         } else if (p.isSpecialiteChoix) {
-          initialBlocks.push({ id: Math.random().toString(), type: 'pred_spec_choix', comp: p.nom, options: p.options || [] });
+          initialBlocks.push({ id: generateId(), type: 'pred_spec_choix', comp: p.nom, options: p.options || [] });
         } else {
-          initialBlocks.push({ id: Math.random().toString(), type: 'pred_fixe', key: p.nom, nom: p.specialite || '' });
+          initialBlocks.push({ id: generateId(), type: 'pred_fixe', key: p.nom, nom: p.specialite || '' });
         }
       });
     }
-
-    // Prédilections des Fées (Futiles)
     if (parsedTech?.futiles) {
       parsedTech.futiles.forEach(f => {
         if (f.isChoix) {
-          initialBlocks.push({ id: Math.random().toString(), type: 'futile_choix', options: f.options || [] });
+          initialBlocks.push({ id: generateId(), type: 'futile_choix', options: f.options || [] });
         } else {
-          initialBlocks.push({ id: Math.random().toString(), type: 'futile_fixe', key: f.nom });
+          initialBlocks.push({ id: generateId(), type: 'futile_fixe', key: f.nom });
         }
       });
     }
-    
+
     setBlocks(initialBlocks);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2. LE CERVEAU (Traduction des Legos en JSON Universel)
-  const compileToJson = (currentBlocks) => {
+  // ✨ FIX : LE CERVEAU (Traduction des Legos en JSON Universel) DOUBLE VITESSE
+  const debounceTimer = useRef(null);
+
+  useEffect(() => {
+    return () => { if (debounceTimer.current) clearTimeout(debounceTimer.current); };
+  }, []);
+
+  // 🧠 2.A. Le Générateur Pur (Synchrone)
+  const generateTechJson = (currentBlocks) => {
     const newTech = {};
-    
+
     currentBlocks.forEach(b => {
-      // Statistiques pures (Atouts, Capacités, Pouvoirs)
       if (b.type === 'carac') {
         if (!newTech.caracteristiques) newTech.caracteristiques = {};
         newTech.caracteristiques[b.key] = parseInt(b.val) || 0;
@@ -117,12 +117,11 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
         newTech.competences[b.key] = parseInt(b.val) || 0;
       }
       if (b.type === 'fortune') newTech.fortune = parseInt(b.val) || 0;
+      
       if (b.type === 'spec') {
         if (!newTech.specialites) newTech.specialites = [];
         if (b.comp && b.nom) newTech.specialites.push({ competence: b.comp, nom: b.nom });
       }
-
-      // Règles des Fées (Prédilections Utiles)
       if (b.type === 'pred_fixe') {
         if (!newTech.predilections) newTech.predilections = [];
         newTech.predilections.push({ nom: b.key, isChoix: false, specialite: b.nom || null });
@@ -135,8 +134,6 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
         if (!newTech.predilections) newTech.predilections = [];
         newTech.predilections.push({ nom: b.comp, isSpecialiteChoix: true, options: b.options || [] });
       }
-
-      // Règles des Fées (Prédilections Futiles)
       if (b.type === 'futile_fixe') {
         if (!newTech.futiles) newTech.futiles = [];
         newTech.futiles.push({ nom: b.key, isChoix: false });
@@ -147,31 +144,49 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
       }
     });
 
+    return newTech;
+  };
+
+  // ⚡ 2.B. Exécution Immédiate (Pour les actions structurelles : ajout, suppression)
+  const compileImmediate = (currentBlocks) => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    const newTech = generateTechJson(currentBlocks);
     updateTech(newTech);
+    if (onJsonChange) onJsonChange(JSON.stringify(newTech, null, 2));
+  };
+
+  // ⏳ 2.C. Exécution Retardée (Pour la frappe clavier)
+  const compileLazy = (currentBlocks) => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      compileImmediate(currentBlocks);
+    }, 400); 
   };
 
   // 3. GESTION DES ÉVÉNEMENTS
   const addBlock = (type) => {
-    const newBlock = { id: Date.now().toString(), type, key: '', val: 1, comp: '', nom: '', options: [] };
-    if (type === 'carac') newBlock.key = 'force';
-    if (type === 'comp') newBlock.key = usefulSkills || 'Observation';
+    const newBlock = { id: generateId(), type, key: '', val: 1, comp: '', nom: '', options: [] };
     
+    if (type === 'carac') newBlock.key = 'force';
+    // ✨ FIX : On utilise .at(0) au lieu de l'index strict banni !
+    if (type === 'comp') newBlock.key = usefulSkills.at(0) || 'Observation';
+
     const newBlocks = [...blocks, newBlock];
     setBlocks(newBlocks);
-    compileToJson(newBlocks);
+    compileImmediate(newBlocks); // ⚡ Action instantanée
     setShowMenu(false);
   };
 
   const updateBlock = (id, field, value) => {
     const newBlocks = blocks.map(b => b.id === id ? { ...b, [field]: value } : b);
     setBlocks(newBlocks);
-    compileToJson(newBlocks);
+    compileLazy(newBlocks); // ⏳ Action retardée (clavier)
   };
 
   const removeBlock = (id) => {
     const newBlocks = blocks.filter(b => b.id !== id);
     setBlocks(newBlocks);
-    compileToJson(newBlocks);
+    compileImmediate(newBlocks); // ⚡ Action instantanée
   };
 
   const handleCreateGlobalSpeciality = async (blockId, compName, specName) => {
@@ -212,28 +227,32 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
         </label>
         
         <div className="relative">
-          <button 
+          <button
             type="button"
-            onClick={() => setShowMenu(!showMenu)} 
+            onClick={() => setShowMenu(!showMenu)}
             className="flex items-center gap-2 bg-stone-800 hover:bg-stone-900 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm transition-all"
           >
             <Plus size={16} /> Ajouter une règle <ChevronDown size={14} />
           </button>
-
+          
+          {/* ✨ FIX : Le calque invisible (Overlay) pour fermer le menu en douceur */}
           {showMenu && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-stone-200 rounded-xl shadow-xl z-20 overflow-hidden animate-fade-in max-h-96 overflow-y-auto">
-              {BLOCK_TYPES.map(bt => (
-                <button
-                  key={bt.id}
-                  type="button"
-                  onClick={() => addBlock(bt.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm hover:bg-stone-50 border-b border-stone-50 transition-colors ${bt.color.replace('bg-', 'hover:bg-').replace('100', '50')}`}
-                >
-                  <span className={`p-1.5 rounded-md ${bt.color}`}>{bt.icon}</span>
-                  <span className="font-bold text-stone-700">{bt.label}</span>
-                </button>
-              ))}
-            </div>
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)}></div>
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-stone-200 rounded-xl shadow-xl z-20 overflow-hidden animate-fade-in max-h-96 overflow-y-auto">
+                {BLOCK_TYPES.map(bt => (
+                  <button
+                    key={bt.id}
+                    type="button"
+                    onClick={() => addBlock(bt.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm hover:bg-stone-50 border-b border-stone-50 transition-colors ${bt.color.replace('bg-', 'hover:bg-').replace('100', '50')}`}
+                  >
+                    <span className={`p-1.5 rounded-md ${bt.color}`}>{bt.icon}</span>
+                    <span className="font-bold text-stone-700">{bt.label}</span>
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -299,14 +318,14 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
               return (
                 <>
                   <div className="bg-amber-100 text-amber-800 p-2 rounded border border-amber-200"><Star size={18}/></div>
-                  <select 
-                    value={block.comp} 
-                    onChange={(e) => { 
+                  <select
+                    value={block.comp}
+                    onChange={(e) => {
                       const val = e.target.value;
                       const newBlocks = blocks.map(b => b.id === block.id ? { ...b, comp: val, nom: '' } : b);
                       setBlocks(newBlocks);
-                      compileToJson(newBlocks);
-                    }} 
+                      compileImmediate(newBlocks); // ⚡ On compile direct pour les selects complexes !
+                    }}
                     className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-amber-200 outline-none w-1/3"
                   >
                     <option value="">Compétence...</option>
@@ -334,12 +353,16 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
                       <button type="button" onClick={() => setCreatingSpecFor(null)} className="bg-stone-200 text-stone-700 rounded px-2 py-1 text-xs font-bold">Annuler</button>
                     </div>
                   ) : (
-                    <select 
-                      value={block.nom} 
+                    <select
+                      value={block.nom}
                       onChange={(e) => {
-                        if (e.target.value === '__CREATE_NEW__') { setCreatingSpecFor(block.id); setNewSpecName(''); } 
-                        else updateBlock(block.id, 'nom', e.target.value);
-                      }} 
+                        if (e.target.value === '__CREATE_NEW__') { setCreatingSpecFor(block.id); setNewSpecName(''); }
+                        else {
+                          const newBlocks = blocks.map(b => b.id === block.id ? { ...b, nom: e.target.value } : b);
+                          setBlocks(newBlocks);
+                          compileImmediate(newBlocks);
+                        }
+                      }}
                       className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-amber-200 outline-none flex-1"
                     >
                       <option value="">Spécialité...</option>
@@ -365,7 +388,11 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
                   {(block.options || []).map(opt => (
                     <span key={opt} className="bg-purple-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm animate-fade-in">
                       {opt}
-                      <button type="button" onClick={() => updateBlock(block.id, 'options', block.options.filter(o => o !== opt))} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
+                      <button type="button" onClick={() => {
+                        const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
+                        setBlocks(newBlocks);
+                        compileImmediate(newBlocks);
+                      }} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
                     </span>
                   ))}
                   <input
@@ -376,7 +403,11 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
                       if (e.key === 'Enter' && e.target.value.trim()) {
                         e.preventDefault();
                         const val = e.target.value.trim();
-                        if (!(block.options || []).includes(val)) updateBlock(block.id, 'options', [...(block.options || []), val]);
+                        if (!(block.options || []).includes(val)) {
+                          const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), val] } : b);
+                          setBlocks(newBlocks);
+                          compileImmediate(newBlocks);
+                        }
                         e.target.value = '';
                       }
                     }}
@@ -390,31 +421,36 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
             {block.type === 'pred_spec_choix' && (() => {
               const compData = competencesData?.find(c => c.name === block.comp) || {};
               const availableSpecs = compData.specialites || [];
-
               return (
                 <>
                   <div className="bg-pink-100 text-pink-800 p-2 rounded border border-pink-200"><Star size={18}/></div>
                   <span className="text-sm font-bold text-pink-900">Spécialités pour :</span>
-                  <select 
-                    value={block.comp} 
+                  <select
+                    value={block.comp}
                     onChange={(e) => {
                       const val = e.target.value;
                       const newBlocks = blocks.map(b => b.id === block.id ? { ...b, comp: val, options: [] } : b);
                       setBlocks(newBlocks);
-                      compileToJson(newBlocks);
-                    }} 
+                      compileImmediate(newBlocks);
+                    }}
                     className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-pink-200 outline-none w-1/4"
                   >
                     <option value="">Compétence...</option>
                     {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
+                  
                   <div className="flex flex-wrap gap-1 flex-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[42px] shadow-inner">
                     {(block.options || []).map(opt => (
                       <span key={opt} className="bg-pink-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm animate-fade-in">
                         {opt}
-                        <button type="button" onClick={() => updateBlock(block.id, 'options', block.options.filter(o => o !== opt))} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
+                        <button type="button" onClick={() => {
+                          const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
+                          setBlocks(newBlocks);
+                          compileImmediate(newBlocks);
+                        }} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
                       </span>
                     ))}
+                    
                     {block.comp ? (
                       <div className="flex items-center gap-1 flex-1 min-w-[140px]">
                         <input
@@ -425,7 +461,11 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
                             if (e.key === 'Enter' && e.target.value.trim()) {
                               e.preventDefault();
                               const val = e.target.value.trim();
-                              if (!(block.options || []).includes(val)) updateBlock(block.id, 'options', [...(block.options || []), val]);
+                              if (!(block.options || []).includes(val)) {
+                                const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), val] } : b);
+                                setBlocks(newBlocks);
+                                compileImmediate(newBlocks);
+                              }
                               e.target.value = '';
                             }
                           }}
@@ -441,43 +481,45 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
               );
             })()}
 
-			{/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
-			{block.type === 'pred_fixe' && (
-			  <>
-				<div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200"><BookOpen size={18}/></div>
-				<span className="text-sm font-bold text-fuchsia-900">Utile imposée :</span>
-				
-				{/* ✨ LA CORRECTION EST ICI : Un vrai Select strict */}
-				<select
-				  value={block.key}
-				  onChange={(e) => updateBlock(block.id, 'key', e.target.value)}
-				  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
-				>
-				  <option value="">Sélectionner...</option>
-				  {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
-				</select>
+            {/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
+            {block.type === 'pred_fixe' && (
+              <>
+                <div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200"><BookOpen size={18}/></div>
+                <span className="text-sm font-bold text-fuchsia-900">Utile imposée :</span>
+                <select
+                  value={block.key}
+                  onChange={(e) => {
+                    const newBlocks = blocks.map(b => b.id === block.id ? { ...b, key: e.target.value } : b);
+                    setBlocks(newBlocks);
+                    compileImmediate(newBlocks);
+                  }}
+                  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
+                >
+                  <option value="">Sélectionner...</option>
+                  {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <span className="text-stone-400 font-bold">▶</span>
+                <input type="text" placeholder="Spécialité (Optionnelle)..." value={block.nom || ''} onChange={(e) => updateBlock(block.id, 'nom', e.target.value)} className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none" />
+              </>
+            )}
 
-				<span className="text-stone-400 font-bold">▶</span>
-				<input type="text" placeholder="Spécialité (Optionnelle)..." value={block.nom || ''} onChange={(e) => updateBlock(block.id, 'nom', e.target.value)} className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none" />
-			  </>
-			)}
-			
-            {/* ✨ NOUVEAU : Lego Choix de Futile (Teal/Cyan) ✨ */}
+            {/* ✨ Lego Choix de Futile (Teal/Cyan) ✨ */}
             {block.type === 'futile_choix' && (
               <>
                 <div className="bg-teal-100 text-teal-800 p-2 rounded border border-teal-200"><Sparkles size={18}/></div>
                 <span className="text-sm font-bold text-teal-900">Choix (Futiles) :</span>
                 <div className="flex flex-wrap gap-1 flex-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[42px] shadow-inner">
-                  
-                  {/* L'affichage des compétences déjà choisies (Les petites bulles) */}
                   {(block.options || []).map(opt => (
                     <span key={opt} className="bg-teal-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm animate-fade-in">
                       {opt}
-                      <button type="button" onClick={() => updateBlock(block.id, 'options', block.options.filter(o => o !== opt))} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
+                      <button type="button" onClick={() => {
+                        const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
+                        setBlocks(newBlocks);
+                        compileImmediate(newBlocks);
+                      }} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
                     </span>
                   ))}
-
-                  {/* ✨ LE SELECT CRÉATIF ADAPTÉ AUX LISTES ✨ */}
+                  
                   {creatingFutileId === block.id ? (
                     <div className="flex gap-1 items-center animate-fade-in">
                       <input
@@ -487,7 +529,7 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
                         value={newFutileName}
                         onChange={(e) => setNewFutileName(e.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleCreateFutile(block.id, true); // 👈 On précise que c'est une liste !
+                          if (e.key === 'Enter') handleCreateFutile(block.id, true);
                           if (e.key === 'Escape') { setCreatingFutileId(null); setNewFutileName(''); }
                         }}
                         className="p-1 text-xs border border-teal-300 rounded focus:ring-2 focus:ring-teal-200 outline-none w-32"
@@ -505,14 +547,15 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
                           setNewFutileName('');
                         } else if (val) {
                           if (!(block.options || []).includes(val)) {
-                            updateBlock(block.id, 'options', [...(block.options || []), val]);
+                            const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), val] } : b);
+                            setBlocks(newBlocks);
+                            compileImmediate(newBlocks);
                           }
                         }
                       }}
                       className="text-xs bg-transparent outline-none focus:ring-0 font-bold text-stone-500 cursor-pointer flex-1 border-none min-w-[140px]"
                     >
                       <option value="">+ Ajouter (Futiles)...</option>
-                      {/* On filtre la liste pour ne pas proposer ce qui est déjà sélectionné ! */}
                       {allFutiles.filter(f => !(block.options || []).includes(f)).map(s => <option key={s} value={s}>{s}</option>)}
                       <option value="__CREATE__" className="font-bold text-teal-700">➕ Créer une nouvelle...</option>
                     </select>
@@ -521,54 +564,54 @@ export default function BonusBuilder({ parsedTech, updateTech, usefulSkills = []
               </>
             )}
 
-			{/* ✨ NOUVEAU : Lego Prédilection Futile Fixe (Cyan) ✨ */}
-			{block.type === 'futile_fixe' && (
-			  <>
-				<div className="bg-cyan-100 text-cyan-800 p-2 rounded border border-cyan-200"><Sparkles size={18}/></div>
-				<span className="text-sm font-bold text-cyan-900">Futile imposée :</span>
-				
-            {/* ✨ LA CORRECTION EST ICI : Le Select Créatif */}
-            {creatingFutileId === block.id ? (
-              <div className="flex gap-1 flex-1 animate-fade-in">
-                <input
-                  autoFocus
-                  type="text"
-                  placeholder="Nouvelle futile..."
-                  value={newFutileName}
-                  onChange={(e) => setNewFutileName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleCreateFutile(block.id);
-                    if (e.key === 'Escape') { setCreatingFutileId(null); setNewFutileName(''); }
-                  }}
-                  className="p-1.5 border border-cyan-300 rounded text-sm flex-1 focus:ring-2 focus:ring-cyan-200 outline-none"
-                />
-                <button onClick={() => handleCreateFutile(block.id)} className="bg-cyan-600 text-white rounded px-2 py-1 text-xs font-bold shadow-sm hover:bg-cyan-700 transition-colors">Créer</button>
-                <button onClick={() => { setCreatingFutileId(null); setNewFutileName(''); }} className="bg-gray-200 text-gray-600 rounded px-2 py-1 text-xs font-bold hover:bg-gray-300 transition-colors">Annuler</button>
-              </div>
-            ) : (
-              <select
-                value={block.key}
-                onChange={(e) => {
-                  if (e.target.value === '__CREATE__') {
-                    setCreatingFutileId(block.id);
-                    setNewFutileName('');
-                  } else {
-                    updateBlock(block.id, 'key', e.target.value);
-                  }
-                }}
-                className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-cyan-200 outline-none flex-1"
-              >
-                <option value="">Sélectionner...</option>
-                {allFutiles.map(s => <option key={s} value={s}>{s}</option>)}
-                <option value="__CREATE__" className="font-bold text-cyan-700">➕ Créer une nouvelle...</option>
-              </select>
+            {/* ✨ Lego Prédilection Futile Fixe (Cyan) ✨ */}
+            {block.type === 'futile_fixe' && (
+              <>
+                <div className="bg-cyan-100 text-cyan-800 p-2 rounded border border-cyan-200"><Sparkles size={18}/></div>
+                <span className="text-sm font-bold text-cyan-900">Futile imposée :</span>
+                {creatingFutileId === block.id ? (
+                  <div className="flex gap-1 flex-1 animate-fade-in">
+                    <input
+                      autoFocus
+                      type="text"
+                      placeholder="Nouvelle futile..."
+                      value={newFutileName}
+                      onChange={(e) => setNewFutileName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleCreateFutile(block.id);
+                        if (e.key === 'Escape') { setCreatingFutileId(null); setNewFutileName(''); }
+                      }}
+                      className="p-1.5 border border-cyan-300 rounded text-sm flex-1 focus:ring-2 focus:ring-cyan-200 outline-none"
+                    />
+                    <button onClick={() => handleCreateFutile(block.id)} className="bg-cyan-600 text-white rounded px-2 py-1 text-xs font-bold shadow-sm hover:bg-cyan-700 transition-colors">Créer</button>
+                    <button onClick={() => { setCreatingFutileId(null); setNewFutileName(''); }} className="bg-gray-200 text-gray-600 rounded px-2 py-1 text-xs font-bold hover:bg-gray-300 transition-colors">Annuler</button>
+                  </div>
+                ) : (
+                  <select
+                    value={block.key}
+                    onChange={(e) => {
+                      if (e.target.value === '__CREATE__') {
+                        setCreatingFutileId(block.id);
+                        setNewFutileName('');
+                      } else {
+                        const newBlocks = blocks.map(b => b.id === block.id ? { ...b, key: e.target.value } : b);
+                        setBlocks(newBlocks);
+                        compileImmediate(newBlocks);
+                      }
+                    }}
+                    className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-cyan-200 outline-none flex-1"
+                  >
+                    <option value="">Sélectionner...</option>
+                    {allFutiles.map(s => <option key={s} value={s}>{s}</option>)}
+                    <option value="__CREATE__" className="font-bold text-cyan-700">➕ Créer une nouvelle...</option>
+                  </select>
+                )}
+              </>
             )}
-			  </>
-			)}
 
             {/* Bouton Supprimer */}
             <button type="button" onClick={() => removeBlock(block.id)} className="ml-auto p-2 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Supprimer la règle">
-              <Trash2 size={18} />
+              <Trash2 size={16} />
             </button>
           </div>
         ))}

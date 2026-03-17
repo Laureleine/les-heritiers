@@ -2,6 +2,7 @@
 // 10.4.0 // 10.6.0 // 10.8.0
 // 11.1.0
 // 13.11.0
+// 14.0.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling, Lock } from 'lucide-react';
@@ -21,21 +22,31 @@ export default function Step1() {
 
   useEffect(() => {
     const verifierInitiation = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: profile } = await supabase
           .from('profiles')
-          .select('unlocked_fairies, is_docte')
+          .select('role, unlocked_fairies')
           .eq('id', user.id)
           .single();
-        if (data) {
-          setUnlockedFairies(data.unlocked_fairies || []);
-          setIsUserDocte(data.is_docte || false);
+
+        if (profile) {
+          // ✨ FIX : On sécurise l'accès en listant tous les rôles supérieurs
+          const hasAccess = ['docte', 'super_admin', 'gardien'].includes(profile.role);
+          setIsUserDocte(hasAccess);
+          setUnlockedFairies(profile.unlocked_fairies || []);
         }
+      } catch (error) {
+        console.error("❌ Erreur de vérification des Sceaux :", error);
       }
     };
-    verifierInitiation();
-  }, []);
+
+    if (!isLocked) {
+      verifierInitiation();
+    }
+  }, [isLocked]);
 
   // --- HANDLERS BLINDÉS CONTRE LA TRICHE ---
   const onNomChange = (val) => {
@@ -381,8 +392,11 @@ export default function Step1() {
               ?.filter(fairyName => {
                 const fData = fairyData[fairyName];
                 if (!fData) return false;
-                // LA RÈGLE DU SECRET
-                return !fData.isSecret || isUserDocte || unlockedFairies.includes(fData.id);
+				// ✨ FIX : Le double contrôle absolu ! On attrape le camelCase ET le snake_case.
+				const isFairySecret = fData.isSecret === true || fData.is_secret === true;
+
+				// LA RÈGLE DU SECRET
+				return !isFairySecret || isUserDocte || unlockedFairies.includes(fData.id);
               })
               .map((fairyName) => (
                 <button

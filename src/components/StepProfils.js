@@ -1,10 +1,11 @@
 // src/components/StepProfils.js
 // 10.6.0
-// 13.0.0
+// 13.0.0 // 13.13.0
 
 import React from 'react';
-import { Info, Star, Award, Briefcase } from 'lucide-react';
+import { Info, Star, Award, Briefcase, Lock, CheckCircle } from 'lucide-react';
 import { useCharacter } from '../context/CharacterContext';
+import { showInAppNotification } from '../utils/SystemeServices';
 
 export default function StepProfils() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -13,8 +14,16 @@ export default function StepProfils() {
   // On extrait la liste de toutes les compétences existantes
   const usefulSkills = Object.keys(competences || {}).sort();
 
+  // ✨ LE BOUCLIER DES PROFILS (Mode XP)
+  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+  const isLocked = isReadOnly || isScelle;
+
   const onProfilsChange = (p) => {
-    if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { profils: p }, gameData });
+    if (isLocked) {
+      if (isScelle) showInAppNotification("Vos profils fondateurs sont scellés et ne peuvent plus être modifiés !", "warning");
+      return;
+    }
+    dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { profils: p }, gameData });
   };
 
   // Créer un objet indexé par nom pour compatibilité avec le code existant
@@ -45,6 +54,7 @@ export default function StepProfils() {
   };
 
   const handleProfilMajeurChange = (profil) => {
+    if (isLocked) return;
     onProfilsChange({
       ...character.profils,
       majeur: {
@@ -56,6 +66,7 @@ export default function StepProfils() {
   };
 
   const handleProfilMineurChange = (profil) => {
+    if (isLocked) return;
     onProfilsChange({
       ...character.profils,
       mineur: {
@@ -67,6 +78,7 @@ export default function StepProfils() {
   };
 
   const handleTraitMajeurChange = (trait) => {
+    if (isLocked) return;
     onProfilsChange({
       ...character.profils,
       majeur: {
@@ -77,6 +89,7 @@ export default function StepProfils() {
   };
 
   const handleTraitMineurChange = (trait) => {
+    if (isLocked) return;
     onProfilsChange({
       ...character.profils,
       mineur: {
@@ -93,7 +106,9 @@ export default function StepProfils() {
 
   const renderProfilCard = (profilName, isSelected, isMajeur, onSelect) => {
     const profilData = profilsObj[profilName];
-    const isDisabled = isMajeur ? profilName === profilMineur : profilName === profilMajeur;
+    
+    // ✨ FIX : On bloque visuellement si le profil est déjà pris dans l'autre catégorie OU si le personnage est scellé
+    const isDisabled = isLocked || (isMajeur ? profilName === profilMineur : profilName === profilMajeur);
 
     return (
       <button
@@ -139,14 +154,30 @@ export default function StepProfils() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in pb-12">
+      
+      {/* ✨ LE BANDEAU DE SCELLAGE */}
+      {isScelle && (
+        <div className="bg-amber-50 border border-amber-200 p-4 md:p-5 rounded-xl flex items-start gap-4 shadow-sm">
+          <div className="bg-amber-200/50 p-2 rounded-lg shrink-0 text-amber-700 mt-0.5">
+            <Lock size={24} />
+          </div>
+          <div>
+            <h3 className="font-serif font-bold text-amber-900 text-lg">Profils Scellés</h3>
+            <p className="text-sm text-amber-800 leading-relaxed mt-1">
+              Vos vocations fondamentales (Profils Majeur et Mineur) ainsi que vos traits de personnalité sont définitivement gravés dans le marbre. L'évolution de votre Héritier se fera désormais en investissant de l'Expérience dans vos Compétences Utiles.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="bg-amber-50 p-6 rounded-lg border-2 border-amber-200">
         <h2 className="text-2xl font-serif text-amber-900 mb-3">
           Profils et Compétences
         </h2>
         <div className="space-y-2 text-amber-800">
           <p>
-            Choisissez un <span className="font-bold text-amber-900">Profil majeur</span> (compétences +2)
+            Choisissez un <span className="font-bold text-amber-900">Profil majeur</span> (compétences +2) 
             et un <span className="font-bold text-blue-900">Profil mineur</span> (compétences +1).
           </p>
           <div className="flex items-start gap-2 text-sm">
@@ -169,7 +200,7 @@ export default function StepProfils() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-          {profilNames.map(name =>
+          {profilNames.map(name => 
             renderProfilCard(name, profilMajeur === name, true, handleProfilMajeurChange)
           )}
         </div>
@@ -184,9 +215,12 @@ export default function StepProfils() {
                 <button
                   key={trait}
                   onClick={() => handleTraitMajeurChange(trait)}
+                  disabled={isLocked}
                   className={`p-3 rounded-lg border-2 transition-all font-serif ${
                     traitMajeur === trait
-                      ? 'border-amber-600 bg-amber-100 text-amber-900 font-semibold'
+                      ? 'border-amber-600 bg-amber-100 text-amber-900 font-semibold shadow-sm'
+                      : isLocked
+                      ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
                       : 'border-amber-200 bg-white text-amber-800 hover:border-amber-400'
                   }`}
                 >
@@ -211,7 +245,7 @@ export default function StepProfils() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-          {profilNames.map(name =>
+          {profilNames.map(name => 
             renderProfilCard(name, profilMineur === name, false, handleProfilMineurChange)
           )}
         </div>
@@ -226,9 +260,12 @@ export default function StepProfils() {
                 <button
                   key={trait}
                   onClick={() => handleTraitMineurChange(trait)}
+                  disabled={isLocked}
                   className={`p-3 rounded-lg border-2 transition-all font-serif ${
                     traitMineur === trait
-                      ? 'border-blue-600 bg-blue-100 text-blue-900 font-semibold'
+                      ? 'border-blue-600 bg-blue-100 text-blue-900 font-semibold shadow-sm'
+                      : isLocked
+                      ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
                       : 'border-blue-200 bg-white text-blue-800 hover:border-blue-400'
                   }`}
                 >
@@ -242,12 +279,12 @@ export default function StepProfils() {
 
       {/* Récapitulatif */}
       {profilMajeur && traitMajeur && profilMineur && traitMineur && (
-        <div className="p-6 bg-green-50 border-2 border-green-400 rounded-lg">
-          <h4 className="font-serif text-xl text-green-900 mb-4 font-bold">
-            ✓ Récapitulatif
+        <div className="p-6 bg-green-50 border-2 border-green-400 rounded-lg shadow-sm">
+          <h4 className="font-serif text-xl text-green-900 mb-4 font-bold flex items-center gap-2">
+            <CheckCircle size={20} /> Récapitulatif
           </h4>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 bg-white p-3 rounded border border-green-200">
               <Star className="text-amber-600 flex-shrink-0 mt-1" size={20} fill="currentColor" />
               <div>
                 <span className="font-semibold text-amber-900">{getProfilDisplayName(profilMajeur)}</span>
@@ -259,7 +296,7 @@ export default function StepProfils() {
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 bg-white p-3 rounded border border-green-200">
               <Award className="text-blue-600 flex-shrink-0 mt-1" size={20} />
               <div>
                 <span className="font-semibold text-blue-900">{getProfilDisplayName(profilMineur)}</span>
