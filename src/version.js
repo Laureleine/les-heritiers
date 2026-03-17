@@ -6,6 +6,14 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.1.0',
+    date: '17 Mars 2026',
+    changes: [
+      '🐛 **Économie Féérique (Hotfix) :** Résolution d\'une erreur de facturation lors de l\'augmentation des Caractéristiques. Le calculateur d\'XP lit désormais correctement le rang de départ au lieu du rang d\'arrivée, rétablissant le coût légal de 16 XP (au lieu de 20) pour passer du rang 3 au rang 4.',
+      '🛡️ **Plancher de Verre (Hotfix) :** Correction du système de rétrogradation d\'XP. Le validateur de l\'Étape 5 lit désormais correctement l\'archive scellée dans le Nuage (`character.data.stats_scellees`) et rembourse la valeur exacte de l\'échelon annulé, empêchant le verrouillage abusif lors d\'un remboursement légitime.'
+    ]
+  },
+  {
     version: '14.0.0',
     date: '16 Mars 2026',
     changes: [
