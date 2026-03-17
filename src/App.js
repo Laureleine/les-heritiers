@@ -5,8 +5,9 @@
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
 // 13.1.0 // 13.8.0 // 13.12.0
+// 14.0.0
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useCharacter } from './context/CharacterContext';
 import { supabase } from './config/supabase';
 import { loadAllGameData } from './utils/supabaseGameData';
@@ -48,6 +49,7 @@ import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
 import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock } from 'lucide-react';
 
 function App() {
+
   // --- 1. ÉTATS GLOBAUX DU NUAGE (CONTEXT API) ---
   const { character, dispatchCharacter, gameData, setGameData, isReadOnly, setIsReadOnly, initialCharacterState } = useCharacter();
 
@@ -59,10 +61,25 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [step, setStep] = useState(1);
-  const [showSaveNotification, setShowSaveNotification] = useState(false);
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // ✨ FIX : L'Interrupteur et le Bouclier (Anti-Boucle Infinie)
+  const [initTrigger, setInitTrigger] = useState(0);
+  const sessionRef = useRef(null);
+
+  // ✨ FIX : Le Bouclier anti-démarrages concurrents (Sémaphore)
+  const isInitializingRef = useRef(false);
+
+  // ✨ FIX : La fonction douce pour rafraîchir le profil sans recharger la page
+  const refreshUserProfile = async () => {
+    if (!session?.user?.id) return;
+    const { data: profile } = await supabase
+      .from('profiles').select('*')
+      .eq('id', session.user.id).single();
+    if (profile) setUserProfile({ ...session.user, profile });
+  };
+  
   // --- SYSTÈME DE MISE À JOUR AUTOMATIQUE ---
   const { updateAvailable, applyUpdate } = useAutoUpdate(60000);
 
@@ -73,46 +90,70 @@ function App() {
     }
   }, [updateAvailable, applyUpdate]);
 
-  // --- 3. INITIALISATION (UNE SEULE FOIS) ---
+  // ✨ FIX : Maintien du bouclier mémoriel
   useEffect(() => {
-    if (isInitialized) return;
+    sessionRef.current = session;
+  }, [session]);
+
+  useEffect(() => {
+    // ✨ FIX : Si on est déjà initialisé, OU si une initialisation est DÉJÀ en cours, on stoppe tout !
+    if (isInitialized || isInitializingRef.current) return;
+    
     let mounted = true;
+    isInitializingRef.current = true; // 🔴 On allume le feu rouge !
 
     const safetyTimer = setTimeout(() => {
-      if (mounted && globalLoading) setGlobalLoading(false);
+      if (mounted && globalLoading) {
+        setGlobalLoading(false);
+        isInitializingRef.current = false; // 🟢 Sécurité : on libère le feu
+      }
     }, 30000);
 
     const initializeApp = async () => {
       try {
         setLoadingStep("Vérification connexion...");
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session: activeSession } } = await supabase.auth.getSession();
         
-        if (!session) {
+        if (!activeSession) {
           if (mounted) setGlobalLoading(false);
+          isInitializingRef.current = false; // 🟢 LE COUPABLE ÉTAIT ICI ! On libère le feu si personne n'est connecté.
           return;
         }
-
+		
         setLoadingStep("Chargement Grimoire...");
         const data = await loadAllGameData();
         
         if (mounted) {
           setGameData(data);
-          const { data: profile } = await supabase
-          .from('profiles').select('role, username, badges, show_pixie, active_badge, dice_theme, is_joueur, is_docte, use_3d_dice')
-            .eq('id', session.user.id).single();
+          setSession(activeSession); 
+
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', activeSession.user.id)
+            .single();
+
+          if (profileData) {
+            setUserProfile(profileData); 
+          }
           
-          setSession(session);
-          setUserProfile({ ...session.user, profile });
-          console.log(`✅ Connecté: ${session.user.email} Rôle: ${profile?.role}`);
-          setGlobalLoading(false);
           setIsInitialized(true);
+          setGlobalLoading(false);
         }
+
+        // ✨ FIX : LE COUP DE GÉNIE EST ICI !
+        // On libère le feu vert ABSOLUMENT TOUT LE TEMPS, même si la fonction a été 
+        // court-circuitée par un re-render (mounted === false).
+        isInitializingRef.current = false;
+
       } catch (error) {
         console.error("❌ Init failed:", error);
         if (mounted) {
           setGlobalLoading(false);
           setIsInitialized(false);
         }
+        // ✨ Le verrou de sécurité du catch reste en place
+        isInitializingRef.current = false;
       }
     };
 
@@ -122,20 +163,30 @@ function App() {
       mounted = false;
       clearTimeout(safetyTimer);
     };
-  }, [isInitialized, setGameData]);
+  // Notre interrupteur est toujours là, prêt à fonctionner !
+  }, [isInitialized, setGameData, initTrigger]); 
 
   // --- ÉCOUTEUR D'AUTHENTIFICATION ---
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (!session) {
+      (_event, currentSession) => {
+        if (!currentSession) {
           setSession(null);
           setUserProfile(null);
           setGlobalLoading(false);
           setIsInitialized(false);
+          isInitializingRef.current = false; // 🟢 SÉCURITÉ ABSOLUE : On force le feu vert à la déconnexion !
+        } else if (_event === 'SIGNED_IN') {
+   		  // ✨ FIX : Vérification via le bouclier
+          if (!sessionRef.current) {
+            setIsInitialized(false);
+            setGlobalLoading(true);
+            setInitTrigger(prev => prev + 1); // 👈 Le clic magique !
+          }
         }
       }
     );
+
     return () => subscription.unsubscribe();
   }, []);
 
@@ -143,32 +194,41 @@ function App() {
   useEffect(() => {
     if (!session?.user?.id) return;
     let lastActivity = Date.now();
-    
-    const handleActivity = () => { lastActivity = Date.now(); };
+    let isThrottled = false; // ✨ FIX : Notre modérateur d'événements
+
+    const handleActivity = () => {
+      if (!isThrottled) {
+        lastActivity = Date.now();
+        isThrottled = true;
+        // On ignore les mouvements de souris pendant 2 secondes !
+        setTimeout(() => { isThrottled = false; }, 2000); 
+      }
+    };
+
     window.addEventListener('mousemove', handleActivity);
     window.addEventListener('keydown', handleActivity);
-    
+
     const updatePresence = async () => {
       if (Date.now() - lastActivity < 5 * 60 * 1000) {
         await supabase.from('profiles').update({ last_seen: new Date() }).eq('id', session.user.id);
       }
     };
-    
+
     updatePresence();
     const interval = setInterval(updatePresence, 3 * 60 * 1000);
-    
+
     return () => {
       window.removeEventListener('mousemove', handleActivity);
       window.removeEventListener('keydown', handleActivity);
       clearInterval(interval);
     };
   }, [session]);
-
+  
   // --- SAUVEGARDE GLOBALE ---
   const handleSave = async () => {
     if (isReadOnly) return;
+
     if (!character.nom.trim() || !character.sexe || !character.typeFee) {
-      // ✨ La nouvelle notification :
       showInAppNotification("Impossible de sauvegarder : votre Héritier a besoin d'un Nom, d'un Sexe et d'un Héritage (Étape 1) !", "warning");
       return;
     }
@@ -176,10 +236,9 @@ function App() {
     try {
       const saved = await saveCharacterToSupabase(character);
       dispatchCharacter({ type: 'UPDATE_FIELD', field: 'id', value: saved.id, gameData });
-      setShowSaveNotification(true);
-      setTimeout(() => setShowSaveNotification(false), 3000);
+      showInAppNotification("✓ L'Héritier a été sauvegardé avec succès !", "success");
+      
     } catch (e) {
-      // ✨ Et on n'oublie pas l'erreur de sauvegarde !
       showInAppNotification("Les fluides éthérés refusent l'enregistrement : " + e.message, "error");
     }
   };
@@ -203,21 +262,14 @@ function App() {
     window.scrollTo(0, 0);
   };
 
-  // 🌟 LE DICTIONNAIRE DES ÉTAPES (Purifié grâce au Context API)
-  const stepComponents = {
-    1: <Step1 />,
-    2: <Step2 />,
-    3: <Step3 />,
-    4: <StepAtouts />,
-    5: <StepCaracteristiques />,
-    6: <StepProfils />,
-    7: <StepCompetencesLibres />,
-    8: <StepCompetencesFutiles />,
-    9: <StepVieSociale />,
-    10: <StepPersonnalisation />,
+  // 🌟 LE DICTIONNAIRE DES ÉTAPES (Protégé par useMemo)
+  const stepComponents = useMemo(() => ({
+    1: <Step1 />, 2: <Step2 />, 3: <Step3 />, 4: <StepAtouts />,
+    5: <StepCaracteristiques />, 6: <StepProfils />, 7: <StepCompetencesLibres />,
+    8: <StepCompetencesFutiles />, 9: <StepVieSociale />, 10: <StepPersonnalisation />,
     11: <StepRecapitulatif />
-  };
-
+  }), []); // <-- Le tableau vide garantit qu'il n'est jamais recréé !
+  
   // --- RENDU ÉCRAN DE CHARGEMENT ---
   if (globalLoading) {
     return (
@@ -338,14 +390,17 @@ function App() {
 			  profils={gameData.profils}
 			  gameData={gameData}
 			  onSelectCharacter={(c, readOnly = false) => {
-				dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c });
 				
-				// ✨ FIX : Le statut "Scellé" ne déclenche PLUS la lecture seule globale !
+				// ✨ FIX : On injecte "gameData" dans la charge utile ! 
+				// Le super-calculateur du characterEngine s'allumera instantanément au chargement.
+				dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c, gameData });
+				
+				// ✨ Le statut "Scellé" ne déclenche PLUS la lecture seule globale !
 				// La lecture seule n'est activée que par le paramètre readOnly (ex: vue d'un profil communautaire).
 				setIsReadOnly(readOnly);
 				
 				setStep(1);
-				navigate('/creator'); // 👈 LA LIGNE VITALE QUE J'AVAIS EFFACÉE !
+				navigate('/creator'); 
 				window.scrollTo(0, 0);
 			  }}
 			  onNewCharacter={() => {
@@ -397,7 +452,7 @@ function App() {
 
           {/* ROUTE 3 : AUTRES PAGES */}
           <Route path="/validations" element={<ValidationsPendantes session={session} onBack={() => navigate('/encyclopedia')} />} />
-          <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={() => window.location.reload()} onBack={() => navigate('/')} />} />
+          <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={refreshUserProfile} onBack={() => navigate('/')} />} />
           <Route path="/admin_dashboard" element={<AdminDashboard session={session} onBack={() => navigate('/')} />} />
           <Route path="/cercles" element={<CerclesDashboard session={session} onBack={() => navigate('/')} />} />
 		  <Route path="/mes_propositions" element={<MesPropositions session={session} onBack={() => navigate('/encyclopedia')} />} />
@@ -436,12 +491,6 @@ function App() {
                   )}
                 </div>
               </div>
-
-              {showSaveNotification && (
-                <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-center font-bold font-serif animate-fade-in border border-green-200">
-                  ✓ Sauvegardé avec succès !
-                </div>
-              )}
 
               {/* BARRE DE PROGRESSION MAGIQUE ET CONNECTÉE */}
               <div className="relative flex justify-between items-center w-full max-w-4xl mx-auto py-4 px-2 mb-10 mt-4">
@@ -585,8 +634,12 @@ function App() {
                     {v.changes.map((change, cIdx) => (
                       <li key={cIdx} className="text-sm text-stone-700 flex items-start gap-2 leading-relaxed">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0 shadow-sm" />
-                        <span dangerouslySetInnerHTML={{__html: change.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`(.*?)`/g, '<code class="bg-amber-100 text-amber-900 px-1 rounded">$1</code>')}} />
-                      </li>
+						  <span dangerouslySetInnerHTML={{__html: change
+							.replace(/</g, '&lt;').replace(/>/g, '&gt;') /* ✨ FIX : Bouclier anti-XSS */
+							.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+							.replace(/`(.*?)`/g, '<code class="bg-amber-100 text-amber-900 px-1 rounded">$1</code>')
+						  }} />
+						  </li>
                     ))}
                   </ul>
                 </div>

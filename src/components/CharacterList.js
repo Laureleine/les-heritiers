@@ -3,188 +3,264 @@
 // 10.2.0 // 10.4.0
 // 11.1.0
 // 12.4.0
-// 13.2.0 // 13.3.0 // 13.12.0
+// 13.2.0 // 13.3.0 // 13.12.0 // 13.13.0
+// 14.0.0
 
-import React, { useState, useEffect } from 'react';
-import { Sparkles, User, Users, Trash2, Edit, Download, Upload, Plus, FileText, LogOut, Eye, EyeOff, Shield, Globe, Calendar, Book, Crown, TestTubeDiagonal, Bug, Bomb, FolderOpen, Edit2, Search, BarChart2, Copy, Gift, X } from 'lucide-react'; 
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
-import { APP_VERSION, BUILD_DATE } from '../version';
-import { logger, getCurrentUserFast, translateError, showInAppNotification } from '../utils/SystemeServices';
-import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
+import { showInAppNotification, translateError } from '../utils/SystemeServices';
+import ConfirmModal from './ConfirmModal';
 
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, profils = [], userProfile, gameData }) { // ✨ NOUVEAU PARAMÈTRE À LA FIN
+// ============================================================================
+// ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
+// ============================================================================
+const CharacterCard = React.memo(({ 
+  char, 
+  isMyCharacter, 
+  currentUser,
+  profils, 
+  gameData,
+  onSelect, 
+  onToggleVisibility, 
+  onDuplicate, 
+  onCreateGift, 
+  onDeleteClick 
+}) => {
+
+  const getProfilInfo = (nomBrut, sexe) => {
+    if (!profils || profils.length === 0 || !nomBrut) return { icon: '👤', text: nomBrut || '-' };
+    const p = profils.find(pr =>
+      pr.nom === nomBrut || pr.nomFeminin === nomBrut || (typeof nomBrut === 'string' && pr.nom && nomBrut.includes(pr.nom))
+    );
+    if (!p) return { icon: '👤', text: nomBrut };
+    const text = (sexe === 'Femme' && p.nomFeminin) ? p.nomFeminin : p.nom;
+    return { icon: p.icon || '👤', text };
+  };
+
+  const majeur = getProfilInfo(char.profils?.majeur?.nom, char.sexe);
+  const mineur = getProfilInfo(char.profils?.mineur?.nom, char.sexe);
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
+      
+      {/* 1. EN-TÊTE */}
+      <div className="p-4 pb-1 border-b border-stone-100">
+        <div className="flex justify-between items-start mb-1">
+          <h3 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
+            {char.nom || 'Sans nom'}
+            {char.isPublic && (
+              <sup className="ml-1 text-blue-500 inline-block" title="Visible par tous"><Globe size={12} /></sup>
+            )}
+          </h3>
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="text-sm text-amber-700 font-serif italic">
+            {char.typeFee || 'Inconnu'} • {char.sexe || '?'}
+          </div>
+          {(char.statut === 'scelle' || char.statut === 'scellé') && (
+            <div className="flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 shadow-sm" title={`Acquis : ${char.xp_total || 0} XP | Dépensés : ${char.xp_depense || 0} XP`}>
+              <Sparkles size={12} className="text-amber-500" />
+              {(char.xp_total || 0) - (char.xp_depense || 0)} XP
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 2. PROFILS */}
+      <div className="flex items-center justify-center gap-3 text-sm text-gray-600 mb-2 pt-1">
+        <div className="flex items-center gap-1.5" title="Profil Majeur">
+          <span className="text-base">{majeur.icon}</span>
+          <span className="font-bold text-amber-900">{majeur.text}</span>
+        </div>
+        <span className="text-gray-300">|</span>
+        <div className="flex items-center gap-1.5" title="Profil Mineur">
+          <span className="text-base">{mineur.icon}</span>
+          <span className="text-blue-900">{mineur.text}</span>
+        </div>
+      </div>
+
+      {/* 3. ACTIONS */}
+      <div className="px-4 pb-3 flex gap-2">
+        {isMyCharacter ? (
+          <>
+            <button onClick={() => onSelect(char)} className="flex-1 py-1.5 bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-800 rounded border border-stone-200 text-sm font-bold transition-colors flex justify-center items-center gap-2">
+              <Edit size={14}/> Modifier
+            </button>
+            <button onClick={() => exportToPDF(char, gameData)} className="p-1.5 text-stone-400 hover:text-stone-600 hover:bg-stone-50 rounded border border-transparent transition-all" title="PDF">
+              <FileText size={16}/>
+            </button>
+            <button 
+              onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)} 
+              className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-blue-50' : 'text-stone-300 hover:text-stone-500 hover:bg-stone-50'}`} 
+              title={char.isPublic ? "Rendre privé" : "Rendre public"}
+            >
+              {char.isPublic ? <Globe size={16}/> : <EyeOff size={16}/>}
+            </button>
+            <button onClick={() => onDuplicate(char)} className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Dupliquer le personnage">
+              <Copy size={16}/>
+            </button>
+            <button onClick={() => onCreateGift(char)} className="p-2 text-stone-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Offrir ce personnage">
+              <Gift size={16}/>
+            </button>
+            <button onClick={() => onDeleteClick(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded">
+              <Trash2 size={16}/>
+            </button>
+          </>
+        ) : (
+          <button onClick={() => onSelect(char, true)} className="w-full py-2 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2">
+            <Eye size={16}/> Voir la fiche
+          </button>
+        )}
+      </div>
+
+      {/* 4. FOOTER */}
+      <div className="bg-stone-50 px-4 py-2 border-t border-stone-100 flex justify-between items-center text-[10px] text-stone-400 mt-auto">
+        <div className="flex items-center gap-1.5">
+          {!isMyCharacter && (
+            <>
+              <User size={10} className="text-blue-400"/>
+              <span className="text-blue-900 font-bold">{char.ownerUsername || 'Inconnu'}</span>
+            </>
+          )}
+          {isMyCharacter && <span className="italic">Mon personnage</span>}
+        </div>
+        <div className="flex items-center gap-1" title="Modifié le">
+          <Calendar size={10}/>
+          {new Date(char.updated_at || char.created_at).toLocaleDateString('fr-FR')}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// ============================================================================
+// ✨ COMPOSANT PRINCIPAL
+// ============================================================================
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, profils = [], userProfile, gameData, session }) {
   
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
   
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [activeTab, setActiveTab] = useState('my'); 
+  const [activeTab, setActiveTab] = useState('my');
   const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // ✨ NOUVEAU : La mémoire des dons et des modales
   const [hasGiftsWaiting, setHasGiftsWaiting] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimCode, setClaimCode] = useState('');
   const [giftCodeToShow, setGiftCodeToShow] = useState(null);
-  
-  // --- NOUVEAU HELPER (Version Propre) ---
-  const getProfilInfo = (nomBrut, sexe) => {
-    // Sécurité de base
-    if (!profils || profils.length === 0 || !nomBrut) return { icon: '👤', text: nomBrut || '-' };
 
-    // 1. Trouver le profil dans la liste de référence
-    const p = profils.find(pr => 
-      pr.nom === nomBrut || 
-      pr.nomFeminin === nomBrut || 
-      (typeof nomBrut === 'string' && pr.nom && nomBrut.includes(pr.nom))
-    );
+  const [publicInfoModal, setPublicInfoModal] = useState({ isOpen: false, charName: '' });
+  const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, charId: null });
 
-    // Si non trouvé, renvoi brut
-    if (!p) return { icon: '👤', text: nomBrut };
+  // 🧠 FIX : Le "Latest Ref Pattern" pour isoler onSignOut du cycle de dépendances
+  const onSignOutRef = useRef(onSignOut);
+  useEffect(() => {
+    onSignOutRef.current = onSignOut;
+  }, [onSignOut]);
 
-    // 2. Appliquer l'accord féminin si nécessaire
-    const text = (sexe === 'Femme' && p.nomFeminin) ? p.nomFeminin : p.nom;
+  const loadCharacters = useCallback(async (isMounted = true) => {
+    if (!isMounted) return;
+    setLoading(true);
 
-    return { icon: p.icon || '👤', text };
-  };
-  
- // Lancement initial
-	useEffect(() => {
-	  let isMounted = true;
+    try {
+      const myUserId = session?.user?.id;
+      if (!myUserId || !isMounted) return;
 
-	  const run = async () => {
-		await loadCharacters(isMounted);
-	  };
+      const isAdminUser = userProfile?.profile?.role === 'super_admin';
+      if (isMounted) setIsAdmin(isAdminUser);
 
-	  run();
+      const [mesPersos, persosPublics, persosAdmin] = await Promise.all([
+        getUserCharacters(myUserId),
+        getPublicCharacters(),
+        isAdminUser ? getAllCharactersAdmin() : Promise.resolve([])
+      ]);
 
-	  return () => {
-		isMounted = false;
-	  };
-	}, []);
+      const { data: giftPing } = await supabase.rpc('check_pending_gifts');
 
-const loadCharacters = async (isMounted = true) => {
-  if (!isMounted) return;
-  setLoading(true);
+      if (!isMounted) return;
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s
-  
-  try {
-    // 1. Utilisateur AVANT tout
-    logger.info("👤 1. Récupération utilisateur...");
-    const user = await getCurrentUserFast();
-    if (!user || !isMounted) return;
-    
-    setCurrentUser(user);
-    const myUserId = user.id;
-	logger.info("👤 User ID:", myUserId);
-    
-    // Admin check
-	const isAdminUser = userProfile?.profile?.role === 'super_admin';    
-	if (isMounted) setIsAdmin(isAdminUser);
-
-    // 2. Chargement PARALLÈLE avec myUserId correct
-    const [mesPersos, persosPublics, persosAdmin] = await Promise.all([
-      getUserCharacters(myUserId),
-      getPublicCharacters(),
-      isAdminUser ? getAllCharactersAdmin() : Promise.resolve([])
-    ]);
-
-      // 3. Mise à jour states
+      setHasGiftsWaiting(!!giftPing);
       setMyCharacters(mesPersos || []);
       setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
+      
       if (isAdminUser) {
         setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
       }
 
-      // ✨ NOUVEAU : Ping du Radar pour le bouton Recevoir
-      const { data: giftPing } = await supabase.rpc('check_pending_gifts');
-      if (isMounted) setHasGiftsWaiting(!!giftPing);
-	  
-    if (!isMounted) return;
-
-    // 3. Mise à jour states
-    setMyCharacters(mesPersos || []);
-    setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
-    
-    if (isAdminUser) {
-      setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
-    }
-
-    
-  } catch (error) {
-    if (error.name !== 'AbortError') {
+    } catch (error) {
       console.error('❌ loadCharacters error:', error);
       if (error.message?.includes('JWT') || error.status === 401) {
-        if (onSignOut) onSignOut();
+        // 🧠 Appel sécurisé via la référence
+        if (onSignOutRef.current) onSignOutRef.current();
       }
+    } finally {
+      if (isMounted) setLoading(false);
     }
-  } finally {
-    clearTimeout(timeoutId); // ✅ timeoutId correct
-    if (isMounted) {
-      setLoading(false); // ✅ TOUJOURS exécuté
-    }
-  }
-};
+  // 🧠 FIX : On a retiré onSignOut des dépendances grâce au useRef !
+  }, [session?.user?.id, userProfile?.profile?.role]);
 
-  const handleDelete = async (id) => {
+  useEffect(() => {
+    let isMounted = true;
+    loadCharacters(isMounted);
+    return () => { isMounted = false; };
+  }, [loadCharacters]);
+
+  // --- ACTIONS MÉMOÏSÉES ---
+
+  const handleDeleteClick = useCallback((id) => {
+    setConfirmDelete({ isOpen: true, charId: id });
+  }, []);
+
+  const executeDelete = useCallback(async () => {
+    if (!confirmDelete.charId) return;
     try {
-      await deleteCharacterFromSupabase(id);
+      await deleteCharacterFromSupabase(confirmDelete.charId);
       await loadCharacters();
-      setShowDeleteConfirm(null);
       showInAppNotification("Le personnage a été effacé de notre réalité.", "success");
     } catch (error) {
-      // ✨ La magie opère ici !
       showInAppNotification(translateError(error), "error");
+    } finally {
+      setConfirmDelete({ isOpen: false, charId: null });
     }
-  };
+  }, [confirmDelete.charId, loadCharacters]);
 
-  const handleDuplicate = async (charToDuplicate) => {
+  const handleDuplicate = useCallback(async (charToDuplicate) => {
     try {
-      // 1. On crée une "copie profonde" déconnectée de l'original
       const newChar = JSON.parse(JSON.stringify(charToDuplicate));
-      
-      // 2. On lave l'identité pour que le Nuage crée une nouvelle fiche
       newChar.id = null;
       newChar.nom = `${newChar.nom} (Copie)`;
-      
-      // 3. (Optionnel) On repasse le statut en brouillon par sécurité pour éviter de dupliquer un sceau !
       newChar.statut = 'brouillon';
       
-      // 4. On expédie au Nuage
       await saveCharacterToSupabase(newChar);
-      
-      // 5. On recharge l'affichage
       await loadCharacters();
-      
       showInAppNotification("L'Héritier a été dupliqué avec succès !", "success");
     } catch (error) {
       showInAppNotification(translateError(error), "error");
     }
-  };
-  
-  // ✨ LE DON (Création du Parchemin via Modale)
-  const handleCreateGiftCode = async (char) => {
+  }, [loadCharacters]);
+
+  const handleCreateGiftCode = useCallback(async (char) => {
     try {
-      const code = 'DON-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+      const randomSegment = typeof crypto !== 'undefined' && crypto.randomUUID 
+        ? crypto.randomUUID().split('-').at(0).toUpperCase() 
+        : Math.random().toString(36).substring(2, 6).toUpperCase();
+        
+      const code = `DON-${randomSegment}`;
       const { error } = await supabase.from('characters').update({ transfer_code: code }).eq('id', char.id);
       if (error) throw error;
       
-      // On ouvre notre belle modale avec le code généré
       setGiftCodeToShow({ nom: char.nom, code });
       await loadCharacters();
     } catch (error) {
       showInAppNotification("Erreur lors de la création du don : " + error.message, "error");
     }
-  };
+  }, [loadCharacters]);
 
-  // ✨ LA RÉCEPTION (Lecture du Parchemin via Modale)
   const handleClaimGift = async () => {
     if (!claimCode.trim()) {
       showInAppNotification("Veuillez saisir un code !", "warning");
@@ -193,7 +269,7 @@ const loadCharacters = async (isMounted = true) => {
     try {
       const { error } = await supabase.rpc('claim_character_by_code', { p_code: claimCode.trim().toUpperCase() });
       if (error) throw error;
-
+      
       showInAppNotification("Un nouvel Héritier a rejoint vos rangs !", "success");
       setShowClaimModal(false);
       setClaimCode('');
@@ -202,192 +278,49 @@ const loadCharacters = async (isMounted = true) => {
       showInAppNotification(error.message, "error");
     }
   };
-  
-  const handleToggleVisibility = async (id, currentlyPublic) => {
+
+  const handleToggleVisibility = useCallback(async (id, currentlyPublic, charName) => {
     try {
-      await toggleCharacterVisibility(id, !currentlyPublic);
+      const newPublicStatus = !currentlyPublic;
+      await toggleCharacterVisibility(id, newPublicStatus);
       await loadCharacters();
+
+      // ✨ FIX : Si le personnage devient public, on affiche la belle modale !
+      if (newPublicStatus) {
+        setPublicInfoModal({ isOpen: true, charName: charName || 'Votre personnage' });
+      } else {
+        // S'il redevient privé, une petite notification discrète suffit
+        showInAppNotification("L'Héritier est de nouveau masqué au public.", "info");
+      }
     } catch (error) {
       showInAppNotification("Erreur : " + error.message, "error");
     }
-  };
+  }, [loadCharacters]);
 
-  // Rendu d'une carte personnage
-    const renderCharacterCard = (char, isMyCharacter = true) => (
-        <div key={char.id} className="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
-
-            {/* 1. EN-TÊTE : Nom et Type (Style plus classique) */}
-            <div className="p-4 pb-2 border-b border-stone-100">
-                <div className="flex justify-between items-start mb-1">
-					<h3 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
-					  {char.nom || 'Sans nom'}
-					  {/* Le Globe en exposant sur la même ligne */}
-					  {char.isPublic && (
-						<sup className="ml-1 text-blue-500 inline-block" title="Visible par tous">
-						   <Globe size={12} />
-						</sup>
-					  )}
-					</h3>
-				</div>
-				<div className="flex justify-between items-center mb-2">
-				  <div className="text-sm text-amber-700 font-serif italic">
-					{char.typeFee || 'Inconnu'} • {char.sexe || '?'}
-				  </div>
-				  
-				  {/* ✨ NOUVEAU : Affichage de l'XP si l'Héritier est en mode Évolution */}
-				  {(char.statut === 'scelle' || char.statut === 'scellé') && (
-					<div 
-					  className="flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 shadow-sm" 
-					  title={`Acquis : ${char.xp_total || 0} XP | Dépensés : ${char.xp_depense || 0} XP`}
-					>
-					  <Sparkles size={12} className="text-amber-500" />
-					  {(char.xp_total || 0) - (char.xp_depense || 0)} XP
-					</div>
-				  )}
-				</div>
-			  </div>
-
-      {/* 2. PROFILS (Correction : Utilisation de getProfilInfo) */}
-      <div className="flex items-center justify-center gap-4 text-sm text-gray-600 mb-4">
-        
-        {/* On calcule les infos avant l'affichage */}
-        {(() => {
-            const majeur = getProfilInfo(char.profils?.majeur?.nom, char.sexe);
-            const mineur = getProfilInfo(char.profils?.mineur?.nom, char.sexe);
-
-            return (
-              <>
-                {/* Profil Majeur */}
-                <div className="flex items-center gap-1.5" title="Profil Majeur">
-                   <span className="text-lg">{majeur.icon}</span>
-                   <span className="font-bold text-amber-900">{majeur.text}</span>
-                </div>
-
-                <span className="text-gray-300">|</span>
-
-                {/* Profil Mineur */}
-                <div className="flex items-center gap-1.5" title="Profil Mineur">
-                   <span className="text-lg">{mineur.icon}</span>
-                   <span className="text-blue-900">{mineur.text}</span>
-                </div>
-              </>
-            );
-        })()}
-
-      </div>
-
-            {/* 3. ACTIONS (Boutons plus discrets) */}
-            <div className="px-4 pb-3 flex gap-2">
-                {isMyCharacter ? (
-                    <>
-                        <button 
-                            onClick={() => onSelectCharacter(char)}
-                            className="flex-1 py-1.5 bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-800 rounded border border-stone-200 text-sm font-bold transition-colors flex justify-center items-center gap-2"
-                        >
-                            <Edit size={14}/> Modifier
-                        </button>
-                        <button 
-							onClick={() => exportToPDF(char, gameData)} 
-                            className="p-1.5 text-stone-400 hover:text-stone-600 hover:bg-stone-50 rounded border border-transparent transition-all"
-                            title="PDF"
-                        >
-                            <FileText size={16}/>
-                        </button>
-                        <button 
-                            onClick={() => handleToggleVisibility(char.id, char.isPublic)}
-                            className={`p-1.5 rounded transition-all ${
-                                char.isPublic 
-                                ? 'text-blue-500 hover:bg-blue-50' 
-                                : 'text-stone-300 hover:text-stone-500 hover:bg-stone-50'
-                            }`}
-                            title={char.isPublic ? "Rendre privé" : "Rendre public"}
-                        >
-                            {char.isPublic ? <Globe size={16}/> : <EyeOff size={16}/>}
-                        </button>
-						  {/* LE NOUVEAU BOUTON CLONAGE */}
-						  <button
-							onClick={(e) => { e.stopPropagation(); handleDuplicate(char); }}
-							className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-							title="Dupliquer le personnage"
-						  >
-							<Copy size={16}/>
-						  </button>			
-						  {/* LE NOUVEAU BOUTON OFFRIR */}
-						  <button
-							onClick={(e) => { e.stopPropagation(); handleCreateGiftCode(char); }}
-							className="p-2 text-stone-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-							title="Offrir ce personnage (Générer un code de don)"
-						  >
-							<Gift size={16}/>
-						  </button>						  
-                        {showDeleteConfirm === char.id ? (
-                            <button onClick={() => handleDelete(char.id)} className="p-1.5 bg-red-50 text-red-600 rounded border border-red-100 animate-pulse"><Trash2 size={16}/></button>
-                        ) : (
-                            <button onClick={() => setShowDeleteConfirm(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded"><Trash2 size={16}/></button>
-                        )}
-                    </>
-                ) : (
-                    <button 
-                        onClick={() => onSelectCharacter(char, true)}
-                        className="w-full py-2 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2"
-                    >
-                        <Eye size={16}/> Voir la fiche
-                    </button>
-                )}
-            </div>
-
-            {/* 4. FOOTER (Option A intégrée discrètement) */}
-            <div className="bg-stone-50 px-4 py-2 border-t border-stone-100 flex justify-between items-center text-[10px] text-stone-400">
-                <div className="flex items-center gap-1.5">
-                    {!isMyCharacter && (
-                        <>
-                            <User size={10} className="text-blue-400"/>
-                            <span className="text-blue-900 font-bold">{char.ownerUsername || 'Inconnu'}</span>
-                        </>
-                    )}
-                    {isMyCharacter && <span className="italic">Mon personnage</span>}
-                </div>
-                <div className="flex items-center gap-1" title="Modifié le">
-                    <Calendar size={10}/>
-                    {new Date(char.updated_at || char.created_at).toLocaleDateString('fr-FR')}
-                </div>
-            </div>
-        </div>
-    );
-	
   return (
     <div className="animate-fade-in w-full">
-      {/* BARRE D'ACTIONS & ONGLETS */}
       <div className="flex flex-col gap-6 mb-8 mt-2">
-        {/* LIGNE 1 : LES BOUTONS D'ACTION */}
         <div className="flex flex-wrap items-center gap-3">
           <button onClick={onNewCharacter} className="mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
             <Plus size={18} /> <span className="hidden sm:inline">Nouveau</span>
           </button>
-
           <button onClick={onOpenEncyclopedia} className="flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={16} /> <span className="hidden sm:inline">Encyclopédie</span>
           </button>
-
-          {/* ✨ NOTRE NOUVEAU BOUTON CERCLES ! */}
           <button onClick={onOpenCercles} className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm shadow-sm" title="Gérer mes tables virtuelles">
             <Users size={16} /> <span className="hidden sm:inline">Cercles</span>
           </button>
-		  
           <button onClick={onOpenAdmin} className="flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
             <BarChart2 size={16} /> <span className="hidden sm:inline">Communauté</span>
           </button>
-
           <button onClick={onOpenAccount} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-sm shadow-sm">
             <User size={16} /> <span className="hidden sm:inline">Compte</span>
           </button>
-
           <button onClick={onSignOut} className="flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-sm shadow-sm" title="Se déconnecter">
             <LogOut size={16} /> <span className="hidden sm:inline">Déconnexion</span>
           </button>
         </div>
 
-        {/* LIGNE 2 : LES ONGLETS PERSONNAGES */}
         <div className="flex gap-8 border-b border-gray-200 overflow-x-auto hide-scrollbar">
           <button onClick={() => setActiveTab('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
             Mes personnages
@@ -395,24 +328,20 @@ const loadCharacters = async (isMounted = true) => {
               {myCharacters.length}
             </span>
           </button>
-          
           <button onClick={() => setActiveTab('public')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'public' ? 'text-blue-900 border-blue-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
             <Globe size={16} /> Publics
             <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'public' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
               {publicCharacters.length}
             </span>
           </button>
-  
           {isAdmin && (
             <button onClick={() => setActiveTab('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-red-900 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
-              <Shield size={16} /> Admin
+              <Crown size={16} /> Admin
               <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'admin' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
                 {adminCharacters.length}
               </span>
             </button>
-          )}	
-
-          {/* ✨ LE BOUTON D'ADOPTION (PERMANENT) */}
+          )}
           <button
             onClick={() => setShowClaimModal(true)}
             className="ml-auto pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 text-emerald-600 border-b-2 border-transparent hover:border-emerald-600 hover:text-emerald-700 transition-colors"
@@ -423,7 +352,6 @@ const loadCharacters = async (isMounted = true) => {
         </div>
       </div>
 
-      {/* GRILLE DE CARTES */}
       {loading ? (
         <div className="text-center py-20">
           <p className="text-xl text-gray-500 font-serif animate-pulse">Consultation des archives...</p>
@@ -433,7 +361,22 @@ const loadCharacters = async (isMounted = true) => {
           {activeTab === 'my' && (
             myCharacters.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myCharacters.map((char, index) => <div key={char.id || `my-${index}`} className="h-full">{renderCharacterCard(char, true)}</div>)}
+                {myCharacters.map((char) => (
+                  <div key={char.id} className="h-full">
+                    <CharacterCard 
+                      char={char} 
+                      isMyCharacter={true} 
+                      currentUser={session?.user}
+                      profils={profils}
+                      gameData={gameData}
+                      onSelect={onSelectCharacter}
+                      onToggleVisibility={handleToggleVisibility}
+                      onDuplicate={handleDuplicate}
+                      onCreateGift={handleCreateGiftCode}
+                      onDeleteClick={handleDeleteClick}
+                    />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-300">
@@ -442,21 +385,49 @@ const loadCharacters = async (isMounted = true) => {
               </div>
             )
           )}
-
           {activeTab === 'public' && (
             publicCharacters.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {publicCharacters.map((char, index) => <div key={char.id || `pub-${index}`} className="h-full">{renderCharacterCard(char, char.userId === currentUser?.id)}</div>)}
+                {publicCharacters.map((char) => (
+                  <div key={char.id} className="h-full">
+                    <CharacterCard 
+                      char={char} 
+                      isMyCharacter={char.userId === session?.user?.id}
+                      currentUser={session?.user}
+                      profils={profils}
+                      gameData={gameData}
+                      onSelect={onSelectCharacter}
+                      onToggleVisibility={handleToggleVisibility}
+                      onDuplicate={handleDuplicate}
+                      onCreateGift={handleCreateGiftCode}
+                      onDeleteClick={handleDeleteClick}
+                    />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage public disponible pour le moment.</div>
             )
           )}
-
           {activeTab === 'admin' && isAdmin && (
             adminCharacters.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {adminCharacters.map((char, index) => <div key={char.id || `adm-${index}`} className="h-full">{renderCharacterCard(char, char.userId === currentUser?.id)}</div>)}
+                {adminCharacters.map((char) => (
+                  <div key={char.id} className="h-full">
+                    <CharacterCard 
+                      char={char} 
+                      isMyCharacter={char.userId === session?.user?.id}
+                      currentUser={session?.user}
+                      profils={profils}
+                      gameData={gameData}
+                      onSelect={onSelectCharacter}
+                      onToggleVisibility={handleToggleVisibility}
+                      onDuplicate={handleDuplicate}
+                      onCreateGift={handleCreateGiftCode}
+                      onDeleteClick={handleDeleteClick}
+                    />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage masqué à afficher.</div>
@@ -465,7 +436,15 @@ const loadCharacters = async (isMounted = true) => {
         </div>
       )}
 
-      {/* 🎁 MODALE : SAISIE DU CODE (POUR LE RECEVEUR) */}
+      <ConfirmModal
+        isOpen={confirmDelete.isOpen}
+        title="Détruire le Sceau"
+        message="Voulez-vous vraiment effacer ce personnage des Archives ? Cette action est irréversible."
+        onConfirm={executeDelete}
+        onCancel={() => setConfirmDelete({ isOpen: false, charId: null })}
+        confirmText="Oui, l'effacer"
+      />
+
       {showClaimModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-emerald-900/20 overflow-hidden transform animate-fade-in-up">
@@ -491,9 +470,8 @@ const loadCharacters = async (isMounted = true) => {
         </div>
       )}
 
-      {/* 🎁 MODALE : AFFICHAGE DU CODE (POUR LE DONNEUR) */}
       {giftCodeToShow && (
-         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-purple-900/20 overflow-hidden transform animate-fade-in-up">
             <div className="p-4 bg-purple-50 border-b border-purple-200 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg text-purple-900 flex items-center gap-2"><Gift size={20}/> Parchemin Scellé</h3>
@@ -502,10 +480,40 @@ const loadCharacters = async (isMounted = true) => {
             <div className="p-6 text-center">
               <p className="text-sm text-stone-600 mb-4">Le personnage <strong>{giftCodeToShow.nom}</strong> est prêt à être transféré. Transmettez ce code unique au destinataire :</p>
               <div className="bg-white p-4 rounded-xl border-2 border-dashed border-purple-300 mb-6 shadow-sm">
-                 <span className="font-mono font-black text-3xl text-purple-800 tracking-widest">{giftCodeToShow.code}</span>
+                <span className="font-mono font-black text-3xl text-purple-800 tracking-widest">{giftCodeToShow.code}</span>
               </div>
               <button onClick={() => setGiftCodeToShow(null)} className="w-full py-3 bg-purple-600 text-white font-bold rounded-lg shadow-md hover:bg-purple-700 transition-all">
                 J'ai noté le code
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✨ NOUVEAU : MODALE D'INFORMATION PUBLIQUE */}
+      {publicInfoModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-blue-900/20 overflow-hidden transform animate-fade-in-up">
+            <div className="p-4 bg-blue-50 border-b border-blue-200 flex justify-between items-center">
+              <h3 className="font-serif font-bold text-lg text-blue-900 flex items-center gap-2">
+                <Globe size={20} className="text-blue-600"/> Révélation Publique
+              </h3>
+              <button onClick={() => setPublicInfoModal({ isOpen: false, charName: '' })} className="text-blue-400 hover:text-blue-700 transition-colors">
+                <X size={20}/>
+              </button>
+            </div>
+            <div className="p-6 text-center">
+              <p className="text-stone-700 mb-5 leading-relaxed text-sm">
+                L'Héritier <strong className="text-amber-900 font-serif text-lg">{publicInfoModal.charName}</strong> est désormais visible par l'ensemble de la communauté !
+              </p>
+              <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 mb-6 text-sm text-amber-800 shadow-inner text-left flex gap-3 items-start">
+                <Info size={24} className="shrink-0 mt-0.5 text-amber-600" />
+                <p>
+                  Pour garder votre Grimoire bien rangé, ce personnage restera classé dans votre onglet <strong>"Mes personnages"</strong>. Il n'apparaîtra pas en double dans votre vue de l'onglet "Publics".
+                </p>
+              </div>
+              <button onClick={() => setPublicInfoModal({ isOpen: false, charName: '' })} className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-transform active:scale-95">
+                J'ai compris !
               </button>
             </div>
           </div>

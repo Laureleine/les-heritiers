@@ -4,42 +4,46 @@
 // 13.0.0 // 13.3.0
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { Plus, Minus, Star, Brain, RotateCcw, Users, Info } from 'lucide-react'; // ✨ Info ajouté ici
+import { Plus, Minus, Star, Brain, RotateCcw, Briefcase, Info, Lock } from 'lucide-react';
 import { addGlobalSpeciality } from '../utils/supabaseGameData';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 
 const POINTS_TOTAUX = 15;
 const SKILLS_ESPRIT = [
-  'Culture', 'Occultisme', 'Fortitude', 'Rhétorique',
+  'Culture', 'Occultisme', 'Fortitude', 'Rhétorique', 
   'Habiletés', 'Médecine', 'Observation', 'Sciences'
 ];
 
 export default function StepCompetencesLibres() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
   const { profils, competences, competencesParProfil, fairyData } = gameData;
-
-  const onCompetencesLibresChange = (c) => {
-    if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: c }, gameData });
-  };
+  
+  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+  
+  const xpTotal = character.xp_total || 0;
+  const xpDepense = character.xp_depense || 0;
+  const xpDispo = xpTotal - xpDepense;
 
   const [creatingSpecFor, setCreatingSpecFor] = useState(null);
-  const [selectValue, setSelectValue] = useState('');
-
   const feeData = fairyData[character.typeFee];
   const lib = character.competencesLibres || { rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} };
 
+  const onCompetencesLibresChange = useCallback((newLib) => {
+    if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_FIELD', field: 'competencesLibres', value: newLib, gameData });
+  }, [dispatchCharacter, gameData, isReadOnly]);
+
+  // Extraction des bonus d'Atouts
   const atoutsBonuses = useMemo(() => {
     const activeAtoutsNames = character.atouts || [];
     const allFairyAtouts = feeData?.atouts || [];
     const specs = [];
-
     allFairyAtouts.forEach(atout => {
       if (activeAtoutsNames.includes(atout.nom)) {
         const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques || '{}') : atout.effets_techniques;
         if (tech?.specialites) {
-          tech.specialites.forEach(spec => {
-            specs.push({ comp: spec.competence, nom: spec.nom, source: atout.nom });
+          tech.specialites.forEach(s => {
+            specs.push({ nom: s.nom, competences: [s.competence], source: atout.nom });
           });
         }
       }
@@ -47,119 +51,193 @@ export default function StepCompetencesLibres() {
     return specs;
   }, [character.atouts, feeData]);
 
-  const predFinales = character.computedStats?.predFinales || [];
-  const getScoreBase = useCallback((nomComp) => {
-    return character.computedStats?.competencesBase?.[nomComp] || 0;
-  }, [character.computedStats]);
+  // Scores calculés par le Moteur (App.js)
+  const { predFinales, competencesBase, rangsProfils, budgetsPP } = character.computedStats || {};
+  const getScoreBase = useCallback((nomComp) => competencesBase?.[nomComp] || 0, [competencesBase]);
+  
+  const bonusEspritMax = Math.max(0, (character.caracteristiques?.esprit || 1) - 3);
 
-  const budgetData = useMemo(() => {
-    const esprit = Number(character.caracteristiques?.esprit || 0);
-    const bonusEspritMax = Math.max(0, esprit - 3);
-    let investissementEligibleEsprit = 0;
-    let investissementStandard = 0;
-
+  // === CALCUL DES FONDS (Mode Création) ===
+  const { investissementStandard, investissementEligibleEsprit } = useMemo(() => {
+    let std = 0; let eligible = 0;
     Object.entries(lib.rangs || {}).forEach(([nom, val]) => {
-      if (SKILLS_ESPRIT.includes(nom)) investissementEligibleEsprit += val;
-      else investissementStandard += val;
+      if (SKILLS_ESPRIT.includes(nom)) eligible += val;
+      else std += val;
     });
-
     Object.entries(lib.choixSpecialiteUser || {}).forEach(([nom, specs]) => {
       let count = specs.length;
-      if (nom === 'Conduite' && count > 0) {
-        const rangTotal = getScoreBase('Conduite') + (lib.rangs['Conduite'] || 0);
-        if (rangTotal > 0) count -= 1;
-      }
-      if (SKILLS_ESPRIT.includes(nom)) investissementEligibleEsprit += count;
-      else investissementStandard += count;
+      if (nom === 'Conduite' && count > 0 && (getScoreBase('Conduite') + (lib.rangs['Conduite']||0)) > 0) count -= 1;
+      if (SKILLS_ESPRIT.includes(nom)) eligible += count;
+      else std += count;
     });
+    return { investissementStandard: std, investissementEligibleEsprit: eligible };
+  }, [lib.rangs, lib.choixSpecialiteUser, getScoreBase]);
 
-    const pointsVioletsUtilises = Math.min(investissementEligibleEsprit, bonusEspritMax);
-    const pointsRestantsViolets = bonusEspritMax - pointsVioletsUtilises;
-    const debordementEspritVersVert = investissementEligibleEsprit - pointsVioletsUtilises;
-    const totalVertUtilise = investissementStandard + debordementEspritVersVert;
-    const pointsRestantsVerts = POINTS_TOTAUX - totalVertUtilise;
+  const pointsVioletsUtilises = Math.min(investissementEligibleEsprit, bonusEspritMax);
+  const debordementEsprit = investissementEligibleEsprit - pointsVioletsUtilises;
+  const totalVertUtilise = investissementStandard + debordementEsprit;
+  
+  const pointsRestantsVerts = POINTS_TOTAUX - totalVertUtilise;
+  const pointsRestantsViolets = bonusEspritMax - pointsVioletsUtilises;
 
-    return { bonusEspritMax, pointsRestantsViolets, pointsRestantsVerts, nextSpecCost: 1 };
-  }, [character.caracteristiques, lib, getScoreBase]);
-
-  const { bonusEspritMax, pointsRestantsViolets, pointsRestantsVerts, nextSpecCost } = budgetData;
-
+  // ========================================================================
+  // ✨ LES HANDLERS HYBRIDES (Création & XP)
+  // ========================================================================
   const handleRangChange = useCallback((nomComp, delta) => {
+    if (isReadOnly) return;
+
     const current = lib.rangs[nomComp] || 0;
     const totalScore = getScoreBase(nomComp) + current;
-    const isPred = predFinales.includes(nomComp);
-    const max = isPred ? 5 : 4;
+    const isPred = predFinales?.includes(nomComp);
+    const evolutionMax = isPred ? 7 : 6;
+    const maxAllowed = isScelle ? evolutionMax : (isPred ? 5 : 4);
 
+    if (isScelle) {
+      // 🛡️ PLANCHER DE VERRE
+      const plancher = character.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0;
+
+      if (delta > 0) {
+        if (totalScore >= evolutionMax) {
+          showInAppNotification(`Excellence maximale atteinte (${evolutionMax}).`, "warning");
+          return;
+        }
+        const costXP = (totalScore + 1) * 3;
+        if (xpDispo < costXP) {
+          showInAppNotification(`Il vous faut ${costXP} XP pour atteindre le rang ${totalScore + 1}.`, "error");
+          return;
+        }
+        dispatchCharacter({
+          type: 'UPDATE_MULTIPLE',
+          payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + 1 } }, xp_depense: xpDepense + costXP },
+          gameData
+        });
+        showInAppNotification(`Compétence améliorée pour ${costXP} XP !`, "success");
+      } else if (delta < 0) {
+        if (current <= plancher) {
+          showInAppNotification("Savoir originel scellé ! Impossible d'oublier cette compétence.", "warning");
+          return;
+        }
+        const refundXP = totalScore * 3; 
+        dispatchCharacter({
+          type: 'UPDATE_MULTIPLE',
+          payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current - 1 } }, xp_depense: xpDepense - refundXP },
+          gameData
+        });
+        showInAppNotification(`Amélioration annulée. +${refundXP} XP récupérés.`, "info");
+      }
+      return;
+    }
+
+    // MODE CRÉATION
     if (delta > 0) {
-      if (totalScore >= max) return;
+      if (totalScore >= maxAllowed) return;
       const isEsprit = SKILLS_ESPRIT.includes(nomComp);
       if (!(pointsRestantsVerts > 0 || (isEsprit && pointsRestantsViolets > 0))) return;
     }
-
     if (delta < 0 && current <= 0) return;
-    onCompetencesLibresChange({ ...lib, rangs: { ...lib.rangs, [nomComp]: current + delta } });
-  }, [lib, getScoreBase, predFinales, pointsRestantsVerts, pointsRestantsViolets, onCompetencesLibresChange]);
 
-  const handleChoixChange = useCallback((index, value, type) => {
-    const target = type === 'competence' ? 'choixPredilection' : 'choixSpecialite';
-    onCompetencesLibresChange({ ...lib, [target]: { ...lib[target], [index]: value } });
-  }, [lib, onCompetencesLibresChange]);
+    onCompetencesLibresChange({ ...lib, rangs: { ...lib.rangs, [nomComp]: current + delta } });
+  }, [lib, getScoreBase, predFinales, pointsRestantsVerts, pointsRestantsViolets, onCompetencesLibresChange, isScelle, isReadOnly, xpDispo, xpDepense, character.data, dispatchCharacter, gameData]);
 
   const handleAddSpecialiteUser = useCallback((nomComp, specName) => {
-    if (!specName) return;
-    const isConduite = nomComp === 'Conduite';
-    const conduitePayee = isConduite && (getScoreBase('Conduite') + (lib.rangs['Conduite']||0) > 0);
-    const slotGratuitDispo = conduitePayee && (!lib.choixSpecialiteUser?.['Conduite']?.length);
-
-    if (!slotGratuitDispo) {
-      const isEsprit = SKILLS_ESPRIT.includes(nomComp);
-      if (!((isEsprit && pointsRestantsViolets > 0) || pointsRestantsVerts > 0)) return;
-    }
-
-    const currentSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
+    if (!specName || isReadOnly) return;
+    const currentSpecs = lib.choixSpecialiteUser[nomComp] || [];
     if (currentSpecs.includes(specName)) return;
 
-    onCompetencesLibresChange({
-      ...lib,
-      choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] }
-    });
-    setSelectValue('');
-  }, [lib, getScoreBase, pointsRestantsViolets, pointsRestantsVerts, onCompetencesLibresChange]);
+    const isFreeConduite = nomComp === 'Conduite' && (getScoreBase(nomComp) + (lib.rangs[nomComp] || 0)) > 0 && currentSpecs.length === 0;
+    const costXP = isFreeConduite ? 0 : 8;
 
-  const handleRemoveSpecialiteUser = useCallback((nomComp, specName) => {
-    const currentSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
-    onCompetencesLibresChange({
-      ...lib,
-      choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specName) }
-    });
-  }, [lib, onCompetencesLibresChange]);
+    if (isScelle) {
+      if (xpDispo < costXP) {
+        showInAppNotification(`Il vous faut ${costXP} XP pour acquérir cette spécialité.`, "error");
+        return;
+      }
+      dispatchCharacter({
+        type: 'UPDATE_MULTIPLE',
+        payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] } }, xp_depense: xpDepense + costXP },
+        gameData
+      });
+      if (costXP > 0) showInAppNotification(`Spécialité acquise pour ${costXP} XP !`, "success");
+      else showInAppNotification("Spécialité de Conduite gratuite acquise !", "success");
+      return;
+    }
+
+    // MODE CRÉATION
+    if (!isFreeConduite) {
+      const isEsprit = SKILLS_ESPRIT.includes(nomComp);
+      if (!(pointsRestantsVerts > 0 || (isEsprit && pointsRestantsViolets > 0))) {
+        showInAppNotification("Fonds insuffisants.", "error");
+        return;
+      }
+    }
+    onCompetencesLibresChange({ ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] } });
+  }, [lib, isReadOnly, isScelle, xpDispo, xpDepense, getScoreBase, pointsRestantsVerts, pointsRestantsViolets, onCompetencesLibresChange, dispatchCharacter, gameData]);
+
+  const handleRemoveSpecialiteUser = useCallback((nomComp, specToRemove) => {
+    if (isReadOnly) return;
+
+    const currentSpecs = lib.choixSpecialiteUser[nomComp] || [];
+    const isRefundingFreeConduite = nomComp === 'Conduite' && currentSpecs.length === 1 && specToRemove === currentSpecs.at(0);
+    const refundXP = isRefundingFreeConduite ? 0 : 8;
+
+    if (isScelle) {
+      const plancherSpecs = character.data?.stats_scellees?.competencesLibres?.choixSpecialiteUser?.[nomComp] || [];
+      if (plancherSpecs.includes(specToRemove)) {
+        showInAppNotification("Savoir originel scellé ! Impossible d'oublier cette spécialité.", "warning");
+        return;
+      }
+      dispatchCharacter({
+        type: 'UPDATE_MULTIPLE',
+        payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specToRemove) } }, xp_depense: xpDepense - refundXP },
+        gameData
+      });
+      if (refundXP > 0) showInAppNotification(`Spécialité oubliée. +${refundXP} XP récupérés.`, "info");
+      return;
+    }
+
+    onCompetencesLibresChange({ ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specToRemove) } });
+  }, [lib, isReadOnly, isScelle, xpDepense, character.data, onCompetencesLibresChange, dispatchCharacter, gameData]);
 
   const handleCreateGlobalSpeciality = useCallback(async (nomComp, specName) => {
     const compData = competences[nomComp];
     if (!compData || !compData.id) return;
     try {
       const newSpecObj = await addGlobalSpeciality(compData.id, specName);
-      if (competences[nomComp]) {
-        competences[nomComp].specialites = [...(competences[nomComp].specialites || []), newSpecObj];
-      }
+      if (competences[nomComp]) competences[nomComp].specialites = [...(competences[nomComp].specialites || []), newSpecObj];
       handleAddSpecialiteUser(nomComp, specName);
       setCreatingSpecFor(null);
     } catch (e) { showInAppNotification("Erreur : " + e.message, "error"); }
   }, [competences, handleAddSpecialiteUser]);
 
-  const handleReset = useCallback(() => {
-    if (window.confirm("Voulez-vous vraiment réinitialiser tous vos points investis et spécialités achetées ?")) {
-      onCompetencesLibresChange({ ...lib, rangs: {}, choixSpecialiteUser: {} });
+  const handleChoixChange = useCallback((index, value, type) => {
+    if (isReadOnly || isScelle) {
+      if (isScelle) showInAppNotification("Les prédilections sont inscrites dans votre génétique. Inaltérable !", "warning");
+      return;
     }
-  }, [lib, onCompetencesLibresChange]);
+    const field = type === 'competence' ? 'choixPredilection' : 'choixSpecialite';
+    onCompetencesLibresChange({ ...lib, [field]: { ...lib[field], [index]: value } });
+  }, [lib, onCompetencesLibresChange, isReadOnly, isScelle]);
 
-  const renderCompRow = useCallback((nomComp) => {
+  const handleReset = () => {
+    if (isReadOnly || isScelle) return;
+    if (window.confirm("Voulez-vous réinitialiser TOUS vos points et spécialités utiles ?")) {
+      onCompetencesLibresChange({ rangs: {}, choixPredilection: {}, choixSpecialite: {}, choixSpecialiteUser: {} });
+    }
+  };
+
+  // ========================================================================
+  // 🎨 LE MOTEUR DE RENDU
+  // ========================================================================
+  const renderCompRow = (nomComp) => {
+    const current = lib.rangs?.[nomComp] || 0;
     const scoreBase = getScoreBase(nomComp);
-    const investis = lib.rangs[nomComp] || 0;
-    const total = scoreBase + investis;
-    const isPred = predFinales.includes(nomComp);
+    const totalScore = scoreBase + current;
+    const isPred = predFinales?.includes(nomComp);
     const isEspritEligible = SKILLS_ESPRIT.includes(nomComp);
-    const canAfford = pointsRestantsVerts > 0 || (isEspritEligible && pointsRestantsViolets > 0);
+    
+    const evolutionMax = isPred ? 7 : 6;
+    const maxAllowed = isScelle ? evolutionMax : (isPred ? 5 : 4);
+    const plancher = character.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0;
 
     const getFairySpec = () => {
       if (!feeData?.competencesPredilection) return null;
@@ -170,119 +248,155 @@ export default function StepCompetencesLibres() {
     };
 
     const fairySpecActuelle = getFairySpec();
+    const specsFromAtouts = atoutsBonuses.filter(a => a.competences.includes(nomComp));
     const userSpecs = lib.choixSpecialiteUser?.[nomComp] || [];
-    const availableSpecs = competences[nomComp]?.specialites || [];
-    const isCreating = creatingSpecFor === nomComp;
-    const isConduite = nomComp === 'Conduite';
-    const isFreeEligible = isConduite && total > 0;
-    const specsFromAtouts = atoutsBonuses.filter(b => b.comp === nomComp);
-    const hasFreeSpecUsed = isFreeEligible && userSpecs.length > 0;
-    const effectiveCanAffordSpec = canAfford || (isFreeEligible && !hasFreeSpecUsed);
+    
+    // ✨ L'AFFICHEUR DU MÉTIER ACQUIS À L'ÉTAPE 10 !
+    const jobSpec = character.competencesLibres?.specialiteMetier;
+    const hasJobSpecHere = jobSpec && jobSpec.comp === nomComp && jobSpec.nom;
 
-    const onSelectChange = (e) => {
-      const val = e.target.value;
-      if (val === '__CREATE_NEW__') setCreatingSpecFor(nomComp);
-      else if (val) handleAddSpecialiteUser(nomComp, val);
-      setSelectValue('');
-    };
+    const isFirstConduite = nomComp === 'Conduite' && totalScore > 0 && userSpecs.length === 0;
+    const nextSpecCost = isScelle ? (isFirstConduite ? 0 : 8) : (isFirstConduite ? 0 : 1);
+    const availableSpecs = competences[nomComp]?.specialites || [];
+
+    const isMinusDisabled = isScelle ? (current <= plancher) : (current <= 0);
 
     return (
-      <div key={nomComp} className={`p-2 border-b border-gray-100 last:border-0 ${isPred ? 'bg-amber-50/30' : ''}`}>
-        <div className="flex justify-between items-center mb-1">
+      <div key={nomComp} className="flex flex-col py-3 px-2 hover:bg-stone-50 transition-colors">
+        <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
-            <span className={`font-serif font-bold text-sm ${isPred ? 'text-amber-700' : 'text-gray-700'}`}>{nomComp}</span>
+            <span className="font-bold text-stone-800 text-sm">{nomComp}</span>
             {isPred && <Star size={12} className="text-amber-500 fill-amber-500" />}
-            {isEspritEligible && bonusEspritMax > 0 && <Brain size={12} className="text-purple-400" />}
+            {isEspritEligible && bonusEspritMax > 0 && !isScelle && <Brain size={12} className="text-purple-400" />}
           </div>
           <div className="flex items-center bg-white rounded border border-stone-300 shadow-sm">
-            <div className="px-2 py-1 text-xs text-stone-400 border-r border-stone-200 bg-stone-50" title="Base">{scoreBase}</div>
-            <button onClick={() => handleRangChange(nomComp, -1)} disabled={investis <= 0} className="px-2 py-1 hover:bg-red-100 text-amber-800 disabled:opacity-30 border-r border-stone-300 font-bold">-</button>
-            <span className={`w-8 text-center font-bold text-sm ${total >= (isPred ? 5 : 4) ? 'text-green-600' : ''}`}>{total}</span>
-            <button onClick={() => handleRangChange(nomComp, 1)} disabled={total >= (isPred ? 5 : 4) || !canAfford} className="px-2 py-1 hover:bg-green-100 text-amber-800 disabled:opacity-30 border-l border-stone-300 font-bold">+</button>
+            <div className="px-2 py-1 text-xs text-stone-400 border-r border-stone-200 bg-stone-50" title="Base calculée">{scoreBase}</div>
+            <button onClick={() => handleRangChange(nomComp, -1)} disabled={isMinusDisabled} className="px-2 py-1 hover:bg-red-100 text-amber-800 disabled:opacity-30 border-r border-stone-300 font-bold" title={isScelle && current > plancher ? 'Récupérer les XP investis' : ''}>-</button>
+            <div className="px-3 py-1 font-bold text-amber-900 min-w-[28px] text-center bg-amber-50">{totalScore}</div>
+            <button onClick={() => handleRangChange(nomComp, 1)} disabled={totalScore >= maxAllowed} className="px-2 py-1 hover:bg-green-100 text-amber-800 disabled:opacity-30 font-bold" title={isScelle && totalScore < maxAllowed ? `Coût : ${(totalScore + 1) * 3} XP` : ''}>+</button>
           </div>
         </div>
-        <div className="pl-2 border-l-2 border-amber-100 mt-1">
-          <div className="flex flex-wrap gap-1 mb-1">
-            {fairySpecActuelle && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded border border-amber-200 flex items-center" title="Héritage">🔒 {fairySpecActuelle}</span>
-            )}
-            {specsFromAtouts.map((spec, idx) => (
-              <span key={`atout-${idx}`} className="text-[10px] px-2 py-1 bg-yellow-100 text-yellow-900 border border-yellow-300 ring-1 ring-yellow-200 rounded flex items-center gap-1 shadow-sm" title={`Offert par l'atout : ${spec.source}`}>
-                ⭐ {spec.nom}
+
+        <div className="flex flex-wrap items-center gap-2 pl-4 border-l-2 border-stone-200 ml-1">
+          {/* Spécialité issue de l'héritage Fée */}
+          {fairySpecActuelle && (
+            <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded border border-amber-200 flex items-center" title="Héritage">🔒 {fairySpecActuelle}</span>
+          )}
+          
+          {/* Spécialité issue des Atouts */}
+          {specsFromAtouts.map((spec, idx) => (
+            <span key={`atout-${idx}`} className="text-[10px] px-2 py-1 bg-yellow-100 text-yellow-900 border border-yellow-300 ring-1 ring-yellow-200 rounded flex items-center gap-1 shadow-sm" title={`Offert par l'atout : ${spec.source}`}>
+              ✨ {spec.nom}
+            </span>
+          ))}
+
+          {/* ✨ Spécialité offerte par le Métier (Étape 10) */}
+          {hasJobSpecHere && (
+            <span className="text-[10px] px-2 py-1 bg-emerald-100 text-emerald-900 border border-emerald-300 ring-1 ring-emerald-200 rounded flex items-center gap-1 shadow-sm" title="Spécialité acquise par votre Métier">
+              💼 {jobSpec.nom} {isScelle ? '🔒' : ''}
+            </span>
+          )}
+
+          {/* Spécialités Achetées (Avec vérification Plancher de Verre) */}
+          {userSpecs.map(spec => {
+             const isPlancher = isScelle && (character.data?.stats_scellees?.competencesLibres?.choixSpecialiteUser?.[nomComp] || []).includes(spec);
+             return (
+              <span key={spec} className={`text-[10px] px-2 py-1 rounded flex items-center gap-1 shadow-sm border ${isPlancher ? 'bg-blue-50 text-blue-900 border-blue-200' : 'bg-blue-100 text-blue-800 border-blue-300'}`}>
+                {spec} {isPlancher ? '🔒' : <button onClick={() => handleRemoveSpecialiteUser(nomComp, spec)} className="hover:text-red-500 ml-1" title={isScelle ? "Oublier (Récupérer 8 XP)" : "Retirer"}>&times;</button>}
               </span>
-            ))}
-            {userSpecs.map(specName => {
-              const isFreeSlot = isFreeEligible && userSpecs.indexOf(specName) === 0;
-              return (
-                <span key={specName} className={`text-[10px] px-1.5 py-0.5 rounded border flex items-center shadow-sm animate-fade-in ${isFreeSlot ? 'bg-green-50 text-green-800 border-green-200' : 'bg-blue-50 text-blue-800 border-blue-200'}`}>
-                  <span className="font-medium font-serif">{specName}</span>
-                  {isFreeSlot && <span className="text-[8px] uppercase font-bold ml-0.5 opacity-80">(Gratuit)</span>}
-                  <button onClick={() => handleRemoveSpecialiteUser(nomComp, specName)} className="font-bold ml-1.5 focus:outline-none hover:text-red-600">×</button>
-                </span>
-              );
-            })}
-          </div>
-          <div className="mt-1">
-            {!isCreating ? (
-              <select value={selectValue} onChange={onSelectChange} disabled={!effectiveCanAffordSpec} className="w-full text-[11px] p-1 border rounded bg-gray-50 font-serif text-gray-700 outline-none focus:border-amber-400 disabled:opacity-50 disabled:cursor-not-allowed">
-                <option value="">+ Choisir ({nextSpecCost === 0 ? 'Gratuit' : '1 pt'})</option>
-                <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
-                <optgroup label="📚 Officielles">
-                  {availableSpecs.filter(s => s.is_official && !userSpecs.includes(s.nom) && s.nom !== fairySpecActuelle && !specsFromAtouts.some(a => a.nom === s.nom)).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+             );
+          })}
+
+          {/* Achat de nouvelle Spécialité */}
+          {totalScore > 0 && creatingSpecFor !== nomComp && (
+            <select onChange={(e) => { if (e.target.value === '__CREATE_NEW__') setCreatingSpecFor(nomComp); else handleAddSpecialiteUser(nomComp, e.target.value); e.target.value = ''; }} className="text-[10px] bg-transparent text-gray-400 hover:text-blue-600 outline-none cursor-pointer w-24">
+              <option value="">+ Choisir ({nextSpecCost === 0 ? 'Gratuit' : (isScelle ? '8 XP' : '1 pt')})</option>
+              <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
+              <optgroup label="📚 Officielles">
+                {availableSpecs.filter(s => s.is_official && !userSpecs.includes(s.nom) && s.nom !== fairySpecActuelle && !specsFromAtouts.some(a => a.nom === s.nom)).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+              </optgroup>
+              {availableSpecs.some(s => !s.is_official) && (
+                <optgroup label="👥 Communauté">
+                  {availableSpecs.filter(s => !s.is_official && !userSpecs.includes(s.nom) && s.nom !== fairySpecActuelle && !specsFromAtouts.some(a => a.nom === s.nom)).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
                 </optgroup>
-                {availableSpecs.some(s => !s.is_official) && (
-                  <optgroup label="👥 Communauté">
-                    {availableSpecs.filter(s => !s.is_official && !userSpecs.includes(s.nom) && s.nom !== fairySpecActuelle && !specsFromAtouts.some(a => a.nom === s.nom)).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
-                  </optgroup>
-                )}
-              </select>
-            ) : (
-              <div className="flex gap-1 items-center animate-fade-in">
-                <input id={`input-spec-${nomComp}`} type="text" autoFocus placeholder="Nom..." className="flex-1 text-[11px] p-1 border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200" onKeyDown={(e) => { if (e.key === 'Enter' && e.currentTarget.value.trim()) handleCreateGlobalSpeciality(nomComp, e.currentTarget.value.trim()); if (e.key === 'Escape') setCreatingSpecFor(null); }}/>
-                <button onClick={() => { const val = document.getElementById(`input-spec-${nomComp}`)?.value?.trim(); if (val) handleCreateGlobalSpeciality(nomComp, val); }} className="bg-blue-600 text-white rounded px-2 py-1 text-xs">Créer</button>
-                <button onClick={() => setCreatingSpecFor(null)} className="bg-gray-200 text-gray-600 rounded px-2 py-1 text-xs">Annuler</button>
-              </div>
-            )}
-          </div>
+              )}
+            </select>
+          )}
+
+          {/* Créateur Custom */}
+          {creatingSpecFor === nomComp && (
+            <div className="flex gap-1 items-center animate-fade-in">
+              <input id={`input-spec-${nomComp}`} type="text" autoFocus placeholder="Nom..." className="flex-1 text-[11px] p-1 border border-blue-300 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200" onKeyDown={(e) => { if (e.key === 'Enter' && e.currentTarget.value.trim()) handleCreateGlobalSpeciality(nomComp, e.currentTarget.value.trim()); if (e.key === 'Escape') setCreatingSpecFor(null); }}/>
+              <button onClick={() => { const input = document.getElementById(`input-spec-${nomComp}`); if (input && input.value.trim()) handleCreateGlobalSpeciality(nomComp, input.value.trim()); }} className="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">Créer</button>
+              <button onClick={() => setCreatingSpecFor(null)} className="bg-gray-200 text-gray-600 px-2 py-1 rounded text-[10px] font-bold">X</button>
+            </div>
+          )}
         </div>
       </div>
     );
-  }, [selectValue, creatingSpecFor, lib, getScoreBase, predFinales, pointsRestantsVerts, pointsRestantsViolets, bonusEspritMax, nextSpecCost, feeData, competences, atoutsBonuses, handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality]);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in pb-20">
+      
+      {/* ✨ LE MESSAGE INFORMATIF (CACHÉ EN XP) ✨ */}
+      {!isScelle && (
+        <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-start gap-3 shadow-sm animate-fade-in">
+          <Info size={20} className="text-blue-600 shrink-0 mt-0.5" />
+          <p className="text-sm text-blue-800 leading-relaxed">
+            <strong>Note :</strong> Vous pourrez choisir une Spécialité supplémentaire gratuite lors du choix d'un métier à l'étape de personnalisation.
+          </p>
+        </div>
+      )}
 
-      {/* ✨ NOUVEAU : LE MESSAGE INFORMATIF DU SCÉNARIO C ✨ */}
-      <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-start gap-3 shadow-sm animate-fade-in">
-        <Info size={20} className="text-blue-600 shrink-0 mt-0.5" />
-        <p className="text-sm text-blue-800 leading-relaxed">
-          <strong>Note :</strong> Vous pourrez choisir une Spécialité supplémentaire gratuite lors du choix d'un métier à l'étape de personnalisation.
-        </p>
+      {/* ✨ L'EN-TÊTE HYBRIDE ✨ */}
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur shadow-sm p-4 rounded-b-xl border-b border-gray-200 flex justify-between items-center">
+        {isScelle ? (
+           <div className="flex flex-col gap-1">
+             <h3 className="font-serif font-bold text-amber-900 text-lg flex items-center gap-2">
+                 <Lock size={18} className="text-amber-600"/> L'Académie de Magie
+             </h3>
+             <p className="text-xs text-amber-700">Améliorez un rang pour <strong>(Rang visé x 3) XP</strong>. Acquérez une spécialité pour <strong>8 XP</strong>.</p>
+         </div>
+        ) : (
+           <div>
+             <h3 className="font-serif font-bold text-amber-900 text-lg">Compétences Utiles</h3>
+             <p className="text-xs text-gray-500">15 points à répartir. (Max 4, ou 5 en Prédilection).</p>
+           </div>
+        )}
+        
+        {!isScelle && (
+          <button onClick={handleReset} className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200" title="Réinitialiser">
+            <RotateCcw size={16} /> <span className="hidden sm:inline">Tout effacer</span>
+          </button>
+        )}
       </div>
 
-      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur shadow-sm p-4 rounded-b-xl border-b border-gray-200 flex justify-between items-center">
-        <div>
-          <h3 className="font-serif font-bold text-amber-900 text-lg">Compétences Utiles</h3>
-          <p className="text-xs text-gray-500">15 points à répartir. (Max 4, ou 5 en Prédilection).</p>
-        </div>
-        <button onClick={handleReset} className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200" title="Réinitialiser">
-          <RotateCcw size={16} /> <span className="hidden sm:inline">Réinitialiser</span>
-        </button>
-        <div className="flex gap-2">
-          {bonusEspritMax > 0 && (
-            <div className={`flex flex-col items-center px-3 py-1 rounded border ${pointsRestantsViolets > 0 ? 'bg-purple-100 border-purple-300 text-purple-900' : 'bg-gray-50 border-gray-200 text-gray-400 opacity-60'}`}>
-              <span className="text-lg font-bold leading-none">{pointsRestantsViolets}</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider">Bonus Esprit</span>
+      {/* ✨ LES COMPTEURS DE CRÉATION (CACHÉS EN XP) ✨ */}
+      {!isScelle && (
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200 flex flex-col items-center justify-center shadow-sm">
+            <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">Standard & Spécialités</span>
+            <div className={`text-3xl font-black font-serif ${pointsRestantsVerts === 0 ? 'text-emerald-500' : pointsRestantsVerts < 0 ? 'text-red-600' : 'text-emerald-700'}`}>
+              {pointsRestantsVerts}
             </div>
-          )}
-          <div className={`flex flex-col items-center px-3 py-1 rounded border ${pointsRestantsVerts === 0 ? 'bg-green-100 text-green-800 border-green-300' : pointsRestantsVerts < 0 ? 'bg-red-100 text-red-800 border-red-300' : 'bg-amber-100 text-amber-900 border-amber-300'}`}>
-            <span className="text-lg font-bold leading-none">{pointsRestantsVerts}</span>
-            <span className="text-[10px] uppercase font-bold tracking-wider">Points Libres</span>
+          </div>
+          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200 flex flex-col items-center justify-center shadow-sm">
+            <span className="text-xs font-bold text-purple-800 uppercase tracking-wider mb-1 flex items-center gap-1"><Brain size={14}/> Bonus d'Esprit</span>
+            <div className={`text-3xl font-black font-serif ${pointsRestantsViolets === 0 ? 'text-purple-400' : 'text-purple-700'}`}>
+              {pointsRestantsViolets}
+            </div>
+            {bonusEspritMax > 0 ? (
+              <span className="text-[10px] text-purple-600 mt-1 font-bold text-center">Réservé aux compétences violettes</span>
+            ) : (
+              <span className="text-[10px] text-gray-400 mt-1 font-bold">Esprit insuffisant</span>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
-      {feeData?.competencesPredilection?.some(p => p.isChoix || p.isSpecialiteChoix) && (
+      {/* ✨ PRÉDILECTIONS AU CHOIX (CACHÉES EN XP) ✨ */}
+      {!isScelle && feeData?.competencesPredilection?.some(p => p.isChoix || p.isSpecialiteChoix) && (
         <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6 shadow-sm">
           <h4 className="font-bold text-amber-800 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
             <Star size={16} className="fill-amber-600 text-amber-600"/> Héritage Féérique : Choix requis
@@ -292,7 +406,7 @@ export default function StepCompetencesLibres() {
               if (p.isChoix) return (
                 <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-amber-100 pb-2 last:border-0">
                   <span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">Prédilection au choix :</span>
-                  <select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm focus:border-amber-500 outline-none cursor-pointer" value={lib.choixPredilection?.[i] || ''} onChange={(e) => handleChoixChange(i, e.target.value, 'competence')}>
+                  <select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm focus:border-amber-500 outline-none cursor-pointer" value={lib.choixPredilection?.[i] || ''} onChange={(e) => handleChoixChange(i, e.target.value, 'competence')} disabled={isScelle}>
                     <option value="">-- Sélectionner --</option>
                     {p.options?.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
@@ -300,8 +414,8 @@ export default function StepCompetencesLibres() {
               );
               if (p.isSpecialiteChoix) return (
                 <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-amber-100 pb-2 last:border-0">
-                  <span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">{p.nom} (Spécialité) :</span>
-                  <select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm focus:border-amber-500 outline-none cursor-pointer" value={lib.choixSpecialite?.[i] || ''} onChange={(e) => handleChoixChange(i, e.target.value, 'specialite')}>
+                  <span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">Spécialité en <strong className="text-amber-700">{p.nom}</strong> :</span>
+                  <select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm focus:border-amber-500 outline-none cursor-pointer" value={lib.choixSpecialite?.[i] || ''} onChange={(e) => handleChoixChange(i, e.target.value, 'specialite')} disabled={isScelle}>
                     <option value="">-- Sélectionner --</option>
                     {p.options?.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
@@ -313,34 +427,27 @@ export default function StepCompetencesLibres() {
         </div>
       )}
 
+      {/* LA GRILLE DES PROFILS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {['Aventurier', 'Combattant', 'Érudit', 'Gentleman', 'Roublard', 'Savant'].map(profilNom => {
           const profil = profils?.find(p => p.nom === profilNom) || { nom: profilNom };
-
-          // ✨ LE TRADUCTEUR DE GENRE S'INSÈRE LÀ :
           const isFemme = character.genreHumain === 'Féminin' || character.sexe === 'Femme';
-          // On vérifie si c'est une femme ET si le profil a une version féminine enregistrée dans la base
-          const displayNom = isFemme && profil.nomFeminin ? profil.nomFeminin : profil.nom;
-
-          const isMajeur = character.profils?.majeur?.nom === profil.nom;
-          const isMineur = character.profils?.mineur?.nom === profil.nom;
-          const rang = character.computedStats?.rangsProfils?.[profilNom] || 0;
-          const totalPP = character.computedStats?.budgetsPP?.[profilNom] || 0;
-          const bonusFixe = isMajeur ? 8 : isMineur ? 4 : 0;
-          const headerColor = isMajeur ? 'text-amber-900' : isMineur ? 'text-blue-900' : 'text-gray-500';
-          const borderColor = isMajeur ? 'border-amber-400' : isMineur ? 'border-blue-300' : 'border-gray-200';
-          const bgColor = isMajeur ? 'bg-amber-50/50' : isMineur ? 'bg-blue-50/30' : 'bg-gray-50/50';
+          const nomAffiche = isFemme && profil.nomFeminin ? profil.nomFeminin : profil.nom;
+          
+          const rang = rangsProfils?.[profil.nom] || 0;
+          const totalPP = budgetsPP?.[profil.nom] || 0;
+          const bonusFixe = character.profils?.majeur?.nom === profil.nom ? 8 : character.profils?.mineur?.nom === profil.nom ? 4 : 0;
 
           return (
-            <div key={profil.nom} className={`rounded-xl border-2 overflow-hidden ${borderColor} bg-white shadow-sm hover:shadow-md transition-all`}>
-              <div className={`p-3 border-b ${borderColor} ${bgColor} flex justify-between items-center`}>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{profil.icon || '👤'}</span>
+            <div key={profil.nom} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="bg-stone-100 p-3 border-b border-gray-200 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl" title={profil.nom}>{profil.icon || '👤'}</span>
                   <div>
-					<h4 className={`font-bold font-serif leading-none ${headerColor}`}>{displayNom}</h4>
-                    <div className="flex gap-1 mt-1">
-                      {isMajeur && <span className="text-[10px] bg-amber-600 text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Majeur (+2)</span>}
-                      {isMineur && <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Mineur (+1)</span>}
+                    <h4 className="font-serif font-bold text-amber-900">{nomAffiche}</h4>
+                    <div className="flex gap-2 mt-1">
+                      {character.profils?.majeur?.nom === profil.nom && <span className="text-[10px] bg-amber-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Majeur</span>}
+                      {character.profils?.mineur?.nom === profil.nom && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Mineur</span>}
                     </div>
                   </div>
                 </div>

@@ -6,6 +6,30 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.0.0',
+    date: '16 Mars 2026',
+    changes: [
+      '📠 **Restauration Pneumatique :** Résolution du "syndrome de la boîte verrouillée". Les champs de saisie du Télégraphe ont été re-câblés pour garantir la capture du texte et un affichage en contraste élevé (`text-stone-900`), évitant les conflits de focus ou le texte blanc fantôme.',
+      '⌨️ **Confort d\'Écriture :** La barre de messagerie de la taverne et des conversations privées est désormais une zone multi-lignes. La touche `Entrée` expédie la missive instantanément, tandis que la combinaison `Shift + Entrée` permet d\'effectuer un retour à la ligne de manière naturelle.',
+      '🎨 **Transparence du Grimoire (UX) :** Création d\'une modale informative immersive lorsqu\'un joueur rend son Héritier public. Le système rassure désormais l\'utilisateur en lui expliquant que son personnage restera visible uniquement dans l\'onglet "Mes personnages" de sa propre interface, évitant ainsi toute sensation de perte de données ou de bug d\'affichage.',
+      '🔒 **Le Sceau des Origines (Hotfix) :** Restauration de la Loi du Silence sur l\'Étape 1 de création. Le filtre de sélection des fées vérifie désormais correctement la nomenclature de la base de données (`is_secret`) évitant une faille de type "Undefined" qui révélait les fées étendues à l\'ensemble de la communauté.',
+      '🛡️ **Reconnaissance Hiérarchique :** La vérification des droits (Initiation) englobe désormais formellement les rôles supérieurs (`gardien`, `super_admin`) en plus des `doctes`.'
+    ]
+  },
+  {
+    version: '13.13.0',
+    date: '15 Mars 2026',
+    changes: [
+      '🔒 **Sceau des Vocations :** Verrouillage complet de l\'Étape 6 (Profils Majeur, Mineur et Traits de caractère) lorsque l\'Héritier est engagé dans une campagne (Mode Évolution). L\'orientation de carrière de base est désormais rigoureusement protégée par le Plancher de Verre.',
+      '🎨 **Ergonomie Cognitive :** Ajout d\'une bannière visuelle immersive "Profils Scellés" expliquant au joueur pourquoi l\'ensemble de ses boutons d\'options sont désormais grisés et inaccessibles.',
+      '🎓 **Académie de Magie (Évolution) :** L\'Étape 7 (Compétences Utiles) est désormais connectée au Puits des Âmes. Les Héritiers scellés peuvent dépenser leurs XP pour augmenter leurs rangs de compétences (`Rang visé x 3` XP) ou s\'offrir de nouvelles spécialités (`8 XP`).',
+      '🛡️ **Sceau des Connaissances :** Déploiement du Plancher de Verre sur l\'Étape 7. Le savoir et les spécialités acquis à la création sont définitivement verrouillés et ne peuvent plus être oubliés pour récupérer frauduleusement de l\'XP.',
+      '🎓 **Académie de Magie (Évolution) :** L\'Étape 7 (Compétences Utiles) est désormais connectée au Puits des Âmes. Les Héritiers scellés peuvent dépenser leurs XP pour augmenter leurs rangs de compétences (`Rang visé x 3` XP) ou s\'offrir de nouvelles spécialités (`8 XP`).',      '🛡️ **Sceau des Connaissances :** Déploiement du Plancher de Verre sur l\'Étape 7. Le savoir et les spécialités acquises à la création sont définitivement verrouillés et ne peuvent plus être oubliés pour récupérer frauduleusement de l\'XP.',
+      '🚗 **Conduite (Le Code de la Route) :** Même en mode Évolution, le moteur d\'XP prend intelligemment en compte la règle de "La première spécialité de conduite est toujours gratuite".',
+      '📸 **Archive Implicite (Hotfix) :** Correction du système de photographie spatio-temporelle (`StepRecapitulatif.js`) pour qu\'il immortalise désormais correctement le savoir (`competencesLibres`) au moment du scellage.'
+    ]
+  },
+  {
     version: '13.12.0',
     date: '15 Mars 2026',
     changes: [

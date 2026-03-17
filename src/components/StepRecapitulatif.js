@@ -3,7 +3,7 @@
 // 9.11.0
 // 10.1.0 // 10.4.0 // 10.6.0
 // 12.6.0
-// 13.0.O // 13.7.0 // 13.9.0 // 13.10.0 // 13.12.0
+// 13.0.O // 13.7.0 // 13.9.0 // 13.10.0 // 13.12.0 // 13.13.0
 
 import React, { useState, useEffect } from 'react';
 import { Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert } from 'lucide-react';
@@ -72,7 +72,8 @@ export default function StepRecapitulatif() {
       // 1. On définit le nouveau "Plancher de Verre" avec les stats actuelles
       const nouveauPlancher = {
         caracteristiques: { ...character.caracteristiques },
-        atouts: [...(character.atouts || [])]
+        atouts: [...(character.atouts || [])],
+        competencesLibres: { ...character.competencesLibres } // 👈 LA LIGNE À AJOUTER !
       };
 
       // 2. On prépare la copie intégrale du personnage pour l'archive
@@ -227,7 +228,8 @@ export default function StepRecapitulatif() {
         atouts: character.atouts || [],
         pouvoirs: character.pouvoirs || [],
         capaciteChoisie: character.capaciteChoisie || null,
-        caracteristiques: character.caracteristiques || {}
+        caracteristiques: character.caracteristiques || {},
+        competencesLibres: character.competencesLibres || {} // 👈 LA LIGNE À AJOUTER !
       };
 
       const newData = { ...(character.data || {}), stats_scellees: snapshot };
