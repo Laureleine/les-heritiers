@@ -4,6 +4,7 @@
 // 10.4.0 // 10.6.0
 // 11.1.0
 // 13.6.0 // 13.6.1 // 13.7.0 // 13.8.0 // 13.9.0 // 13.10.0
+// 14.1.0
 
 import React, { useState, useMemo } from 'react';
 import { Plus, Minus, RotateCcw } from 'lucide-react';
@@ -56,13 +57,17 @@ export default function StepCaracteristiques() {
   // ========================================================================
 
   const handleEvolutionChange = (key, delta, currentBase, newValue, maxGenetique) => {
-    // 🛡️ Point 3 : Protection absolue du Faux-Semblant
+    
+    // 🛡️ Point 3 : Protection absolue de l'Héritier
     if (isReadOnly) {
       showInAppNotification("Les sceaux sont verrouillés, la fiche est en lecture seule.", "warning");
       return;
     }
 
-    const plancherScelle = character.stats_scellees?.caracteristiques?.[key] || currentBase;
+    // ✨ FIX 1 : On va chercher le "Plancher de Verre" dans la BONNE archive du Nuage
+    // S'il n'y a pas d'archive, on utilise le minimum naturel de l'espèce.
+    const minGenetique = feeData?.caracteristiques?.[key]?.min || 1;
+    const plancherScelle = character.data?.stats_scellees?.caracteristiques?.[key] || minGenetique;
 
     // 🔙 Rétrogradation (Remboursement)
     if (delta < 0) {
@@ -70,15 +75,19 @@ export default function StepCaracteristiques() {
         showInAppNotification("Vos capacités passées sont figées, vous ne pouvez pas les désapprendre !", "warning");
         return;
       }
-      const costToRefund = getCaracCost(currentBase);
-      dispatchCharacter({ 
-        type: 'UPDATE_MULTIPLE', 
-        payload: { 
+
+      // ✨ FIX 2 : Le remboursement correspond au prix de l'échelon qu'on vient de quitter ! (newValue)
+      const costToRefund = getCaracCost(newValue);
+
+      dispatchCharacter({
+        type: 'UPDATE_MULTIPLE',
+        payload: {
           caracteristiques: { ...currentCaracs, [key]: newValue },
-          xp_depense: Math.max(0, xpDepense - costToRefund) 
-        }, 
-        gameData 
+          xp_depense: Math.max(0, xpDepense - costToRefund)
+        },
+        gameData
       });
+
       showInAppNotification(`Dépense annulée : +${costToRefund} XP récupérés !`, "success");
       return;
     }
@@ -89,23 +98,28 @@ export default function StepCaracteristiques() {
         showInAppNotification(`Limites physiologiques de votre espèce atteintes (${maxGenetique}).`, "warning");
         return;
       }
-      const cost = getCaracCost(newValue);
+
+      // ✨ FIX 3 : La facture se calcule sur notre base ACTUELLE (currentBase)
+      const cost = getCaracCost(currentBase);
+
       if (xpDispo < cost) {
         showInAppNotification(`Il vous faut ${cost} XP pour atteindre ce rang !`, "error");
         return;
       }
-      dispatchCharacter({ 
-        type: 'UPDATE_MULTIPLE', 
-        payload: { 
+
+      dispatchCharacter({
+        type: 'UPDATE_MULTIPLE',
+        payload: {
           caracteristiques: { ...currentCaracs, [key]: newValue },
-          xp_depense: xpDepense + cost 
-        }, 
-        gameData 
+          xp_depense: xpDepense + cost
+        },
+        gameData
       });
+
       showInAppNotification(`Évolution acquise pour ${cost} XP !`, "success");
     }
   };
-
+  
   const handleCreationChange = (key, delta, newValue, maxGenetique) => {
     // 🛡️ Protection supplémentaire
     if (isReadOnly) return;
