@@ -1,6 +1,7 @@
 // src/components/StepProfils.js
 // 10.6.0
 // 13.0.0 // 13.13.0
+// 14.2.0
 
 import React from 'react';
 import { Info, Star, Award, Briefcase, Lock, CheckCircle } from 'lucide-react';
@@ -171,21 +172,24 @@ export default function StepProfils() {
         </div>
       )}
 
-      <div className="bg-amber-50 p-6 rounded-lg border-2 border-amber-200">
-        <h2 className="text-2xl font-serif text-amber-900 mb-3">
-          Profils et Compétences
-        </h2>
-        <div className="space-y-2 text-amber-800">
-          <p>
-            Choisissez un <span className="font-bold text-amber-900">Profil majeur</span> (compétences +2) 
-            et un <span className="font-bold text-blue-900">Profil mineur</span> (compétences +1).
-          </p>
-          <div className="flex items-start gap-2 text-sm">
-            <Info size={16} className="mt-0.5 flex-shrink-0" />
-            <span>Chaque profil s'accompagne d'un trait de caractère qui définit la personnalité de votre personnage.</span>
+      {/* ✨ FIX : On cache le tutoriel de création si l'Héritier est déjà scellé */}
+      {!isScelle && (
+        <div className="bg-amber-50 p-6 rounded-lg border-2 border-amber-200 mb-6">
+          <h2 className="text-2xl font-serif text-amber-900 mb-3">
+            Profils et Compétences
+          </h2>
+          <div className="space-y-2 text-amber-800">
+            <p>
+              Choisissez un <span className="font-bold text-amber-900">Profil majeur</span> (compétences +2)
+              et un <span className="font-bold text-blue-900">Profil mineur</span> (compétences +1).
+            </p>
+            <div className="flex items-start gap-2 text-sm">
+              <Info size={16} className="mt-0.5 flex-shrink-0" />
+              <span>Chaque profil s'accompagne d'un trait de caractère qui définit la personnalité de votre personnage.</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Profil Majeur */}
       <div className="border-2 border-amber-300 rounded-lg p-6 bg-gradient-to-br from-amber-50 to-orange-50">

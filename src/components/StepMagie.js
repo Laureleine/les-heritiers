@@ -1,6 +1,7 @@
 // 10.4.0 // 10.6.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 12.5.0
 // 13.1.0 // 13.10.0 // 13.11.0
+// 14.2.0
 
 import React, { useState, useMemo } from 'react';
 import { Star, Info, Check, Sparkles, AlertCircle, Plus, Minus } from 'lucide-react';
@@ -325,6 +326,32 @@ export function Step3() {
     });
   };
 
+  // ✨ FIX : LE FILTRE INTELLIGENT (Les Sceaux des Légendes)
+  const getAvailablePowers = () => {
+    if (!data?.pouvoirs) return [];
+    
+    return data.pouvoirs.filter(p => {
+      // Sécurité : on s'assure de lire le type officiel de la base de données
+      const type = p.type_pouvoir || '';
+      
+      // Les Pouvoirs Profonds s'éveillent à 7 de Féérie
+      if (type.includes('profond')) {
+        return currentFeerie >= 7;
+      }
+      
+      // Les Pouvoirs Légendaires s'éveillent à 8 de Féérie
+      if (type.includes('legendaire') || type.includes('légendaire')) {
+        return currentFeerie >= 8;
+      }
+      
+      // Les pouvoirs standards ('masque' ou 'demasque') sont toujours là
+      return type === 'masque' || type === 'demasque';
+    });
+  };
+
+  // On stocke le résultat dans une variable prête à être affichée
+  const availablePowers = getAvailablePowers();
+  
   if (!data) return null;
 
   return (
@@ -404,7 +431,7 @@ export function Step3() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        {data.pouvoirs.map((pouvoir, idx) => {
+        {availablePowers.map((pouvoir, idx) => {
           const isSelected = character.pouvoirs?.includes(pouvoir.nom);
           const isDisabled = !isSelected && countSelected >= maxPouvoirs;
           const isInnate = isScelle && innatePouvoirs.includes(pouvoir.nom);
@@ -430,17 +457,32 @@ export function Step3() {
                       🔒 Inné
                     </span>
                   )}
-                  {(() => {
-                    const isDemasque = pouvoir.type_pouvoir?.includes('demasque');
-                    const isMasque = !isDemasque;
-                    return (
-                      <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                        isMasque ? 'bg-purple-100 text-purple-700' : 'bg-rose-100 text-rose-700'
-                      }`}>
-                        {isMasque ? '🎭 Masqué' : '🔥 Démasqué'}
-                      </span>
-                    );
-                  })()}
+                {(() => {
+                  const typeStr = pouvoir.type_pouvoir?.toLowerCase() || '';
+                  const isDemasque = typeStr.includes('demasque');
+                  const isMasque = !isDemasque;
+                  
+                  // ✨ FIX : Détection des Sceaux de Puissance
+                  const isProfond = typeStr.includes('profond');
+                  const isLegendaire = typeStr.includes('legendaire') || typeStr.includes('légendaire');
+
+                  // On compose le texte de l'étiquette
+                  let label = isProfond ? '🔮 Profond' : isLegendaire ? '👑 Légendaire' : (isMasque ? '🎭 Masqué' : '🔥 Démasqué');
+                  if (isProfond || isLegendaire) {
+                    label += isMasque ? ' (🎭 Masqué)' : ' (🔥 Démasqué)';
+                  }
+
+                  // On garde tes belles couleurs (Violet pour Masqué, Rose pour Démasqué)
+                  const colorClass = isMasque 
+                    ? 'bg-purple-100 text-purple-700 border border-purple-200' 
+                    : 'bg-rose-100 text-rose-700 border border-rose-200';
+
+                  return (
+                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full shadow-sm ${colorClass}`}>
+                      {label}
+                    </span>
+                  );
+                })()}
                 </div>
               </div>
               <div className="text-sm text-gray-600 leading-relaxed mt-2">
