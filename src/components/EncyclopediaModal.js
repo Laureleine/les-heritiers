@@ -5,6 +5,7 @@
 // 11.1.0 // 11.2.0
 // 12.5.0
 // 13.0.3 // 13.0.4
+// 14.2.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -84,6 +85,7 @@ export default function EncyclopediaModal({
       if (proposal.description !== editingItem.description) surgicalData.description = proposal.description;
       if (proposal.taille !== (editingItem.taille_categorie || 'Moyenne')) surgicalData.taille_categorie = proposal.taille;
       if (proposal.era !== editingItem.era) surgicalData.era = proposal.era || 'traditionnelle';
+      if (proposal.is_secret !== (editingItem.is_secret || false)) surgicalData.is_secret = proposal.is_secret;
       if (!arraysEqual(proposal.allowedGenders, editingItem.allowed_genders)) surgicalData.allowed_genders = proposal.allowedGenders;
       if (!arraysEqual(newTraits, editingItem.traits)) surgicalData.traits = newTraits;
       if (!arraysEqual(newAvantages, editingItem.avantages)) surgicalData.avantages = newAvantages;
@@ -388,9 +390,28 @@ export default function EncyclopediaModal({
                 </div>
               </div>
 
+			  {/* ✨ NOUVEAU : LE SCEAU DU SILENCE (FÉE SECRÈTE) */}
+			  <div className="bg-red-50 p-4 rounded-xl border border-red-200 mt-2 mb-6 shadow-sm">
+				<label className="flex items-center gap-3 cursor-pointer">
+				  <input
+					type="checkbox"
+					checked={proposal.is_secret || false}
+					onChange={(e) => setProposal({ ...proposal, is_secret: e.target.checked })}
+					className="w-5 h-5 accent-red-600"
+				  />
+				  <div>
+					<span className="font-bold text-red-900 text-sm flex items-center gap-2">
+					   Savoir sous le Sceau du Silence (Fée Secrète)
+					</span>
+					<span className="text-xs text-red-700 italic block mt-1">
+					  Cochez cette case pour masquer cette fée aux simples Héritiers dans la création de personnage.
+					</span>
+				  </div>
+				</label>
+			  </div>
 
-              <div>
-                <label className="block text-sm font-bold text-amber-900 mb-1">Traits de caractère (séparés par des virgules)</label>
+			  <div>
+				<label className="block text-sm font-bold text-amber-900 mb-1">Traits de caractère (séparés par des virgules)</label>
                 <input
                   type="text"
                   value={proposal.traits || ''}

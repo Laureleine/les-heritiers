@@ -3,6 +3,7 @@
 // 11.1.0
 // 12.5.0
 // 13.0.6
+// 14.2.0
 
 import { supabase } from '../config/supabase';
 
@@ -320,14 +321,15 @@ export const loadFairyTypes = async () => {
       const assetsTries = rawAssets
         .sort((a, b) => a.nom.localeCompare(b.nom));
 
-      // Traitement des Pouvoirs
-      const rawPouvoirsLinks = fairy.fairy_type_powers || [];
-		  
-		  // On filtre pour ne garder QUE les standards pour l'Étape 3
-		  const rawPouvoirs = rawPouvoirsLinks
-			.map(link => link.power)
-			.filter(p => p && (p.type_pouvoir === 'masque' || p.type_pouvoir === 'demasque'));
-
+		// Traitement des Pouvoirs
+		const rawPouvoirsLinks = fairy.fairy_type_powers || [];
+		
+		// ✨ FIX : On laisse passer TOUS les pouvoirs depuis le Nuage ! 
+		// C'est désormais StepMagie.js (le filtre intelligent) qui se chargera de les cacher ou non.
+		const rawPouvoirs = rawPouvoirsLinks
+		  .map(link => link.power)
+		  .filter(p => p != null); 
+	  
 		  const pouvoirsTries = rawPouvoirs.sort((a, b) => {
 			// ✨ NOUVEAU DICTIONNAIRE DE TRI
 			const order = { 

@@ -5,6 +5,7 @@
 // 11.2.0
 // 12.1.0
 // 13.0.0 // 13.0.1 // 13.0.3
+// 14.2.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -164,6 +165,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         description: '',
         era: 'traditionnelle',
         taille_categorie: 'Moyenne',
+        is_secret: false, // ✨ FIX : Initialisation pour une nouvelle fée
         traits: '',
         avantages: '',
         desavantages: '',
@@ -219,6 +221,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         description: item.description || item.desc || '',
         taille: item.taille || item.taille_categorie || 'Moyenne',
         era: item.era || 'traditionnelle',
+        is_secret: item.is_secret || false, // ✨ FIX : Lecture depuis la base
         allowedGenders: item.allowed_genders || item.allowedGenders || ['Homme', 'Femme'],
         traits: item.traits ? (Array.isArray(item.traits) ? item.traits.join(', ') : item.traits) : '',
         avantages: item.avantages ? (Array.isArray(item.avantages) ? item.avantages.join('\n') : item.avantages) : '',

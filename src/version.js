@@ -6,6 +6,16 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.2.0',
+    date: '17 Mars 2026',
+    changes: [
+      '⚡ **L\'Éveil des Légendes (End Game) :** Le catalogue des Pouvoirs de l\'Étape 3 est désormais dynamique. L\'application déverrouille et affiche automatiquement le `Pouvoir Profond` exclusif de l\'espèce lorsque l\'Héritier atteint le rang 7 en Féérie, et le `Pouvoir Légendaire` au rang 8, respectant scrupuleusement l\'évolution dictée par les Sceaux.',
+      '🎨 **Sceaux de Puissance (UI) :** Amélioration du moteur de rendu des cartes de Pouvoirs dans l\'Étape 3 (`StepMagie.js`). L\'interface analyse désormais finement la nature du pouvoir pour afficher des badges combinés et explicites (ex: "🔮 Profond (🎭 Masqué)" ou "👑 Légendaire (🔥 Démasqué)").',
+      '🎨 **Épure Visuelle (UX) :** Masquage conditionnel des instructions de création dans l\'Étape 6 (`StepProfils.js`). Le tutoriel textuel disparaît désormais automatiquement lorsque l\'Héritier bascule en mode Expérience (Sceau actif), désencombrant ainsi l\'interface de jeu.',
+      '🔒 **Sceau du Silence (Correction) :** Intégration réussie du contrôleur de Fée Secrète (`is_secret`) dans l\'éditeur de l\'Encyclopédie. L\'état est désormais correctement initialisé par le composant parent (`Encyclopedia.js`) et sauvegardé via la modale enfant (`EncyclopediaModal.js`).'
+    ]
+  },
+  {
     version: '14.1.0',
     date: '17 Mars 2026',
     changes: [
