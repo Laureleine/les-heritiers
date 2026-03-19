@@ -5,7 +5,7 @@
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
 // 13.1.0 // 13.8.0 // 13.12.0
-// 14.0.0
+// 14.0.0 // 14.3.0
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -134,7 +134,9 @@ function App() {
             .single();
 
           if (profileData) {
-            setUserProfile(profileData); 
+            // ✨ FIX : On structure la mémoire du joueur avec le tiroir 'profile', 
+            // exactement de la même manière que dans 'refreshUserProfile' !
+            setUserProfile({ ...activeSession.user, profile: profileData }); 
           }
           
           setIsInitialized(true);

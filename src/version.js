@@ -6,6 +6,14 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.3.0',
+    date: '17 Mars 2026',
+    changes: [
+      '🐛 **Mémoire des Doctes (Hotfix) :** Résolution d\'une anomalie structurelle ("Amnésie d\'état") qui réinitialisait visuellement les Doctes en simples Joueurs à chaque rechargement de l\'application. La fonction d\'initialisation (`App.js`) imbrique désormais correctement les données de Supabase dans la propriété `profile`, préservant l\'accès ininterrompu à l\'Encyclopédie.',
+      '⚡ **Performances et UX (Grimoire) :** Implémentation du suivi d\'état (`Dirty State`) sur le formulaire des Paramètres du Compte. Le bouton de sauvegarde analyse désormais en temps réel les données locales et se désactive automatiquement si aucune modification n\'a été apportée, évitant ainsi les requêtes réseau superflues.'
+    ]
+  },
+  {
     version: '14.2.0',
     date: '17 Mars 2026',
     changes: [

@@ -1,5 +1,6 @@
 // src/components/ConfirmModal.js
 // 9.6.0
+// 14.3.0
 
 import React from 'react';
 import { HelpCircle, X, Check } from 'lucide-react';
@@ -8,6 +9,8 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
   if (!isOpen) return null;
 
   return (
+    // ✨ UX NOTE : Pas de 'onClick={onCancel}' sur l'overlay sombre (fond) de manière délibérée !
+    // Cela force l'utilisateur à choisir consciemment une action et évite les annulations accidentelles.
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-amber-900/20 overflow-hidden transform animate-fade-in-up">
         
@@ -16,10 +19,11 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
           <HelpCircle size={24} className="text-amber-300" />
           <h3 className="font-serif font-bold text-lg">{title || "Requête des Gardiens"}</h3>
         </div>
-        
+
         {/* Message */}
         <div className="p-6 font-serif text-stone-700 text-center text-lg leading-relaxed">
-          <p>{message}</p>
+          {/* ✨ FIX : whitespace-pre-wrap permet au HTML d'interpréter les sauts de ligne (\n) natifs du texte ! */}
+          <p className="whitespace-pre-wrap">{message}</p>
         </div>
         
         {/* Boutons */}
