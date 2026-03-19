@@ -1,4 +1,5 @@
 // 11.4.0
+// 14.3.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Dices, Sparkles, Triangle, ShieldAlert, Zap, Crown, RefreshCcw } from 'lucide-react';
@@ -11,12 +12,14 @@ const parseAdj = (str) => str.split(',').map(n => parseInt(n.trim()));
 const ADJACENCIES = {
   D8: {
     1: parseAdj("2,3,4"), 2: parseAdj("1,3,5"), 3: parseAdj("1,2,6"), 4: parseAdj("1,5,6"),
-    5: parseAdj("2,4,7"), 6: parseAdj("3,4,8"), 7: parseAdj("5,8,9"), 8: parseAdj("6,7,10") 
+    // ✨ FIX : Rétablissement de la réalité physique d'un D8 (Faces max : 8)
+    5: parseAdj("2,4,7"), 6: parseAdj("3,4,8"), 7: parseAdj("5,6,8"), 8: parseAdj("5,6,7")
   },
   D10: {
     1: parseAdj("2,3,4,5"), 2: parseAdj("1,3,6,7"), 3: parseAdj("1,2,4,8"), 4: parseAdj("1,3,5,9"),
     5: parseAdj("1,4,6,10"), 6: parseAdj("2,5,7,10"), 7: parseAdj("2,6,8,10"), 8: parseAdj("3,7,9,10"),
-    9: parseAdj("4,8,10,11"), 10: parseAdj("5,6,7,8,9")
+    // ✨ FIX : Rétablissement de la réalité physique d'un D10 (Faces max : 10)
+    9: parseAdj("4,8,10,1"), 10: parseAdj("5,6,7,8,9")
   },
   D12: {
     1: parseAdj("2,3,4,5,6"), 2: parseAdj("1,3,7,8,12"), 3: parseAdj("1,2,4,8,9"),
@@ -32,6 +35,14 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
   const [rollingMode, setRollingMode] = useState(null);
   const [diceType, setDiceType] = useState('D8');
   const [result, setResult] = useState(null);
+
+  const rollTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
+    };
+  }, []);
 
   // ✨ MÉMOIRE DU MOTEUR 3D WEBGL
   const diceBoxRef = useRef(null);
@@ -112,12 +123,13 @@ useEffect(() => {
     setRollingMode(mode);
     setIsRolling(true);
 
-    // 🎲 1. LE VRAI MOTEUR 3D (Seulement pour un jet Normal si l'option est cochée)
-    if (use3DDice && is3DReady && mode === 'NORMAL') {
-      handleClear();
-      try {
-		await new Promise(resolve => setTimeout(resolve, 999)); // ← ajoute cette ligne
-        const results = await diceBoxRef.current.roll('1${diceType.toLowerCase()}');
+      // 🎲 1. LE VRAI MOTEUR 3D (Seulement pour un jet Normal si l'option est cochée)
+      if (use3DDice && is3DReady && mode === 'NORMAL') {
+        handleClear();
+        try {
+          await new Promise(resolve => setTimeout(resolve, 999));
+          // ✨ FIX : Le retour des Backticks salvateurs !
+        const results = await diceBoxRef.current.roll(`1${diceType.toLowerCase()}`);
         const face = results.at(0).value; // 🛡️ Remplacement sécurisé des crochets
         const f = { D8: null, D10: null, D12: null };
         const v = { D8: null, D10: null, D12: null };
@@ -140,82 +152,95 @@ useEffect(() => {
       diceBoxRef.current.clear(); 
     }
 
-    const duration = mode === 'FLIP_FACE' ? 800 : 1500;
-    setTimeout(() => {
-      if (mode === 'NORMAL') {
-        const max = parseInt(diceType.replace('D', ''));
-        const face = rollSingle(max);
-        const f = { D8: null, D10: null, D12: null };
-        const v = { D8: null, D10: null, D12: null };
+      const duration = mode === 'FLIP_FACE' ? 800 : 1500;
 
-        if (diceType === 'D8') { f.D8 = face; v.D8 = getGameValue('D8', face); }
-        if (diceType === 'D10') { f.D10 = face; v.D10 = getGameValue('D10', face); }
-        if (diceType === 'D12') { f.D12 = face; v.D12 = getGameValue('D12', face); }
-        setResult({ type: 'NORMAL', faces: f, values: v });
-      }
-      else if (mode === 'ADD_DICE') {
-        const others = ['D8', 'D10', 'D12'].filter(t => t !== diceType);
-        const type1 = others.at(0); // 🛡️ Remplacement sécurisé
-        const type2 = others.at(1);
-        const face1 = rollSingle(parseInt(type1.replace('D', '')));
-        const face2 = rollSingle(parseInt(type2.replace('D', '')));
+      // ✨ FIX : On purge tout timer fantôme avant d'en lancer un nouveau
+      if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
 
-        const faces = { D8: result.faces?.D8, D10: result.faces?.D10, D12: result.faces?.D12 };
-        if (type1 === 'D8') faces.D8 = face1;
-        if (type1 === 'D10') faces.D10 = face1;
-        if (type1 === 'D12') faces.D12 = face1;
-        if (type2 === 'D8') faces.D8 = face2;
-        if (type2 === 'D10') faces.D10 = face2;
-        if (type2 === 'D12') faces.D12 = face2;
+      rollTimerRef.current = setTimeout(() => {
+        if (mode === 'NORMAL') {
+          const max = parseInt(diceType.replace('D', ''));
+          const face = rollSingle(max);
+          const f = { D8: null, D10: null, D12: null };
+          const v = { D8: null, D10: null, D12: null };
 
-        const values = {
-          D8: getGameValue('D8', faces.D8),
-          D10: getGameValue('D10', faces.D10),
-          D12: getGameValue('D12', faces.D12)
-        };
+          if (diceType === 'D8') { f.D8 = face; v.D8 = getGameValue('D8', face); }
+          if (diceType === 'D10') { f.D10 = face; v.D10 = getGameValue('D10', face); }
+          if (diceType === 'D12') { f.D12 = face; v.D12 = getGameValue('D12', face); }
 
-        const best = Math.max(values.D8, values.D10, values.D12);
-        let special = null;
-
-        if (values.D8 > 0 && values.D10 > 0 && values.D12 > 0) {
-          if (values.D8 === values.D10 && values.D10 === values.D12) {
-            special = 'TRIPLE';
-          } else {
-            const getVal = (t) => t === 'D8' ? values.D8 : (t === 'D10' ? values.D10 : values.D12);
-            const sorted = ['D8', 'D10', 'D12'].map(getVal).sort((a, b) => a - b);
-            const s1 = sorted.at(0);
-            const s2 = sorted.at(1);
-            const s3 = sorted.at(2);
-            if (s1 + 1 === s2 && s2 + 1 === s3) {
-              special = 'SUITE';
-            }
-          }
+          setResult({ type: 'NORMAL', faces: f, values: v });
         }
-        setResult({ type: 'ADD_DICE', faces, values, best, special });
-      }
-      else if (mode === 'FLIP_FACE') {
-        let oldFace = 0;
-        if (diceType === 'D8') oldFace = result.faces?.D8;
-        if (diceType === 'D10') oldFace = result.faces?.D10;
-        if (diceType === 'D12') oldFace = result.faces?.D12;
+        else if (mode === 'ADD_DICE') {
+          const others = ['D8', 'D10', 'D12'].filter(t => t !== diceType);
+          const type1 = others.at(0); 
+          const type2 = others.at(1);
+          const face1 = rollSingle(parseInt(type1.replace('D', '')));
+          const face2 = rollSingle(parseInt(type2.replace('D', '')));
 
-        const newFace = getBestAdjacent(diceType, oldFace);
-        const f = { D8: result.faces?.D8, D10: result.faces?.D10, D12: result.faces?.D12 };
-        const v = { D8: result.values?.D8, D10: result.values?.D10, D12: result.values?.D12 };
-        let oldVal = 0;
+          // ✨ FIX : Utilisation du callback prevResult pour éviter la Stale Closure !
+          setResult(prevResult => {
+            const faces = { D8: prevResult?.faces?.D8, D10: prevResult?.faces?.D10, D12: prevResult?.faces?.D12 };
+            
+            if (type1 === 'D8') faces.D8 = face1;
+            if (type1 === 'D10') faces.D10 = face1;
+            if (type1 === 'D12') faces.D12 = face1;
+            if (type2 === 'D8') faces.D8 = face2;
+            if (type2 === 'D10') faces.D10 = face2;
+            if (type2 === 'D12') faces.D12 = face2;
 
-        if (diceType === 'D8') { oldVal = v.D8; f.D8 = newFace; v.D8 = getGameValue('D8', newFace); }
-        if (diceType === 'D10') { oldVal = v.D10; f.D10 = newFace; v.D10 = getGameValue('D10', newFace); }
-        if (diceType === 'D12') { oldVal = v.D12; f.D12 = newFace; v.D12 = getGameValue('D12', newFace); }
-        
-        setResult({ type: 'FLIP_FACE', faces: f, values: v, oldVal: oldVal });
-      }
+            const values = {
+              D8: getGameValue('D8', faces.D8),
+              D10: getGameValue('D10', faces.D10),
+              D12: getGameValue('D12', faces.D12)
+            };
 
-      setIsRolling(false);
-      setRollingMode(null);
-    }, duration);
-  };
+            const best = Math.max(values.D8, values.D10, values.D12);
+            let special = null;
 
+            if (values.D8 > 0 && values.D10 > 0 && values.D12 > 0) {
+              if (values.D8 === values.D10 && values.D10 === values.D12) {
+                special = 'TRIPLE';
+              } else {
+                const getVal = (t) => t === 'D8' ? values.D8 : (t === 'D10' ? values.D10 : values.D12);
+                const sorted = ['D8', 'D10', 'D12'].map(getVal).sort((a, b) => a - b);
+                const s1 = sorted.at(0);
+                const s2 = sorted.at(1);
+                const s3 = sorted.at(2);
+
+                if (s1 + 1 === s2 && s2 + 1 === s3) {
+                  special = 'SUITE';
+                }
+              }
+            }
+            return { type: 'ADD_DICE', faces, values, best, special };
+          });
+        }
+        else if (mode === 'FLIP_FACE') {
+          // ✨ FIX : Callback prevResult ici aussi !
+          setResult(prevResult => {
+            let oldFace = 0;
+            if (diceType === 'D8') oldFace = prevResult?.faces?.D8;
+            if (diceType === 'D10') oldFace = prevResult?.faces?.D10;
+            if (diceType === 'D12') oldFace = prevResult?.faces?.D12;
+
+            const newFace = getBestAdjacent(diceType, oldFace);
+            const f = { D8: prevResult?.faces?.D8, D10: prevResult?.faces?.D10, D12: prevResult?.faces?.D12 };
+            const v = { D8: prevResult?.values?.D8, D10: prevResult?.values?.D10, D12: prevResult?.values?.D12 };
+
+            let oldVal = 0;
+            if (diceType === 'D8') { oldVal = v.D8; f.D8 = newFace; v.D8 = getGameValue('D8', newFace); }
+            if (diceType === 'D10') { oldVal = v.D10; f.D10 = newFace; v.D10 = getGameValue('D10', newFace); }
+            if (diceType === 'D12') { oldVal = v.D12; f.D12 = newFace; v.D12 = getGameValue('D12', newFace); }
+
+            return { type: 'FLIP_FACE', faces: f, values: v, oldVal: oldVal };
+          });
+        }
+
+        setIsRolling(false);
+        setRollingMode(null);
+      }, duration);
+    };
+	
   const getDiceConfig = (type) => {
     if (type === 'D10') return { color: 'text-rose-600', fill: 'rgba(225, 29, 72, 0.2)' };
     if (type === 'D12') return { color: 'text-indigo-600', fill: 'rgba(79, 70, 229, 0.2)' };
@@ -224,16 +249,12 @@ useEffect(() => {
 
   const renderDie = (type) => {
     const config = getDiceConfig(type);
-    let face = null;
-    let val = null;
+    const face = result?.faces?.[type]; // Alternative plus propre si tu préfères
+    const val = result?.values?.[type];
 
-    if (type === 'D8') { face = result?.faces?.D8; val = result?.values?.D8; }
-    if (type === 'D10') { face = result?.faces?.D10; val = result?.values?.D10; }
-    if (type === 'D12') { face = result?.faces?.D12; val = result?.values?.D12; }
-
-    const isNegative = val < 0;
-    const isMax = face === parseInt(type.replace('D', ''));
-    const isWinner = result?.type === 'ADD_DICE' && val === result.best;
+    // ✨ FIX : Sécurité anti-falsy sur le null
+    const isNegative = val !== null && val !== undefined && val < 0;
+    const isMax = face === parseInt(type.replace('D', ''));    const isWinner = result?.type === 'ADD_DICE' && val === result.best;
     const opacityClass = (result?.type === 'ADD_DICE' && !isWinner && !result.special) ? 'opacity-40 scale-90' : 'scale-110 z-10 dice-glow';
 
     let animClass = '';

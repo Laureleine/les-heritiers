@@ -4,8 +4,9 @@
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.3.0
 // 13.11.0
+// 14.3.0
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone, MessageCircle } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
@@ -34,6 +35,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
   });
   
   const [pushSupported, setPushSupported] = useState(false);
+  const [initialNotifPrefs, setInitialNotifPrefs] = useState(null);
 
   const myBadges = AVAILABLE_BADGES.filter(b => profile.badges?.includes(b.id));
 
@@ -52,6 +54,8 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
 
   useEffect(() => {
     if (!isFormInitialized && Object.keys(profile).length > 0) {
+      const safeUsername = profile.username || session?.user?.user_metadata?.username || '';
+      if (safeUsername) setNewUsername(safeUsername);
       if (profile.username) setNewUsername(profile.username);
       if (profile.show_pixie !== undefined) setShowPixie(profile.show_pixie);
       if (profile.notify_telegraphe !== undefined) setNotifyTelegraphe(profile.notify_telegraphe);
@@ -83,17 +87,60 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
         .maybeSingle();
 
       if (!error && data) {
-        setNotifPrefs({
+        const loadedPrefs = {
           subscribe_to_updates: data.subscribe_to_updates,
           notify_major_versions: data.notify_major_versions,
           notify_minor_versions: data.notify_minor_versions,
           enable_push_notifications: data.enable_push_notifications
+        };
+        setNotifPrefs(loadedPrefs);
+        setInitialNotifPrefs(loadedPrefs); // ✨ MÉMORISATION !
+      } else {
+        // En cas d'absence de données, on mémorise les valeurs par défaut
+        setInitialNotifPrefs({
+          subscribe_to_updates: false,
+          notify_major_versions: true,
+          notify_minor_versions: false,
+          enable_push_notifications: false
         });
       }
     };
     loadNotifPrefs();
   }, [session.user.id]);
 
+  // ✨ NOUVEAU : Le Détecteur de Changements (Dirty State)
+  const hasChanges = useMemo(() => {
+    if (!isFormInitialized) return false;
+
+    // On reconstitue les valeurs exactes d'origine
+    const origUsername = profile.username || session?.user?.user_metadata?.username || '';
+    const origShowPixie = profile.show_pixie !== undefined ? profile.show_pixie : true;
+    const origNotifyTelegraphe = profile.notify_telegraphe !== undefined ? profile.notify_telegraphe : true;
+    const origDiceTheme = profile.dice_theme || 'laiton';
+    const origUse3DDice = profile.use_3d_dice !== undefined ? profile.use_3d_dice : false;
+    const origIsJoueur = profile.is_joueur !== undefined ? profile.is_joueur : true;
+    const origIsDocte = profile.is_docte !== undefined ? profile.is_docte : false;
+    const origBadge = profile.active_badge || (profile.badges && profile.badges.length > 0 ? profile.badges.at(0) : '');
+
+    // Le tribunal des comparaisons !
+    if (newUsername !== origUsername) return true;
+    if (showPixie !== origShowPixie) return true;
+    if (notifyTelegraphe !== origNotifyTelegraphe) return true;
+    if (diceTheme !== origDiceTheme) return true;
+    if (use3DDice !== origUse3DDice) return true;
+    if (isJoueur !== origIsJoueur) return true;
+    if (isDocte !== origIsDocte) return true;
+    if (activeBadge !== origBadge) return true;
+
+    // Comparaison profonde des notifications
+    if (initialNotifPrefs && JSON.stringify(notifPrefs) !== JSON.stringify(initialNotifPrefs)) return true;
+
+    return false;
+  }, [
+    newUsername, showPixie, notifyTelegraphe, diceTheme, use3DDice, isJoueur, isDocte, activeBadge, notifPrefs,
+    profile, session, isFormInitialized, initialNotifPrefs
+  ]);
+  
   const handleUpdate = async () => {
     setLoading(true);
     setMessage('');
@@ -143,6 +190,12 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
       // 🐛 FIX 3 : Nettoyage automatique du message (avec protection Ref)
       if (messageTimerRef.current) clearTimeout(messageTimerRef.current);
       messageTimerRef.current = setTimeout(() => setMessage(''), 4000);
+
+      if (messageTimerRef.current) clearTimeout(messageTimerRef.current);
+      messageTimerRef.current = setTimeout(() => setMessage(''), 4000);
+
+      // ✨ NOUVEAU : On met à jour notre mémoire locale pour éteindre le bouton après sauvegarde !
+      setInitialNotifPrefs(notifPrefs);
 
       if (onUpdateProfile) onUpdateProfile();
 
@@ -348,10 +401,14 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
       <div className="mt-8 mb-8">
         <button
           onClick={handleUpdate}
-          disabled={loading}
-          className="w-full py-4 bg-stone-800 hover:bg-stone-900 text-white rounded-xl font-bold font-serif text-xl shadow-xl transition-transform active:scale-95 flex justify-center items-center gap-3"
+          disabled={loading || !hasChanges}
+          className={`w-full py-4 rounded-xl font-bold font-serif text-xl shadow-xl transition-all flex justify-center items-center gap-3 ${
+            loading || !hasChanges
+              ? 'bg-stone-300 text-stone-500 cursor-not-allowed'
+              : 'bg-stone-800 hover:bg-stone-900 text-white transform active:scale-95'
+          }`}
         >
-          {loading ? 'Gravure en cours...' : 'Sauvegarder toutes mes Préférences'}
+          {loading ? 'Gravure en cours...' : hasChanges ? 'Sauvegarder toutes mes Préférences' : 'Préférences à jour'}
         </button>
       </div>
 
