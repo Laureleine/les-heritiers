@@ -6,6 +6,16 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.4.0',
+    date: '17 Mars 2026',
+    changes: [
+      '🎓 **Académie des Arts (Évolution) :** L\'Étape 8 (Compétences Futiles) est désormais connectée au Puits des Âmes. Les Héritiers scellés peuvent dépenser leurs XP pour perfectionner leurs loisirs et passions artistiques (Coût : `Rang visé x 1` XP).',
+      '🛡️ **Sceau des Passions :** Déploiement du Plancher de Verre sur l\'Étape 8. Le niveau de compétence futile atteint lors de la création initiale est définitivement verrouillé et ne peut plus être désappris pour récupérer de l\'expérience.',
+      '🎨 **Académie des Arts (Interface) :** Application de la logique conditionnelle sur les boutons d\'investissement des Compétences Futiles (`StepCompetencesFutiles.js`). Le bouton de rétrogradation se verrouille désormais fidèlement sur le "Plancher de Verre", et le bouton d\'évolution respecte la nouvelle limite de l\'End Game (Rang 6, ou 7 pour une Prédilection).',
+      '🔒 **Sceau des Passions (Correction) :** Masquage et verrouillage du bloc "Héritage Féérique : Choix requis" dans l\'Étape 8 (`StepCompetencesFutiles.js`). L\'interface désactive et masque désormais automatiquement les menus déroulants de prédilection lorsque l\'Héritier est scellé, empêchant toute altération illégale des choix de création.'
+    ]
+  },
+  {
     version: '14.3.0',
     date: '17 Mars 2026',
     changes: [
