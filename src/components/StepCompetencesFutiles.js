@@ -3,6 +3,7 @@
 // 9.11.0
 // 10.4.0 // 10.6.0 // 10.9.0
 // 11.1.0
+// 14.4.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
@@ -10,6 +11,7 @@ import { getCompetencesFutiles, addCompetenceFutile, invalidateCompetencesFutile
 import { parseCompetencesFutilesPredilection } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { getFutileCost } from '../utils/xpCalculator'; 
 
 const POINTS_TOTAUX = 10;
 
@@ -30,6 +32,12 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
 
   const feeData = fairyData[character.typeFee];
 
+  // ✨ NOUVEAU : Variables du Puits des Âmes et du Plancher de Verre
+  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+  const xpTotal = character.xp_total || 0;
+  const xpDepense = character.xp_depense || 0;
+  const xpDispo = xpTotal - xpDepense;
+  
   // 2. Gérer les compétences de prédilection
   const parsedPredilection = parseCompetencesFutilesPredilection(feeData?.competencesFutilesPredilection || []);
 
@@ -64,6 +72,9 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
 
   // Handlers
   const handleChoixPredilectionChange = (index, value) => {
+    // ✨ FIX : Blindage absolu contre le changement de vocation
+    if (isReadOnly || isScelle) return;
+
     const newChoix = { ...choixPredilection, [index]: value };
     setChoixPredilection(newChoix);
     onCompetencesFutilesChange({
@@ -83,9 +94,69 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
   };
 
   const handleRangChange = (nomComp, delta) => {
-    const current = rangsInvestis[nomComp] || 0;
-    const newValue = Math.max(0, current + delta);
+    if (isReadOnly) return;
 
+    const current = rangsInvestis[nomComp] || 0;
+    const scoreTotal = character.computedStats?.futilesTotal?.[nomComp] || 0;
+    const isPred = competencesPredilection.includes(nomComp);
+    const evolutionMax = isPred ? 7 : 6;
+    const maxAllowed = isScelle ? evolutionMax : (isPred ? 5 : 4);
+
+    // 🛡️ MODE ÉVOLUTION (SCELLÉ)
+    if (isScelle) {
+      const plancher = character.data?.stats_scellees?.competencesFutiles?.rangs?.[nomComp] || 0;
+
+      if (delta > 0) {
+        if (scoreTotal >= evolutionMax) {
+          showInAppNotification(`Excellence maximale atteinte (${evolutionMax}).`, "warning");
+          return;
+        }
+        
+        const costXP = getFutileCost(scoreTotal);
+
+        if (xpDispo < costXP) {
+          showInAppNotification(`Il vous faut ${costXP} XP pour atteindre ce rang.`, "error");
+          return;
+        }
+
+        const newRangs = { ...rangsInvestis, [nomComp]: current + 1 };
+        dispatchCharacter({
+          type: 'UPDATE_MULTIPLE',
+          payload: {
+            competencesFutiles: { ...character.competencesFutiles, rangs: newRangs },
+            xp_depense: xpDepense + costXP
+          },
+          gameData
+        });
+        showInAppNotification(`Passion perfectionnée pour ${costXP} XP !`, "success");
+        
+      } else if (delta < 0) {
+        if (current <= plancher) {
+          showInAppNotification("Savoir originel scellé ! Impossible d'oublier ce loisir.", "warning");
+          return;
+        }
+        
+        const refundXP = getFutileCost(scoreTotal - 1);
+        const newRangs = { ...rangsInvestis };
+        
+        if (current - 1 === 0) delete newRangs[nomComp];
+        else newRangs[nomComp] = current - 1;
+
+        dispatchCharacter({
+          type: 'UPDATE_MULTIPLE',
+          payload: {
+            competencesFutiles: { ...character.competencesFutiles, rangs: newRangs },
+            xp_depense: xpDepense - refundXP
+          },
+          gameData
+        });
+        showInAppNotification(`Dépense annulée. +${refundXP} XP récupérés.`, "info");
+      }
+      return;
+    }
+
+    // 🎨 MODE CRÉATION (Standard)
+    const newValue = Math.max(0, current + delta);
     if (delta > 0 && !canAddRang(nomComp)) return;
     if (delta < 0 && current === 0) return;
 
@@ -139,10 +210,18 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
 
   // Rendu d'une ligne de compétence
   const renderCompetence = (comp) => {
+    // 1. On lit l'état actuel de la compétence
     const isPredilection = competencesPredilection.includes(comp.nom);
     const scoreTotal = character.computedStats?.futilesTotal?.[comp.nom] || 0;
     const rangsInvestisComp = rangsInvestis[comp.nom] || 0;
-    const maxRangs = isPredilection ? 5 : 4;
+    
+    // ✨ FIX : 2. On calcule les limites (Création vs Évolution/Scellé)
+    const evolutionMax = isPredilection ? 7 : 6;
+    const maxAllowed = isScelle ? evolutionMax : (isPredilection ? 5 : 4);
+    const plancher = character.data?.stats_scellees?.competencesFutiles?.rangs?.[comp.nom] || 0;
+    
+    // 3. On détermine si le bouton "Moins" doit être bloqué
+    const isMinusDisabled = isScelle ? (rangsInvestisComp <= plancher) : (rangsInvestisComp <= 0);
 
     return (
       <div key={comp.nom} className={`p-3 rounded-lg border flex justify-between items-center transition-all ${
@@ -157,25 +236,31 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
           <div className="text-xs text-gray-500">{comp.description}</div>
         </div>
         <div className="flex items-center gap-3 bg-white px-2 py-1 rounded border border-gray-100 shadow-sm ml-2">
+          
+          {/* ✨ PETIT BONUS : J'ai remplacé maxRangs par maxAllowed ici pour que l'affichage de la fraction (ex: 2/7) soit dynamique en XP ! */}
           <span className="font-serif font-bold text-lg w-8 text-center text-amber-900">
-            {scoreTotal}<span className="text-gray-300 text-sm">/{maxRangs}</span>
+            {scoreTotal}<span className="text-gray-300 text-sm">/{maxAllowed}</span>
           </span>
+
           <button
             onClick={() => handleRangChange(comp.nom, -1)}
-            disabled={rangsInvestisComp === 0}
+            // ✨ FIX : On applique notre fameux Plancher de Verre
+            disabled={isMinusDisabled}
             className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600 disabled:opacity-30 transition-colors"
           >
             <Minus size={16}/>
           </button>
+
           <button
             onClick={() => handleRangChange(comp.nom, 1)}
-            disabled={!canAddRang(comp.nom)}
+            // ✨ FIX : L'hybride parfait !
+            disabled={isScelle ? (scoreTotal >= maxAllowed) : (!canAddRang(comp.nom))}
             className="w-8 h-8 flex items-center justify-center rounded bg-amber-100 hover:bg-amber-200 text-amber-800 disabled:opacity-30 disabled:bg-gray-100 transition-colors"
           >
             <Plus size={16}/>
           </button>
-        </div>
-        
+
+        </div>        
         {comp.nom.toLowerCase().includes('au choix') && (isPredilection || (rangsInvestis[comp.nom] > 0)) && (
           <div className="mt-3 pl-3 ml-1 border-l-2 border-amber-400 animate-fade-in w-full">
             <label className="block text-xs font-bold text-amber-800 mb-1">
@@ -202,33 +287,33 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
           <h2 className="text-xl font-bold text-amber-900 font-serif flex items-center gap-2">
             <Sparkles className="text-amber-600"/> Compétences Futiles
           </h2>
-          <p className="text-sm text-amber-700">Loisirs, arts et passions (Max 4, ou 5 si prédilection)</p>
+          {isScelle ? (
+            <p className="text-sm text-amber-700">Perfectionnez vos loisirs et passions (1 XP par rang visé).</p>
+          ) : (
+            <p className="text-sm text-amber-700">Loisirs, arts et passions (Max 4, ou 5 si prédilection)</p>
+          )}
         </div>
-        <div className="flex items-center gap-4 mt-3 md:mt-0">
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200"
-            title="Réinitialiser les dépenses et les choix"
-          >
-            <RotateCcw size={16} />
-            <span className="hidden sm:inline">Réinitialiser</span>
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-amber-800 font-bold uppercase tracking-wider">Points restants:</span>
-            <div className={`text-2xl font-bold font-serif w-12 h-12 flex items-center justify-center rounded-full border-2 ${
-              pointsRestants === 0 ? 'bg-green-100 text-green-700 border-green-300' :
-              pointsRestants < 0 ? 'bg-red-100 text-red-700 border-red-300' :
-              'bg-white text-amber-600 border-amber-300'
-            }`}>
-              {pointsRestants}
-            </div>
-          </div>
-        </div>
-      </div>
 
+        {/* ✨ On cache les points et le bouton Reset en mode Évolution */}
+        {!isScelle && (
+          <div className="flex items-center gap-4 mt-3 md:mt-0">
+            <div className="text-right">
+              <div className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Points Restants</div>
+              <div className={`text-2xl font-black font-serif ${pointsRestants === 0 ? 'text-amber-500' : pointsRestants < 0 ? 'text-red-600' : 'text-amber-700'}`}>
+                {pointsRestants}
+              </div>
+            </div>
+            <button onClick={handleReset} className="p-2 text-amber-600 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200" title="Réinitialiser">
+              <RotateCcw size={20} />
+            </button>
+          </div>
+        )}
+      </div>
+	  
       {/* 1. Sélection des Prédilections (Si choix requis) */}
-      {parsedPredilection.some(item => item.isChoix) && (
-        <div className="bg-purple-50 p-6 rounded-xl border border-purple-200">
+      {/* ✨ FIX : On masque totalement la boîte de choix une fois le personnage scellé ! */}
+      {!isScelle && parsedPredilection.some(item => item.isChoix) && (
+        <div className="bg-purple-50 p-6 rounded-xl border border-purple-200 mb-6">
           <h3 className="font-serif text-lg text-purple-900 mb-4 flex items-center gap-2">
             <AlertCircle size={20}/> Héritage Féérique : Choix requis
           </h3>
