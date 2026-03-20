@@ -6,6 +6,13 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.9.56',
+    date: '17 Mars 2026',
+    changes: [
+      '🎨 **Confort de Lecture (UX) :** Intégration d\'un "Tri Magnétique" dans le catalogue de l\'Étape 8 (`StepCompetencesFutiles.js`). Les compétences futiles dans lesquelles l\'Héritier a investi des points (Création ou XP) remontent désormais automatiquement au sommet de la liste, classées par score décroissant puis par ordre alphabétique, facilitant grandement la consultation et l\'évolution.'
+    ]
+  },
+  {
     version: '14.4.0',
     date: '17 Mars 2026',
     changes: [

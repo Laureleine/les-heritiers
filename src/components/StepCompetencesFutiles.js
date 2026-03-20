@@ -3,7 +3,7 @@
 // 9.11.0
 // 10.4.0 // 10.6.0 // 10.9.0
 // 11.1.0
-// 14.4.0
+// 14.4.0 // 14.5.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
@@ -371,9 +371,24 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
                   .filter(comp => !competencesPredilection.includes(comp.nom))
                   /* ✨ Sécurité anti-crash iOS avec (comp.nom || '') */
                   .filter(comp => !(comp.nom || '').toLowerCase().includes('au choix'))
-                  .map(renderCompetence)}
-              </div>
-            </div>
+              // ✨ FIX : Le Tri Magnétique ! 
+              // Remonte les compétences investies en haut, triées par score puis par ordre alphabétique.
+              .sort((a, b) => {
+                // On récupère le score total (avec la sécurité habituelle au cas où la valeur est vide)
+                const scoreA = character.computedStats?.futilesTotal?.[a.nom] || 0;
+                const scoreB = character.computedStats?.futilesTotal?.[b.nom] || 0;
+                
+                // Règle 1 : Trier par score décroissant (les scores > 0 montent)
+                if (scoreB !== scoreA) {
+                  return scoreB - scoreA;
+                }
+                
+                // Règle 2 : En cas d'égalité de score (ex: les deux à 0), on trie par alphabet
+                return (a.nom || '').localeCompare(b.nom || '');
+              })
+              
+              .map(renderCompetence)}
+          </div>
 
           {/* 4. Création Custom */}
           <div className="mt-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
