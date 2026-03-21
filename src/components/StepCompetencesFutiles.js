@@ -357,38 +357,35 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
         </div>
       )}
 
-        {/* 3. Liste Complète des Compétences Disponibles */}
-        {allChoicesMade ? (
-          <>
-            <div className="mt-8">
-              <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2 flex justify-between items-end">
-                <span>Compétences Disponibles</span>
-                <span className="text-xs font-sans text-gray-400 font-normal">Classées par ordre alphabétique</span>
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {competencesFutilesBase
-                  .filter(comp => !competencesPredilection.includes(comp.nom))
-                  /* ✨ Sécurité anti-crash iOS avec (comp.nom || '') */
-                  .filter(comp => !(comp.nom || '').toLowerCase().includes('au choix'))
-              // ✨ FIX : Le Tri Magnétique ! 
-              // Remonte les compétences investies en haut, triées par score puis par ordre alphabétique.
-              .sort((a, b) => {
-                // On récupère le score total (avec la sécurité habituelle au cas où la valeur est vide)
-                const scoreA = character.computedStats?.futilesTotal?.[a.nom] || 0;
-                const scoreB = character.computedStats?.futilesTotal?.[b.nom] || 0;
+      {/* 3. Liste Complète des Compétences Disponibles */}
+      {allChoicesMade ? (
+        <>
+          <div className="mt-8">
+            <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2 flex justify-between items-end">
+              <span>Compétences Disponibles</span>
+              <span className="text-xs font-sans text-gray-400 font-normal">Classées par ordre alphabétique</span>
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {competencesFutilesBase
+                .filter(comp => !competencesPredilection.includes(comp.nom))
+                /* ✨ Sécurité anti-crash iOS avec (comp.nom || '') */
+                .filter(comp => !(comp.nom || '').toLowerCase().includes('au choix'))
                 
-                // Règle 1 : Trier par score décroissant (les scores > 0 montent)
-                if (scoreB !== scoreA) {
-                  return scoreB - scoreA;
-                }
+                // ✨ FIX : Le Tri Magnétique ! 
+                .sort((a, b) => {
+                  const scoreA = character.computedStats?.futilesTotal?.[a.nom] || 0;
+                  const scoreB = character.computedStats?.futilesTotal?.[b.nom] || 0;
+                  
+                  if (scoreB !== scoreA) {
+                    return scoreB - scoreA;
+                  }
+                  return (a.nom || '').localeCompare(b.nom || '');
+                })
                 
-                // Règle 2 : En cas d'égalité de score (ex: les deux à 0), on trie par alphabet
-                return (a.nom || '').localeCompare(b.nom || '');
-              })
-              
-              .map(renderCompetence)}
-          </div>
+                .map(renderCompetence)}
+            </div>
+          </div> {/* 👈 LE VOILÀ ! Le fameux </div> qui avait disparu ! */}
 
           {/* 4. Création Custom */}
           <div className="mt-8 bg-gray-50 p-6 rounded-xl border border-gray-200">

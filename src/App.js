@@ -5,7 +5,7 @@
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
 // 13.1.0 // 13.8.0 // 13.12.0
-// 14.0.0 // 14.3.0
+// 14.0.0 // 14.3.0 // 14.5.0
 
 import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -25,15 +25,6 @@ import DiceRoller from './components/DiceRoller';
 import PixieAssistant from './components/PixieAssistant';
 import BackgroundDecor from './components/BackgroundDecor';
 
-// ✨ FIX : LE CODE SPLITTING (Lazy Loading)
-// Ces composants lourds ne seront téléchargés par le navigateur QUE lorsque le joueur cliquera dessus !
-const Encyclopedia = lazy(() => import('./components/Encyclopedia'));
-const ValidationsPendantes = lazy(() => import('./components/ValidationsPendantes'));
-const AccountSettings = lazy(() => import('./components/AccountSettings'));
-const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
-const CerclesDashboard = lazy(() => import('./components/CerclesDashboard'));
-const MesPropositions = lazy(() => import('./components/MesPropositions'));
-
 // --- IMPORTS DES ÉTAPES ---
 import Step1 from './components/Step1';
 import { Step2, Step3, StepAtouts } from './components/StepMagie';
@@ -50,6 +41,15 @@ import { AVAILABLE_BADGES, STEP_CONFIG } from './data/DictionnaireJeu';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
 
 import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock } from 'lucide-react';
+
+// ✨ FIX : LE CODE SPLITTING (Lazy Loading)
+// Ces composants lourds ne seront téléchargés par le navigateur QUE lorsque le joueur cliquera dessus !
+const Encyclopedia = lazy(() => import('./components/Encyclopedia'));
+const ValidationsPendantes = lazy(() => import('./components/ValidationsPendantes'));
+const AccountSettings = lazy(() => import('./components/AccountSettings'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const CerclesDashboard = lazy(() => import('./components/CerclesDashboard'));
+const MesPropositions = lazy(() => import('./components/MesPropositions'));
 
 function App() {
 
