@@ -38,7 +38,12 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId }) {
     }
 
     setIsSubmitting(true);
-    const success = await createEntry(activeTab, formData);
+    
+    // ✨ FIX : Le Traducteur Singulier/Pluriel !
+    // On convertit le nom de notre onglet en valeur stricte pour la base de données.
+    const dbType = activeTab === 'notes' ? 'note' : 'contact';
+    
+    const success = await createEntry(dbType, formData);
     setIsSubmitting(false);
 
     if (success) setIsModalOpen(false);
