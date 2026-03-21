@@ -6,10 +6,11 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
-    version: '14.9.56',
+    version: '14.5.0',
     date: '17 Mars 2026',
     changes: [
-      '🎨 **Confort de Lecture (UX) :** Intégration d\'un "Tri Magnétique" dans le catalogue de l\'Étape 8 (`StepCompetencesFutiles.js`). Les compétences futiles dans lesquelles l\'Héritier a investi des points (Création ou XP) remontent désormais automatiquement au sommet de la liste, classées par score décroissant puis par ordre alphabétique, facilitant grandement la consultation et l\'évolution.'
+      '🎨 **Confort de Lecture (UX) :** Intégration d\'un "Tri Magnétique" dans le catalogue de l\'Étape 8 (`StepCompetencesFutiles.js`). Les compétences futiles dans lesquelles l\'Héritier a investi des points (Création ou XP) remontent désormais automatiquement au sommet de la liste, classées par score décroissant puis par ordre alphabétique, facilitant grandement la consultation et l\'évolution.',
+      '⚡ **Performances Front-End (Code Splitting) :** Implémentation du "Lazy Loading" via `React.lazy` et `Suspense` dans le routeur principal (`App.js`). Les modules massifs (Encyclopédie, Administration, Cercles, Paramètres) sont désormais exclus du bundle initial et téléchargés à la volée uniquement lors de leur consultation, réduisant drastiquement le temps de chargement au démarrage du Grimoire.'
     ]
   },
   {
