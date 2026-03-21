@@ -97,16 +97,66 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId }) {
             </div>
           ) : (
             <div className="grid gap-4">
-              {/* Le rendu de notre liste (sécurisé via .map) */}
-              {notes.map((note) => (
-                <div key={note.id} className="p-4 border border-stone-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
-                  {/* Contenu de la note à construire */}
-                </div>
-              ))}
+              {notes.map((note) => {
+                // 🧠 On décode le propriétaire et le contenu JSONB
+                const isMine = note.player_id === playerId;
+                const data = note.content || {};
+
+                return (
+                  <div key={note.id} className="p-5 border border-stone-200 rounded-xl bg-white shadow-sm flex flex-col gap-3 relative overflow-hidden hover:shadow-md transition-shadow">
+                    
+                    {/* 🛡️ Badge de provenance (Si la note appartient à un camarade) */}
+                    {!isMine && (
+                      <div className="absolute top-0 right-0 bg-blue-100 text-blue-800 text-[10px] font-bold px-3 py-1 rounded-bl-xl flex items-center gap-1 shadow-sm">
+                        <Share2 size={10} /> Partagé par le Cercle
+                      </div>
+                    )}
+
+                    {/* EN-TÊTE DE LA NOTE */}
+                    <div className="flex justify-between items-start">
+                      <div className="pr-6">
+                        <h4 className="font-serif font-bold text-xl text-amber-900">{data.titre || 'Pensée sans titre'}</h4>
+                        <div className="text-xs font-bold text-stone-500 mt-1 flex items-center gap-2">
+                          <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">
+                            <Tag size={10} className="inline mr-1 mb-0.5"/>
+                            {data.categorie || 'Savoir'}
+                          </span>
+                          {data.date_creation && (
+                            <span className="italic">
+                              {new Date(data.date_creation).toLocaleDateString('fr-FR')}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CONTENU (Avec préservation des sauts de ligne) */}
+                    <p className="text-sm text-stone-700 leading-relaxed font-serif whitespace-pre-wrap bg-amber-50/50 p-4 rounded-lg border border-amber-100/50">
+                      {data.contenu || "Le texte s'est effacé..."}
+                    </p>
+
+                    {/* 🧠 Bouton de partage conditionnel (Hybride Solo/Cercle) */}
+                    {isMine && cercleId && (
+                      <div className="mt-2 pt-3 border-t border-stone-100 flex justify-end">
+                        <button
+                          onClick={() => toggleShare(note.id, note.is_shared)}
+                          className={`text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm border ${
+                            note.is_shared
+                              ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+                              : 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
+                          }`}
+                        >
+                          {note.is_shared ? <><Share2 size={14}/> Rendu public au Cercle</> : <><Lock size={14}/> Gardé secret</>}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )
         )}
-
+		
         {activeTab === 'contacts' && (
           contacts.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4">

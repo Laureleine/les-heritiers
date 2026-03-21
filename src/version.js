@@ -6,6 +6,16 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.7.0',
+    date: '21 Mars 2026',
+    changes: [
+      '📔 **Notes Narratives (Interface) :** Remplacement de la maquette visuelle par le véritable moteur de rendu dynamique dans le Grimoire Personnel. Les pensées des joueurs s\'affichent désormais sous forme de parchemins élégants, respectant la typographie (sauts de ligne) et intégrant le système de partage sécurisé (Sceau RLS).',
+      '🖨️ **Forge PDF (Correction d\'Impression) :** L\'exportation PDF des feuilles de personnages lit désormais les scores finaux calculés par le moteur de jeu (`computedStats`) au lieu des rangs bruts investis. Les compétences affichent correctement les bonus issus des Profils Majeurs/Mineurs, des Prédilections et des Atouts.',
+      '📚 **Héritage Féérique :** Les spécialités de naissance (offertes par l\'espèce ou choisies via prédilection) sont désormais intelligemment identifiées et imprimées sur la feuille PDF à côté des choix du joueur et de la spécialité de métier.',
+      '🐛 **Forge PDF (Hotfix) :** Résolution d\'une erreur fatale (TypeError) lors de l\'exportation de la fiche de personnage. L\'accès à la spécialité de métier (`specialiteMetier`) est désormais proprement extrait et sécurisé par un Optional Chaining strict, empêchant le crash du compilateur si le nœud de données est absent ou nul.'
+    ]
+  },
+  {
     version: '14.6.0',
     date: '17 Mars 2026',
     changes: [

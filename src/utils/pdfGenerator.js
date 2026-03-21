@@ -2,6 +2,7 @@
 // 10.4.0
 // 12.3.0 // 12.6.0
 // 13.0.0
+// 14.7.0
 
 // ============================================================================
 // PDF EXPORT (Fiche de Personnage Complète Recto/Verso)
@@ -25,22 +26,7 @@ export const exportToPDF = (character, gameData = {}) => {
   const equipements = boughtItems.filter(i => i.categorie !== 'langue' && i.categorie !== 'contact').map(i => i.nom);
   const contacts = boughtItems.filter(i => i.categorie === 'contact').map(i => i.nom);
 
-  // 1. Calculs rapides des statistiques de combat et de santé
-  const pvMax = (3 * (character.caracteristiques?.constitution || 1)) + 9;
-  const skills = character.competencesLibres?.rangs || {};
-  const getS = (nom) => skills[nom] || 0;
-  const agi = character.caracteristiques?.agilite || 1;
-  const con = character.caracteristiques?.constitution || 1;
-  const esp = character.caracteristiques?.esprit || 1;
-  const sf = character.caracteristiques?.sangFroid || 1;
-  
-  const esquive = getS('Mouvement') + agi + 5;
-  const parade = getS('Mêlée') + agi + 5;
-  const resPhys = getS('Ressort') + con + 5;
-  const resPsych = getS('Fortitude') + esp + 5;
-  const init = getS('Art de la guerre') + sf;
-
-  // 2. Structuration des Compétences par Profil (comme sur la fiche officielle)
+  // 2. Structuration des Compétences par Profil (On remonte ce dictionnaire pour qu'il soit accessible)
   const profilsMap = {
     'Aventurier': ['Conduite', 'Mouvement', 'Ressort', 'Survie'],
     'Combattant': ['Art de la guerre', 'Autorité', 'Mêlée', 'Tir'],
@@ -49,6 +35,54 @@ export const exportToPDF = (character, gameData = {}) => {
     'Roublard': ['Comédie', 'Larcin', 'Discrétion', 'Monde du crime'],
     'Savant': ['Habiletés', 'Médecine', 'Observation', 'Sciences']
   };
+
+  // 1. Calculs rapides des points de vie
+  const pvMax = (3 * (character.caracteristiques?.constitution || 1)) + 9;
+
+  // ✨ FIX ABSOLU : L'Imprimante Autonome
+  // Comme le PDF est généré sans passer par le contexte React, on fait l'addition des bonus ici !
+  const getS = (nomComp) => {
+    const rangInvesti = character.competencesLibres?.rangs?.[nomComp] || 0;
+    
+    // Bonus de Profil
+    let bonusProfil = 0;
+    Object.entries(profilsMap).forEach(([pName, comps]) => {
+        if (comps.includes(nomComp)) {
+            if (character.profils?.majeur?.nom === pName) bonusProfil = 2;
+            if (character.profils?.mineur?.nom === pName) bonusProfil = 1;
+        }
+    });
+    
+    // Bonus de Prédilection
+    const feeData = gameData?.fairyData?.[character.typeFee];
+    const isPred = feeData?.competencesPredilection?.some(p => p.nom === nomComp) || Object.values(character.competencesLibres?.choixPredilection || {}).includes(nomComp);
+    const bonusPred = isPred ? 2 : 0;
+    
+    // Bonus d'Atouts
+    let bonusAtout = 0;
+    (character.atouts || []).forEach(atoutId => {
+      const atoutDef = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
+      if (atoutDef?.effets_techniques) {
+         try {
+           const tech = typeof atoutDef.effets_techniques === 'string' ? JSON.parse(atoutDef.effets_techniques) : atoutDef.effets_techniques;
+           if (tech.competences && tech.competences[nomComp]) bonusAtout += tech.competences[nomComp];
+         } catch(e) {}
+      }
+    });
+    
+    return rangInvesti + bonusProfil + bonusPred + bonusAtout;
+  };
+
+  const agi = character.caracteristiques?.agilite || 1;
+  const con = character.caracteristiques?.constitution || 1;
+  const esp = character.caracteristiques?.esprit || 1;
+  const sf = character.caracteristiques?.sangFroid || 1;
+
+  const esquive = getS('Mouvement') + agi + 5;
+  const parade = getS('Mêlée') + agi + 5;
+  const resPhys = getS('Ressort') + con + 5;
+  const resPsych = getS('Fortitude') + esp + 5;
+  const init = getS('Art de la guerre') + sf;
 
   const printWindow = window.open('', '_blank');
 
@@ -241,46 +275,86 @@ export const exportToPDF = (character, gameData = {}) => {
           </div>
         </div>
 
-        <!-- COMPÉTENCES UTILES -->
-        <div class="section">
-          <div class="section-title">Compétences Utiles</div>
-          <div class="grid-2 box">
-            ${Object.entries(profilsMap).map(([profil, comps]) => `
-              <div class="profil-block">
-                <div class="profil-title">${profil}</div>
-                ${comps.map(comp => {
-                  const score = getS(comp);
-                  const isPred = feeData?.competencesPredilection?.some(p => p.nom === comp) || Object.values(character.competencesLibres?.choixPredilection || {}).includes(comp);
-                  const specs = character.competencesLibres?.choixSpecialiteUser?.[comp] || [];
-                  const finalSpecs = [...specs];
+<!-- COMPÉTENCES UTILES -->
+<div class="section">
+  <div class="section-title">Compétences Utiles</div>
+  <div class="grid-2 box">
+    ${Object.entries(profilsMap).map(([profil, comps]) => {
+      
+      let htmlBloc = '<div class="profil-block"><div class="profil-title">' + profil + '</div>';
 
-                  // ✨ LE SCÉNARIO C : On l'ajoute à la liste des spécialités à imprimer !
-                  if (character.competencesLibres?.specialiteMetier?.comp === comp && character.competencesLibres?.specialiteMetier?.nom) {
-                    finalSpecs.push(`${character.competencesLibres.specialiteMetier.nom} (Métier)`);
-                  }
+      htmlBloc += comps.map(comp => {
+        // 🧠 Le Vrai Score, enfin !
+        const scoreTotal = getS(comp);
+        
+        const feeData = gameData?.fairyData?.[character.typeFee];
+        const isPred = feeData?.competencesPredilection?.some(p => p.nom === comp) || Object.values(character.competencesLibres?.choixPredilection || {}).includes(comp);
+        
+        const specs = character.competencesLibres?.choixSpecialiteUser?.[comp] || [];
+        const finalSpecs = [...specs];
 
-                  return `
-                    <div class="skill-row">
-                      <span class="skill-name">${comp} ${isPred ? '<span style="font-size:10px; color:#d97706;">★</span>' : ''} ${finalSpecs.length > 0 ? `<span style="font-size:10px; color:#8b7355; font-style:italic;">(${finalSpecs.join(', ')})</span>` : ''}</span>
-                      <span class="skill-dots">${'.'.repeat(40)}</span>
-                      <span class="skill-score"><b>${score}</b></span>
-                    </div>
-                  `;
-                  return `
-                  <div class="skill-row">
-                    <span class="skill-name ${isPred ? 'font-weight: bold;' : ''}">${comp}${isPred ? '*' : ''}</span>
-                    <span class="skill-dots">......................................................</span>
-                    <span class="skill-score">${score > 0 ? score : '-'}</span>
-                  </div>
-                  ${specs.length > 0 ? `<div style="font-size: 10px; color: #8b7355; margin-left: 10px; font-style: italic;">↳ ${specs.join(', ')}</div>` : ''}
-                  `
-                }).join('')}
-              </div>
-            `).join('')}
-          </div>
-        </div>
+        // A. Spécialité de Métier
+        const specMetier = character.competencesLibres?.specialiteMetier;
+        if (specMetier && specMetier.comp === comp && specMetier.nom) {
+          const jobSpecText = specMetier.nom + " (Métier)";
+          if (!finalSpecs.includes(jobSpecText)) finalSpecs.push(jobSpecText);
+        }
 
-        <!-- COMBAT & SANTÉ -->
+        // B. Spécialité de Naissance (Fée)
+        if (feeData && feeData.competencesPredilection) {
+          const predIndex = feeData.competencesPredilection.findIndex(p => p.nom === comp);
+          if (predIndex !== -1) {
+            const pred = feeData.competencesPredilection[predIndex];
+            const feeSpec = pred.specialite || (pred.isSpecialiteChoix ? character.competencesLibres?.choixSpecialite?.[predIndex] : null);
+            if (feeSpec && !finalSpecs.includes(feeSpec)) finalSpecs.push(feeSpec + " (Inné)");
+          }
+        }
+
+        // C. Spécialités offertes via les Atouts
+        const atoutsIds = character.atouts || [];
+        atoutsIds.forEach(atoutId => {
+          const atoutDef = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
+          if (atoutDef && atoutDef.effets_techniques) {
+             try {
+               const tech = typeof atoutDef.effets_techniques === 'string' ? JSON.parse(atoutDef.effets_techniques) : atoutDef.effets_techniques;
+               if (tech.specialites) {
+                  tech.specialites.forEach(s => {
+                     if (s.competence === comp && !finalSpecs.includes(s.nom)) {
+                        finalSpecs.push(s.nom + " (Atout)");
+                     }
+                  });
+               }
+             } catch(e) {}
+          }
+        });
+
+        const predHtml = isPred ? '<span style="font-size:10px; color:#d97706; margin-left:4px;">★</span>' : '';
+        
+        const specsHtml = finalSpecs.length > 0 
+            ? '<div style="font-size:10px; color:#8b7355; font-style:italic; margin-top:-2px; margin-bottom:4px; margin-left:8px; line-height:1.1;">↳ ' + finalSpecs.join(', ') + '</div>' 
+            : '';
+
+        // ✨ FIX CSS : Finis les pointillés en dur ! Place au "flex-grow" avec une bordure !
+        // Cela garantit que le texte ne débordera JAMAIS du cadre, peu importe la largeur.
+        return '<div style="margin-bottom: 2px;">' +
+          '<div class="skill-row" style="display:flex; justify-content:space-between; align-items:flex-end;">' +
+            '<span class="skill-name" style="white-space:nowrap; flex-shrink:0;">' + comp + predHtml + '</span>' +
+            '<span style="flex-grow:1; border-bottom: 2px dotted #b5a287; margin: 0 6px; position:relative; top:-4px;"></span>' +
+            '<span style="font-weight: bold; color: #4a3b2c; white-space:nowrap; flex-shrink:0;">' + scoreTotal + '</span>' +
+          '</div>' +
+          specsHtml +
+        '</div>';
+
+      }).join('');
+
+      htmlBloc += '</div>';
+      return htmlBloc;
+
+    }).join('')}
+  </div>
+</div>
+
+		<!-- COMBAT & SANTÉ -->
         <div class="section">
           <div class="section-title">Combat & Santé</div>
           <div class="grid-4 box" style="background: #e6e1d8; border-color: #4a3b2c;">
