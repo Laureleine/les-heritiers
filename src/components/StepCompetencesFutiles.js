@@ -345,8 +345,9 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
       {/* 2. Liste des Prédilections Actives */}
       {allChoicesMade && competencesPredilection.length > 0 && (
         <div>
+          {/* ✨ FIX : On adapte le titre selon le statut du personnage */}
           <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2">
-            Vos Compétences de Prédilection (Base 2 gratuite)
+            {isScelle ? "Vos Compétences de Prédilection" : "Vos Compétences de Prédilection (Base 2 gratuite)"}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {competencesPredilection.map(nomComp => {

@@ -4,15 +4,16 @@
 // 11.1.0
 // 12.4.0
 // 13.2.0 // 13.3.0 // 13.12.0 // 13.13.0
-// 14.0.0
+// 14.0.0 // 14.0.6
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff } from 'lucide-react';
+import { Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
+import GrimoirePersonnel from './cercle/GrimoirePersonnel'; 
 
 // ============================================================================
 // ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
@@ -27,7 +28,8 @@ const CharacterCard = React.memo(({
   onToggleVisibility, 
   onDuplicate, 
   onCreateGift, 
-  onDeleteClick 
+  onDeleteClick,
+  onOpenGrimoire   
 }) => {
 
   const getProfilInfo = (nomBrut, sexe) => {
@@ -99,6 +101,10 @@ const CharacterCard = React.memo(({
             >
               {char.isPublic ? <Globe size={16}/> : <EyeOff size={16}/>}
             </button>
+            {/* ✨ NOUVEAU : La clé d'accès au Grimoire Privé ! */}
+            <button onClick={() => onOpenGrimoire(char.id)} className="p-2 text-stone-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Ouvrir le Grimoire Personnel">
+              <BookOpen size={16}/>
+            </button>
             <button onClick={() => onDuplicate(char)} className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Dupliquer le personnage">
               <Copy size={16}/>
             </button>
@@ -153,6 +159,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimCode, setClaimCode] = useState('');
   const [giftCodeToShow, setGiftCodeToShow] = useState(null);
+
+  const [activeGrimoireCharId, setActiveGrimoireCharId] = useState(null); 
 
   const [publicInfoModal, setPublicInfoModal] = useState({ isOpen: false, charName: '' });
   const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, charId: null });
@@ -374,6 +382,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}
                       onDeleteClick={handleDeleteClick}
+                      onOpenGrimoire={setActiveGrimoireCharId} /* ✨ NOUVEAU : Le câblage */
                     />
                   </div>
                 ))}
@@ -401,6 +410,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}
                       onDeleteClick={handleDeleteClick}
+                      onOpenGrimoire={setActiveGrimoireCharId} /* ✨ NOUVEAU : Le câblage */
                     />
                   </div>
                 ))}
@@ -425,6 +435,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}
                       onDeleteClick={handleDeleteClick}
+                      onOpenGrimoire={setActiveGrimoireCharId} /* ✨ NOUVEAU : Le câblage */
                     />
                   </div>
                 ))}
@@ -519,7 +530,33 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
           </div>
         </div>
       )}
-	  
+
+      {/* ✨ NOUVEAU : LA MODALE IMMERSIVE DU GRIMOIRE PERSONNEL (SOLO) ✨ */}
+      {activeGrimoireCharId && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-stone-900/90 backdrop-blur-sm p-4 md:p-8 animate-fade-in">
+          
+          {/* Bouton de fermeture de la surcouche */}
+          <div className="flex justify-end mb-4">
+            <button 
+              onClick={() => setActiveGrimoireCharId(null)} 
+              className="text-stone-300 hover:text-white flex items-center gap-2 font-bold transition-colors bg-stone-800/50 px-4 py-2 rounded-xl"
+            >
+              <X size={20} /> Refermer le Grimoire
+            </button>
+          </div>
+
+          {/* Le conteneur sécurisé */}
+          <div className="flex-1 overflow-hidden max-w-5xl mx-auto w-full relative">
+            <GrimoirePersonnel 
+              characterId={activeGrimoireCharId} 
+              cercleId={null} /* 🛡️ On force le mode Solo pour le RLS */
+              playerId={session?.user?.id} 
+            />
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }
