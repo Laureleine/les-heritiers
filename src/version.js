@@ -6,6 +6,21 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.6.0',
+    date: '17 Mars 2026',
+    changes: [
+      '🎨 **Académie des Arts (UX) :** Ajustement dynamique du titre des Prédilections dans l\'Étape 8 (`StepCompetencesFutiles.js`). La mention obsolète "(Base 2 gratuite)" est désormais intelligemment masquée lorsque l\'Héritier est scellé (Mode Évolution).',
+      '📔 **Grimoire Personnel (Moteur de Données) :** Validation et implémentation du Scénario A (Table Supabase dédiée `cercle_notes` + RLS). Le système garantit désormais un cloisonnement hermétique des pensées privées tout en permettant un partage conditionnel au sein du Cercle.',
+      '🧠 **Architecture Découplée :** Création du Hook autonome `useGrimoire.js` (Cerveau Séparé). L\'interface utilisateur est libérée des appels réseau complexes, prévenant la création d\'un "God Component" et respectant les principes d\'immersion (`showInAppNotification`).',
+      '📔 **L\'Encre des Héritiers (Grimoire Personnel) :** Implémentation du constructeur dynamique JSONB (`GrimoirePersonnel.js`). L\'interface permet désormais la création de Notes (avec catégories) et de Contacts (avec statuts et localisation) via une modale in-app immersive.',
+      '☁️ **Architecture Séparée :** La logique de persistance des données a été intégrée dans le Hook autonome `useGrimoire.js`. Les soumissions mettent à jour le cache visuel instantanément sans provoquer de surchauffe du réseau.',
+      '📔 **Visages Rencontrés (Grimoire Personnel) :** Mise en page dynamique de la galerie des contacts narratifs. Les Héritiers peuvent désormais visualiser les PNJs archivés sous forme de cartes élégantes.',
+      '🤝 **Partage Communautaire :** Rendu visuel de la mécanique de Sceau (RLS). Les joueurs peuvent ouvrir ou fermer l\'accès de leurs fiches au reste du Cercle d\'un simple clic. Les contacts partagés par autrui arborent un badge de provenance distinctif pour clarifier la lecture.',
+      '🚪 **Accès Universel au Grimoire :** Intégration d\'un bouton d\'accès direct au Grimoire Personnel depuis les cartes de la Liste des Personnages (`CharacterList.js`). Les joueurs sans Cercle peuvent désormais consigner leurs notes narratives et contacts en mode "Solo".',
+      '☁️ **Architecture Modulaire :** Réutilisation du composant `GrimoirePersonnel` au sein d\'un nouveau sas immersif, validant ainsi la robustesse de l\'architecture hybride (découplage total avec la notion de Cercle virtuel).'
+    ]
+  },
+  {
     version: '14.5.0',
     date: '17 Mars 2026',
     changes: [
