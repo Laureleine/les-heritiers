@@ -6,6 +6,14 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.8.0',
+    date: '21 Mars 2026',
+    changes: [
+      '🎨 **Spécialités Féériques (Immersion) :** Généralisation des textes d\'invites pour les compétences futiles "au choix". Le formulaire de précision ne présume plus qu\'il s\'agit obligatoirement d\'un art (ex: Danse, Peinture), s\'adaptant ainsi parfaitement aux compétences de plein air (Orc) ou aux futures créations des Doctes.',
+      '🛡️ **Bouclier Anti-Fantôme (Hotfix) :** Résolution du crash critique `foreign key constraint` lors de la prise de photographie temporelle. L\'interface empêche désormais le Scellage et l\'Archivage d\'un Héritier qui n\'a pas été préalablement sauvegardé dans la base de données (absence d\'UUID valide), évitant ainsi les mises à jour silencieuses sur des identifiants nuls.'
+    ]
+  },
+  {
     version: '14.7.0',
     date: '21 Mars 2026',
     changes: [

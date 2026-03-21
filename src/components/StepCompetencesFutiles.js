@@ -3,7 +3,7 @@
 // 9.11.0
 // 10.4.0 // 10.6.0 // 10.9.0
 // 11.1.0
-// 14.4.0 // 14.5.0
+// 14.4.0 // 14.5.0 // 14.8.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
@@ -264,18 +264,18 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
         {comp.nom.toLowerCase().includes('au choix') && (isPredilection || (rangsInvestis[comp.nom] > 0)) && (
           <div className="mt-3 pl-3 ml-1 border-l-2 border-amber-400 animate-fade-in w-full">
             <label className="block text-xs font-bold text-amber-800 mb-1">
-              Précisez votre compétence (ex: Peinture, Danse, Sculpture...) :
+              Précisez l'intitulé de votre choix :
             </label>
             <input
               type="text"
               value={character.competencesFutiles?.precisions?.[comp.nom] || ''}
               onChange={(e) => handlePrecisionChange(comp.nom, e.target.value)}
-              placeholder="Écrivez votre art..."
+              placeholder="Saisissez votre compétence..."
               className="w-full p-2 text-sm border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-amber-50/30"
             />
           </div>
         )}
-      </div>
+	  </div>
     );
   };
 

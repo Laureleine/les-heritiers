@@ -4,6 +4,7 @@
 // 10.1.0 // 10.4.0 // 10.6.0
 // 12.6.0
 // 13.0.O // 13.7.0 // 13.9.0 // 13.10.0 // 13.12.0 // 13.13.0
+// 14.8.0
 
 import React, { useState, useEffect } from 'react';
 import { Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert } from 'lucide-react';
@@ -59,6 +60,12 @@ export default function StepRecapitulatif() {
   const handleTakeSnapshot = async () => {
     if (!photoTitle.trim()) {
       showInAppNotification("Veuillez donner un titre à cette archive !", "warning");
+      return;
+    }
+
+    // ✨ FIX : Sécurité redondante pour l'appareil photo
+    if (!character.id || character.id.toString().startsWith('temp_')) {
+      showInAppNotification("Impossible d'archiver un fantôme. Veuillez sauvegarder l'Héritier !", "error");
       return;
     }
 
@@ -157,11 +164,19 @@ export default function StepRecapitulatif() {
   // ✨ LA DOUANE DE VÉRIFICATION AVANT SCELLAGE
   // ========================================================================
   const handleSealClick = () => {
+    
+    // ✨ FIX : Le Bouclier Anti-Fantôme !
+    // On s'assure que l'Héritier est bien gravé dans la base Supabase avec un vrai UUID.
+    if (!character.id || character.id.toString().startsWith('temp_')) {
+      showInAppNotification("Votre Héritier n'existe que dans vos rêves ! Sauvegardez-le d'abord (l'icône disquette en haut de l'écran) avant de pouvoir le sceller.", "error");
+      return;
+    }
+
     if (isScelle) {
       showInAppNotification("Le sceau a déjà été apposé sur cette fiche !", "warning");
       return;
     }
-
+	
     let caracsRestants = 10;
     if (feeData && feeData.caracteristiques) {
       CARAC_LIST.forEach(carac => {
