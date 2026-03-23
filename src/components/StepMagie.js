@@ -1,16 +1,16 @@
 // 10.4.0 // 10.6.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 12.5.0
 // 13.1.0 // 13.10.0 // 13.11.0
-// 14.2.0
+// 14.2.0 // 14.9.0
 
 import React, { useState, useMemo } from 'react';
 import { Star, Info, Check, Sparkles, AlertCircle, Plus, Minus } from 'lucide-react';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { getFeerieCost, getCaracCost, FIXED_XP_COSTS } from '../utils/xpCalculator';
 
 // 🧠 LES CONSTANTES CENTRALISÉES
 const MAX_ATOUTS_GLOBAL = 2;
-const ATOUT_XP_COST = 8;
 
 // ============================================================================
 // --- ÉTAPE 2 : CAPACITÉS ---
@@ -153,10 +153,6 @@ export function Step3() {
   const anomalieId = anomalieAtout ? anomalieAtout.id : 'Anomalie féérique';
   const hasAnomalie = character.atouts?.includes(anomalieId) || character.atouts?.includes('Anomalie féérique');
 
-  // ✨ LA MATHÉMATIQUE DE L'EXPÉRIENCE (Livre de Base)
-  const getFeerieCost = (rank) => rank * 5;
-  const getMasqueCost = (rank) => Math.max(12, rank * 4);
-
   const handleUpgradeStat = (stat) => {
     if (!isScelle) return;
     const currentRank = stat === 'feerie' ? currentFeerie : currentMasque;
@@ -167,7 +163,7 @@ export function Step3() {
       return;
     }
 
-    const cost = stat === 'feerie' ? getFeerieCost(currentRank + 1) : getMasqueCost(currentRank + 1);
+    const cost = stat === 'feerie' ? getFeerieCost(currentRank) : getCaracCost(currentRank);
 
     if (xpDispo < cost) {
       showInAppNotification(`Il vous faut ${cost} XP pour augmenter cette caractéristique !`, "error");
@@ -204,7 +200,7 @@ export function Step3() {
       return;
     }
 
-    const refund = stat === 'feerie' ? getFeerieCost(currentRank) : getMasqueCost(currentRank);
+    const refund = stat === 'feerie' ? getFeerieCost(currentRank - 1) : getCaracCost(currentRank - 1);
     const newCaracs = { ...(character.caracteristiques || {}), [stat]: currentRank - 1 };
     const newTricherie = Math.floor((newCaracs.feerie + newCaracs.masque) / 2);
 
@@ -280,8 +276,8 @@ export function Step3() {
       const isAtoutInnate = innateAtouts.includes(anomalieId) || innateAtouts.includes('Anomalie féérique');
 
       if (isScelle && !isAtoutInnate) {
-        newXpDepense = Math.max(0, xpDepense - ATOUT_XP_COST);
-        showInAppNotification(`Anomalie purgée : +${ATOUT_XP_COST} XP récupérés !`, "success");
+        newXpDepense = Math.max(0, xpDepense - FIXED_XP_COSTS.nouvel_atout);
+        showInAppNotification(`Anomalie purgée : +${FIXED_XP_COSTS.nouvel_atout} XP récupérés !`, "success");
       }
     } else {
       // 🛒 SÉLECTION ET ACHAT
@@ -298,12 +294,12 @@ export function Step3() {
         if (!hasAnomalie) {
           if (isScelle) {
             // 🌟 COMPORTEMENT ÉVOLUTION : On vérifie les finances
-            if (xpDispo < ATOUT_XP_COST) {
-              showInAppNotification(`L'Anomalie consomme un emplacement d'Atout. Il vous faut ${ATOUT_XP_COST} XP !`, "error");
+            if (xpDispo < FIXED_XP_COSTS.nouvel_atout) {
+              showInAppNotification(`L'Anomalie consomme un emplacement d'Atout. Il vous faut ${FIXED_XP_COSTS.nouvel_atout} XP !`, "error");
               return;
             }
-            newXpDepense = xpDepense + ATOUT_XP_COST;
-            showInAppNotification(`Anomalie activée pour ${ATOUT_XP_COST} XP !`, "success");
+            newXpDepense = xpDepense + FIXED_XP_COSTS.nouvel_atout.nouvel_atoutCOST;
+            showInAppNotification(`Anomalie activée pour ${FIXED_XP_COSTS.nouvel_atout} XP !`, "success");
           } else {
             // 🌟 COMPORTEMENT CRÉATION : On vérifie la limite de 2
             if (countAtouts >= MAX_ATOUTS_GLOBAL) {
@@ -357,65 +353,76 @@ export function Step3() {
   return (
     <div className="space-y-8 animate-fade-in">
       
-      {/* FÉÉRIE & MASQUE */}
-      <div className="bg-indigo-50 border border-indigo-200 p-4 md:p-5 rounded-xl shadow-sm">
-        <h3 className="font-serif font-bold text-indigo-900 mb-4 flex items-center gap-2 text-lg">
-          <Star className="text-indigo-600" size={22} />
-          Attributs Féériques
-        </h3>
+	  {/* FÉÉRIE & MASQUE */}
+	  <div className="bg-indigo-50 border border-indigo-200 p-4 md:p-5 rounded-xl shadow-sm">
+		<h3 className="font-serif font-bold text-indigo-900 mb-4 flex items-center gap-2 text-lg">
+		  <Star className="text-indigo-600" size={22} />
+		  Attributs Féériques
+		</h3>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          
-          <div className="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm">
-            <div className="flex items-baseline gap-2">
-              <span className="font-bold text-indigo-900 text-lg">Féérie</span>
-              <span className="text-xs text-indigo-500 font-medium">— Gouverne vos Pouvoirs</span>
-            </div>
-            <div className="flex items-center gap-3 self-end sm:self-auto">
-              {isScelle && currentFeerie > baseFeerie && (
-                <button onClick={() => handleDowngradeStat('feerie')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getFeerieCost(currentFeerie)} XP`}>
-                  <Minus size={18} />
-                </button>
-              )}
-              <span className="text-2xl font-serif font-bold text-indigo-900 w-8 text-center">{currentFeerie}</span>
-              {isScelle && currentFeerie < 8 && (
-                <button onClick={() => handleUpgradeStat('feerie')} className="p-1 text-emerald-600 hover:bg-emerald-50 rounded flex flex-col items-center transition-colors" title={`Coûte ${getFeerieCost(currentFeerie + 1)} XP`}>
-                  <Plus size={18} />
-                  <span className="text-[9px] font-bold mt-0.5">{getFeerieCost(currentFeerie + 1)} XP</span>
-                </button>
-              )}
-            </div>
-          </div>
+		<div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+		  
+		  {/* --- 1. CARTE FÉÉRIE --- */}
+		  <div className="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm">
+			<div className="flex items-baseline gap-2">
+			  <span className="font-bold text-indigo-900 text-lg">Féérie</span>
+			  <span className="text-xs text-indigo-500 font-medium">— Gouverne vos Pouvoirs</span>
+			</div>
+			
+			<div className="flex items-center gap-3 self-end sm:self-auto">
+			  {/* BOUTON MOINS FÉÉRIE */}
+			  {isScelle && currentFeerie > baseFeerie && (
+				<button onClick={() => handleDowngradeStat('feerie')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getFeerieCost(currentFeerie - 1)} XP`}>
+				  <Minus size={18} />
+				</button>
+			  )}
 
-          <div className="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm">
-            <div className="flex items-baseline gap-2">
-              <span className="font-bold text-indigo-900 text-lg">Masque</span>
-              <span className="text-xs text-indigo-500 font-medium">— Illusion & dissimulation</span>
-            </div>
-            <div className="flex items-center gap-3 self-end sm:self-auto">
-              {isScelle && currentMasque > baseMasque && (
-                <button onClick={() => handleDowngradeStat('masque')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getMasqueCost(currentMasque)} XP`}>
-                  <Minus size={18} />
-                </button>
-              )}
-              <span className="text-2xl font-serif font-bold text-indigo-900 w-8 text-center">{currentMasque}</span>
-              {isScelle && currentMasque < 10 && (
-                <button onClick={() => handleUpgradeStat('masque')} className="p-1 text-emerald-600 hover:bg-emerald-50 rounded flex flex-col items-center transition-colors" title={`Coûte ${getMasqueCost(currentMasque + 1)} XP`}>
-                  <Plus size={18} />
-                  <span className="text-[9px] font-bold mt-0.5">{getMasqueCost(currentMasque + 1)} XP</span>
-                </button>
-              )}
-            </div>
-          </div>
+			  <span className="text-2xl font-serif font-bold text-indigo-900 w-8 text-center">{currentFeerie}</span>
 
-        </div>
-        {isScelle && (
-          <p className="text-xs text-indigo-800 mt-4 italic text-center">
-            Améliorer vos Attributs Féériques consomme de l'Expérience. Augmenter la Féérie débloquera immédiatement un nouvel emplacement de Pouvoir.
-          </p>
-        )}
-      </div>
+			  {/* BOUTON PLUS FÉÉRIE */}
+			  {isScelle && currentFeerie < 8 && (
+				<button onClick={() => handleUpgradeStat('feerie')} className="p-1 text-emerald-600 hover:bg-emerald-50 rounded flex flex-col items-center transition-colors" title={`Coûte ${getFeerieCost(currentFeerie)} XP`}>
+				  <Plus size={18} />
+				  <span className="text-[9px] font-bold mt-0.5">{getFeerieCost(currentFeerie)} XP</span>
+				</button>
+			  )}
+			</div>
+		  </div>
 
+		  {/* --- 2. CARTE MASQUE --- */}
+		  <div className="bg-white p-3 rounded-lg border border-indigo-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm">
+			<div className="flex items-baseline gap-2">
+			  <span className="font-bold text-indigo-900 text-lg">Masque</span>
+			  <span className="text-xs text-indigo-500 font-medium">— Illusion & dissimulation</span>
+			</div>
+			
+			<div className="flex items-center gap-3 self-end sm:self-auto">
+			  {/* BOUTON MOINS MASQUE */}
+			  {isScelle && currentMasque > baseMasque && (
+				<button onClick={() => handleDowngradeStat('masque')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getCaracCost(currentMasque - 1)} XP`}>
+				  <Minus size={18} />
+				</button>
+			  )}
+
+			  <span className="text-2xl font-serif font-bold text-indigo-900 w-8 text-center">{currentMasque}</span>
+
+			  {/* BOUTON PLUS MASQUE */}
+			  {isScelle && currentMasque < 10 && (
+				<button onClick={() => handleUpgradeStat('masque')} className="p-1 text-emerald-600 hover:bg-emerald-50 rounded flex flex-col items-center transition-colors" title={`Coûte ${getCaracCost(currentMasque)} XP`}>
+				  <Plus size={18} />
+				  <span className="text-[9px] font-bold mt-0.5">{getCaracCost(currentMasque)} XP</span>
+				</button>
+			  )}
+			</div>
+		  </div>
+		</div>
+
+		{isScelle && (
+		  <p className="text-xs text-indigo-800 mt-4 italic text-center">
+			Améliorer vos Attributs Féériques consomme de l'Expérience. Augmenter la Féérie débloquera immédiatement un nouvel emplacement de Pouvoir.
+		  </p>
+		)}
+	  </div>
       {/* POUVOIRS */}
       <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
         <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
@@ -544,7 +551,7 @@ export function Step3() {
           {/* ✨ FIX : Message indicatif pour le joueur en mode Évolution */}
           {!selectedExterior && !hasAnomalie && isScelle && (
             <div className="text-xs text-fuchsia-800 font-bold mt-3 bg-fuchsia-50 p-2 rounded border border-fuchsia-200 animate-fade-in">
-              🪄 L'activation de l'Anomalie consommera un nouvel emplacement d'Atout et coûtera {ATOUT_XP_COST} XP.
+              🪄 L'activation de l'Anomalie consommera un nouvel emplacement d'Atout et coûtera {FIXED_XP_COSTS.nouvel_atout} XP.
             </div>
           )}
 
@@ -633,16 +640,16 @@ export function StepAtouts() {
           type: 'UPDATE_MULTIPLE',
           payload: {
             atouts: newAtouts,
-            xp_depense: Math.max(0, xpDepense - ATOUT_XP_COST)
+            xp_depense: Math.max(0, xpDepense - FIXED_XP_COSTS.nouvel_atout)
           },
           gameData
         });
-        showInAppNotification(`Atout désappris : +${ATOUT_XP_COST} XP récupérés !`, "success");
+        showInAppNotification(`Atout désappris : +${FIXED_XP_COSTS.nouvel_atout} XP récupérés !`, "success");
         return;
       } else {
         // ✨ ACHAT DIRECT ET INSTANTANÉ
-        if (xpDispo < ATOUT_XP_COST) {
-          showInAppNotification(`Il vous faut ${ATOUT_XP_COST} XP pour débloquer cet Atout !`, "error");
+        if (xpDispo < FIXED_XP_COSTS.nouvel_atout) {
+          showInAppNotification(`Il vous faut ${FIXED_XP_COSTS.nouvel_atout} XP pour débloquer cet Atout !`, "error");
           return;
         }
         const newAtouts = [...(character.atouts || []), atout.nom];
@@ -650,11 +657,11 @@ export function StepAtouts() {
           type: 'UPDATE_MULTIPLE',
           payload: {
             atouts: newAtouts,
-            xp_depense: xpDepense + ATOUT_XP_COST
+            xp_depense: xpDepense + FIXED_XP_COSTS.nouvel_atout
           },
           gameData
         });
-        showInAppNotification(`L'Atout "${atout.nom}" a été acquis pour ${ATOUT_XP_COST} XP !`, "success");
+        showInAppNotification(`L'Atout "${atout.nom}" a été acquis pour ${FIXED_XP_COSTS.nouvel_atout} XP !`, "success");
         return;
       }
     }
@@ -675,7 +682,7 @@ export function StepAtouts() {
           <h3 className="font-serif font-bold text-amber-900">Atouts Féériques</h3>
           {isScelle ? (
             <p className="text-sm text-amber-800">
-              Dépensez votre Expérience ({ATOUT_XP_COST} XP) pour acquérir de nouveaux Atouts. Vous pouvez librement cliquer sur un Atout acquis pour le désapprendre et récupérer vos points.
+              Dépensez votre Expérience ({FIXED_XP_COSTS.nouvel_atout} XP) pour acquérir de nouveaux Atouts. Vous pouvez librement cliquer sur un Atout acquis pour le désapprendre et récupérer vos points.
             </p>
           ) : (
             <p className="text-sm text-amber-800">
@@ -722,7 +729,7 @@ export function StepAtouts() {
               {/* Le prix en XP */}
               {isScelle && !isSelected && !isAnomalie && (
                 <div className="absolute top-3 right-3 bg-amber-100 text-amber-800 text-[10px] uppercase font-bold px-2 py-1 rounded border border-amber-300 shadow-sm">
-                  {ATOUT_XP_COST} XP
+                  {FIXED_XP_COSTS.nouvel_atout} XP
                 </div>
               )}
 

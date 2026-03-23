@@ -5,7 +5,7 @@
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
 // 13.1.0 // 13.8.0 // 13.12.0
-// 14.0.0 // 14.3.0 // 14.5.0
+// 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0
 
 import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -25,17 +25,6 @@ import DiceRoller from './components/DiceRoller';
 import PixieAssistant from './components/PixieAssistant';
 import BackgroundDecor from './components/BackgroundDecor';
 
-// --- IMPORTS DES ÉTAPES ---
-import Step1 from './components/Step1';
-import { Step2, Step3, StepAtouts } from './components/StepMagie';
-import StepCaracteristiques from './components/StepCaracteristiques';
-import StepProfils from './components/StepProfils';
-import StepCompetencesLibres from './components/StepCompetencesLibres';
-import StepCompetencesFutiles from './components/StepCompetencesFutiles';
-import StepVieSociale from './components/StepVieSociale';
-import StepPersonnalisation from './components/StepPersonnalisation';
-import StepRecapitulatif from './components/StepRecapitulatif';
-
 import { exportToPDF } from './utils/pdfGenerator';
 import { AVAILABLE_BADGES, STEP_CONFIG } from './data/DictionnaireJeu';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
@@ -50,6 +39,23 @@ const AccountSettings = lazy(() => import('./components/AccountSettings'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const CerclesDashboard = lazy(() => import('./components/CerclesDashboard'));
 const MesPropositions = lazy(() => import('./components/MesPropositions'));
+
+// --- IMPORTS DES ÉTAPES ---
+// ✨ NOUVEAU : LE CHARGEMENT PARESSEUX DES ÉTAPES
+const Step1 = lazy(() => import('./components/Step1'));
+
+// 💡 Astuce de Senior : Comment Lazy Loader des exports nommés !
+const Step2 = lazy(() => import('./components/StepMagie').then(module => ({ default: module.Step2 })));
+const Step3 = lazy(() => import('./components/StepMagie').then(module => ({ default: module.Step3 })));
+const StepAtouts = lazy(() => import('./components/StepMagie').then(module => ({ default: module.StepAtouts })));
+
+const StepCaracteristiques = lazy(() => import('./components/StepCaracteristiques'));
+const StepProfils = lazy(() => import('./components/StepProfils'));
+const StepCompetencesLibres = lazy(() => import('./components/StepCompetencesLibres'));
+const StepCompetencesFutiles = lazy(() => import('./components/StepCompetencesFutiles'));
+const StepVieSociale = lazy(() => import('./components/StepVieSociale'));
+const StepPersonnalisation = lazy(() => import('./components/StepPersonnalisation'));
+const StepRecapitulatif = lazy(() => import('./components/StepRecapitulatif'));
 
 function App() {
 
@@ -577,7 +583,15 @@ function App() {
 
 				  {/* LE CORPS DE L'ÉTAPE */}
 				  <main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
-					{stepComponents[step]}
+					{/* ✨ FIX : Le filet de sécurité local pour que la page ne clignote pas au changement d'étape ! */}
+					<Suspense fallback={
+					  <div className="flex flex-col items-center justify-center h-64 animate-pulse">
+						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mb-4"></div>
+						<p className="text-amber-900 font-serif text-lg font-bold">Dépliage du parchemin...</p>
+					  </div>
+					}>
+					  {stepComponents[step]}
+					</Suspense>
 				  </main>
 
 				  {/* BOUTONS PRÉCÉDENT / SUIVANT */}

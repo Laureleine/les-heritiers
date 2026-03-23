@@ -2,11 +2,12 @@
 // 8.20.0 
 // 9.6.0
 // 10.8.0
+// 14.9.0
 
 import React from 'react';
 import { Feather, Sparkles, Star, Lock, ShieldCheck, ShieldAlert, Unlock } from 'lucide-react';
 
-export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked, onToggleSeal, userProfile }) {
+const EncyclopediaCard = ({ item, activeTab, onOpenEdit, isLocked, onToggleSeal, userProfile }) => {
   const title = item.name || item.nom;
   const desc = item.description || item.desc;
   const isRestricted = item.is_official === false;
@@ -153,3 +154,19 @@ export default function EncyclopediaCard({ item, activeTab, onOpenEdit, isLocked
     </div>
   );
 }
+
+// ✨ NOUVEAU : LE BOUCLIER DE PERFORMANCE (Custom Comparator)
+const arePropsEqual = (prevProps, nextProps) => {
+  // On compare uniquement les données réelles et les états visuels.
+  // On ignore volontairement les fonctions (onOpenEdit, onToggleSeal) 
+  // qui sont recréées par le parent à chaque frappe dans la barre de recherche !
+  return (
+    prevProps.item === nextProps.item &&
+    prevProps.activeTab === nextProps.activeTab &&
+    prevProps.isLocked === nextProps.isLocked &&
+    prevProps.userProfile === nextProps.userProfile
+  );
+};
+
+// 🛡️ L'export blindé !
+export default React.memo(EncyclopediaCard, arePropsEqual);
