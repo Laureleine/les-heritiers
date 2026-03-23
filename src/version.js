@@ -6,6 +6,15 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.10.0',
+    date: '23 Mars 2026',
+    changes: [
+      '🐛 **Télégraphe Pneumatique (Hotfix UX) :** Correction du syndrome d\'affichage asynchrone ("Fantôme"). L\'interface n\'attend plus le retour du WebSocket Supabase Realtime pour s\'actualiser : l\'envoi d\'un message ou la création d\'un ticket déclenchent désormais un rafraîchissement manuel et immédiat des données locales.',
+      '🚀 **Démarrage Fulgurant (Stale-While-Revalidate) :** Intégration du "Grimoire de Poche". Le lourd dictionnaire de jeu est désormais mis en cache dans le navigateur (`localStorage`).',
+      '✨ **Chargement Asynchrone :** L\'application démarre désormais instantanément à la deuxième visite en lisant le cache local, tout en synchronisant silencieusement les nouvelles données depuis Supabase en arrière-plan.'
+    ]
+  },
+  {
     version: '14.9.0',
     date: '21 Mars 2026',
     changes: [

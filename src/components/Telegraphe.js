@@ -2,7 +2,7 @@
 // 9.0.0 // 9.0.1
 // 12.3.0
 // 13.4.0
-// 14.0.0
+// 14.0.0 // 14.9.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, LayoutList, ListFilter, Settings } from 'lucide-react';
@@ -227,6 +227,9 @@ export default function Telegraphe({ session, userProfile }) {
       setNewMessage('');
       setView('list');
       showInAppNotification("Missive de support expédiée au Conseil.", "success");
+      // ✨ FIX : On rafraîchit immédiatement la liste des correspondances
+      if (fetchChannelsRef.current) fetchChannelsRef.current(true);
+
     } catch (err) {
       showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
     } finally {
@@ -255,6 +258,15 @@ export default function Telegraphe({ session, userProfile }) {
       if (chanError) throw chanError;
 
       setNewMessage('');
+	  
+      // ✨ FIX : On n'attend pas le WebSocket, on recharge la vue instantanément !
+      if (fetchMessagesRef.current && activeChannel) {
+        fetchMessagesRef.current(activeChannel, true);
+      }
+      if (fetchChannelsRef.current) {
+        fetchChannelsRef.current(true);
+      }
+	  
     } catch (err) {
       showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
     } finally {
