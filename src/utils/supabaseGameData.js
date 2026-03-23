@@ -3,7 +3,7 @@
 // 11.1.0
 // 12.5.0
 // 13.0.6
-// 14.2.0
+// 14.2.0 // 14.10.0
 
 import { supabase } from '../config/supabase';
 
@@ -407,8 +407,29 @@ export const loadFairyTypes = async () => {
   }
 };
 
+/**
+ * Ajoute une spécialité publique à une compétence existante
+ */
+export const addGlobalSpeciality = async (competenceId, newSpeciality) => {
+  try {
+    const { data, error } = await supabase
+      .from('specialites')
+      .insert([{ competence_id: competenceId, nom: newSpeciality, is_official: false }])
+      .select()
+      .single();
+    if (error) {
+      if (error.code === '23505') throw new Error("Cette spécialité existe déjà.");
+      throw error;
+    }
+    return { id: data.id, nom: data.nom, is_official: data.is_official };
+  } catch (error) {
+    console.error("Erreur ajout spécialité:", error);
+    throw error;
+  }
+};
+
 // ============================================================================
-// CACHE GLOBAL ET ORCHESTRATION
+// CACHE GLOBAL ET ORCHESTRATION (Le Grimoire de Poche)
 // ============================================================================
 
 let cachedProfils = null;
@@ -417,7 +438,9 @@ let cachedFairyTypes = null;
 let cachedSocialItems = null;
 let cachedEncyclopediaRefs = null;
 
-// ✨ NOUVEAU : Récupération du catalogue
+const LOCAL_CACHE_KEY = 'heritiers_grimoire_cache';
+
+// ✨ NOUVEAU : Chargement des équipements
 export const loadSocialItems = async () => {
   try {
     const { data, error } = await supabase
@@ -449,61 +472,98 @@ export const loadEncyclopediaRefs = async () => {
   }
 };
 
+// 🧠 LE TRAVAILLEUR DE L'OMBRE : Télécharge et met en cache silencieusement
+const fetchAndCacheFromCloud = async (forceRefresh = false) => {
+  try {
+    const [p, c, f, fut, soc, refs] = await Promise.all([
+      loadProfils(), loadCompetences(), loadFairyTypes(), getCompetencesFutiles(forceRefresh), loadSocialItems(), loadEncyclopediaRefs()
+    ]);
+
+    cachedProfils = p; 
+    cachedCompetences = c; 
+    cachedFairyTypes = f; 
+    cachedSocialItems = soc; 
+    cachedEncyclopediaRefs = refs;
+
+    const completeData = {
+      profils: p,
+      competences: c.competences,
+      competencesParProfil: c.competencesParProfil,
+      competencesFutiles: fut,
+      fairyData: f.fairyData,
+      fairyTypes: f.fairyTypes,
+      fairyTypesByAge: f.fairyTypesByAge,
+      socialItems: soc,
+      encyclopediaRefs: refs
+    };
+
+    // 💾 On grave le dictionnaire dans le navigateur !
+    localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(completeData));
+    return completeData;
+  } catch (error) {
+    console.error("❌ Erreur lors de la synchronisation silencieuse :", error);
+    return null;
+  }
+};
+
+// 🚀 LE MOTEUR PRINCIPAL (Stale-While-Revalidate)
 export const loadAllGameData = async (forceRefresh = false) => {
-  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes && cachedCompetencesFutiles && cachedSocialItems && cachedEncyclopediaRefs) {
+  
+  // 1. RAM (Mémoire Vive) : Le plus rapide
+  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes && cachedSocialItems && cachedEncyclopediaRefs) {
     return {
       profils: cachedProfils,
       competences: cachedCompetences.competences,
       competencesParProfil: cachedCompetences.competencesParProfil,
-      competencesFutiles: cachedCompetencesFutiles,
+      // Note: cachedCompetencesFutiles est géré localement dans sa propre fonction au début du fichier
+      competencesFutiles: await getCompetencesFutiles(false), 
       fairyData: cachedFairyTypes.fairyData,
       fairyTypes: cachedFairyTypes.fairyTypes,
       fairyTypesByAge: cachedFairyTypes.fairyTypesByAge,
       socialItems: cachedSocialItems,
-      encyclopediaRefs: cachedEncyclopediaRefs // 👈 NOUVEAU
+      encyclopediaRefs: cachedEncyclopediaRefs
     };
   }
 
-  const [p, c, f, fut, soc, refs] = await Promise.all([
-    loadProfils(), loadCompetences(), loadFairyTypes(), getCompetencesFutiles(forceRefresh), loadSocialItems(), loadEncyclopediaRefs()
-  ]);
+  // 2. Grimoire de Poche (LocalStorage) : Lecture Instantanée
+  if (!forceRefresh) {
+    const localData = localStorage.getItem(LOCAL_CACHE_KEY);
+    if (localData) {
+      try {
+        const parsedData = JSON.parse(localData);
 
-  cachedProfils = p; cachedCompetences = c; cachedFairyTypes = f; cachedSocialItems = soc; cachedEncyclopediaRefs = refs;
+        // Restauration de la RAM
+        cachedProfils = parsedData.profils;
+        cachedCompetences = { competences: parsedData.competences, competencesParProfil: parsedData.competencesParProfil };
+        cachedFairyTypes = { fairyData: parsedData.fairyData, fairyTypes: parsedData.fairyTypes, fairyTypesByAge: parsedData.fairyTypesByAge };
+        cachedSocialItems = parsedData.socialItems;
+        cachedEncyclopediaRefs = parsedData.encyclopediaRefs;
 
-  return {
-    profils: p,
-    competences: c.competences,
-    competencesParProfil: c.competencesParProfil,
-    competencesFutiles: fut,
-    fairyData: f.fairyData,
-    fairyTypes: f.fairyTypes,
-    fairyTypesByAge: f.fairyTypesByAge,
-    socialItems: soc,
-    encyclopediaRefs: refs // 👈 NOUVEAU
-  };
-};
+        // ✨ LA MAGIE : On lance la mise à jour sans utiliser "await", pour ne PAS bloquer l'application !
+        fetchAndCacheFromCloud(false);
 
-export const invalidateAllCaches = () => {
-  cachedProfils = null; cachedCompetences = null; cachedFairyTypes = null; cachedCompetencesFutiles = null; cachedSocialItems = null; cachedEncyclopediaRefs = null;
-};
-
-/**
- * Ajoute une spécialité publique à une compétence existante
- */
-export const addGlobalSpeciality = async (competenceId, newSpeciality) => {
-  try {
-    const { data, error } = await supabase
-      .from('specialites')
-      .insert([{ competence_id: competenceId, nom: newSpeciality, is_official: false }])
-      .select()
-      .single();
-    if (error) {
-      if (error.code === '23505') throw new Error("Cette spécialité existe déjà.");
-      throw error;
+        console.log("⚡ Grimoire chargé depuis la poche en 0.01s !");
+        return parsedData;
+      } catch (e) {
+        console.warn("Cache local corrompu, on purge...", e);
+        localStorage.removeItem(LOCAL_CACHE_KEY);
+      }
     }
-    return { id: data.id, nom: data.nom, is_official: data.is_official };
-  } catch (error) {
-    console.error("Erreur ajout spécialité:", error);
-    throw error;
   }
+
+  // 3. Nuage Supabase (Bloquant) : Premier démarrage ou ForceRefresh
+  console.log("☁️ Téléchargement lourd du Grimoire depuis le Nuage...");
+  const freshData = await fetchAndCacheFromCloud(forceRefresh);
+  return freshData;
+};
+
+// Le bouton d'urgence (Purge)
+export const invalidateAllCaches = () => {
+  cachedProfils = null; 
+  cachedCompetences = null; 
+  cachedFairyTypes = null; 
+  invalidateCompetencesFutilesCache(); // Fonction déjà déclarée plus haut
+  cachedSocialItems = null; 
+  cachedEncyclopediaRefs = null;
+  localStorage.removeItem(LOCAL_CACHE_KEY); // ✨ On vide aussi la poche !
 };
