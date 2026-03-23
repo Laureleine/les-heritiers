@@ -4,7 +4,7 @@
 // 10.4.0 // 10.6.0
 // 11.1.0
 // 13.6.0 // 13.6.1 // 13.7.0 // 13.8.0 // 13.9.0 // 13.10.0
-// 14.1.0
+// 14.1.0 // 14.9.0
 
 import React, { useState, useMemo } from 'react';
 import { Plus, Minus, RotateCcw } from 'lucide-react';
@@ -221,10 +221,9 @@ export default function StepCaracteristiques() {
           const current = currentCaracs[carac.key] || minGenetique;
           const investis = current - minGenetique;
 
-          // ✨ Planchers et plafonds visuels
-          const plancher = isScelle 
-            ? (character.stats_scellees?.caracteristiques?.[carac.key] || minGenetique)
-            : minGenetique;
+		  const plancher = isScelle
+			? (character.data?.stats_scellees?.caracteristiques?.[carac.key] || minGenetique)
+			: minGenetique;
 
           const plafond = isScelle 
             ? maxGenetique 
@@ -241,7 +240,11 @@ export default function StepCaracteristiques() {
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{carac.icon}</span>
                 <div>
-                  <div className="font-bold text-gray-800">{carac.label}</div>
+                  {/* ✨ FIX : On met le label ET le cadenas dans un même conteneur flex ! */}
+                  <div className="font-bold text-gray-800 flex items-center gap-2">
+                    {carac.label}
+                  </div>
+                  
                   <div className="text-xs font-bold text-gray-400">
                     Min {minGenetique} <span className="text-gray-300 font-normal">/</span> Max {maxGenetique}
                   </div>
@@ -267,10 +270,14 @@ export default function StepCaracteristiques() {
                 <button
                   onClick={() => handleChange(carac.key, 1)}
                   disabled={isPlusDisabled}
-                  className="h-10 w-10 flex items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
+                  className="h-10 w-10 flex flex-col items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors font-bold"
                 >
                   <Plus size={18} />
+                  {isScelle && current < plafond && (
+                    <span className="text-[9px] font-bold -mt-1">({getCaracCost(current)} XP)</span>
+                  )}
                 </button>
+
               </div>
 
             </div>

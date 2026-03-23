@@ -6,6 +6,22 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.9.0',
+    date: '21 Mars 2026',
+    changes: [
+      '✨ **L\'Illusion Parfaite (Optimisation UX) :** Remplacement des textes d\'attente statiques par des "Skeleton Loaders" animés sur la Liste des Personnages et l\'Encyclopédie.',
+      '🧠 **Biais Cognitif :** La structure visuelle des cartes (en-têtes, badges, textes) est désormais dessinée en filigrane grisé pendant les requêtes au Nuage Supabase. Cela réduit drastiquement la perception du temps de chargement pour les joueurs, fluidifiant la navigation.',
+      '💰 **Évolution Sociale (Fortune) :** Le Puits des Âmes gère désormais l\'augmentation de la Fortune (Étape 9). Les joueurs peuvent s\'enrichir en dépensant des XP selon la formule complexe du livre de base (calculée dynamiquement en fonction de leurs compétences Classe ou Sciences).',
+      '🔮 **Affichage Prédictif (UX XP) :** Intégration de la tarification dynamique sur les boutons d\'augmentation des Caractéristiques, Compétences, Fortune, etc... Le joueur voit désormais le coût exact (ex: "+ (12 XP)") avant de valider son achat', 
+      '✨ **Affichage Prédictif :** Ajustement des étiquettes de remboursement (Boutons -) sur l\'interface de Magie. Le système affiche désormais correctement le prix de l\'échelon précédemment franchi lors d\'une annulation.',
+      '🚀 **Performance Absolue (Lazy Loading) :** Refonte de l\'architecture de chargement du Créateur d\'Héritier. Les 11 étapes de création ne sont plus chargées statiquement au démarrage de l\'application, mais uniquement à la demande (au clic sur le bouton "Suivant"). Cela réduit drastiquement le poids initial de la PWA et le temps de lancement sur mobile.',
+      '✨ **Expérience Utilisateur :** Ajout d\'un composant d\'attente localisé (`Suspense`) dans la zone principale du Créateur, affichant un "Dépliage du parchemin..." fluide sans faire clignoter le reste de l\'interface.',
+      '✨ **Fluidité de Recherche :** La barre de recherche du Grimoire est désormais instantanée. La saisie textuelle ne provoque plus le recalcul graphique et le re-rendu de toutes les cartes affichées à l\'écran.',
+      '🚀 **Performance Absolue (Réseau) :** Application de la Diète du Nuage sur le chargement des personnages. Les requêtes Supabase de listes utilisent désormais un filtre strict (`LIGHT_SELECT`) excluant la récupération des volumineux historiques et Planchers de Verre.',
+      '✨ **Lazy Loading de Données :** Les données complètes (JSONB lourds) d\'un Héritier ne sont téléchargées depuis le serveur qu\'au moment précis où le joueur clique sur "Voir la fiche", "Dupliquer" ou "Offrir", allégeant considérablement la bande passante globale.'
+    ]
+  },
+  {
     version: '14.8.0',
     date: '21 Mars 2026',
     changes: [

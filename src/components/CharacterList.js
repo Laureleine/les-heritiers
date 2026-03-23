@@ -4,12 +4,12 @@
 // 11.1.0
 // 12.4.0
 // 13.2.0 // 13.3.0 // 13.12.0 // 13.13.0
-// 14.0.0 // 14.0.6
+// 14.0.0 // 14.0.6 // 14.9.0
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase } from '../utils/supabaseStorage';
+import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
@@ -85,43 +85,53 @@ const CharacterCard = React.memo(({
       </div>
 
       {/* 3. ACTIONS */}
-      <div className="px-4 pb-3 flex gap-2">
+      <div className="px-3 pb-3 flex items-center justify-between gap-1.5">
         {isMyCharacter ? (
           <>
-            <button onClick={() => onSelect(char)} className="flex-1 py-1.5 bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-800 rounded border border-stone-200 text-sm font-bold transition-colors flex justify-center items-center gap-2">
-              <Edit size={14}/> Modifier
+            {/* Le bouton principal (S'adapte à l'espace restant) */}
+            <button onClick={() => onSelect(char)} className="flex-1 py-1.5 px-2 bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-800 rounded border border-stone-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 overflow-hidden">
+              <Edit size={14} className="shrink-0" /> 
+              <span className="truncate hidden sm:inline">Modifier</span>
             </button>
-            <button onClick={() => exportToPDF(char, gameData)} className="p-1.5 text-stone-400 hover:text-stone-600 hover:bg-stone-50 rounded border border-transparent transition-all" title="PDF">
-              <FileText size={16}/>
-            </button>
-            <button 
-              onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)} 
-              className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-blue-50' : 'text-stone-300 hover:text-stone-500 hover:bg-stone-50'}`} 
-              title={char.isPublic ? "Rendre privé" : "Rendre public"}
-            >
-              {char.isPublic ? <Globe size={16}/> : <EyeOff size={16}/>}
-            </button>
-            {/* ✨ NOUVEAU : La clé d'accès au Grimoire Privé ! */}
-            <button onClick={() => onOpenGrimoire(char.id)} className="p-2 text-stone-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Ouvrir le Grimoire Personnel">
-              <BookOpen size={16}/>
-            </button>
-            <button onClick={() => onDuplicate(char)} className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Dupliquer le personnage">
-              <Copy size={16}/>
-            </button>
-            <button onClick={() => onCreateGift(char)} className="p-2 text-stone-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Offrir ce personnage">
-              <Gift size={16}/>
-            </button>
-            <button onClick={() => onDeleteClick(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded">
-              <Trash2 size={16}/>
-            </button>
+
+            {/* La barre d'outils secondaire (Ultra-compacte) */}
+            <div className="flex items-center gap-0.5 shrink-0 bg-stone-50/50 p-0.5 rounded border border-stone-100">
+              <button onClick={() => exportToPDF(char, gameData)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF">
+                <FileText size={15}/>
+              </button>
+
+              <button
+                onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)}
+                className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-white' : 'text-stone-400 hover:text-stone-700 hover:bg-white'}`}
+                title={char.isPublic ? "Rendre privé" : "Rendre public"}
+              >
+                {char.isPublic ? <Globe size={15}/> : <EyeOff size={15}/>}
+              </button>
+
+              <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-stone-400 hover:text-amber-600 hover:bg-white rounded transition-colors" title="Ouvrir le Grimoire Personnel">
+                <BookOpen size={15}/>
+              </button>
+
+              <button onClick={() => onDuplicate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Dupliquer le personnage">
+                <Copy size={15}/>
+              </button>
+
+              <button onClick={() => onCreateGift(char)} className="p-1.5 text-stone-400 hover:text-purple-600 hover:bg-white rounded transition-colors" title="Offrir ce personnage">
+                <Gift size={15}/>
+              </button>
+
+              <button onClick={() => onDeleteClick(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Détruire">
+                <Trash2 size={15}/>
+              </button>
+            </div>
           </>
         ) : (
-          <button onClick={() => onSelect(char, true)} className="w-full py-2 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2">
+          <button onClick={() => onSelect(char, true)} className="w-full py-1.5 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2">
             <Eye size={16}/> Voir la fiche
           </button>
         )}
       </div>
-
+	  
       {/* 4. FOOTER */}
       <div className="bg-stone-50 px-4 py-2 border-t border-stone-100 flex justify-between items-center text-[10px] text-stone-400 mt-auto">
         <div className="flex items-center gap-1.5">
@@ -218,6 +228,18 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     return () => { isMounted = false; };
   }, [loadCharacters]);
 
+  // 🧠 FIX : Le Cerveau qui charge le reste du personnage uniquement au clic !
+  const handleSelectCharacter = useCallback(async (lightChar, readOnly = false) => {
+    try {
+      showInAppNotification("Ouverture des archives...", "info");
+      const fullChar = await getFullCharacter(lightChar.id);
+      fullChar.ownerUsername = lightChar.ownerUsername; // On préserve le nom du joueur
+      onSelectCharacter(fullChar, readOnly); // On passe le relais au vrai gestionnaire
+    } catch (error) {
+      showInAppNotification("Le parchemin est illisible : " + error.message, "error");
+    }
+  }, [onSelectCharacter]);
+  
   // --- ACTIONS MÉMOÏSÉES ---
 
   const handleDeleteClick = useCallback((id) => {
@@ -237,32 +259,47 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     }
   }, [confirmDelete.charId, loadCharacters]);
 
-  const handleDuplicate = useCallback(async (charToDuplicate) => {
+  // 🧠 FIX 1 : Le Cerveau qui duplique en chargeant le lourd grimoire
+  const handleDuplicate = useCallback(async (lightChar) => {
     try {
-      const newChar = JSON.parse(JSON.stringify(charToDuplicate));
+      showInAppNotification("Copie du parchemin en cours...", "info");
+      
+      // On télécharge la version lourde (Lazy Loading)
+      const fullChar = await getFullCharacter(lightChar.id); 
+      
+      // On clone l'objet
+      const newChar = JSON.parse(JSON.stringify(fullChar));
       newChar.id = null;
       newChar.nom = `${newChar.nom} (Copie)`;
       newChar.statut = 'brouillon';
       
+      // Sauvegarde dans le Nuage
       await saveCharacterToSupabase(newChar);
       await loadCharacters();
+      
       showInAppNotification("L'Héritier a été dupliqué avec succès !", "success");
     } catch (error) {
       showInAppNotification(translateError(error), "error");
     }
   }, [loadCharacters]);
 
-  const handleCreateGiftCode = useCallback(async (char) => {
+  // 🧠 FIX 2 : L'Offrande a juste besoin de l'ID (Léger et rapide !)
+  const handleCreateGiftCode = useCallback(async (lightChar) => {
     try {
+      showInAppNotification("Préparation de l'offrande...", "info");
+      
+      // Pas besoin de charger le lourd, le lightChar suffit !
       const randomSegment = typeof crypto !== 'undefined' && crypto.randomUUID 
         ? crypto.randomUUID().split('-').at(0).toUpperCase() 
         : Math.random().toString(36).substring(2, 6).toUpperCase();
-        
       const code = `DON-${randomSegment}`;
-      const { error } = await supabase.from('characters').update({ transfer_code: code }).eq('id', char.id);
+
+      // ✨ CORRECTIF : On utilise bien 'lightChar' partout !
+      const { error } = await supabase.from('characters').update({ transfer_code: code }).eq('id', lightChar.id);
+      
       if (error) throw error;
       
-      setGiftCodeToShow({ nom: char.nom, code });
+      setGiftCodeToShow({ nom: lightChar.nom, code });
       await loadCharacters();
     } catch (error) {
       showInAppNotification("Erreur lors de la création du don : " + error.message, "error");
@@ -361,8 +398,31 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       </div>
 
       {loading ? (
-        <div className="text-center py-20">
-          <p className="text-xl text-gray-500 font-serif animate-pulse">Consultation des archives...</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-4">
+          {/* On génère 6 cartes fantômes pour remplir un grand écran */}
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden flex flex-col h-[200px] animate-pulse">
+              {/* En-tête du fantôme */}
+              <div className="p-4 border-b border-stone-100">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="h-6 w-1/2 bg-stone-200 rounded-md"></div>
+                  <div className="h-5 w-16 bg-stone-200 rounded-full"></div>
+                </div>
+                <div className="h-4 w-1/3 bg-stone-100 rounded-md"></div>
+              </div>
+              {/* Corps (Profils) */}
+              <div className="flex-1 p-4 flex items-center justify-center gap-3">
+                <div className="h-5 w-24 bg-stone-200 rounded-md"></div>
+                <div className="h-4 w-4 bg-stone-100 rounded-full"></div>
+                <div className="h-5 w-24 bg-stone-200 rounded-md"></div>
+              </div>
+              {/* Pied de page */}
+              <div className="bg-stone-50 px-4 py-3 border-t border-stone-100 flex justify-between items-center mt-auto">
+                <div className="h-3 w-20 bg-stone-200 rounded-md"></div>
+                <div className="h-3 w-16 bg-stone-200 rounded-md"></div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="py-4">
@@ -377,7 +437,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       currentUser={session?.user}
                       profils={profils}
                       gameData={gameData}
-                      onSelect={onSelectCharacter}
+					  onSelect={handleSelectCharacter} /* ✨ LE NOUVEAU CÂBLAGE ! */
                       onToggleVisibility={handleToggleVisibility}
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}

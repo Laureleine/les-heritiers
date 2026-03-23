@@ -2,12 +2,14 @@
 // 9.0.4 // 9.11.0
 // 11.1.0
 // 13.0.0 // 13.3.0
+// 14.9.0
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Minus, Star, Brain, RotateCcw, Briefcase, Info, Lock } from 'lucide-react';
 import { addGlobalSpeciality } from '../utils/supabaseGameData';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { getUtileCost, FIXED_XP_COSTS } from '../utils/xpCalculator';
 
 const POINTS_TOTAUX = 15;
 const SKILLS_ESPRIT = [
@@ -101,7 +103,7 @@ export default function StepCompetencesLibres() {
           showInAppNotification(`Excellence maximale atteinte (${evolutionMax}).`, "warning");
           return;
         }
-        const costXP = (totalScore + 1) * 3;
+        const costXP = getUtileCost(totalScore);
         if (xpDispo < costXP) {
           showInAppNotification(`Il vous faut ${costXP} XP pour atteindre le rang ${totalScore + 1}.`, "error");
           return;
@@ -117,7 +119,7 @@ export default function StepCompetencesLibres() {
           showInAppNotification("Savoir originel scellé ! Impossible d'oublier cette compétence.", "warning");
           return;
         }
-        const refundXP = totalScore * 3; 
+        const refundXP = getUtileCost(totalScore - 1);
         dispatchCharacter({
           type: 'UPDATE_MULTIPLE',
           payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current - 1 } }, xp_depense: xpDepense - refundXP },
@@ -145,7 +147,7 @@ export default function StepCompetencesLibres() {
     if (currentSpecs.includes(specName)) return;
 
     const isFreeConduite = nomComp === 'Conduite' && (getScoreBase(nomComp) + (lib.rangs[nomComp] || 0)) > 0 && currentSpecs.length === 0;
-    const costXP = isFreeConduite ? 0 : 8;
+    const costXP = isFreeConduite ? 0 : FIXED_XP_COSTS.specialite_utile;
 
     if (isScelle) {
       if (xpDispo < costXP) {
@@ -178,7 +180,7 @@ export default function StepCompetencesLibres() {
 
     const currentSpecs = lib.choixSpecialiteUser[nomComp] || [];
     const isRefundingFreeConduite = nomComp === 'Conduite' && currentSpecs.length === 1 && specToRemove === currentSpecs.at(0);
-    const refundXP = isRefundingFreeConduite ? 0 : 8;
+    const refundXP = isRefundingFreeConduite ? 0 : FIXED_XP_COSTS.specialite_utile;
 
     if (isScelle) {
       const plancherSpecs = character.data?.stats_scellees?.competencesLibres?.choixSpecialiteUser?.[nomComp] || [];
@@ -271,10 +273,21 @@ export default function StepCompetencesLibres() {
           </div>
           <div className="flex items-center bg-white rounded border border-stone-300 shadow-sm">
             <div className="px-2 py-1 text-xs text-stone-400 border-r border-stone-200 bg-stone-50" title="Base calculée">{scoreBase}</div>
-            <button onClick={() => handleRangChange(nomComp, -1)} disabled={isMinusDisabled} className="px-2 py-1 hover:bg-red-100 text-amber-800 disabled:opacity-30 border-r border-stone-300 font-bold" title={isScelle && current > plancher ? 'Récupérer les XP investis' : ''}>-</button>
+				<button onClick={() => handleRangChange(nomComp, -1)} disabled={isMinusDisabled} className="px-2 py-1 hover:bg-red-100 text-amber-800 disabled:opacity-30 border-r border-stone-300 font-bold" title={isScelle && current > plancher ? 'Récupérer les XP investis' : ''}>-</button>
             <div className="px-3 py-1 font-bold text-amber-900 min-w-[28px] text-center bg-amber-50">{totalScore}</div>
-            <button onClick={() => handleRangChange(nomComp, 1)} disabled={totalScore >= maxAllowed} className="px-2 py-1 hover:bg-green-100 text-amber-800 disabled:opacity-30 font-bold" title={isScelle && totalScore < maxAllowed ? `Coût : ${(totalScore + 1) * 3} XP` : ''}>+</button>
-          </div>
+				<button
+				  onClick={() => handleRangChange(nomComp, 1)}
+				  disabled={isReadOnly || totalScore >= maxAllowed || (!isScelle && pointsRestantsVerts <= 0 && (!isEspritEligible || pointsRestantsViolets <= 0))}
+				  className="p-1 hover:bg-emerald-50 text-emerald-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+				>
+				  <div className="flex items-center gap-1">
+					<Plus size={16} />
+						{isScelle && totalScore < maxAllowed && (
+						  <span className="text-[10px] font-bold text-emerald-700">({getUtileCost(totalScore)} XP)</span>
+						)}
+				  </div>
+				</button>          
+			</div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 pl-4 border-l-2 border-stone-200 ml-1">

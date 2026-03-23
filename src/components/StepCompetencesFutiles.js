@@ -3,7 +3,7 @@
 // 9.11.0
 // 10.4.0 // 10.6.0 // 10.9.0
 // 11.1.0
-// 14.4.0 // 14.5.0 // 14.8.0
+// 14.4.0 // 14.5.0 // 14.8.0 // 14.9.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
@@ -15,7 +15,7 @@ import { getFutileCost } from '../utils/xpCalculator';
 
 const POINTS_TOTAUX = 10;
 
-export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
+export default function StepCompetencesFutiles() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
   const fairyData = gameData.fairyData;
 
@@ -183,7 +183,6 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
         newCompetenceDesc.trim() || 'Compétence personnalisée'
       );
       if (newComp) {
-        // ✨ Plus de requête redondante, on l'ajoute directement à la liste visuelle !
         setCompetencesFutilesBase(prev => {
           const newList = [...prev, newComp];
           return newList.sort((a, b) => a.nom.localeCompare(b.nom));
@@ -253,11 +252,15 @@ export default function StepCompetencesFutiles() { // 👈 PLUS DE PARAMÈTRES
 
           <button
             onClick={() => handleRangChange(comp.nom, 1)}
-            // ✨ FIX : L'hybride parfait !
-            disabled={isScelle ? (scoreTotal >= maxAllowed) : (!canAddRang(comp.nom))}
-            className="w-8 h-8 flex items-center justify-center rounded bg-amber-100 hover:bg-amber-200 text-amber-800 disabled:opacity-30 disabled:bg-gray-100 transition-colors"
+            disabled={isReadOnly || scoreTotal >= maxAllowed || (!isScelle && !canAddRang(comp.nom))}
+            className="p-1 hover:bg-emerald-50 text-emerald-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Plus size={16}/>
+            <div className="flex items-center gap-1">
+              <Plus size={16} />
+              {isScelle && scoreTotal < maxAllowed && (
+                <span className="text-[10px] font-bold text-emerald-700">({getFutileCost(scoreTotal)} XP)</span>
+              )}
+			</div>
           </button>
 
         </div>        

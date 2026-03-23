@@ -1,5 +1,5 @@
 // 11.4.0
-// 14.3.0
+// 14.3.0 // 14.9.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Dices, Sparkles, Triangle, ShieldAlert, Zap, Crown, RefreshCcw } from 'lucide-react';
@@ -63,7 +63,7 @@ useEffect(() => {
     if (use3DDice && containerExists && !diceBoxRef.current) {
       try {
         diceBoxRef.current = new DiceBox("#dice-canvas-container", {
-		  assetPath: `${window.location.origin}/assets/dice-box/`,
+          assetPath: '/assets/dice-box/', 
 		  theme: diceTheme === 'sang' ? 'rust' : diceTheme === 'améthyste' ? 'purple' : 'default',
           themeColor: "#b45309",
           scale: 6,

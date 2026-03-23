@@ -1,12 +1,15 @@
 // src/utils/supabaseStorage.js
 // 12.0.0
 // 13.1.0 // 13.3.0 // 13.10.0 // 13.12.0
+// 14.9.0
 
 import { supabase } from '../config/supabase';
 
 // ============================================================================
 // CONFIGURATION ET CACHE HORS-LIGNE
 // ============================================================================
+
+const LIGHT_SELECT = 'id, user_id, created_at, updated_at, nom, sexe, type_fee, anciennete, profils, is_public, statut, xp_total, xp_depense';
 
 const OFFLINE_STORAGE_KEY = 'heritiers_character_cache';
 let userCharactersCache = null;
@@ -145,7 +148,7 @@ export const getUserCharacters = async (forceRefresh = false) => {
     // Récupération brute depuis Supabase
     const { data, error } = await supabase
       .from('characters')
-      .select('*')
+      .select(LIGHT_SELECT)
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
 
@@ -170,7 +173,7 @@ export const getPublicCharacters = async () => {
     try {
         const { data, error } = await supabase
             .from('characters')
-            .select('*, profiles(username)')
+			.select(`${LIGHT_SELECT}, profiles(username)`)
             .eq('is_public', true)
             .order('updated_at', { ascending: false });
 
@@ -293,7 +296,7 @@ export const getAllCharactersAdmin = async () => {
     try {
         const { data, error } = await supabase
             .from('characters')
-            .select('*, profiles(username)')
+			.select(`${LIGHT_SELECT}, profiles(username)`) // 👈 Remplacer '*, profiles(username)'
             .order('updated_at', { ascending: false });
 
         if (error) throw error;
@@ -315,4 +318,23 @@ export const toggleCharacterVisibility = async (characterId, isPublic) => {
     if (error) throw error;
     userCharactersCache = null;
     return mapDatabaseToCharacter(data);
+};
+
+// ============================================================================
+// 🧠 RÉCUPÉRATION DU GRIMOIRE COMPLET (LAZY LOADING)
+// ============================================================================
+export const getFullCharacter = async (characterId) => {
+  try {
+    const { data, error } = await supabase
+      .from('characters')
+      .select('*')
+      .eq('id', characterId)
+      .single();
+
+    if (error) throw error;
+    return mapDatabaseToCharacter(data);
+  } catch (error) {
+    console.error('❌ Erreur de récupération complète:', error);
+    throw error;
+  }
 };

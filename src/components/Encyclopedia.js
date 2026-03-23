@@ -5,7 +5,7 @@
 // 11.2.0
 // 12.1.0
 // 13.0.0 // 13.0.1 // 13.0.3
-// 14.2.0
+// 14.2.0 // 14.9.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -391,8 +391,24 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
         {/* Grille de résultats */}
         {loading ? (
-          <div className="text-center py-20 text-stone-400 animate-pulse text-lg font-serif">
-            Consultation des archives...
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-2">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden animate-pulse flex flex-col h-[180px]">
+                {/* En-tête et Icône */}
+                <div className="p-5 flex justify-between items-start border-b border-stone-100">
+                  <div className="flex-1 pr-4">
+                    <div className="h-6 w-3/4 bg-stone-200 rounded-md mb-3"></div>
+                    <div className="h-4 w-1/2 bg-stone-100 rounded-md"></div>
+                  </div>
+                  <div className="h-10 w-10 bg-stone-200 rounded-xl shrink-0"></div>
+                </div>
+                {/* Description fantôme */}
+                <div className="p-5 space-y-3 flex-1">
+                  <div className="h-3 w-full bg-stone-100 rounded-md"></div>
+                  <div className="h-3 w-5/6 bg-stone-100 rounded-md"></div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

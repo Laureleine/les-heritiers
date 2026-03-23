@@ -1,6 +1,7 @@
 // src/utils/pixieBrain.js
 // 9.4.0// 9.6.0
 // 10.2.0 // 10.9.0
+// 14.9.0
 
 // ============================================================================
 // 🧠 1. DICTIONNAIRES DE VOCABULAIRE GENRÉ ET ALÉATOIRE
@@ -254,6 +255,23 @@ export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
     pool.push("On a les poches vides hein ? Je peux voler un {gadget} pour toi si tu veux !");
   }
 
+	// ✨ NOUVEAU : LE RADAR D'EXPÉRIENCE (Ordre de Marie Cha')
+	if (c.statut === 'scelle' || c.statut === 'scellé') {
+	  const xpDispo = (c.xp_total || 0) - (c.xp_depense || 0);
+	  const currentFeerie = c.caracteristiques?.feerie || 3;
+	  const currentMasque = c.caracteristiques?.masque || 4;
+
+	  // La Mathématique de l'Évolution
+	  const costFeerie = (currentFeerie + 1) * 5;
+	  const costMasque = Math.max(12, (currentMasque + 1) * 4);
+
+	  if (currentFeerie < 8 && xpDispo >= costFeerie) {
+		pool.push("{excl} Ton Puits des Âmes déborde ! Tu as assez d'XP pour augmenter ta Féérie et briser un nouveau sceau !");
+	  } else if (currentMasque < 10 && xpDispo >= costMasque) {
+		pool.push("{excl} Ton Puits des Âmes est bien rempli ! Tu as l'Expérience nécessaire pour épaissir ton Masque !");
+	  }
+	}
+	
   // ✨ NOUVEAU : LE PLACEMENT DE PRODUIT DE PIXIE (Étape 9 uniquement, 15% de chance)
   if (step === 9 && Math.random() < 0.15) {
     pool.push("Dis, si tu as trop de Francs, tu savais que tu pouvais offrir un cadeau au Créateur du Grimoire ? Le lien magique est caché dans ton profil !");

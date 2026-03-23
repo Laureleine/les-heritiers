@@ -3,13 +3,16 @@
 // 10.6.0 // 10.9.0
 // 11.1.0
 // 13.4.0
+// 14.9.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext'; 
 import { showInAppNotification } from '../utils/SystemeServices';
+import { getFortuneCost } from '../utils/xpCalculator';
 
+  
 const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, freeContactsRemaining = 0 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -90,7 +93,55 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
 
 export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  
+  // ✨ VARIABLES DU PUITS DES ÂMES
+  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+  const xpTotal = character.xp_total || 0;
+  const xpDepense = character.xp_depense || 0;
+  const xpDispo = xpTotal - xpDepense;
 
+  // 💰 GESTION DE LA FORTUNE (ÉVOLUTION XP)
+  const handleUpgradeFortune = () => {
+    if (isReadOnly) return;
+    const currentFortune = character.fortune || 0;
+    
+    if (currentFortune >= 15) {
+      showInAppNotification("Votre Fortune a atteint son apogée !", "warning");
+      return;
+    }
+
+    if (isScelle) {
+      const cost = getFortuneCost(currentFortune, character.computedStats);
+      if (xpDispo < cost) {
+        showInAppNotification(`Fonds insuffisants ! Il vous faut ${cost} XP pour le rang ${currentFortune + 1}.`, "error");
+        return;
+      }
+      onCharacterChange({ fortune: currentFortune + 1, xp_depense: xpDepense + cost });
+      showInAppNotification(`Niveau de Fortune augmenté pour ${cost} XP !`, "success");
+    } else {
+      // Mode création classique
+      onCharacterChange({ fortune: currentFortune + 1 });
+    }
+  };
+
+  const handleDowngradeFortune = () => {
+    if (isReadOnly) return;
+    const currentFortune = character.fortune || 0;
+    
+    if (isScelle) {
+      const plancher = character.data?.stats_scellees?.fortune || 0;
+      if (currentFortune <= plancher) {
+        showInAppNotification("Votre Fortune originelle est scellée ! Impossible de la réduire.", "warning");
+        return;
+      }
+      const refund = getFortuneCost(currentFortune - 1, character.computedStats);
+      onCharacterChange({ fortune: currentFortune - 1, xp_depense: xpDepense - refund });
+      showInAppNotification(`Dépense annulée. +${refund} XP récupérés.`, "info");
+    } else {
+      if (currentFortune > 0) onCharacterChange({ fortune: currentFortune - 1 });
+    }
+  };
+  
   // Le remplaçant local :
   const onCharacterChange = (payload) => {
     if (!isReadOnly) dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload, gameData });
@@ -342,13 +393,55 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
           </h2>
           <p className="text-sm text-amber-700 mt-1">Vos budgets sont liés à vos Profils Majeur, Mineur et à la moyenne de vos compétences.</p>
         </div>
-        <div className="flex flex-col items-center bg-white py-2 px-6 rounded-lg border-2 border-amber-300 shadow-sm">
-          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Votre Fortune Actuelle</div>
-          <div className="text-2xl font-black text-amber-600 flex items-center gap-2">
-            <Coins size={24} className="text-amber-500" />
-            {currentFortune} <span className="text-sm text-gray-400 font-normal">/ 15</span>
+        {/* ✨ NOUVEAU : LE CONTRÔLEUR DE FORTUNE */}
+        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl flex items-center justify-between mb-6 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="bg-emerald-100 p-2 rounded-lg text-emerald-700">
+              <Coins size={24} />
+            </div>
+            <div>
+              <div className="font-bold text-emerald-900 font-serif text-lg">Niveau de Fortune</div>
+              {isScelle ? (
+                <div className="text-xs text-emerald-700">Votre richesse augmente avec l'expérience.</div>
+              ) : (
+                <div className="text-xs text-emerald-700">Défini par vos métiers et origines.</div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Bouton Moins (Remboursement) */}
+            <button 
+              onClick={handleDowngradeFortune}
+              disabled={isReadOnly || (isScelle && (character.fortune || 0) <= (character.data?.stats_scellees?.fortune || 0)) || (!isScelle && (character.fortune || 0) <= 0)}
+              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-emerald-200 text-emerald-600 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 transition-colors font-bold"
+              title={isScelle ? "Récupérer les XP investis" : "Réduire"}
+            >
+              <Minus size={18} />
+            </button>
+
+            {/* Score Actuel */}
+            <div className="w-8 text-center text-2xl font-serif font-black text-emerald-900">
+              {character.fortune || 0}
+            </div>
+
+            {/* Bouton Plus (Avec Affichage Prédictif !) */}
+            <button 
+              onClick={handleUpgradeFortune}
+              disabled={isReadOnly || (character.fortune || 0) >= 15 || (isScelle && xpDispo < getFortuneCost(character.fortune || 0, character.computedStats))}
+              className="h-10 px-3 flex flex-col items-center justify-center rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-30 disabled:bg-gray-400 transition-colors shadow-md"
+            >
+              <Plus size={18} />
+              {/* ✨ FIX : On cache le prix si la richesse absolue est atteinte */}
+              {isScelle && (character.fortune || 0) < 15 && (
+                <span className="text-[9px] font-bold -mt-1 tracking-wider">
+                  ({getFortuneCost(character.fortune || 0, character.computedStats)} XP)
+                </span>
+              )}
+            </button>
           </div>
         </div>
+
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
