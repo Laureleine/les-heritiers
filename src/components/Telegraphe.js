@@ -2,7 +2,7 @@
 // 9.0.0 // 9.0.1
 // 12.3.0
 // 13.4.0
-// 14.0.0 // 14.9.0
+// 14.0.0 // 14.9.0 // 14.10.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, LayoutList, ListFilter, Settings } from 'lucide-react';
@@ -43,25 +43,74 @@ export default function Telegraphe({ session, userProfile }) {
   // 📡 LES MOTEURS DE REQUÊTES BLINDÉS (Avec Mode Silencieux)
   // ==========================================================================
   const fetchChannels = async (isSilent = false) => {
-    if (!session?.user?.id) return;
     if (!isSilent) setLoading(true);
-    
     try {
-      const { data, error } = await supabase.from('chat_channels').select('*').order('last_message_at', { ascending: false });
-      if (error) throw error;
-      
-      if (data) {
-        const myId = session.user.id;
-        const accessibleChannels = data.filter(c => 
-          c.type === 'global' || 
-          (c.type === 'private' && (c.participant_1 === myId || c.participant_2 === myId)) ||
-          (c.type === 'support' && (isAdmin || c.participant_1 === myId)) ||
-          c.type === 'cercle'
-        );
-        setChannels(accessibleChannels);
+      const myId = session.user.id;
+
+      // 1. On récupère les Cercles dont je suis le Docte
+      const { data: docteCercles } = await supabase
+        .from('cercles')
+        .select('id, nom')
+        .eq('docte_id', myId);
+
+      // 2. On récupère les Cercles dont je suis Membre
+      const { data: memberData } = await supabase
+        .from('cercle_membres')
+        .select('cercles(id, nom)')
+        .eq('user_id', myId);
+
+      // Fusion propre sans doublons
+      const myCercles = [...(docteCercles || [])];
+      if (memberData) {
+        memberData.forEach(m => {
+          if (m.cercles && !myCercles.find(c => c.id === m.cercles.id)) {
+            myCercles.push(m.cercles);
+          }
+        });
       }
+      const cercleIds = myCercles.map(c => c.id);
+
+      // 3. On construit la requête dynamique pour chat_channels
+      // (En injectant astucieusement l'ID du Cercle dans participant_1)
+      let queryOr = isAdmin 
+        ? `type.eq.global,type.eq.support,and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`
+        : `type.eq.global,and(type.eq.support,participant_1.eq.${myId}),and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`;
+
+      if (cercleIds.length > 0) {
+        queryOr += `,and(type.eq.cercle,participant_1.in.(${cercleIds.join(',')}))`;
+      }
+
+      const { data: chatData, error: chatError } = await supabase
+        .from('chat_channels')
+        .select('*')
+        .or(queryOr)
+        .order('last_message_at', { ascending: false });
+
+      if (chatError) throw chatError;
+
+      let finalChannels = [...(chatData || [])];
+
+      // ✨ 4. L'ASTUCE : On invente les "Canaux Virtuels" pour les Cercles sans historique
+      myCercles.forEach(cercle => {
+        const exists = finalChannels.find(chan => chan.type === 'cercle' && chan.participant_1 === cercle.id);
+        if (!exists) {
+          finalChannels.push({
+            id: `virtual_${cercle.id}`,
+            is_virtual: true,
+            type: 'cercle',
+            name: `Table : ${cercle.nom}`,
+            participant_1: cercle.id, // On planque l'ID du cercle ici !
+            last_message_at: new Date(0).toISOString() // Date lointaine pour le mettre en bas
+          });
+        }
+      });
+
+      // On retrie le tout fraîchement
+      finalChannels.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+      setChannels(finalChannels);
+
     } catch (err) {
-      console.error("Erreur de chargement des canaux:", err);
+      showInAppNotification("Erreur de lecture des correspondances : " + translateError(err), "error");
     } finally {
       if (!isSilent) setLoading(false);
     }
@@ -80,7 +129,16 @@ export default function Telegraphe({ session, userProfile }) {
   const fetchMessages = async (channel, isSilent = false) => {
     if (!isSilent) setLoading(true);
     setActiveChannel(channel);
-    
+
+    // ✨ FIX : Le Court-circuit pour les canaux fantômes !
+    // Si c'est un salon virtuel, il est vide par définition. On ne dérange pas Supabase !
+    if (channel.is_virtual) {
+      setMessages([]);
+      setView('chat');
+      if (!isSilent) setLoading(false);
+      return; 
+    }
+
     try {
       const { data, error } = await supabase
         .from('chat_messages')
@@ -89,11 +147,12 @@ export default function Telegraphe({ session, userProfile }) {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      
+
       if (data) {
         setMessages(data);
         setView('chat');
-
+        
+        // Mise à jour du statut pour le support (inchangé)
         if (channel.type === 'support') {
           if (isAdmin && channel.status === 'nouveau') updateChannelStatus(channel.id, 'lu');
           else if (!isAdmin && channel.status === 'lu') updateChannelStatus(channel.id, 'consulte');
@@ -105,7 +164,6 @@ export default function Telegraphe({ session, userProfile }) {
       if (!isSilent) setLoading(false);
     }
   };
-
   const startPrivateChat = async (targetUser) => {
     setLoading(true);
     const myId = session.user.id;
@@ -240,45 +298,67 @@ export default function Telegraphe({ session, userProfile }) {
   const sendReply = async () => {
     if (!newMessage.trim() || !activeChannel) return;
     setLoading(true);
+
     try {
+      let actualChannelId = activeChannel.id;
+
+      // ✨ FIX : Si c'est un canal de Cercle "Virtuel", on le grave dans le marbre d'abord !
+      if (activeChannel.is_virtual) {
+        const { data: newChan, error: chanError } = await supabase.from('chat_channels').insert([{
+          type: 'cercle',
+          name: activeChannel.name,
+          participant_1: activeChannel.participant_1, // L'ID du Cercle est récupéré ici
+          status: 'open',
+          last_message_at: new Date().toISOString()
+        }]).select().single();
+
+        if (chanError) throw chanError;
+        actualChannelId = newChan.id;
+        setActiveChannel(newChan); // On désactive le mode virtuel localement
+      }
+
+      // Envoi du message classique
       const { error: msgError } = await supabase.from('chat_messages').insert([{
-        channel_id: activeChannel.id,
+        channel_id: actualChannelId,
         user_id: session.user.id,
         message: newMessage,
-        is_admin: isAdmin
+        is_admin: isAdmin || false
       }]);
+
       if (msgError) throw msgError;
 
-      const newStatus = activeChannel.type === 'support' ? (isAdmin ? 'lu' : 'nouveau') : 'open';
-      const { error: chanError } = await supabase.from('chat_channels').update({
-        last_message_at: new Date().toISOString(),
-        status: newStatus
-      }).eq('id', activeChannel.id);
-      
-      if (chanError) throw chanError;
+      // Mise à jour de la date du canal (seulement s'il n'est pas tout neuf !)
+      if (!activeChannel.is_virtual) {
+        const newStatus = activeChannel.type === 'support' ? (isAdmin ? 'lu' : 'nouveau') : 'open';
+        const { error: updateError } = await supabase.from('chat_channels').update({
+          last_message_at: new Date().toISOString(),
+          status: newStatus
+        }).eq('id', actualChannelId);
+
+        if (updateError) throw updateError;
+      }
 
       setNewMessage('');
-	  
-      // ✨ FIX : On n'attend pas le WebSocket, on recharge la vue instantanément !
-      if (fetchMessagesRef.current && activeChannel) {
-        fetchMessagesRef.current(activeChannel, true);
+
+      // Rafraîchissement asynchrone des vues
+      if (fetchMessagesRef.current) {
+        fetchMessagesRef.current({ id: actualChannelId, type: activeChannel.type }, true);
       }
-      if (fetchChannelsRef.current) {
-        fetchChannelsRef.current(true);
-      }
-	  
+      if (fetchChannelsRef.current) fetchChannelsRef.current(true);
+
     } catch (err) {
       showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
     } finally {
       setLoading(false);
     }
   };
-
+  
   const getChannelIcon = (type) => {
     if (type === 'global') return <Globe size={16} className="text-blue-600" />;
+    if (type === 'support') return <ShieldAlert size={16} className="text-amber-600" />;
     if (type === 'private') return <User size={16} className="text-emerald-600" />;
-    if (type === 'cercle') return <Users size={16} className="text-purple-600" />;
-    return <Shield size={16} className="text-red-600" />;
+    if (type === 'cercle') return <Users size={16} className="text-purple-600" />; // ✨ NOUVEAU
+    return <MessageCircle size={16} className="text-gray-600" />;
   };
 
   if (!session) return null;
@@ -328,7 +408,7 @@ export default function Telegraphe({ session, userProfile }) {
                 <div className="flex bg-stone-100 border-b border-stone-200 p-1 shrink-0 overflow-x-auto hide-scrollbar">
                   {[
                     { id: 'global', label: 'Public', icon: <Globe size={14}/> },
-                    { id: 'cercle', label: 'Cercles', icon: <Users size={14}/> },
+                    { id: 'cercle', label: 'Mes Tables', icon: <Users size={14}/> },
                     { id: 'private', label: 'Privé', icon: <User size={14}/> },
                     { id: 'support', label: 'Conseil', icon: <Shield size={14}/> }
                   ].map(tab => (

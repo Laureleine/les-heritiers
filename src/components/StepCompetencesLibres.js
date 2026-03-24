@@ -2,7 +2,7 @@
 // 9.0.4 // 9.11.0
 // 11.1.0
 // 13.0.0 // 13.3.0
-// 14.9.0
+// 14.9.0 // 14.10.0
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Minus, Star, Brain, RotateCcw, Briefcase, Info, Lock } from 'lucide-react';
@@ -322,7 +322,11 @@ export default function StepCompetencesLibres() {
 
           {/* Achat de nouvelle Spécialité */}
           {totalScore > 0 && creatingSpecFor !== nomComp && (
-            <select onChange={(e) => { if (e.target.value === '__CREATE_NEW__') setCreatingSpecFor(nomComp); else handleAddSpecialiteUser(nomComp, e.target.value); e.target.value = ''; }} className="text-[10px] bg-transparent text-gray-400 hover:text-blue-600 outline-none cursor-pointer w-24">
+            <select 
+			  onChange={(e) => { if (e.target.value === '__CREATE_NEW__') setCreatingSpecFor(nomComp); else handleAddSpecialiteUser(nomComp, e.target.value); e.target.value = ''; }} 
+			  disabled={isReadOnly} // ✨ FIX
+              className="text-[10px] bg-transparent text-gray-400 hover:text-blue-600 outline-none cursor-pointer w-24 disabled:opacity-50 disabled:cursor-not-allowed"
+			>
               <option value="">+ Choisir ({nextSpecCost === 0 ? 'Gratuit' : (isScelle ? '8 XP' : '1 pt')})</option>
               <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
               <optgroup label="📚 Officielles">

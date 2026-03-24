@@ -1,6 +1,7 @@
 // src/components/StepPersonnalisation.js
 // 10.1.0 // 10.6.0
 // 13.0.0
+// 14.10.0
 
 import React from 'react';
 import { User, Feather, Briefcase } from 'lucide-react'; 
@@ -68,25 +69,20 @@ export default function StepPersonnalisation() {
                 <select
                   value={character.profils?.activiteDomaine || ''}
                   onChange={(e) => updateActiviteDomaine(e.target.value)}
-                  className="w-full p-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-serif text-emerald-900 shadow-sm bg-white"
+                  disabled={isReadOnly} // ✨ FIX
+                  className="w-full p-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-serif text-emerald-900 shadow-sm bg-white disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Sélectionnez un métier...</option>
                   {boughtMetiers.map(m => (
                     <option key={m.id} value={m.nom}>{m.nom}</option>
                   ))}
                 </select>
-                {boughtMetiers.length === 0 && (
-                  <p className="text-xs text-amber-600 mt-1 font-bold">⚠️ Aucun métier n'a été acheté à l'étape "Social & Richesse".</p>
-                )}
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-emerald-900 mb-2">Précision (Texte libre)</label>
                 <input
                   type="text"
                   value={character.profils?.activite || ''}
                   onChange={(e) => updateActivitePrecision(e.target.value)}
-                  className="w-full p-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-serif text-emerald-900 shadow-sm bg-white"
+                  disabled={isReadOnly} // ✨ FIX
+                  className="w-full p-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-serif text-emerald-900 shadow-sm bg-white disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
                   placeholder="Ex: Chirurgien des bas-fonds..."
                 />
               </div>
@@ -99,7 +95,8 @@ export default function StepPersonnalisation() {
                 <select
                   value={character.competencesLibres?.specialiteMetier?.comp || ''}
                   onChange={(e) => updateSpecialiteMetier(e.target.value, '')}
-                  className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500"
+                  disabled={isReadOnly} // ✨ FIX
+                  className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Compétence...</option>
                   {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
@@ -108,8 +105,8 @@ export default function StepPersonnalisation() {
                 <select
                   value={character.competencesLibres?.specialiteMetier?.nom || ''}
                   onChange={(e) => updateSpecialiteMetier(character.competencesLibres?.specialiteMetier?.comp || '', e.target.value)}
-                  disabled={!character.competencesLibres?.specialiteMetier?.comp}
-                  className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isReadOnly || !character.competencesLibres?.specialiteMetier?.comp} // ✨ FIX
+                  className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Spécialité...</option>
                   {(competences[character.competencesLibres?.specialiteMetier?.comp]?.specialites || []).map(spec => (
@@ -139,13 +136,13 @@ export default function StepPersonnalisation() {
             </div>
             <div>
               <label className="block text-xs font-bold text-purple-600 uppercase mb-1">Nom Féérique (Vrai Nom)</label>
-              <input type="text" value={character.nomFeerique || ''} onChange={(e) => updateField('nomFeerique', e.target.value)} className="w-full p-2 border border-purple-200 rounded focus:ring-2 focus:ring-purple-500 outline-none font-serif text-purple-900 placeholder-purple-300" placeholder="Ex: Titania, Obéron..." />
+              <input type="text" value={character.nomFeerique || ''} onChange={(e) => updateField('nomFeerique', e.target.value)} disabled={isReadOnly} className="w-full p-2 border border-purple-200 rounded focus:ring-2 focus:ring-purple-500 outline-none font-serif text-purple-900 placeholder-purple-300 disabled:opacity-60 disabled:bg-purple-50 disabled:cursor-not-allowed" placeholder="Ex: Titania, Obéron..." />
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Apparence Sociale (Genre)</label>
               <div className="flex rounded-md shadow-sm">
                 {['Masculin', 'Féminin', 'Androgyne'].map(genre => (
-                  <button key={genre} onClick={() => updateField('genreHumain', genre)} className={`flex-1 py-2 text-xs font-bold border first:rounded-l-md last:rounded-r-md transition-colors ${character.genreHumain === genre ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}`}>
+                    <button key={genre} onClick={() => updateField('genreHumain', genre)} disabled={isReadOnly} className={`flex-1 py-2 text-xs font-bold border first:rounded-l-md last:rounded-r-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${character.genreHumain === genre ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}`}>
                     {genre}
                   </button>
                 ))}
@@ -156,16 +153,16 @@ export default function StepPersonnalisation() {
             <div className="flex gap-4">
               <div className="flex-1">
                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Taille</label>
-                <input type="text" value={character.taille || ''} onChange={(e) => updateField('taille', e.target.value)} className="w-full p-2 border border-gray-300 rounded focus:border-amber-500 outline-none" placeholder="ex: 1m75" />
+                <input type="text" value={character.taille || ''} onChange={(e) => updateField('taille', e.target.value)} disabled={isReadOnly} className="w-full p-2 border border-gray-300 rounded focus:border-amber-500 outline-none disabled:opacity-60 disabled:bg-gray-50 disabled:cursor-not-allowed" placeholder="ex: 1m75" />
               </div>
               <div className="flex-1">
                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Poids</label>
-                <input type="text" value={character.poids || ''} onChange={(e) => updateField('poids', e.target.value)} className="w-full p-2 border border-gray-300 rounded focus:border-amber-500 outline-none" placeholder="ex: 70kg" />
+                <input type="text" value={character.poids || ''} onChange={(e) => updateField('poids', e.target.value)} disabled={isReadOnly} className="w-full p-2 border border-gray-300 rounded focus:border-amber-500 outline-none disabled:opacity-60 disabled:bg-gray-50 disabled:cursor-not-allowed" placeholder="ex: 70kg" />
               </div>
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Description Physique</label>
-              <textarea value={character.apparence || ''} onChange={(e) => updateField('apparence', e.target.value)} className="w-full p-2 border border-gray-300 rounded focus:border-amber-500 outline-none text-sm resize-none custom-scrollbar" rows="3" placeholder="Description de l'apparence humaine ou féérique..." />
+              <textarea value={character.apparence || ''} onChange={(e) => updateField('apparence', e.target.value)} disabled={isReadOnly} className="w-full p-2 border border-gray-300 rounded focus:border-amber-500 outline-none text-sm resize-none custom-scrollbar disabled:opacity-60 disabled:bg-gray-50 disabled:cursor-not-allowed" rows="3" placeholder="Description de l'apparence humaine ou féérique..." />
             </div>
           </div>
         </div>

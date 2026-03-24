@@ -7,6 +7,18 @@ export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
     version: '14.10.0',
+    date: '24 Mars 2026',
+    changes: [
+      '👁️ **Passe-Partout du Meneur :** Le Docte possède désormais la capacité d\'inspecter en détail les Héritiers rattachés à sa table (Cercle).',
+      '🔒 **Verrouillage de l\'Identité (UX) :** Le sélecteur de fées (onglets de catégories et liste des espèces) de l\'Étape 1 est désormais totalement grisé et incliquable lorsque l\'Héritier est scellé ou consulté en lecture seule par le Docte.',
+      '🔒 **Sécurité et UX (Lecture Seule) :** Renforcement visuel total du mode de consultation (Passe-Partout du Docte ou archives communautaires). Tous les champs de saisie de texte, les menus déroulants et les boutons de personnalisation (Étapes 7, 8 et 10) sont désormais strictement grisés et inaccessibles au clic, évitant toute confusion chez le lecteur.',
+      '🔒 **Sécurité Critique (Lecture Seule) :** Verrouillage complet des trois écrans de l\'Académie de Magie (`StepMagie.js`). Le Docte ne peut plus accidentellement dépenser l\'Expérience d\'un joueur en modifiant sa Féérie ou son Masque, ni altérer la sélection de ses Pouvoirs et Atouts lors de l\'inspection de sa fiche.',
+      '📻 **Télégraphe Pneumatique :** Les joueurs et le Docte peuvent désormais discuter dans des salons privés dédiés à leurs Cercles de jeu ("Mes Tables").',
+      '✨ **Lazy Instantiation (Architecture) :** Pour préserver les performances de la base de données, les canaux de Cercles sont créés "virtuellement" lors de la connexion, et ne s\'inscrivent véritablement dans le marbre de Supabase qu\'à l\'envoi du tout premier message par un membre.'
+    ]
+  },
+  {
+    version: '14.10.0',
     date: '23 Mars 2026',
     changes: [
       '🐛 **Télégraphe Pneumatique (Hotfix UX) :** Correction du syndrome d\'affichage asynchrone ("Fantôme"). L\'interface n\'attend plus le retour du WebSocket Supabase Realtime pour s\'actualiser : l\'envoi d\'un message ou la création d\'un ticket déclenchent désormais un rafraîchissement manuel et immédiat des données locales.',
