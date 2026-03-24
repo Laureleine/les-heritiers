@@ -1,17 +1,24 @@
 // 11.1.0 // 11.2.1
 // 13.13.0
+// 14.10.0
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../config/supabase';
-import { Shield, Users, Plus, Key, X, ArrowLeft, EyeOff, LogOut } from 'lucide-react';
+import { Eye, Shield, Users, Plus, Key, X, ArrowLeft, EyeOff, LogOut } from 'lucide-react';
 import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
+import { getFullCharacter } from '../utils/supabaseStorage';
 
 // ============================================================================
 // ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
 // ============================================================================
-const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave }) => {
+// ============================================================================
+// ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
+// ============================================================================
+
+const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacterClick }) => { // 👈 PROP AJOUTÉE ICI
   if (!cercle) return null;
+
   const isDocte = cercle.docte_id === session.user.id;
 
   return (
@@ -56,6 +63,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* ✨ C'est ici que 'member' est défini par la boucle map ! */}
         {activeMembers.map(member => (
           <div key={member.id} className="p-4 border-2 border-stone-100 rounded-lg flex gap-4 items-center bg-stone-50/50">
             <div className="w-12 h-12 rounded-full bg-stone-200 flex items-center justify-center text-stone-500 font-serif text-xl border-2 border-white shadow-sm">
@@ -64,11 +72,21 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
             <div className="flex-1">
               <div className="font-bold text-amber-900 font-serif">{member.characters?.nom}</div>
               <div className="text-xs text-stone-500">Joué par : {member.profiles?.username}</div>
-              
+
               {/* L'ILLUSION DU MASQUE EN ACTION ! */}
               {isDocte ? (
-                <div className="mt-2 text-xs text-purple-700 bg-purple-100 px-2 py-1 rounded inline-block font-bold">
-                  Vraie nature : {member.characters?.typeFee || 'Inconnue'}
+                <div className="flex flex-col items-start gap-2 mt-2 w-full">
+                  <div className="text-xs text-purple-700 bg-purple-100 px-2 py-1 rounded inline-block font-bold">
+                    Vraie nature : {member.characters?.typeFee || 'Inconnue'}
+                  </div>
+                  {/* ✨ NOUVEAU : Le passe-partout du Docte */}
+                  <button
+                    onClick={() => onViewCharacterClick(member.characters?.id)}
+                    className="w-full py-1.5 bg-white text-purple-700 hover:bg-purple-600 hover:text-white rounded border border-purple-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm"
+                    title="Inspecter la fiche complète"
+                  >
+                    <Eye size={14} /> Voir la fiche
+                  </button>
                 </div>
               ) : (
                 <div className="mt-2 text-xs text-stone-400 flex items-center gap-1 italic">
@@ -89,10 +107,22 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
 // ============================================================================
 // ✨ LE COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CerclesDashboard({ session, onBack }) {
+export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   const [cercles, setCercles] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // ✨ NOUVEAU : Le Cerveau qui télécharge l'Héritier complet pour le Docte
+  const handleViewCharacterClick = useCallback(async (charId) => {
+    if (!charId) return;
+    try {
+      showInAppNotification("Ouverture des archives de cet Héritier...", "info");
+      const fullChar = await getFullCharacter(charId);
+      onViewCharacter(fullChar); // On expédie la fiche à App.js
+    } catch (error) {
+      showInAppNotification("Le parchemin est illisible : " + error.message, "error");
+    }
+  }, [onViewCharacter]);
   
   const [confirmState, setConfirmState] = useState({
     isOpen: false,
@@ -161,7 +191,7 @@ export default function CerclesDashboard({ session, onBack }) {
         .select(`
           id, user_id, joined_at,
           profiles ( username, unlocked_fairies ),
-          characters ( nom, apparence, genreHumain:genre_humain, typeFee:type_fee )
+          characters ( id, nom, apparence, genreHumain:genre_humain, typeFee:type_fee ) 
         `)
         .eq('cercle_id', cercleId);
 
@@ -347,7 +377,8 @@ export default function CerclesDashboard({ session, onBack }) {
               session={session} 
               activeMembers={activeMembers} 
               onDelete={handleDeleteCercle} 
-              onLeave={handleLeaveCercle} 
+              onLeave={handleLeaveCercle}
+			  onViewCharacterClick={handleViewCharacterClick}
             />
           )}
         </>

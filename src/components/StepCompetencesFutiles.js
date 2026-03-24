@@ -3,7 +3,7 @@
 // 9.11.0
 // 10.4.0 // 10.6.0 // 10.9.0
 // 11.1.0
-// 14.4.0 // 14.5.0 // 14.8.0 // 14.9.0
+// 14.4.0 // 14.5.0 // 14.8.0 // 14.9.0 // 14.10.0
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
@@ -269,13 +269,14 @@ export default function StepCompetencesFutiles() {
             <label className="block text-xs font-bold text-amber-800 mb-1">
               Précisez l'intitulé de votre choix :
             </label>
-            <input
-              type="text"
-              value={character.competencesFutiles?.precisions?.[comp.nom] || ''}
-              onChange={(e) => handlePrecisionChange(comp.nom, e.target.value)}
-              placeholder="Saisissez votre compétence..."
-              className="w-full p-2 text-sm border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-amber-50/30"
-            />
+			<input
+			  type="text"
+			  value={character.competencesFutiles?.precisions?.[comp.nom] || ''}
+			  onChange={(e) => handlePrecisionChange(comp.nom, e.target.value)}
+			  disabled={isReadOnly} // ✨ FIX
+			  placeholder="Saisissez votre compétence..."
+			  className="w-full p-2 text-sm border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-amber-50/30 disabled:opacity-60 disabled:cursor-not-allowed"
+			/>
           </div>
         )}
 	  </div>
@@ -389,7 +390,7 @@ export default function StepCompetencesFutiles() {
                 
                 .map(renderCompetence)}
             </div>
-          </div> {/* 👈 LE VOILÀ ! Le fameux </div> qui avait disparu ! */}
+          </div>
 
           {/* 4. Création Custom */}
           <div className="mt-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
@@ -399,21 +400,23 @@ export default function StepCompetencesFutiles() {
             <div className="flex flex-col md:flex-row gap-3">
               <input
                 type="text"
+                placeholder="Nouvelle compétence..."
                 value={newCompetenceName}
-                onChange={(e) => setNewCompetenceName(e.target.value)}
-                placeholder="Nom (ex: Collection de timbres)"
-                className="flex-1 p-3 border rounded-lg"
+                onChange={e => setNewCompetenceName(e.target.value)}
+                disabled={isReadOnly} // ✨ FIX
+                className="flex-1 p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-60 disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
               <input
                 type="text"
+                placeholder="Description (optionnelle)..."
                 value={newCompetenceDesc}
-                onChange={(e) => setNewCompetenceDesc(e.target.value)}
-                placeholder="Description courte"
-                className="flex-1 p-3 border rounded-lg"
+                onChange={e => setNewCompetenceDesc(e.target.value)}
+                disabled={isReadOnly} // ✨ FIX
+                className="flex-1 p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-60 disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
               <button
                 onClick={handleAddCustomCompetence}
-                disabled={!newCompetenceName.trim()}
+                disabled={isReadOnly || !newCompetenceName.trim()} // ✨ FIX
                 className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 font-bold"
               >
                 Ajouter

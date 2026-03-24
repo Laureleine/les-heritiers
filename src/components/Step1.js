@@ -2,7 +2,7 @@
 // 10.4.0 // 10.6.0 // 10.8.0
 // 11.1.0
 // 13.11.0
-// 14.0.0
+// 14.0.0 // 14.10.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling, Lock } from 'lucide-react';
@@ -371,7 +371,8 @@ export default function Step1() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`w-full px-4 py-3 rounded-lg text-left font-bold capitalize transition-all flex items-center justify-between ${
+				disabled={isLocked} 
+                  className={`flex-1 py-2 rounded-md font-bold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                   activeCategory === cat
                     ? 'bg-white text-amber-900 shadow-md ring-1 ring-amber-200 border-l-4 border-amber-500'
                     : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
@@ -392,33 +393,33 @@ export default function Step1() {
               ?.filter(fairyName => {
                 const fData = fairyData[fairyName];
                 if (!fData) return false;
-				// ✨ FIX : Le double contrôle absolu ! On attrape le camelCase ET le snake_case.
 				const isFairySecret = fData.isSecret === true || fData.is_secret === true;
-
-				// LA RÈGLE DU SECRET
 				return !isFairySecret || isUserDocte || unlockedFairies.includes(fData.id);
               })
-              .map((fairyName) => (
-                <button
-                  key={fairyName}
-                  onClick={() => {
-                    if (selectedPreview !== fairyName) {
-                      setSelectedPreview(fairyName);
-                      if (character.traitsFeeriques && character.traitsFeeriques.length > 0) {
-                        onCharacterChange({ traitsFeeriques: [] });
-                      }
-                    }
-                  }}
-                  className={`w-full text-left px-4 py-3 border-b border-gray-50 transition-all flex items-center justify-between group ${
-                    selectedPreview === fairyName
-                      ? 'bg-amber-100 text-amber-900 border-l-4 border-l-amber-600 pl-3'
-                      : 'hover:bg-stone-50 text-gray-600'
-                  }`}
-                >
-                  <span className="font-serif font-medium">{fairyName}</span>
-                  {character.typeFee === fairyName && <CheckCircle size={16} className="text-green-600"/>}
-                </button>
-              ))}
+				.map((fairyName) => (
+				  <button
+					key={fairyName}
+					onClick={() => {
+					  if (selectedPreview !== fairyName) {
+						setSelectedPreview(fairyName);
+						if (character.traitsFeeriques && character.traitsFeeriques.length > 0) {
+						  onCharacterChange({ traitsFeeriques: [] });
+						}
+					  }
+					}}
+					// ✨ FIX : On verrouille la liste des espèces !
+					disabled={isLocked}
+					className={`w-full text-left px-4 py-3 border-b border-gray-50 transition-all flex items-center justify-between group disabled:opacity-60 disabled:cursor-not-allowed ${
+					  selectedPreview === fairyName
+						? 'bg-amber-100 text-amber-900 border-l-4 border-l-amber-600 pl-3'
+						: 'hover:bg-stone-50 text-gray-600'
+					}`}
+				  >
+					<span className="font-serif font-medium">{fairyName}</span>
+					{character.typeFee === fairyName && <CheckCircle size={16} className="text-green-600"/>}
+				  </button>
+				))}
+
           </div>
         </div>
 

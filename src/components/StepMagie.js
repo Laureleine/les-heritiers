@@ -1,7 +1,7 @@
 // 10.4.0 // 10.6.0 // 10.8.0 // 10.9.0
 // 11.1.0 // 12.5.0
 // 13.1.0 // 13.10.0 // 13.11.0
-// 14.2.0 // 14.9.0
+// 14.2.0 // 14.9.0 // 14.10.0
 
 import React, { useState, useMemo } from 'react';
 import { Star, Info, Check, Sparkles, AlertCircle, Plus, Minus } from 'lucide-react';
@@ -81,7 +81,7 @@ export function Step2() {
         {data.capacites?.choix?.map((cap, idx) => {
           const isSelected = character.capaciteChoisie === cap.nom;
           // Si le personnage est scellé, les options non choisies sont grisées
-          const isDisabled = isScelle && !isSelected;
+          const isDisabled = (isReadOnly || isScelle) && !isSelected;
 
           return (
             <div key={idx} className="flex flex-col gap-2">
@@ -154,7 +154,7 @@ export function Step3() {
   const hasAnomalie = character.atouts?.includes(anomalieId) || character.atouts?.includes('Anomalie féérique');
 
   const handleUpgradeStat = (stat) => {
-    if (!isScelle) return;
+    if (isReadOnly || !isScelle) return;
     const currentRank = stat === 'feerie' ? currentFeerie : currentMasque;
     const maxLimit = stat === 'feerie' ? 8 : 10;
 
@@ -186,7 +186,7 @@ export function Step3() {
   };
 
   const handleDowngradeStat = (stat) => {
-    if (!isScelle) return;
+    if (isReadOnly || !isScelle) return; // 🔒 FIX DU SIÈCLE
     const currentRank = stat === 'feerie' ? currentFeerie : currentMasque;
     const baseRank = stat === 'feerie' ? baseFeerie : baseMasque;
 
@@ -371,7 +371,7 @@ export function Step3() {
 			
 			<div className="flex items-center gap-3 self-end sm:self-auto">
 			  {/* BOUTON MOINS FÉÉRIE */}
-			  {isScelle && currentFeerie > baseFeerie && (
+			  {!isReadOnly && isScelle && currentFeerie > baseFeerie && (
 				<button onClick={() => handleDowngradeStat('feerie')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getFeerieCost(currentFeerie - 1)} XP`}>
 				  <Minus size={18} />
 				</button>
@@ -380,7 +380,7 @@ export function Step3() {
 			  <span className="text-2xl font-serif font-bold text-indigo-900 w-8 text-center">{currentFeerie}</span>
 
 			  {/* BOUTON PLUS FÉÉRIE */}
-			  {isScelle && currentFeerie < 8 && (
+			  {!isReadOnly && isScelle && currentFeerie < 8 && (
 				<button onClick={() => handleUpgradeStat('feerie')} className="p-1 text-emerald-600 hover:bg-emerald-50 rounded flex flex-col items-center transition-colors" title={`Coûte ${getFeerieCost(currentFeerie)} XP`}>
 				  <Plus size={18} />
 				  <span className="text-[9px] font-bold mt-0.5">{getFeerieCost(currentFeerie)} XP</span>
@@ -398,7 +398,7 @@ export function Step3() {
 			
 			<div className="flex items-center gap-3 self-end sm:self-auto">
 			  {/* BOUTON MOINS MASQUE */}
-			  {isScelle && currentMasque > baseMasque && (
+			  {!isReadOnly && isScelle && currentMasque > baseMasque && (
 				<button onClick={() => handleDowngradeStat('masque')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getCaracCost(currentMasque - 1)} XP`}>
 				  <Minus size={18} />
 				</button>
@@ -407,7 +407,7 @@ export function Step3() {
 			  <span className="text-2xl font-serif font-bold text-indigo-900 w-8 text-center">{currentMasque}</span>
 
 			  {/* BOUTON PLUS MASQUE */}
-			  {isScelle && currentMasque < 10 && (
+			  {!isReadOnly && isScelle && currentMasque < 10 && (
 				<button onClick={() => handleUpgradeStat('masque')} className="p-1 text-emerald-600 hover:bg-emerald-50 rounded flex flex-col items-center transition-colors" title={`Coûte ${getCaracCost(currentMasque)} XP`}>
 				  <Plus size={18} />
 				  <span className="text-[9px] font-bold mt-0.5">{getCaracCost(currentMasque)} XP</span>
@@ -440,13 +440,14 @@ export function Step3() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {availablePowers.map((pouvoir, idx) => {
           const isSelected = character.pouvoirs?.includes(pouvoir.nom);
-          const isDisabled = !isSelected && countSelected >= maxPouvoirs;
+          const isDisabled = isReadOnly || (!isSelected && countSelected >= maxPouvoirs);
           const isInnate = isScelle && innatePouvoirs.includes(pouvoir.nom);
 
           return (
             <div
               key={idx}
               onClick={() => !isDisabled && handlePouvoirToggle(pouvoir.nom)}
+              disabled={isReadOnly}
               className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden cursor-pointer ${
                 isSelected ? 'border-indigo-600 bg-indigo-50 shadow-md ring-2 ring-indigo-400' :
                 isDisabled ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed' :
@@ -616,6 +617,7 @@ export function StepAtouts() {
   const xpDispo = xpTotal - xpDepense;
 
   const handleAtoutToggle = (atout) => {
+    if (isReadOnly) return; // 🔒 FIX
     const isSelectedByName = character.atouts?.includes(atout.nom);
     const isSelectedById = character.atouts?.includes(atout.id);
     const isCurrentlySelected = isSelectedByName || isSelectedById;
@@ -701,7 +703,7 @@ export function StepAtouts() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         {data.atouts.map((atout, idx) => {
           const isSelected = character.atouts?.includes(atout.nom) || character.atouts?.includes(atout.id);
-          const isDisabled = !isScelle && !isSelected && countSelected >= MAX_ATOUTS_GLOBAL;
+          const isDisabled = isReadOnly || (!isScelle && !isSelected && countSelected >= MAX_ATOUTS_GLOBAL);
           const isAnomalie = atout.nom === 'Anomalie féérique';
           
           // 🛡️ Détection visuelle du Plancher de Verre

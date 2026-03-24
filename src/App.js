@@ -5,7 +5,7 @@
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
 // 13.1.0 // 13.8.0 // 13.12.0
-// 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0
+// 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0 // 14.10.0
 
 import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -472,7 +472,21 @@ function App() {
 			  <Route path="/validations" element={<ValidationsPendantes session={session} onBack={() => navigate('/encyclopedia')} />} />
 			  <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={refreshUserProfile} onBack={() => navigate('/')} />} />
 			  <Route path="/admin_dashboard" element={<AdminDashboard session={session} onBack={() => navigate('/')} />} />
-			  <Route path="/cercles" element={<CerclesDashboard session={session} onBack={() => navigate('/')} />} />
+			  {/* ROUTE 3 : CERCLES (Avec inspection du Docte) */}
+			  <Route path="/cercles" element={
+				<CerclesDashboard 
+				  session={session} 
+				  onBack={() => navigate('/')} 
+				  onViewCharacter={(c) => {
+					// ✨ FIX : Le Docte ouvre le dossier d'un de ses joueurs en Lecture Seule
+					dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c, gameData });
+					setIsReadOnly(true);
+					setStep(1);
+					navigate('/creator');
+					window.scrollTo(0, 0);
+				  }}
+				/>
+			  } />			  
 			  <Route path="/mes_propositions" element={<MesPropositions session={session} onBack={() => navigate('/encyclopedia')} />} />
 
 
