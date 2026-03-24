@@ -6,6 +6,13 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.10.1',
+    date: '24 Mars 2026',
+    changes: [
+      '🐛 **Télégraphe Pneumatique (Hotfix SQL) :** Résolution du conflit de clé étrangère (`Foreign Key Violation`) lors de l\'initialisation d\'un salon de Cercle. Migration architecturale de la donnée vers une colonne dédiée `cercle_id` pour respecter l\'intégrité relationnelle de la base de données.'
+    ]
+  },
+  {
     version: '14.10.0',
     date: '24 Mars 2026',
     changes: [
