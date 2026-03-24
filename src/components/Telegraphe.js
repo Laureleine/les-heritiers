@@ -2,7 +2,7 @@
 // 9.0.0 // 9.0.1
 // 12.3.0
 // 13.4.0
-// 14.0.0 // 14.9.0 // 14.10.0
+// 14.0.0 // 14.9.0 // 14.10.0 // 14.10.1
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, LayoutList, ListFilter, Settings } from 'lucide-react';
@@ -77,7 +77,7 @@ export default function Telegraphe({ session, userProfile }) {
         : `type.eq.global,and(type.eq.support,participant_1.eq.${myId}),and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`;
 
       if (cercleIds.length > 0) {
-        queryOr += `,and(type.eq.cercle,participant_1.in.(${cercleIds.join(',')}))`;
+        queryOr += `,and(type.eq.cercle,cercle_id.in.(${cercleIds.join(',')}))`;
       }
 
       const { data: chatData, error: chatError } = await supabase
@@ -92,15 +92,16 @@ export default function Telegraphe({ session, userProfile }) {
 
       // ✨ 4. L'ASTUCE : On invente les "Canaux Virtuels" pour les Cercles sans historique
       myCercles.forEach(cercle => {
-        const exists = finalChannels.find(chan => chan.type === 'cercle' && chan.participant_1 === cercle.id);
+        // ✨ FIX : On vérifie avec cercle_id
+        const exists = finalChannels.find(chan => chan.type === 'cercle' && chan.cercle_id === cercle.id); 
         if (!exists) {
           finalChannels.push({
             id: `virtual_${cercle.id}`,
             is_virtual: true,
             type: 'cercle',
             name: `Table : ${cercle.nom}`,
-            participant_1: cercle.id, // On planque l'ID du cercle ici !
-            last_message_at: new Date(0).toISOString() // Date lointaine pour le mettre en bas
+            cercle_id: cercle.id, // ✨ FIX : On range l'ID proprement dans sa colonne !
+            last_message_at: new Date(0).toISOString() 
           });
         }
       });
@@ -307,7 +308,7 @@ export default function Telegraphe({ session, userProfile }) {
         const { data: newChan, error: chanError } = await supabase.from('chat_channels').insert([{
           type: 'cercle',
           name: activeChannel.name,
-          participant_1: activeChannel.participant_1, // L'ID du Cercle est récupéré ici
+          cercle_id: activeChannel.cercle_id, // ✨ FIX : On expédie vers la colonne officielle
           status: 'open',
           last_message_at: new Date().toISOString()
         }]).select().single();
@@ -316,7 +317,7 @@ export default function Telegraphe({ session, userProfile }) {
         actualChannelId = newChan.id;
         setActiveChannel(newChan); // On désactive le mode virtuel localement
       }
-
+	  
       // Envoi du message classique
       const { error: msgError } = await supabase.from('chat_messages').insert([{
         channel_id: actualChannelId,
