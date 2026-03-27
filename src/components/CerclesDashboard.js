@@ -1,24 +1,19 @@
 // 11.1.0 // 11.2.1
 // 13.13.0
-// 14.10.0
+// 14.10.0 // 14.11.0
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../config/supabase';
-import { Eye, Shield, Users, Plus, Key, X, ArrowLeft, EyeOff, LogOut } from 'lucide-react';
+import { Shield, Users, Plus, Key, X, ArrowLeft, EyeOff, LogOut, Eye, MessageCircle } from 'lucide-react';
 import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
-import { getFullCharacter } from '../utils/supabaseStorage';
 
 // ============================================================================
 // ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
 // ============================================================================
-// ============================================================================
-// ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
-// ============================================================================
 
-const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacterClick }) => { // 👈 PROP AJOUTÉE ICI
+const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave }) => {
   if (!cercle) return null;
-
   const isDocte = cercle.docte_id === session.user.id;
 
   return (
@@ -32,7 +27,21 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
             ) : (
               <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded font-bold uppercase tracking-wider flex items-center gap-1"><Users size={12}/> Vous êtes un Joueur</span>
             )}
+            
+            {/* Le raccourci vers le Télégraphe de la Table */}
+            <button 
+              onClick={() => window.dispatchEvent(new CustomEvent('open-telegraphe', { detail: { targetCercle: true } }))} 
+              className="ml-2 bg-stone-50 text-stone-600 hover:bg-amber-100 hover:text-amber-800 hover:border-amber-300 text-xs px-3 py-1 rounded-full font-bold flex items-center gap-1.5 transition-colors border border-stone-200 shadow-sm"
+              title="Ouvrir les correspondances de la table"
+            >
+              <MessageCircle size={12}/> Discuter avec la Table
+            </button>
           </div>
+
+          {/* ✨ FIX : Le compteur est remonté ici, bien au chaud et plus compact ! */}
+          <h3 className="font-serif font-bold text-stone-500 mt-4 text-sm flex items-center gap-2 uppercase tracking-widest">
+            <Users size={14} /> Héritiers à la table ({activeMembers.length})
+          </h3>
         </div>
 
         {isDocte ? (
@@ -58,47 +67,129 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         )}
       </div>
 
-      <h3 className="font-serif font-bold text-stone-700 mb-4 flex items-center gap-2">
-        <Users size={18} /> Héritiers à la table ({activeMembers.length})
-      </h3>
+      {/* ✨ FIX : L'ancien <h3> a disparu, la zone des joueurs (arc de cercle ou grille) commence directement ici ! */}      
+      {/* ✨ LA TABLE VIRTUELLE (S'adapte dynamiquement à la perspective) */}
+      <div className="relative mt-6 mb-8 bg-stone-50/50 rounded-3xl border border-stone-200/60 p-4 md:p-8 pt-16 md:pt-20 shadow-inner overflow-hidden">
+        
+        {/* L'illusion visuelle du bord de la table (décor) s'inverse selon le rôle ! */}
+        <div className={`absolute ${isDocte ? '-bottom-20 border-t-4' : '-top-20 border-b-4'} left-1/2 -translate-x-1/2 w-[150%] h-40 bg-amber-900/5 rounded-[100%] border-amber-900/10 pointer-events-none`}></div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* ✨ C'est ici que 'member' est défini par la boucle map ! */}
-        {activeMembers.map(member => (
-          <div key={member.id} className="p-4 border-2 border-stone-100 rounded-lg flex gap-4 items-center bg-stone-50/50">
-            <div className="w-12 h-12 rounded-full bg-stone-200 flex items-center justify-center text-stone-500 font-serif text-xl border-2 border-white shadow-sm">
-              {member.characters?.nom?.charAt(0) || '?'}
-            </div>
-            <div className="flex-1">
-              <div className="font-bold text-amber-900 font-serif">{member.characters?.nom}</div>
-              <div className="text-xs text-stone-500">Joué par : {member.profiles?.username}</div>
-
-              {/* L'ILLUSION DU MASQUE EN ACTION ! */}
-              {isDocte ? (
-                <div className="flex flex-col items-start gap-2 mt-2 w-full">
-                  <div className="text-xs text-purple-700 bg-purple-100 px-2 py-1 rounded inline-block font-bold">
-                    Vraie nature : {member.characters?.typeFee || 'Inconnue'}
-                  </div>
-                  {/* ✨ NOUVEAU : Le passe-partout du Docte */}
-                  <button
-                    onClick={() => onViewCharacterClick(member.characters?.id)}
-                    className="w-full py-1.5 bg-white text-purple-700 hover:bg-purple-600 hover:text-white rounded border border-purple-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm"
-                    title="Inspecter la fiche complète"
-                  >
-                    <Eye size={14} /> Voir la fiche
-                  </button>
+        {/* ✨ NOUVEAU : LA PLACE DU DOCTE (Visible uniquement par les joueurs) */}
+        {!isDocte && (
+          <div className="flex justify-center mb-16 relative z-20">
+            <div className="w-full sm:w-56 p-4 border-2 border-purple-200 rounded-xl flex flex-col items-center bg-white shadow-md relative group transition-all hover:border-purple-400 hover:shadow-xl hover:-translate-y-2">
+              
+              {/* Le bouton Télégraphe récupère désormais le vrai pseudo pour le titre de la fenêtre */}
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-telegraphe', { detail: { targetUser: { id: cercle.docte_id, username: cercle.profiles?.username || 'Le Docte' } } }))}
+                className="absolute top-2 right-2 p-1.5 bg-purple-50 text-purple-500 hover:text-purple-700 hover:bg-purple-100 rounded-full transition-colors border border-purple-200 shadow-sm z-30"
+                title={`Missive privée à ${cercle.profiles?.username || 'ce Docte'}`}
+              >
+                <MessageCircle size={14} />
+              </button>
+              
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center text-purple-600 border-4 border-white shadow-sm -mt-10 mb-2 transition-transform group-hover:scale-110">
+                <Shield size={28} />
+              </div>
+              
+              <div className="flex-1 w-full text-center flex flex-col">
+                {/* ✨ FIX : Le vrai pseudo au centre, et "Docte" en sous-titre ! */}
+                <div className="font-bold text-purple-900 font-serif text-lg truncate w-full" title={cercle.profiles?.username}>
+                  {cercle.profiles?.username || 'Le Docte'}
                 </div>
-              ) : (
-                <div className="mt-2 text-xs text-stone-400 flex items-center gap-1 italic">
-                  <EyeOff size={12} /> Nature féérique masquée
+                <div className="text-[10px] text-purple-500 uppercase tracking-widest mt-0.5">
+                  Docte
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        ))}
-        {activeMembers.length === 0 && (
-          <div className="col-span-2 text-center text-stone-400 italic py-4">La table est encore vide.</div>
         )}
+
+        {/* LES HÉRITIERS */}
+        <div className="flex flex-wrap justify-center items-end gap-4 md:gap-6 relative z-10 min-h-[250px]">
+          {activeMembers.map((member, index) => {
+            const n = activeMembers.length;
+            
+            // 📐 L'algorithme de l'Arc Réversible : On ramène la position sur un spectre de -1 (gauche) à +1 (droite)
+            const arcDirection = isDocte ? 1 : -1;
+            const pos = n > 1 ? (index / (n - 1)) * 2 - 1 : 0;
+            
+            // On incline les cartes (inversé si on est face au Docte)
+            const rotation = pos * 12 * arcDirection;
+            
+            // On abaisse (ou on élève) les cartes sur les côtés pour créer la courbe
+            const translateY = Math.abs(pos) * 40 * arcDirection;
+
+            return (
+              // ✨ FIX : Le "Wrapper Géométrique" (Gère la position dans l'arc)
+              <div 
+                key={member.id} 
+                style={{ transform: `translateY(${translateY}px) rotate(${rotation}deg)` }}
+                className="w-full sm:w-56 relative transition-all duration-300 hover:z-20 group"
+              >
+
+                {/* ✨ FIX : On ajoute 'relative' sur la Carte Physique pour accrocher notre bulle ! */}
+                <div className="relative w-full p-4 border-2 border-stone-200 rounded-xl flex flex-col items-center bg-white shadow-md transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-4 group-hover:shadow-xl group-hover:border-amber-300">
+                  
+                  {/* ✨ FIX : La bulle de message privé (invisible pour soi-même) */}
+                  {member.user_id !== session.user.id && (
+                    <button
+                      onClick={() => window.dispatchEvent(new CustomEvent('open-telegraphe', { detail: { targetUser: { id: member.user_id, username: member.profiles?.username } } }))}
+                      className="absolute top-2 right-2 p-1.5 bg-stone-50 text-stone-400 hover:text-amber-600 hover:bg-amber-100 rounded-full transition-colors border border-stone-200 shadow-sm z-30"
+                      title={`Missive privée à ${member.profiles?.username}`}
+                    >
+                      <MessageCircle size={14} />
+                    </button>
+                  )}
+                  
+                  {/* L'avatar qui sort par le haut de la carte */}
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center text-stone-500 font-serif text-2xl border-4 border-white shadow-sm -mt-10 mb-2 group-hover:border-amber-100 transition-colors">
+                    {member.characters?.nom?.charAt(0) || '?'}
+                  </div>
+                  
+                  <div className="flex-1 w-full text-center flex flex-col">
+                    <div className="font-bold text-amber-900 font-serif text-lg truncate w-full" title={member.characters?.nom}>
+                      {member.characters?.nom}
+                    </div>
+                    <div className="text-[10px] text-stone-400 uppercase tracking-widest truncate mt-0.5">
+                      Joué par {member.profiles?.username}
+                    </div>
+
+                    {/* L'ILLUSION DU MASQUE EN ACTION ! */}
+                    {isDocte ? (
+                      <div className="flex flex-col items-center gap-3 mt-4 w-full">
+                        <div className="text-[10px] text-purple-800 bg-purple-100 px-3 py-1 rounded-full font-bold uppercase tracking-wider border border-purple-200 shadow-sm">
+                          {member.characters?.typeFee || 'Inconnue'}
+                        </div>
+                        <button
+                          onClick={() => window.dispatchEvent(new CustomEvent('open-grimoire', { detail: member.characters?.id }))}
+                          className="w-full py-2 bg-stone-50 text-purple-700 hover:bg-purple-600 hover:text-white rounded-lg border border-purple-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm"
+                          title="Inspecter la fiche complète"
+                        >
+                          <Eye size={14} /> Consulter
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="mt-5 text-xs text-stone-400 flex justify-center items-center gap-1 italic bg-stone-50 p-2 rounded-lg border border-stone-100">
+                        <EyeOff size={14} /> Nature masquée
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              </div>
+            );
+          })}
+          
+          {/* Message si la table est vide */}
+          {activeMembers.length === 0 && (
+            <div className="w-full text-center text-stone-400 italic py-10 relative z-10 flex flex-col items-center gap-2">
+              <Users size={32} className="opacity-20" />
+              La table est encore vide.
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   );
@@ -107,23 +198,11 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
 // ============================================================================
 // ✨ LE COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
+
+export default function CerclesDashboard({ session, onBack }) {
   const [cercles, setCercles] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // ✨ NOUVEAU : Le Cerveau qui télécharge l'Héritier complet pour le Docte
-  const handleViewCharacterClick = useCallback(async (charId) => {
-    if (!charId) return;
-    try {
-      showInAppNotification("Ouverture des archives de cet Héritier...", "info");
-      const fullChar = await getFullCharacter(charId);
-      onViewCharacter(fullChar); // On expédie la fiche à App.js
-    } catch (error) {
-      showInAppNotification("Le parchemin est illisible : " + error.message, "error");
-    }
-  }, [onViewCharacter]);
-  
   const [confirmState, setConfirmState] = useState({
     isOpen: false,
     action: null,
@@ -140,22 +219,26 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   const [activeMembers, setActiveMembers] = useState([]);
   const [isCreatingCercle, setIsCreatingCercle] = useState(false);
 
-  // 🧠 FIX : Mémoïsation pure du chargement (Aucune dépendance perturbatrice)
+  // 🧠 FIX : Mémoïsation pure du chargement
   const loadCercles = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.from('cercles').select('*').order('created_at');
+      // ✨ FIX : On fait une jointure pour récupérer le pseudo du Docte dans la table profiles !
+      const { data, error } = await supabase
+        .from('cercles')
+        .select('*, profiles(username)')
+        .order('created_at');
+        
       if (error) throw error;
-      
       if (data) setCercles(data);
     } catch (err) {
       showInAppNotification("Impossible de charger vos Cercles : " + err.message, "error");
     } finally {
       setLoading(false);
     }
-  }, []); // 👈 Dépendances vides : la fonction est gravée dans le marbre !
+  }, []);
 
-  // ✨ FIX : L'initialisation de l'onglet est désormais autonome et réactive
+  // Initialisation de l'onglet
   useEffect(() => {
     if (cercles.length > 0 && !activeTab) {
       setActiveTab(cercles.at(0).id);
@@ -169,7 +252,6 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
         .from('characters')
         .select('id, nom, typeFee:type_fee')
         .eq('user_id', session.user.id);
-        
       if (error) throw error;
       if (data) setMyCharacters(data);
     } catch (err) {
@@ -191,10 +273,9 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
         .select(`
           id, user_id, joined_at,
           profiles ( username, unlocked_fairies ),
-          characters ( id, nom, apparence, genreHumain:genre_humain, typeFee:type_fee ) 
+          characters ( nom, apparence, genreHumain:genre_humain, typeFee:type_fee )
         `)
         .eq('cercle_id', cercleId);
-
       if (error) throw error;
       if (data) setActiveMembers(data);
     } catch (err) {
@@ -207,15 +288,14 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   }, [activeTab, loadMembers]);
 
   // --- ACTIONS ---
+
   const handleCreateCercle = async () => {
     if (!newCircleName.trim() || isCreatingCercle) return;
     setIsCreatingCercle(true);
-    
     try {
-      const randomSegment = typeof crypto !== 'undefined' && crypto.randomUUID 
-        ? crypto.randomUUID().split('-').at(0).toUpperCase() 
+      const randomSegment = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID().split('-').at(0).toUpperCase()
         : Math.random().toString(36).substring(2, 10).toUpperCase();
-        
       const finalCode = `TABLE-${randomSegment}`;
 
       const { data, error } = await supabase.from('cercles').insert([{
@@ -248,9 +328,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
         p_code: joinCode.trim(),
         p_character_id: selectedCharId
       });
-      
       if (error) throw error;
-      
+
       showInAppNotification("Vous avez rejoint la table !", "success");
       setShowAddModal(false);
       setJoinCode('');
@@ -260,7 +339,6 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     }
   };
 
-  // 🧠 FIX : Mémoïsation stricte des actions de départ et de dissolution
   const executeLeaveCercle = useCallback(async (cercleId) => {
     setConfirmState(prev => ({ ...prev, isOpen: false }));
     try {
@@ -268,9 +346,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
         .from('cercle_membres')
         .delete()
         .match({ cercle_id: cercleId, user_id: session.user.id });
-
       if (error) throw error;
-      
+
       showInAppNotification("Vous avez quitté la table avec succès.", "success");
       setActiveTab(null);
       loadCercles();
@@ -296,9 +373,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
         .from('cercles')
         .delete()
         .eq('id', cercleId);
-
       if (error) throw error;
-      
+
       showInAppNotification("Le Cercle a été totalement dissous.", "success");
       setActiveTab(null);
       loadCercles();
@@ -317,7 +393,6 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     });
   }, [executeDeleteCercle]);
 
-  // 🧠 FIX : Mémoïsation de l'objet Cercle actif pour valider le contrat de React.memo
   const activeCercleObj = useMemo(() => {
     return cercles.find(c => c.id === activeTab);
   }, [cercles, activeTab]);
@@ -372,13 +447,12 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
               </button>
             </div>
           ) : (
-            <ActiveCercleView 
-              cercle={activeCercleObj} 
-              session={session} 
-              activeMembers={activeMembers} 
-              onDelete={handleDeleteCercle} 
+            <ActiveCercleView
+              cercle={activeCercleObj}
+              session={session}
+              activeMembers={activeMembers}
+              onDelete={handleDeleteCercle}
               onLeave={handleLeaveCercle}
-			  onViewCharacterClick={handleViewCharacterClick}
             />
           )}
         </>
@@ -392,8 +466,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
               <h3 className="font-serif font-bold text-lg text-stone-800">Les Tables du Grimoire</h3>
               <button onClick={() => setShowAddModal(false)} className="text-stone-400 hover:text-red-500"><X size={20}/></button>
             </div>
+            
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-stone-200">
-              
               {/* Option A : Joueur */}
               <div className="space-y-4 md:pr-4">
                 <div className="flex items-center gap-2 text-blue-900 font-serif font-bold text-xl">
@@ -401,12 +475,14 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
                 </div>
                 <p className="text-sm text-stone-500">Saisissez le code fourni par votre Docte et choisissez qui part à l'aventure.</p>
                 <input type="text" placeholder="Ex: TABLE-A7X9" value={joinCode} onChange={e => setJoinCode(e.target.value)} className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono" />
+                
                 <select value={selectedCharId} onChange={e => setSelectedCharId(e.target.value)} className="w-full p-3 border border-stone-300 rounded-lg bg-white">
                   <option value="">-- Choisir un Héritier --</option>
                   {myCharacters.map(char => (
                     <option key={char.id} value={char.id}>{char.nom} ({char.typeFee})</option>
                   ))}
                 </select>
+                
                 <button onClick={handleJoinCercle} className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors">Entrer dans le Cercle</button>
               </div>
 
@@ -419,7 +495,6 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
                 <input type="text" placeholder="Nom de la Campagne..." value={newCircleName} onChange={e => setNewCircleName(e.target.value)} className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none" />
                 <button onClick={handleCreateCercle} disabled={isCreatingCercle} className="w-full py-3 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 disabled:opacity-50 transition-colors">Générer la Table</button>
               </div>
-
             </div>
           </div>
         </div>

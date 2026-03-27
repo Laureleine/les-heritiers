@@ -3,9 +3,9 @@
 // 10.6.0 // 10.9.0
 // 11.1.0
 // 13.4.0
-// 14.9.0
+// 14.9.0 // 14.11.0
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Loader, Package, Users, CheckCircle, Crown } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext'; 
@@ -100,46 +100,40 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
   const xpDepense = character.xp_depense || 0;
   const xpDispo = xpTotal - xpDepense;
 
-  // 💰 GESTION DE LA FORTUNE (ÉVOLUTION XP)
+  // 💰 GESTION DE LA FORTUNE (STRICTEMENT RÉSERVÉ À L'ÉVOLUTION XP)
   const handleUpgradeFortune = () => {
-    if (isReadOnly) return;
+    if (isReadOnly || !isScelle) return; // ✨ FIX : Totalement interdit en Création !
+
     const currentFortune = character.fortune || 0;
-    
     if (currentFortune >= 15) {
       showInAppNotification("Votre Fortune a atteint son apogée !", "warning");
       return;
     }
 
-    if (isScelle) {
-      const cost = getFortuneCost(currentFortune, character.computedStats);
-      if (xpDispo < cost) {
-        showInAppNotification(`Fonds insuffisants ! Il vous faut ${cost} XP pour le rang ${currentFortune + 1}.`, "error");
-        return;
-      }
-      onCharacterChange({ fortune: currentFortune + 1, xp_depense: xpDepense + cost });
-      showInAppNotification(`Niveau de Fortune augmenté pour ${cost} XP !`, "success");
-    } else {
-      // Mode création classique
-      onCharacterChange({ fortune: currentFortune + 1 });
+    const cost = getFortuneCost(currentFortune, character.computedStats);
+    if (xpDispo < cost) {
+      showInAppNotification(`Fonds insuffisants ! Il vous faut ${cost} XP pour le rang ${currentFortune + 1}.`, "error");
+      return;
     }
+
+    onCharacterChange({ fortune: currentFortune + 1, xp_depense: xpDepense + cost });
+    showInAppNotification(`Niveau de Fortune augmenté pour ${cost} XP !`, "success");
   };
 
   const handleDowngradeFortune = () => {
-    if (isReadOnly) return;
+    if (isReadOnly || !isScelle) return; // ✨ FIX : Totalement interdit en Création !
+
     const currentFortune = character.fortune || 0;
-    
-    if (isScelle) {
-      const plancher = character.data?.stats_scellees?.fortune || 0;
-      if (currentFortune <= plancher) {
-        showInAppNotification("Votre Fortune originelle est scellée ! Impossible de la réduire.", "warning");
-        return;
-      }
-      const refund = getFortuneCost(currentFortune - 1, character.computedStats);
-      onCharacterChange({ fortune: currentFortune - 1, xp_depense: xpDepense - refund });
-      showInAppNotification(`Dépense annulée. +${refund} XP récupérés.`, "info");
-    } else {
-      if (currentFortune > 0) onCharacterChange({ fortune: currentFortune - 1 });
+    const plancher = character.data?.stats_scellees?.fortune || 0;
+
+    if (currentFortune <= plancher) {
+      showInAppNotification("Votre Fortune originelle est scellée ! Impossible de la réduire.", "warning");
+      return;
     }
+
+    const refund = getFortuneCost(currentFortune - 1, character.computedStats);
+    onCharacterChange({ fortune: currentFortune - 1, xp_depense: xpDepense - refund });
+    showInAppNotification(`Dépense annulée. +${refund} XP récupérés.`, "info");
   };
   
   // Le remplaçant local :
@@ -157,6 +151,42 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
   
   // ✨ ON PUISE DIRECTEMENT DANS LE NUAGE
   const { fairyData, socialItems } = gameData;
+
+  // ========================================================================
+  // 🧠 MOTEUR DE FORTUNE : Extracteur des bonus génétiques
+  // ========================================================================
+  const getFortuneFromHeritage = useCallback(() => {
+    const feeData = gameData?.fairyData?.[character.typeFee];
+    let hBase = 0;
+    let hBonus = 0;
+
+    // 1. Scan des Atouts (ex: Capitaine d'industrie, Trésor précieux)
+    if (character.atouts && feeData?.atouts) {
+      character.atouts.forEach(atoutId => {
+        const atout = feeData.atouts.find(a => a.id === atoutId || a.nom === atoutId);
+        if (atout && atout.effets_techniques) {
+          try {
+            const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques) : atout.effets_techniques;
+            if (tech.fortune_score !== undefined) hBase = Math.max(hBase, tech.fortune_score);
+            if (tech.fortune_bonus !== undefined) hBonus += tech.fortune_bonus;
+            if (tech.fortune !== undefined) hBonus += tech.fortune; // Clé historique
+          } catch(e) {}
+        }
+      });
+    }
+
+    // 2. Scan des Capacités
+    if (character.capaciteChoisie && feeData?.capacites) {
+      const caps = [feeData.capacites.fixe1, feeData.capacites.fixe2, ...(feeData.capacites.choix || [])];
+      const cap = caps.find(c => c?.nom === character.capaciteChoisie);
+      if (cap && cap.bonus) {
+        if (cap.bonus.fortune_score !== undefined) hBase = Math.max(hBase, cap.bonus.fortune_score);
+        if (cap.bonus.fortune_bonus !== undefined) hBonus += cap.bonus.fortune_bonus;
+        if (cap.bonus.fortune !== undefined) hBonus += cap.bonus.fortune;
+      }
+    }
+    return { hBase, hBonus };
+  }, [character.atouts, character.capaciteChoisie, character.typeFee, gameData]);
 
   // ✨ LE NOUVEAU TRADUCTEUR DE GENRE POUR LA BOUTIQUE
   const getProfilDisplayName = (pName) => {
@@ -259,29 +289,45 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
     return { depenses, budgets, restes, freeContactsRemaining, freeContactsTotal };
   }, [achats, socialItems, tousLesProfils, character]);
 
+  // ✨ FIX : Le calcul d'affichage strict (Éradication du +1 Fantôme)
   const currentFortune = useMemo(() => {
-    let baseFortune = 0;
-    let bonusFortune = 0;
-    let hasMetier = false;
+    let fBase = 0;
+    let fBonus = 0;
 
     Object.keys(achats).forEach(pKey => {
       (achats[pKey] || []).forEach(id => {
-        const item = socialItems.find(i => i.id === id);
-        if (item) {
-          if (item.fortune_score !== null && item.fortune_score !== undefined) {
-            baseFortune = Math.max(baseFortune, item.fortune_score);
-            hasMetier = true;
+        const i = socialItems.find(x => x.id === id);
+        if (i) {
+          if (i.fortune_score !== null && i.fortune_score !== undefined) {
+            fBase = Math.max(fBase, i.fortune_score);
           }
-          if (item.fortune_bonus !== null && item.fortune_bonus !== undefined) {
-            bonusFortune += item.fortune_bonus;
+          if (i.fortune_bonus !== null && i.fortune_bonus !== undefined) {
+            fBonus += i.fortune_bonus;
           }
         }
       });
     });
 
-    if (!hasMetier) baseFortune = 1;
-    return Math.min(15, baseFortune + bonusFortune);
-  }, [achats, socialItems]);
+    // 🌟 FUSION MAGIQUE AVEC L'ADN DE LA FÉE
+    const heritage = getFortuneFromHeritage();
+    fBase = Math.max(fBase, heritage.hBase);
+    fBonus += heritage.hBonus;
+
+    // 💥 SUPPRESSION DU FANTÔME : On ne force plus la base à 1 !
+    return Math.min(15, fBase + fBonus);
+  }, [achats, socialItems, getFortuneFromHeritage]);
+
+  // ✨ FIX : Le Synchronisateur Silencieux
+  // Force la sauvegarde de la Fortune génétique dans le Nuage dès l'arrivée sur la page
+  useEffect(() => {
+    if (!isScelle && !isReadOnly && character.fortune !== currentFortune) {
+      dispatchCharacter({
+        type: 'UPDATE_MULTIPLE',
+        payload: { fortune: currentFortune },
+        gameData
+      });
+    }
+  }, [currentFortune, character.fortune, isScelle, isReadOnly, dispatchCharacter, gameData]);
 
   const toggleAchat = (profil, item) => {
     const currentIds = achats[profil] || [];
@@ -314,21 +360,38 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
 
     setAchats(newAchats);
 
-    if (onCharacterChange) {
-      let fBase = 0, fBonus = 0, fHasMetier = false;
-      Object.keys(newAchats).forEach(pKey => {
-        (newAchats[pKey] || []).forEach(id => {
-          const i = socialItems.find(x => x.id === id);
-          if (i) {
-            if (i.fortune_score !== null) { fBase = Math.max(fBase, i.fortune_score); fHasMetier = true; }
-            if (i.fortune_bonus !== null) fBonus += i.fortune_bonus;
-          }
-        });
-      });
-      if (!fHasMetier) fBase = 1;
-      const fFinale = Math.min(15, fBase + fBonus);
-      onCharacterChange({ vieSociale: newAchats, fortune: fFinale });
-    }
+        if (onCharacterChange) {
+            let fBase = 0, fBonus = 0;
+
+            Object.keys(newAchats).forEach(pKey => {
+                (newAchats[pKey] || []).forEach(id => {
+                    const i = socialItems.find(x => x.id === id);
+                    if (i) {
+                        if (i.fortune_score !== null && i.fortune_score !== undefined) { 
+                            fBase = Math.max(fBase, i.fortune_score); 
+                        }
+                        if (i.fortune_bonus !== null && i.fortune_bonus !== undefined) {
+                            fBonus += i.fortune_bonus;
+                        }
+                    }
+                });
+            });
+
+            // ✨ FIX : On injecte l'Héritage au moment de la sauvegarde !
+            const heritage = getFortuneFromHeritage();
+            fBase = Math.max(fBase, heritage.hBase);
+            fBonus += heritage.hBonus;
+
+            // 💥 SUPPRESSION DU FANTÔME ICI AUSSI
+            let fFinale = Math.min(15, fBase + fBonus);
+
+            // ⚠️ BLINDAGE : Protection des gains d'XP en mode Évolution (Scellé)
+            if (isScelle && (character.fortune || 0) > fFinale) {
+                fFinale = character.fortune; 
+            }
+
+            onCharacterChange({ vieSociale: newAchats, fortune: fFinale });
+        }
   };
 
   const renderCatalogue = (profilNom) => {
@@ -409,37 +472,40 @@ export default function StepVieSociale() { // 👈 PLUS DE PARAMÈTRES
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Bouton Moins (Remboursement) */}
-            <button 
+        <div className="flex items-center gap-3">
+          {/* Bouton Moins (Remboursement XP) - Masqué en Création */}
+          {isScelle && (
+            <button
               onClick={handleDowngradeFortune}
-              disabled={isReadOnly || (isScelle && (character.fortune || 0) <= (character.data?.stats_scellees?.fortune || 0)) || (!isScelle && (character.fortune || 0) <= 0)}
-              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-emerald-200 text-emerald-600 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 transition-colors font-bold"
-              title={isScelle ? "Récupérer les XP investis" : "Réduire"}
+              disabled={isReadOnly || (character.fortune || 0) <= (character.data?.stats_scellees?.fortune || 0)}
+              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-emerald-200 text-emerald-600 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 transition-colors font-bold shadow-sm"
+              title="Récupérer les XP investis"
             >
               <Minus size={18} />
             </button>
+          )}
 
-            {/* Score Actuel */}
-            <div className="w-8 text-center text-2xl font-serif font-black text-emerald-900">
-              {character.fortune || 0}
-            </div>
+          {/* Score Actuel */}
+          <div className="w-8 text-center text-2xl font-serif font-black text-emerald-900">
+            {isScelle ? (character.fortune || 0) : currentFortune}
+          </div>
 
-            {/* Bouton Plus (Avec Affichage Prédictif !) */}
-            <button 
+          {/* Bouton Plus (Achat XP) - Masqué en Création */}
+          {isScelle && (
+            <button
               onClick={handleUpgradeFortune}
-              disabled={isReadOnly || (character.fortune || 0) >= 15 || (isScelle && xpDispo < getFortuneCost(character.fortune || 0, character.computedStats))}
+              disabled={isReadOnly || (character.fortune || 0) >= 15 || xpDispo < getFortuneCost(character.fortune || 0, character.computedStats)}
               className="h-10 px-3 flex flex-col items-center justify-center rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-30 disabled:bg-gray-400 transition-colors shadow-md"
             >
               <Plus size={18} />
-              {/* ✨ FIX : On cache le prix si la richesse absolue est atteinte */}
-              {isScelle && (character.fortune || 0) < 15 && (
+              {(character.fortune || 0) < 15 && (
                 <span className="text-[9px] font-bold -mt-1 tracking-wider">
                   ({getFortuneCost(character.fortune || 0, character.computedStats)} XP)
                 </span>
               )}
             </button>
-          </div>
+          )}
+        </div>
         </div>
 
       </div>

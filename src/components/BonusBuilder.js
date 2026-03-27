@@ -2,6 +2,7 @@
 // 10.2.0 // 10.3.0 // 10.4.0
 // 11.1.0
 // 12.1.0 // 12.5.0
+// 14.11.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles } from 'lucide-react';
@@ -481,27 +482,104 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
               );
             })()}
 
-            {/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
-            {block.type === 'pred_fixe' && (
-              <>
-                <div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200"><BookOpen size={18}/></div>
-                <span className="text-sm font-bold text-fuchsia-900">Utile imposée :</span>
+        {/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
+        {block.type === 'pred_fixe' && (() => {
+          // 🧠 1. On récupère les données de la compétence sélectionnée
+          const compData = competencesData?.find(c => c.name === block.key) || {};
+          const availableSpecs = compData.specialites || [];
+          const isCreating = creatingSpecFor === block.id;
+
+          return (
+            <>
+              <div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200">
+                <BookOpen size={18}/>
+              </div>
+              <span className="text-sm font-bold text-fuchsia-900">Utile Imposée :</span>
+
+              <select
+                value={block.key || ''}
+                onChange={(e) => {
+                  // ✨ FIX : On change la compétence et on purge la spécialité précédente pour éviter les incohérences
+                  const newBlocks = blocks.map(b => b.id === block.id ? { ...b, key: e.target.value, nom: '' } : b);
+                  setBlocks(newBlocks);
+                  compileImmediate(newBlocks);
+                }}
+                className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
+              >
+                <option value="">Sélectionner...</option>
+                {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+
+              <span className="text-stone-400 font-bold">▶</span>
+
+              {/* ✨ 2. LE MOTEUR INTELLIGENT DE SPÉCIALITÉ (Identique à la brique dorée) */}
+              {!block.key ? (
+                <span className="text-sm italic text-stone-400 flex-1">Sélectionnez d'abord la compétence...</span>
+              ) : isCreating ? (
+                <div className="flex gap-1 flex-1 animate-fade-in">
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="Nouvelle spécialité..."
+                    value={newSpecName}
+                    onChange={(e) => setNewSpecName(e.target.value)}
+                    className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                        handleCreateGlobalSpeciality(block.id, block.key, e.currentTarget.value.trim());
+                      }
+                      if (e.key === 'Escape') {
+                        setCreatingSpecFor(null);
+                        setNewSpecName('');
+                      }
+                    }}
+                  />
+                  <button 
+                    onClick={() => {
+                      if (newSpecName.trim()) handleCreateGlobalSpeciality(block.id, block.key, newSpecName.trim());
+                    }} 
+                    className="bg-fuchsia-600 text-white px-2 py-1 rounded text-[10px] font-bold"
+                  >
+                    Créer
+                  </button>
+                  <button 
+                    onClick={() => { setCreatingSpecFor(null); setNewSpecName(''); }} 
+                    className="bg-stone-200 text-stone-600 px-2 py-1 rounded text-[10px] font-bold"
+                  >
+                    X
+                  </button>
+                </div>
+              ) : (
                 <select
-                  value={block.key}
+                  value={block.nom || ''}
                   onChange={(e) => {
-                    const newBlocks = blocks.map(b => b.id === block.id ? { ...b, key: e.target.value } : b);
-                    setBlocks(newBlocks);
-                    compileImmediate(newBlocks);
+                    if (e.target.value === '__CREATE_NEW__') {
+                      setCreatingSpecFor(block.id);
+                      setNewSpecName('');
+                    } else {
+                      updateBlock(block.id, 'nom', e.target.value);
+                    }
                   }}
-                  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
+                  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none flex-1"
                 >
-                  <option value="">Sélectionner...</option>
-                  {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+                  <option value="">Spécialité (Optionnelle)...</option>
+                  <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
+                  {availableSpecs.filter(s => s.is_official).length > 0 && (
+                    <optgroup label="📚 Officielles">
+                      {availableSpecs.filter(s => s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+                    </optgroup>
+                  )}
+                  {availableSpecs.filter(s => !s.is_official).length > 0 && (
+                    <optgroup label="👥 Communauté">
+                      {availableSpecs.filter(s => !s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+                    </optgroup>
+                  )}
                 </select>
-                <span className="text-stone-400 font-bold">▶</span>
-                <input type="text" placeholder="Spécialité (Optionnelle)..." value={block.nom || ''} onChange={(e) => updateBlock(block.id, 'nom', e.target.value)} className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none" />
-              </>
-            )}
+              )}
+            </>
+          );
+        })()}
+
 
             {/* ✨ Lego Choix de Futile (Teal/Cyan) ✨ */}
             {block.type === 'futile_choix' && (
