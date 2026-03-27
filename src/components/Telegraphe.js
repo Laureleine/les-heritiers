@@ -2,7 +2,7 @@
 // 9.0.0 // 9.0.1
 // 12.3.0
 // 13.4.0
-// 14.0.0 // 14.9.0 // 14.10.0 // 14.10.1
+// 14.0.0 // 14.9.0 // 14.10.0 // 14.10.1 // 14.11.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, LayoutList, ListFilter, Settings } from 'lucide-react';
@@ -246,18 +246,23 @@ export default function Telegraphe({ session, userProfile }) {
   // ==========================================================================
   useEffect(() => {
     const handleOpenTelegraphe = async (e) => {
-      const { targetUser } = e.detail;
+      const { targetUser, targetCercle } = e.detail || {};
       setIsOpen(true);
-      if (startPrivateChatRef.current) await startPrivateChatRef.current(targetUser);
+      
+      // Cas A : Raccourci vers un joueur précis
+      if (targetUser && startPrivateChatRef.current) {
+        await startPrivateChatRef.current(targetUser);
+      } 
+      // ✨ FIX (Cas B) : Raccourci vers le Hub du Cercle !
+      else if (targetCercle) {
+        setActiveTab('cercle');
+        setView('list'); // On s'assure d'être sur la vue liste pour voir sa Table
+      }
     };
+
     window.addEventListener('open-telegraphe', handleOpenTelegraphe);
     return () => window.removeEventListener('open-telegraphe', handleOpenTelegraphe);
   }, []);
-
-  // Scroll automatique en bas de discussion
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   // ==========================================================================
   // ✉️ ENVOI DE MESSAGES
@@ -387,7 +392,7 @@ export default function Telegraphe({ session, userProfile }) {
           <div className="bg-amber-900 text-amber-50 p-3 flex justify-between items-center border-b-4 border-amber-700 shrink-0">
             <h3 className="font-bold flex items-center gap-2">
               <Inbox size={20} />
-              {isAdmin ? "Standard Admin" : "Hub Pneumatique"}
+              {"Hub Pneumatique"}
             </h3>
             <div className="flex items-center gap-3">
               {view === 'list' && (
@@ -508,8 +513,14 @@ export default function Telegraphe({ session, userProfile }) {
               <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                 {messages.map((m) => {
                   const isMe = m.user_id === session.user.id;
-                  let displayName = isMe ? 'Vous' : (m.profiles?.username || 'Anonyme');
-                  if (activeChannel?.type === 'support' && !isMe) displayName = 'Garde des Sceaux';
+					let displayName = isMe ? 'Vous' : (m.profiles?.username || 'Anonyme');
+					
+					// ✨ FIX : On dévoile le pseudo du modérateur tout en gardant son titre officiel !
+					if (activeChannel?.type === 'support' && !isMe) {
+					  displayName = m.profiles?.username 
+						? `${m.profiles.username} (Garde des Sceaux)` 
+						: 'Garde des Sceaux';
+					}
 
                   return (
                     <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>

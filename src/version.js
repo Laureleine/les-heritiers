@@ -6,6 +6,22 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.11.0',
+    date: '27 Mars 2026',
+    changes: [
+      '🎨 **Immersion (UI) :** Renommage de l\'interface "Standard Admin" du Télégraphe en "Hub pneumatique" afin de maintenir la cohérence diégétique de l\'univers.',
+      '💬 **Transparence du Conseil :** Dans le Télégraphe pneumatique (canal de Support), les joueurs peuvent désormais voir le pseudonyme du Gardien du Savoir qui traite leur demande, suivi de son titre officiel, humanisant ainsi les échanges avec l\'administration.',
+      '📱 **Ergonomie Mobile (Hotfix) :** Ajout d\'un bouton flottant de retour sur la vue web générée par l\'export PDF. Ce bouton d\'évasion permet aux joueurs sur téléphone (PWA) de revenir facilement au jeu après consultation, tout en restant totalement invisible lors de l\'impression réelle du document.',
+      '🎨 **Immersion (UI) :** Refonte majeure de l\'interface du Cercle. Les cartes des joueurs sont désormais disposées dynamiquement en arc de cercle grâce à un algorithme géométrique, simulant la sensation pour le Docte de faire face à sa table de jeu physique.',
+      '🚀 **Réseau Pneumatique (UX) :** Intégration de bulles de raccourcis directement dans le tableau de bord du Cercle. Les joueurs peuvent désormais ouvrir le Télégraphe pour envoyer une missive privée à un camarade en un clic sur sa carte, ou ouvrir le canal global de la table via l\'en-tête.',
+      '🎨 **Ergonomie (UI) :** Optimisation de l\'espace vertical sur le tableau de bord des Cercles. Le compteur des Héritiers présents à la table a été intégré à l\'en-tête principal pour maximiser la visibilité de la table de jeu.',
+      '🎨 **Immersion Géométrique (UI) :** L\'interface de la Table Virtuelle est désormais subjective. Si l\'utilisateur est un Joueur, l\'arc de cercle s\'inverse en forme de "U" pour simuler sa place à la table, et la carte du Docte apparaît au sommet avec un raccourci de communication pneumatique direct.',
+      '🧩 **Forge des Chimères (BonusBuilder) :** Harmonisation de l\'UI pour la brique "Utile Imposée" (Fuchsia). Remplacement de la saisie texte libre par le menu déroulant intelligent permettant de lister les spécialités existantes du Nuage ou d\'en créer de nouvelles à la volée.',
+      '🐛 **Création d\'Héritier (Step 8) :** Déploiement d\'un blindage absolu de nettoyage de chaînes (`trim()` et `toLowerCase()`) sur le moteur d\'association des spécialités innées. Cela immunise totalement l\'application contre les espaces fantômes ou les erreurs de casse résiduelles dans la base de données, restaurant ainsi l\'affichage gratuit de "Invention*" et "Tout véhicule à moteur" pour le Fouinard.',
+      '💰 **Économie (Vie Sociale) :** Le calculateur de Fortune intègre désormais nativement les bonus issus de l\'Héritage Féérique (Atouts et Capacités de naissance comme le "Trésor précieux" du Korrigan ou le "Capitaine d\'industrie" du Smog). Un blindage a également été ajouté pour protéger les augmentations de Fortune acquises via l\'Expérience.'
+   ]
+  },
+  {
     version: '14.10.1',
     date: '24 Mars 2026',
     changes: [

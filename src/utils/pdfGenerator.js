@@ -2,7 +2,7 @@
 // 10.4.0
 // 12.3.0 // 12.6.0
 // 13.0.0
-// 14.7.0
+// 14.7.0 // 14.11.0
 
 // ============================================================================
 // PDF EXPORT (Fiche de Personnage Complète Recto/Verso)
@@ -200,13 +200,41 @@ export const exportToPDF = (character, gameData = {}) => {
 
         .list-items { font-size: 13px; line-height: 1.6; }
         .empty-lines { border-bottom: 1px dotted #b5a287; height: 20px; margin-bottom: 5px; }
-      </style>
-    </head>
-    <body>
 
-      <!-- ========================================== -->
-      <!-- PAGE 1 : LE MASQUE (FORME HUMAINE)         -->
-      <!-- ========================================== -->
+		/* ✨ FIX : Le bouton de secours invisible à l'impression ! */
+		@media print {
+		  .no-print { display: none !important; }
+		}
+		.mobile-back-btn {
+		  position: fixed;
+		  top: 15px;
+		  left: 15px;
+		  background-color: #d97706; /* amber-600 */
+		  color: white;
+		  border: 2px solid #b45309;
+		  padding: 12px 20px;
+		  border-radius: 8px;
+		  font-family: sans-serif;
+		  font-weight: bold;
+		  font-size: 16px;
+		  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+		  z-index: 9999;
+		  cursor: pointer;
+		}
+		</style>
+		</head>
+		<body>
+
+		<!-- ✨ FIX : Le fameux bouton d'évasion -->
+		<button class="no-print mobile-back-btn" onclick="window.close(); window.history.back();">
+		  ⬅ Retour à l'application
+		</button>
+
+		<!-- ========================================== -->
+		<!-- PAGE 1 : LE MASQUE (FORME HUMAINE)         -->
+		<!-- ========================================== -->
+
+		--------------------------------------------------------------------------------
       <div class="page">
         
         <div class="header">

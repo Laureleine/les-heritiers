@@ -2,7 +2,7 @@
 // 9.0.4 // 9.11.0
 // 11.1.0
 // 13.0.0 // 13.3.0
-// 14.9.0 // 14.10.0
+// 14.9.0 // 14.10.0 // 14.11.0
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { Plus, Minus, Star, Brain, RotateCcw, Briefcase, Info, Lock } from 'lucide-react';
@@ -234,20 +234,25 @@ export default function StepCompetencesLibres() {
     const current = lib.rangs?.[nomComp] || 0;
     const scoreBase = getScoreBase(nomComp);
     const totalScore = scoreBase + current;
-    const isPred = predFinales?.includes(nomComp);
-    const isEspritEligible = SKILLS_ESPRIT.includes(nomComp);
-    
-    const evolutionMax = isPred ? 7 : 6;
-    const maxAllowed = isScelle ? evolutionMax : (isPred ? 5 : 4);
-    const plancher = character.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0;
+	
+        // ✨ FIX ULTIME : Le blindage anti-espaces invisibles et casse !
+        const isPred = predFinales?.some(p => p?.trim().toLowerCase() === nomComp.trim().toLowerCase());
+        const isEspritEligible = SKILLS_ESPRIT.includes(nomComp);
+        const evolutionMax = isPred ? 7 : 6;
+        const maxAllowed = isScelle ? evolutionMax : (isPred ? 5 : 4);
+        const plancher = character.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0;
 
-    const getFairySpec = () => {
-      if (!feeData?.competencesPredilection) return null;
-      const predIndex = feeData.competencesPredilection.findIndex(p => p.nom === nomComp);
-      if (predIndex === -1) return null;
-      const pred = feeData.competencesPredilection[predIndex];
-      return pred.specialite || (pred.isSpecialiteChoix ? lib.choixSpecialite?.[predIndex] : null);
-    };
+        const getFairySpec = () => {
+            if (!feeData?.competencesPredilection) return null;
+            
+            // Mode Détective : On nettoie la chaîne pour forcer la correspondance absolue
+            const validPred = feeData.competencesPredilection.find(p => p.nom?.trim().toLowerCase() === nomComp.trim().toLowerCase());
+            
+            if (!validPred) return null;
+            
+            const foundSpec = validPred.specialite || (validPred.isSpecialiteChoix ? lib.choixSpecialite?.[feeData.competencesPredilection.indexOf(validPred)] : null);
+            return foundSpec ? foundSpec.trim() : null; // On nettoie aussi la spécialité !
+        };
 
     const fairySpecActuelle = getFairySpec();
     const specsFromAtouts = atoutsBonuses.filter(a => a.competences.includes(nomComp));
@@ -329,13 +334,25 @@ export default function StepCompetencesLibres() {
 			>
               <option value="">+ Choisir ({nextSpecCost === 0 ? 'Gratuit' : (isScelle ? '8 XP' : '1 pt')})</option>
               <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
-              <optgroup label="📚 Officielles">
-                {availableSpecs.filter(s => s.is_official && !userSpecs.includes(s.nom) && s.nom !== fairySpecActuelle && !specsFromAtouts.some(a => a.nom === s.nom)).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
-              </optgroup>
-              {availableSpecs.some(s => !s.is_official) && (
-                <optgroup label="👥 Communauté">
-                  {availableSpecs.filter(s => !s.is_official && !userSpecs.includes(s.nom) && s.nom !== fairySpecActuelle && !specsFromAtouts.some(a => a.nom === s.nom)).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+                <optgroup label="📚 Officielles">
+                  {availableSpecs.filter(s => 
+                    s.is_official && 
+                    !userSpecs.includes(s.nom) && 
+                    s.nom?.trim() !== fairySpecActuelle && 
+                    !specsFromAtouts.some(a => a.nom?.trim() === s.nom?.trim())
+                  ).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
                 </optgroup>
+
+                {availableSpecs.some(s => !s.is_official) && (
+                  <optgroup label="👥 Communauté">
+                    {availableSpecs.filter(s => 
+                      !s.is_official && 
+                      !userSpecs.includes(s.nom) && 
+                      s.nom?.trim() !== fairySpecActuelle && 
+                      !specsFromAtouts.some(a => a.nom?.trim() === s.nom?.trim())
+                    ).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+                  </optgroup>
+                )}
               )}
             </select>
           )}
