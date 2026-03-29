@@ -1,6 +1,7 @@
 // src/components/ConfirmModal.js
 // 9.6.0
 // 14.3.0
+// Optimisé
 
 import React from 'react';
 import { HelpCircle, X, Check } from 'lucide-react';

@@ -2,6 +2,7 @@
 // 11.1.0 // 12.5.0
 // 13.1.0 // 13.10.0 // 13.11.0
 // 14.2.0 // 14.9.0 // 14.10.0
+// Optimisé
 
 import React, { useState, useMemo } from 'react';
 import { Star, Info, Check, Sparkles, AlertCircle, Plus, Minus } from 'lucide-react';

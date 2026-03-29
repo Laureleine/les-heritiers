@@ -5,7 +5,7 @@
 // 11.1.0 // 11.2.0
 // 12.5.0
 // 13.0.3 // 13.0.4
-// 14.2.0
+// 14.2.0 // 14.12.0
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
@@ -176,11 +176,27 @@ export default function EncyclopediaModal({
 	  if (normalizeFutiles(newFutiles) !== normalizeFutiles(oldFutiles)) {
 		changedRelations.competencesFutiles = newFutiles;
 	  }
-		  
-      if (Object.keys(changedRelations).length > 0) {
-        surgicalData._relations = changedRelations;
-      }
 
+         // ✨ FIX : SAUVEGARDE DE L'ADN BRUT (Fortune, etc.) POUR LES ESPÈCES
+          const newEffetsTech = { ...parsedTech };
+          delete newEffetsTech.predilections;
+          delete newEffetsTech.specialites;
+          delete newEffetsTech.futiles;
+
+          const oldEffetsTech = { ...(editingItem.effets_techniques || {}) };
+          delete oldEffetsTech.predilections;
+          delete oldEffetsTech.specialites;
+          delete oldEffetsTech.futiles;
+
+          // Si le reste du JSON (Fortune, etc.) a changé, on le glisse dans l'enveloppe !
+          if (JSON.stringify(newEffetsTech) !== JSON.stringify(oldEffetsTech)) {
+            surgicalData.effets_techniques = Object.keys(newEffetsTech).length > 0 ? newEffetsTech : null;
+          }
+
+          // (La suite de ton code existant)
+          if (Object.keys(changedRelations).length > 0) {
+            surgicalData._relations = changedRelations;
+          }
     } else {
       // Formulaire simple (Capacités, Pouvoirs, Atouts)
       if (proposal.description !== (editingItem.description || editingItem.desc || '')) {
@@ -634,7 +650,7 @@ export default function EncyclopediaModal({
 				  parsedTech={parsedTech}
 				  updateTech={updateTech}
 				  rawJson={proposal.techData}
-				  onJsonChange={(val) => setProposal({...proposal, techData: val})}
+                  onJsonChange={(val) => setProposal({...proposal, techData: val, effets_techniques: val})}
 				  competencesData={competencesData}
 				  usefulSkills={usefulSkills}
                   futilesSkills={allCompFutiles ? allCompFutiles.map(c => c.nom || c.name) : []}

@@ -6,6 +6,18 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '14.12.0',
+    date: '28 Mars 2026',
+    changes: [
+      '🐛 **Droits & Sceaux (Hotfix) :** Résolution d\'un bug critique empêchant les simples Doctes de voir les fées secrètes à l\'Étape 1 (`Step1.js`). Le système vérifie désormais correctement le booléen `is_docte` dans la base de données au lieu de chercher une fausse valeur dans la colonne des rôles d\'administration.',
+      '🐛 **Encyclopédie (BonusBuilder) :** Résolution du bug critique empêchant l\'ajout de blocs techniques sur les Atouts. Synchronisation bidirectionnelle des champs `techData` et `effets_techniques` dans la modale d\'édition pour garantir la persistance des données.',
+      '🛡️ **Stabilité (Constructeur) :** Ajout d\'un "disjoncteur thermique" (`useRef`) dans le moteur du `BonusBuilder` pour empêcher le `useEffect` d\'effacer de manière asynchrone les blocs Lego incomplets en cours d\'édition.',
+      '💰 **Économie & Héritage (Hotfix) :** Intégration des Avantages et Désavantages féériques dans le moteur de calcul du rang de Fortune (`useVieSociale.js`). Les bonus innés à certaines espèces (ex: "Fortune immobilière" du Vampyr) sont désormais correctement parsés depuis le JSONB de Supabase et ajoutés au pactole de l\'Héritier.',
+      '💰 **Économie & Héritage (Hotfix) :** Le moteur de calcul du rang de Fortune (`useVieSociale.js`) lit désormais les effets techniques directement à la racine de la Fée. Cela permet de prendre en compte les bonus de Fortune innés (comme le Trésor du Korrigan) configurés dans l\'encyclopédie au même niveau que les spécialités et compétences futiles de l\'espèce.',
+      '🛠️ **Encyclopédie (BonusBuilder) :** Standardisation du compilateur JSON (`generateTechJson`). Les briques de Fortune génèrent désormais la clé stricte `fortune_bonus` au lieu de `fortune` pour assurer une compatibilité parfaite avec le moteur de calcul de la Vie Sociale et l\'Héritage des espèces.'
+    ]
+  },
+  {
     version: '14.11.0',
     date: '27 Mars 2026',
     changes: [

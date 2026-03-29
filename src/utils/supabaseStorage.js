@@ -2,6 +2,7 @@
 // 12.0.0
 // 13.1.0 // 13.3.0 // 13.10.0 // 13.12.0
 // 14.9.0
+// Optimisé
 
 import { supabase } from '../config/supabase';
 

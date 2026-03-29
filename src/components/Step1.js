@@ -2,7 +2,7 @@
 // 10.4.0 // 10.6.0 // 10.8.0
 // 11.1.0
 // 13.11.0
-// 14.0.0 // 14.10.0
+// 14.0.0 // 14.10.0 // 14.13.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling, Lock } from 'lucide-react';
@@ -28,17 +28,18 @@ export default function Step1() {
 
         const { data: profile } = await supabase
           .from('profiles')
-          .select('role, unlocked_fairies')
+          .select('role, is_docte, unlocked_fairies')
           .eq('id', user.id)
           .single();
 
         if (profile) {
-          // ✨ FIX : On sécurise l'accès en listant tous les rôles supérieurs
-          const hasAccess = ['docte', 'super_admin', 'gardien'].includes(profile.role);
+          // ✨ FIX : On vérifie la case Docte (booléen) OU la hiérarchie Gardien/Admin (rôle)
+          const hasAccess = profile.is_docte === true || ['super_admin', 'gardien'].includes(profile.role);
+          
           setIsUserDocte(hasAccess);
           setUnlockedFairies(profile.unlocked_fairies || []);
-        }
-      } catch (error) {
+        } // 👈 1. Fermeture du IF
+      } catch (error) { // 👈 2. Fermeture du TRY et ouverture du CATCH
         console.error("❌ Erreur de vérification des Sceaux :", error);
       }
     };

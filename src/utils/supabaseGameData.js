@@ -3,7 +3,7 @@
 // 11.1.0
 // 12.5.0
 // 13.0.6
-// 14.2.0 // 14.10.0
+// 14.2.0 // 14.10.0 // 14.12.0
 
 import { supabase } from '../config/supabase';
 
@@ -370,6 +370,7 @@ export const loadFairyTypes = async () => {
 		taille: fairy.taille_categorie || 'Moyenne', 
         avantages: fairy.avantages || [],       // Charge le tableau ou vide par défaut
         desavantages: fairy.desavantages || [], // Charge le tableau ou vide par défaut
+        effets_techniques: fairy.effets_techniques || {},
         caracteristiques: {
           agilite: { min: fairy.agilite_min, max: fairy.agilite_max },
           constitution: { min: fairy.constitution_min, max: fairy.constitution_max },
