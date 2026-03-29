@@ -6,9 +6,10 @@
 // 13.2.0 // 13.3.0 // 13.12.0 // 13.13.0
 // 14.0.0 // 14.0.6 // 14.9.0
 // Optimisé
+// 15.0.0
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen } from 'lucide-react';
+import { Bug, Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
@@ -156,7 +157,7 @@ const CharacterCard = React.memo(({
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, profils = [], userProfile, gameData, session }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, profils = [], userProfile, gameData, session }) {
   
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
@@ -346,25 +347,38 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   return (
     <div className="animate-fade-in w-full">
       <div className="flex flex-col gap-6 mb-8 mt-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <button onClick={onNewCharacter} className="mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
+     
+        {/* ✨ FIX : flex-nowrap et overflow-x-auto forcent la ligne unique parfaite */}
+        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto hide-scrollbar w-full pb-2">
+          
+          <button onClick={onNewCharacter} className="flex-shrink-0 mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
             <Plus size={18} /> <span className="hidden sm:inline">Nouveau</span>
           </button>
-          <button onClick={onOpenEncyclopedia} className="flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm shadow-sm" title="Accéder au Grimoire">
+
+          <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={16} /> <span className="hidden sm:inline">Encyclopédie</span>
           </button>
-          <button onClick={onOpenCercles} className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm shadow-sm" title="Gérer mes tables virtuelles">
+
+          <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm shadow-sm" title="Gérer mes tables virtuelles">
             <Users size={16} /> <span className="hidden sm:inline">Cercles</span>
           </button>
-          <button onClick={onOpenAdmin} className="flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
+
+          <button onClick={onOpenAdmin} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
             <BarChart2 size={16} /> <span className="hidden sm:inline">Communauté</span>
           </button>
-          <button onClick={onOpenAccount} className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-sm shadow-sm">
+
+          <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-rose-100 text-rose-800 border-2 border-rose-200 rounded-lg hover:bg-rose-200 transition-all font-serif font-bold text-sm shadow-sm" title="Signaler une faille dans la matrice">
+            <Bug size={16} /> <span className="hidden sm:inline">Anomalies</span>
+          </button>
+
+          <button onClick={onOpenAccount} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-sm shadow-sm">
             <User size={16} /> <span className="hidden sm:inline">Compte</span>
           </button>
-          <button onClick={onSignOut} className="flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-sm shadow-sm" title="Se déconnecter">
+
+          <button onClick={onSignOut} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-sm shadow-sm" title="Se déconnecter">
             <LogOut size={16} /> <span className="hidden sm:inline">Déconnexion</span>
           </button>
+          
         </div>
 
         <div className="flex gap-8 border-b border-gray-200 overflow-x-auto hide-scrollbar">

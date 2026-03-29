@@ -6,6 +6,13 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '15.0.0',
+    date: '29 Mars 2026',
+    changes: [
+      '🕵️ **Le Bureau des Anomalies :** Implémentation du système de signalement communautaire (`BureauAnomalies.js`). Les Héritiers peuvent désormais remonter des failles avec capture du contexte (version, confidentialité) et soutenir les signalements des autres via un système de poids social (Intelligence collective).'
+    ]
+  },
+  {
     version: '14.12.0',
     date: '28 Mars 2026',
     changes: [
