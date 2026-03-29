@@ -2,6 +2,7 @@
 // 9.4.0// 9.6.0
 // 10.2.0 // 10.9.0
 // 14.9.0
+// 15.0.0
 
 // ============================================================================
 // 🧠 1. DICTIONNAIRES DE VOCABULAIRE GENRÉ ET ALÉATOIRE
@@ -216,6 +217,7 @@ const parseTemplate = (template, char) => {
 // ============================================================================
 // 🧠 6. LE CERVEAU CENTRAL (ANALYSE ET SÉLECTION)
 // ============================================================================
+export const PIXIE_BUG_RESOLVED_MESSAGE = "Youpi ! Grâce à ton œil de lynx, l'anomalie a été chassée du Grimoire ! Les Gardiens te remercient !";
 
 export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
   
@@ -276,7 +278,7 @@ export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
   if (step === 9 && Math.random() < 0.15) {
     pool.push("Dis, si tu as trop de Francs, tu savais que tu pouvais offrir un cadeau au Créateur du Grimoire ? Le lien magique est caché dans ton profil !");
   }  
-    
+
   // ---------------------------------------------------------
   // B. RÉPLIQUES SPÉCIFIQUES À L'ÉTAPE ACTUELLE
   // ---------------------------------------------------------

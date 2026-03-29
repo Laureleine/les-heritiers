@@ -1,9 +1,10 @@
 // 11.1.0
 // 13.3.0 // 13.4.0 // 13.11.0
+// 15.0.0
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../config/supabase';
-import { MessageCircle, Shield, User, Crown, X, Award, BarChart2, Users, FileText, BookOpen, Activity, RefreshCcw, ArrowLeft } from 'lucide-react';
+import { CheckCircle, MessageCircle, Shield, User, Crown, X, Award, BarChart2, Users, FileText, BookOpen, Activity, RefreshCcw, ArrowLeft, Bug, Clock } from 'lucide-react';
 import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 import { showInAppNotification } from '../utils/SystemeServices';
 
@@ -292,6 +293,120 @@ function TabStats() {
 }
 
 // ============================================================================
+// --- 3. ONGLET : BUREAU DES ANOMALIES (Le Panneau de Contrôle) ---
+// ============================================================================
+
+function TabAnomalies() {
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchReports = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('bug_reports')
+        .select('*, profiles(username)')
+        .order('status', { ascending: true }) // On trie par statut pour grouper les résolus à la fin
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      if (data) setReports(data);
+    } catch (err) {
+      showInAppNotification("Erreur de lecture des anomalies : " + err.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const { error } = await supabase
+        .from('bug_reports')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      showInAppNotification(`Le statut a été passé en : ${newStatus}`, "success");
+      fetchReports();
+      
+    } catch (err) {
+      showInAppNotification("Échec de la mise à jour : " + err.message, "error");
+    }
+  };
+
+  if (loading) return <div className="p-8 text-center text-stone-500 font-serif animate-pulse">Inspection des rapports en cours...</div>;
+
+  return (
+    <div className="space-y-4 animate-fade-in">
+      {reports.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-stone-200">
+          <Bug size={48} className="mx-auto text-stone-300 mb-4" />
+          <p className="text-stone-500 font-serif">Le Bureau est vide. La matrice est stable.</p>
+        </div>
+      ) : (
+        reports.map(report => (
+          <div key={report.id} className="bg-white p-5 rounded-xl shadow-sm border border-stone-200 flex flex-col md:flex-row gap-4 hover:shadow-md transition-shadow">
+            
+            {/* Infos du Bug */}
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <span className={`px-2 py-1 text-[10px] font-bold uppercase rounded-full tracking-wider ${
+                  report.status === 'Résolu' ? 'bg-green-100 text-green-800' :
+                  report.status === 'En cours de traitement' ? 'bg-blue-100 text-blue-800' :
+                  'bg-amber-100 text-amber-800'
+                }`}>
+                  {report.status}
+                </span>
+                <h4 className="font-bold text-stone-800 text-lg">{report.title}</h4>
+                {report.is_confidential && <span className="text-[10px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded border border-stone-200">Confidentiel</span>}
+              </div>
+              <p className="text-sm text-stone-600 leading-relaxed mb-3 bg-stone-50 p-3 rounded border border-stone-100">
+                {report.description}
+              </p>
+              <div className="flex flex-wrap gap-4 text-xs text-stone-500 font-bold">
+                <span>Signalé par : <span className="text-stone-700">{report.profiles?.username || 'Anonyme'}</span></span>
+                <span>Version : {report.version_app}</span>
+                <span>Poids communautaire : {(report.community_weight || []).length} vote(s)</span>
+                <span>Le {new Date(report.created_at).toLocaleDateString('fr-FR')}</span>
+              </div>
+            </div>
+
+            {/* Actions d'Administration */}
+            <div className="flex flex-col items-end gap-2 border-t md:border-t-0 md:border-l border-stone-100 pt-3 md:pt-0 md:pl-4 shrink-0 min-w-[200px]">
+              <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Traiter ce signalement</label>
+              
+              {report.status !== 'Signalé' && (
+                <button onClick={() => handleStatusChange(report.id, 'Signalé')} className="w-full text-left px-3 py-2 text-sm bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg font-bold transition-colors">
+                  ➡️ Remettre en Signalé
+                </button>
+              )}
+              
+              {report.status !== 'En cours de traitement' && (
+                <button onClick={() => handleStatusChange(report.id, 'En cours de traitement')} className="w-full text-left px-3 py-2 text-sm bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg font-bold transition-colors flex items-center gap-2">
+                  <Clock size={14} /> Passer En cours
+                </button>
+              )}
+              
+              {report.status !== 'Résolu' && (
+                <button onClick={() => handleStatusChange(report.id, 'Résolu')} className="w-full text-left px-3 py-2 text-sm bg-green-50 text-green-700 hover:bg-green-100 rounded-lg font-bold transition-colors flex items-center gap-2">
+                  <CheckCircle size={14} /> Marquer Résolu
+                </button>
+              )}
+            </div>
+
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
 // --- 3. LE CONTENEUR PRINCIPAL (Dashboard) ---
 // ============================================================================
 
@@ -316,11 +431,17 @@ export default function AdminDashboard({ session, onBack }) {
         <button onClick={() => setActiveTab('stats')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'stats' ? 'text-blue-900 border-blue-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
           <BarChart2 size={18} /> Métriques
         </button>
+        {/* ✨ NOUVEL ONGLET : BUREAU DES ANOMALIES */}
+        <button onClick={() => setActiveTab('anomalies')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'anomalies' ? 'text-rose-900 border-rose-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+          <Bug size={18} /> Anomalies
+        </button>
       </div>
-
+	  
       {/* Contenu de l'onglet actif */}
       {activeTab === 'users' && <TabUsers session={session} />}
       {activeTab === 'stats' && <TabStats />}
+      {activeTab === 'anomalies' && <TabAnomalies />} {/* ✨ LE NOUVEAU CONTENU */}
+	  
     </div>
   );
 }

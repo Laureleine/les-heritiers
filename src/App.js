@@ -7,6 +7,7 @@
 // 13.1.0 // 13.8.0 // 13.12.0
 // 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0 // 14.10.0 // 14.12.0
 // Optimisé
+// 15.0.0
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -30,7 +31,7 @@ import { exportToPDF } from './utils/pdfGenerator';
 import { AVAILABLE_BADGES, STEP_CONFIG } from './data/DictionnaireJeu';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
 
-import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock } from 'lucide-react';
+import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock, Bug } from 'lucide-react';
 
 // ✨ FIX : LE CODE SPLITTING (Lazy Loading)
 // Ces composants lourds ne seront téléchargés par le navigateur QUE lorsque le joueur cliquera dessus !
@@ -40,6 +41,7 @@ const AccountSettings = lazy(() => import('./components/AccountSettings'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const CerclesDashboard = lazy(() => import('./components/CerclesDashboard'));
 const MesPropositions = lazy(() => import('./components/MesPropositions'));
+const BureauAnomalies = lazy(() => import('./components/BureauAnomalies'));
 
 // --- IMPORTS DES ÉTAPES ---
 // ✨ NOUVEAU : LE CHARGEMENT PARESSEUX DES ÉTAPES
@@ -436,6 +438,7 @@ function App() {
 				  onOpenEncyclopedia={() => navigate('/encyclopedia')}
 				  onOpenAdmin={() => navigate('/admin_dashboard')}
 				  onOpenCercles={() => navigate('/cercles')}
+                  onOpenBureau={() => navigate('/bureau_anomalies')} /* ✨ NOUVEAU CÂBLAGE */
 				/>
 			  } />
 
@@ -492,7 +495,6 @@ function App() {
 				/>
 			  } />			  
 			  <Route path="/mes_propositions" element={<MesPropositions session={session} onBack={() => navigate('/encyclopedia')} />} />
-
 
 			  {/* ROUTE 4 : CRÉATEUR DE PERSONNAGE */}
 			  <Route path="/creator" element={
@@ -634,6 +636,14 @@ function App() {
 
 			  {/* ROUTE DE SÉCURITÉ */}
 			  <Route path="*" element={<Navigate to="/" replace />} />
+
+            {/* ✨ NOUVELLE ROUTE : LE BUREAU DES ANOMALIES PUBLIQUE */}
+            <Route path="/bureau_anomalies" element={
+              <BureauAnomalies 
+                session={session} 
+                onBack={() => navigate('/')} 
+              />
+            } />
 
 			</Routes>
 		</Suspense>
