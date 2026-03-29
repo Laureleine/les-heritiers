@@ -5,6 +5,7 @@
 // 12.4.0
 // 13.2.0 // 13.3.0 // 13.12.0 // 13.13.0
 // 14.0.0 // 14.0.6 // 14.9.0
+// Optimisé
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen } from 'lucide-react';

@@ -1,6 +1,7 @@
 // 11.1.0 // 11.2.1
 // 13.13.0
 // 14.10.0 // 14.11.0
+// Optimisé
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../config/supabase';

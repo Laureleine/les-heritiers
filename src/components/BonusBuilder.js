@@ -2,7 +2,7 @@
 // 10.2.0 // 10.3.0 // 10.4.0
 // 11.1.0
 // 12.1.0 // 12.5.0
-// 14.11.0
+// 14.11.0 // 14.12.0
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles } from 'lucide-react';
@@ -16,44 +16,32 @@ const generateId = () => typeof crypto !== 'undefined' && crypto.randomUUID ? cr
 // ✨ FIX : Signature propre avec toutes les props et valeurs par défaut
 export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonChange, usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData = null }) {
 
+  // ==========================================
+  // 1. TOUS LES ÉTATS (DÉCLARATION)
+  // ==========================================
   const [creatingFutileId, setCreatingFutileId] = useState(null);
   const [newFutileName, setNewFutileName] = useState('');
   const [localCreatedFutiles, setLocalCreatedFutiles] = useState([]);
-
-  const allFutiles = Array.from(new Set([...futilesSkills, ...localCreatedFutiles]));
-
-  // La fonction ouvrière polyvalente
-  const handleCreateFutile = async (blockId, isArray = false) => {
-    if (!newFutileName.trim()) return;
-
-    try {
-      const newComp = await addCompetenceFutile(newFutileName.trim(), 'Créée depuis le Constructeur de Lego');
-      setLocalCreatedFutiles(prev => [...prev, newComp.nom]);
-
-      if (isArray) {
-        const block = blocks.find(b => b.id === blockId);
-        updateBlock(blockId, 'options', [...(block.options || []), newComp.nom]);
-      } else {
-        updateBlock(blockId, 'key', newComp.nom);
-      }
-
-      setCreatingFutileId(null);
-      setNewFutileName('');
-      showInAppNotification(`Compétence futile "${newComp.nom}" forgée avec succès !`, "success");
-    } catch (error) {
-      showInAppNotification("Erreur lors de la création : " + error.message, "error");
-    }
-  };
-
   const [showMenu, setShowMenu] = useState(false);
   const [blocks, setBlocks] = useState([]);
   const [creatingSpecFor, setCreatingSpecFor] = useState(null);
   const [newSpecName, setNewSpecName] = useState('');
 
-  // 1. INITIALISATION DE LA MÉMOIRE (Rechargement depuis le JSON)
+  const allFutiles = Array.from(new Set([...futilesSkills, ...localCreatedFutiles]));
+  const debounceTimer = useRef(null);
+  const isInternalChange = useRef(false); // 🛡️ LE DISJONCTEUR
+  
+  // ==========================================
+  // 2. INITIALISATION & SYNCHRONISATION
+  // ==========================================
   useEffect(() => {
-    const initialBlocks = [];
+    // ✨ FIX 3 : Coupe-circuit ! Si on vient d'ajouter une brique, on ne recrée pas tout !
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return; 
+    }
 
+    const initialBlocks = [];
     if (parsedTech?.caracteristiques) {
       Object.entries(parsedTech.caracteristiques).forEach(([key, val]) => {
         initialBlocks.push({ id: generateId(), type: 'carac', key, val });
@@ -64,8 +52,10 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
         initialBlocks.push({ id: generateId(), type: 'comp', key, val });
       });
     }
-    if (parsedTech?.fortune) {
-      initialBlocks.push({ id: generateId(), type: 'fortune', val: parsedTech.fortune });
+    // ✨ FIX : Le scanner doit reconnaître TOUTES les terminologies de Fortune
+    const fortuneVal = parsedTech?.fortune ?? parsedTech?.fortune_bonus ?? parsedTech?.fortune_score;
+    if (fortuneVal !== undefined && fortuneVal !== null) {
+      initialBlocks.push({ id: generateId(), type: 'fortune', val: Number(fortuneVal) });
     }
     if (parsedTech?.specialites) {
       parsedTech.specialites.forEach(spec => {
@@ -92,14 +82,10 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
         }
       });
     }
-
     setBlocks(initialBlocks);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [parsedTech]); // ✨ FIX 2 : Dépendance ajoutée pour éviter les états figés !
 
   // ✨ FIX : LE CERVEAU (Traduction des Legos en JSON Universel) DOUBLE VITESSE
-  const debounceTimer = useRef(null);
-
   useEffect(() => {
     return () => { if (debounceTimer.current) clearTimeout(debounceTimer.current); };
   }, []);
@@ -117,7 +103,11 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
         if (!newTech.competences) newTech.competences = {};
         newTech.competences[b.key] = parseInt(b.val) || 0;
       }
-      if (b.type === 'fortune') newTech.fortune = parseInt(b.val) || 0;
+      
+      // ✨ FIX : On standardise l'export en "fortune_bonus" pour alignement avec l'Héritage
+      if (b.type === 'fortune') {
+        newTech.fortune_bonus = parseInt(b.val) || 0;
+      }
       
       if (b.type === 'spec') {
         if (!newTech.specialites) newTech.specialites = [];
@@ -147,21 +137,23 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
 
     return newTech;
   };
-
-  // ⚡ 2.B. Exécution Immédiate (Pour les actions structurelles : ajout, suppression)
   const compileImmediate = (currentBlocks) => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    isInternalChange.current = true; // 🛡️ On arme le disjoncteur !
     const newTech = generateTechJson(currentBlocks);
-    updateTech(newTech);
+    updateTech(newTech); // (Si tu l'as toujours)
     if (onJsonChange) onJsonChange(JSON.stringify(newTech, null, 2));
   };
 
-  // ⏳ 2.C. Exécution Retardée (Pour la frappe clavier)
+  // ⏳ 2.C. Exécution Différée (Debounce)
   const compileLazy = (currentBlocks) => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
-      compileImmediate(currentBlocks);
-    }, 400); 
+      isInternalChange.current = true; // 🛡️ On arme le disjoncteur !
+      const newTech = generateTechJson(currentBlocks);
+      updateTech(newTech); // (Si tu l'as toujours)
+      if (onJsonChange) onJsonChange(JSON.stringify(newTech, null, 2));
+    }, 400); // (ou 500 selon ce que tu avais mis)
   };
 
   // 3. GESTION DES ÉVÉNEMENTS
@@ -188,6 +180,26 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
     const newBlocks = blocks.filter(b => b.id !== id);
     setBlocks(newBlocks);
     compileImmediate(newBlocks); // ⚡ Action instantanée
+  };
+
+  // ✨ FIX 1 : Déplacé ici, APRÈS les useState et APRÈS updateBlock !
+  const handleCreateFutile = async (blockId, isArray = false) => {
+    if (!newFutileName.trim()) return;
+    try {
+      const newComp = await addCompetenceFutile(newFutileName.trim(), 'Créée depuis le Constructeur de Lego');
+      setLocalCreatedFutiles(prev => [...prev, newComp.nom]);
+      if (isArray) {
+        const block = blocks.find(b => b.id === blockId);
+        updateBlock(blockId, 'options', [...(block.options || []), newComp.nom]);
+      } else {
+        updateBlock(blockId, 'key', newComp.nom);
+      }
+      setCreatingFutileId(null);
+      setNewFutileName('');
+      showInAppNotification(`Compétence futile "${newComp.nom}" forgée avec succès !`, "success");
+    } catch (error) {
+      showInAppNotification("Erreur lors de la création : " + error.message, "error");
+    }
   };
 
   const handleCreateGlobalSpeciality = async (blockId, compName, specName) => {

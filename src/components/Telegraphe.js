@@ -3,6 +3,7 @@
 // 12.3.0
 // 13.4.0
 // 14.0.0 // 14.9.0 // 14.10.0 // 14.10.1 // 14.11.0
+// Optimisé
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, LayoutList, ListFilter, Settings } from 'lucide-react';

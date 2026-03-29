@@ -5,9 +5,10 @@
 // 11.0.0 // 11.1.0 // 11.4.0
 // 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
 // 13.1.0 // 13.8.0 // 13.12.0
-// 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0 // 14.10.0
+// 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0 // 14.10.0 // 14.12.0
+// Optimisé
 
-import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useCharacter } from './context/CharacterContext';
 import { supabase } from './config/supabase';
 import { loadAllGameData } from './utils/supabaseGameData';
@@ -51,9 +52,9 @@ const StepAtouts = lazy(() => import('./components/StepMagie').then(module => ({
 
 const StepCaracteristiques = lazy(() => import('./components/StepCaracteristiques'));
 const StepProfils = lazy(() => import('./components/StepProfils'));
-const StepCompetencesLibres = lazy(() => import('./components/StepCompetencesLibres'));
+const StepCompetencesLibres = lazy(() => import('./components/competencesLibres/StepCompetencesLibres'));
 const StepCompetencesFutiles = lazy(() => import('./components/StepCompetencesFutiles'));
-const StepVieSociale = lazy(() => import('./components/StepVieSociale'));
+const StepVieSociale = lazy(() => import('./components/vieSociale/StepVieSociale'));
 const StepPersonnalisation = lazy(() => import('./components/StepPersonnalisation'));
 const StepRecapitulatif = lazy(() => import('./components/StepRecapitulatif'));
 
@@ -279,7 +280,35 @@ function App() {
     5: <StepCaracteristiques />, 6: <StepProfils />, 7: <StepCompetencesLibres />,
     8: <StepCompetencesFutiles />, 9: <StepVieSociale />, 10: <StepPersonnalisation />,
     11: <StepRecapitulatif />
-  }), []); // <-- Le tableau vide garantit qu'il n'est jamais recréé !
+  }), [
+    Step1, Step2, Step3, StepAtouts, StepCaracteristiques, 
+    StepProfils, StepCompetencesLibres, StepCompetencesFutiles, 
+    StepVieSociale, StepPersonnalisation, StepRecapitulatif
+  ]);
+  
+  // ========================================================================
+  // ✨ GESTION MANUELLE DE L'EXPÉRIENCE (LE PUITS DES ÂMES)
+  // ========================================================================
+  const handleAdjustXP = useCallback((amount) => {
+    const currentTotal = character.xp_total || 0;
+    const depense = character.xp_depense || 0;
+    const newTotal = Math.max(depense, currentTotal + amount);
+
+    if (newTotal === currentTotal) {
+      if (amount < 0) showInAppNotification("Vous ne pouvez pas réduire votre Expérience en dessous des points déjà dépensés !", "warning");
+      return;
+    }
+
+    dispatchCharacter({
+      type: 'UPDATE_FIELD',
+      field: 'xp_total',
+      value: newTotal,
+      gameData
+    });
+
+    if (amount > 0) showInAppNotification(`Gling ! +${amount} XP ajoutés.`, "success");
+    else showInAppNotification(`Ajustement : ${amount} XP retirés.`, "info");
+  }, [character.xp_total, character.xp_depense, dispatchCharacter, gameData]);
   
   // --- RENDU ÉCRAN DE CHARGEMENT ---
   if (globalLoading) {
@@ -302,31 +331,6 @@ function App() {
     );
   }
 
-  // ========================================================================
-  // ✨ GESTION MANUELLE DE L'EXPÉRIENCE (LE PUITS DES ÂMES)
-  // ========================================================================
-  const handleAdjustXP = (amount) => {
-    const currentTotal = character.xp_total || 0;
-    const depense = character.xp_depense || 0;
-    
-    const newTotal = Math.max(depense, currentTotal + amount); 
-
-    if (newTotal === currentTotal) {
-      if (amount < 0) showInAppNotification("Vous ne pouvez pas réduire votre Expérience en dessous des points déjà dépensés !", "warning");
-      return;
-    }
-
-    dispatchCharacter({
-      type: 'UPDATE_FIELD',
-      field: 'xp_total',
-      value: newTotal,
-      gameData
-    });
-
-    if (amount > 0) showInAppNotification(`Gling ! +${amount} XP ajoutés.`, "success");
-    else showInAppNotification(`Ajustement : ${amount} XP retirés.`, "info");
-  };
-  
   // --- RENDU DE L'APPLICATION ---
   return (
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">

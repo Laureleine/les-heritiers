@@ -5,7 +5,7 @@
 // 11.2.0
 // 12.1.0
 // 13.0.0 // 13.0.1 // 13.0.3
-// 14.2.0 // 14.9.0
+// 14.2.0 // 14.9.0 // 14.12.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
@@ -245,30 +245,33 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
         atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         
-        // ✨ ON INJECTE LES BRIQUES DORÉES
+        // ✨ ON INJECTE LES BRIQUES DORÉES ET L'ADN BRUT
         techData: JSON.stringify({
+          ...(item.effets_techniques || {}), // 👈 FIX : L'ADN DE BASE (Fortune, etc) EST LÀ !
           predilections: vraiesPredilections,
-          specialites: specialitesPures, 
+          specialites: specialitesPures,
           futiles: futilesFormatees
         }, null, 2)
       });
-    } else {
-		// Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
-      let existingFairyIds = [];
-      if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-      if (activeTab === 'fairy_powers') existingFairyIds = item.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-      if (activeTab === 'fairy_assets') existingFairyIds = item.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
+      } else {
+        // Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
+        let existingFairyIds = [];
+        if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
+        if (activeTab === 'fairy_powers') existingFairyIds = item.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
+        if (activeTab === 'fairy_assets') existingFairyIds = item.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
 
-      setProposal({
-        name: item.name || item.nom || '', 
-        description: item.description || item.desc || '',
-        type_pouvoir: item.type_pouvoir || 'masque',
-        // 👇 NOUVEAU : Les champs spécifiques aux Atouts
-        effets: item.effets || '',
-        effets_techniques: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '',
-        fairyIds: existingFairyIds
-      });
-    }
+        setProposal({
+          name: item.name || item.nom || '',
+          description: item.description || item.desc || '',
+          type_pouvoir: item.type_pouvoir || 'masque',
+          // 👇 NOUVEAU : Les champs spécifiques aux Atouts
+          effets: item.effets || '',
+          effets_techniques: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '',
+          // ✨ FIX 1 : On initialise le tuyau de communication du BonusBuilder !
+          techData: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '{}',
+          fairyIds: existingFairyIds
+        });
+      }
     setJustification('Mise à jour suite à...');
   };
   
