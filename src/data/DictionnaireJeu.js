@@ -2,6 +2,7 @@
 // 11.0.0
 // 12.6.0
 // 13.3.0 // 13.9.0
+// 15.1.0
 
 import React from 'react';
 import {Camera, Gift, Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle, Compass } from 'lucide-react';
@@ -18,34 +19,6 @@ export const CARAC_LIST = [
   { key: 'perception', label: 'Perception', icon: '👁️', description: 'Observation, sens aiguisés, intuition' },
   { key: 'prestance', label: 'Prestance', icon: '👑', description: 'Charisme, présence, influence' },
   { key: 'sangFroid', label: 'Sang-froid', icon: '🧊', description: 'Calme, maîtrise de soi, courage' }
-];
-
-// ============================================================================
-// 2. LES TITRES HONORIFIQUES (Ancien badges.js)
-// ============================================================================
-export const AVAILABLE_BADGES = [
-  { id: 'beta', label: <span className="flex items-center gap-1"><Bug size={12}/> Bêta-Testeur</span>, color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-  { id: 'lore', label: <span className="flex items-center gap-1"><BookOpen size={12}/> Archiviste</span>, color: 'bg-purple-100 text-purple-800 border-purple-200' },
-  { id: 'creator', label: <span className="flex items-center gap-1"><Sparkles size={12}/> Créateur</span>, color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  { id: 'vip', label: <span className="flex items-center gap-1"><Gem size={12}/> VIP</span>, color: 'bg-rose-100 text-rose-800 border-rose-200' },
-  { id: 'crash', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/><Bug size={12}/><Bomb size={12}/> Crash Testeuse</span>, color: 'bg-stone-900 text-red-400 border-stone-700 shadow-md animate-pulse' },
-  { id: 'telegraph', label: 'Pionnier Pneumatique 📠', color: 'bg-cyan-100 text-cyan-800 border-cyan-200 shadow-sm' },
-  { id: 'pixie_friend', label: 'Ami des Pixies 🧚', color: 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200 shadow-sm' },
-  { id: 'tricheuse', label: <span className="flex items-center gap-1"><Dices size={12}/> Tricheuse</span>, color: 'bg-[#2a1329] text-fuchsia-300 border-fuchsia-800 shadow-[0_0_8px_rgba(192,38,211,0.3)]' },
-  { id: 'lanterne', label: 'Gardien de la Lanterne 🏮', color: 'bg-indigo-900 text-amber-200 border-amber-500/50 shadow-sm' },
-  { id: 'limpide', label: <span className="flex items-center gap-1"><Sparkles size={12}/> Esprit Limpide</span>, color: 'bg-cyan-50 text-cyan-800 border-cyan-200 shadow-sm' },
-  { id: 'pragmatique', label: 'Esprit Pragmatique ⚙️', color: 'bg-slate-100 text-slate-700 border-slate-300 shadow-sm' },
-  { id: 'clarte', label: 'Architecte de la Clarté 📐', color: 'bg-stone-100 text-stone-800 border-stone-300 shadow-sm' },
-  { id: 'safari_guide', label: <span className="flex items-center gap-1"><Compass size={12}/> Guide de Safari</span>, color: 'bg-amber-100 text-amber-900 border-amber-400 shadow-sm'   },
-  { id: 'newton_apple', label: <span className="flex items-center gap-1"><TestTubeDiagonal size={12}/> La Pomme de Newton</span>,     color: 'bg-lime-100 text-lime-900 border-lime-400 shadow-sm'   },
-  { id: 'renard_renarde', label: <span className="flex items-center gap-1"><VenetianMask size={12}/> Le Renard de la Renarde</span>,     color: 'bg-orange-100 text-orange-900 border-orange-400 shadow-sm'   },
-  { id: 'goblin_hunter', label: 'Chasseur de Gobelins 🏹', color: 'bg-green-900 text-amber-400 border-amber-500 shadow-md' },
-  { id: 'anomaly_tracker', label: 'Traqueur d\'Anomalies 🔍', color: 'bg-indigo-100 text-indigo-900 border-indigo-400 shadow-sm' },
-  { id: 'mecene', label: <span className="flex items-center gap-1"><Gem size={12}/> Mécène</span>, color: 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border-amber-400 shadow-md'   },
-  { id: 'pdf_inspector', label: 'Inspecteur des Rotatives 🖨️', color: 'bg-stone-800 text-stone-100 border-stone-500 shadow-sm' },
-  { id: 'typo_hunter', label: <span className="flex items-center gap-1"><Feather size={12}/> Traqueur de Coquilles</span>, color: 'bg-rose-50 text-rose-800 border-rose-300 shadow-sm' },
-  { id: 'passeur_ames', label: <span className="flex items-center gap-1"><Gift size={12}/> Passeur d'Âmes</span>, color: 'bg-emerald-100 text-emerald-900 border-emerald-400 shadow-sm' },
-  { id: 'photographe_temporel', label: <span className="flex items-center gap-1"><Camera size={12}/> Photographe Temporel</span>, color: 'bg-stone-100 text-amber-900 border-amber-700 shadow-sm' },
 ];
 
 // ============================================================================

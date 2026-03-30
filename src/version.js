@@ -6,6 +6,18 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '15.1.0',
+    date: '30 Mars 2026',
+    changes: [
+      '🐛 **Traducteur (Hotfix) :** Résolution d\'un bug de casse (case-sensitivity) dans `SystemeServices.js` qui empêchait la traduction de l\'erreur Supabase d\'envoi d\'emails. Le message immersif sur "Les rouages du Télégraphe" s\'affiche désormais correctement lors d\'une surcharge des requêtes.',
+      '🐛 **Cercles (Hotfix) :** Rétablissement de l\'inspection des Héritiers à la table. Le bouton "Consulter" fait de nouveau appel à la prop `onViewCharacter` au lieu d\'émettre un événement `open-grimoire` orphelin. Le Docte peut à nouveau ouvrir le dossier de ses joueurs en mode Lecture Seule.',
+      '🛡️ **Administration (Gestion des Héritiers) :** Ajout d\'une visibilité directe du statut de validation email dans la liste des utilisateurs du tableau de bord.',
+      '⚙️ **Architecture Sécurisée :** Création de fonctions RPC (Security Definer) côté Supabase pour permettre au Super-Admin de valider manuellement l\'adresse email d\'un joueur bloqué, sans compromettre la sécurité de la table `auth.users`.',
+      '🛡️ **Cockpit d\'Administration :** Refonte majeure de la liste des Héritiers (`AdminDashboard.js`). Le Super-Admin dispose désormais d\'un moteur de recherche (pseudo et email), de filtres rapides (ex: comptes non vérifiés) et d\'options de tri (connexion, inscription, alphabétique).',
+      '🎖️ **Forge des Titres :** Implémentation du module de création de badges honorifiques. L\'administration peut désormais forger de nouvelles récompenses avec prévisualisation dynamique des couleurs Tailwind et des icônes Lucide.'
+     ]
+  },
+  {
     version: '15.0.0',
     date: '29 Mars 2026',
     changes: [

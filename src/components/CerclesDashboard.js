@@ -2,6 +2,7 @@
 // 13.13.0
 // 14.10.0 // 14.11.0
 // Optimisé
+// 15.1.0
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../config/supabase';
@@ -13,7 +14,7 @@ import ConfirmModal from './ConfirmModal';
 // ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
 // ============================================================================
 
-const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave }) => {
+const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter }) => {
   if (!cercle) return null;
   const isDocte = cercle.docte_id === session.user.id;
 
@@ -163,7 +164,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                           {member.characters?.typeFee || 'Inconnue'}
                         </div>
                         <button
-                          onClick={() => window.dispatchEvent(new CustomEvent('open-grimoire', { detail: member.characters?.id }))}
+                          onClick={() => onViewCharacter(member.characters)} 
                           className="w-full py-2 bg-stone-50 text-purple-700 hover:bg-purple-600 hover:text-white rounded-lg border border-purple-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm"
                           title="Inspecter la fiche complète"
                         >
@@ -200,7 +201,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
 // ✨ LE COMPOSANT PRINCIPAL
 // ============================================================================
 
-export default function CerclesDashboard({ session, onBack }) {
+export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   const [cercles, setCercles] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -454,6 +455,7 @@ export default function CerclesDashboard({ session, onBack }) {
               activeMembers={activeMembers}
               onDelete={handleDeleteCercle}
               onLeave={handleLeaveCercle}
+              onViewCharacter={onViewCharacter}
             />
           )}
         </>

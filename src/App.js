@@ -7,7 +7,7 @@
 // 13.1.0 // 13.8.0 // 13.12.0
 // 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0 // 14.10.0 // 14.12.0
 // Optimisé
-// 15.0.0
+// 15.0.0 // 15.1.0
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -18,6 +18,7 @@ import { useAutoUpdate } from './hooks/useAutoUpdate';
 import { showInAppNotification } from './utils/SystemeServices'; 
 import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import * as LucideIcons from 'lucide-react';
 
 // --- IMPORTS STATIQUES (Essentiels au démarrage) ---
 import Auth from './components/Auth';
@@ -28,7 +29,7 @@ import PixieAssistant from './components/PixieAssistant';
 import BackgroundDecor from './components/BackgroundDecor';
 
 import { exportToPDF } from './utils/pdfGenerator';
-import { AVAILABLE_BADGES, STEP_CONFIG } from './data/DictionnaireJeu';
+import { STEP_CONFIG } from './data/DictionnaireJeu';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
 
 import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock, Bug } from 'lucide-react';
@@ -367,30 +368,43 @@ function App() {
           {userProfile?.profile?.role === 'gardien' && (
             <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full border border-blue-200 shadow-sm">Gardien du Savoir</span>
           )}
+
+          {/* ✨ FIX : Le nouveau moteur hybride (Nuage + En dur) */}
           {(() => {
             const userBadges = userProfile?.profile?.badges || [];
             const activeBadgeId = userProfile?.profile?.active_badge;
+
             const sortedBadges = [...userBadges].sort((a, b) => {
               if (a === activeBadgeId) return -1;
               if (b === activeBadgeId) return 1;
               return 0;
             });
+
             return sortedBadges.map((badgeId, index) => {
-              const badgeDef = AVAILABLE_BADGES?.find(b => b.id === badgeId);
+              // 🧠 Le Cerveau cherche d'abord dans le Nuage (RAM), puis dans le vieux grimoire
+              const dbBadges = gameData?.badges || [];
+			  const badgeDef = dbBadges.find(b => b.id === badgeId);              
               if (!badgeDef) return null;
+
               const isActive = badgeId === activeBadgeId || (!activeBadgeId && index === 0);
+              const isLegacy = !badgeDef.icon_name; // Les anciens badges n'ont pas ce champ
+              const DynamicIcon = !isLegacy && badgeDef.icon_name && LucideIcons[badgeDef.icon_name] ? LucideIcons[badgeDef.icon_name] : null;
+              const colorClass = isLegacy ? badgeDef.color : badgeDef.color_classes;
+
               return (
                 <span
                   key={badgeId}
-                  className={`inline-flex items-center border font-bold transition-all cursor-help ${badgeDef.color} ${isActive ? 'px-3 py-1 text-xs rounded-full shadow-sm ring-2 ring-offset-1 ring-amber-400 scale-105' : 'px-2 py-0.5 text-[10px] rounded-full opacity-60 hover:opacity-100'}`}
+                  className={`inline-flex items-center gap-1 border font-bold transition-all cursor-help ${colorClass} ${isActive ? 'px-3 py-1 text-xs rounded-full shadow-sm ring-2 ring-offset-1 ring-amber-400 scale-105' : 'px-2 py-0.5 text-[10px] rounded-full opacity-60 hover:opacity-100'}`}
                   title={isActive ? "Titre Actif" : "Titre Possédé"}
                 >
-                  {badgeDef.label}
+                  {!isLegacy && DynamicIcon && <DynamicIcon size={12} />}
+                  {isLegacy ? badgeDef.label : badgeDef.label}
                 </span>
               );
             });
           })()}
         </div>
+
       </div>
 
         {/* 2. LE CONTENEUR CENTRAL */}
