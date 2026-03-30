@@ -4,6 +4,7 @@
 // 12.5.0
 // 13.0.6
 // 14.2.0 // 14.10.0 // 14.12.0
+// 15.1.0
 
 import { supabase } from '../config/supabase';
 
@@ -430,6 +431,24 @@ export const addGlobalSpeciality = async (competenceId, newSpeciality) => {
 };
 
 // ============================================================================
+// ✨ LES TITRES HONORIFIQUES (BADGES DYNAMIQUES)
+// ============================================================================
+export const loadBadges = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('titres_honorifiques')
+      .select('*')
+      .order('label');
+      
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Erreur chargement des titres honorifiques :", error);
+    return [];
+  }
+};
+
+// ============================================================================
 // CACHE GLOBAL ET ORCHESTRATION (Le Grimoire de Poche)
 // ============================================================================
 
@@ -438,6 +457,7 @@ let cachedCompetences = null;
 let cachedFairyTypes = null;
 let cachedSocialItems = null;
 let cachedEncyclopediaRefs = null;
+let cachedBadges = null; // ✨ NOUVEAU : La mémoire RAM des badges
 
 const LOCAL_CACHE_KEY = 'heritiers_grimoire_cache';
 
@@ -476,15 +496,17 @@ export const loadEncyclopediaRefs = async () => {
 // 🧠 LE TRAVAILLEUR DE L'OMBRE : Télécharge et met en cache silencieusement
 const fetchAndCacheFromCloud = async (forceRefresh = false) => {
   try {
-    const [p, c, f, fut, soc, refs] = await Promise.all([
-      loadProfils(), loadCompetences(), loadFairyTypes(), getCompetencesFutiles(forceRefresh), loadSocialItems(), loadEncyclopediaRefs()
+    // ✨ FIX : On ajoute loadBadges() à l'orchestre !
+    const [p, c, f, fut, soc, refs, badges] = await Promise.all([
+      loadProfils(), loadCompetences(), loadFairyTypes(), getCompetencesFutiles(forceRefresh), loadSocialItems(), loadEncyclopediaRefs(), loadBadges()
     ]);
 
-    cachedProfils = p; 
-    cachedCompetences = c; 
-    cachedFairyTypes = f; 
-    cachedSocialItems = soc; 
+    cachedProfils = p;
+    cachedCompetences = c;
+    cachedFairyTypes = f;
+    cachedSocialItems = soc;
     cachedEncyclopediaRefs = refs;
+    cachedBadges = badges; // ✨ NOUVEAU
 
     const completeData = {
       profils: p,
@@ -495,7 +517,8 @@ const fetchAndCacheFromCloud = async (forceRefresh = false) => {
       fairyTypes: f.fairyTypes,
       fairyTypesByAge: f.fairyTypesByAge,
       socialItems: soc,
-      encyclopediaRefs: refs
+      encyclopediaRefs: refs,
+      badges: badges // ✨ NOUVEAU : Sera accessible via gameData.badges !
     };
 
     // 💾 On grave le dictionnaire dans le navigateur !
@@ -509,20 +532,19 @@ const fetchAndCacheFromCloud = async (forceRefresh = false) => {
 
 // 🚀 LE MOTEUR PRINCIPAL (Stale-While-Revalidate)
 export const loadAllGameData = async (forceRefresh = false) => {
-  
   // 1. RAM (Mémoire Vive) : Le plus rapide
-  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes && cachedSocialItems && cachedEncyclopediaRefs) {
+  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes && cachedSocialItems && cachedEncyclopediaRefs && cachedBadges) {
     return {
       profils: cachedProfils,
       competences: cachedCompetences.competences,
       competencesParProfil: cachedCompetences.competencesParProfil,
-      // Note: cachedCompetencesFutiles est géré localement dans sa propre fonction au début du fichier
-      competencesFutiles: await getCompetencesFutiles(false), 
+      competencesFutiles: await getCompetencesFutiles(false),
       fairyData: cachedFairyTypes.fairyData,
       fairyTypes: cachedFairyTypes.fairyTypes,
       fairyTypesByAge: cachedFairyTypes.fairyTypesByAge,
       socialItems: cachedSocialItems,
-      encyclopediaRefs: cachedEncyclopediaRefs
+      encyclopediaRefs: cachedEncyclopediaRefs,
+      badges: cachedBadges // ✨ NOUVEAU
     };
   }
 
@@ -532,17 +554,16 @@ export const loadAllGameData = async (forceRefresh = false) => {
     if (localData) {
       try {
         const parsedData = JSON.parse(localData);
-
         // Restauration de la RAM
         cachedProfils = parsedData.profils;
         cachedCompetences = { competences: parsedData.competences, competencesParProfil: parsedData.competencesParProfil };
         cachedFairyTypes = { fairyData: parsedData.fairyData, fairyTypes: parsedData.fairyTypes, fairyTypesByAge: parsedData.fairyTypesByAge };
         cachedSocialItems = parsedData.socialItems;
         cachedEncyclopediaRefs = parsedData.encyclopediaRefs;
+        cachedBadges = parsedData.badges; // ✨ NOUVEAU
 
-        // ✨ LA MAGIE : On lance la mise à jour sans utiliser "await", pour ne PAS bloquer l'application !
+        // ✨ LA MAGIE : On lance la mise à jour sans bloquer l'application !
         fetchAndCacheFromCloud(false);
-
         console.log("⚡ Grimoire chargé depuis la poche en 0.01s !");
         return parsedData;
       } catch (e) {
@@ -566,5 +587,6 @@ export const invalidateAllCaches = () => {
   invalidateCompetencesFutilesCache(); // Fonction déjà déclarée plus haut
   cachedSocialItems = null; 
   cachedEncyclopediaRefs = null;
+  cachedBadges = null; // ✨ NOUVEAU
   localStorage.removeItem(LOCAL_CACHE_KEY); // ✨ On vide aussi la poche !
 };

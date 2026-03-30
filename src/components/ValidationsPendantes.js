@@ -5,15 +5,19 @@
 // 11.1.0 // 11.3.0 // 11.4.0
 // 12.1.0 // 12.2.0 // 12.3.0 // 12.4.0
 // 13.1.0 // 13.10.0
+// 15.1.0
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Check, X, ArrowLeft, Shield, User, Plus, Minus, TestTubeDiagonal, ShieldAlert } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
-import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 import ConfirmModal from './ConfirmModal';
 import { generateApprovalSQL } from '../utils/sqlGenerator';
 import { showInAppNotification } from '../utils/SystemeServices';
+
+// ✨ NOUVEAU : On branche le Cerveau et le générateur d'icônes
+import { useCharacter } from '../context/CharacterContext';
+import * as LucideIcons from 'lucide-react';
 
 const TABLE_NAME = 'data_change_requests';
 
@@ -39,7 +43,8 @@ const notifyEscalation = async (change, errorMsg, currentUserId) => {
 // 🟠 LE COMPOSANT ENFANT ÉPURÉ ET MÉMOÏSÉ (React.memo)
 // ======================================================================
 const ChangeCard = React.memo(({ change, context, actions }) => {
-  const { originalRecords, referenceNames, myRole, currentUserId } = context;
+  // ✨ FIX : On récupère dbBadges du contexte
+  const { originalRecords, referenceNames, myRole, currentUserId, dbBadges } = context;
   const { onReject, onApprove, onArchive, onRestore } = actions;
 
   const pData = change.new_data || change.proposed_data || {};
@@ -77,20 +82,25 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
           <span className="text-sm font-bold text-gray-700">
             {change.profiles?.username || 'Héritier Anonyme'}
           </span>
-          {change.profiles?.badges && change.profiles.badges.length > 0 && (
-            <div className="flex flex-wrap gap-1 border-l border-gray-200 pl-2 ml-1">
-              {change.profiles.badges.map(badgeId => {
-                const badgeDef = AVAILABLE_BADGES?.find(b => b.id === badgeId);
-                if (!badgeDef) return null;
-                return (
-                  <span key={badgeId} className={`text-[9px] px-1.5 py-0.5 rounded-full border ${badgeDef.color} font-bold`} title={badgeDef.label}>
-                    {badgeDef.label}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-        </div>
+		{change.profiles?.badges && change.profiles.badges.length > 0 && (
+		  <div className="flex flex-wrap gap-1 border-l border-gray-200 pl-2 ml-1">
+			{change.profiles.badges.map(badgeId => {
+			  // ✨ FIX : Lecture pure depuis la base de données !
+			  const badgeDef = dbBadges.find(b => b.id === badgeId);
+			  if (!badgeDef) return null;
+			  
+			  const DynamicIcon = badgeDef.icon_name && LucideIcons[badgeDef.icon_name] ? LucideIcons[badgeDef.icon_name] : null;
+
+			  return (
+				<span key={badgeId} className={`inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-full border ${badgeDef.color_classes} font-bold`} title={badgeDef.label}>
+				  {DynamicIcon && <DynamicIcon size={10} />}
+				  {badgeDef.label}
+				</span>
+			  );
+			})}
+		  </div>
+		)}
+		</div>
         <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100 italic">
           "{change.justification}"
         </p>
@@ -272,6 +282,8 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
 // 🛡️ LE CONSEIL DES GARDIENS (Parent)
 // ======================================================================
 export default function ValidationsPendantes({ session, onBack }) {
+  const { gameData } = useCharacter(); // ✨ LE CERVEAU
+
   const [pendingChanges, setPendingChanges] = useState([]);
   const [approvedChanges, setApprovedChanges] = useState([]);
   const [historyChanges, setHistoryChanges] = useState([]);
@@ -519,8 +531,9 @@ export default function ValidationsPendantes({ session, onBack }) {
     originalRecords,
     referenceNames,
     myRole,
-    currentUserId: session.user.id
-  }), [originalRecords, referenceNames, myRole, session.user.id]);
+    currentUserId: session.user.id,
+    dbBadges: gameData?.badges || [] // ✨ NOUVEAU : On transmet les badges du Nuage
+  }), [originalRecords, referenceNames, myRole, session.user.id, gameData?.badges]);
 
   const cardActions = useMemo(() => ({
     onReject: handleRejectClick,

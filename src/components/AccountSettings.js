@@ -5,12 +5,14 @@
 // 12.0.0 // 12.3.0
 // 13.11.0
 // 14.3.0
+// 15.1.0
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone, MessageCircle } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { AVAILABLE_BADGES } from '../data/DictionnaireJeu';
 import { showInAppNotification, requestNotificationPermission } from '../utils/SystemeServices';
+import { useCharacter } from '../context/CharacterContext';
+import * as LucideIcons from 'lucide-react';
 
 export default function AccountSettings({ session, userProfile, onBack, onUpdateProfile }) {
   const profile = userProfile?.profile || {};
@@ -37,7 +39,14 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
   const [pushSupported, setPushSupported] = useState(false);
   const [initialNotifPrefs, setInitialNotifPrefs] = useState(null);
 
-  const myBadges = AVAILABLE_BADGES.filter(b => profile.badges?.includes(b.id));
+  // ✨ LE CERVEAU SÉPARÉ : On récupère les données du Nuage
+  const { gameData } = useCharacter();
+
+  // ✨ LE CERVEAU SÉPARÉ : Lecture 100% depuis la base de données
+  const myBadges = useMemo(() => {
+    const dbBadges = gameData?.badges || [];
+    return (profile.badges || []).map(id => dbBadges.find(b => b.id === id)).filter(Boolean);
+  }, [profile.badges, gameData?.badges]);
 
   // 🐛 FIX 6 : Le flag "isFormInitialized" protège nos inputs locaux des re-renders intempestifs !
   const [isFormInitialized, setIsFormInitialized] = useState(false);
@@ -273,21 +282,30 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                   <p className="text-xs text-stone-500 mb-3 italic">
                     Ce titre s'affichera fièrement sous votre nom dans le Télégraphe et la liste de l'administration.
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {myBadges.map(badge => (
-                      <button
-                        key={badge.id}
-                        onClick={() => setActiveBadge(badge.id)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
-                          activeBadge === badge.id
-                            ? `${badge.color} ring-2 ring-offset-1 ring-amber-400 scale-105`
-                            : 'bg-stone-50 text-stone-500 border-stone-200 hover:bg-stone-100 opacity-60 hover:opacity-100'
-                        }`}
-                      >
-                        {badge.label}
-                      </button>
-                    ))}
-                  </div>
+					<div className="flex flex-wrap gap-2">
+					  {myBadges.map(badge => {
+						// ✨ FIX : Détection du type de badge (Nouveau ou Ancien)
+						const isLegacy = !badge.icon_name; 
+						const DynamicIcon = !isLegacy && badge.icon_name && LucideIcons[badge.icon_name] ? LucideIcons[badge.icon_name] : null;
+						const colorClass = isLegacy ? badge.color : badge.color_classes;
+						const isActive = activeBadge === badge.id;
+
+						return (
+						  <button
+							key={badge.id}
+							onClick={() => setActiveBadge(badge.id)}
+							className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
+							  isActive
+								? `${colorClass} ring-2 ring-offset-1 ring-amber-400 scale-105`
+								: 'bg-stone-50 text-stone-500 border-stone-200 hover:bg-stone-100 opacity-60 hover:opacity-100'
+							}`}
+						  >
+							{!isLegacy && DynamicIcon && <DynamicIcon size={14} />}
+							{isLegacy ? badge.label : badge.label}
+						  </button>
+						);
+					  })}
+					</div>
                 </div>
               )}
             </div>
