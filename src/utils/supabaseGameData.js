@@ -4,7 +4,7 @@
 // 12.5.0
 // 13.0.6
 // 14.2.0 // 14.10.0 // 14.12.0
-// 15.1.0
+// 15.1.0 // 15.2.0
 
 import { supabase } from '../config/supabase';
 
@@ -493,23 +493,75 @@ export const loadEncyclopediaRefs = async () => {
   }
 };
 
-// 🧠 LE TRAVAILLEUR DE L'OMBRE : Télécharge et met en cache silencieusement
-const fetchAndCacheFromCloud = async (forceRefresh = false) => {
+// ============================================================================
+// CACHE GLOBAL ET ORCHESTRATION (Le Grimoire de Poche Séquentiel)
+// ============================================================================
+
+// (Garde tes variables 'let cached...' et LOCAL_CACHE_KEY intactes au-dessus)
+
+// 🚀 1. LE NOYAU VITAL (Démarrage ultra-rapide)
+export const loadCoreGameData = async () => {
+  // A. On tente d'abord la lecture instantanée du cache local (Mémoire du navigateur)
+  const localData = localStorage.getItem(LOCAL_CACHE_KEY);
+  if (localData) {
+    try {
+      const parsedData = JSON.parse(localData);
+      cachedProfils = parsedData.profils;
+      cachedBadges = parsedData.badges; // Rétrocompatibilité de notre Forge !
+      cachedCompetences = { competences: parsedData.competences, competencesParProfil: parsedData.competencesParProfil };
+      cachedFairyTypes = { fairyData: parsedData.fairyData, fairyTypes: parsedData.fairyTypes, fairyTypesByAge: parsedData.fairyTypesByAge };
+      cachedSocialItems = parsedData.socialItems;
+      cachedEncyclopediaRefs = parsedData.encyclopediaRefs;
+      
+      // Si on a le cache, on retourne TOUT instantanément !
+      return parsedData; 
+    } catch (e) {
+      console.warn("Cache corrompu, on purge la poche...");
+      localStorage.removeItem(LOCAL_CACHE_KEY);
+    }
+  }
+
+  // B. Pas de cache (Premier démarrage) ? On télécharge UNIQUEMENT le strict minimum bloquant !
+  console.log("⚡ Allumage du Noyau (Profils & Titres)...");
   try {
-    // ✨ FIX : On ajoute loadBadges() à l'orchestre !
-    const [p, c, f, fut, soc, refs, badges] = await Promise.all([
-      loadProfils(), loadCompetences(), loadFairyTypes(), getCompetencesFutiles(forceRefresh), loadSocialItems(), loadEncyclopediaRefs(), loadBadges()
+    const [p, b] = await Promise.all([
+      loadProfils(),
+      typeof loadBadges === 'function' ? loadBadges() : Promise.resolve([]) // Sécurité si la fonction n'est pas encore là
+    ]);
+    
+    cachedProfils = p;
+    cachedBadges = b;
+    
+    return {
+      profils: p,
+      badges: b,
+      // ✨ LA MAGIE : On renvoie des coquilles vides pour le reste pour ne pas faire crasher l'UI
+      competences: {}, competencesParProfil: {}, competencesFutiles: [],
+      fairyData: {}, fairyTypes: [], fairyTypesByAge: { traditionnelles: [], modernes: [] },
+      socialItems: [], encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] }
+    };
+  } catch (error) {
+    console.error("❌ Erreur fatale du Noyau :", error);
+    return null;
+  }
+};
+
+// 🧠 2. L'ÉRUDITION LOURDE (Téléchargement asynchrone en arrière-plan)
+export const loadHeavyLoreData = async (currentCoreData) => {
+  console.log("☁️ Téléchargement lourd du Lore dans la toile de fond...");
+  try {
+    // On télécharge le mammouth !
+    const [c, f, fut, soc, refs] = await Promise.all([
+      loadCompetences(), loadFairyTypes(), getCompetencesFutiles(true), loadSocialItems(), loadEncyclopediaRefs()
     ]);
 
-    cachedProfils = p;
     cachedCompetences = c;
     cachedFairyTypes = f;
     cachedSocialItems = soc;
     cachedEncyclopediaRefs = refs;
-    cachedBadges = badges; // ✨ NOUVEAU
 
     const completeData = {
-      profils: p,
+      ...currentCoreData, // On fusionne avec notre noyau déjà affiché (Profils & Badges)
       competences: c.competences,
       competencesParProfil: c.competencesParProfil,
       competencesFutiles: fut,
@@ -517,76 +569,26 @@ const fetchAndCacheFromCloud = async (forceRefresh = false) => {
       fairyTypes: f.fairyTypes,
       fairyTypesByAge: f.fairyTypesByAge,
       socialItems: soc,
-      encyclopediaRefs: refs,
-      badges: badges // ✨ NOUVEAU : Sera accessible via gameData.badges !
+      encyclopediaRefs: refs
     };
 
-    // 💾 On grave le dictionnaire dans le navigateur !
+    // 💾 On grave le grand dictionnaire complet et on le retourne
     localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(completeData));
     return completeData;
   } catch (error) {
-    console.error("❌ Erreur lors de la synchronisation silencieuse :", error);
+    console.error("❌ Erreur lors de l'injection du Lore :", error);
     return null;
   }
 };
 
-// 🚀 LE MOTEUR PRINCIPAL (Stale-While-Revalidate)
-export const loadAllGameData = async (forceRefresh = false) => {
-  // 1. RAM (Mémoire Vive) : Le plus rapide
-  if (!forceRefresh && cachedProfils && cachedCompetences && cachedFairyTypes && cachedSocialItems && cachedEncyclopediaRefs && cachedBadges) {
-    return {
-      profils: cachedProfils,
-      competences: cachedCompetences.competences,
-      competencesParProfil: cachedCompetences.competencesParProfil,
-      competencesFutiles: await getCompetencesFutiles(false),
-      fairyData: cachedFairyTypes.fairyData,
-      fairyTypes: cachedFairyTypes.fairyTypes,
-      fairyTypesByAge: cachedFairyTypes.fairyTypesByAge,
-      socialItems: cachedSocialItems,
-      encyclopediaRefs: cachedEncyclopediaRefs,
-      badges: cachedBadges // ✨ NOUVEAU
-    };
-  }
-
-  // 2. Grimoire de Poche (LocalStorage) : Lecture Instantanée
-  if (!forceRefresh) {
-    const localData = localStorage.getItem(LOCAL_CACHE_KEY);
-    if (localData) {
-      try {
-        const parsedData = JSON.parse(localData);
-        // Restauration de la RAM
-        cachedProfils = parsedData.profils;
-        cachedCompetences = { competences: parsedData.competences, competencesParProfil: parsedData.competencesParProfil };
-        cachedFairyTypes = { fairyData: parsedData.fairyData, fairyTypes: parsedData.fairyTypes, fairyTypesByAge: parsedData.fairyTypesByAge };
-        cachedSocialItems = parsedData.socialItems;
-        cachedEncyclopediaRefs = parsedData.encyclopediaRefs;
-        cachedBadges = parsedData.badges; // ✨ NOUVEAU
-
-        // ✨ LA MAGIE : On lance la mise à jour sans bloquer l'application !
-        fetchAndCacheFromCloud(false);
-        console.log("⚡ Grimoire chargé depuis la poche en 0.01s !");
-        return parsedData;
-      } catch (e) {
-        console.warn("Cache local corrompu, on purge...", e);
-        localStorage.removeItem(LOCAL_CACHE_KEY);
-      }
-    }
-  }
-
-  // 3. Nuage Supabase (Bloquant) : Premier démarrage ou ForceRefresh
-  console.log("☁️ Téléchargement lourd du Grimoire depuis le Nuage...");
-  const freshData = await fetchAndCacheFromCloud(forceRefresh);
-  return freshData;
-};
-
-// Le bouton d'urgence (Purge)
+// Le bouton d'urgence (Purge) reste inchangé
 export const invalidateAllCaches = () => {
-  cachedProfils = null; 
-  cachedCompetences = null; 
-  cachedFairyTypes = null; 
-  invalidateCompetencesFutilesCache(); // Fonction déjà déclarée plus haut
-  cachedSocialItems = null; 
+  cachedProfils = null;
+  cachedCompetences = null;
+  cachedFairyTypes = null;
+  invalidateCompetencesFutilesCache();
+  cachedSocialItems = null;
   cachedEncyclopediaRefs = null;
-  cachedBadges = null; // ✨ NOUVEAU
-  localStorage.removeItem(LOCAL_CACHE_KEY); // ✨ On vide aussi la poche !
+  cachedBadges = null;
+  localStorage.removeItem(LOCAL_CACHE_KEY);
 };

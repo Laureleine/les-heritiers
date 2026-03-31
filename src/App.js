@@ -7,12 +7,12 @@
 // 13.1.0 // 13.8.0 // 13.12.0
 // 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0 // 14.10.0 // 14.12.0
 // Optimisé
-// 15.0.0 // 15.1.0
+// 15.0.0 // 15.1.0 // 15.2.0
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useCharacter } from './context/CharacterContext';
 import { supabase } from './config/supabase';
-import { loadAllGameData } from './utils/supabaseGameData';
+import { loadCoreGameData, loadHeavyLoreData } from './utils/supabaseGameData';
 import { saveCharacterToSupabase, toggleCharacterVisibility } from './utils/supabaseStorage';
 import { useAutoUpdate } from './hooks/useAutoUpdate'; 
 import { showInAppNotification } from './utils/SystemeServices'; 
@@ -122,55 +122,60 @@ function App() {
       }
     }, 30000);
 
-    const initializeApp = async () => {
-      try {
-        setLoadingStep("Vérification connexion...");
-        const { data: { session: activeSession } } = await supabase.auth.getSession();
-        
-        if (!activeSession) {
-          if (mounted) setGlobalLoading(false);
-          isInitializingRef.current = false; // 🟢 LE COUPABLE ÉTAIT ICI ! On libère le feu si personne n'est connecté.
-          return;
-        }
-		
-        setLoadingStep("Chargement Grimoire...");
-        const data = await loadAllGameData();
-        
-        if (mounted) {
-          setGameData(data);
-          setSession(activeSession); 
+	const initializeApp = async () => {
+	  try {
+		setLoadingStep("Vérification connexion...");
+		const { data: { session: activeSession } } = await supabase.auth.getSession();
 
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', activeSession.user.id)
-            .single();
+		if (!activeSession) {
+		  if (mounted) setGlobalLoading(false);
+		  isInitializingRef.current = false;
+		  return;
+		}
 
-          if (profileData) {
-            // ✨ FIX : On structure la mémoire du joueur avec le tiroir 'profile', 
-            // exactement de la même manière que dans 'refreshUserProfile' !
-            setUserProfile({ ...activeSession.user, profile: profileData }); 
-          }
-          
-          setIsInitialized(true);
-          setGlobalLoading(false);
-        }
+		setLoadingStep("Allumage du Noyau...");
+		// ✨ 1. LE NOYAU : On ne bloque le démarrage QUE pour ça !
+		const coreData = await loadCoreGameData();
 
-        // ✨ FIX : LE COUP DE GÉNIE EST ICI !
-        // On libère le feu vert ABSOLUMENT TOUT LE TEMPS, même si la fonction a été 
-        // court-circuitée par un re-render (mounted === false).
-        isInitializingRef.current = false;
+		if (mounted) {
+		  setGameData(coreData);
+		  setSession(activeSession);
 
-      } catch (error) {
-        console.error("❌ Init failed:", error);
-        if (mounted) {
-          setGlobalLoading(false);
-          setIsInitialized(false);
-        }
-        // ✨ Le verrou de sécurité du catch reste en place
-        isInitializingRef.current = false;
-      }
-    };
+		  const { data: profileData } = await supabase
+			.from('profiles')
+			.select('*')
+			.eq('id', activeSession.user.id)
+			.single();
+
+		  if (profileData) {
+			setUserProfile({ ...activeSession.user, profile: profileData });
+		  }
+
+		  setIsInitialized(true);
+		  
+		  // 🟢 FEU VERT ABSOLU ! L'application démarre tout de suite !
+		  setGlobalLoading(false); 
+		}
+
+		// ✨ 2. LE LORE : Tâche de fond asynchrone (Non-bloquante)
+		loadHeavyLoreData(coreData).then(heavyData => {
+		   if (heavyData && mounted) {
+			  setGameData(heavyData);
+			  console.log("✨ Moteur d'Érudition connecté : Lore injecté !");
+		   }
+		});
+
+		isInitializingRef.current = false;
+
+	  } catch (error) {
+		console.error("❌ Init failed:", error);
+		if (mounted) {
+		  setGlobalLoading(false);
+		  setIsInitialized(false);
+		}
+		isInitializingRef.current = false;
+	  }
+	};
 
     initializeApp();
 

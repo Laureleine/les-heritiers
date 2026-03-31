@@ -2,11 +2,13 @@
 // 10.6.0
 // 13.0.0 // 13.13.0
 // 14.2.0
+// 15.2.0
 
 import React from 'react';
 import { Info, Star, Award, Briefcase, Lock, CheckCircle } from 'lucide-react';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { accorderTexte } from '../data/DictionnaireJeu';
 
 export default function StepProfils() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -153,6 +155,8 @@ export default function StepProfils() {
       </button>
     );
   };
+  
+  const genreActuel = character.genreHumain || character.sexe;
 
   return (
     <div className="space-y-8 animate-fade-in pb-12">
@@ -215,11 +219,11 @@ export default function StepProfils() {
               Choisissez un trait de caractère
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {profilsObj[profilMajeur].traits.map(trait => (
-                <button
-                  key={trait}
-                  onClick={() => handleTraitMajeurChange(trait)}
-                  disabled={isLocked}
+				{profilsObj[profilMajeur].traits.map(trait => (
+				  <button
+					key={trait}
+					onClick={() => handleTraitMajeurChange(trait)}
+					disabled={isLocked}
                   className={`p-3 rounded-lg border-2 transition-all font-serif ${
                     traitMajeur === trait
                       ? 'border-amber-600 bg-amber-100 text-amber-900 font-semibold shadow-sm'
@@ -228,9 +232,10 @@ export default function StepProfils() {
                       : 'border-amber-200 bg-white text-amber-800 hover:border-amber-400'
                   }`}
                 >
-                  {trait}
-                </button>
-              ))}
+					{/* Remplacement du texte brut */}
+					{accorderTexte(trait, genreActuel)}
+				  </button>
+				))}
             </div>
           </div>
         )}
@@ -254,31 +259,32 @@ export default function StepProfils() {
           )}
         </div>
 
-        {profilMineur && (
-          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-blue-300">
-            <h4 className="font-serif text-lg text-blue-900 mb-3 font-semibold">
-              Choisissez un trait de caractère
-            </h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {profilsObj[profilMineur].traits.map(trait => (
-                <button
-                  key={trait}
-                  onClick={() => handleTraitMineurChange(trait)}
-                  disabled={isLocked}
-                  className={`p-3 rounded-lg border-2 transition-all font-serif ${
-                    traitMineur === trait
-                      ? 'border-blue-600 bg-blue-100 text-blue-900 font-semibold shadow-sm'
-                      : isLocked
-                      ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                      : 'border-blue-200 bg-white text-blue-800 hover:border-blue-400'
-                  }`}
-                >
-                  {trait}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+		{profilMineur && (
+		  <div className="mt-4 p-4 bg-white rounded-lg border-2 border-blue-300">
+			<h4 className="font-serif text-lg text-blue-900 mb-3 font-semibold">
+			  Choisissez un trait de caractère
+			</h4>
+			<div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+			  {profilsObj[profilMineur].traits.map(trait => (
+				<button
+				  key={trait}
+				  onClick={() => handleTraitMineurChange(trait)}
+				  disabled={isLocked}
+				  className={`p-3 rounded-lg border-2 transition-all font-serif ${
+					traitMineur === trait
+					  ? 'border-blue-600 bg-blue-100 text-blue-900 font-semibold shadow-sm'
+					  : isLocked
+					  ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+					  : 'border-blue-200 bg-white text-blue-800 hover:border-blue-400'
+				  }`}
+				>
+				  {/* Et le voilà pour le mineur 👇 */}
+				  {accorderTexte(trait, genreActuel)}
+				</button>
+			  ))}
+			</div>
+		  </div>
+		)}
       </div>
 
       {/* Récapitulatif */}
@@ -287,30 +293,37 @@ export default function StepProfils() {
           <h4 className="font-serif text-xl text-green-900 mb-4 font-bold flex items-center gap-2">
             <CheckCircle size={20} /> Récapitulatif
           </h4>
+          
           <div className="space-y-4">
+            
+            {/* Encart du Profil Majeur */}
             <div className="flex items-start gap-3 bg-white p-3 rounded border border-green-200">
               <Star className="text-amber-600 flex-shrink-0 mt-1" size={20} fill="currentColor" />
               <div>
                 <span className="font-semibold text-amber-900">{getProfilDisplayName(profilMajeur)}</span>
                 <span className="text-amber-700"> - Trait : </span>
-                <span className="font-semibold text-amber-900">{traitMajeur}</span>
+                {/* L'accord dynamique est appliqué ici */}
+                <span className="font-semibold text-amber-900">{accorderTexte(traitMajeur, genreActuel)}</span>
                 <div className="text-sm text-amber-700 mt-1">
                   Compétences à +2 : {profilsObj[profilMajeur].competences.join(', ')}
                 </div>
               </div>
             </div>
 
+            {/* Encart du Profil Mineur */}
             <div className="flex items-start gap-3 bg-white p-3 rounded border border-green-200">
               <Award className="text-blue-600 flex-shrink-0 mt-1" size={20} />
               <div>
                 <span className="font-semibold text-blue-900">{getProfilDisplayName(profilMineur)}</span>
                 <span className="text-blue-700"> - Trait : </span>
-                <span className="font-semibold text-blue-900">{traitMineur}</span>
+                {/* L'accord dynamique est appliqué ici aussi */}
+                <span className="font-semibold text-blue-900">{accorderTexte(traitMineur, genreActuel)}</span>
                 <div className="text-sm text-blue-700 mt-1">
                   Compétences à +1 : {profilsObj[profilMineur].competences.join(', ')}
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       )}

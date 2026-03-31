@@ -4,15 +4,18 @@
 // 13.0.0
 // 14.7.0 // 14.11.0 // 14.13.0
 // Optimisé
+// 15.2.0
 
 // ============================================================================
 // PDF EXPORT (Fiche de Personnage Complète Recto/Verso)
 // ============================================================================
 
 import { supabase } from '../config/supabase';
-import { CARAC_LIST } from '../data/DictionnaireJeu';
+import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
 
 export const exportToPDF = (character, gameData = {}) => {
+  const genreActuel = character.genreHumain || character.sexe;
+	
   // ✨ SÉCURITÉ : Rétrocompatibilité (au cas où le vieux code passerait encore par là)
   const fairyData = gameData.fairyData ? gameData.fairyData : gameData;
   const feeData = fairyData[character.typeFee] || {};
@@ -265,10 +268,14 @@ export const exportToPDF = (character, gameData = {}) => {
               <div class="field-value">Rang ${character.fortune || 0}</div>
             </div>
           </div>
-          <div class="field" style="margin-top: 10px;">
-            <span class="field-label">Traits de caractère</span>
-            <div class="field-value">${(character.traitsFeeriques || []).join(' • ') || character.profils?.majeur?.trait || ''}</div>
-          </div>
+  <div class="field" style="margin-top: 10px;">
+    <span class="field-label">Traits de caractère</span>
+    <div class="field-value">
+      {/* On map chaque trait avec accorderTexte avant de tout fusionner */}
+      {(character.traitsFeeriques || []).map(t => accorderTexte(t, genreActuel)).join(' • ') || 
+       (character.profils?.majeur?.trait ? accorderTexte(character.profils.majeur.trait, genreActuel) : '')}
+    </div>
+  </div>
           <div class="grid-3" style="margin-top: 10px;">
             <div class="field">
               <span class="field-label">Taille masquée</span>

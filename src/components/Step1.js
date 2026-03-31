@@ -3,19 +3,21 @@
 // 11.1.0
 // 13.11.0
 // 14.0.0 // 14.10.0 // 14.13.0
+// 15.2.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling, Lock } from 'lucide-react';
 import { useCharacter } from '../context/CharacterContext';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { accorderTexte } from '../data/DictionnaireJeu';
 
 export default function Step1() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
   const [unlockedFairies, setUnlockedFairies] = useState([]);
   const [isUserDocte, setIsUserDocte] = useState(false);
   const { fairyData, fairyTypesByAge } = gameData;
-
+  
   // ✨ LE BOUCLIER DE L'IDENTITÉ (Mode XP)
   const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
   const isLocked = isReadOnly || isScelle;
@@ -272,13 +274,14 @@ export default function Step1() {
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2 font-sans">
-              {availableTraits.map((trait) => {
-                const isSelected = character.traitsFeeriques?.includes(trait);
-                const isDisabled = isLocked || (!isSelected && character.traitsFeeriques?.length >= 2);
-                return (
-                  <button
-                    key={trait}
-                    onClick={() => handleTraitToggle(trait)}
+				{availableTraits.map((trait) => {
+				  const isSelected = character.traitsFeeriques?.includes(trait);
+				  const isDisabled = isLocked || (!isSelected && character.traitsFeeriques?.length >= 2);
+				  
+				  return (
+				  <button
+					key={trait}
+					onClick={() => handleTraitToggle(trait)}
                     disabled={isDisabled}
                     className={`py-2 px-3 border rounded text-xs font-bold transition-all text-left flex justify-between items-center ${
                       isSelected
@@ -288,11 +291,12 @@ export default function Step1() {
                         : 'border-gray-200 text-gray-600 hover:border-purple-300 hover:bg-purple-50/50'
                     }`}
                   >
-                    {trait}
-                    {isSelected && <CheckCircle size={14} className="text-purple-600"/>}
-                  </button>
-                );
-              })}
+					{/* LA MAGIE EST ICI */}
+					{accorderTexte(trait, genreActuel)}
+					{isSelected && <CheckCircle size={14} className="text-purple-600"/>}
+				  </button>
+				  );
+				})}
             </div>
           </div>
 
@@ -321,6 +325,8 @@ export default function Step1() {
       </div>
     );
   };
+
+  const genreActuel = character.genreHumain || character.sexe;
 
   return (
     <div className="flex flex-col gap-6 h-full min-h-[600px] pb-12 animate-fade-in">

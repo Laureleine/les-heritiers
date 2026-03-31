@@ -2,13 +2,15 @@
 // 13.13.0
 // 14.10.0 // 14.11.0
 // Optimisé
-// 15.1.0
+// 15.1.0 // 15.2.0
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../config/supabase';
 import { Shield, Users, Plus, Key, X, ArrowLeft, EyeOff, LogOut, Eye, MessageCircle } from 'lucide-react';
 import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
+import { getFullCharacter } from '../utils/supabaseStorage';
+
 
 // ============================================================================
 // ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
@@ -270,14 +272,14 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   const loadMembers = useCallback(async (cercleId) => {
     setActiveMembers([]);
     try {
-      const { data, error } = await supabase
-        .from('cercle_membres')
-        .select(`
-          id, user_id, joined_at,
-          profiles ( username, unlocked_fairies ),
-          characters ( nom, apparence, genreHumain:genre_humain, typeFee:type_fee )
-        `)
-        .eq('cercle_id', cercleId);
+		const { data, error } = await supabase
+		  .from('cercle_membres')
+		  .select(`
+			id, user_id, joined_at,
+			profiles ( username, unlocked_fairies ),
+			characters ( id, nom, sexe, apparence, genreHumain:genre_humain, typeFee:type_fee )
+		  `)
+		  .eq('cercle_id', cercleId);
       if (error) throw error;
       if (data) setActiveMembers(data);
     } catch (err) {
@@ -399,8 +401,25 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     return cercles.find(c => c.id === activeTab);
   }, [cercles, activeTab]);
 
+  // ✨ L'INCISION 3 : L'intercepteur qui charge le lourd lore
+  const handleInspectCharacter = async (lightChar) => {
+    if (!lightChar?.id) {
+      showInAppNotification("La fiche de cet Héritier est introuvable.", "error");
+      return;
+    }
+    try {
+      showInAppNotification("Ouverture des archives secrètes...", "info");
+      // On télécharge la fiche complète (pouvoirs, XP, atouts...)
+      const fullChar = await getFullCharacter(lightChar.id);
+      // On passe la vraie fiche complète à App.js !
+      onViewCharacter(fullChar);
+    } catch (error) {
+      showInAppNotification("Le parchemin est illisible : " + error.message, "error");
+    }
+  };
+
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-6 pb-24 animate-fade-in">
+    <div className="max-w-6xl mx-auto p-4 md:p-6 font-serif min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-serif font-bold text-amber-900 flex items-center gap-3">
           <Users className="text-amber-600" /> Mes Cercles de Jeu
@@ -455,7 +474,7 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
               activeMembers={activeMembers}
               onDelete={handleDeleteCercle}
               onLeave={handleLeaveCercle}
-              onViewCharacter={onViewCharacter}
+              onViewCharacter={handleInspectCharacter}
             />
           )}
         </>
