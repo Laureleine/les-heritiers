@@ -2,6 +2,7 @@
 // 10.1.0 // 10.6.0
 // 13.0.0
 // 14.10.0
+// 15.2.0
 
 import React from 'react';
 import { User, Feather, Briefcase } from 'lucide-react'; 
@@ -9,8 +10,9 @@ import { useCharacter } from '../context/CharacterContext';
 
 export default function StepPersonnalisation() { 
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter(); 
-
-  const { competences, socialItems } = gameData;
+  
+  const { competences, socialItems, fairyData } = gameData;
+  const feeData = fairyData?.[character.typeFee];  
   const usefulSkills = Object.keys(competences || {}).sort();
 
   // ✨ LA MAGIE EST ICI : On extrait les métiers acquis à l'Étape 9
@@ -35,6 +37,55 @@ export default function StepPersonnalisation() {
   const updateSpecialiteMetier = (comp, nom) => {
     if (isReadOnly) return;
     dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...character.competencesLibres, specialiteMetier: { comp, nom } } }, gameData });
+  };
+
+  const getSpecsDisponiblesPourMetier = (compNom) => {
+    // Si pas de compétence sélectionnée ou pas de spécialités dans le catalogue, on coupe.
+    if (!compNom || !competences[compNom]?.specialites) return [];
+
+    const toutesLesSpecs = competences[compNom].specialites;
+
+    // A. Les spécialités achetées à la main (Étape 7)
+    const acquisesManuellement = character.competencesLibres?.choixSpecialiteUser?.[compNom] || [];
+
+    // B. La spécialité innée (Prédilection de l'espèce)
+    let specInnee = null;
+    if (feeData?.competencesPredilection) {
+      const predIndex = feeData.competencesPredilection.findIndex(p => p.nom === compNom);
+      if (predIndex !== -1) {
+        const pred = feeData.competencesPredilection[predIndex];
+        specInnee = pred.specialite || (pred.isSpecialiteChoix ? character.competencesLibres?.choixSpecialite?.[predIndex] : null);
+      }
+    }
+
+    // C. Les spécialités offertes par les Atouts
+    const specsAtouts = [];
+    (character.atouts || []).forEach(atoutId => {
+      const atoutDef = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
+      if (atoutDef?.effets_techniques) {
+        try {
+          const tech = typeof atoutDef.effets_techniques === 'string' 
+            ? JSON.parse(atoutDef.effets_techniques) 
+            : atoutDef.effets_techniques;
+            
+          if (tech.specialites) {
+            tech.specialites.forEach(s => {
+              if (s.competence === compNom) specsAtouts.push(s.nom);
+            });
+          }
+        } catch(e) {}
+      }
+    });
+
+    // D. La fusion sacrée de tout ce que possède le personnage
+    const toutesMesSpecs = [
+      ...acquisesManuellement,
+      specInnee,
+      ...specsAtouts
+    ].filter(Boolean); // Le filter(Boolean) retire les null/undefined
+
+    // E. On filtre le catalogue pour ne garder que ce qu'il n'a pas !
+    return toutesLesSpecs.filter(spec => !toutesMesSpecs.includes(spec.nom));
   };
 
   return (
@@ -102,17 +153,17 @@ export default function StepPersonnalisation() {
                   {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
 
-                <select
-                  value={character.competencesLibres?.specialiteMetier?.nom || ''}
-                  onChange={(e) => updateSpecialiteMetier(character.competencesLibres?.specialiteMetier?.comp || '', e.target.value)}
-                  disabled={isReadOnly || !character.competencesLibres?.specialiteMetier?.comp} // ✨ FIX
-                  className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
-                >
-                  <option value="">Spécialité...</option>
-                  {(competences[character.competencesLibres?.specialiteMetier?.comp]?.specialites || []).map(spec => (
-                    <option key={spec.id || spec.nom} value={spec.nom}>{spec.nom}</option>
-                  ))}
-                </select>
+<select
+  value={character.competencesLibres?.specialiteMetier?.nom || ''}
+  onChange={(e) => updateSpecialiteMetier(character.competencesLibres?.specialiteMetier?.comp || '', e.target.value)}
+  disabled={isReadOnly || !character.competencesLibres?.specialiteMetier?.comp}
+  className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
+>
+  <option value="">Spécialité...</option>
+  {getSpecsDisponiblesPourMetier(character.competencesLibres?.specialiteMetier?.comp).map(spec => (
+    <option key={spec.id || spec.nom} value={spec.nom}>{spec.nom}</option>
+  ))}
+</select>
               </div>
             </div>
 

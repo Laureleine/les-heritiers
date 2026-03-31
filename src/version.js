@@ -6,6 +6,21 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '15.2.0',
+    date: '30 Mars 2026',
+    changes: [
+      '🚀 **Data Lazy Loading (Performances) :** Démembrement du super-chargeur de données au démarrage. Mise en place d\'un Cerveau Séquentiel (`loadCoreGameData` + `loadHeavyLoreData`).',
+      '⚡ **Allumage Instantané :** Le Grimoire ne bloque plus le rendu initial pour télécharger l\'Encyclopédie et les Fées. Il s\'ouvre instantanément en téléchargeant le Lore silencieusement en arrière-plan, résolvant les crashs mémoire (Safari/Mac) et les lenteurs sur mobile.',
+      '✨ **Interface (UX) :** Optimisation de la vue des Compétences Utiles. Les étiquettes "Majeur" et "Mineur" sont désormais parfaitement alignées avec les noms des Profils (même lorsqu\'ils s\'étendent sur deux lignes), supprimant les décalages de mise en page.',
+      '✨ **Interface (UX) :** Cure d\'amaigrissement massif de la vue des Compétences Utiles. Les espacements, marges et compteurs ont été affinés pour un rendu "Haute Densité", réduisant drastiquement le besoin de faire défiler la page.',
+      '✨ **Interface (UX) :** Optimisation "Haute Densité" finalisée sur la page des Compétences Utiles. Les compteurs de budget (Standard et Esprit) ont été drastiquement compressés en hauteur pour laisser la part belle à la liste des profils.',
+      '✨ **Grammaire Féérique Intelligente :** Les traits dominants (féériques) s\'accordent désormais automatiquement et prioritairement avec le Genre Humain (l\'apparence sociale). Si aucun genre n\'est encore défini, le Sexe (biologique) prend le relais pour garantir une lecture fluide.',
+      '🐛 **Spécialités Utiles (Sécurité) :** Les popups de sélection de spécialités (Étape 7 et Étape 10) excluent désormais rigoureusement les compétences déjà acquises par l\'Héritier (qu\'elles soient innées, issues d\'un Atout, ou achetées). Fini les doublons dans les menus !',
+      '🐛 **Spécialité de Métier (Hotfix) :** L\'Étape 10 scanne désormais la totalité de l\'ADN de l\'Héritier (Achats, Innées, Atouts) pour exclure rigoureusement les spécialités qu\'il possède déjà du menu déroulant des Métiers. Adieu les doublons involontaires !',
+      '🐛 **Inspection des Héritiers (Hotfix) :** Résolution du bug bloquant l\'accès aux fiches depuis le tableau de bord du Cercle. L\'interface récupère désormais proprement le Sexe du personnage et télécharge intelligemment l\'intégralité des données (Pouvoirs, Compétences) avant d\'ouvrir le Grimoire en mode Lecture Seule.'
+   ]
+  },
+  {
     version: '15.1.0',
     date: '30 Mars 2026',
     changes: [
