@@ -80,17 +80,18 @@ export default function WidgetAnomalie() {
 
   return (
     <>
-      {/* Bouton Flottant */}
+      {/* ✨ L'INCISION : On le remet à "right-6" et on le propulse à "bottom-44" pour surplomber les dés ! */}
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 p-4 rounded-full shadow-2xl bg-stone-900 text-amber-400 hover:scale-110 hover:bg-stone-800 transition-all z-40 border-2 border-amber-600/50"
+        className="fixed bottom-44 right-6 p-4 rounded-full shadow-2xl bg-stone-900 text-amber-400 hover:scale-110 hover:bg-stone-800 transition-all z-40 border-2 border-amber-600/50"
+        title="Signaler une anomalie"
       >
         <Bug size={24} />
       </button>
 
       {/* Modale Immersive */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
+ 	    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-[#fdfbf7] w-full max-w-lg rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden">
             
             <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center">
