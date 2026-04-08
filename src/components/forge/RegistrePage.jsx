@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useForge } from '../../context/ForgeContext';
-import { Filter, Archive, EyeOff, ArrowLeft } from 'lucide-react';
+import { Filter, Archive, EyeOff, ArrowLeft, Plus } from 'lucide-react';
 
 export default function RegistrePage({ onBack }) {
   const { entrees, loading, deplacerCarteKanban, toggleArchive } = useForge();
@@ -65,7 +65,6 @@ export default function RegistrePage({ onBack }) {
       {/* HEADER & FILTRES */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-stone-200 pb-4 gap-4">
         
-        {/* ✨ FIX : Le titre avec son bouton de retour intégré */}
         <div className="flex items-center gap-4">
           {onBack && (
             <button onClick={onBack} className="p-2 bg-stone-200 text-stone-600 hover:bg-stone-300 hover:text-stone-900 rounded-lg transition-colors shadow-sm">
@@ -75,7 +74,16 @@ export default function RegistrePage({ onBack }) {
           <h1 className="text-3xl font-serif font-bold text-amber-900">Registre de la Forge</h1>
         </div>
         
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center flex-wrap justify-end">
+          
+          {/* ✨ LA MAGIE EST ICI : Le Bouton d'Invocation */}
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('open-forge-widget', { detail: { type: filtreType } }))}
+            className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-transform active:scale-95"
+          >
+            <Plus size={18} /> Nouvelle Entrée
+          </button>
+
 		  <button onClick={() => setVoirArchives(!voirArchives)} className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 border ${voirArchives ? 'bg-stone-800 text-white' : 'bg-white text-stone-600'}`}>
             {voirArchives ? <EyeOff size={16}/> : <Archive size={16}/>} Archives
           </button>

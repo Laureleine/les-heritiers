@@ -667,16 +667,16 @@ function App() {
       {/* 🎲 PISTE DE DÉ FLOTTANTE */}
       <DiceRoller use3DDice={userProfile?.profile?.use_3d_dice} diceTheme={userProfile?.profile?.dice_theme} />
 
-      {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT */}
-      {location.pathname === '/creator' && userProfile?.profile?.show_pixie !== false && (
-        <PixieAssistant
-          character={character}
-          step={step}
-          session={session}
-          onSleep={() => setUserProfile({ ...userProfile, profile: { ...userProfile.profile, show_pixie: false } })}
-          fairyData={gameData.fairyData}
-        />
-      )}
+	{/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT (Globale pour les notifications de Badges) */}
+	{userProfile?.profile?.show_pixie !== false && (
+	  <PixieAssistant
+		character={character}
+		step={step}
+		session={session}
+		onSleep={() => setUserProfile({ ...userProfile, profile: { ...userProfile.profile, show_pixie: false } })}
+		fairyData={gameData?.fairyData}
+	  />
+	)}
 
       {/* ✨ 5. MODALE DU JOURNAL DES VERSIONS ✨ */}
       {showVersionModal && (
