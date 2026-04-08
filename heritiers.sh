@@ -49,8 +49,21 @@ if ! git pull origin main; then
   exit 1
 fi
 
+echo "🔀 git checkout main"
+git checkout main
+
+echo "🔀 merge dev → main"
+if ! git merge dev --no-edit; then
+  echo "❌ Conflit lors du merge dev → main !"
+  exit 1
+fi
+
 echo "🚀 git push origin main"
 git push origin main
+
+echo "🔙 git checkout dev"
+git checkout dev
+
 echo "✅ Push OK → Google Docs..."
 
 # ── 4. Sync fichiers JS vers Google Drive ─────────────────────────────────────
