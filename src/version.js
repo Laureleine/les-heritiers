@@ -6,6 +6,37 @@ export const APP_VERSION = buildInfo.version;
 export const BUILD_DATE = buildInfo.buildDate;
 export const VERSION_HISTORY = [
   {
+    version: '15.5.2 - "Rupture & Renouveau 💔"',
+    date: 'Aujourd\'hui',
+    changes: [
+      '♻️ **Adieu l\'Ancien :** Rupture officielle et sans regret avec le vieux module `BureauAnomalies.js`. Il a fait son temps, mais il était devenu trop toxique pour notre architecture.',
+      '🚀 **Nouveau Départ :** Le bouton d\'accueil pointe désormais vers notre magnifique Kanban unifié (`RegistrePage.jsx`). Une relation beaucoup plus saine et réactive !'
+    ]
+  },
+  {
+    version: '15.5.1 - "L\'Espion Qui M\'Aimait 🕵️‍♀️"',
+    date: 'Aujourd\'hui',
+    changes: [
+      '🔌 **Connexion Fusionnelle :** Le `ForgeProvider` enlace désormais toute l\'application depuis la racine (`index.js`). Son amour (et son Contexte) irradie dans tous les composants.',
+      '💕 **Toujours Près de Toi :** Le petit Espion (Widget Anomalie) accompagne désormais les Héritiers connectés dans tous leurs déplacements pour veiller sur eux et écouter leurs moindres chagrins (erreurs consoles).'
+    ]
+  },
+  {
+    version: '15.5.0 - "Kanban Mon Amour ❤️"',
+    date: 'Aujourd\'hui',
+    changes: [
+      '✨ **Le Coup de Foudre (Optimistic UI) :** Naissance du Registre de la Forge. L\'interface réagit désormais à la vitesse de l\'amour (glisser-déposer HTML5 natif), pendant que Supabase fait le travail lourd de synchronisation en coulisses.',
+      '📸 **Boîte Noire Émotionnelle :** Le widget de signalement capture automatiquement les peines de cœur du navigateur (logs d\'erreurs) et accepte les mots doux sous forme de captures d\'écran glissées-déposées.'
+    ]
+  },
+{
+  version: '15.3.0', 
+  date: '31 Mars 2026',
+  changes: [
+    '🐛 **Traits Dominants (Hotfix) :** Nettoyage algorithmique de la liste des traits dominants à l\'Étape 1. Le compteur est désormais immunisé contre les traits "fantômes" (restes d\'une ancienne espèce cliquée) et les variables non-initialisées, garantissant un affichage infaillible de "0 / 2" à "2 / 2".'
+  ]
+},
+  {
     version: '15.2.0',
     date: '30 Mars 2026',
     changes: [

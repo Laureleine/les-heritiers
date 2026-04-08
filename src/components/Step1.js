@@ -3,7 +3,7 @@
 // 11.1.0
 // 13.11.0
 // 14.0.0 // 14.10.0 // 14.13.0
-// 15.2.0
+// 15.2.0 // 15.3.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling, Lock } from 'lucide-react';
@@ -161,7 +161,14 @@ export default function Step1() {
     );
 
     const tailleInfo = getTailleDisplay(previewData.taille);
-    const availableTraits = previewData.traits || ["Trait A", "Trait B", "Trait C", "Trait D"];
+    const availableTraits = previewData?.traits || [];
+
+	const traitsPropres = Array.isArray(character.traitsFeeriques)
+	  ? character.traitsFeeriques.filter(t => availableTraits.includes(t))
+	  : [];
+	  
+	const traitsCount = traitsPropres.length;
+	const genreActuel = character.genreHumain || character.sexe;
 
     return (
       <div className="bg-white p-6 rounded-2xl shadow-xl border border-stone-200 h-full flex flex-col relative overflow-hidden">
@@ -265,41 +272,44 @@ export default function Step1() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="font-bold text-xs uppercase text-gray-400 font-sans flex items-center gap-1">
-                <Heart size={12} /> Traits Dominants (1 ou 2 max)
-              </label>
-              <span className={`text-xs font-bold ${character.traitsFeeriques?.length > 0 ? 'text-green-600' : 'text-amber-600'}`}>
-                {character.traitsFeeriques?.length || 0} / 2
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-2 font-sans">
-				{availableTraits.map((trait) => {
-				  const isSelected = character.traitsFeeriques?.includes(trait);
-				  const isDisabled = isLocked || (!isSelected && character.traitsFeeriques?.length >= 2);
-				  
-				  return (
+			<div className="flex items-center justify-between mb-2">
+			  <label className="font-bold text-xs uppercase text-gray-400 font-sans flex items-center gap-1">
+				<Heart size={12} /> Traits Dominants (1 ou 2 max)
+			  </label>
+			  {/* L'affichage utilise maintenant notre compteur blindé (plus de " / 2" vide !) */}
+			  <span className={`text-xs font-bold ${traitsCount > 0 ? 'text-green-600' : 'text-amber-600'}`}>
+				{traitsCount} / 2
+			  </span>
+			</div>
+			<div className="grid grid-cols-2 gap-2">
+			  {availableTraits.map((traitBrut) => {
+				// On vérifie la sélection dans notre tableau purifié
+				const isSelected = traitsPropres.includes(traitBrut);
+				
+				// On bloque intelligemment si 2 traits légitimes sont déjà pris
+				const isDisabled = isLocked || (!isSelected && traitsCount >= 2);
+				
+				return (
 				  <button
-					key={trait}
-					onClick={() => handleTraitToggle(trait)}
-                    disabled={isDisabled}
-                    className={`py-2 px-3 border rounded text-xs font-bold transition-all text-left flex justify-between items-center ${
-                      isSelected
-                        ? 'border-purple-500 bg-purple-50 text-purple-900 shadow-sm ring-1 ring-purple-200'
-                        : isDisabled
-                        ? 'border-gray-100 text-gray-300 bg-stone-50 cursor-not-allowed'
-                        : 'border-gray-200 text-gray-600 hover:border-purple-300 hover:bg-purple-50/50'
-                    }`}
-                  >
-					{/* LA MAGIE EST ICI */}
-					{accorderTexte(trait, genreActuel)}
+					key={traitBrut}
+					onClick={() => handleTraitToggle(traitBrut)}
+					disabled={isDisabled}
+					className={`p-2 border rounded-lg text-sm transition-all flex items-center justify-between font-serif ${
+					  isSelected 
+						? 'border-purple-500 bg-purple-50 text-purple-900 font-bold shadow-sm'
+						: isDisabled 
+						? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+						: 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+					}`}
+				  >
+					{/* On conserve bien l'accord grammatical dynamique mis en place précédemment ! */}
+					{accorderTexte(traitBrut, genreActuel)}
 					{isSelected && <CheckCircle size={14} className="text-purple-600"/>}
 				  </button>
-				  );
-				})}
-            </div>
-          </div>
-
+				);
+			  })}
+			</div>
+		  </div>
           <div className="font-sans">
             <button
               onClick={() => onTypeFeeChange(selectedPreview)}

@@ -1,13 +1,4 @@
 // src/App.js
-// 8.25.0 // 8.26.0 
-// 9.0.0 // 9.1.0 // 9.2.0 // 9.3.0 // 9.5.0 // 9.6.0 // 9.7.0 // 9.9.0 // 9.11.0
-// 10.2.0 // 10.4.0 // 10.5.0 // 10.6.0 // 10.8.0
-// 11.0.0 // 11.1.0 // 11.4.0
-// 12.0.0 // 12.1.0 // 12.3.0 // 12.4.0
-// 13.1.0 // 13.8.0 // 13.12.0
-// 14.0.0 // 14.3.0 // 14.5.0 // 14.9.0 // 14.10.0 // 14.12.0
-// Optimisé
-// 15.0.0 // 15.1.0 // 15.2.0
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useCharacter } from './context/CharacterContext';
@@ -27,7 +18,7 @@ import Telegraphe from './components/Telegraphe';
 import DiceRoller from './components/DiceRoller';
 import PixieAssistant from './components/PixieAssistant';
 import BackgroundDecor from './components/BackgroundDecor';
-
+import WidgetAnomalie from './components/forge/WidgetAnomalie'; 
 import { exportToPDF } from './utils/pdfGenerator';
 import { STEP_CONFIG } from './data/DictionnaireJeu';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
@@ -42,7 +33,7 @@ const AccountSettings = lazy(() => import('./components/AccountSettings'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const CerclesDashboard = lazy(() => import('./components/CerclesDashboard'));
 const MesPropositions = lazy(() => import('./components/MesPropositions'));
-const BureauAnomalies = lazy(() => import('./components/BureauAnomalies'));
+const RegistrePage = lazy(() => import('./components/forge/RegistrePage'));
 
 // --- IMPORTS DES ÉTAPES ---
 // ✨ NOUVEAU : LE CHARGEMENT PARESSEUX DES ÉTAPES
@@ -656,13 +647,12 @@ function App() {
 			  {/* ROUTE DE SÉCURITÉ */}
 			  <Route path="*" element={<Navigate to="/" replace />} />
 
-            {/* ✨ NOUVELLE ROUTE : LE BUREAU DES ANOMALIES PUBLIQUE */}
-            <Route path="/bureau_anomalies" element={
-              <BureauAnomalies 
-                session={session} 
-                onBack={() => navigate('/')} 
-              />
-            } />
+			{/* ✨ LA NOUVELLE FORGE UNIFIÉE (Remplace l'ancien Bureau) */}
+			<Route path="/bureau_anomalies" element={
+			  <RegistrePage 
+				onBack={() => navigate('/')} 
+			  />
+			} />
 
 			</Routes>
 		</Suspense>
@@ -670,6 +660,9 @@ function App() {
 
       {/* 3. TÉLÉGRAPHE PNEUMATIQUE */}
       {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
+
+	  {/* ✨ 3.bis. L'ESPION DE LA FORGE (Visible uniquement si connecté) */}
+      {session && <WidgetAnomalie />}
 
       {/* 🎲 PISTE DE DÉ FLOTTANTE */}
       <DiceRoller use3DDice={userProfile?.profile?.use_3d_dice} diceTheme={userProfile?.profile?.dice_theme} />
