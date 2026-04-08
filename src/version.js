@@ -3,6 +3,13 @@
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
+    version: '15.6.3 - "L\'Identité Retrouvée 🪪"',
+    date: '8 Avril 2026',
+    changes: [
+      '🐛 **Forge (Hotfix Critique) :** Résolution du blocage de soumission sur le widget d\'anomalies (la modale refusait de se fermer). Le Contexte de la Forge tentait de lire l\'identifiant du joueur au mauvais endroit de l\'architecture.',
+      '🛡️ **Sécurité Autonome :** Le `ForgeContext` interroge désormais directement le cœur du système d\'authentification Supabase (`getUser()`) au moment du clic, garantissant le respect absolu des règles RLS (Row Level Security) lors de l\'insertion en base.'
+    ]
+  },  {
     version: '15.6.2 - "Le Vaccin Anti-Zombie 💉"',
     date: '8 Avril 2026',
     changes: [
