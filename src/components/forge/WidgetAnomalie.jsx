@@ -32,6 +32,20 @@ export default function WidgetAnomalie() {
     return () => { console.error = originalError; };
   }, []);
 
+  // ✨ L'INCISION : Écouteur d'invocation à distance
+  useEffect(() => {
+    const handleOpenWidget = (e) => {
+      // Si l'événement transmet un type (ex: depuis le Kanban), on pré-remplit !
+      if (e.detail?.type) {
+        setTypeEntree(e.detail.type);
+      }
+      setIsOpen(true);
+    };
+
+    window.addEventListener('open-forge-widget', handleOpenWidget);
+    return () => window.removeEventListener('open-forge-widget', handleOpenWidget);
+  }, []);
+
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
