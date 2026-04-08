@@ -3,7 +3,7 @@
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
-    version: '15.6.1 - "La Boucle du Zombie 🧟"',
+    version: '15.6.1',
     date: '8 Avril 2026',
     changes: [
       '🐛 **Système (Hotfix Critique) :** Résolution de la boucle de rechargement infini sur l\'écran de connexion. Une désynchronisation du manifeste public déclenchait la purge automatique de la mémoire (`localStorage.clear()`), expulsant les Héritiers en boucle.',
