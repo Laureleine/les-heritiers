@@ -1,22 +1,23 @@
-// 10.6.0
-// 12.0.0
+// src/index.js
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { CharacterProvider } from './context/CharacterContext';
-import { BrowserRouter } from 'react-router-dom'; 
-
-// ✨ LE VOILÀ, NOTRE DISPARU !
-import reportWebVitals from './reportWebVitals'; 
+// ✨ L'INCISION : L'import magique de la Forge
+import { ForgeProvider } from './context/ForgeContext'; 
+import { BrowserRouter } from 'react-router-dom';
+import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-
 root.render(
   <BrowserRouter>
     <CharacterProvider>
-      <App />
+      {/* ✨ L'INCISION : On enveloppe l'App avec notre Cerveau Kanban */}
+      <ForgeProvider>
+        <App />
+      </ForgeProvider>
     </CharacterProvider>
   </BrowserRouter>
 );
