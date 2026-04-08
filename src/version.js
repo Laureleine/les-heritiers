@@ -3,7 +3,14 @@
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
-    version: '15.6.1',
+    version: '15.6.2 - "Le Vaccin Anti-Zombie 💉"',
+    date: '8 Avril 2026',
+    changes: [
+      '🛡️ **Architecture (DevOps) :** Déploiement d\'un vaccin algorithmique (Safe-breaker) dans le moteur de mise à jour automatique (`useAutoUpdate`).',
+      '🐛 **Stabilité Critique :** En cas de désynchronisation entre le manifeste statique serveur et la version du code client, l\'application ne peut désormais boucler qu\'une seule fois. Un traceur URL (`?updated=true`) immunise le client contre les rechargements infinis qui bloquaient l\'accès à la taverne.'
+    ]
+  },  {
+    version: '15.6.1 - "La Boucle du Zombie 🧟"',
     date: '8 Avril 2026',
     changes: [
       '🐛 **Système (Hotfix Critique) :** Résolution de la boucle de rechargement infini sur l\'écran de connexion. Une désynchronisation du manifeste public déclenchait la purge automatique de la mémoire (`localStorage.clear()`), expulsant les Héritiers en boucle.',
