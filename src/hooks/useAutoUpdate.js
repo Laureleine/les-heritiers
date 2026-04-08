@@ -5,67 +5,56 @@ export const useAutoUpdate = (intervalMs = 60000) => { // Vérifie toutes les mi
     const [updateAvailable, setUpdateAvailable] = useState(false);
     const [remoteVersion, setRemoteVersion] = useState(null);
 
-	  const checkForUpdate = async () => {
-		// ✨ L'INCISION : LE COUPE-CIRCUIT !
-		// Si on est sur notre machine (localhost), on désactive la vérification.
-		// L'auto-updater ne s'allumera qu'une fois déployé sur le vrai serveur !
-		if (process.env.NODE_ENV === 'development') return;
+  const checkForUpdate = async () => {
+    // 1. Le disjoncteur de développement
+    if (process.env.NODE_ENV === 'development') return;
+    
+    // ✨ 2. LE VACCIN : Si l'URL contient notre marqueur de mise à jour fraîche, on stoppe tout !
+    if (window.location.search.includes('updated=true')) {
+      console.log("Mise à jour fraîchement appliquée, pause du détecteur.");
+      return;
+    }
 
-		try {
-		  const response = await fetch(`/version.json?t=${new Date().getTime()}`);
-		  const data = await response.json();
-		  if (data.version !== APP_VERSION) {
-			setUpdateAvailable(true);
-		  }
-		} catch (error) {
-		  console.error("Impossible de vérifier les mises à jour :", error);
-		}
-	  };
-  
-    useEffect(() => {
-        // Vérification immédiate au lancement
-        checkForUpdate();
+    try {
+      const response = await fetch(`/version.json?t=${new Date().getTime()}`);
+      if (!response.ok) return;
+      const data = await response.json();
 
-        // Puis vérification périodique
-        const interval = setInterval(checkForUpdate, intervalMs);
-        return () => clearInterval(interval);
-    }, []);
+      if (data.version !== APP_VERSION) {
+        console.log(`Mise à jour détectée : v${APP_VERSION} -> v${data.version}`);
+        setRemoteVersion(data.version);
+        setUpdateAvailable(true);
+      }
+    } catch (error) {
+      console.error("Impossible de vérifier les mises à jour :", error);
+    }
+  };
 
-  // Fonction pour appliquer la mise à jour
   const applyUpdate = async () => {
-    // 1. Destruction de l'ancien Service Worker
     if ('serviceWorker' in navigator) {
       try {
         const registrations = await navigator.serviceWorker.getRegistrations();
         for (let registration of registrations) {
-          await registration.unregister(); 
+          await registration.unregister();
         }
-      } catch (e) {
-        console.error("Erreur unregister SW:", e);
-      }
+      } catch (e) { console.error("Erreur unregister SW:", e); }
     }
 
-    // 2. Destruction des vieux fichiers en cache
     if ('caches' in window) {
       try {
         const cacheNames = await caches.keys();
-        for (let name of cacheNames) {
-          await caches.delete(name);
-        }
-      } catch (e) {
-        console.error("Erreur suppression caches:", e);
-      }
+        for (let name of cacheNames) { await caches.delete(name); }
+      } catch (e) { console.error("Erreur suppression caches:", e); }
     }
 
-    // 3. ✨ LA SOLUTION ANTI-ZOMBIE ✨
-    // On détruit la mémoire locale pour forcer Supabase à recréer un jeton propre
-    // Cela effacera aussi l'ancien cache des personnages hors-ligne pour éviter les conflits
     localStorage.clear();
     sessionStorage.clear();
 
-    // 4. On force le rechargement pur et dur de la page
-    window.location.reload(true);
+    // ✨ 3. L'INJECTION DU VACCIN : On recharge la page en ajoutant un marqueur dans l'URL !
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('updated', 'true');
+    window.location.replace(currentUrl.toString());
   };
-  
+
   return { updateAvailable, remoteVersion, applyUpdate };
 };
