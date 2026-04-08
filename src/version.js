@@ -1,21 +1,45 @@
 // src/version.js
 
-import buildInfo from './build-info.json'; 
-
-export const APP_VERSION = buildInfo.version;
-export const BUILD_DATE = buildInfo.buildDate;
+// 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
+    version: '15.6.1 - "La Boucle du Zombie 🧟"',
+    date: '8 Avril 2026',
+    changes: [
+      '🐛 **Système (Hotfix Critique) :** Résolution de la boucle de rechargement infini sur l\'écran de connexion. Une désynchronisation du manifeste public déclenchait la purge automatique de la mémoire (`localStorage.clear()`), expulsant les Héritiers en boucle.',
+      '⚙️ **Architecture (DevOps) :** Désactivation stricte du hook `useAutoUpdate` en environnement de développement (`localhost`). Le Grimoire ne cherchera désormais à se mettre à jour tout seul que lorsqu\'il sera déployé en production.'
+    ]
+  },  {
+    version: '15.6.0 - "La Source Unique 💧"',
+    date: '8 Avril 2026',
+    changes: [
+      '⚙️ **Architecture (Build) :** Suppression définitive de la dépendance à `build-info.json`. Le système lit désormais la version globale de l\'application de manière dynamique en ciblant la toute dernière entrée du registre des versions.'
+    ]
+  },  
+  {
+    version: '15.5.8 - "L\'Oubli de la Maçonne 🧱"',
+    date: '8 Avril 2026',
+    changes: [
+      '🏗️ **Infrastructure (PostgreSQL) :** Coulage effectif des fondations de la base de données. Création de la table `registre_forge` et du bucket de stockage `bug_captures` avec configuration complète des politiques de sécurité (RLS) pour autoriser l\'insertion de tickets par les joueurs.',
+      '🤦‍♀️ **Mea Culpa :** L\'Architecte avait conçu une interface magnifique tout en oubliant de créer la table cible. L\'outil de signalement est désormais *véritablement* connecté au Nuage !'
+    ]
+  },  {
+    version: '15.5.6 - "L\'Ascension de l\'Espion 🎈"',
+    date: '8 Avril 2026',
+    changes: [
+      '✨ **Ergonomie (UI) :** Réorganisation de la barre d\'outils globale. L\'Espion de la Forge (Widget d\'anomalies) a été repositionné en empilement vertical pur (`bottom-44`, `right-6`) pour surplomber harmonieusement le Télégraphe et la Piste de Dés, libérant ainsi l\'espace horizontal au bas de l\'écran.'
+    ]
+  },  
+  {
     version: '15.5.2 - "Rupture & Renouveau 💔"',
-    date: 'Aujourd\'hui',
+    date: '8 Avril 2026',
     changes: [
       '♻️ **Adieu l\'Ancien :** Rupture officielle et sans regret avec le vieux module `BureauAnomalies.js`. Il a fait son temps, mais il était devenu trop toxique pour notre architecture.',
       '🚀 **Nouveau Départ :** Le bouton d\'accueil pointe désormais vers notre magnifique Kanban unifié (`RegistrePage.jsx`). Une relation beaucoup plus saine et réactive !'
     ]
-  },
-  {
+  }, {
     version: '15.5.1 - "L\'Espion Qui M\'Aimait 🕵️‍♀️"',
-    date: 'Aujourd\'hui',
+    date: '8 Avril 2026',
     changes: [
       '🔌 **Connexion Fusionnelle :** Le `ForgeProvider` enlace désormais toute l\'application depuis la racine (`index.js`). Son amour (et son Contexte) irradie dans tous les composants.',
       '💕 **Toujours Près de Toi :** Le petit Espion (Widget Anomalie) accompagne désormais les Héritiers connectés dans tous leurs déplacements pour veiller sur eux et écouter leurs moindres chagrins (erreurs consoles).'
@@ -23,7 +47,7 @@ export const VERSION_HISTORY = [
   },
   {
     version: '15.5.0 - "Kanban Mon Amour ❤️"',
-    date: 'Aujourd\'hui',
+    date: '8 Avril 2026',
     changes: [
       '✨ **Le Coup de Foudre (Optimistic UI) :** Naissance du Registre de la Forge. L\'interface réagit désormais à la vitesse de l\'amour (glisser-déposer HTML5 natif), pendant que Supabase fait le travail lourd de synchronisation en coulisses.',
       '📸 **Boîte Noire Émotionnelle :** Le widget de signalement capture automatiquement les peines de cœur du navigateur (logs d\'erreurs) et accepte les mots doux sous forme de captures d\'écran glissées-déposées.'
@@ -1076,3 +1100,9 @@ export const VERSION_HISTORY = [
     ]
   }
 ];
+
+// ✨ EXTRACTION DYNAMIQUE (Le Parseur est sécurisé !)
+// On coupe la chaîne sur le tiret pour récupérer juste le "15.6.1" pour l'UI, 
+// tout en conservant le nom complet ("La Boucle du Zombie") dans la modale des archives.
+export const APP_VERSION = VERSION_HISTORY[0].version.split(' - ')[0] || VERSION_HISTORY[0].version;
+export const BUILD_DATE = VERSION_HISTORY[0].date;
