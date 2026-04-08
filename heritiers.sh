@@ -41,16 +41,16 @@ CHANGED_FILES=$(git diff --name-only --cached 2>/dev/null || echo "")
 echo "📝 git commit"
 git commit -m "Les Héritiers v${VERSION}"
 
-echo "⬇️ git pull origin dev"
-if ! git pull origin dev; then
+echo "⬇️ git pull origin main"
+if ! git pull origin main; then
   echo "❌ Conflit lors du merge !"
   echo "   Résous les conflits manuellement (ex: 'code .' dans VS Code),"
   echo "   puis 'git add .' et relance le script."
   exit 1
 fi
 
-echo "🚀 git push origin dev"
-git push origin dev
+echo "🚀 git push origin main"
+git push origin main
 echo "✅ Push OK → Google Docs..."
 
 # ── 4. Sync fichiers JS vers Google Drive ─────────────────────────────────────
