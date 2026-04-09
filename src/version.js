@@ -3,6 +3,14 @@
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
+    version: '15.6.17 - "Les Secrets de l\'Atelier 🗝️"',
+    date: '9 Avril 2026',
+    changes: [
+      '🗝️ **Le Sceau des Initiés (UI/UX) :** Refonte esthétique de la confidentialité sur les cartes du Registre de la Forge. Un verrou interactif (sécurisé par une modale in-app) permet désormais aux Gardiens et Initiés de restreindre l\'accès d\'un ticket d\'un simple clic au survol.',
+      '☁️ **Traitement des Archives (Stockage) :** Intégration d\'une moulinette algorithmique purifiant les noms des captures d\'écran avant leur envoi dans le Nuage. Les caractères diacritiques (accents) et les espaces ne provoquent plus le rejet silencieux par l\'infrastructure Supabase.',
+      '📠 **Télégraphe Pneumatique :** Mise à jour des lois fondamentales de la base de données (Check Constraints) pour autoriser officiellement la création et le routage des dépêches vers le salon exclusif du Cercle des Initiés.'
+    ]
+  },  {
     version: '15.6.16 - "L\'Âme Complète 🧩"',
     date: '9 Avril 2026',
     changes: [
