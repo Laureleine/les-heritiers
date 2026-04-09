@@ -2,7 +2,14 @@
 
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
-    {
+  {
+    version: '15.6.10 - "Le Cercle des Initiés 🗝️"',
+    date: '9 Avril 2026',
+    changes: [
+      '🗝️ **Architecture (Accès VIP) :** Simplification radicale du système de "Feature Flags". Les fonctionnalités en cours de développement (bêta) sont désormais accessibles via un unique statut global (`is_initiated`).',
+      '🛡️ **Administration :** Ajout d\'un interrupteur direct dans le tableau de bord communautaire permettant au Super Admin d\'octroyer ou de révoquer l\'accès Bêta aux joueurs sélectionnés en un seul clic.'
+    ]
+  },    {
     version: '15.6.9 - "La Voix de la Plèbe 👍"',
     date: '9 Avril 2026',
     changes: [

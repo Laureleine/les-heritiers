@@ -1,16 +1,13 @@
-// 15.0.0
+// src/hooks/useFeatureFlag.js
+import { useCharacter } from '../context/CharacterContext';
 
-import { useCharacter } from '../context/CharacterContext'; // Ou là où se trouve ton userProfile
+// On a retiré le "flagName" puisqu'on donne un accès global aux features secrètes
+export const useFeatureFlag = () => {
+  const { userProfile } = useCharacter();
 
-export const useFeatureFlag = (flagName) => {
-  // On récupère le profil utilisateur global (que tu as mis en place dans App.js)
-  const { userProfile } = useCharacter(); // Adapte si userProfile est dans un AuthContext séparé
+  // 🛡️ Le compte Super-Admin (Toi) voit TOUT par défaut
+  if (userProfile?.profile?.role === 'super_admin') return true;
 
-  // 🛡️ Le compte Super-Admin (Toi et Marie Cha') voit TOUT par défaut
-  if (userProfile?.role === 'super_admin') return true;
-
-  // 🔍 On fouille le trousseau de clés
-  const features = userProfile?.profile?.unlocked_features || [];
-  
-  return features.includes(flagName);
+  // 🔍 On vérifie si le joueur fait partie du cercle très fermé des bêta-testeurs
+  return userProfile?.profile?.is_initiated === true;
 };
