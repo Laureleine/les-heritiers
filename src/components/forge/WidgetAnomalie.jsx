@@ -4,9 +4,8 @@ import { Bug, Sparkles, X, Image as ImageIcon, Send, Key } from 'lucide-react'; 
 import { useForge } from '../../context/ForgeContext';
 import { useCharacter } from '../../context/CharacterContext'; // ✨ Ajout du Nuage
 
-export default function WidgetAnomalie() {
+export default function WidgetAnomalie({ userProfile }) {
   const { soumettreEntree } = useForge();
-  const { userProfile } = useCharacter();
 
   // ✨ DÉTECTION DU VIP
   const isInitiated = userProfile?.profile?.is_initiated === true || ['super_admin', 'gardien'].includes(userProfile?.profile?.role);

@@ -34,7 +34,17 @@ export function ForgeProvider({ children }) {
 
       let captureUrl = null;
       if (file) {
-        const fileName = `${Date.now()}_${file.name}`;
+        // ✨ L'INCISION : La Moulinette de Nettoyage
+        // 1. On retire les accents (normalize NFD)
+        // 2. On remplace tout ce qui n'est pas alphanumérique (ou point/tiret) par des underscores
+        // 3. On passe en minuscules pour avoir une URL propre
+        const safeName = file.name
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-zA-Z0-9.-]/g, "_")
+          .toLowerCase();
+          
+        const fileName = `${Date.now()}_${safeName}`;
+
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('bug_captures')
           .upload(fileName, file);
@@ -51,7 +61,7 @@ export function ForgeProvider({ children }) {
         statut: data.type_entree === 'Anomalie' ? 'Vu' : "À l'étude",
         is_masque: false,
         flag_persistance: false,
-        is_initie_only: data.is_initie_only || false // ✨ L'INCISION DU SECRET
+        is_initie_only: data.is_initie_only || false
       };
 
       const { data: newEntree, error } = await supabase.from('registre_forge').insert([payload]).select().single();
@@ -67,7 +77,7 @@ export function ForgeProvider({ children }) {
       return false;
     }
   };
-
+  
   const deplacerCarteKanban = async (idCarte, statutCible, idCarteSurvolee) => {
     const nouvellesEntrees = [...entrees];
     const indexCarte = nouvellesEntrees.findIndex(c => c.id === idCarte);
