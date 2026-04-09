@@ -2,7 +2,14 @@
 
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
-    {
+  {
+    version: '15.6.5 - "Le Vide Génétique 🧬"',
+    date: '9 Avril 2026',
+    changes: [
+      '🐛 **Forge PDF (Hotfix) :** Résolution d\'un défaut d\'impression majeur sur les fiches de personnages. Si un Héritier n\'avait pas manuellement augmenté une Caractéristique lors de sa création, le générateur l\'imprimait au niveau 1 (handicap total) au lieu d\'afficher le minimum génétique de son espèce féérique.',
+      '🧮 **Stabilité des Combats :** Les valeurs dérivées de combat imprimées sur le PDF (Esquive, Parade, Points de Vie, Résistances, Initiative) sont désormais calculées avec les véritables caractéristiques de base de l\'Héritier.'
+    ]
+  },    {
     version: '15.6.4 - "Le Parchemin Nettoyé 📜"',
     date: '8 Avril 2026',
     changes: [

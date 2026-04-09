@@ -1,30 +1,36 @@
 // src/utils/pdfGenerator.js
-
-// ============================================================================
-// PDF EXPORT (Fiche de Personnage Complète Recto/Verso)
-// ============================================================================
-
 import { supabase } from '../config/supabase';
 import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
 
 export const exportToPDF = (character, gameData = {}) => {
   const genreActuel = character.genreHumain || character.sexe;
-	
-  // ✨ SÉCURITÉ : Rétrocompatibilité (au cas où le vieux code passerait encore par là)
-  const fairyData = gameData.fairyData ? gameData.fairyData : gameData;
-  const feeData = fairyData[character.typeFee] || {};
 
-  // ✨ LE TRADUCTEUR UNIVERSEL (Identifiants -> Noms)
+  // 1. L'ADN de la fée
+  const feeData = gameData?.fairyData?.[character.typeFee] || {};
+
+  // 2. Le Super-Extracteur Génétique (Caractéristiques)
+  const getCarac = (key) => {
+    return character.caracteristiques?.[key] 
+        || character.data?.stats_scellees?.caracteristiques?.[key] 
+        || feeData?.caracteristiques?.[key]?.min 
+        || 1;
+  };
+
+  const agi = getCarac('agilite');
+  const con = getCarac('constitution');
+  const esp = getCarac('esprit');
+  const sf = getCarac('sangFroid');
+
+  // 3. L'Extracteur Social (✨ LA LIGNE MANQUANTE POUR LE JSONB EST LÀ !)
   const allBoughtIds = Object.values(character.vieSociale || {}).flat();
-  const socialItems = gameData.socialItems || [];
+  const socialItems = gameData?.socialItems || [];
   const boughtItems = socialItems.filter(item => allBoughtIds.includes(item.id));
-  
-  // On sépare intelligemment toutes les catégories pour les ranger dans les bonnes cases !
+
   const langues = boughtItems.filter(i => i.categorie === 'langue').map(i => i.nom);
   const equipements = boughtItems.filter(i => i.categorie !== 'langue' && i.categorie !== 'contact').map(i => i.nom);
   const contacts = boughtItems.filter(i => i.categorie === 'contact').map(i => i.nom);
 
-  // 2. Structuration des Compétences par Profil (On remonte ce dictionnaire pour qu'il soit accessible)
+  // 4. La Map des Profils
   const profilsMap = {
     'Aventurier': ['Conduite', 'Mouvement', 'Ressort', 'Survie'],
     'Combattant': ['Art de la guerre', 'Autorité', 'Mêlée', 'Tir'],
@@ -34,8 +40,8 @@ export const exportToPDF = (character, gameData = {}) => {
     'Savant': ['Habiletés', 'Médecine', 'Observation', 'Sciences']
   };
 
-  // 1. Calculs rapides des points de vie
-  const pvMax = (3 * (character.caracteristiques?.constitution || 1)) + 9;
+  // 5. Calculs rapides des points de vie
+  const pvMax = (3 * con) + 9;
 
   // ✨ FIX ABSOLU : L'Imprimante Autonome
   // Comme le PDF est généré sans passer par le contexte React, on fait l'addition des bonus ici !
@@ -70,11 +76,6 @@ export const exportToPDF = (character, gameData = {}) => {
     
     return rangInvesti + bonusProfil + bonusPred + bonusAtout;
   };
-
-  const agi = character.caracteristiques?.agilite || 1;
-  const con = character.caracteristiques?.constitution || 1;
-  const esp = character.caracteristiques?.esprit || 1;
-  const sf = character.caracteristiques?.sangFroid || 1;
 
   const esquive = getS('Mouvement') + agi + 5;
   const parade = getS('Mêlée') + agi + 5;
@@ -285,24 +286,27 @@ export const exportToPDF = (character, gameData = {}) => {
           </div>
         </div>
 
-        <!-- CARACTÉRISTIQUES -->
-        <div class="section">
-          <div class="section-title">Caractéristiques</div>
-          <div class="grid-4">
-            ${['agilite', 'constitution', 'force', 'precision'].map(stat => `
-              <div class="carac-box">
-                <div class="carac-name">${stat === 'agilite' ? 'Agilité' : stat === 'precision' ? 'Précision' : stat}</div>
-                <div class="carac-score">${character.caracteristiques?.[stat] || 1}</div>
-              </div>
-            `).join('')}
-            ${['esprit', 'perception', 'prestance', 'sangFroid'].map(stat => `
-              <div class="carac-box">
-                <div class="carac-name">${stat === 'sangFroid' ? 'Sang-froid' : stat}</div>
-                <div class="carac-score">${character.caracteristiques?.[stat] || 1}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
+<!-- CARACTÉRISTIQUES -->
+<div class="section">
+  <div class="section-title">Caractéristiques</div>
+  <div class="grid-4">
+
+    ${['agilite', 'constitution', 'force', 'precision'].map(stat => `
+    <div class="carac-box">
+      <div class="carac-name">${stat === 'agilite' ? 'Agilité' : stat === 'precision' ? 'Précision' : (stat.charAt(0).toUpperCase() + stat.slice(1))}</div>
+      <div class="carac-score">${getCarac(stat)}</div>
+    </div>
+    `).join('')}
+
+    ${['esprit', 'perception', 'prestance', 'sangFroid'].map(stat => `
+    <div class="carac-box">
+      <div class="carac-name">${stat === 'sangFroid' ? 'Sang-froid' : (stat.charAt(0).toUpperCase() + stat.slice(1))}</div>
+      <div class="carac-score">${getCarac(stat)}</div>
+    </div>
+    `).join('')}
+
+  </div>
+</div>
 
 <!-- COMPÉTENCES UTILES -->
 <div class="section">
