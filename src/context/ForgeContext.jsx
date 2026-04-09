@@ -15,7 +15,8 @@ export function ForgeProvider({ children }) {
     setLoading(true);
     const { data, error } = await supabase
       .from('registre_forge')
-      .select('*')
+      // ✨ L'INCISION : On fait la jointure pour récupérer le username !
+      .select('*, profiles(username)') 
       .order('ordre', { ascending: true })
       .order('created_at', { ascending: false });
       
