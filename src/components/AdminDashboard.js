@@ -1,6 +1,3 @@
-// 11.1.0
-// 13.3.0 // 13.4.0 // 13.11.0
-// 15.0.0 // 15.1.0
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../config/supabase';
@@ -112,6 +109,20 @@ function TabUsers({ session }) {
     } catch (error) { showInAppNotification("Erreur de rôle : " + error.message, "error"); }
   };
 
+  const handleToggleInitiated = async (userId, currentStatus) => {
+    if (myRole !== 'super_admin') return;
+    
+    try {
+      const { error } = await supabase.from('profiles').update({ is_initiated: !currentStatus }).eq('id', userId);
+      if (error) throw error;
+      
+      setUsers(users.map(u => u.id === userId ? { ...u, is_initiated: !currentStatus } : u));
+      showInAppNotification(currentStatus ? "Accès VIP révoqué." : "L'Héritier a rejoint les Initiés !", "success");
+    } catch (error) { 
+      showInAppNotification("Erreur : " + error.message, "error"); 
+    }
+  };
+  
   const handleToggleBadge = async (userId, badgeId, currentBadges) => {
     if (myRole !== 'super_admin') return;
 
@@ -248,6 +259,7 @@ function TabUsers({ session }) {
                   <div className="flex flex-col gap-2 items-start">
                     {isSuperAdmin && <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full border border-amber-200"><Crown size={12} /> Super Admin</span>}
                     {isGardien && <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full border border-blue-200"><Shield size={12} /> Gardien du Savoir</span>}
+					{u.is_initiated && <span className="inline-flex items-center gap-1 px-2 py-1 mt-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full border border-emerald-200"><LucideIcons.Key size={12} /> Initié (Bêta)</span>}
                     {!isSuperAdmin && !isGardien && <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full border border-gray-200"><User size={12} /> Héritier (Joueur)</span>}
 
                     {userBadges.length > 0 && (
@@ -290,11 +302,18 @@ function TabUsers({ session }) {
 						</button>
 					  )}
 
-					  {!isSuperAdmin && (
-						<button onClick={() => handleToggleRole(u.id, u.role)} className={`w-full text-xs px-3 py-1.5 rounded font-bold border transition-colors ${isGardien ? 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'}`}>
-						  {isGardien ? 'Rétrograder' : 'Promouvoir Gardien'}
-						</button>
-					  )}
+						{!isSuperAdmin && (
+						  <button onClick={() => handleToggleRole(u.id, u.role)} className={`w-full text-xs px-3 py-1.5 rounded font-bold border transition-colors ${isGardien ? 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'}`}>
+							{isGardien ? 'Rétrograder' : 'Promouvoir Gardien'}
+						  </button>
+						)}
+
+						{/* ✨ L'INCISION D'ACTION : Le bouton magique */}
+						{!isSuperAdmin && (
+						  <button onClick={() => handleToggleInitiated(u.id, u.is_initiated)} className={`w-full mt-2 text-xs px-3 py-1.5 rounded font-bold border transition-colors flex justify-center items-center gap-1 ${u.is_initiated ? 'bg-white text-emerald-700 border-emerald-300 hover:bg-emerald-50' : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700'}`}>
+							<LucideIcons.Key size={14} /> {u.is_initiated ? 'Révoquer l\'Initié' : 'Rendre Initié'}
+						  </button>
+						)}
 
                       <div className="relative">
                         <button onClick={() => setEditingBadgesFor(editingBadgesFor === u.id ? null : u.id)} className="text-xs flex items-center gap-1 text-amber-600 hover:text-amber-800 font-bold border border-amber-200 px-2 py-1 rounded bg-amber-50">
