@@ -2,20 +2,22 @@
 import React, { useState } from 'react';
 import { useForge } from '../../context/ForgeContext';
 import { useCharacter } from '../../context/CharacterContext';
-import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Key } from 'lucide-react'; // ✨ Ajout de Key
+import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock } from 'lucide-react'; // ✨ Remplacement de Key par Lock/Unlock
+import ConfirmModal from '../ConfirmModal'; // ✨ Ajout de la modale de confirmation in-app
 
-export default function RegistrePage({ onBack }) {
+export default function RegistrePage({ onBack, userProfile }) {
   const { entrees, loading, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly } = useForge();
-  const { userProfile } = useCharacter();
   
   const myUserId = userProfile?.id;
-  // ✨ DÉTECTION DU VIP POUR LE FILTRE !
   const isInitiated = userProfile?.profile?.is_initiated === true || ['super_admin', 'gardien'].includes(userProfile?.profile?.role);
 
   const [filtreType, setFiltreType] = useState('Anomalie');
   const [tri, setTri] = useState('Manuel');
   const [voirArchives, setVoirArchives] = useState(false);
   const [dragOverId, setDragOverId] = useState(null);
+
+  // ✨ MÉMOIRE DU VERROU SECRET
+  const [confirmSecret, setConfirmSecret] = useState({ isOpen: false, id: null, currentState: false });
 
   const colonnes = filtreType === 'Anomalie'
     ? ['Vu', 'En cours', 'Résolu']
@@ -27,11 +29,9 @@ export default function RegistrePage({ onBack }) {
     return 'bg-stone-100 text-stone-800 border-stone-300';
   };
 
-  // ✨ LE CŒUR DU TRI
   let cartesAffichees = entrees.filter(e => e.type_entree === filtreType);
   if (!voirArchives) cartesAffichees = cartesAffichees.filter(e => !e.is_masque);
   
-  // ✨ LE FILTRE ABSOLU : On cache les tickets secrets aux simples joueurs !
   if (!isInitiated) {
     cartesAffichees = cartesAffichees.filter(e => e.is_initie_only !== true);
   }
@@ -50,6 +50,12 @@ export default function RegistrePage({ onBack }) {
     const carteId = e.dataTransfer.getData('text/plain');
     if (carteId) deplacerCarteKanban(carteId, colonneCible, dragOverId);
     setDragOverId(null);
+  };
+
+  // ✨ FONCTION D'EXÉCUTION DU SECRET
+  const executeToggleSecret = () => {
+    toggleInitieOnly(confirmSecret.id, confirmSecret.currentState);
+    setConfirmSecret({ isOpen: false, id: null, currentState: false });
   };
 
   if (loading) return <div className="p-8 text-center animate-pulse">Chargement de la Forge...</div>;
@@ -124,24 +130,39 @@ export default function RegistrePage({ onBack }) {
                     } ${carte.is_masque ? 'opacity-60' : ''}`}
                   >
                     
-					{/* ✨ LA CHECKBOX SECRÈTE DES INITIÉS */}
-                    {isInitiated && (
-                      <label className="absolute -top-3 -left-3 bg-purple-100 text-purple-800 px-2 py-1.5 rounded-full border border-purple-300 shadow-sm z-10 flex items-center gap-1.5 cursor-pointer hover:bg-purple-200 transition-colors" title="Restreindre l'accès aux seuls Initiés">
-                        <input
-                          type="checkbox"
-                          checked={carte.is_initie_only || false}
-                          onChange={() => toggleInitieOnly(carte.id, carte.is_initie_only)}
-                          className="w-3.5 h-3.5 text-purple-600 rounded cursor-pointer"
-                        />
-                        <Key size={14} />
-                      </label>
-                    )}
+                    {/* ✨ LE NOUVEAU BLOC D'ACTIONS (HAUT DROITE) ✨ */}
+                    <div className={`absolute top-2 right-2 flex items-center gap-1 z-20 transition-opacity duration-200 ${carte.is_initie_only || carte.is_masque ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                      
+                      {/* 1. Le Verrou des Initiés */}
+                      {isInitiated && (
+                        <button
+                          onClick={() => setConfirmSecret({ isOpen: true, id: carte.id, currentState: carte.is_initie_only })}
+                          className={`p-1.5 rounded-lg transition-all border shadow-sm ${
+                            carte.is_initie_only
+                              ? 'bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200 hover:scale-105'
+                              : 'bg-stone-50 text-stone-400 border-stone-200 hover:text-purple-600 hover:bg-purple-50 hover:border-purple-200'
+                          }`}
+                          title={carte.is_initie_only ? "Sceau actif : Rendre public" : "Restreindre l'accès aux Initiés"}
+                        >
+                          {carte.is_initie_only ? <Lock size={14} /> : <Unlock size={14} />}
+                        </button>
+                      )}
 
-                    <button onClick={() => toggleArchive(carte.id, carte.is_masque)} className="absolute top-2 right-2 p-1.5 bg-stone-50 text-stone-400 hover:text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                      {carte.is_masque ? <EyeOff size={14}/> : <Archive size={14}/>}
-                    </button>
+                      {/* 2. L'Archive (La poubelle/œil) */}
+                      <button 
+                        onClick={() => toggleArchive(carte.id, carte.is_masque)} 
+                        className={`p-1.5 rounded-lg transition-all border shadow-sm ${
+                          carte.is_masque 
+                            ? 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100 hover:scale-105' 
+                            : 'bg-stone-50 text-stone-400 border-stone-200 hover:text-red-500 hover:bg-red-50 hover:border-red-200'
+                        }`}
+                        title={carte.is_masque ? "Désarchiver" : "Archiver le ticket"}
+                      >
+                        {carte.is_masque ? <EyeOff size={14}/> : <Archive size={14}/>}
+                      </button>
+                    </div>
 
-                    <div className="flex gap-2 mb-2">
+                    <div className="flex gap-2 mb-2 pr-16">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase ${getCouleurStatut(carte.statut)}`}>{carte.statut}</span>
                       {carte.niveau_gravite && <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${carte.niveau_gravite === 'Bloquant' ? 'bg-red-100 text-red-700' : carte.niveau_gravite === 'Gênant' ? 'bg-orange-100 text-orange-700' : 'bg-stone-100 text-stone-600'}`}>{carte.niveau_gravite}</span>}
                       {carte.benefice_creatif && <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${carte.benefice_creatif === 'Nouveau Mécanisme' ? 'bg-emerald-100 text-emerald-700' : 'bg-teal-50 text-teal-600'}`}>{carte.benefice_creatif}</span>}
@@ -163,14 +184,14 @@ export default function RegistrePage({ onBack }) {
                       </div>
 
                       {/* 🗳️ La Zone de Vote Communautaire */}
-                      <div className="flex items-center gap-2 bg-stone-50 px-2 py-1 rounded-lg border border-stone-200">
-                        <button onClick={() => voterEntree(carte.id, 'up')} className="hover:scale-110 hover:text-emerald-600 transition-all cursor-pointer z-10" title="Voter Pour">
+                      <div className="flex items-center gap-2 bg-stone-50 px-2 py-1 rounded-lg border border-stone-200 relative z-10">
+                        <button onClick={() => voterEntree(carte.id, 'up')} className="hover:scale-110 hover:text-emerald-600 transition-all cursor-pointer" title="Voter Pour">
                           <ThumbsUp size={14} className={(carte.votes?.up || []).includes(myUserId) ? 'fill-emerald-500 text-emerald-600' : ''} />
                         </button>
                         <span className={`text-xs w-4 text-center ${((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) > 0 ? 'text-emerald-600' : ((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) < 0 ? 'text-red-600' : 'text-stone-500'}`}>
                           {((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) > 0 ? '+' : ''}{((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0))}
                         </span>
-                        <button onClick={() => voterEntree(carte.id, 'down')} className="hover:scale-110 hover:text-red-600 transition-all cursor-pointer z-10" title="Voter Contre">
+                        <button onClick={() => voterEntree(carte.id, 'down')} className="hover:scale-110 hover:text-red-600 transition-all cursor-pointer" title="Voter Contre">
                           <ThumbsDown size={14} className={(carte.votes?.down || []).includes(myUserId) ? 'fill-red-500 text-red-600' : ''} />
                         </button>
                       </div>
@@ -182,6 +203,18 @@ export default function RegistrePage({ onBack }) {
           );
         })}
       </div>
+
+      {/* ✨ LA NOUVELLE MODALE DE CONFIRMATION */}
+      <ConfirmModal
+        isOpen={confirmSecret.isOpen}
+        title={confirmSecret.currentState ? "Lever le Sceau du Secret" : "Apposer le Sceau du Secret"}
+        message={confirmSecret.currentState
+          ? "Voulez-vous vraiment retirer le Sceau du Secret ? Ce ticket sera de nouveau visible et consultable par l'ensemble de la communauté."
+          : "Voulez-vous vraiment restreindre l'accès à ce ticket ? Il deviendra totalement invisible pour les joueurs qui ne sont pas Initiés."}
+        onConfirm={executeToggleSecret}
+        onCancel={() => setConfirmSecret({ isOpen: false, id: null, currentState: false })}
+        confirmText={confirmSecret.currentState ? "Oui, rendre public" : "Oui, restreindre l'accès"}
+      />
     </div>
   );
 }

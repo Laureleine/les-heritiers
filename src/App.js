@@ -647,12 +647,13 @@ function App() {
 			  {/* ROUTE DE SÉCURITÉ */}
 			  <Route path="*" element={<Navigate to="/" replace />} />
 
-			{/* ✨ LA NOUVELLE FORGE UNIFIÉE (Remplace l'ancien Bureau) */}
-			<Route path="/bureau_anomalies" element={
-			  <RegistrePage 
-				onBack={() => navigate('/')} 
-			  />
-			} />
+				{/* ✨ LA NOUVELLE FORGE UNIFIÉE (Remplace l'ancien Bureau) */}
+				<Route path="/bureau_anomalies" element={
+				  <RegistrePage
+					onBack={() => navigate('/')}
+					userProfile={userProfile} 
+				  />
+				} />
 
 			</Routes>
 		</Suspense>
@@ -662,7 +663,7 @@ function App() {
       {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
 
 	  {/* ✨ 3.bis. L'ESPION DE LA FORGE (Visible uniquement si connecté) */}
-      {session && <WidgetAnomalie />}
+      {session && <WidgetAnomalie userProfile={userProfile} />} {/* 👈 L'INCISION 2 */}
 
       {/* 🎲 PISTE DE DÉ FLOTTANTE */}
       <DiceRoller use3DDice={userProfile?.profile?.use_3d_dice} diceTheme={userProfile?.profile?.dice_theme} />
