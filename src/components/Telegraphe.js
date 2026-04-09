@@ -1,12 +1,7 @@
 // src/components/Telegraphe.js
-// 9.0.0 // 9.0.1
-// 12.3.0
-// 13.4.0
-// 14.0.0 // 14.9.0 // 14.10.0 // 14.10.1 // 14.11.0
-// Optimisé
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, LayoutList, ListFilter, Settings } from 'lucide-react';
+import { MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, LayoutList, ListFilter, Settings, Key } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 
@@ -33,6 +28,8 @@ export default function Telegraphe({ session, userProfile }) {
   
   const messagesEndRef = useRef(null);
   const isAdmin = userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien';
+  // ✨ L'INCISION : Le laissez-passer des VIP
+  const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin;
 
   // ==========================================================================
   // 🧠 LATEST REF PATTERN : On mémorise les états pour les WebSockets
@@ -72,13 +69,17 @@ export default function Telegraphe({ session, userProfile }) {
       const cercleIds = myCercles.map(c => c.id);
 
       // 3. On construit la requête dynamique pour chat_channels
-      // (En injectant astucieusement l'ID du Cercle dans participant_1)
-      let queryOr = isAdmin 
+      let queryOr = isAdmin
         ? `type.eq.global,type.eq.support,and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`
         : `type.eq.global,and(type.eq.support,participant_1.eq.${myId}),and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`;
 
       if (cercleIds.length > 0) {
         queryOr += `,and(type.eq.cercle,cercle_id.in.(${cercleIds.join(',')}))`;
+      }
+      
+      // ✨ NOUVEAU : On ajoute le canal VIP si l'Héritier a le droit !
+      if (isInitiated) {
+        queryOr += `,type.eq.initie`;
       }
 
       const { data: chatData, error: chatError } = await supabase
@@ -91,21 +92,29 @@ export default function Telegraphe({ session, userProfile }) {
 
       let finalChannels = [...(chatData || [])];
 
-      // ✨ 4. L'ASTUCE : On invente les "Canaux Virtuels" pour les Cercles sans historique
+      // ✨ 4. L'ASTUCE : On invente les "Canaux Virtuels" pour les historiques vides
       myCercles.forEach(cercle => {
-        // ✨ FIX : On vérifie avec cercle_id
-        const exists = finalChannels.find(chan => chan.type === 'cercle' && chan.cercle_id === cercle.id); 
+        const exists = finalChannels.find(chan => chan.type === 'cercle' && chan.cercle_id === cercle.id);
         if (!exists) {
           finalChannels.push({
-            id: `virtual_${cercle.id}`,
-            is_virtual: true,
-            type: 'cercle',
-            name: `Table : ${cercle.nom}`,
-            cercle_id: cercle.id, // ✨ FIX : On range l'ID proprement dans sa colonne !
-            last_message_at: new Date(0).toISOString() 
+            id: `virtual_${cercle.id}`, is_virtual: true, type: 'cercle',
+            name: `Table : ${cercle.nom}`, cercle_id: cercle.id,
+            last_message_at: new Date(0).toISOString()
           });
         }
       });
+
+      // ✨ NOUVEAU : Le Canal Virtuel des Initiés
+      if (isInitiated) {
+        const existsInitie = finalChannels.find(chan => chan.type === 'initie');
+        if (!existsInitie) {
+          finalChannels.push({
+            id: 'virtual_initie', is_virtual: true, type: 'initie',
+            name: 'Le Cercle des Initiés', cercle_id: null,
+            last_message_at: new Date(0).toISOString()
+          });
+        }
+      }
 
       // On retrie le tout fraîchement
       finalChannels.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
@@ -309,19 +318,19 @@ export default function Telegraphe({ session, userProfile }) {
     try {
       let actualChannelId = activeChannel.id;
 
-      // ✨ FIX : Si c'est un canal de Cercle "Virtuel", on le grave dans le marbre d'abord !
+      // ✨ FIX : Si c'est un canal Virtuel, on le grave dynamiquement !
       if (activeChannel.is_virtual) {
         const { data: newChan, error: chanError } = await supabase.from('chat_channels').insert([{
-          type: 'cercle',
+          type: activeChannel.type, // 👈 C'était hardcodé en 'cercle' avant !
           name: activeChannel.name,
-          cercle_id: activeChannel.cercle_id, // ✨ FIX : On expédie vers la colonne officielle
+          cercle_id: activeChannel.cercle_id || null, 
           status: 'open',
           last_message_at: new Date().toISOString()
         }]).select().single();
 
         if (chanError) throw chanError;
         actualChannelId = newChan.id;
-        setActiveChannel(newChan); // On désactive le mode virtuel localement
+        setActiveChannel(newChan); 
       }
 	  
       // Envoi du message classique
@@ -364,7 +373,8 @@ export default function Telegraphe({ session, userProfile }) {
     if (type === 'global') return <Globe size={16} className="text-blue-600" />;
     if (type === 'support') return <ShieldAlert size={16} className="text-amber-600" />;
     if (type === 'private') return <User size={16} className="text-emerald-600" />;
-    if (type === 'cercle') return <Users size={16} className="text-purple-600" />; // ✨ NOUVEAU
+    if (type === 'cercle') return <Users size={16} className="text-purple-600" />; 
+    if (type === 'initie') return <Key size={16} className="text-emerald-600" />; // ✨ NOUVEAU
     return <MessageCircle size={16} className="text-gray-600" />;
   };
 
@@ -416,15 +426,17 @@ export default function Telegraphe({ session, userProfile }) {
                   {[
                     { id: 'global', label: 'Public', icon: <Globe size={14}/> },
                     { id: 'cercle', label: 'Mes Tables', icon: <Users size={14}/> },
+                    // ✨ L'ONGLET VIP conditionnel !
+                    ...(isInitiated ? [{ id: 'initie', label: 'Initiés', icon: <Key size={14}/> }] : []),
                     { id: 'private', label: 'Privé', icon: <User size={14}/> },
                     { id: 'support', label: 'Conseil', icon: <Shield size={14}/> }
                   ].map(tab => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex-1 py-2 px-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 rounded transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-white shadow-sm text-amber-900' : 'text-stone-500 hover:text-stone-700'}`}
+                      className={`flex-1 min-w-[80px] flex justify-center items-center gap-1.5 py-2 px-3 text-xs font-bold rounded transition-all ${activeTab === tab.id ? 'bg-white text-amber-900 shadow-sm border border-stone-200' : 'text-stone-500 hover:bg-stone-200 hover:text-stone-700'}`}
                     >
-                      {tab.icon} {tab.label}
+                      {tab.icon} <span className="hidden sm:inline">{tab.label}</span>
                     </button>
                   ))}
                 </div>
