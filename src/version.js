@@ -3,6 +3,13 @@
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
+    version: '15.6.7 - "La Signature de l\'Artisan ✍️"',
+    date: '9 Avril 2026',
+    changes: [
+      '🔌 **Cerveau (Supabase) :** Le `ForgeContext` effectue désormais une jointure relationnelle (`profiles(username)`) lors du chargement du registre pour récupérer l\'identité sociale des auteurs de requêtes.',
+      '🎨 **UI (Kanban) :** Les cartes du Registre de la Forge ne sont plus anonymes. Elles affichent désormais fièrement le pseudonyme de leur créateur dans leur pied de page, à côté de la version.'
+    ]
+  },  {
     version: '15.6.5 - "Le Vide Génétique 🧬"',
     date: '9 Avril 2026',
     changes: [
