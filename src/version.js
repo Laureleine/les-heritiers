@@ -2,7 +2,13 @@
 
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
-  {
+    {
+    version: '15.6.4 - "Le Parchemin Nettoyé 📜"',
+    date: '8 Avril 2026',
+    changes: [
+      '🐛 **Forge PDF (Hotfix) :** Résolution d\'un défaut d\'impression sur la feuille de personnage. Une erreur de syntaxe (commentaire JSX isolé dans un Template Literal) provoquait l\'affichage de code brut dans l\'encart des Traits de Caractère. Le générateur compile de nouveau un français impeccable, proprement accordé.'
+    ]
+  },{
     version: '15.6.3 - "L\'Identité Retrouvée 🪪"',
     date: '8 Avril 2026',
     changes: [
