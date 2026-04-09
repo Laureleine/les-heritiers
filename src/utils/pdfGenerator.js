@@ -180,11 +180,13 @@ export const exportToPDF = (character, gameData = {}) => {
       <div class="field" style="margin-top: 10px;">
         <span class="field-label">Traits de caractère</span>
         <div class="field-value">
-          ${(character.traitsFeeriques || []).map(t => accorderTexte(t, genreActuel)).join(' • ') || (character.profils?.majeur?.trait ? accorderTexte(character.profils.majeur.trait, genreActuel) : '')}
+          ${[...(character.traitsFeeriques || []), character.profils?.majeur?.trait, character.profils?.mineur?.trait]
+            .filter(Boolean)
+            .map(t => accorderTexte(t, genreActuel))
+            .join(' • ')}
         </div>
-      </div>
+      </div>	  
     </div>
-
     <!-- CARACTÉRISTIQUES -->
     <div class="section">
       <div class="section-title">Caractéristiques</div>

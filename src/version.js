@@ -3,6 +3,13 @@
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
+    version: '15.6.16 - "L\'Âme Complète 🧩"',
+    date: '9 Avril 2026',
+    changes: [
+      '🧬 **Fiche Bilan (UI/UX) :** Le récapitulatif affiche désormais les véritables caractéristiques de base de l\'Héritier (minimum génétique) au lieu d\'un "1" artificiel si aucun point n\'a été investi.',
+      '🎭 **Personnalité Globale :** Fusion et alignement des Traits de Caractère. La page Bilan et l\'exportation PDF lisent et affichent désormais l\'intégralité des traits de l\'Héritier (les traits innés de l\'Étape 1 combinés aux traits issus des Profils Majeur et Mineur).'
+    ]
+  },  {
     version: '15.6.15 - "La Diète de l\'Imprimeur 📉"',
     date: '9 Avril 2026',
     changes: [

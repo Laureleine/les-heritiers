@@ -1,10 +1,4 @@
 // src/components/StepRecapitulatif.js
-// 8.23.0 // 8.32.0
-// 9.11.0
-// 10.1.0 // 10.4.0 // 10.6.0
-// 12.6.0
-// 13.0.O // 13.7.0 // 13.9.0 // 13.10.0 // 13.12.0 // 13.13.0
-// 14.8.0
 
 import React, { useState, useEffect } from 'react';
 import { Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert } from 'lucide-react';
@@ -21,6 +15,15 @@ export default function StepRecapitulatif() {
   const [showConfirmSeal, setShowConfirmSeal] = useState(false);
 
   const feeData = gameData?.fairyData ? gameData.fairyData[character.typeFee] : null;
+
+  // ✨ L'INCISION 1 : L'Extracteur Génétique pour le Bilan
+  const getCarac = (key) => {
+    return character.caracteristiques?.[key] 
+        || character.data?.stats_scellees?.caracteristiques?.[key] 
+        || feeData?.caracteristiques?.[key]?.min 
+        || 1;
+  };
+
   const uniqueFutiles = Object.keys(character.computedStats?.futilesTotal || {}).sort((a, b) => a.localeCompare(b));
 
   // L'état de scellage de l'Héritier
@@ -299,14 +302,28 @@ export default function StepRecapitulatif() {
                   <div className="text-[10px] uppercase font-bold text-gray-500 tracking-wider truncate" title={c.label}>
                     {c.label.substring(0, 3)}
                   </div>
-                  <div className="text-xl font-bold text-amber-900 mt-1">
-                    {character.caracteristiques?.[c.key] || 1}
-                  </div>
+				  <div className="text-xl font-bold text-amber-900 mt-1">
+					{getCarac(c.key)}
+				  </div>			  
                 </div>
               ))}
             </div>
           </div>
 
+			{/* L'ENCART DES TRAITS (TOUS FUSIONNÉS) */}
+			<div className="bg-stone-50 p-3 rounded-lg border border-stone-200 mb-4 shadow-sm">
+			  <div className="flex items-center gap-2 mb-1">
+				<Sparkles size={16} className="text-stone-600" />
+				<span className="font-bold text-stone-800">Traits de personnalité</span>
+			  </div>
+			  <div className="font-serif font-bold text-amber-900 pl-7">
+				{[...(character.traitsFeeriques || []), character.profils?.majeur?.trait, character.profils?.mineur?.trait]
+				  .filter(Boolean)
+				  .map(t => accorderTexte(t, character.genreHumain || character.sexe))
+				  .join(' • ')}
+			  </div>
+			</div>
+			
           {/* Profils d'Héritier */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
             <h3 className="font-serif font-bold text-lg mb-4 text-amber-900 border-b border-amber-100 pb-2 flex items-center gap-2">
