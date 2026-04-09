@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useForge } from '../../context/ForgeContext';
-import { Filter, Archive, EyeOff, ArrowLeft, Plus } from 'lucide-react';
+import { Filter, Archive, EyeOff, ArrowLeft, Plus, User } from 'lucide-react';
 
 export default function RegistrePage({ onBack }) {
   const { entrees, loading, deplacerCarteKanban, toggleArchive } = useForge();
@@ -145,17 +145,22 @@ export default function RegistrePage({ onBack }) {
                     <h4 className="font-serif font-bold text-stone-800 mb-2 pr-6">{carte.titre}</h4>
                     <p className="text-xs text-stone-500 line-clamp-3 leading-relaxed mb-3">{carte.description}</p>
                     
-                    {carte.capture_url && (
-                      <div className="mt-2 h-24 rounded-lg bg-stone-100 bg-cover bg-center border border-stone-200" style={{ backgroundImage: `url(${carte.capture_url})` }} />
-                    )}
-                    
-                    <div className="mt-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest border-t border-stone-100 pt-2">
-                      v{carte.version_constatee}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+					{/* ... (le titre, la description, et la capture d'écran restent au dessus) ... */}
+					{carte.capture_url && (
+					  <div className="mt-2 h-24 rounded-lg bg-stone-100 bg-cover bg-center border border-stone-200" style={{ backgroundImage: `url(${carte.capture_url})` }} />
+					)}
+
+					{/* ✨ L'INCISION : Le pied de page de la carte avec l'auteur ! */}
+					<div className="mt-3 flex justify-between items-center text-[10px] font-bold text-stone-400 uppercase tracking-widest border-t border-stone-100 pt-2">
+					  <span>v{carte.version_constatee}</span>
+					  <span className="flex items-center gap-1 text-amber-700/80" title="Auteur du signalement">
+						<User size={10} /> {carte.profiles?.username || 'Anonyme'}
+					  </span>
+					</div>
+				  </div>
+				))}
+			  </div>
+			</div>
           );
         })}
       </div>
