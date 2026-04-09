@@ -3,6 +3,31 @@
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
+    version: '15.6.15 - "La Diète de l\'Imprimeur 📉"',
+    date: '9 Avril 2026',
+    changes: [
+      '🎨 **Imprimerie (Design UI) :** Cure d\'amaigrissement drastique sur les blocs de Caractéristiques de la fiche PDF. Réduction des marges intérieures, ajustement des hauteurs de ligne (`line-height: 1`) et légère compression des polices pour garantir que la première page tienne parfaitement sur un format A4 standard sans forcer de saut de page intempestif.'
+    ]
+  },  {
+    version: '15.6.13 - "Entre les Lignes 📏"',
+    date: '9 Avril 2026',
+    changes: [
+      '🎨 **Imprimerie (Design UI) :** Optimisation drastique de l\'espace sur la Page 1 des fiches PDF. Les spécialités des compétences utiles ne s\'affichent plus sur une seconde ligne qui gonflait l\'encart, mais sont désormais élégamment incrustées au sein même des pointillés reliant la compétence à son score final.'
+    ]
+  },    {
+    version: '15.6.12 - "La Poupée Russe 🪆"',
+    date: '9 Avril 2026',
+    changes: [
+      '🐛 **Forge PDF (Hotfix) :** Résolution du décalage d\'impression (environ 15mm) affectant la seconde page des fiches de personnages. Une balise de structure non fermée emboîtait la page de Féérie à l\'intérieur de la page du Masque, forçant le moteur de rendu à cumuler les marges intérieures.'
+    ]
+  }, {
+    version: '15.6.11 - "Les Murmures de l\'Ombre 🗝️"',
+    date: '9 Avril 2026',
+    changes: [
+      '💬 **Télégraphe Pneumatique (Accès VIP) :** Création d\'une ligne de communication secrète nommée "Le Cercle des Initiés". Cet onglet n\'apparaît que pour les Héritiers possédant l\'accès Bêta-testeur, leur permettant de discuter des fonctionnalités en développement avec le Super Admin.',
+      '⚙️ **Lazy Instantiation (Architecture) :** Optimisation du système de Canaux Virtuels. Le moteur d\'initialisation est désormais dynamique (`activeChannel.type`) et n\'est plus limité aux seules tables de jeu (Cercles), évitant la duplication de code en base de données.'
+    ]
+  },  {
     version: '15.6.10 - "Le Cercle des Initiés 🗝️"',
     date: '9 Avril 2026',
     changes: [
