@@ -128,11 +128,48 @@ export function ForgeProvider({ children }) {
     if (!error) setEntrees(prev => prev.map(c => c.id === id ? { ...c, is_masque: !currentState } : c));
   };
 
+  // 🗳️ 4. LE SYSTÈME DE VOTE (Optimistic UI)
+  const voterEntree = async (idCarte, typeVote) => {
+    const { data: authData } = await supabase.auth.getUser();
+    const userId = authData?.user?.id;
+    
+    if (!userId) {
+      showInAppNotification("Il faut être formellement identifié pour voter !", "warning");
+      return;
+    }
+
+    // A. Mise à jour instantanée de l'UI
+    setEntrees(prev => prev.map(carte => {
+      if (carte.id !== idCarte) return carte;
+      
+      const votes = carte.votes || { up: [], down: [] };
+      let newUp = [...(votes.up || [])];
+      let newDown = [...(votes.down || [])];
+
+      // La logique de bascule intelligente
+      if (typeVote === 'up') {
+        if (newUp.includes(userId)) newUp = newUp.filter(id => id !== userId);
+        else { newUp.push(userId); newDown = newDown.filter(id => id !== userId); }
+      } else if (typeVote === 'down') {
+        if (newDown.includes(userId)) newDown = newDown.filter(id => id !== userId);
+        else { newDown.push(userId); newUp = newUp.filter(id => id !== userId); }
+      }
+
+      const newVotes = { up: newUp, down: newDown };
+      
+      // B. Sauvegarde silencieuse en arrière-plan
+      supabase.from('registre_forge').update({ votes: newVotes }).eq('id', idCarte).then(({error}) => {
+         if (error) console.error("Erreur de synchronisation du vote :", error);
+      });
+
+      return { ...carte, votes: newVotes };
+    }));
+  };
+
   return (
-    <ForgeContext.Provider value={{ entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban, toggleArchive }}>
+    <ForgeContext.Provider value={{ entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban, toggleArchive, voterEntree }}>
       {children}
     </ForgeContext.Provider>
   );
 }
-
 export const useForge = () => useContext(ForgeContext);

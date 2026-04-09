@@ -2,10 +2,15 @@
 
 import React, { useState } from 'react';
 import { useForge } from '../../context/ForgeContext';
-import { Filter, Archive, EyeOff, ArrowLeft, Plus, User } from 'lucide-react';
+import { useCharacter } from '../../context/CharacterContext'; // ✨ Indispensable pour l'ID du votant
+import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown } from 'lucide-react'; // ✨ Ajout des pouces
 
 export default function RegistrePage({ onBack }) {
-  const { entrees, loading, deplacerCarteKanban, toggleArchive } = useForge();
+  // ✨ Extraction de voterEntree
+  const { entrees, loading, deplacerCarteKanban, toggleArchive, voterEntree } = useForge(); 
+  // ✨ Récupération de l'ID du joueur pour colorer SON vote
+  const { userProfile } = useCharacter();
+  const myUserId = userProfile?.id;
   const [filtreType, setFiltreType] = useState('Anomalie');
   const [tri, setTri] = useState('Manuel');
   const [voirArchives, setVoirArchives] = useState(false);
@@ -150,12 +155,37 @@ export default function RegistrePage({ onBack }) {
 					  <div className="mt-2 h-24 rounded-lg bg-stone-100 bg-cover bg-center border border-stone-200" style={{ backgroundImage: `url(${carte.capture_url})` }} />
 					)}
 
-					{/* ✨ L'INCISION : Le pied de page de la carte avec l'auteur ! */}
+					{/* ✨ L'INCISION : Le pied de page de la carte avec l'auteur ET les votes ! */}
 					<div className="mt-3 flex justify-between items-center text-[10px] font-bold text-stone-400 uppercase tracking-widest border-t border-stone-100 pt-2">
-					  <span>v{carte.version_constatee}</span>
-					  <span className="flex items-center gap-1 text-amber-700/80" title="Auteur du signalement">
-						<User size={10} /> {carte.profiles?.username || 'Anonyme'}
-					  </span>
+					  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+						<span>v{carte.version_constatee}</span>
+						<span className="flex items-center gap-1 text-amber-700/80" title="Auteur du signalement">
+						  <User size={10} /> {carte.profiles?.username || 'Anonyme'}
+						</span>
+					  </div>
+					  
+					  {/* 🗳️ La Zone de Vote Communautaire */}
+					  <div className="flex items-center gap-2 bg-stone-50 px-2 py-1 rounded-lg border border-stone-200">
+						<button 
+						  onClick={() => voterEntree(carte.id, 'up')} 
+						  className="hover:scale-110 hover:text-emerald-600 transition-all cursor-pointer z-10"
+						  title="Voter Pour"
+						>
+						  <ThumbsUp size={14} className={(carte.votes?.up || []).includes(myUserId) ? 'fill-emerald-500 text-emerald-600' : ''} />
+						</button>
+						
+						<span className={`text-xs w-4 text-center ${((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) > 0 ? 'text-emerald-600' : ((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) < 0 ? 'text-red-600' : 'text-stone-500'}`}>
+						  {((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) > 0 ? '+' : ''}{((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0))}
+						</span>
+						
+						<button 
+						  onClick={() => voterEntree(carte.id, 'down')} 
+						  className="hover:scale-110 hover:text-red-600 transition-all cursor-pointer z-10"
+						  title="Voter Contre"
+						>
+						  <ThumbsDown size={14} className={(carte.votes?.down || []).includes(myUserId) ? 'fill-red-500 text-red-600' : ''} />
+						</button>
+					  </div>
 					</div>
 				  </div>
 				))}
