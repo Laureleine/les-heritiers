@@ -3,19 +3,18 @@ set -euo pipefail
 
 command -v jq >/dev/null 2>&1 || { echo "❌ jq requis"; exit 1; }
 [ -f .env ] || { echo "❌ .env manquant"; exit 1; }
+[ -f src/version.js ] || { echo "❌ src/version.js manquant"; exit 1; }
 
 source .env
 
-# ── 1. Prebuild ───────────────────────────────────────────────────────────────
-echo "🔨 npm run prebuild..."
-PREBUILD_OUTPUT=$(npm run prebuild 2>&1)
-echo "$PREBUILD_OUTPUT"
+# ── 1. Version ────────────────────────────────────────────────────────────────
+VERSION=$(grep -m1 "version:" src/version.js | sed "s/.*version: ['\"]\\([0-9.]*\\).*/\\1/")
+[ -z "$VERSION" ] && { echo "❌ Version introuvable dans src/version.js"; exit 1; }
+echo "📦 Les Héritiers v$VERSION"
 
-VERSION=$(echo "$PREBUILD_OUTPUT" | grep -oP 'Build v\K[0-9]+\.[0-9]+\.[0-9]+')
-if [[ -z "$VERSION" ]]; then
-  echo "❌ Impossible d'extraire le numéro de version."; exit 1
-fi
-echo "📦 Version : $VERSION"
+# ── 2. Prebuild ───────────────────────────────────────────────────────────────
+echo "🔨 npm run prebuild..."
+npm run prebuild
 
 # ── 2. Token Google Drive ─────────────────────────────────────────────────────
 echo ""
@@ -49,25 +48,12 @@ if ! git pull origin main; then
   exit 1
 fi
 
-echo "🔀 git checkout main"
-git checkout main
-
-echo "🔀 merge dev → main"
-if ! git merge dev --no-edit; then
-  echo "❌ Conflit lors du merge dev → main !"
-  exit 1
-fi
-
 echo "🚀 git push origin main"
 git push origin main
-
-echo "🔙 git checkout dev"
-git checkout dev
-
 echo "✅ Push OK → Google Docs..."
 
 # ── 4. Sync fichiers JS vers Google Drive ─────────────────────────────────────
-JS_FILES=$(echo "$CHANGED_FILES" | grep '\.js$' || true)
+JS_FILES=$(echo "$CHANGED_FILES" | grep -E '\.(js|jsx)$' || true)
 
 if [[ -z "$JS_FILES" ]]; then
   echo "⚠️  Aucun fichier .js modifié, sync Drive ignorée."

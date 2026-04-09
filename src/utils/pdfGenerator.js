@@ -1,10 +1,4 @@
-// src/utils/utils.js
-// 10.4.0
-// 12.3.0 // 12.6.0
-// 13.0.0
-// 14.7.0 // 14.11.0 // 14.13.0
-// Optimisé
-// 15.2.0
+// src/utils/pdfGenerator.js
 
 // ============================================================================
 // PDF EXPORT (Fiche de Personnage Complète Recto/Verso)
@@ -268,14 +262,13 @@ export const exportToPDF = (character, gameData = {}) => {
               <div class="field-value">Rang ${character.fortune || 0}</div>
             </div>
           </div>
-  <div class="field" style="margin-top: 10px;">
-    <span class="field-label">Traits de caractère</span>
-    <div class="field-value">
-      {/* On map chaque trait avec accorderTexte avant de tout fusionner */}
-      {(character.traitsFeeriques || []).map(t => accorderTexte(t, genreActuel)).join(' • ') || 
-       (character.profils?.majeur?.trait ? accorderTexte(character.profils.majeur.trait, genreActuel) : '')}
-    </div>
+<div class="field" style="margin-top: 10px;">
+  <span class="field-label">Traits de caractère</span>
+  <div class="field-value">
+    ${(character.traitsFeeriques || []).map(t => accorderTexte(t, genreActuel)).join(' • ') || 
+    (character.profils?.majeur?.trait ? accorderTexte(character.profils.majeur.trait, genreActuel) : '')}
   </div>
+</div>	
           <div class="grid-3" style="margin-top: 10px;">
             <div class="field">
               <span class="field-label">Taille masquée</span>
