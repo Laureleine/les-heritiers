@@ -2,7 +2,14 @@
 
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
-  {
+    {
+    version: '15.6.9 - "La Voix de la Plèbe 👍"',
+    date: '9 Avril 2026',
+    changes: [
+      '🗳️ **Intelligence Collective (UI/UX) :** Intégration d\'un système d\'approbation et de désapprobation communautaire (Upvote/Downvote) directement sur les cartes du Registre de la Forge.',
+      '⚙️ **Architecture de Base de Données :** Implémentation d\'une colonne JSONB `votes` dans Supabase pour stocker efficacement les identifiants uniques des votants et prévenir la fraude, tout en maintenant l\'interface ultra-réactive via Optimistic UI.'
+    ]
+  },{
     version: '15.6.7 - "La Signature de l\'Artisan ✍️"',
     date: '9 Avril 2026',
     changes: [
