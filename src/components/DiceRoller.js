@@ -3,8 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Dices, Sparkles, Triangle, ShieldAlert, Zap, Crown, RefreshCcw } from 'lucide-react';
 import DiceBox from '@3d-dice/dice-box';
 
+// 🛡️ PARADE ANTI-BUG : On utilise du texte converti en tableau
 const parseAdj = (str) => str.split(',').map(n => parseInt(n.trim()));
 
+// 🎲 CARTOGRAPHIE PHYSIQUE EXACTE DES DÉS
 const ADJACENCIES = {
   D8: {
     1: parseAdj("2,3,4"), 2: parseAdj("1,3,5"), 3: parseAdj("1,2,6"), 4: parseAdj("1,5,6"),
@@ -31,14 +33,15 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
   const [result, setResult] = useState(null);
 
   const rollTimerRef = useRef(null);
-  const diceBoxRef = useRef(null);
-  const [is3DReady, setIs3DReady] = useState(false);
 
   useEffect(() => {
     return () => {
       if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
     };
   }, []);
+
+  const diceBoxRef = useRef(null);
+  const [is3DReady, setIs3DReady] = useState(false);
 
   useEffect(() => {
     if (!use3DDice || !isOpen || diceBoxRef.current) return;
@@ -49,43 +52,63 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
       const gl = canvasTest.getContext('webgl') || canvasTest.getContext('experimental-webgl');
 
       if (!gl) {
-        console.warn("WebGL non disponible, des 3D desactives");
+        console.warn("WebGL non disponible, dés 3D désactivés");
         return;
       }
 
-      if (!containerEl) return;
+      if (containerEl) {
+        try {
+          containerEl.innerHTML = '';
 
-      try {
-        containerEl.innerHTML = '';
+          // Force les dimensions en pixels avant que DiceBox les lise
+          const w = containerEl.offsetWidth;
+          const h = containerEl.offsetHeight;
+          containerEl.style.width = w + 'px';
+          containerEl.style.height = h + 'px';
 
-        diceBoxRef.current = new DiceBox("#casino-dice-canvas", {
-          assetPath: '/assets/dice-box/',
-          theme: diceTheme === 'sang' ? 'rust' : diceTheme === 'améthyste' ? 'purple' : 'default',
-          themeColor: "#b45309",
-          scale: 40,
-          throwForce: 8,
-          spinForce: 8
-        });
-
-        diceBoxRef.current.init()
-          .then(() => setIs3DReady(true))
-          .catch(e => {
-            console.error("Init 3D échouée :", e);
-            diceBoxRef.current = null;
+          diceBoxRef.current = new DiceBox("#casino-dice-canvas", {
+            assetPath: '/assets/dice-box/',
+            theme: diceTheme === 'sang' ? 'rust' : diceTheme === 'améthyste' ? 'purple' : 'default',
+            themeColor: "#b45309",
+            scale: 40,
+            throwForce: 8,
+            spinForce: 8
           });
 
-      } catch (e) {
-        console.error("Création DiceBox échouée :", e);
-        diceBoxRef.current = null;
+          diceBoxRef.current.init()
+            .then(() => {
+              setIs3DReady(true);
+              // Remet en % et envoie resize pour que le Worker recalcule ses murs
+              containerEl.style.width = '100%';
+              containerEl.style.height = '100%';
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 200);
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 600);
+            })
+            .catch(e => {
+              console.error("Init 3D échouée :", e);
+              diceBoxRef.current = null;
+            });
+
+        } catch (e) {
+          console.error("Création DiceBox échouée :", e);
+          diceBoxRef.current = null;
+        }
       }
-    }, 800);
+    }, 600);
 
     return () => clearTimeout(timer);
   }, [use3DDice, diceTheme, isOpen]);
 
-  // Jamais de clear() — le Worker Rapier/Wasm plante systématiquement.
-  const handleClear = () => setResult(null);
-  const handleCloseAndClear = () => { setResult(null); setIsOpen(false); };
+  // ✅ Jamais de clear() sur dice-box — le Worker Rapier/Wasm plante systématiquement.
+  // roll() remplace les dés existants automatiquement, pas besoin de purger.
+  const handleClear = () => {
+    setResult(null);
+  };
+
+  const handleCloseAndClear = () => {
+    setResult(null);
+    setIsOpen(false);
+  };
 
   const getGameValue = (type, face) => {
     if (type === 'D10' && face === 1) return -3;
@@ -98,8 +121,10 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
   const getBestAdjacent = (type, currentFace) => {
     const adj = ADJACENCIES[type]?.[currentFace];
     if (!adj) return currentFace;
+
     let bestFace = adj[0];
     let bestVal = getGameValue(type, bestFace);
+
     adj.forEach(face => {
       const val = getGameValue(type, face);
       if (val > bestVal) { bestVal = val; bestFace = face; }
@@ -112,17 +137,23 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
     setIsRolling(true);
     setRollingMode(mode);
 
+    // ── Chemin 3D (mode NORMAL uniquement) ──────────────────────────────────
     if (use3DDice && is3DReady && mode === 'NORMAL') {
+      // On réinitialise uniquement l'état React — pas de clear() sur dice-box
       setResult(null);
       try {
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Délai pour laisser le canvas se stabiliser avant le lancer
+        await new Promise(resolve => setTimeout(resolve, 500));
         const results = await diceBoxRef.current.roll(`1${diceType.toLowerCase()}`);
         const face = results.at(0).value;
+
         const f = { D8: null, D10: null, D12: null };
         const v = { D8: null, D10: null, D12: null };
+
         if (diceType === 'D8')  { f.D8  = face; v.D8  = getGameValue('D8',  face); }
         if (diceType === 'D10') { f.D10 = face; v.D10 = getGameValue('D10', face); }
         if (diceType === 'D12') { f.D12 = face; v.D12 = getGameValue('D12', face); }
+
         setResult({ type: 'NORMAL', faces: f, values: v });
       } catch (e) {
         console.error("Erreur lancer 3D:", e);
@@ -132,7 +163,9 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
       return;
     }
 
+    // ── Chemin 2D / modes triche ─────────────────────────────────────────────
     const duration = mode === 'FLIP_FACE' ? 800 : 1500;
+
     if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
 
     rollTimerRef.current = setTimeout(() => {
@@ -152,6 +185,7 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
         const type2 = others.at(1);
         const face1 = rollSingle(parseInt(type1.replace('D', '')));
         const face2 = rollSingle(parseInt(type2.replace('D', '')));
+
         setResult(prevResult => {
           const faces = { D8: prevResult?.faces?.D8, D10: prevResult?.faces?.D10, D12: prevResult?.faces?.D12 };
           if (type1 === 'D8')  faces.D8  = face1;
@@ -160,13 +194,16 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
           if (type2 === 'D8')  faces.D8  = face2;
           if (type2 === 'D10') faces.D10 = face2;
           if (type2 === 'D12') faces.D12 = face2;
+
           const values = {
             D8:  faces.D8  ? getGameValue('D8',  faces.D8)  : null,
             D10: faces.D10 ? getGameValue('D10', faces.D10) : null,
             D12: faces.D12 ? getGameValue('D12', faces.D12) : null
           };
+
           let best = -99;
           Object.values(values).forEach(v => { if (v !== null && v > best) best = v; });
+
           let special = null;
           const vArr = Object.values(values).filter(v => v !== null);
           const isSuite =
@@ -175,8 +212,10 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
             (vArr.includes(5) && vArr.includes(6) && vArr.includes(7)) ||
             (vArr.includes(6) && vArr.includes(7) && vArr.includes(8));
           const isTriple = vArr.length === 3 && vArr[0] === vArr[1] && vArr[1] === vArr[2];
+
           if (isTriple) special = "Triple !";
           else if (isSuite) special = "Suite parfaite !";
+
           return { type: 'ADD_DICE', faces, values, best, special };
         });
       }
@@ -207,10 +246,13 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
     const config = getDiceConfig(type);
     const face = result?.faces?.[type];
     const val = result?.values?.[type];
+
     const isNegative = val !== null && val !== undefined && val < 0;
     const isMax = face === parseInt(type.replace('D', ''));
     const isWinner = result?.type === 'ADD_DICE' && val === result.best;
+
     const opacityClass = (result?.type === 'ADD_DICE' && !isWinner && !result.special) ? 'opacity-40 scale-90' : 'scale-110 z-10 dice-glow';
+
     return (
       <div className={`relative flex items-center justify-center transition-all duration-500 ${isRolling ? 'animate-spin-fast blur-sm scale-75' : opacityClass}`}>
         <svg width="120" height="120" viewBox="0 0 100 100" className={config.color} style={{ filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.5))' }}>
@@ -231,49 +273,40 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
 
   return (
     <>
-      <style>{`
-        @keyframes spin-fast { 0% { transform: rotate(0deg) scale(0.8); } 100% { transform: rotate(1080deg) scale(0.8); } }
-        .animate-spin-fast { animation: spin-fast 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        @keyframes fade-in-up { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in-up { animation: fade-in-up 0.4s ease-out forwards; }
-        .dice-glow { filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
-        .felt-table { background-color: #064e3b; background-image: radial-gradient(circle, #065f46 0%, #022c22 100%); }
-        @keyframes shimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
-      `}</style>
+      <style>
+        {`
+          @keyframes spin-fast { 0% { transform: rotate(0deg) scale(0.8); } 100% { transform: rotate(1080deg) scale(0.8); } }
+          .animate-spin-fast { animation: spin-fast 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+          @keyframes fade-in-up { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+          .animate-fade-in-up { animation: fade-in-up 0.4s ease-out forwards; }
+          .dice-glow { filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
+          .felt-table { background-color: #064e3b; background-image: radial-gradient(circle, #065f46 0%, #022c22 100%); }
+          @keyframes shimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
+        `}
+      </style>
 
-      {/* BOUTON D'OUVERTURE */}
+      {/* 1. LE BOUTON D'OUVERTURE */}
       {!isOpen && (
         <button onClick={() => setIsOpen(true)} className="fixed bottom-24 right-6 bg-stone-900 hover:bg-stone-800 text-amber-400 p-4 rounded-full border-2 border-amber-600/50 hover:scale-110 transition-all z-40 group" style={{ boxShadow: '0 0 20px rgba(251,191,36,0.3)' }} title="Piste de Lancer">
           <Dices size={28} className="group-hover:animate-spin" />
         </button>
       )}
 
-      {/* CANVAS DICE-BOX — position fixed pleine fenêtre, HORS du tapis.
-          Cela évite overflow:hidden et border-radius qui contraignent le monde physique. */}
-      <div
-        id="casino-dice-canvas"
-        style={{
-          position: 'fixed', top: 0, left: 0,
-          width: '100vw', height: '100vh',
-          zIndex: isOpen ? 51 : -1,
-          pointerEvents: 'none'
-        }}
-      />
-
-      {/* RIDEAU OPAQUE */}
+      {/* 2. LE RIDEAU OPAQUE */}
       <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300 p-4 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
 
         {/* Bouton Fermer */}
-        <button onClick={handleCloseAndClear} className="absolute top-6 right-6 text-stone-400 hover:text-amber-400 bg-stone-900 border border-stone-700 rounded-full p-2 transition-all z-[60] hover:scale-110">
+        <button onClick={handleCloseAndClear} className="absolute top-6 right-6 text-stone-400 hover:text-amber-400 bg-stone-900 border border-stone-700 rounded-full p-2 transition-all z-50 hover:scale-110">
           <X size={24} />
         </button>
 
-        {/* TAPIS VERT — zIndex 52 pour passer devant le canvas dice-box */}
-        <div
-          className="relative w-full max-w-4xl felt-table overflow-hidden shadow-2xl"
-          style={{ height: '85vh', borderRadius: '40px', zIndex: 52, boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 16px #451a03, inset 0 0 20px 20px rgba(0,0,0,0.8)' }}
-        >
-          {/* COUCHE UI */}
+        {/* 3. LE TAPIS VERT */}
+        <div className="relative w-full max-w-4xl felt-table overflow-hidden shadow-2xl" style={{ height: '85vh', borderRadius: '40px', boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 16px #451a03, inset 0 0 20px 20px rgba(0,0,0,0.8)' }}>
+
+          {/* 4. SAS WEBGL */}
+          <div id="casino-dice-canvas" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}></div>
+
+          {/* 5. COUCHE UI */}
           <div style={{ position: 'relative', zIndex: 10, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', pointerEvents: 'none' }}>
 
             {/* Header */}
