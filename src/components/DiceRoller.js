@@ -50,9 +50,8 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
     const timer = setTimeout(() => {
       // ✨ FIX DU SYNDROME FANTÔME : Utilisation d'un ID flambant neuf !
       const containerExists = document.getElementById("casino-dice-canvas");
-      
-      const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      const canvasTest = document.createElement('canvas');
+      const gl = canvasTest.getContext('webgl') || canvasTest.getContext('experimental-webgl');
       
       if (!gl) {
         console.warn("WebGL non disponible, dés 3D désactivés");
@@ -65,7 +64,8 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
           containerExists.innerHTML = '';
 
           diceBoxRef.current = new DiceBox("#casino-dice-canvas", {
-            assetPath: '/assets/dice-box/',
+            // ✨ L'INCISION : On branche le tuyau directement sur le CDN de la bibliothèque !
+            assetPath: 'https://unpkg.com/@3d-dice/dice-box/lib/',
             theme: diceTheme === 'sang' ? 'rust' : diceTheme === 'améthyste' ? 'purple' : 'default',
             themeColor: "#b45309",
             scale: 60, // L'échelle géante pour bien voir les dés
@@ -76,19 +76,37 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
           diceBoxRef.current.init()
             .then(() => {
               setIs3DReady(true);
-              // ✨ LE COUP DE GRÂCE : On force le navigateur à recalculer les murs physiques de la table
-              window.dispatchEvent(new Event('resize'));
+              
+              // ✨ L'INCISION : Forcer le recalcul des murs physiques APRÈS le Paint de React
+              requestAnimationFrame(() => {
+                window.dispatchEvent(new Event('resize'));
+                
+                // Double sécurité : On attend 100ms que le DOM soit parfaitement stable
+                setTimeout(() => {
+                  window.dispatchEvent(new Event('resize'));
+                  
+                  // ✨ Force brute : Redimensionnement manuel du canvas interne
+                  const canvasEl = document.querySelector('#casino-dice-canvas canvas');
+                  const containerEl = document.getElementById('casino-dice-canvas');
+                  if (canvasEl && containerEl) {
+                    canvasEl.width = containerEl.offsetWidth;
+                    canvasEl.height = containerEl.offsetHeight;
+                  }
+                }, 100);
+              });
             })
             .catch(e => {
               console.error("Init 3D échouée :", e);
               diceBoxRef.current = null;
             });
+
+        // ✨ LE FAMEUX CATCH QUI AVAIT DISPARU !
         } catch (e) {
           console.error("Création DiceBox échouée :", e);
           diceBoxRef.current = null;
         }
       }
-    }, 350); 
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [use3DDice, diceTheme, isOpen]);
