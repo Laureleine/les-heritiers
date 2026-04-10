@@ -1,12 +1,67 @@
 // src/utils/characterEngine.js
-// 12.0.0
-// 13.0.3
+
+import { reconstructHistory } from './historyReconstructor';
 
 // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
 export function characterReducer(state, action) {
 	let newState = { ...state }; 
     switch (action.type) {
-      case 'LOAD_CHARACTER':
+		// ✨ LA MIGRATION DOUCE ET INTELLIGENTE (Archéologie de l'Âme)
+		case 'LOAD_CHARACTER': {
+		  let loadedState = { ...action.payload };
+		  const isScelle = loadedState.statut === 'scelle' || loadedState.statut === 'scellé';
+		  
+		  // Si c'est un vieux personnage déjà en jeu...
+		  if (isScelle) {
+			if (!loadedState.data) loadedState.data = {};
+			
+			// ...et qu'il n'a pas encore de registre d'XP...
+			if (!loadedState.data.historique_xp || loadedState.data.historique_xp.length === 0) {
+			  const pastTotal = loadedState.xp_total || 0;
+			  const pastDepense = loadedState.xp_depense || 0;
+			  
+			  if (pastTotal > 0 || pastDepense > 0) {
+				loadedState.data.historique_xp = [];
+				
+				// 1. Le Gain Originel
+				if (pastTotal > 0) {
+				  loadedState.data.historique_xp.push({
+					type: 'GAIN',
+					label: 'Expérience acquise avant l\'ouverture du Registre',
+					valeur: pastTotal,
+					date_mouvement: new Date(Date.now() - 200000).toISOString() 
+				  });
+				}
+				
+				// 2. La Fouille Archéologique
+				if (pastDepense > 0) {
+				  const reconstructedTxs = reconstructHistory(loadedState, action.gameData);
+				  
+				  // 3. L'Intégrité Mathématique (Le Solde de Tout Compte)
+				  const sumReconstructed = reconstructedTxs.reduce((acc, tx) => acc + tx.valeur, 0);
+				  
+				  if (sumReconstructed !== pastDepense) {
+					const difference = pastDepense - sumReconstructed;
+					reconstructedTxs.push({
+					  type: difference > 0 ? 'DEPENSE' : 'REMBOURSEMENT',
+					  label: difference > 0 ? 'Ajustements manuels antérieurs (Passif)' : 'Remboursements antérieurs (Passif)',
+					  valeur: Math.abs(difference),
+					  date_mouvement: new Date(Date.now() - 1000).toISOString() // La toute dernière ligne du passé
+					});
+				  }
+
+				  // On injecte les lignes du passé en antéchronologique (les plus récentes d'abord)
+				  reconstructedTxs.reverse().forEach(tx => {
+					loadedState.data.historique_xp.unshift(tx);
+				  });
+				}
+			  }
+			}
+		  }
+		  
+		  newState = loadedState;
+		  break;
+		}
       case 'RESET_CHARACTER':
         newState = { ...action.payload };
         break;
@@ -24,6 +79,40 @@ export function characterReducer(state, action) {
           newState[action.field] = [...currentArray, action.value];
         }
         break;
+    // ==========================================================
+    // ✨ LE GRAND REGISTRE (JOURNAL DES FLUX DE L'ÂME)
+    // ==========================================================
+    case 'LOG_XP_TRANSACTION': {
+      const { transaction } = action;
+      if (!transaction) break; // 👈 FIX : On break au lieu de return !
+
+      // 1. On s'assure que le livre de comptes existe dans notre structure JSONB flexible
+      if (!newState.data) newState.data = {};
+      if (!newState.data.historique_xp) newState.data.historique_xp = [];
+
+      // 2. On grave la ligne dans le registre temporel
+      const newTx = {
+        ...transaction,
+        date_mouvement: new Date().toISOString()
+      };
+      
+      // On l'ajoute au début du tableau pour avoir le plus récent en premier
+      newState.data.historique_xp = [newTx, ...newState.data.historique_xp];
+
+      // 3. LA VÉRITÉ UNIQUE : Le recalcul mathématique absolu
+      if (transaction.type === 'GAIN') {
+        newState.xp_total = (newState.xp_total || 0) + transaction.valeur;
+      } 
+      else if (transaction.type === 'DEPENSE') {
+        newState.xp_depense = (newState.xp_depense || 0) + transaction.valeur;
+      } 
+      else if (transaction.type === 'REMBOURSEMENT') {
+        // En cas d'annulation, on rembourse la dépense (sans jamais descendre sous 0)
+        newState.xp_depense = Math.max(0, (newState.xp_depense || 0) - transaction.valeur);
+      }
+
+      break; // 👈 FIX : Le fameux break ! On sort du switch pour laisser le Calculateur faire son job en dessous !
+    }
     default:
       return state;
   }

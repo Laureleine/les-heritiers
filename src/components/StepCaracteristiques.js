@@ -1,10 +1,4 @@
 // src/compoents/StepCaracteristiques.js
-// 8.32.0 
-// 9.4.0 // 9.11.0
-// 10.4.0 // 10.6.0
-// 11.1.0
-// 13.6.0 // 13.6.1 // 13.7.0 // 13.8.0 // 13.9.0 // 13.10.0
-// 14.1.0 // 14.9.0
 
 import React, { useState, useMemo } from 'react';
 import { Plus, Minus, RotateCcw } from 'lucide-react';
@@ -57,7 +51,7 @@ export default function StepCaracteristiques() {
   // ========================================================================
 
   const handleEvolutionChange = (key, delta, currentBase, newValue, maxGenetique) => {
-    
+
     // 🛡️ Point 3 : Protection absolue de l'Héritier
     if (isReadOnly) {
       showInAppNotification("Les sceaux sont verrouillés, la fiche est en lecture seule.", "warning");
@@ -69,6 +63,9 @@ export default function StepCaracteristiques() {
     const minGenetique = feeData?.caracteristiques?.[key]?.min || 1;
     const plancherScelle = character.data?.stats_scellees?.caracteristiques?.[key] || minGenetique;
 
+    // On récupère le joli nom de la caractéristique pour le journal
+    const caracName = CARAC_LIST.find(c => c.key === key)?.label || key;
+
     // 🔙 Rétrogradation (Remboursement)
     if (delta < 0) {
       if (newValue < plancherScelle) {
@@ -76,14 +73,22 @@ export default function StepCaracteristiques() {
         return;
       }
 
-      // ✨ FIX 2 : Le remboursement correspond au prix de l'échelon qu'on vient de quitter ! (newValue)
       const costToRefund = getCaracCost(newValue);
 
+      // 1. On met à jour le score de la caractéristique
       dispatchCharacter({
         type: 'UPDATE_MULTIPLE',
-        payload: {
-          caracteristiques: { ...currentCaracs, [key]: newValue },
-          xp_depense: Math.max(0, xpDepense - costToRefund)
+        payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
+        gameData
+      });
+
+      // 2. ✨ LE CERVEAU CENTRAL : On consigne le remboursement (qui recalculera xp_depense)
+      dispatchCharacter({
+        type: 'LOG_XP_TRANSACTION',
+        transaction: {
+          type: 'REMBOURSEMENT',
+          label: `Annulation : ${caracName}`,
+          valeur: costToRefund
         },
         gameData
       });
@@ -99,19 +104,27 @@ export default function StepCaracteristiques() {
         return;
       }
 
-      // ✨ FIX 3 : La facture se calcule sur notre base ACTUELLE (currentBase)
       const cost = getCaracCost(currentBase);
-
       if (xpDispo < cost) {
         showInAppNotification(`Il vous faut ${cost} XP pour atteindre ce rang !`, "error");
         return;
       }
 
+      // 1. On met à jour le score de la caractéristique
       dispatchCharacter({
         type: 'UPDATE_MULTIPLE',
-        payload: {
-          caracteristiques: { ...currentCaracs, [key]: newValue },
-          xp_depense: xpDepense + cost
+        payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
+        gameData
+      });
+
+      // 2. ✨ LE CERVEAU CENTRAL : On consigne l'achat (qui recalculera xp_depense)
+      dispatchCharacter({
+        type: 'LOG_XP_TRANSACTION',
+        transaction: {
+          type: 'DEPENSE',
+          label: `Augmentation : ${caracName}`,
+          valeur: cost,
+          rang_final: newValue
         },
         gameData
       });
