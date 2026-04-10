@@ -1,6 +1,4 @@
 // src/components/PixieAssistant.js
-// 9.4.0 // 9.6.0 // 9.7.0
-//
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, AlertCircle, CheckCircle2, Info, Moon } from 'lucide-react';
@@ -44,6 +42,56 @@ export default function PixieAssistant({ character, step, session, onSleep, fair
     setSilentMood(analysis.mood);
   }, [character, step, fairyData]); // 👈 Ajout ici
 
+  // ✨ LA MISSION D'ÉLISE : Le Ping de l'Inventeur !
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const verifierRecompensesForge = async () => {
+      try {
+        // On cherche 1 ticket résolu/intégré non notifié pour ce joueur
+        const { data, error } = await supabase
+          .from('registre_forge')
+          .select('id, titre, type_entree')
+          .eq('user_id', session.user.id)
+          .in('statut', ['Résolu', 'Intégré'])
+          .eq('is_notified_pixie', false)
+          .limit(1)
+          .maybeSingle(); // maybeSingle évite l'erreur si aucun ticket n'est trouvé
+
+        if (!error && data) {
+          // 1. On prépare le message personnalisé selon le type
+          let texte = "";
+          if (data.type_entree === 'Inspiration') {
+            texte = `Sapristi ! Regarde ! Ton idée "${data.titre}" a été gravée dans les archives du Grimoire ! Merci pour ton imagination, petit prodige !`;
+          } else {
+            texte = `Youpi ! Grâce à ton œil de lynx, l'anomalie "${data.titre}" a été chassée du Grimoire ! Les Gardiens te remercient !`;
+          }
+
+          // 2. On valide immédiatement en base pour que Pixie ne répète pas
+          await supabase
+            .from('registre_forge')
+            .update({ is_notified_pixie: true })
+            .eq('id', data.id);
+
+          // 3. On déclenche l'animation de Pixie !
+          setMessage({ text: texte, mood: 'success' });
+          setIsTalking(true);
+          setSilentMood('success');
+        }
+      } catch (err) {
+        console.error("Erreur de notification Pixie (Forge) :", err);
+      }
+    };
+
+    // On attend 5 secondes après le chargement de l'application 
+    // pour ne pas agresser le joueur dès la première milliseconde
+    const timer = setTimeout(() => {
+      verifierRecompensesForge();
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [session?.user?.id]);
+  
   const fermerBulleEtFuir = () => {
     setIsTalking(false);
     clearTimeout(bubbleTimer.current);
