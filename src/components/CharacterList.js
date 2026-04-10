@@ -342,7 +342,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   return (
     <div className="animate-fade-in w-full">
       <div className="flex flex-col gap-6 mb-8 mt-2">
-		<div className="relative z-[1] flex flex-nowrap items-center gap-2 overflow-x-auto hide-scrollbar w-full pb-2">
+        <div className="relative z-50 flex flex-nowrap items-center gap-2 overflow-x-auto hide-scrollbar w-full pb-2">
           <button onClick={onNewCharacter} className="flex-shrink-0 mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
             <Plus size={18} /> <span className="hidden sm:inline">Nouveau</span>
           </button>

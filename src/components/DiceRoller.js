@@ -180,12 +180,12 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
 
       <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300 p-4 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <div className="relative w-full max-w-4xl felt-table overflow-hidden shadow-2xl" style={{ height: '85vh', borderRadius: '40px', border: '16px solid #451a03' }}>
-          <button onClick={handleCloseAndClear} className="absolute top-6 right-6 text-stone-400 hover:text-white z-50 pointer-events-auto"><X size={32} /></button>
+          <button onClick={handleCloseAndClear} className={`absolute top-6 right-6 text-stone-400 hover:text-white z-50 ${isOpen ? 'pointer-events-auto' : ''}`}><X size={32} /></button>
           
           <div id="casino-dice-canvas" className="absolute inset-0 w-full h-full z-0" style={{ pointerEvents: 'none' }}></div>
 
           <div className="relative z-10 w-full h-full flex flex-col items-center p-8 pointer-events-none">
-            <div className="h-20 flex gap-4 pointer-events-auto">
+            <div className={`h-20 flex gap-4 ${isOpen ? 'pointer-events-auto' : ''}`}>
               {['D8', 'D10', 'D12'].map(t => (
                 <button key={t} onClick={() => { setDiceType(t); setResult(null); }} className={`px-6 py-2 rounded-full font-serif font-bold border-2 transition-all ${diceType === t ? 'bg-amber-600 border-amber-400 text-white shadow-lg scale-105' : 'bg-stone-800 text-stone-400'}`}>{t}</button>
               ))}
