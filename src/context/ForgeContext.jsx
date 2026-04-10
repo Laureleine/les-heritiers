@@ -35,16 +35,13 @@ export function ForgeProvider({ children }) {
       let captureUrl = null;
       if (file) {
         // ✨ L'INCISION : La Moulinette de Nettoyage
-        // 1. On retire les accents (normalize NFD)
-        // 2. On remplace tout ce qui n'est pas alphanumérique (ou point/tiret) par des underscores
-        // 3. On passe en minuscules pour avoir une URL propre
         const safeName = file.name
           .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
           .replace(/[^a-zA-Z0-9.-]/g, "_")
           .toLowerCase();
           
         const fileName = `${Date.now()}_${safeName}`;
-
+        
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('bug_captures')
           .upload(fileName, file);
@@ -70,14 +67,13 @@ export function ForgeProvider({ children }) {
       setEntrees(prev => [newEntree, ...prev]);
       showInAppNotification("✨ Gravé dans les archives avec succès !", "success");
       return true;
-
     } catch (error) {
       console.error("❌ Anomalie de la Forge :", error);
       showInAppNotification("La gravure a échoué : " + error.message, "error");
       return false;
     }
   };
-  
+
   const deplacerCarteKanban = async (idCarte, statutCible, idCarteSurvolee) => {
     const nouvellesEntrees = [...entrees];
     const indexCarte = nouvellesEntrees.findIndex(c => c.id === idCarte);
@@ -92,6 +88,7 @@ export function ForgeProvider({ children }) {
       const indexSurvol = nouvellesEntrees.findIndex(c => c.id === idCarteSurvolee);
       if (indexSurvol !== -1) indexInsertion = indexSurvol;
     }
+
     nouvellesEntrees.splice(indexInsertion, 0, carte);
 
     const cartesColonne = nouvellesEntrees.filter(c => c.statut === statutCible);
@@ -118,10 +115,11 @@ export function ForgeProvider({ children }) {
     const { error } = await supabase.from('registre_forge').update({ is_initie_only: !currentState }).eq('id', id);
     if (!error) setEntrees(prev => prev.map(c => c.id === id ? { ...c, is_initie_only: !currentState } : c));
   };
-  
+
   const voterEntree = async (idCarte, typeVote) => {
     const { data: authData } = await supabase.auth.getUser();
     const userId = authData?.user?.id;
+    
     if (!userId) {
       showInAppNotification("Il faut être formellement identifié pour voter !", "warning");
       return;
@@ -147,15 +145,49 @@ export function ForgeProvider({ children }) {
       supabase.from('registre_forge').update({ votes: newVotes }).eq('id', idCarte).then(({error}) => {
         if (error) console.error("Erreur de synchronisation du vote :", error);
       });
+
       return { ...carte, votes: newVotes };
     }));
   };
 
+  // ✨ LA NOUVELLE FONCTION DE REJET
+  const rejeterEntree = async (id, commentaire) => {
+    try {
+      const { error } = await supabase
+        .from('registre_forge')
+        .update({
+          statut: 'Rejeté',
+          reponse_officielle: commentaire,
+          is_masque: true 
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setEntrees(prev => prev.map(c => c.id === id ? { 
+        ...c, 
+        statut: 'Rejeté', 
+        reponse_officielle: commentaire, 
+        is_masque: true 
+      } : c));
+      
+      showInAppNotification("Le ticket a été rejeté, archivé, et la réponse consignée.", "success");
+      return true;
+    } catch (error) {
+      console.error("Erreur de rejet :", error);
+      showInAppNotification("La clôture a échoué : " + error.message, "error");
+      return false;
+    }
+  };
+
   return (
-    <ForgeContext.Provider value={{ entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly }}>
+    <ForgeContext.Provider value={{ 
+      entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban, 
+      toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree
+    }}>
       {children}
     </ForgeContext.Provider>
   );
-}
+} // ✨ L'accolade salvatrice était ici !
 
 export const useForge = () => useContext(ForgeContext);

@@ -2,12 +2,14 @@
 import React, { useState } from 'react';
 import { useForge } from '../../context/ForgeContext';
 import { useCharacter } from '../../context/CharacterContext';
-import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X } from 'lucide-react'; // ✨ Ajout des icônes pour la modale
-import ConfirmModal from '../ConfirmModal'; 
+import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X, Copy, MessageCircle } from 'lucide-react'; // ✨ MessageCircle ajouté !
+import ConfirmModal from '../ConfirmModal';
+import { showInAppNotification } from '../../utils/SystemeServices';
 
 export default function RegistrePage({ onBack, userProfile }) {
-  const { entrees, loading, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly } = useForge();
-  
+  // ✨ On récupère rejeterEntree !
+  const { entrees, loading, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree } = useForge();
+ 
   const myUserId = userProfile?.id;
   const isInitiated = userProfile?.profile?.is_initiated === true || ['super_admin', 'gardien'].includes(userProfile?.profile?.role);
 
@@ -17,10 +19,18 @@ export default function RegistrePage({ onBack, userProfile }) {
   const [dragOverId, setDragOverId] = useState(null);
 
   const [confirmSecret, setConfirmSecret] = useState({ isOpen: false, id: null, currentState: false });
-  
-  // ✨ LA MÉMOIRE DE LA LECTURE
   const [carteSelectionnee, setCarteSelectionnee] = useState(null);
 
+  const [rejetState, setRejetState] = useState({ isOpen: false, raison: '' });
+
+  const handleRejeter = async () => {
+    const success = await rejeterEntree(carteSelectionnee.id, rejetState.raison);
+    if (success) {
+      setRejetState({ isOpen: false, raison: '' });
+      setCarteSelectionnee(null); // On ferme la modale !
+    }
+  };
+  
   const colonnes = filtreType === 'Anomalie'
     ? ['Vu', 'En cours', 'Résolu']
     : ["À l'étude", 'Planifié', 'Intégré'];
@@ -59,22 +69,55 @@ export default function RegistrePage({ onBack, userProfile }) {
     setConfirmSecret({ isOpen: false, id: null, currentState: false });
   };
 
+  // ✨ LA FONCTION DE COPIE (Pour toi et moi !)
+  const handleCopyCard = (e, carte) => {
+    e.stopPropagation();
+    
+    const icone = carte.type_entree === 'Anomalie' ? '🐛' : '✨';
+    const infoSup = carte.type_entree === 'Anomalie' ? `Gravité: ${carte.niveau_gravite || '?'}` : `Bénéfice: ${carte.benefice_creatif || '?'}`;
+    
+    let texte = `${icone} [${carte.type_entree}] ${carte.titre}\n`;
+    texte += `Statut: ${carte.statut} | ${infoSup} | v${carte.version_constatee}\n`;
+    texte += `Auteur: ${carte.profiles?.username || 'Anonyme'}\n`;
+    texte += `----------------------------------------\n`;
+    texte += `${carte.description}\n`;
+
+    if (isInitiated && carte.logs_techniques && carte.logs_techniques !== "[]") {
+      texte += `\n----------------------------------------\n`;
+      texte += `Boîte Noire (Logs techniques) :\n`;
+      try {
+        const parsed = JSON.parse(carte.logs_techniques);
+        texte += parsed.map(log => `> ${log}`).join('\n');
+      } catch {
+        texte += carte.logs_techniques;
+      }
+    }
+
+    navigator.clipboard.writeText(texte).then(() => {
+      showInAppNotification("Ticket copié dans le presse-papier ! Prêt à être collé.", "success");
+    }).catch(() => {
+      showInAppNotification("Impossible de copier le ticket. Droits du navigateur insuffisants.", "error");
+    });
+  };
+
   if (loading) return <div className="p-8 text-center animate-pulse">Chargement de la Forge...</div>;
 
   return (
-    <div className="max-w-7xl mx-auto p-6 font-sans text-stone-800 h-screen flex flex-col">
+    // ✨ INCISION 1 : h-[calc(100vh-8rem)] au lieu de h-screen !
+    <div className="max-w-7xl mx-auto p-4 md:p-6 font-sans text-stone-800 flex flex-col h-[85vh] md:h-[calc(100vh-8rem)]">
+      
       {/* HEADER & FILTRES */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-stone-200 pb-4 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b border-stone-200 pb-4 gap-4 shrink-0">
         <div className="flex items-center gap-4">
           {onBack && (
             <button onClick={onBack} className="p-2 bg-stone-200 text-stone-600 hover:bg-stone-300 hover:text-stone-900 rounded-lg transition-colors shadow-sm">
               <ArrowLeft size={20} />
             </button>
           )}
-          <h1 className="text-3xl font-serif font-bold text-amber-900">Registre de la Forge</h1>
+          <h1 className="text-2xl md:text-3xl font-serif font-bold text-amber-900">Registre de la Forge</h1>
         </div>
 
-        <div className="flex gap-4 items-center flex-wrap justify-end">
+        <div className="flex gap-3 items-center flex-wrap justify-end">
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-forge-widget', { detail: { type: filtreType } }))}
             className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-transform active:scale-95"
@@ -87,8 +130,8 @@ export default function RegistrePage({ onBack, userProfile }) {
           </button>
 
           <div className="flex items-center bg-white border border-stone-300 rounded-lg p-1 shadow-sm">
-            <button onClick={() => setFiltreType('Anomalie')} className={`px-4 py-1 text-sm font-bold rounded ${filtreType === 'Anomalie' ? 'bg-red-50 text-red-700' : 'text-stone-500'}`}>Bugs</button>
-            <button onClick={() => setFiltreType('Inspiration')} className={`px-4 py-1 text-sm font-bold rounded ${filtreType === 'Inspiration' ? 'bg-emerald-50 text-emerald-700' : 'text-stone-500'}`}>Idées</button>
+            <button onClick={() => setFiltreType('Anomalie')} className={`px-3 py-1 text-sm font-bold rounded ${filtreType === 'Anomalie' ? 'bg-red-50 text-red-700' : 'text-stone-500'}`}>Bugs</button>
+            <button onClick={() => setFiltreType('Inspiration')} className={`px-3 py-1 text-sm font-bold rounded ${filtreType === 'Inspiration' ? 'bg-emerald-50 text-emerald-700' : 'text-stone-500'}`}>Idées</button>
           </div>
 
           <div className="flex items-center gap-2 bg-white border border-stone-300 rounded-lg px-2 py-1 shadow-sm">
@@ -104,7 +147,8 @@ export default function RegistrePage({ onBack, userProfile }) {
       </div>
 
       {/* LE KANBAN */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+      {/* ✨ INCISION 1 : flex-1 + min-h-0 sur le conteneur parent */}
+      <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-y-auto md:overflow-hidden pr-2 md:pr-0 pb-4 md:pb-0 custom-scrollbar">
         {colonnes.map(colStatut => {
           const cartesDeLaColonne = cartesAffichees.filter(c => c.statut === colStatut);
           return (
@@ -112,30 +156,42 @@ export default function RegistrePage({ onBack, userProfile }) {
               key={colStatut} 
               onDragOver={(e) => onDragOver(e, null)} 
               onDrop={(e) => onDrop(e, colStatut)}
-              className="bg-stone-100 rounded-2xl p-4 flex flex-col h-full border border-stone-200"
+              // ✨ INCISION 2 : md:min-h-0 sur la colonne
+              className="bg-stone-100 rounded-2xl p-4 flex flex-col h-[500px] md:h-full md:min-h-0 border border-stone-200 shrink-0"
             >
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-4 shrink-0">
                 <h3 className="font-bold text-stone-700 uppercase tracking-widest text-sm">{colStatut}</h3>
                 <span className="text-xs font-bold bg-stone-200 text-stone-500 px-2 py-0.5 rounded-full">{cartesDeLaColonne.length}</span>
               </div>
 
-              <div className="flex-1 overflow-y-auto space-y-4 custom-scrollbar pr-2 pb-10">
+              {/* ✨ INCISION 3 : min-h-0 sur la zone de défilement interne, c'est lui qui libère l'ascenseur ! */}
+              <div className="flex-1 min-h-0 overflow-y-auto space-y-4 custom-scrollbar pr-2 pb-2">
                 {cartesDeLaColonne.map(carte => (
                   <div 
                     key={carte.id} 
                     draggable 
                     onDragStart={(e) => onDragStart(e, carte.id)}
                     onDragOver={(e) => onDragOver(e, carte.id)}
-                    onClick={() => setCarteSelectionnee(carte)} // ✨ L'INCISION : Ouverture de la modale !
+                    onClick={() => setCarteSelectionnee(carte)} 
                     className={`bg-white p-4 rounded-xl border-2 shadow-sm cursor-pointer transition-all relative group ${
                       dragOverId === carte.id ? 'border-t-4 border-t-amber-500' : 'border-stone-200 hover:border-amber-300'
                     } ${carte.is_masque ? 'opacity-60' : ''}`}
                   >
                     
                     <div className={`absolute top-2 right-2 flex items-center gap-1 z-20 transition-opacity duration-200 ${carte.is_initie_only || carte.is_masque ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                      
+                      {/* Le Bouton de Copie */}
+                      <button
+                        onClick={(e) => handleCopyCard(e, carte)}
+                        className="p-1.5 rounded-lg transition-all border shadow-sm bg-stone-50 text-stone-400 border-stone-200 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200"
+                        title="Copier les détails pour l'IA"
+                      >
+                        <Copy size={14} />
+                      </button>
+
                       {isInitiated && (
                         <button
-                          onClick={(e) => { e.stopPropagation(); setConfirmSecret({ isOpen: true, id: carte.id, currentState: carte.is_initie_only }); }} // ✨ FIX : On bloque le clic parent
+                          onClick={(e) => { e.stopPropagation(); setConfirmSecret({ isOpen: true, id: carte.id, currentState: carte.is_initie_only }); }} 
                           className={`p-1.5 rounded-lg transition-all border shadow-sm ${
                             carte.is_initie_only
                               ? 'bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200 hover:scale-105'
@@ -148,7 +204,7 @@ export default function RegistrePage({ onBack, userProfile }) {
                       )}
 
                       <button 
-                        onClick={(e) => { e.stopPropagation(); toggleArchive(carte.id, carte.is_masque); }} // ✨ FIX : On bloque le clic parent
+                        onClick={(e) => { e.stopPropagation(); toggleArchive(carte.id, carte.is_masque); }} 
                         className={`p-1.5 rounded-lg transition-all border shadow-sm ${
                           carte.is_masque 
                             ? 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100 hover:scale-105' 
@@ -160,7 +216,7 @@ export default function RegistrePage({ onBack, userProfile }) {
                       </button>
                     </div>
 
-                    <div className="flex gap-2 mb-2 pr-16 pointer-events-none">
+                    <div className="flex gap-2 mb-2 pr-24 pointer-events-none">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase ${getCouleurStatut(carte.statut)}`}>{carte.statut}</span>
                       {carte.niveau_gravite && <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${carte.niveau_gravite === 'Bloquant' ? 'bg-red-100 text-red-700' : carte.niveau_gravite === 'Gênant' ? 'bg-orange-100 text-orange-700' : 'bg-stone-100 text-stone-600'}`}>{carte.niveau_gravite}</span>}
                       {carte.benefice_creatif && <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${carte.benefice_creatif === 'Nouveau Mécanisme' ? 'bg-emerald-100 text-emerald-700' : 'bg-teal-50 text-teal-600'}`}>{carte.benefice_creatif}</span>}
@@ -201,18 +257,17 @@ export default function RegistrePage({ onBack, userProfile }) {
         })}
       </div>
 
-      {/* ✨ LA NOUVELLE MODALE IMMERSIVE (Lecture Détaillée) ✨ */}
+      {/* LA MODALE IMMERSIVE */}
       {carteSelectionnee && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setCarteSelectionnee(null)}>
           <div className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up" onClick={e => e.stopPropagation()}>
             
-            {/* En-tête */}
             <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center shrink-0">
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${carteSelectionnee.type_entree === 'Anomalie' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}>
                   {carteSelectionnee.type_entree === 'Anomalie' ? <Bug size={24}/> : <Sparkles size={24}/>}
                 </div>
-                <h2 className="text-xl md:text-2xl font-serif font-bold text-stone-800 leading-tight">
+                <h2 className="text-xl md:text-2xl font-serif font-bold text-stone-800 leading-tight pr-4">
                   {carteSelectionnee.titre}
                 </h2>
               </div>
@@ -221,37 +276,29 @@ export default function RegistrePage({ onBack, userProfile }) {
               </button>
             </div>
 
-            {/* Corps */}
             <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
-              
-              {/* Badges d'information */}
               <div className="flex flex-wrap gap-3 items-center pb-4 border-b border-stone-100">
                 <span className={`text-xs px-3 py-1 rounded-full border font-bold uppercase ${getCouleurStatut(carteSelectionnee.statut)}`}>
                   {carteSelectionnee.statut}
                 </span>
-                
                 {carteSelectionnee.niveau_gravite && (
                   <span className={`text-xs px-3 py-1 rounded-full font-bold uppercase ${carteSelectionnee.niveau_gravite === 'Bloquant' ? 'bg-red-100 text-red-700' : carteSelectionnee.niveau_gravite === 'Gênant' ? 'bg-orange-100 text-orange-700' : 'bg-stone-100 text-stone-600'}`}>
                     Gravité : {carteSelectionnee.niveau_gravite}
                   </span>
                 )}
-                
                 {carteSelectionnee.benefice_creatif && (
                   <span className={`text-xs px-3 py-1 rounded-full font-bold uppercase ${carteSelectionnee.benefice_creatif === 'Nouveau Mécanisme' ? 'bg-emerald-100 text-emerald-700' : 'bg-teal-50 text-teal-600'}`}>
                     Bénéfice : {carteSelectionnee.benefice_creatif}
                   </span>
                 )}
-                
                 <span className="text-xs font-bold text-stone-500 bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
                   v{carteSelectionnee.version_constatee}
                 </span>
-                
                 <span className="flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-200 ml-auto">
                   <User size={14} /> Auteur : {carteSelectionnee.profiles?.username || 'Anonyme'}
                 </span>
               </div>
 
-              {/* Texte Complet */}
               <div>
                 <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Description détaillée</h4>
                 <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-inner">
@@ -261,7 +308,6 @@ export default function RegistrePage({ onBack, userProfile }) {
                 </div>
               </div>
 
-              {/* Capture Magnifiée */}
               {carteSelectionnee.capture_url && (
                 <div>
                   <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Preuve Visuelle</h4>
@@ -276,7 +322,19 @@ export default function RegistrePage({ onBack, userProfile }) {
                 </div>
               )}
 
-              {/* La Boîte Noire (Uniquement pour nous !) */}
+              {/* ✨ AFFICHAGE DE LA RÉPONSE OFFICIELLE (Si elle existe) */}
+              {carteSelectionnee.reponse_officielle && (
+                <div className="mt-4 p-4 bg-stone-100 border-l-4 border-stone-500 rounded-r-xl shadow-inner">
+                  <h4 className="text-sm font-bold text-stone-800 mb-2 flex items-center gap-2">
+                    <MessageCircle size={16} className="text-stone-600" />
+                    Réponse de l'Atelier :
+                  </h4>
+                  <p className="text-sm text-stone-700 font-serif italic whitespace-pre-wrap leading-relaxed">
+                    "{carteSelectionnee.reponse_officielle}"
+                  </p>
+                </div>
+              )}
+
               {isInitiated && carteSelectionnee.logs_techniques && carteSelectionnee.logs_techniques !== "[]" && (
                 <div>
                   <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 flex items-center gap-2">
@@ -294,13 +352,53 @@ export default function RegistrePage({ onBack, userProfile }) {
                   </div>
                 </div>
               )}
+			  
+              {/* ✨ LE POSTE DE COMMANDEMENT DU GARDIEN (Pour Rejeter) */}
+              {isInitiated && !rejetState.isOpen && carteSelectionnee.statut !== 'Rejeté' && (
+                <div className="mt-6 pt-4 border-t border-stone-200 flex justify-end gap-3">
+                  <button 
+                    onClick={() => setRejetState({ isOpen: true, raison: '' })} 
+                    className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm"
+                  >
+                    <X size={18} /> Rejeter et Archiver
+                  </button>
+                </div>
+              )}
 
+              {/* ✨ LE FORMULAIRE DE SAISIE DE REJET */}
+              {rejetState.isOpen && (
+                <div className="mt-6 pt-4 border-t border-stone-200 bg-red-50 p-4 rounded-xl shadow-inner animate-fade-in">
+                  <label className="block text-sm font-bold text-red-900 mb-2">Motif du rejet (Visible par l'auteur) :</label>
+                  <textarea
+                    value={rejetState.raison}
+                    onChange={(e) => setRejetState({ ...rejetState, raison: e.target.value })}
+                    className="w-full p-3 border border-red-200 rounded-lg focus:ring-2 focus:ring-red-500 outline-none resize-none bg-white mb-3 custom-scrollbar"
+                    rows="3"
+                    placeholder="Expliquez pourquoi ce ticket est refusé ou classé sans suite..."
+                    autoFocus
+                  />
+                  <div className="flex justify-end gap-3">
+                    <button 
+                      onClick={() => setRejetState({ isOpen: false, raison: '' })} 
+                      className="px-4 py-2 text-stone-600 hover:bg-stone-200 rounded-lg font-bold transition-colors"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={handleRejeter}
+                      disabled={!rejetState.raison.trim()}
+                      className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-md transition-colors disabled:opacity-50"
+                    >
+                      Confirmer la sanction
+                    </button>
+                  </div>
+                </div>
+              )}			  
             </div>
           </div>
         </div>
       )}
 
-      {/* Modale de Confirmation de Sceau */}
       <ConfirmModal
         isOpen={confirmSecret.isOpen}
         title={confirmSecret.currentState ? "Lever le Sceau du Secret" : "Apposer le Sceau du Secret"}
