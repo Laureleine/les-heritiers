@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { useForge } from '../../context/ForgeContext';
 import { useCharacter } from '../../context/CharacterContext';
-import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock } from 'lucide-react'; // ✨ Remplacement de Key par Lock/Unlock
-import ConfirmModal from '../ConfirmModal'; // ✨ Ajout de la modale de confirmation in-app
+import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X } from 'lucide-react'; // ✨ Ajout des icônes pour la modale
+import ConfirmModal from '../ConfirmModal'; 
 
 export default function RegistrePage({ onBack, userProfile }) {
   const { entrees, loading, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly } = useForge();
@@ -16,8 +16,10 @@ export default function RegistrePage({ onBack, userProfile }) {
   const [voirArchives, setVoirArchives] = useState(false);
   const [dragOverId, setDragOverId] = useState(null);
 
-  // ✨ MÉMOIRE DU VERROU SECRET
   const [confirmSecret, setConfirmSecret] = useState({ isOpen: false, id: null, currentState: false });
+  
+  // ✨ LA MÉMOIRE DE LA LECTURE
+  const [carteSelectionnee, setCarteSelectionnee] = useState(null);
 
   const colonnes = filtreType === 'Anomalie'
     ? ['Vu', 'En cours', 'Résolu']
@@ -52,7 +54,6 @@ export default function RegistrePage({ onBack, userProfile }) {
     setDragOverId(null);
   };
 
-  // ✨ FONCTION D'EXÉCUTION DU SECRET
   const executeToggleSecret = () => {
     toggleInitieOnly(confirmSecret.id, confirmSecret.currentState);
     setConfirmSecret({ isOpen: false, id: null, currentState: false });
@@ -125,18 +126,16 @@ export default function RegistrePage({ onBack, userProfile }) {
                     draggable 
                     onDragStart={(e) => onDragStart(e, carte.id)}
                     onDragOver={(e) => onDragOver(e, carte.id)}
-                    className={`bg-white p-4 rounded-xl border-2 shadow-sm cursor-grab active:cursor-grabbing transition-all relative group ${
+                    onClick={() => setCarteSelectionnee(carte)} // ✨ L'INCISION : Ouverture de la modale !
+                    className={`bg-white p-4 rounded-xl border-2 shadow-sm cursor-pointer transition-all relative group ${
                       dragOverId === carte.id ? 'border-t-4 border-t-amber-500' : 'border-stone-200 hover:border-amber-300'
                     } ${carte.is_masque ? 'opacity-60' : ''}`}
                   >
                     
-                    {/* ✨ LE NOUVEAU BLOC D'ACTIONS (HAUT DROITE) ✨ */}
                     <div className={`absolute top-2 right-2 flex items-center gap-1 z-20 transition-opacity duration-200 ${carte.is_initie_only || carte.is_masque ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                      
-                      {/* 1. Le Verrou des Initiés */}
                       {isInitiated && (
                         <button
-                          onClick={() => setConfirmSecret({ isOpen: true, id: carte.id, currentState: carte.is_initie_only })}
+                          onClick={(e) => { e.stopPropagation(); setConfirmSecret({ isOpen: true, id: carte.id, currentState: carte.is_initie_only }); }} // ✨ FIX : On bloque le clic parent
                           className={`p-1.5 rounded-lg transition-all border shadow-sm ${
                             carte.is_initie_only
                               ? 'bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200 hover:scale-105'
@@ -148,9 +147,8 @@ export default function RegistrePage({ onBack, userProfile }) {
                         </button>
                       )}
 
-                      {/* 2. L'Archive (La poubelle/œil) */}
                       <button 
-                        onClick={() => toggleArchive(carte.id, carte.is_masque)} 
+                        onClick={(e) => { e.stopPropagation(); toggleArchive(carte.id, carte.is_masque); }} // ✨ FIX : On bloque le clic parent
                         className={`p-1.5 rounded-lg transition-all border shadow-sm ${
                           carte.is_masque 
                             ? 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100 hover:scale-105' 
@@ -162,36 +160,35 @@ export default function RegistrePage({ onBack, userProfile }) {
                       </button>
                     </div>
 
-                    <div className="flex gap-2 mb-2 pr-16">
+                    <div className="flex gap-2 mb-2 pr-16 pointer-events-none">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase ${getCouleurStatut(carte.statut)}`}>{carte.statut}</span>
                       {carte.niveau_gravite && <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${carte.niveau_gravite === 'Bloquant' ? 'bg-red-100 text-red-700' : carte.niveau_gravite === 'Gênant' ? 'bg-orange-100 text-orange-700' : 'bg-stone-100 text-stone-600'}`}>{carte.niveau_gravite}</span>}
                       {carte.benefice_creatif && <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${carte.benefice_creatif === 'Nouveau Mécanisme' ? 'bg-emerald-100 text-emerald-700' : 'bg-teal-50 text-teal-600'}`}>{carte.benefice_creatif}</span>}
                     </div>
 
-                    <h4 className="font-bold text-stone-900 mb-1 leading-tight">{carte.titre}</h4>
-                    <p className="text-xs text-stone-500 line-clamp-3 leading-relaxed whitespace-pre-wrap">{carte.description}</p>
+                    <h4 className="font-bold text-stone-900 mb-1 leading-tight pointer-events-none">{carte.titre}</h4>
+                    <p className="text-xs text-stone-500 line-clamp-3 leading-relaxed whitespace-pre-wrap pointer-events-none">{carte.description}</p>
 
                     {carte.capture_url && (
-                      <div className="mt-2 h-24 rounded-lg bg-stone-100 bg-cover bg-center border border-stone-200" style={{ backgroundImage: `url(${carte.capture_url})` }} />
+                      <div className="mt-2 h-24 rounded-lg bg-stone-100 bg-cover bg-center border border-stone-200 pointer-events-none" style={{ backgroundImage: `url(${carte.capture_url})` }} />
                     )}
 
                     <div className="mt-3 flex justify-between items-center text-[10px] font-bold text-stone-400 uppercase tracking-widest border-t border-stone-100 pt-2">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 pointer-events-none">
                         <span>v{carte.version_constatee}</span>
                         <span className="flex items-center gap-1 text-amber-700/80" title="Auteur du signalement">
                           <User size={10} /> {carte.profiles?.username || 'Anonyme'}
                         </span>
                       </div>
 
-                      {/* 🗳️ La Zone de Vote Communautaire */}
                       <div className="flex items-center gap-2 bg-stone-50 px-2 py-1 rounded-lg border border-stone-200 relative z-10">
-                        <button onClick={() => voterEntree(carte.id, 'up')} className="hover:scale-110 hover:text-emerald-600 transition-all cursor-pointer" title="Voter Pour">
+                        <button onClick={(e) => { e.stopPropagation(); voterEntree(carte.id, 'up'); }} className="hover:scale-110 hover:text-emerald-600 transition-all cursor-pointer" title="Voter Pour">
                           <ThumbsUp size={14} className={(carte.votes?.up || []).includes(myUserId) ? 'fill-emerald-500 text-emerald-600' : ''} />
                         </button>
                         <span className={`text-xs w-4 text-center ${((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) > 0 ? 'text-emerald-600' : ((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) < 0 ? 'text-red-600' : 'text-stone-500'}`}>
                           {((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0)) > 0 ? '+' : ''}{((carte.votes?.up?.length || 0) - (carte.votes?.down?.length || 0))}
                         </span>
-                        <button onClick={() => voterEntree(carte.id, 'down')} className="hover:scale-110 hover:text-red-600 transition-all cursor-pointer" title="Voter Contre">
+                        <button onClick={(e) => { e.stopPropagation(); voterEntree(carte.id, 'down'); }} className="hover:scale-110 hover:text-red-600 transition-all cursor-pointer" title="Voter Contre">
                           <ThumbsDown size={14} className={(carte.votes?.down || []).includes(myUserId) ? 'fill-red-500 text-red-600' : ''} />
                         </button>
                       </div>
@@ -204,7 +201,106 @@ export default function RegistrePage({ onBack, userProfile }) {
         })}
       </div>
 
-      {/* ✨ LA NOUVELLE MODALE DE CONFIRMATION */}
+      {/* ✨ LA NOUVELLE MODALE IMMERSIVE (Lecture Détaillée) ✨ */}
+      {carteSelectionnee && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setCarteSelectionnee(null)}>
+          <div className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up" onClick={e => e.stopPropagation()}>
+            
+            {/* En-tête */}
+            <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${carteSelectionnee.type_entree === 'Anomalie' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                  {carteSelectionnee.type_entree === 'Anomalie' ? <Bug size={24}/> : <Sparkles size={24}/>}
+                </div>
+                <h2 className="text-xl md:text-2xl font-serif font-bold text-stone-800 leading-tight">
+                  {carteSelectionnee.titre}
+                </h2>
+              </div>
+              <button onClick={() => setCarteSelectionnee(null)} className="text-stone-400 hover:text-red-500 bg-white p-2 rounded-full shadow-sm transition-all hover:scale-110 shrink-0">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Corps */}
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
+              
+              {/* Badges d'information */}
+              <div className="flex flex-wrap gap-3 items-center pb-4 border-b border-stone-100">
+                <span className={`text-xs px-3 py-1 rounded-full border font-bold uppercase ${getCouleurStatut(carteSelectionnee.statut)}`}>
+                  {carteSelectionnee.statut}
+                </span>
+                
+                {carteSelectionnee.niveau_gravite && (
+                  <span className={`text-xs px-3 py-1 rounded-full font-bold uppercase ${carteSelectionnee.niveau_gravite === 'Bloquant' ? 'bg-red-100 text-red-700' : carteSelectionnee.niveau_gravite === 'Gênant' ? 'bg-orange-100 text-orange-700' : 'bg-stone-100 text-stone-600'}`}>
+                    Gravité : {carteSelectionnee.niveau_gravite}
+                  </span>
+                )}
+                
+                {carteSelectionnee.benefice_creatif && (
+                  <span className={`text-xs px-3 py-1 rounded-full font-bold uppercase ${carteSelectionnee.benefice_creatif === 'Nouveau Mécanisme' ? 'bg-emerald-100 text-emerald-700' : 'bg-teal-50 text-teal-600'}`}>
+                    Bénéfice : {carteSelectionnee.benefice_creatif}
+                  </span>
+                )}
+                
+                <span className="text-xs font-bold text-stone-500 bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
+                  v{carteSelectionnee.version_constatee}
+                </span>
+                
+                <span className="flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-200 ml-auto">
+                  <User size={14} /> Auteur : {carteSelectionnee.profiles?.username || 'Anonyme'}
+                </span>
+              </div>
+
+              {/* Texte Complet */}
+              <div>
+                <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Description détaillée</h4>
+                <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-inner">
+                  <p className="text-stone-700 leading-relaxed font-serif whitespace-pre-wrap text-base md:text-lg">
+                    {carteSelectionnee.description}
+                  </p>
+                </div>
+              </div>
+
+              {/* Capture Magnifiée */}
+              {carteSelectionnee.capture_url && (
+                <div>
+                  <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Preuve Visuelle</h4>
+                  <a href={carteSelectionnee.capture_url} target="_blank" rel="noopener noreferrer" className="block cursor-zoom-in group relative rounded-xl overflow-hidden border-2 border-stone-200 shadow-md">
+                    <img src={carteSelectionnee.capture_url} alt="Capture d'écran" className="w-full object-contain group-hover:scale-[1.02] transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                      <span className="text-white font-bold tracking-widest uppercase flex items-center gap-2">
+                        <ExternalLink size={18}/> Ouvrir en taille réelle
+                      </span>
+                    </div>
+                  </a>
+                </div>
+              )}
+
+              {/* La Boîte Noire (Uniquement pour nous !) */}
+              {isInitiated && carteSelectionnee.logs_techniques && carteSelectionnee.logs_techniques !== "[]" && (
+                <div>
+                  <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Lock size={14}/> Boîte Noire du Navigateur (Privé)
+                  </h4>
+                  <div className="bg-stone-900 p-4 rounded-xl overflow-x-auto text-green-400 font-mono text-xs shadow-inner whitespace-pre-wrap leading-relaxed">
+                    {(() => {
+                      try {
+                        const parsed = JSON.parse(carteSelectionnee.logs_techniques);
+                        return parsed.map((log, i) => <div key={i} className="mb-2 pb-2 border-b border-stone-800 last:border-0 last:mb-0 last:pb-0">{`> ${log}`}</div>);
+                      } catch {
+                        return carteSelectionnee.logs_techniques;
+                      }
+                    })()}
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modale de Confirmation de Sceau */}
       <ConfirmModal
         isOpen={confirmSecret.isOpen}
         title={confirmSecret.currentState ? "Lever le Sceau du Secret" : "Apposer le Sceau du Secret"}
