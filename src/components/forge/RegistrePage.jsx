@@ -262,6 +262,7 @@ export default function RegistrePage({ onBack, userProfile }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setCarteSelectionnee(null)}>
           <div className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up" onClick={e => e.stopPropagation()}>
             
+            {/* En-tête de la Modale */}
             <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center shrink-0">
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${carteSelectionnee.type_entree === 'Anomalie' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}>
@@ -271,9 +272,24 @@ export default function RegistrePage({ onBack, userProfile }) {
                   {carteSelectionnee.titre}
                 </h2>
               </div>
-              <button onClick={() => setCarteSelectionnee(null)} className="text-stone-400 hover:text-red-500 bg-white p-2 rounded-full shadow-sm transition-all hover:scale-110 shrink-0">
-                <X size={20} />
-              </button>
+              
+              {/* ✨ L'INCISION : Le groupe de boutons d'action en haut à droite */}
+              <div className="flex items-center gap-2 shrink-0">
+                <button 
+                  onClick={(e) => handleCopyCard(e, carteSelectionnee)} 
+                  className="text-stone-400 hover:text-blue-600 bg-white p-2 rounded-full shadow-sm transition-all hover:scale-110"
+                  title="Copier les détails pour l'IA"
+                >
+                  <Copy size={20} />
+                </button>
+                
+                <button 
+                  onClick={() => setCarteSelectionnee(null)} 
+                  className="text-stone-400 hover:text-red-500 bg-white p-2 rounded-full shadow-sm transition-all hover:scale-110"
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">

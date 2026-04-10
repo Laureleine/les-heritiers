@@ -60,7 +60,8 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
         try {
           containerEl.innerHTML = '';
 
-          // Force les dimensions en pixels avant que DiceBox les lise
+          // DiceBox lit offsetWidth/offsetHeight du conteneur pendant init().
+          // On fixe en pixels pour qu'il lise les bonnes valeurs.
           const w = containerEl.offsetWidth;
           const h = containerEl.offsetHeight;
           containerEl.style.width = w + 'px';
@@ -77,12 +78,10 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
 
           diceBoxRef.current.init()
             .then(() => {
-              setIs3DReady(true);
-              // Remet en % et envoie resize pour que le Worker recalcule ses murs
+              // Remet en layout fluide une fois le monde physique initialisé
               containerEl.style.width = '100%';
               containerEl.style.height = '100%';
-              setTimeout(() => window.dispatchEvent(new Event('resize')), 200);
-              setTimeout(() => window.dispatchEvent(new Event('resize')), 600);
+              setIs3DReady(true);
             })
             .catch(e => {
               console.error("Init 3D échouée :", e);
