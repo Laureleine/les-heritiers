@@ -2,7 +2,14 @@
 
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
-  {
+    {
+    version: '15.7.1 - "La Messagère du Grimoire 🧚‍♀️"',
+    date: '10 Avril 2026',
+    changes: [
+      '🧚‍♀️ **Récompense Communautaire (Gamification) :** Pixie intervient désormais personnellement à l\'écran pour annoncer et célébrer avec les Héritiers la validation de leurs idées ou la résolution de leurs rapports d\'anomalies dans la Forge.',
+      '⚙️ **Mémoire Asynchrone (Base de données) :** Déploiement d\'un interrupteur silencieux (`is_notified_pixie`) dans le registre pour garantir que les joueurs soient notifiés à leur prochaine connexion, tout en empêchant intelligemment les boucles de spam.'
+    ]
+  },{
     version: '15.7.0 - "La Création Spontanée 🪆"',
     date: '10 Avril 2026',
     changes: [
