@@ -43,64 +43,54 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
   const diceBoxRef = useRef(null);
   const [is3DReady, setIs3DReady] = useState(false);
 
-  useEffect(() => {
+useEffect(() => {
     if (!use3DDice || !isOpen || diceBoxRef.current) return;
 
+    // On attend que l'animation d'ouverture soit terminée (ex: 300ms de transition)
     const timer = setTimeout(() => {
       const containerEl = document.getElementById("casino-dice-canvas");
-      const canvasTest = document.createElement('canvas');
-      const gl = canvasTest.getContext('webgl') || canvasTest.getContext('experimental-webgl');
+      if (!containerEl) return;
 
-      if (!gl) {
-        console.warn("WebGL non disponible, dés 3D désactivés");
-        return;
+      try {
+        containerEl.innerHTML = '';
+        
+        // 🛠️ FIX : On récupère les dimensions réelles du tapis vert
+        const rect = containerEl.getBoundingClientRect();
+        
+        diceBoxRef.current = new DiceBox("#casino-dice-canvas", {
+          assetPath: '/assets/dice-box/',
+          theme: diceTheme === 'sang' ? 'rust' : diceTheme === 'améthyste' ? 'purple' : 'default',
+          // 📏 On force les dimensions ici
+          width: rect.width,
+          height: rect.height,
+          themeColor: "#b45309",
+          scale: 8,
+          throwForce: 8,
+          spinForce: 8
+        });
+
+        diceBoxRef.current.init()
+          .then(() => {
+            setIs3DReady(true);
+            // On s'assure que le canvas interne prend bien le 100%
+            const canvas = containerEl.querySelector('canvas');
+            if (canvas) {
+              canvas.style.width = '100%';
+              canvas.style.height = '100%';
+            }
+            window.dispatchEvent(new Event('resize'));
+          })
+          .catch(e => console.error("Init 3D échouée :", e));
+
+      } catch (e) {
+        console.error("Création DiceBox échouée :", e);
       }
-
-      if (containerEl) {
-        try {
-          containerEl.innerHTML = '';
-
-          // Force les dimensions en pixels avant que DiceBox les lise
-          const w = containerEl.offsetWidth;
-          const h = containerEl.offsetHeight;
-          containerEl.style.width = w + 'px';
-          containerEl.style.height = h + 'px';
-
-          diceBoxRef.current = new DiceBox("#casino-dice-canvas", {
-            assetPath: '/assets/dice-box/',
-            theme: diceTheme === 'sang' ? 'rust' : diceTheme === 'améthyste' ? 'purple' : 'default',
-            themeColor: "#b45309",
-            scale: 40,
-            throwForce: 8,
-            spinForce: 8
-          });
-
-          diceBoxRef.current.init()
-            .then(() => {
-              setIs3DReady(true);
-              // Remet en % et envoie resize pour que le Worker recalcule ses murs
-              containerEl.style.width = '100%';
-              containerEl.style.height = '100%';
-              setTimeout(() => window.dispatchEvent(new Event('resize')), 200);
-              setTimeout(() => window.dispatchEvent(new Event('resize')), 600);
-            })
-            .catch(e => {
-              console.error("Init 3D échouée :", e);
-              diceBoxRef.current = null;
-            });
-
-        } catch (e) {
-          console.error("Création DiceBox échouée :", e);
-          diceBoxRef.current = null;
-        }
-      }
-    }, 600);
+    }, 800); // Délai un peu plus long pour être sûr que le modal est stable
 
     return () => clearTimeout(timer);
   }, [use3DDice, diceTheme, isOpen]);
 
   // ✅ Jamais de clear() sur dice-box — le Worker Rapier/Wasm plante systématiquement.
-  // roll() remplace les dés existants automatiquement, pas besoin de purger.
   const handleClear = () => {
     setResult(null);
   };
@@ -139,10 +129,8 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
 
     // ── Chemin 3D (mode NORMAL uniquement) ──────────────────────────────────
     if (use3DDice && is3DReady && mode === 'NORMAL') {
-      // On réinitialise uniquement l'état React — pas de clear() sur dice-box
       setResult(null);
       try {
-        // Délai pour laisser le canvas se stabiliser avant le lancer
         await new Promise(resolve => setTimeout(resolve, 500));
         const results = await diceBoxRef.current.roll(`1${diceType.toLowerCase()}`);
         const face = results.at(0).value;
@@ -303,8 +291,12 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
         {/* 3. LE TAPIS VERT */}
         <div className="relative w-full max-w-4xl felt-table overflow-hidden shadow-2xl" style={{ height: '85vh', borderRadius: '40px', boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 16px #451a03, inset 0 0 20px 20px rgba(0,0,0,0.8)' }}>
 
-          {/* 4. SAS WEBGL */}
-          <div id="casino-dice-canvas" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}></div>
+		{/* 4. SAS WEBGL */}
+		<div 
+		  id="casino-dice-canvas" 
+		  className="absolute inset-0 w-full h-full" // Utilise inset-0 pour bien remplir
+		  style={{ zIndex: 0, pointerEvents: 'none' }}
+		></div>
 
           {/* 5. COUCHE UI */}
           <div style={{ position: 'relative', zIndex: 10, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', pointerEvents: 'none' }}>
