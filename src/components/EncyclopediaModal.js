@@ -1,14 +1,8 @@
 // src/components/EncyclopediaModal.js
-// 8.20.0 // 8.21.0 // 8.29.0 
-// 9.4.0 // 9.10.0
-// 10.0.0 // 10.2.0 // 10.3.0 // 10.4.0 // 10.7.0 // 10.8.0 // 10.9.0
-// 11.1.0 // 11.2.0
-// 12.5.0
-// 13.0.3 // 13.0.4
-// 14.2.0 // 14.12.0
 
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Save, Star, TestTubeDiagonal } from 'lucide-react';
+import { X, Sparkles, Save, Star, TestTubeDiagonal, Search, Plus } from 'lucide-react'; // ✨ Ajouts : Search, Plus
+import QuickForgeModal from './QuickForgeModal'; // ✨ L'import de la Poupée Russe
 import { supabase } from '../config/supabase';
 import BonusBuilder from './BonusBuilder';
 import { logger, showInAppNotification, translateError } from '../utils/SystemeServices';
@@ -34,6 +28,38 @@ export default function EncyclopediaModal({
 
   const { gameData } = useCharacter(); // ✨ CONNEXION AU NUAGE
 
+  const [justificationError, setJustificationError] = useState(false);
+
+  // ✨ INCISION : Les barres de recherche et la gestion de la Poupée Russe
+  const [searchPouvoirs, setSearchPouvoirs] = useState('');
+  const [searchAtouts, setSearchAtouts] = useState('');
+  const [searchCapacites, setSearchCapacites] = useState('');
+
+  // ✨ LE CERVEAU SÉPARÉ : On copie les listes globales pour pouvoir y injecter nos nouvelles créations en temps réel !
+  const [localPouvoirs, setLocalPouvoirs] = useState(allPouvoirs || []);
+  const [localAtouts, setLocalAtouts] = useState(allAtouts || []);
+  const [localCapacites, setLocalCapacites] = useState(allCapacites || []);
+
+  const [quickForge, setQuickForge] = useState({ isOpen: false, type: null });
+ 
+  useEffect(() => { setLocalPouvoirs(allPouvoirs || []); }, [allPouvoirs]);
+  useEffect(() => { setLocalAtouts(allAtouts || []); }, [allAtouts]);
+  useEffect(() => { setLocalCapacites(allCapacites || []); }, [allCapacites]);
+
+  const handleQuickForgeSuccess = (newItem, type) => {
+    if (type === 'fairy_powers') {
+      setLocalPouvoirs(prev => [...prev, newItem]);
+      setProposal(prev => ({ ...prev, pouvoirsIds: [...(prev.pouvoirsIds || []), newItem.id] }));
+    } else if (type === 'fairy_assets') {
+      setLocalAtouts(prev => [...prev, newItem]);
+      setProposal(prev => ({ ...prev, assetsIds: [...(prev.assetsIds || []), newItem.id] }));
+    } else if (type === 'fairy_capacites') {
+      // ✨ L'INCISION : Gestion des Capacités
+      setLocalCapacites(prev => [...prev, newItem]);
+      setProposal(prev => ({ ...prev, capacitesChoixIds: [...(prev.capacitesChoixIds || []), newItem.id] }));
+    }
+  };
+  
   // 🧠 On extrait et formate instantanément les données du Nuage pour le BonusBuilder
   const competencesData = Object.values(gameData.competences || {}).map(c => ({
     id: c.id,
@@ -487,102 +513,138 @@ export default function EncyclopediaModal({
 					/>
                 </div>
 
-                <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                  <label className="block text-sm font-bold text-indigo-900 mb-4">Capacités attachées</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
-                      <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Fixe 1</label>
-                      <select value={proposal.capaciteFixe1 || ''} onChange={(e) => setProposal({ ...proposal, capaciteFixe1: e.target.value })} className="w-full p-2 border border-indigo-200 rounded text-sm bg-indigo-50/30">
-                        <option value="">-- Sélectionner --</option>
-                        {allCapacites.map(cap => <option key={cap.id} value={cap.id}>{cap.nom}</option>)}
-                      </select>
-                    </div>
-                    <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
-                      <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Fixe 2</label>
-                      <select value={proposal.capaciteFixe2 || ''} onChange={(e) => setProposal({ ...proposal, capaciteFixe2: e.target.value })} className="w-full p-2 border border-indigo-200 rounded text-sm bg-indigo-50/30">
-                        <option value="">-- Sélectionner --</option>
-                        {allCapacites.map(cap => <option key={cap.id} value={cap.id}>{cap.nom}</option>)}
-                      </select>
-                    </div>
-                  </div>
+				{/* ✨ LE BLOC DES CAPACITÉS AUGMENTÉ ✨ */}
+				<div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mt-4">
+				  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+					<label className="block text-sm font-bold text-indigo-900">Capacités attachées</label>
+					<button onClick={() => setQuickForge({ isOpen: true, type: 'fairy_capacites' })} className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded flex items-center gap-1 shadow-sm transition-colors shrink-0">
+					  <Plus size={14} /> Créer à la volée
+					</button>
+				  </div>
+
+				  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+					<div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
+					  <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Fixe 1</label>
+					  <select value={proposal.capaciteFixe1 || ''} onChange={(e) => setProposal({ ...proposal, capaciteFixe1: e.target.value })} className="w-full p-2 border border-indigo-200 rounded text-sm bg-indigo-50/30">
+						<option value="">-- Sélectionner --</option>
+						{localCapacites.map(cap => <option key={cap.id} value={cap.id}>{cap.nom}</option>)}
+					  </select>
+					</div>
+					<div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
+					  <label className="block text-xs font-bold text-indigo-800 mb-2">🌟 Capacité Fixe 2</label>
+					  <select value={proposal.capaciteFixe2 || ''} onChange={(e) => setProposal({ ...proposal, capaciteFixe2: e.target.value })} className="w-full p-2 border border-indigo-200 rounded text-sm bg-indigo-50/30">
+						<option value="">-- Sélectionner --</option>
+						{localCapacites.map(cap => <option key={cap.id} value={cap.id}>{cap.nom}</option>)}
+					  </select>
+					</div>
+				  </div>
+
+				  <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
+					<label className="block text-xs font-bold text-indigo-800 mb-2">⭐ Capacités au Choix</label>
+					
+					<div className="relative mb-3">
+					  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-indigo-300" />
+					  <input type="text" placeholder="Rechercher une capacité..." value={searchCapacites} onChange={e => setSearchCapacites(e.target.value)} className="w-full pl-8 pr-3 py-1.5 text-sm border border-indigo-200 rounded-lg outline-none focus:border-indigo-400 bg-indigo-50/30" />
+					</div>
+
+					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+					  {[...localCapacites]
+						.filter(c => c.nom.toLowerCase().includes(searchCapacites.toLowerCase()))
+						.sort((a, b) => {
+						  const aSel = proposal.capacitesChoixIds?.includes(a.id);
+						  const bSel = proposal.capacitesChoixIds?.includes(b.id);
+						  if (aSel && !bSel) return -1;
+						  if (!aSel && bSel) return 1;
+						  return a.nom.localeCompare(b.nom);
+						}).map(cap => (
+						<label key={cap.id} className="flex items-start space-x-2 text-xs cursor-pointer p-1 hover:bg-indigo-50 rounded transition-colors">
+						  <input
+							type="checkbox"
+							checked={proposal.capacitesChoixIds?.includes(cap.id) || false}
+							onChange={(e) => { const newIds = e.target.checked ? [...(proposal.capacitesChoixIds || []), cap.id] : (proposal.capacitesChoixIds || []).filter(id => id !== cap.id); setProposal({ ...proposal, capacitesChoixIds: newIds }); }}
+							className="mt-0.5 shrink-0"
+						  />
+						  <span className="line-clamp-2 leading-tight">{cap.nom}</span>
+						</label>
+					  ))}
+					</div>
+				  </div>
+				</div>
+
+				<div className="bg-rose-50 p-4 rounded-xl border border-rose-100 mt-4">
+				  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+					<label className="block text-sm font-bold text-rose-900">Pouvoirs attachés</label>
+					<button onClick={() => setQuickForge({ isOpen: true, type: 'fairy_powers' })} className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded flex items-center gap-1 shadow-sm transition-colors shrink-0">
+					  <Plus size={14} /> Créer à la volée
+					</button>
+				  </div>
 				  
-                <div className="bg-white p-3 rounded border border-indigo-200 shadow-sm">
-                  <label className="block text-xs font-bold text-indigo-800 mb-2">⭐ Capacités au Choix</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-2">
-                    {[...allCapacites].sort((a, b) => {
-                      const aSel = proposal.capacitesChoixIds?.includes(a.id);
-                      const bSel = proposal.capacitesChoixIds?.includes(b.id);
-                      if (aSel && !bSel) return -1;
-                      if (!aSel && bSel) return 1;
-                      return a.nom.localeCompare(b.nom);
-                    }).map(cap => (
-                      <label key={cap.id} className="flex items-start space-x-2 text-xs cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={proposal.capacitesChoixIds?.includes(cap.id)} 
-                          onChange={(e) => { const newIds = e.target.checked ? [...(proposal.capacitesChoixIds || []), cap.id] : (proposal.capacitesChoixIds || []).filter(id => id !== cap.id); setProposal({ ...proposal, capacitesChoixIds: newIds }); }} 
-                          className="mt-0.5 shrink-0"
-                        />
-                        <span className="line-clamp-2 leading-tight">{cap.nom}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
+				  <div className="relative mb-3">
+					<Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-300" />
+					<input type="text" placeholder="Rechercher un pouvoir par nom..." value={searchPouvoirs} onChange={e => setSearchPouvoirs(e.target.value)} className="w-full pl-8 pr-3 py-1.5 text-sm border border-rose-200 rounded-lg outline-none focus:border-rose-400 bg-white" />
+				  </div>
 
-              <div className="bg-rose-50 p-4 rounded-xl border border-rose-100 mt-4">
-                <label className="block text-sm font-bold text-rose-900 mb-3">Pouvoirs attachés</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-rose-200">
-                  {[...allPouvoirs].sort((a, b) => {
-                    const aSel = proposal.pouvoirsIds?.includes(a.id);
-                    const bSel = proposal.pouvoirsIds?.includes(b.id);
-                    if (aSel && !bSel) return -1;
-                    if (!aSel && bSel) return 1;
-                    return a.nom.localeCompare(b.nom);
-                  }).map(pow => (
-                    <label key={pow.id} className="flex items-start space-x-2 text-xs cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        checked={proposal.pouvoirsIds?.includes(pow.id)} 
-                        onChange={(e) => { const newIds = e.target.checked ? [...(proposal.pouvoirsIds || []), pow.id] : (proposal.pouvoirsIds || []).filter(id => id !== pow.id); setProposal({ ...proposal, pouvoirsIds: newIds }); }} 
-                        className="mt-0.5 shrink-0"
-                      />
-                      <span className="line-clamp-2 leading-tight">{pow.nom}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+				  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-rose-200 custom-scrollbar">
+					{[...localPouvoirs]
+					  .filter(p => p.nom.toLowerCase().includes(searchPouvoirs.toLowerCase()))
+					  .sort((a, b) => {
+						const aSel = proposal.pouvoirsIds?.includes(a.id);
+						const bSel = proposal.pouvoirsIds?.includes(b.id);
+						if (aSel && !bSel) return -1;
+						if (!aSel && bSel) return 1;
+						return a.nom.localeCompare(b.nom);
+					  }).map(pow => (
+					  <label key={pow.id} className="flex items-start space-x-2 text-xs cursor-pointer p-1 hover:bg-rose-100 rounded transition-colors">
+						<input
+						  type="checkbox"
+						  checked={proposal.pouvoirsIds?.includes(pow.id) || false}
+						  onChange={(e) => { const newIds = e.target.checked ? [...(proposal.pouvoirsIds || []), pow.id] : (proposal.pouvoirsIds || []).filter(id => id !== pow.id); setProposal({ ...proposal, pouvoirsIds: newIds }); }}
+						  className="mt-0.5 shrink-0"
+						/>
+						<span className="line-clamp-2 leading-tight">{pow.nom}</span>
+					  </label>
+					))}
+				  </div>
+				</div>
 
-              {/* SÉLECTION DES ATOUTS */}
-              <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-200 mt-4">
-                <label className="block text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
-                  <Star size={16} /> Atouts féériques attachés
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-amber-100 shadow-inner custom-scrollbar">
-                  {[...allAtouts].sort((a, b) => {
-                    const aSel = proposal.atoutsIds?.includes(a.id);
-                    const bSel = proposal.atoutsIds?.includes(b.id);
-                    if (aSel && !bSel) return -1;
-                    if (!aSel && bSel) return 1;
-                    return a.nom.localeCompare(b.nom);
-                  }).map(atout => (
-                    <label key={atout.id} className="flex items-start space-x-2 text-xs cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={proposal.atoutsIds?.includes(atout.id)}
-                        onChange={(e) => {
-                          const newIds = e.target.checked
-                            ? [...(proposal.atoutsIds || []), atout.id]
-                            : (proposal.atoutsIds || []).filter(id => id !== atout.id);
-                          setProposal({ ...proposal, atoutsIds: newIds });
-                        }}
-                        className="mt-0.5 shrink-0"
-                      />
-                      <span className="line-clamp-2 leading-tight font-medium text-gray-700">{atout.nom}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+				{/* SÉLECTION DES ATOUTS */}
+				<div className="bg-amber-50/50 p-4 rounded-xl border border-amber-200 mt-4">
+				  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+					<label className="block text-sm font-bold text-amber-900 flex items-center gap-2">
+					  <Star size={16} /> Atouts féériques attachés
+					</label>
+					<button onClick={() => setQuickForge({ isOpen: true, type: 'fairy_assets' })} className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded flex items-center gap-1 shadow-sm transition-colors shrink-0">
+					  <Plus size={14} /> Créer à la volée
+					</button>
+				  </div>
+
+				  <div className="relative mb-3">
+					<Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-300" />
+					<input type="text" placeholder="Rechercher un atout par nom..." value={searchAtouts} onChange={e => setSearchAtouts(e.target.value)} className="w-full pl-8 pr-3 py-1.5 text-sm border border-amber-200 rounded-lg outline-none focus:border-amber-400 bg-white" />
+				  </div>
+
+				  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded border border-amber-100 shadow-inner custom-scrollbar">
+					{[...localAtouts]
+					  .filter(a => a.nom.toLowerCase().includes(searchAtouts.toLowerCase()))
+					  .sort((a, b) => {
+						const aSel = proposal.assetsIds?.includes(a.id);
+						const bSel = proposal.assetsIds?.includes(b.id);
+						if (aSel && !bSel) return -1;
+						if (!aSel && bSel) return 1;
+						return a.nom.localeCompare(b.nom);
+					  }).map(atout => (
+					  <label key={atout.id} className="flex items-start space-x-2 text-xs cursor-pointer p-1 hover:bg-amber-100 rounded transition-colors">
+						<input
+						  type="checkbox"
+						  checked={proposal.assetsIds?.includes(atout.id) || false}
+						  onChange={(e) => { const newIds = e.target.checked ? [...(proposal.assetsIds || []), atout.id] : (proposal.assetsIds || []).filter(id => id !== atout.id); setProposal({ ...proposal, assetsIds: newIds }); }}
+						  className="mt-0.5 shrink-0"
+						/>
+						<span className="line-clamp-2 leading-tight">{atout.nom}</span>
+					  </label>
+					))}
+				  </div>
+				</div>
             </div>
           ) : (
           /* === FORMULAIRE SIMPLE (Pour Capacités, Pouvoirs, Atouts) === */
@@ -721,6 +783,13 @@ export default function EncyclopediaModal({
           </button>
         </div>
       </div>
+      {/* L'INCISION : La modale Poupée Russe ! */}
+      <QuickForgeModal
+        isOpen={quickForge.isOpen}
+        type={quickForge.type}
+        onClose={() => setQuickForge({ isOpen: false, type: null })}
+        onSuccess={handleQuickForgeSuccess}
+      />
     </div>
   );
 }

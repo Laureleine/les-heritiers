@@ -3,6 +3,16 @@
 // 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
   {
+    version: '15.7.0 - "La Création Spontanée 🪆"',
+    date: '10 Avril 2026',
+    changes: [
+      '🪆 **Création à la Volée (UI/UX) :** Intégration de modales autonomes (Poupées Russes) dans l\'Encyclopédie. Vous pouvez désormais forger des Pouvoirs, Atouts et Capacités à la volée sans jamais interrompre la création de votre Héritage féérique.',
+      '🔍 **Filtre Enchanté (Confort) :** Ajout de barres de recherche dynamiques dans les listes de Magie & Héritage pour retrouver instantanément vos éléments sans saturer l\'interface visuelle.',
+      '⚖️ **Tribunal de la Forge (Modération) :** Les Gardiens disposent d\'une nouvelle interface pour rejeter les tickets avec un verdict officiel, provoquant un archivage automatique pour purger le registre actif.',
+      '🎲 **Moteur Physique Quantique (Hotfix) :** Rapatriement des modèles 3D en local et blindage du buffer WebAssembly (Rapier). Les dés rebondissent enfin dans les bonnes limites physiques sans faire crasher le moteur WebGL.',
+      '📐 **Mécanique des Fluides (CSS) :** Résolution du "Syndrome du Flexbox Infini" (`min-h-0`) sur le Registre de la Forge. L\'ascenseur vertical est de nouveau parfaitement fonctionnel sur ordinateur comme sur mobile.'
+    ]
+  },  {
     version: '15.6.17 - "Les Secrets de l\'Atelier 🗝️"',
     date: '9 Avril 2026',
     changes: [
