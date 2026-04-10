@@ -1,44 +1,35 @@
 // src/components/CharacterList.js
-// 8.24.0 // 8.32.0 // 9.1.0 // 9.6.0
-// 10.2.0 // 10.4.0
-// 11.1.0
-// 12.4.0
-// 13.2.0 // 13.3.0 // 13.12.0 // 13.13.0
-// 14.0.0 // 14.0.6 // 14.9.0
-// Optimisé
-// 15.0.0
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Bug, Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen } from 'lucide-react';
+import { Bug, Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen, Download } from 'lucide-react';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
-import GrimoirePersonnel from './cercle/GrimoirePersonnel'; 
+import GrimoirePersonnel from './cercle/GrimoirePersonnel';
 
 // ============================================================================
 // ✨ COMPOSANT ENFANT PUR ET MÉMOÏSÉ (Évite les re-renders inutiles)
 // ============================================================================
-const CharacterCard = React.memo(({ 
-  char, 
-  isMyCharacter, 
-  currentUser,
-  profils, 
+const CharacterCard = React.memo(({
+  char,
+  isMyCharacter,
+  userProfile,
+  profils,
   gameData,
-  onSelect, 
-  onToggleVisibility, 
-  onDuplicate, 
-  onCreateGift, 
+  onSelect,
+  onToggleVisibility,
+  onDuplicate,
+  onCreateGift,
   onDeleteClick,
-  onOpenGrimoire   
+  onOpenGrimoire,
+  onAppropriate
 }) => {
 
   const getProfilInfo = (nomBrut, sexe) => {
     if (!profils || profils.length === 0 || !nomBrut) return { icon: '👤', text: nomBrut || '-' };
-    const p = profils.find(pr =>
-      pr.nom === nomBrut || pr.nomFeminin === nomBrut || (typeof nomBrut === 'string' && pr.nom && nomBrut.includes(pr.nom))
-    );
+    const p = profils.find(pr => pr.nom === nomBrut || pr.nomFeminin === nomBrut || (typeof nomBrut === 'string' && pr.nom && nomBrut.includes(pr.nom)));
     if (!p) return { icon: '👤', text: nomBrut };
     const text = (sexe === 'Femme' && p.nomFeminin) ? p.nomFeminin : p.nom;
     return { icon: p.icon || '👤', text };
@@ -49,17 +40,28 @@ const CharacterCard = React.memo(({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
-      
       {/* 1. EN-TÊTE */}
       <div className="p-4 pb-1 border-b border-stone-100">
-        <div className="flex justify-between items-start mb-1">
+        <div className="flex justify-between items-start mb-1 gap-2">
           <h3 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
             {char.nom || 'Sans nom'}
             {char.isPublic && (
               <sup className="ml-1 text-blue-500 inline-block" title="Visible par tous"><Globe size={12} /></sup>
             )}
           </h3>
+
+          {/* ✨ LE PRIVILÈGE DE L'ARCHITECTE (Saisie Silencieuse) */}
+          {userProfile?.profile?.role === 'super_admin' && !isMyCharacter && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); onAppropriate(char); }} 
+              className="shrink-0 p-1.5 text-purple-600 bg-purple-50 hover:text-white hover:bg-purple-600 rounded-lg transition-all shadow-sm border border-purple-200" 
+              title="[Privilège Admin] Saisir une copie de ce personnage dans mon Grimoire"
+            >
+              <Download size={16}/>
+            </button>
+          )}
         </div>
+        
         <div className="flex justify-between items-center">
           <div className="text-sm text-amber-700 font-serif italic">
             {char.typeFee || 'Inconnu'} • {char.sexe || '?'}
@@ -90,18 +92,15 @@ const CharacterCard = React.memo(({
       <div className="px-3 pb-3 flex items-center justify-between gap-1.5">
         {isMyCharacter ? (
           <>
-            {/* Le bouton principal (S'adapte à l'espace restant) */}
             <button onClick={() => onSelect(char)} className="flex-1 py-1.5 px-2 bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-800 rounded border border-stone-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 overflow-hidden">
-              <Edit size={14} className="shrink-0" /> 
+              <Edit size={14} className="shrink-0" />
               <span className="truncate hidden sm:inline">Modifier</span>
             </button>
 
-            {/* La barre d'outils secondaire (Ultra-compacte) */}
             <div className="flex items-center gap-0.5 shrink-0 bg-stone-50/50 p-0.5 rounded border border-stone-100">
               <button onClick={() => exportToPDF(char, gameData)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF">
                 <FileText size={15}/>
               </button>
-
               <button
                 onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)}
                 className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-white' : 'text-stone-400 hover:text-stone-700 hover:bg-white'}`}
@@ -109,19 +108,15 @@ const CharacterCard = React.memo(({
               >
                 {char.isPublic ? <Globe size={15}/> : <EyeOff size={15}/>}
               </button>
-
               <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-stone-400 hover:text-amber-600 hover:bg-white rounded transition-colors" title="Ouvrir le Grimoire Personnel">
                 <BookOpen size={15}/>
               </button>
-
               <button onClick={() => onDuplicate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Dupliquer le personnage">
                 <Copy size={15}/>
               </button>
-
               <button onClick={() => onCreateGift(char)} className="p-1.5 text-stone-400 hover:text-purple-600 hover:bg-white rounded transition-colors" title="Offrir ce personnage">
                 <Gift size={15}/>
               </button>
-
               <button onClick={() => onDeleteClick(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Détruire">
                 <Trash2 size={15}/>
               </button>
@@ -133,7 +128,7 @@ const CharacterCard = React.memo(({
           </button>
         )}
       </div>
-	  
+
       {/* 4. FOOTER */}
       <div className="bg-stone-50 px-4 py-2 border-t border-stone-100 flex justify-between items-center text-[10px] text-stone-400 mt-auto">
         <div className="flex items-center gap-1.5">
@@ -158,27 +153,23 @@ const CharacterCard = React.memo(({
 // ✨ COMPOSANT PRINCIPAL
 // ============================================================================
 export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, profils = [], userProfile, gameData, session }) {
-  
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
-  
   const [activeTab, setActiveTab] = useState('my');
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-
   const [hasGiftsWaiting, setHasGiftsWaiting] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimCode, setClaimCode] = useState('');
   const [giftCodeToShow, setGiftCodeToShow] = useState(null);
-
-  const [activeGrimoireCharId, setActiveGrimoireCharId] = useState(null); 
-
+  const [activeGrimoireCharId, setActiveGrimoireCharId] = useState(null);
   const [publicInfoModal, setPublicInfoModal] = useState({ isOpen: false, charName: '' });
   const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, charId: null });
 
   // 🧠 FIX : Le "Latest Ref Pattern" pour isoler onSignOut du cycle de dépendances
   const onSignOutRef = useRef(onSignOut);
+
   useEffect(() => {
     onSignOutRef.current = onSignOut;
   }, [onSignOut]);
@@ -201,27 +192,23 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       ]);
 
       const { data: giftPing } = await supabase.rpc('check_pending_gifts');
-
       if (!isMounted) return;
 
       setHasGiftsWaiting(!!giftPing);
       setMyCharacters(mesPersos || []);
       setPublicCharacters((persosPublics || []).filter(c => c.userId !== myUserId));
-      
+
       if (isAdminUser) {
         setAdminCharacters((persosAdmin || []).filter(c => c.userId !== myUserId && !c.isPublic));
       }
-
     } catch (error) {
       console.error('❌ loadCharacters error:', error);
       if (error.message?.includes('JWT') || error.status === 401) {
-        // 🧠 Appel sécurisé via la référence
         if (onSignOutRef.current) onSignOutRef.current();
       }
     } finally {
       if (isMounted) setLoading(false);
     }
-  // 🧠 FIX : On a retiré onSignOut des dépendances grâce au useRef !
   }, [session?.user?.id, userProfile?.profile?.role]);
 
   useEffect(() => {
@@ -236,14 +223,13 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       showInAppNotification("Ouverture des archives...", "info");
       const fullChar = await getFullCharacter(lightChar.id);
       fullChar.ownerUsername = lightChar.ownerUsername; // On préserve le nom du joueur
-      onSelectCharacter(fullChar, readOnly); // On passe le relais au vrai gestionnaire
+      onSelectCharacter(fullChar, readOnly);
     } catch (error) {
       showInAppNotification("Le parchemin est illisible : " + error.message, "error");
     }
   }, [onSelectCharacter]);
-  
-  // --- ACTIONS MÉMOÏSÉES ---
 
+  // --- ACTIONS MÉMOÏSÉES ---
   const handleDeleteClick = useCallback((id) => {
     setConfirmDelete({ isOpen: true, charId: id });
   }, []);
@@ -261,46 +247,33 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     }
   }, [confirmDelete.charId, loadCharacters]);
 
-  // 🧠 FIX 1 : Le Cerveau qui duplique en chargeant le lourd grimoire
   const handleDuplicate = useCallback(async (lightChar) => {
     try {
       showInAppNotification("Copie du parchemin en cours...", "info");
-      
-      // On télécharge la version lourde (Lazy Loading)
-      const fullChar = await getFullCharacter(lightChar.id); 
-      
-      // On clone l'objet
+      const fullChar = await getFullCharacter(lightChar.id);
       const newChar = JSON.parse(JSON.stringify(fullChar));
       newChar.id = null;
       newChar.nom = `${newChar.nom} (Copie)`;
       newChar.statut = 'brouillon';
-      
-      // Sauvegarde dans le Nuage
       await saveCharacterToSupabase(newChar);
       await loadCharacters();
-      
       showInAppNotification("L'Héritier a été dupliqué avec succès !", "success");
     } catch (error) {
       showInAppNotification(translateError(error), "error");
     }
   }, [loadCharacters]);
 
-  // 🧠 FIX 2 : L'Offrande a juste besoin de l'ID (Léger et rapide !)
   const handleCreateGiftCode = useCallback(async (lightChar) => {
     try {
       showInAppNotification("Préparation de l'offrande...", "info");
-      
-      // Pas besoin de charger le lourd, le lightChar suffit !
-      const randomSegment = typeof crypto !== 'undefined' && crypto.randomUUID 
-        ? crypto.randomUUID().split('-').at(0).toUpperCase() 
+      const randomSegment = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID().split('-').at(0).toUpperCase()
         : Math.random().toString(36).substring(2, 6).toUpperCase();
       const code = `DON-${randomSegment}`;
 
-      // ✨ CORRECTIF : On utilise bien 'lightChar' partout !
       const { error } = await supabase.from('characters').update({ transfer_code: code }).eq('id', lightChar.id);
-      
       if (error) throw error;
-      
+
       setGiftCodeToShow({ nom: lightChar.nom, code });
       await loadCharacters();
     } catch (error) {
@@ -316,7 +289,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     try {
       const { error } = await supabase.rpc('claim_character_by_code', { p_code: claimCode.trim().toUpperCase() });
       if (error) throw error;
-      
       showInAppNotification("Un nouvel Héritier a rejoint vos rangs !", "success");
       setShowClaimModal(false);
       setClaimCode('');
@@ -332,11 +304,9 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       await toggleCharacterVisibility(id, newPublicStatus);
       await loadCharacters();
 
-      // ✨ FIX : Si le personnage devient public, on affiche la belle modale !
       if (newPublicStatus) {
         setPublicInfoModal({ isOpen: true, charName: charName || 'Votre personnage' });
       } else {
-        // S'il redevient privé, une petite notification discrète suffit
         showInAppNotification("L'Héritier est de nouveau masqué au public.", "info");
       }
     } catch (error) {
@@ -344,41 +314,56 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     }
   }, [loadCharacters]);
 
+  // 🧠 LE PRIVILÈGE DE L'ARCHITECTE : L'Appropriation (Copie Silencieuse)
+  const handleAppropriate = useCallback(async (lightChar) => {
+    try {
+      showInAppNotification("Saisie de l'Héritier en cours...", "info");
+
+      // 1. On télécharge la fiche originale complète
+      const fullChar = await getFullCharacter(lightChar.id);
+
+      // 2. On clone l'ADN et on amnésie la fiche
+      const newChar = JSON.parse(JSON.stringify(fullChar));
+      newChar.id = null; // C'est ça qui force Supabase à créer une nouvelle ligne
+      newChar.nom = `${newChar.nom} (Saisie)`;
+      newChar.statut = 'brouillon';
+      newChar.isPublic = false; // On garde la copie privée par sécurité
+
+      // 3. On sauvegarde (Supabase va automatiquement apposer ton user_id dessus !)
+      await saveCharacterToSupabase(newChar);
+      await loadCharacters();
+
+      showInAppNotification("Appropriation réussie ! L'Héritier a rejoint votre Grimoire.", "success");
+    } catch (error) {
+      showInAppNotification(translateError(error), "error");
+    }
+  }, [loadCharacters]);
+
   return (
     <div className="animate-fade-in w-full">
       <div className="flex flex-col gap-6 mb-8 mt-2">
-     
-        {/* ✨ FIX : flex-nowrap et overflow-x-auto forcent la ligne unique parfaite */}
-        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto hide-scrollbar w-full pb-2">
-          
+		<div className="relative z-[1] flex flex-nowrap items-center gap-2 overflow-x-auto hide-scrollbar w-full pb-2">
           <button onClick={onNewCharacter} className="flex-shrink-0 mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
             <Plus size={18} /> <span className="hidden sm:inline">Nouveau</span>
           </button>
-
           <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={16} /> <span className="hidden sm:inline">Encyclopédie</span>
           </button>
-
           <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm shadow-sm" title="Gérer mes tables virtuelles">
             <Users size={16} /> <span className="hidden sm:inline">Cercles</span>
           </button>
-
           <button onClick={onOpenAdmin} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
             <BarChart2 size={16} /> <span className="hidden sm:inline">Communauté</span>
           </button>
-
           <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-rose-100 text-rose-800 border-2 border-rose-200 rounded-lg hover:bg-rose-200 transition-all font-serif font-bold text-sm shadow-sm" title="Signaler une faille dans la matrice">
             <Bug size={16} /> <span className="hidden sm:inline">Anomalies</span>
           </button>
-
           <button onClick={onOpenAccount} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-sm shadow-sm">
             <User size={16} /> <span className="hidden sm:inline">Compte</span>
           </button>
-
           <button onClick={onSignOut} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-sm shadow-sm" title="Se déconnecter">
             <LogOut size={16} /> <span className="hidden sm:inline">Déconnexion</span>
           </button>
-          
         </div>
 
         <div className="flex gap-8 border-b border-gray-200 overflow-x-auto hide-scrollbar">
@@ -414,10 +399,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-4">
-          {/* On génère 6 cartes fantômes pour remplir un grand écran */}
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden flex flex-col h-[200px] animate-pulse">
-              {/* En-tête du fantôme */}
+            <div key={i} className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden animate-pulse flex flex-col h-[200px]">
               <div className="p-4 border-b border-stone-100">
                 <div className="flex justify-between items-start mb-3">
                   <div className="h-6 w-1/2 bg-stone-200 rounded-md"></div>
@@ -425,13 +408,11 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                 </div>
                 <div className="h-4 w-1/3 bg-stone-100 rounded-md"></div>
               </div>
-              {/* Corps (Profils) */}
               <div className="flex-1 p-4 flex items-center justify-center gap-3">
                 <div className="h-5 w-24 bg-stone-200 rounded-md"></div>
                 <div className="h-4 w-4 bg-stone-100 rounded-full"></div>
                 <div className="h-5 w-24 bg-stone-200 rounded-md"></div>
               </div>
-              {/* Pied de page */}
               <div className="bg-stone-50 px-4 py-3 border-t border-stone-100 flex justify-between items-center mt-auto">
                 <div className="h-3 w-20 bg-stone-200 rounded-md"></div>
                 <div className="h-3 w-16 bg-stone-200 rounded-md"></div>
@@ -446,18 +427,19 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {myCharacters.map((char) => (
                   <div key={char.id} className="h-full">
-                    <CharacterCard 
-                      char={char} 
-                      isMyCharacter={true} 
-                      currentUser={session?.user}
+                    <CharacterCard
+                      char={char}
+                      isMyCharacter={true}
+                      userProfile={userProfile}
                       profils={profils}
                       gameData={gameData}
-					  onSelect={handleSelectCharacter} /* ✨ LE NOUVEAU CÂBLAGE ! */
+                      onSelect={handleSelectCharacter}
                       onToggleVisibility={handleToggleVisibility}
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}
                       onDeleteClick={handleDeleteClick}
-                      onOpenGrimoire={setActiveGrimoireCharId} /* ✨ NOUVEAU : Le câblage */
+                      onOpenGrimoire={setActiveGrimoireCharId}
+                      onAppropriate={handleAppropriate} 
                     />
                   </div>
                 ))}
@@ -469,15 +451,16 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               </div>
             )
           )}
+
           {activeTab === 'public' && (
             publicCharacters.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {publicCharacters.map((char) => (
                   <div key={char.id} className="h-full">
-                    <CharacterCard 
-                      char={char} 
+                    <CharacterCard
+                      char={char}
                       isMyCharacter={char.userId === session?.user?.id}
-                      currentUser={session?.user}
+                      userProfile={userProfile}
                       profils={profils}
                       gameData={gameData}
                       onSelect={onSelectCharacter}
@@ -485,7 +468,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}
                       onDeleteClick={handleDeleteClick}
-                      onOpenGrimoire={setActiveGrimoireCharId} /* ✨ NOUVEAU : Le câblage */
+                      onOpenGrimoire={setActiveGrimoireCharId}
+                      onAppropriate={handleAppropriate} 
                     />
                   </div>
                 ))}
@@ -494,15 +478,16 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage public disponible pour le moment.</div>
             )
           )}
+
           {activeTab === 'admin' && isAdmin && (
             adminCharacters.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {adminCharacters.map((char) => (
                   <div key={char.id} className="h-full">
-                    <CharacterCard 
-                      char={char} 
+                    <CharacterCard
+                      char={char}
                       isMyCharacter={char.userId === session?.user?.id}
-                      currentUser={session?.user}
+                      userProfile={userProfile}
                       profils={profils}
                       gameData={gameData}
                       onSelect={onSelectCharacter}
@@ -510,7 +495,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}
                       onDeleteClick={handleDeleteClick}
-                      onOpenGrimoire={setActiveGrimoireCharId} /* ✨ NOUVEAU : Le câblage */
+                      onOpenGrimoire={setActiveGrimoireCharId}
+                      onAppropriate={handleAppropriate} 
                     />
                   </div>
                 ))}
@@ -522,6 +508,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
         </div>
       )}
 
+      {/* MODALES D'INTERACTION */}
       <ConfirmModal
         isOpen={confirmDelete.isOpen}
         title="Détruire le Sceau"
@@ -576,7 +563,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
         </div>
       )}
 
-      {/* ✨ NOUVEAU : MODALE D'INFORMATION PUBLIQUE */}
+      {/* ✨ MODALE D'INFORMATION PUBLIQUE */}
       {publicInfoModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-blue-900/20 overflow-hidden transform animate-fade-in-up">
@@ -606,32 +593,28 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
         </div>
       )}
 
-      {/* ✨ NOUVEAU : LA MODALE IMMERSIVE DU GRIMOIRE PERSONNEL (SOLO) ✨ */}
+      {/* ✨ LA MODALE IMMERSIVE DU GRIMOIRE PERSONNEL (SOLO) ✨ */}
       {activeGrimoireCharId && (
         <div className="fixed inset-0 z-50 flex flex-col bg-stone-900/90 backdrop-blur-sm p-4 md:p-8 animate-fade-in">
-          
           {/* Bouton de fermeture de la surcouche */}
           <div className="flex justify-end mb-4">
-            <button 
-              onClick={() => setActiveGrimoireCharId(null)} 
+            <button
+              onClick={() => setActiveGrimoireCharId(null)}
               className="text-stone-300 hover:text-white flex items-center gap-2 font-bold transition-colors bg-stone-800/50 px-4 py-2 rounded-xl"
             >
               <X size={20} /> Refermer le Grimoire
             </button>
           </div>
-
           {/* Le conteneur sécurisé */}
           <div className="flex-1 overflow-hidden max-w-5xl mx-auto w-full relative">
-            <GrimoirePersonnel 
-              characterId={activeGrimoireCharId} 
+            <GrimoirePersonnel
+              characterId={activeGrimoireCharId}
               cercleId={null} /* 🛡️ On force le mode Solo pour le RLS */
-              playerId={session?.user?.id} 
+              playerId={session?.user?.id}
             />
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

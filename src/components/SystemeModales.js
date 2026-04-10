@@ -1,5 +1,4 @@
-// 10.7.0
-// 12.3.0
+// src/components/SystemeModales.js
 
 import React, { useState, useEffect } from 'react';
 import { Download, X, Smartphone, Share, AlertCircle, CheckCircle, Info, BookOpen, Check } from 'lucide-react';
@@ -117,7 +116,7 @@ export function InAppNotification() {
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2 max-w-md">
       {notifications.map(notif => (
-        <div key={notif.id} className={`p-4 rounded-lg border-2 shadow-lg animate-slide-in ${getColors(notif.type)}`}>
+        <div key={notif.id} className={`pointer-events-auto p-4 rounded-lg border-2 shadow-lg animate-slide-in ${getColors(notif.type)}`}>
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0">{getIcon(notif.type)}</div>
             <div className="flex-1 font-serif">{notif.message}</div>
