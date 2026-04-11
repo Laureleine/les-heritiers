@@ -2,6 +2,13 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.1 - "L\'Éveil du Noyau ⚙️"',
+    date: '11 Avril 2026',
+    changes: [
+      '🐛 **Noyau PWA (Hotfix) :** Résolution d\'un interblocage (Deadlock) critique figeant l\'application sur l\'écran "Allumage du Noyau..." lors d\'une réouverture rapide depuis un téléphone.',
+      '⚙️ **Cycle de Vie (Architecture) :** Le sas d\'authentification libère désormais rigoureusement ses verrous de sécurité en cas de reconnexion asynchrone fulgurante, garantissant un accès fluide et instantané au Grimoire.'
+    ]
+  },  {
     version: '15.8.0 - "Le Sceau du Télégraphe ✉️"',
     date: '11 Avril 2026',
     changes: [
