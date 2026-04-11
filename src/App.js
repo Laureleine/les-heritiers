@@ -162,6 +162,10 @@ function App() {
     return () => {
       mounted = false;
       clearTimeout(safetyTimer);
+      // ✨ LE VACCIN ANTI-DEADLOCK : On rend les clés de la porte !
+      // Si React coupe ce useEffect en plein vol (à cause d'un SIGNED_IN intempestif),
+      // le prochain useEffect aura l'autorisation de s'exécuter.
+      isInitializingRef.current = false;
     };
   }, [isInitialized, setGameData, initTrigger]);
 
