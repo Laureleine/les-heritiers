@@ -1,0 +1,63 @@
+{
+  "id": "a737c1ce-f8dd-4293-93fb-85537a422473",
+  "userId": "04ae6db4-ab6d-4d33-9001-3b6419c85d37",
+  "nom": "Marie Josèphe Grobis",
+  "sexe": "Femme",
+  "nomFeerique": "",
+  "genreHumain": "",
+  "traitsFeeriques": [],
+  "typeFee": "Bastet",
+  "anciennete": "",
+  "apparence": "",
+  "taille": "",
+  "poids": "",
+  "caracteristiques": {},
+  "profils": {
+    "majeur": {
+      "nom": "Aventurier",
+      "trait": "Tenace",
+      "competences": [
+        "Conduite",
+        "Mouvement",
+        "Ressort",
+        "Survie"
+      ]
+    },
+    "mineur": {
+      "nom": "Roublard",
+      "trait": "Malin/Maligne",
+      "competences": [
+        "Comédie",
+        "Discrétion",
+        "Larcin",
+        "Monde du crime"
+      ]
+    },
+    "activiteDomaine": "Braconnier"
+  },
+  "competencesLibres": {
+    "rangs": {},
+    "choixPredilection": {},
+    "choixSpecialite": {},
+    "choixSpecialiteUser": {},
+    "specialiteMetier": null
+  },
+  "competencesFutiles": {
+    "rangs": {},
+    "choixPredilection": {},
+    "personnalisees": []
+  },
+  "capaciteChoisie": "",
+  "pouvoirs": [],
+  "atouts": [],
+  "vieSociale": {},
+  "fortune": 0,
+  "isPublic": false,
+  "statut": "scelle",
+  "xp_total": 0,
+  "xp_depense": 0,
+  "ownerUsername": "Inconnu",
+  "data": {},
+  "created_at": "2026-03-31T10:44:35.852482+00:00",
+  "updated_at": "2026-03-31T14:35:14.128087+00:00"
+}

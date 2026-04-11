@@ -25,7 +25,8 @@ const CharacterCard = React.memo(({
   onCreateGift,
   onDeleteClick,
   onOpenGrimoire,
-  onAppropriate
+  onAppropriate,
+  onExportJson 
 }) => {
 
   const getProfilInfo = (nomBrut, sexe) => {
@@ -53,12 +54,8 @@ const CharacterCard = React.memo(({
 
           {/* ✨ LE PRIVILÈGE DE L'ARCHITECTE (Saisie Silencieuse) */}
           {userProfile?.profile?.role === 'super_admin' && !isMyCharacter && (
-            <button 
-              onClick={(e) => { e.stopPropagation(); onAppropriate(char); }} 
-              className="shrink-0 p-1.5 text-purple-600 bg-purple-50 hover:text-white hover:bg-purple-600 rounded-lg transition-all shadow-sm border border-purple-200" 
-              title="[Privilège Admin] Saisir une copie de ce personnage dans mon Grimoire"
-            >
-              <Download size={16}/>
+			<button onClick={() => onExportJson(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN complet (Format JSON)">
+               <Download size={16}/>
             </button>
           )}
         </div>
@@ -344,6 +341,19 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     }
   }, [loadCharacters]);
 
+  // 🧠 LE SÉQUENCEUR D'ADN ASYNCHRONE
+  const handleExportJson = useCallback(async (lightChar) => {
+    try {
+      showInAppNotification("Séquençage de l'ADN en cours...", "info");
+      // On télécharge la fiche VRAIMENT complète depuis le Nuage
+      const fullChar = await getFullCharacter(lightChar.id);
+      // On envoie la fiche complète à notre utilitaire de téléchargement
+      exportCharacter(fullChar);
+    } catch (error) {
+      showInAppNotification("Impossible d'extraire l'ADN : " + translateError(error), "error");
+    }
+  }, []);
+  
   return (
     <div className="animate-fade-in w-full">
       <div className="flex flex-col gap-6 mb-8 mt-2">
@@ -444,7 +454,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onCreateGift={handleCreateGiftCode}
                       onDeleteClick={handleDeleteClick}
                       onOpenGrimoire={setActiveGrimoireCharId}
-                      onAppropriate={handleAppropriate} 
+                      onAppropriate={handleAppropriate}
+					  onExportJson={handleExportJson}
                     />
                   </div>
                 ))}
@@ -475,6 +486,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onDeleteClick={handleDeleteClick}
                       onOpenGrimoire={setActiveGrimoireCharId}
                       onAppropriate={handleAppropriate} 
+					  onExportJson={handleExportJson}
                     />
                   </div>
                 ))}
@@ -501,7 +513,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onCreateGift={handleCreateGiftCode}
                       onDeleteClick={handleDeleteClick}
                       onOpenGrimoire={setActiveGrimoireCharId}
-                      onAppropriate={handleAppropriate} 
+                      onAppropriate={handleAppropriate}
+					  onExportJson={handleExportJson}
                     />
                   </div>
                 ))}
