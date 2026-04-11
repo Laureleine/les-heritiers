@@ -137,12 +137,15 @@ function App() {
         }
 
         loadHeavyLoreData(coreData).then(heavyData => {
-          if (heavyData && mounted) {
+          // ✨ LE FIX : On retire le "&& mounted" qui assassinait la promesse !
+          // App.js ne se démonte jamais, il est donc 100% sûr de mettre à jour l'état du jeu ici,
+          // même si le useEffect d'origine a été nettoyé entre-temps.
+          if (heavyData) {
             setGameData(heavyData);
             console.log("✨ Moteur d'Érudition connecté : Lore injecté !");
           }
         });
-
+		
         isInitializingRef.current = false;
       } catch (error) {
         console.error("❌ Init failed:", error);
@@ -164,26 +167,28 @@ function App() {
 
   // --- ÉCOUTEUR D'AUTHENTIFICATION ---
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, currentSession) => {
-        if (!currentSession) {
-          setSession(null);
-          setUserProfile(null);
-          setGlobalLoading(false);
-          setIsInitialized(false);
-          isInitializingRef.current = false; 
-        } else if (_event === 'SIGNED_IN') {
-          if (!sessionRef.current) {
-            setIsInitialized(false);
-            setGlobalLoading(true);
-            setInitTrigger(prev => prev + 1); 
-          }
-        }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      
+      if (event === 'SIGNED_IN') {
+        console.log("✨ Nouvel Héritier connecté ! Redémarrage du Noyau...");
+        // ✨ LE VACCIN : On désinitialise l'app et on incrémente le trigger.
+        // Cela va forcer le grand useEffect 'initializeApp' situé plus haut à se relancer
+        // pour télécharger le lourd Lore de l'Encyclopédie !
+        setIsInitialized(false);
+        setInitTrigger(prev => prev + 1);
+      } 
+      
+      else if (event === 'SIGNED_OUT') {
+        setSession(null);
+        setUserProfile(null);
+        setIsInitialized(false);
       }
-    );
+      
+    });
+
     return () => subscription.unsubscribe();
   }, []);
-
+  
   // --- TRAQUEUR D'ACTIVITÉ ---
   useEffect(() => {
     if (!session?.user?.id) return;

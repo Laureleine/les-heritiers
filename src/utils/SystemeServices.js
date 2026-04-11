@@ -1,7 +1,4 @@
-// 10.7.0
-// 12.0.0
-// 15.1.0
-
+// src/utils/SystemeServices.js
 import { supabase } from '../config/supabase';
 
 // ============================================================================
@@ -14,7 +11,9 @@ export const translateError = (error) => {
   const code = error.code || '';
   const msgLower = msg.toLowerCase();
 
-
+  // ✨ LA NOUVELLE INCISION : Interception du délai de sécurité anti-spam
+  if (msgLower.includes('for security purposes') || msgLower.includes('request this after')) return "Les Gardiens du Silence surveillent ce canal. Par sécurité, faites profil bas et patientez une minute avant d'envoyer une nouvelle missive.";
+  if (msgLower.includes('email') && msgLower.includes('invalid')) return "Les pigeons voyageurs tournent en rond ! L'adresse électronique fournie semble invalide.";
   if (msgLower.includes('invalid login credentials')) return "Les Docteurs refusent cet accès. Vos identifiants sont erronés.";
   if (msgLower.includes('user already registered')) return "Ce nom est déjà gravé dans nos registres. Veuillez vous connecter.";
   if (msgLower.includes('rate limit exceeded') || msg.includes('Too many requests')) return "Les rouages du Télégraphe surchauffent ! Attendez quelques instants avant de réessayer.";

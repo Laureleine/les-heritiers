@@ -1,9 +1,3 @@
-// src/components/Auth.js
-// 9.6.0
-// 10.4.0
-// 11.1.0
-// 13.11.0
-
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
 import { APP_VERSION, BUILD_DATE } from '../version';
@@ -18,7 +12,17 @@ export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
   const [resetMode, setResetMode] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
+  const handleModeSwitch = (modeInscription) => {
+    setIsSignUp(modeInscription);
+    setEmailSent(false); // ✨ On réinitialise l'écran de succès
+    setEmail('');
+    setPassword('');
+    setUsername('');
+    setError('');
+  };
+  
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
@@ -35,7 +39,6 @@ export default function Auth() {
       } 
       else if (isSignUp) {
         if (!username.trim()) throw new Error("Le nom d'utilisateur est requis.");
-        // ✨ FIX 3 : Validation côté client pour économiser une requête réseau !
         if (password.length < 6) throw new Error("Le mot de passe doit contenir au moins 6 caractères.");
 
         const { data, error } = await supabase.auth.signUp({
@@ -47,29 +50,34 @@ export default function Auth() {
             }
           }
         });
+
         if (error) throw error;
-        showInAppNotification("Inscription réussie ! Vérifiez votre email pour confirmer.", "success");
+
+        // ✨ LE DÉTECTEUR DE MENSONGE (Anti-Énumération)
+        if (data?.user && data.user.identities && data.user.identities.length === 0) {
+           throw new Error("User already registered");
+        }
+
+        // ✨ LE FIX : On bascule sur l'écran d'attente du Télégraphe !
+        setEmailSent(true);
       } 
       else {
-        // ✨ FIX 1 & 2 : On fait confiance à React et Supabase !
+        // ✨ On fait confiance à React et Supabase !
         // La fonction onAuthStateChange (dans App.js) écoute en permanence et fermera cet écran naturellement.
-        // Adieu le console.log bavard et le window.location.href destructeur !
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        
         if (error) throw error;
       }
     } catch (error) {
       console.error("❌ Erreur Auth:", error);
-      setError(translateError(error)); 
+      setError(translateError(error));
     } finally {
       setLoading(false);
     }
   };
 
-  // ✨ FIX 4 : On rend le texte du bouton parfaitement cohérent avec l'action en cours
   const getButtonText = () => {
     if (loading) {
       return resetMode ? 'Envoi en cours...' : isSignUp ? 'Inscription...' : 'Connexion...';
@@ -90,11 +98,12 @@ export default function Auth() {
         </div>
 
         <div className="p-8">
+          
           {/* Onglets Connexion/Inscription */}
           {!resetMode && (
             <div className="flex mb-6 bg-gray-100 p-1 rounded-lg">
               <button
-                onClick={() => setIsSignUp(false)}
+                onClick={() => handleModeSwitch(false)}
                 className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${
                   !isSignUp ? 'bg-white text-amber-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 }`}
@@ -102,7 +111,7 @@ export default function Auth() {
                 Connexion
               </button>
               <button
-                onClick={() => setIsSignUp(true)}
+                onClick={() => handleModeSwitch(true)}
                 className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${
                   isSignUp ? 'bg-white text-amber-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 }`}
@@ -112,77 +121,102 @@ export default function Auth() {
             </div>
           )}
 
-          <form onSubmit={handleAuth} className="space-y-4">
-            {/* Username (inscription seulement) */}
-            {isSignUp && !resetMode && (
-              <div className="relative">
-                <User className="absolute left-3 top-3 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Nom d'utilisateur"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  required
-                />
+          {emailSent ? (
+            /* ✨ NOUVEL ÉCRAN : Attente de la validation par email */
+            <div className="text-center py-8 animate-fade-in">
+              <div className="bg-amber-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-amber-200">
+                <Mail size={40} className="text-amber-600" />
               </div>
-            )}
-
-            {/* Email */}
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
-              <input
-                type="email"
-                placeholder="Votre email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                required
-              />
+              <h3 className="text-2xl font-serif font-bold text-amber-900 mb-3">Missive expédiée !</h3>
+              <p className="text-sm text-stone-600 mb-8 leading-relaxed">
+                Les Gardiens viennent de transmettre un Sceau de Validation à l'adresse <strong className="text-amber-800">{email}</strong>.<br/><br/>
+                Veuillez consulter votre Télégraphe Pneumatique (boîte mail) et suivre les instructions pour finaliser votre inscription.
+              </p>
+              <button 
+                onClick={() => handleModeSwitch(false)} 
+                className="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 py-3 rounded-lg font-serif font-bold transition-all border border-stone-300"
+              >
+                J'ai validé mon Sceau, me connecter
+              </button>
             </div>
+          ) : (
+            /* L'ancien formulaire classique */
+			  <form onSubmit={handleAuth} className="space-y-4">
+				
+				{/* Username (inscription seulement) */}
+				{isSignUp && !resetMode && (
+				  <div className="relative">
+					<User className="absolute left-3 top-3 text-gray-400" size={20} />
+					<input
+					  type="text"
+					  placeholder="Nom d'utilisateur"
+					  value={username}
+					  onChange={(e) => setUsername(e.target.value)}
+					  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+					  required
+					  autoComplete="off"
+					/>
+				  </div>
+				)}
 
-            {/* Password */}
-            {!resetMode && (
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
-                <input
-                  type="password"
-                  placeholder="Mot de passe"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  required
-                />
-              </div>
-            )}
+				{/* Email */}
+				<div className="relative">
+				  <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+				  <input
+					type="email"
+					placeholder="Votre email"
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+					required
+					autoComplete="off"
+				  />
+				</div>
 
-            {/* L'Encart d'Erreur "Sceau Brisé" */}
-            {error && (
-              <div className="relative overflow-hidden bg-[#2a1313] text-red-100 p-4 rounded-xl border border-red-900/50 shadow-[0_0_15px_rgba(153,27,27,0.4)] animate-fade-in-up">
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
-                <div className="flex items-start gap-3 relative z-10">
-                  <div className="bg-red-950/50 p-1.5 rounded-lg border border-red-800/50 shrink-0">
-                    <AlertCircle size={20} className="text-red-400" />
-                  </div>
-                  <div className="pt-0.5">
-                    <h4 className="text-red-400 font-bold font-serif text-sm uppercase tracking-wider mb-0.5">Avertissement</h4>
-                    <p className="text-sm font-serif italic text-red-200/90 leading-snug">
-                      {error}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+				{/* Password */}
+				{!resetMode && (
+				  <div className="relative">
+					<Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+					<input
+					  type="password"
+					  placeholder="Mot de passe"
+					  value={password}
+					  onChange={(e) => setPassword(e.target.value)}
+					  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+					  required
+					  autoComplete="new-password"
+					/>
+				  </div>
+				)}
 
-            {/* Bouton Dynamique */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-amber-600 text-white py-3 rounded-lg font-serif font-bold hover:bg-amber-700 transition-all shadow-md transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {getButtonText()}
-            </button>
-          </form>
+				{/* L'Encart d'Erreur "Sceau Brisé" */}
+				{error && (
+				  <div className="relative overflow-hidden bg-[#2a1313] text-red-100 p-4 rounded-xl border border-red-900/50 shadow-[0_0_15px_rgba(153,27,27,0.4)] animate-fade-in-up">
+					<div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
+					<div className="flex items-start gap-3 relative z-10">
+					  <div className="bg-red-950/50 p-1.5 rounded-lg border border-red-800/50 shrink-0">
+						<AlertCircle size={20} className="text-red-400" />
+					  </div>
+					  <div className="pt-0.5">
+						<h4 className="text-red-400 font-bold font-serif text-sm uppercase tracking-wider mb-0.5">Avertissement</h4>
+						<p className="text-sm font-serif italic text-red-200/90 leading-snug">
+						  {error}
+						</p>
+					  </div>
+					</div>
+				  </div>
+				)}
+
+				{/* Bouton Dynamique */}
+				<button
+				  type="submit"
+				  disabled={loading}
+				  className="w-full bg-amber-600 text-white py-3 rounded-lg font-serif font-bold hover:bg-amber-700 transition-all shadow-md transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+				>
+				  {getButtonText()}
+				</button>
+			  </form>
+          )}
 
           {/* Mot de passe oublié */}
           <div className="mt-4 text-center">
@@ -202,6 +236,7 @@ export default function Auth() {
               </button>
             )}
           </div>
+          
         </div>
       </div>
     </div>
