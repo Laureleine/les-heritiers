@@ -1,0 +1,63 @@
+{
+  "id": "1725e172-5ccc-4013-9401-3273e81e1524",
+  "userId": "04ae6db4-ab6d-4d33-9001-3b6419c85d37",
+  "nom": "John Smith 1",
+  "sexe": "Homme",
+  "nomFeerique": "",
+  "genreHumain": "",
+  "traitsFeeriques": [],
+  "typeFee": "Smog",
+  "anciennete": "",
+  "apparence": "",
+  "taille": "",
+  "poids": "",
+  "caracteristiques": {},
+  "profils": {
+    "majeur": {
+      "nom": "Savant",
+      "trait": "Ingénieux/Ingénieuse",
+      "competences": [
+        "Habiletés",
+        "Médecine",
+        "Observation",
+        "Sciences"
+      ]
+    },
+    "mineur": {
+      "nom": "Roublard",
+      "trait": "Malin/Maligne",
+      "competences": [
+        "Comédie",
+        "Discrétion",
+        "Larcin",
+        "Monde du crime"
+      ]
+    },
+    "activiteDomaine": "Pharmacien"
+  },
+  "competencesLibres": {
+    "rangs": {},
+    "choixPredilection": {},
+    "choixSpecialite": {},
+    "choixSpecialiteUser": {},
+    "specialiteMetier": null
+  },
+  "competencesFutiles": {
+    "rangs": {},
+    "choixPredilection": {},
+    "personnalisees": []
+  },
+  "capaciteChoisie": "",
+  "pouvoirs": [],
+  "atouts": [],
+  "vieSociale": {},
+  "fortune": 0,
+  "isPublic": false,
+  "statut": "brouillon",
+  "xp_total": 0,
+  "xp_depense": 0,
+  "ownerUsername": "Inconnu",
+  "data": {},
+  "created_at": "2026-04-11T14:33:03.329972+00:00",
+  "updated_at": "2026-04-11T14:33:53.695484+00:00"
+}

@@ -5,6 +5,7 @@ import { Bug, Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
+import { exportCharacter } from '../utils/utils'; 
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
 import GrimoirePersonnel from './cercle/GrimoirePersonnel';
@@ -101,6 +102,10 @@ const CharacterCard = React.memo(({
               <button onClick={() => exportToPDF(char, gameData)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF">
                 <FileText size={15}/>
               </button>
+			  {/* ✨ LE NOUVEAU BOUTON : Extracteur JSON */}
+			  <button onClick={() => exportCharacter(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN (Format JSON)">
+				<Download size={15}/>
+			  </button>			  
               <button
                 onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)}
                 className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-white' : 'text-stone-400 hover:text-stone-700 hover:bg-white'}`}

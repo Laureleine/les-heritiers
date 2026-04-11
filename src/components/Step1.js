@@ -1,9 +1,4 @@
 // src/components/Step1.js
-// 10.4.0 // 10.6.0 // 10.8.0
-// 11.1.0
-// 13.11.0
-// 14.0.0 // 14.10.0 // 14.13.0
-// 15.2.0 // 15.3.0
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crown, CheckCircle, Users, AlertCircle, Info, Feather, User, Activity, ThumbsUp, ThumbsDown, Heart, Scaling, Lock } from 'lucide-react';
@@ -406,16 +401,25 @@ export default function Step1() {
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar">
-            {fairyTypesByAge[activeCategory]
-              ?.filter(fairyName => {
-                const fData = fairyData[fairyName];
-                if (!fData) return false;
-				const isFairySecret = fData.isSecret === true || fData.is_secret === true;
-				return !isFairySecret || isUserDocte || unlockedFairies.includes(fData.id);
-              })
-				.map((fairyName) => (
-				  <button
-					key={fairyName}
+            
+            {/* ✨ FIX UX : Le Loader localisé (Skeleton UX) ! */}
+            {!gameData.fairyTypes || gameData.fairyTypes.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full p-6 text-center animate-pulse">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mb-4"></div>
+                <p className="text-amber-900 font-serif font-bold text-sm">Déchiffrage du Nuage...</p>
+              </div>
+            ) : (
+              /* L'affichage normal de tes fées */
+              fairyTypesByAge[activeCategory]
+                ?.filter(fairyName => {
+                  const fData = fairyData[fairyName];
+                  if (!fData) return false;
+                  const isFairySecret = fData.isSecret === true || fData.is_secret === true;
+                  return !isFairySecret || isUserDocte || unlockedFairies.includes(fData.id);
+                })
+                .map((fairyName) => (
+                  <button
+                    key={fairyName}
 					onClick={() => {
 					  if (selectedPreview !== fairyName) {
 						setSelectedPreview(fairyName);
@@ -424,19 +428,19 @@ export default function Step1() {
 						}
 					  }
 					}}
-					// ✨ FIX : On verrouille la liste des espèces !
-					disabled={isLocked}
+                    disabled={isLocked}
 					className={`w-full text-left px-4 py-3 border-b border-gray-50 transition-all flex items-center justify-between group disabled:opacity-60 disabled:cursor-not-allowed ${
 					  selectedPreview === fairyName
 						? 'bg-amber-100 text-amber-900 border-l-4 border-l-amber-600 pl-3'
 						: 'hover:bg-stone-50 text-gray-600'
 					}`}
-				  >
-					<span className="font-serif font-medium">{fairyName}</span>
-					{character.typeFee === fairyName && <CheckCircle size={16} className="text-green-600"/>}
-				  </button>
-				))}
-
+                  >
+                    <span className="font-serif font-medium">{fairyName}</span>
+                    {character.typeFee === fairyName && <CheckCircle size={16} className="text-green-600"/>}
+                  </button>
+                ))
+            )}
+            
           </div>
         </div>
 
