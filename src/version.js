@@ -1,8 +1,16 @@
 // src/version.js
 
-// 1. On déclare le registre COMPLET en premier
 export const VERSION_HISTORY = [
-    {
+  {
+    version: '15.8.0 - "Le Sceau du Télégraphe ✉️"',
+    date: '11 Avril 2026',
+    changes: [
+      '🛡️ **Sécurité Anti-Énumération :** Le formulaire d\'inscription déjoue désormais les "faux succès" de sécurité renvoyés par le Nuage, affichant le véritable avertissement si un Héritier possède déjà un compte gravé dans les archives.',
+      '📠 **Le Télégraphe Immersif :** Traduction lore-friendly des erreurs brutes de la base de données (délai anti-spam et adresses invalides) pour préserver l\'immersion narrative.',
+      '✨ **Sceau de Validation (UI/UX) :** À la création d\'un compte, le formulaire cède désormais sa place à un écran statique et élégant invitant le joueur à consulter ses courriers pour valider son inscription.',
+      '🧹 **Amnésie Mécanique :** Les champs de connexion et d\'inscription (ainsi que les erreurs) se purgent désormais instantanément à chaque bascule d\'onglet pour garantir une ardoise vierge aux nouveaux arrivants.'
+    ]
+  },    {
     version: '15.7.1 - "La Messagère du Grimoire 🧚‍♀️"',
     date: '10 Avril 2026',
     changes: [
