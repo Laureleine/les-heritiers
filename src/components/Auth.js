@@ -14,13 +14,17 @@ export default function Auth() {
   const [resetMode, setResetMode] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
+  // ✨ LE NETTOYEUR INTELLIGENT : On ne vide la mémoire qu'en Inscription !
   const handleModeSwitch = (modeInscription) => {
     setIsSignUp(modeInscription);
-    setEmailSent(false); // ✨ On réinitialise l'écran de succès
-    setEmail('');
-    setPassword('');
-    setUsername('');
+    setEmailSent(false); 
     setError('');
+    
+    if (modeInscription) {
+      setEmail('');
+      setPassword('');
+      setUsername('');
+    }
   };
   
   const handleAuth = async (e) => {
@@ -169,7 +173,8 @@ export default function Auth() {
 					onChange={(e) => setEmail(e.target.value)}
 					className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
 					required
-					autoComplete="off"
+					// ✨ FIX : Ouvert en connexion, fermé en inscription
+					autoComplete={isSignUp ? "off" : "email"} 
 				  />
 				</div>
 
@@ -184,7 +189,8 @@ export default function Auth() {
 					  onChange={(e) => setPassword(e.target.value)}
 					  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
 					  required
-					  autoComplete="new-password"
+					  // ✨ FIX : Dit au navigateur de proposer le mot de passe existant en connexion
+					  autoComplete={isSignUp ? "new-password" : "current-password"} 
 					/>
 				  </div>
 				)}
