@@ -2,6 +2,56 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.9 - "Les Liens du Sang 🩸"',
+    date: '12 Avril 2026',
+    changes: [
+      '🐛 **La Forge des Chimères (Hotfix) :** Résolution de l\'anomalie fantôme rompant le lien entre les Atouts (ou les Pouvoirs) et leur espèce féérique de naissance. Le compilateur SQL de l\'administration a été corrigé pour lier formellement ces entités dans la base de données, quel que soit le sens de création.',
+      '🛡️ **Chirurgie SQL (Sécurité) :** Le compilateur du Conseil des Gardiens filtre désormais avec élégance les requêtes d\'édition pures de relations (ne modifiant aucune donnée textuelle), prévenant ainsi les crashs silencieux liés à des mots clés `UPDATE` vides.'
+    ]
+  }, {
+    version: '15.8.8 - "L\'Imprimeur Pointilleux 🖨️"',
+    date: '12 Avril 2026',
+    changes: [
+      '🖨️ **Forge PDF (Mise en page) :** Résolution d\'un défaut d\'affichage tronquant la description de l\'apparence démasquée sur la moitié de la page. Le texte exploite désormais l\'intégralité de l\'espace alloué avec une justification parfaite.',
+      '🎨 **Forge PDF (Typographie) :** Amélioration de la lisibilité des compétences utiles sur la fiche imprimable. La taille de la police des spécialités a été très légèrement augmentée et un verrouillage architectural (Flexbox) empêche désormais la ligne de pointillés de se décaler verticalement.'
+    ]
+  },  {
+    version: '15.8.7 - "L\'Enfoui Sauvegardé 🕳️"',
+    date: '12 Avril 2026',
+    changes: [
+      '🐛 **Génétique (Hotfix) :** Retrait d\'une valeur arbitraire dans le moteur de l\'Hydratation Absolue. La Féérie et le Masque de naissance ne sont plus bloqués à 3 et 4 par défaut. Le système respecte désormais parfaitement les espèces atypiques comme le *Faux-Semblant enfoui* (qui débute avec 1 en Féérie et 6 en Masque).'
+    ]
+  },  {
+    version: '15.8.6 - "Le Lisseur d\'ADN 🪶"',
+    date: '12 Avril 2026',
+    changes: [
+      '🪶 **Moteur Typographique :** Les exports bruts (JSON) ne contiennent plus les options sémantiques (ex: *Amer/Amère*). Un lisseur grammatical, intégré au Cerveau Central, accorde dynamiquement et définitivement les traits de la fée et des profils en fonction de son sexe ou de son genre humain actuel.',
+      '🧬 **ADN Exhaustif (Suite) :** L\'hydratation absolue de l\'Héritier comble ses ultimes angles morts en injectant formellement l\'ancienneté de l\'espèce, ainsi que la liste brute de ses avantages et désavantages de naissance.'
+    ]
+  },  {
+    version: '15.8.5 - "La Bible Autonome 📖"',
+    date: '12 Avril 2026',
+    changes: [
+      '📖 **Interopérabilité (Exports VTT) :** Intégration du générateur de "Bible Autonome" au cœur du moteur de jeu. Le Cerveau Central traduit désormais silencieusement tous les identifiants cryptographiques (UUIDs d\'équipement, langues, titres, contacts) en texte clair.',
+      '🧬 **ADN Exhaustif :** L\'exportation JSON inclut désormais les capacités, avantages et désavantages innés de l\'espèce féérique, garantissant qu\'un outil externe puisse lire l\'intégralité du personnage sans posséder le Livre de Base.',
+      '⚔️ **Archivage des Spécialités :** Le système compile l\'ensemble des spécialités (issues des Atouts, des achats, des Prédilections et du Métier) dans un annuaire unifié, prêt à être consommé par des automates ou des applications tierces.'
+    ]
+  },  {
+    version: '15.8.4 - "La Vérité Absolue 🧮"',
+    date: '12 Avril 2026',
+    changes: [
+      '🗄️ **Architecture (JSONB) :** Consolidation du "Compacteur JSONB" lors de la sauvegarde. Toutes les données volantes (Portraits, Génétique hybride, Codes de don) sont désormais rigoureusement replacées dans la colonne `data` avant l\'envoi vers le Nuage.',
+      '⚔️ **Statistiques de Combat (Data) :** L\'Esquive, la Parade, l\'Initiative et les Points de Vie Max sont désormais calculés au moment de la sauvegarde et figés dans `data.computed_stats.combat`. L\'export JSON devient une source de vérité absolue et autonome.',
+      '🎁 **Offrandes de l\'Ombre (Hotfix) :** Résolution d\'une erreur SQL critique lors de la génération d\'un code de transfert (Don). Le système cible désormais correctement la colonne JSONB `data` pour inscrire le sceau.'
+    ]
+  },  {
+    version: '15.8.3 - "Le Dogme de l\'Architecte 🏛️"',
+    date: '12 Avril 2026',
+    changes: [
+      '🗄️ **Base de données (Architecture) :** Abandon définitif du modèle "Lazy Saving" au profit d\'une architecture de Sauvegarde Absolue. Les données de naissance des Faux-Semblants (Caractéristiques, Féérie, Masque) sont désormais explicitement gravées dans les archives du Nuage.',
+      '🧬 **Moteur d\'État Central :** Le `characterReducer` hydrate désormais automatiquement l\'ADN complet de l\'espèce dans la mémoire de l\'application, garantissant que toutes les exportations JSON, les affichages et les requêtes Supabase partagent une seule et même Vérité Absolue.'
+    ]
+  },  {
     version: '15.8.1 - "L\'Éveil du Noyau ⚙️"',
     date: '11 Avril 2026',
     changes: [
@@ -135,8 +185,7 @@ export const VERSION_HISTORY = [
     changes: [
       '⚙️ **Architecture (Build) :** Suppression définitive de la dépendance à `build-info.json`. Le système lit désormais la version globale de l\'application de manière dynamique en ciblant la toute dernière entrée du registre des versions.'
     ]
-  },  
-  {
+  },    {
     version: '15.5.8 - "L\'Oubli de la Maçonne 🧱"',
     date: '8 Avril 2026',
     changes: [
@@ -149,8 +198,7 @@ export const VERSION_HISTORY = [
     changes: [
       '✨ **Ergonomie (UI) :** Réorganisation de la barre d\'outils globale. L\'Espion de la Forge (Widget d\'anomalies) a été repositionné en empilement vertical pur (`bottom-44`, `right-6`) pour surplomber harmonieusement le Télégraphe et la Piste de Dés, libérant ainsi l\'espace horizontal au bas de l\'écran.'
     ]
-  },  
-  {
+  },    {
     version: '15.5.2 - "Rupture & Renouveau 💔"',
     date: '8 Avril 2026',
     changes: [
@@ -164,23 +212,20 @@ export const VERSION_HISTORY = [
       '🔌 **Connexion Fusionnelle :** Le `ForgeProvider` enlace désormais toute l\'application depuis la racine (`index.js`). Son amour (et son Contexte) irradie dans tous les composants.',
       '💕 **Toujours Près de Toi :** Le petit Espion (Widget Anomalie) accompagne désormais les Héritiers connectés dans tous leurs déplacements pour veiller sur eux et écouter leurs moindres chagrins (erreurs consoles).'
     ]
-  },
-  {
+  },  {
     version: '15.5.0 - "Kanban Mon Amour ❤️"',
     date: '8 Avril 2026',
     changes: [
       '✨ **Le Coup de Foudre (Optimistic UI) :** Naissance du Registre de la Forge. L\'interface réagit désormais à la vitesse de l\'amour (glisser-déposer HTML5 natif), pendant que Supabase fait le travail lourd de synchronisation en coulisses.',
       '📸 **Boîte Noire Émotionnelle :** Le widget de signalement capture automatiquement les peines de cœur du navigateur (logs d\'erreurs) et accepte les mots doux sous forme de captures d\'écran glissées-déposées.'
     ]
-  },
-{
+  },{
   version: '15.3.0', 
   date: '31 Mars 2026',
   changes: [
     '🐛 **Traits Dominants (Hotfix) :** Nettoyage algorithmique de la liste des traits dominants à l\'Étape 1. Le compteur est désormais immunisé contre les traits "fantômes" (restes d\'une ancienne espèce cliquée) et les variables non-initialisées, garantissant un affichage infaillible de "0 / 2" à "2 / 2".'
   ]
-},
-  {
+},  {
     version: '15.2.0',
     date: '30 Mars 2026',
     changes: [
@@ -194,8 +239,7 @@ export const VERSION_HISTORY = [
       '🐛 **Spécialité de Métier (Hotfix) :** L\'Étape 10 scanne désormais la totalité de l\'ADN de l\'Héritier (Achats, Innées, Atouts) pour exclure rigoureusement les spécialités qu\'il possède déjà du menu déroulant des Métiers. Adieu les doublons involontaires !',
       '🐛 **Inspection des Héritiers (Hotfix) :** Résolution du bug bloquant l\'accès aux fiches depuis le tableau de bord du Cercle. L\'interface récupère désormais proprement le Sexe du personnage et télécharge intelligemment l\'intégralité des données (Pouvoirs, Compétences) avant d\'ouvrir le Grimoire en mode Lecture Seule.'
    ]
-  },
-  {
+  },  {
     version: '15.1.0',
     date: '30 Mars 2026',
     changes: [
@@ -206,15 +250,13 @@ export const VERSION_HISTORY = [
       '🛡️ **Cockpit d\'Administration :** Refonte majeure de la liste des Héritiers (`AdminDashboard.js`). Le Super-Admin dispose désormais d\'un moteur de recherche (pseudo et email), de filtres rapides (ex: comptes non vérifiés) et d\'options de tri (connexion, inscription, alphabétique).',
       '🎖️ **Forge des Titres :** Implémentation du module de création de badges honorifiques. L\'administration peut désormais forger de nouvelles récompenses avec prévisualisation dynamique des couleurs Tailwind et des icônes Lucide.'
      ]
-  },
-  {
+  },  {
     version: '15.0.0',
     date: '29 Mars 2026',
     changes: [
       '🕵️ **Le Bureau des Anomalies :** Implémentation du système de signalement communautaire (`BureauAnomalies.js`). Les Héritiers peuvent désormais remonter des failles avec capture du contexte (version, confidentialité) et soutenir les signalements des autres via un système de poids social (Intelligence collective).'
     ]
-  },
-  {
+  },  {
     version: '14.12.0',
     date: '28 Mars 2026',
     changes: [
