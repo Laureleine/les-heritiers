@@ -276,34 +276,52 @@ export default function Step1() {
 				{traitsCount} / 2
 			  </span>
 			</div>
-			<div className="grid grid-cols-2 gap-2">
-			  {availableTraits.map((traitBrut) => {
-				// On vérifie la sélection dans notre tableau purifié
-				const isSelected = traitsPropres.includes(traitBrut);
-				
-				// On bloque intelligemment si 2 traits légitimes sont déjà pris
-				const isDisabled = isLocked || (!isSelected && traitsCount >= 2);
-				
-				return (
-				  <button
-					key={traitBrut}
-					onClick={() => handleTraitToggle(traitBrut)}
-					disabled={isDisabled}
-					className={`p-2 border rounded-lg text-sm transition-all flex items-center justify-between font-serif ${
-					  isSelected 
-						? 'border-purple-500 bg-purple-50 text-purple-900 font-bold shadow-sm'
-						: isDisabled 
-						? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-						: 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
-					}`}
-				  >
-					{/* On conserve bien l'accord grammatical dynamique mis en place précédemment ! */}
-					{accorderTexte(traitBrut, genreActuel)}
-					{isSelected && <CheckCircle size={14} className="text-purple-600"/>}
-				  </button>
-				);
-			  })}
-			</div>
+            <div className="grid grid-cols-2 gap-2">
+              {/* ✨ FIX : On utilise 'availableTraits' qui est déjà proprement calculé par le composant ! */}
+              {availableTraits.map((traitBrut) => {
+                // 1. On lisse pour l'affichage
+                const smoothedTrait = accorderTexte(traitBrut, genreActuel);
+                
+                // 2. On vérifie si l'Héritier possède l'ADN Brut OU l'ADN lissé corrompu
+                const isSelected = traitsPropres.includes(traitBrut) || traitsPropres.includes(smoothedTrait);
+                
+                // On bloque intelligemment si 2 traits légitimes sont déjà pris
+                const isDisabled = isLocked || (!isSelected && traitsCount >= 2);
+
+                // 3. Fonction de bascule locale ultra-robuste
+                const handleSafeToggle = () => {
+                  let newTraits;
+                  if (isSelected) {
+                    // On purge sans pitié les DEUX formats pour bien décocher le bouton
+                    newTraits = traitsPropres.filter(t => t !== traitBrut && t !== smoothedTrait);
+                  } else {
+                    if (traitsCount >= 2) return; // Limite atteinte
+                    newTraits = [...traitsPropres, traitBrut]; // On garde strictement l'ADN brut !
+                  }
+                  
+                  // On met à jour l'Héritier via la fonction existante du composant
+                  onTraitsFeeriquesChange(newTraits); 
+                };
+
+                return (
+                  <button
+                    key={traitBrut}
+                    onClick={handleSafeToggle}
+                    disabled={isDisabled}
+                    className={`p-2 rounded-lg border-2 text-sm text-left flex justify-between items-center transition-all font-serif ${
+                      isSelected
+                        ? 'border-purple-500 bg-purple-50 text-purple-900 font-bold shadow-sm'
+                        : isDisabled
+                        ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                        : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+                    }`}
+                  >
+                    {smoothedTrait}
+                    {isSelected && <CheckCircle size={14} className="text-purple-600"/>}
+                  </button>
+                );
+              })}
+            </div>
 		  </div>
           <div className="font-sans">
             <button

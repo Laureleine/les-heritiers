@@ -139,16 +139,16 @@ export function characterReducer(state, action) {
         return (isFemme && parts.length > 1) ? parts.at(1).trim() : parts.at(0).trim();
       };
 
-      if (newState.traitsFeeriques) {
-        newState.traitsFeeriques = newState.traitsFeeriques.map(t => accorder(t));
-      }
-      if (newState.profils?.majeur?.trait) {
-        newState.profils.majeur.trait = accorder(newState.profils.majeur.trait);
-      }
-      if (newState.profils?.mineur?.trait) {
-        newState.profils.mineur.trait = accorder(newState.profils.mineur.trait);
-      }
-
+      // ✨ FIX : On NE DÉTRUIT PLUS le texte brut ("Curieux/Curieuse") dans l'état React !
+      // On conserve l'ADN d'origine pour pouvoir re-calculer le sexe à l'infini,
+      // et on range les versions lisses dans computedStats pour satisfaire les exports JSON purs.
+      newState.computedStats = newState.computedStats || {};
+      newState.computedStats.traits_lisses = {
+        feeriques: (newState.traitsFeeriques || []).map(t => accorder(t)),
+        majeur: accorder(newState.profils?.majeur?.trait),
+        mineur: accorder(newState.profils?.mineur?.trait)
+      };
+	  
       // 3. Hydratation des caractéristiques de base
       if (feeData.caracteristiques) {
         const baseCaracs = {

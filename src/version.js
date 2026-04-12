@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.12 - "Le Sexe des Fées 🧚"',
+    date: '12 Avril 2026',
+    changes: [
+      '✨ **Métamorphose Fluide :** L\'interface de sélection des traits de naissance (Étape 1) conserve désormais l\'ADN brut en mémoire. Les Héritiers peuvent changer de sexe ou de genre en pleine création sans jamais figer ou corrompre la sélection de leurs traits (ex: "Amer/Amère").',
+      '🐛 **Lisseur Grammatical (Hotfix) :** Résolution d\'une mutation destructrice d\'état. Le Cerveau Central n\'écrase plus l\'ADN textuel des traits de personnalité (ex: "Curieux/Curieuse") lors de son lissage. La donnée brute est conservée pour garantir la fluidité de l\'interface en cas de changement de sexe en cours de création.',
+      '✨ **Export & Rétrocompatibilité :** L\'interface de sélection des profils est désormais capable de s\'auto-réparer si elle rencontre une ancienne fiche corrompue par l\'itération précédente, tout en garantissant des exports JSON parfaitement lissés (`traits_lisses`).',
+      '🐛 **Interface des Profils (Hotfix) :** Résolution d\'un conflit de synchronisation d\'état sur l\'Étape 6. Le Lisseur Grammatical modifiait silencieusement la donnée en mémoire, empêchant les boutons de sélection des traits de se mettre en surbrillance (créant l\'illusion qu\'ils étaient inactifs).',
+      '✨ **Ergonomie Typographique :** Les boutons de sélection des traits de Profils affichent désormais les mots parfaitement accordés à votre Héritier avant même que vous ne cliquiez dessus.'
+    ]
+  },  {
     version: '15.8.9 - "Les Liens du Sang 🩸"',
     date: '12 Avril 2026',
     changes: [

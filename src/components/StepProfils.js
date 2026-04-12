@@ -1,8 +1,4 @@
 // src/components/StepProfils.js
-// 10.6.0
-// 13.0.0 // 13.13.0
-// 14.2.0
-// 15.2.0
 
 import React from 'react';
 import { Info, Star, Award, Briefcase, Lock, CheckCircle } from 'lucide-react';
@@ -215,28 +211,35 @@ export default function StepProfils() {
 
         {profilMajeur && (
           <div className="mt-4 p-4 bg-white rounded-lg border-2 border-amber-300">
-            <h4 className="font-serif text-lg text-amber-900 mb-3 font-semibold">
-              Choisissez un trait de caractère
-            </h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-				{profilsObj[profilMajeur].traits.map(trait => (
-				  <button
-					key={trait}
-					onClick={() => handleTraitMajeurChange(trait)}
-					disabled={isLocked}
-                  className={`p-3 rounded-lg border-2 transition-all font-serif ${
-                    traitMajeur === trait
-                      ? 'border-amber-600 bg-amber-100 text-amber-900 font-semibold shadow-sm'
-                      : isLocked
-                      ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                      : 'border-amber-200 bg-white text-amber-800 hover:border-amber-400'
-                  }`}
-                >
-					{/* Remplacement du texte brut */}
-					{accorderTexte(trait, genreActuel)}
-				  </button>
-				))}
-            </div>
+              <h4 className="font-serif text-lg text-amber-900 mb-3 font-semibold">
+                Choisissez un trait de caractère
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {profilsObj[profilMajeur].traits.map(rawTrait => {
+                  const smoothedTrait = accorderTexte(rawTrait, genreActuel);
+                  
+                  // ✨ FIX : On accepte la donnée brute (saine) OU la donnée déjà lissée (corrompue).
+                  // Ça répare instantanément l'affichage des anciens personnages !
+                  const isSelected = traitMajeur === rawTrait || traitMajeur === smoothedTrait;
+                  
+                  return (
+                    <button
+                      key={rawTrait}
+                      onClick={() => handleTraitMajeurChange(rawTrait)}
+                      disabled={isLocked}
+                      className={`p-3 rounded-lg border-2 transition-all font-serif ${
+                        isSelected
+                          ? 'border-amber-600 bg-amber-100 text-amber-900 font-semibold shadow-sm'
+                          : isLocked
+                          ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                          : 'border-amber-200 bg-white text-amber-800 hover:border-amber-400'
+                      }`}
+                    >
+                      {smoothedTrait}
+                    </button>
+                  );
+                })}
+              </div>
           </div>
         )}
       </div>
@@ -261,28 +264,34 @@ export default function StepProfils() {
 
 		{profilMineur && (
 		  <div className="mt-4 p-4 bg-white rounded-lg border-2 border-blue-300">
-			<h4 className="font-serif text-lg text-blue-900 mb-3 font-semibold">
-			  Choisissez un trait de caractère
-			</h4>
-			<div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-			  {profilsObj[profilMineur].traits.map(trait => (
-				<button
-				  key={trait}
-				  onClick={() => handleTraitMineurChange(trait)}
-				  disabled={isLocked}
-				  className={`p-3 rounded-lg border-2 transition-all font-serif ${
-					traitMineur === trait
-					  ? 'border-blue-600 bg-blue-100 text-blue-900 font-semibold shadow-sm'
-					  : isLocked
-					  ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-					  : 'border-blue-200 bg-white text-blue-800 hover:border-blue-400'
-				  }`}
-				>
-				  {/* Et le voilà pour le mineur 👇 */}
-				  {accorderTexte(trait, genreActuel)}
-				</button>
-			  ))}
-			</div>
+              <h4 className="font-serif text-lg text-blue-900 mb-3 font-semibold">
+                Choisissez un trait de caractère
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {profilsObj[profilMineur].traits.map(rawTrait => {
+                  const smoothedTrait = accorderTexte(rawTrait, genreActuel);
+                  
+                  // ✨ FIX : La même sécurité pour le Profil Mineur
+                  const isSelected = traitMineur === rawTrait || traitMineur === smoothedTrait;
+                  
+                  return (
+                    <button
+                      key={rawTrait}
+                      onClick={() => handleTraitMineurChange(rawTrait)}
+                      disabled={isLocked}
+                      className={`p-3 rounded-lg border-2 transition-all font-serif ${
+                        isSelected
+                          ? 'border-blue-600 bg-blue-100 text-blue-900 font-semibold shadow-sm'
+                          : isLocked
+                          ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                          : 'border-blue-200 bg-white text-blue-800 hover:border-blue-400'
+                      }`}
+                    >
+                      {smoothedTrait}
+                    </button>
+                  );
+                })}
+              </div>
 		  </div>
 		)}
       </div>
