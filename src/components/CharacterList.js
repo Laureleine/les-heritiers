@@ -51,13 +51,6 @@ const CharacterCard = React.memo(({
               <sup className="ml-1 text-blue-500 inline-block" title="Visible par tous"><Globe size={12} /></sup>
             )}
           </h3>
-
-          {/* ✨ LE PRIVILÈGE DE L'ARCHITECTE (Saisie Silencieuse) */}
-          {userProfile?.profile?.role === 'super_admin' && !isMyCharacter && (
-			<button onClick={() => onExportJson(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN complet (Format JSON)">
-               <Download size={16}/>
-            </button>
-          )}
         </div>
         
         <div className="flex justify-between items-center">
@@ -86,52 +79,63 @@ const CharacterCard = React.memo(({
         </div>
       </div>
 
-      {/* 3. ACTIONS */}
-      <div className="px-3 pb-3 flex items-center justify-between gap-1.5">
-        {isMyCharacter ? (
-          <>
+        {/* 3. ACTIONS */}
+        <div className="px-3 pb-3 flex items-center justify-between gap-1.5">
+
+          {/* Le Bouton Principal (Modifier ou Voir la fiche) */}
+          {isMyCharacter ? (
             <button onClick={() => onSelect(char)} className="flex-1 py-1.5 px-2 bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-800 rounded border border-stone-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 overflow-hidden">
               <Edit size={14} className="shrink-0" />
               <span className="truncate hidden sm:inline">Modifier</span>
             </button>
+          ) : (
+            <button onClick={() => onSelect(char, true)} className="flex-1 py-1.5 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2">
+              <Eye size={16}/> Voir la fiche
+            </button>
+          )}
 
-            <div className="flex items-center gap-0.5 shrink-0 bg-stone-50/50 p-0.5 rounded border border-stone-100">
-              <button onClick={() => exportToPDF(char, gameData)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF">
-                <FileText size={15}/>
-              </button>
-			  {/* ✨ LE NOUVEAU BOUTON : Extracteur JSON */}
-			  <button onClick={() => onExportJson(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN complet (Format JSON)">
-				<Download size={15}/>
-			  </button>			  
-              <button
-                onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)}
-                className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-white' : 'text-stone-400 hover:text-stone-700 hover:bg-white'}`}
-                title={char.isPublic ? "Rendre privé" : "Rendre public"}
-              >
-                {char.isPublic ? <Globe size={15}/> : <EyeOff size={15}/>}
-              </button>
-              <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-stone-400 hover:text-amber-600 hover:bg-white rounded transition-colors" title="Ouvrir le Grimoire Personnel">
-                <BookOpen size={15}/>
-              </button>
-              <button onClick={() => onDuplicate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Dupliquer le personnage">
-                <Copy size={15}/>
-              </button>
-              <button onClick={() => onCreateGift(char)} className="p-1.5 text-stone-400 hover:text-purple-600 hover:bg-white rounded transition-colors" title="Offrir ce personnage">
-                <Gift size={15}/>
-              </button>
-              <button onClick={() => onDeleteClick(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Détruire">
-                <Trash2 size={15}/>
-              </button>
-            </div>
-          </>
-        ) : (
-          <button onClick={() => onSelect(char, true)} className="w-full py-1.5 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2">
-            <Eye size={16}/> Voir la fiche
-          </button>
-        )}
-      </div>
+          {/* Les Petits Boutons d'Action alignés à droite */}
+          <div className="flex items-center gap-0.5 shrink-0 bg-stone-50/50 p-0.5 rounded border border-stone-100">
+            
+            {/* Boutons Communs (PDF & JSON) */}
+            <button onClick={() => exportToPDF(char, gameData)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF">
+              <FileText size={15}/>
+            </button>
+            <button onClick={() => onExportJson(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN complet (Format JSON)">
+              <Download size={15}/>
+            </button>
 
-      {/* 4. FOOTER */}
+            {/* Boutons Spécifiques selon le propriétaire */}
+            {isMyCharacter ? (
+              <>
+                <button onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)} className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-white' : 'text-stone-400 hover:text-stone-700 hover:bg-white'}`} title={char.isPublic ? "Rendre privé" : "Rendre public"}>
+                  {char.isPublic ? <Globe size={15}/> : <EyeOff size={15}/>}
+                </button>
+                <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-stone-400 hover:text-amber-600 hover:bg-white rounded transition-colors" title="Ouvrir le Grimoire Personnel">
+                  <BookOpen size={15}/>
+                </button>
+                <button onClick={() => onDuplicate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Dupliquer le personnage">
+                  <Copy size={15}/>
+                </button>
+                <button onClick={() => onCreateGift(char)} className="p-1.5 text-stone-400 hover:text-purple-600 hover:bg-white rounded transition-colors" title="Offrir ce personnage">
+                  <Gift size={15}/>
+                </button>
+                <button onClick={() => onDeleteClick(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Détruire">
+                  <Trash2 size={15}/>
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => onAppropriate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Adopter cet Héritage (Cloner dans mon Grimoire)">
+                  <Copy size={15}/>
+                </button>
+              </>
+            )}
+          </div>
+
+        </div>
+
+        {/* 4. FOOTER */}
       <div className="bg-stone-50 px-4 py-2 border-t border-stone-100 flex justify-between items-center text-[10px] text-stone-400 mt-auto">
         <div className="flex items-center gap-1.5">
           {!isMyCharacter && (
