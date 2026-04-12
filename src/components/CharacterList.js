@@ -100,7 +100,7 @@ const CharacterCard = React.memo(({
                 <FileText size={15}/>
               </button>
 			  {/* ✨ LE NOUVEAU BOUTON : Extracteur JSON */}
-			  <button onClick={() => exportCharacter(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN (Format JSON)">
+			  <button onClick={() => onExportJson(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN complet (Format JSON)">
 				<Download size={15}/>
 			  </button>			  
               <button
@@ -268,16 +268,26 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const handleCreateGiftCode = useCallback(async (lightChar) => {
     try {
       showInAppNotification("Préparation de l'offrande...", "info");
+      
+      // ✨ LA GÉNÉRATION DU CODE (Ce que j'avais remplacé par un commentaire !)
       const randomSegment = typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID().split('-').at(0).toUpperCase()
+        ? crypto.randomUUID().split('-')[0].toUpperCase()
         : Math.random().toString(36).substring(2, 6).toUpperCase();
+        
       const code = `DON-${randomSegment}`;
 
-      const { error } = await supabase.from('characters').update({ transfer_code: code }).eq('id', lightChar.id);
+      // ✨ LA RÉPARATION : On télécharge la fiche, on injecte le code dans 'data', et on met à jour le JSONB
+      const fullChar = await getFullCharacter(lightChar.id);
+      const newData = { ...(fullChar.data || {}), transfer_code: code };
+
+      const { error } = await supabase.from('characters').update({ data: newData }).eq('id', lightChar.id);
+      
       if (error) throw error;
 
+      // On affiche la modale avec le code et on rafraîchit la liste
       setGiftCodeToShow({ nom: lightChar.nom, code });
       await loadCharacters();
+
     } catch (error) {
       showInAppNotification("Erreur lors de la création du don : " + error.message, "error");
     }

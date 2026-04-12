@@ -252,17 +252,21 @@ export const exportToPDF = (character, gameData = {}) => {
               }
             });
 
-            const predHtml = isPred ? '<span style="font-size:10px; color:#d97706; margin-left:4px;">★</span>' : '';
-            
-            const specsText = finalSpecs.length > 0 ? finalSpecs.join(' • ') : '';
+			const predHtml = isPred ? '<span style="font-size:10px; color:#d97706; margin-left:4px;">★</span>' : '';
+			const specsText = finalSpecs.length > 0 ? finalSpecs.join(' • ') : '';
 
-            return '<div style="margin-bottom: 2px;">' +
-              '<div class="skill-row" style="display:flex; justify-content:space-between; align-items:baseline;">' +
-              '<span class="skill-name" style="white-space:nowrap; flex-shrink:0;">' + comp + predHtml + '</span>' +
-              '<span style="flex-grow:1; border-bottom: 2px dotted #b5a287; margin: 0 6px; text-align:center; font-size:9px; color:#8b7355; font-style:italic; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; position:relative; top:-2px;">' + specsText + '</span>' +
-              '<span style="font-weight: bold; color: #4a3b2c; white-space:nowrap; flex-shrink:0;">' + scoreTotal + '</span>' +
-              '</div>' +
-              '</div>';
+			// ✨ FIX : On englobe la spécialité DANS le span principal pour stabiliser la baseline Flexbox !
+			// Et on passe la taille de police de 9px à 11px pour la lisibilité
+			return '<div style="margin-bottom: 2px;">' +
+			  '<div style="display: flex; align-items: baseline; font-size: 13px;">' +
+				'<span style="color: #4a3b2c;">' + 
+				  comp + predHtml + 
+				  (specsText ? '<span style="font-size: 11px; color: #8b7355; margin-left: 6px; font-style: italic;">' + specsText + '</span>' : '') +
+				'</span>' +
+				'<span style="flex-grow: 1; border-bottom: 1px dotted #b5a287; margin: 0 8px; position: relative; top: -4px;"></span>' +
+				'<span style="font-weight: bold; color: #4a3b2c; white-space:nowrap; flex-shrink:0;">' + scoreTotal + '</span>' +
+			  '</div>' +
+			'</div>';
           }).join('');
           htmlBloc += '</div>';
           return htmlBloc;
@@ -308,21 +312,21 @@ export const exportToPDF = (character, gameData = {}) => {
     </div>
   </div> 
 
-  <!-- ========================================== -->
-  <!-- PAGE 2 : LA FÉE (FORME DÉMASQUÉE)          -->
-  <!-- ========================================== -->
-  <div class="page">
-    <!-- IDENTITÉ FÉÉRIQUE -->
-    <div class="section box">
-      <div class="grid-2">
-        <div class="field">
-          <span class="field-label">Apparence démasquée</span>
-          <div class="field-value" style="min-height: 44px;">${character.apparence || feeData?.description || ''}</div>
-        </div>
-      </div>
-    </div>
+	<!-- ========================================== -->
+	<!-- PAGE 2 : LA FÉE (FORME DÉMASQUÉE)          -->
+	<!-- ========================================== -->
+	<div class="page">
 
-    <!-- MAGIE & HÉRITAGE -->
+	<!-- IDENTITÉ FÉÉRIQUE -->
+	<div class="section box">
+	  <!-- ✨ FIX : Suppression du "grid-2" qui étranglait la mise en page -->
+	  <div class="field">
+		<span class="field-label">Apparence démasquée</span>
+		<div class="field-value" style="min-height: 44px; text-align: justify; white-space: pre-wrap;">${character.apparence || feeData?.description || ''}</div>
+	  </div>
+	</div>
+
+	<!-- MAGIE & HÉRITAGE -->
     <div class="section">
       <div class="section-title" style="background: #1e3a8a;">Magie & Héritage</div>
       <div class="grid-3 box" style="margin-bottom: 15px; text-align: center; background: #e0e7ff; border-color: #1e3a8a;">
