@@ -3,15 +3,25 @@
   "userId": "04ae6db4-ab6d-4d33-9001-3b6419c85d37",
   "nom": "John Smith 1",
   "sexe": "Homme",
-  "nomFeerique": "",
-  "genreHumain": "",
-  "traitsFeeriques": [],
+  "nomFeerique": "Doe",
+  "genreHumain": "Masculin",
+  "traitsFeeriques": [
+    "Amer/Amère",
+    "Révoltée/Révolté"
+  ],
   "typeFee": "Smog",
   "anciennete": "",
-  "apparence": "",
-  "taille": "",
-  "poids": "",
-  "caracteristiques": {},
+  "apparence": "Homme épais, du rembourrage aux entournures. Son visage est mangé par des marques qui font penser à la petite vérole",
+  "taille": "1m68",
+  "poids": "80",
+  "caracteristiques": {
+    "force": 2,
+    "agilite": 5,
+    "precision": 3,
+    "sangFroid": 5,
+    "perception": 4,
+    "constitution": 4
+  },
   "profils": {
     "majeur": {
       "nom": "Savant",
@@ -36,28 +46,150 @@
     "activiteDomaine": "Pharmacien"
   },
   "competencesLibres": {
-    "rangs": {},
-    "choixPredilection": {},
+    "rangs": {
+      "Culture": 2,
+      "Conduite": 2,
+      "Sciences": 1,
+      "Fortitude": 1,
+      "Médecine": 1,
+      "Occultisme": 2,
+      "Monde du crime": 2
+    },
     "choixSpecialite": {},
-    "choixSpecialiteUser": {},
-    "specialiteMetier": null
+    "specialiteMetier": {
+      "nom": "Pharmacopée*",
+      "comp": "Médecine"
+    },
+    "choixPredilection": {},
+    "choixSpecialiteUser": {
+      "Conduite": [
+        "Pilotage d'aéronefs*"
+      ],
+      "Sciences": [
+        "Faëologie"
+      ],
+      "Fortitude": [
+        "Maîtrise de soi "
+      ],
+      "Médecine": [
+        "Premiers soins"
+      ],
+      "Monde du crime": [
+        "Connaissance de la pègre"
+      ]
+    }
   },
   "competencesFutiles": {
-    "rangs": {},
-    "choixPredilection": {},
-    "personnalisees": []
+    "rangs": {
+      "Aviation": 3,
+      "Astronomie": 3,
+      "Épicurien": 1,
+      "Agriculture": 2,
+      "Production de liqueur de Berthaniel": 1
+    },
+    "personnalisees": [],
+    "choixPredilection": {
+      "1": "Psychanalyse"
+    },
+    "precisions": {}
   },
-  "capaciteChoisie": "",
-  "pouvoirs": [],
-  "atouts": [],
-  "vieSociale": {},
-  "fortune": 0,
+  "capaciteChoisie": "Vision thermique",
+  "pouvoirs": [
+    "Métamorphose en nuage",
+    "Regard dissuasif",
+    "Régénération toxique"
+  ],
+  "atouts": [
+    "Contacts aristocratiques",
+    "Laboratoire secret"
+  ],
+  "avantages": [],
+  "desavantages": [],
+  "transfer_code": null,
+  "portrait_masked_url": "",
+  "portrait_unmasked_url": "",
+  "is_unmasked_revealed": false,
+  "is_insolite": false,
+  "species_ids": [],
+  "vieSociale": {
+    "Savant": [
+      "2e8c9b77-217d-4228-9c5c-f263a4ebcccd",
+      "5ccdb122-a6b6-4d2e-b650-57674d2545e9",
+      "06cac3e8-ac15-41f9-920b-2cd9aa8018fa",
+      "5ced61d9-902e-4deb-8214-df01d207ae93",
+      "63c05af3-9559-4e00-8c87-d04ac8756607",
+      "e53c60f3-116d-4ed5-a145-79fc42d8418e",
+      "168252cf-8687-4233-b9e2-1c7a342ab0a1"
+    ],
+    "Roublard": [
+      "a8d71db5-8ac7-4605-8883-7d0aeb75899b",
+      "9ab77099-231d-4856-8da1-74fdde546670",
+      "f9b68688-a8bf-4ce4-a0fd-2dc429442b3b",
+      "2f4abdf7-42d1-4fdf-9dcb-63de6007ab8e"
+    ]
+  },
+  "fortune": 5,
   "isPublic": false,
   "statut": "brouillon",
   "xp_total": 0,
   "xp_depense": 0,
-  "ownerUsername": "Inconnu",
-  "data": {},
+  "ownerUsername": "Azghâl",
+  "data": {
+    "stats_scellees": {
+      "atouts": [
+        "Contacts aristocratiques",
+        "Laboratoire secret"
+      ],
+      "pouvoirs": [
+        "Métamorphose en nuage",
+        "Regard dissuasif",
+        "Régénération toxique"
+      ],
+      "capaciteChoisie": "Vision thermique",
+      "caracteristiques": {
+        "force": 2,
+        "agilite": 5,
+        "precision": 3,
+        "sangFroid": 5,
+        "perception": 4,
+        "constitution": 4
+      },
+      "competencesLibres": {
+        "rangs": {
+          "Culture": 2,
+          "Conduite": 2,
+          "Sciences": 1,
+          "Fortitude": 1,
+          "Médecine": 1,
+          "Occultisme": 2,
+          "Monde du crime": 2
+        },
+        "choixSpecialite": {},
+        "specialiteMetier": {
+          "nom": "Pharmacopée*",
+          "comp": "Médecine"
+        },
+        "choixPredilection": {},
+        "choixSpecialiteUser": {
+          "Conduite": [
+            "Pilotage d'aéronefs*"
+          ],
+          "Sciences": [
+            "Faëologie"
+          ],
+          "Fortitude": [
+            "Maîtrise de soi "
+          ],
+          "Médecine": [
+            "Premiers soins"
+          ],
+          "Monde du crime": [
+            "Connaissance de la pègre"
+          ]
+        }
+      }
+    }
+  },
   "created_at": "2026-04-11T14:33:03.329972+00:00",
   "updated_at": "2026-04-11T14:33:53.695484+00:00"
 }

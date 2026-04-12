@@ -113,8 +113,76 @@ export function characterReducer(state, action) {
 
       break; // 👈 FIX : Le fameux break ! On sort du switch pour laisser le Calculateur faire son job en dessous !
     }
+	
     default:
       return state;
+  }
+
+  // ✨ L'HYDRATATION ABSOLUE (Le Dogme de l'Architecte)
+  // On grave la vérité absolue dans l'état React. Ainsi, toute sauvegarde envoyée
+  // à Supabase (ou extraite en JSON) contiendra 100% de l'ADN de naissance !
+  if (action.gameData?.fairyData && newState.typeFee) {
+    const feeData = action.gameData.fairyData[newState.typeFee];
+    
+    if (feeData) { // 👈 LA FAMEUSE ACCOLADE OUVERTE
+      
+      // 1. Aspiration des gènes innés
+      newState.anciennete = newState.anciennete || feeData.anciennete || feeData.era || 'traditionnelle';
+      newState.avantages = feeData.avantages || [];
+      newState.desavantages = feeData.desavantages || [];
+
+      // 2. Le Lisseur Grammatical (Accord automatique du sexe)
+      const isFemme = (newState.genreHumain || newState.sexe) === 'Femme' || (newState.genreHumain || newState.sexe) === 'Féminin';
+      const accorder = (texte) => {
+        if (!texte) return '';
+        const parts = texte.split('/');
+        return (isFemme && parts.length > 1) ? parts.at(1).trim() : parts.at(0).trim();
+      };
+
+      if (newState.traitsFeeriques) {
+        newState.traitsFeeriques = newState.traitsFeeriques.map(t => accorder(t));
+      }
+      if (newState.profils?.majeur?.trait) {
+        newState.profils.majeur.trait = accorder(newState.profils.majeur.trait);
+      }
+      if (newState.profils?.mineur?.trait) {
+        newState.profils.mineur.trait = accorder(newState.profils.mineur.trait);
+      }
+
+      // 3. Hydratation des caractéristiques de base
+      if (feeData.caracteristiques) {
+        const baseCaracs = {
+          agilite: feeData.caracteristiques.agilite?.min || 1,
+          constitution: feeData.caracteristiques.constitution?.min || 1,
+          force: feeData.caracteristiques.force?.min || 1,
+          precision: feeData.caracteristiques.precision?.min || 1,
+          esprit: feeData.caracteristiques.esprit?.min || 1,
+          perception: feeData.caracteristiques.perception?.min || 1,
+          prestance: feeData.caracteristiques.prestance?.min || 1,
+          sangFroid: feeData.caracteristiques.sangFroid?.min || 1,
+          feerie: feeData.caracteristiques.feerie?.min || 3,
+          masque: feeData.caracteristiques.masque?.min || 4
+        };
+
+        // Fusion sans écraser les investissements réels
+        newState.caracteristiques = { ...baseCaracs, ...(newState.caracteristiques || {}) };
+        
+        const tricherieBase = feeData.caracteristiques.tricherie?.min || Math.floor((newState.caracteristiques.feerie + newState.caracteristiques.masque) / 2);
+        newState.caracteristiques.tricherie = Math.max(tricherieBase, Math.floor((newState.caracteristiques.feerie + newState.caracteristiques.masque) / 2));
+
+        // Hydratation de l'Archive Scellée (Plancher de Verre)
+        if (newState.data?.stats_scellees?.caracteristiques) {
+          newState.data.stats_scellees.caracteristiques = {
+            ...baseCaracs,
+            ...newState.data.stats_scellees.caracteristiques
+          };
+          const sf = newState.data.stats_scellees.caracteristiques.feerie;
+          const sm = newState.data.stats_scellees.caracteristiques.masque;
+          const stBase = feeData.caracteristiques.tricherie?.min || Math.floor((sf + sm) / 2);
+          newState.data.stats_scellees.caracteristiques.tricherie = Math.max(stBase, Math.floor((sf + sm) / 2));
+        }
+      }
+    } // 👈 LA VOILÀ ! L'ACCOLADE MANQUANTE QUI FAISAIT CRASHER TON FICHIER !
   }
 
   // ✨ LE BOUCLIER ANTI-LAG (SHORT-CIRCUIT) ✨
@@ -243,6 +311,61 @@ export function characterReducer(state, action) {
       });
 
       // --- F. Enregistrement de TOUS les Totaux ---
+
+      // ✨ G. L'ANNUAIRE D'EXPORTATION (La Bible Autonome pour JSON et VTT externes)
+      const capacitesInnees = [];
+      if (feeData?.capacites?.fixe1?.nom && feeData.capacites.fixe1.nom !== 'Inconnu') capacitesInnees.push(feeData.capacites.fixe1.nom);
+      if (feeData?.capacites?.fixe2?.nom && feeData.capacites.fixe2.nom !== 'Inconnu') capacitesInnees.push(feeData.capacites.fixe2.nom);
+
+      const avantagesInnes = feeData?.avantages?.map(a => typeof a === 'string' ? a : a.nom) || [];
+      const desavantagesInnes = feeData?.desavantages?.map(d => typeof d === 'string' ? d : d.nom) || [];
+
+      // On compile TOUTES les spécialités du personnage (Innées, Achetées, Atouts, Métiers) en texte clair
+      const toutesLesSpecialites = [];
+      if (newState.competencesLibres?.specialiteMetier?.nom) toutesLesSpecialites.push(`${newState.competencesLibres.specialiteMetier.comp} : ${newState.competencesLibres.specialiteMetier.nom} (Métier)`);
+      
+      Object.entries(newState.competencesLibres?.choixSpecialiteUser || {}).forEach(([comp, specs]) => {
+        specs.forEach(s => toutesLesSpecialites.push(`${comp} : ${s} (Acquise)`));
+      });
+      
+      if (feeData?.competencesPredilection) {
+        feeData.competencesPredilection.forEach((pred, idx) => {
+          const feeSpec = pred.specialite || (pred.isSpecialiteChoix ? newState.competencesLibres?.choixSpecialite?.[idx] : null);
+          if (feeSpec) toutesLesSpecialites.push(`${pred.nom} : ${feeSpec} (Innée)`);
+        });
+      }
+      
+      (newState.atouts || []).forEach(atoutId => {
+        const atoutDef = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
+        if (atoutDef?.effets_techniques) {
+          try {
+            const tech = typeof atoutDef.effets_techniques === 'string' ? JSON.parse(atoutDef.effets_techniques) : atoutDef.effets_techniques;
+            if (tech.specialites) tech.specialites.forEach(s => toutesLesSpecialites.push(`${s.competence} : ${s.nom} (Atout)`));
+          } catch(e) {}
+        }
+      });
+
+      // On traduit les UUIDs de l'inventaire en noms lisibles
+      const inventaireLisible = { armes_equipements: [], contacts: [], langues: [], titres: [] };
+      const allBoughtIds = Object.values(newState.vieSociale || {}).flat();
+      if (action.gameData?.socialItems) {
+        const boughtItems = action.gameData.socialItems.filter(item => allBoughtIds.includes(item.id));
+        inventaireLisible.langues = boughtItems.filter(i => i.categorie === 'langue').map(i => i.nom);
+        inventaireLisible.contacts = boughtItems.filter(i => i.categorie === 'contact').map(i => i.nom);
+        inventaireLisible.titres = boughtItems.filter(i => i.categorie === 'titre').map(i => i.nom);
+        inventaireLisible.armes_equipements = boughtItems.filter(i => !['langue', 'contact', 'titre'].includes(i.categorie)).map(i => i.nom);
+      }
+
+      const bibleAutonome = {
+        capacites_innees: capacitesInnees,
+        avantages_innes: avantagesInnes,
+        desavantages_innes: desavantagesInnes,
+        specialites_globales: toutesLesSpecialites,
+        inventaire_lisible: inventaireLisible
+      };
+
+      // ---------------------------------------------------------
+
       newState.computedStats = {
         entregentTotal: Math.min(8, entregent),
         contactsGratuits: bonusPrestance + bonusEntregent,
@@ -251,11 +374,12 @@ export function characterReducer(state, action) {
         competencesBase: competencesBase,
         competencesTotal: competencesTotal,
         predFinales: predFinales,
-        // 👇 ON SAUVEGARDE LES FUTILES ICI !
         futilesPredFinales: futilesPredFinales,
         futilesBase: futilesBase,
-        futilesTotal: futilesTotal
+        futilesTotal: futilesTotal,
+        bible_autonome: bibleAutonome // ✨ ON RANGE LA BIBLE ICI !
       };
     }
+
     return newState;
   }

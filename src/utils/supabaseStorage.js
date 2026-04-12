@@ -1,9 +1,4 @@
 // src/utils/supabaseStorage.js
-// 12.0.0
-// 13.1.0 // 13.3.0 // 13.10.0 // 13.12.0
-// 14.9.0
-// Optimisé
-
 import { supabase } from '../config/supabase';
 
 // ============================================================================
@@ -16,103 +11,85 @@ const OFFLINE_STORAGE_KEY = 'heritiers_character_cache';
 let userCharactersCache = null;
 
 /**
- * Nettoie les données pour optimiser le stockage JSONB.
- */
-const cleanupCharacterData = (char) => {
-    const cleanRangs = (rangs) => 
-        Object.fromEntries(Object.entries(rangs || {}).filter(([_, v]) => v > 0));
-
-    return {
-        ...char,
-        competencesLibres: {
-            ...char.competencesLibres,
-            rangs: cleanRangs(char.competencesLibres?.rangs)
-        },
-        competencesFutiles: {
-            ...char.competencesFutiles,
-            rangs: cleanRangs(char.competencesFutiles?.rangs)
-        }
-    };
-};
-
-/**
  * Mappage Universel : Gère les colonnes SQL (snake_case) ET les vieux JSON (camelCase).
  */
 const mapDatabaseToCharacter = (char) => {
-    // 1. Sécurité : On essaie de récupérer les données, qu'elles soient à la racine ou dans un champ 'data'
-    const source = { ...char.data, ...char };
+  // 1. Sécurité : On essaie de récupérer les données, qu'elles soient à la racine ou dans un champ 'data'
+  const source = { ...char.data, ...char };
 
-    // 2. Extraction permissive des blocs de compétences (snake_case OU camelCase)
-    const cLibres = source.competences_libres || source.competencesLibres || {};
-    const cFutiles = source.competences_futiles || source.competencesFutiles || {};
+  // 2. Extraction permissive des blocs de compétences
+  const cLibres = source.competences_libres || source.competencesLibres || {};
+  const cFutiles = source.competences_futiles || source.competencesFutiles || {};
 
-    return {
-        id: source.id,
-        userId: source.user_id,
-        nom: source.nom || 'Sans nom',
-		sexe: source.sexe || '',
-        
-        // Champs Identité Féérique (Nouveaux)
-        nomFeerique: source.nom_feerique || source.nomFeerique || '',
-        genreHumain: source.genre_humain || source.genreHumain || '',
-        traitsFeeriques: source.traits_feeriques || source.traitsFeeriques || [],
+  return {
+    id: source.id,
+    userId: source.user_id,
+    nom: source.nom || 'Sans nom',
+    sexe: source.sexe || '',
+    
+    // Champs Identité Féérique
+    nomFeerique: source.nom_feerique || source.nomFeerique || '',
+    genreHumain: source.genre_humain || source.genreHumain || '',
+    traitsFeeriques: source.traits_feeriques || source.traitsFeeriques || [],
+    typeFee: source.type_fee || source.typeFee || '',
+    anciennete: source.anciennete || '',
+    
+    // Champs Apparence
+    apparence: source.apparence || '',
+    taille: source.taille || '',
+    poids: source.poids || '',
+    
+    caracteristiques: source.caracteristiques || {},
+    profils: source.profils || {
+      majeur: { nom: '', trait: '', competences: [] },
+      mineur: { nom: '', trait: '', competences: [] }
+    },
+    
+    competencesLibres: {
+      ...cLibres,
+      rangs: cLibres.rangs || {},
+      choixPredilection: cLibres.choixPredilection || {},
+      choixSpecialite: cLibres.choixSpecialite || {},
+      choixSpecialiteUser: cLibres.choixSpecialiteUser || {},
+      specialiteMetier: cLibres.specialite_metier || cLibres.specialiteMetier || null
+    },
+    
+    competencesFutiles: {
+      ...cFutiles,
+      rangs: cFutiles.rangs || {},
+      choixPredilection: cFutiles.choixPredilection || {},
+      personnalisees: cFutiles.personnalisees || [],
+      precisions: cFutiles.precisions || {} // ✨ FIX : On n'oublie plus les précisions !
+    },
+    
+    capaciteChoisie: source.capacite_choisie || source.capaciteChoisie || '',
+    pouvoirs: source.pouvoirs || [],
+    atouts: source.atouts || [],
+    
+    // ✨ FIX : LES CHAMPS MANQUANTS (Génétique, Portrait, Transfert)
+    avantages: source.avantages || [],
+    desavantages: source.desavantages || [],
+    transfer_code: source.transfer_code || source.transferCode || null,
+    portrait_masked_url: source.portrait_masked_url || source.portraitMaskedUrl || '',
+    portrait_unmasked_url: source.portrait_unmasked_url || source.portraitUnmaskedUrl || '',
+    is_unmasked_revealed: source.is_unmasked_revealed || source.isUnmaskedRevealed || false,
+    is_insolite: source.is_insolite || source.isInsolite || false,
+    species_ids: source.species_ids || source.speciesIds || [],
 
-        // Tente de lire type_fee (base) ou typeFee (vieux JSON)
-        typeFee: source.type_fee || source.typeFee || '',
-        anciennete: source.anciennete || '',
-
-        // Champs Apparence
-        apparence: source.apparence || '', 
-        taille: source.taille || '',       
-        poids: source.poids || '',         
-
-        caracteristiques: source.caracteristiques || {},
-        profils: source.profils || { 
-            majeur: { nom: '', trait: '', competences: [] }, 
-            mineur: { nom: '', trait: '', competences: [] } 
-        },
-
-		competencesLibres: {
-		  // ✨ LE BOUCLIER ULTIME : On utilise le Spread Operator pour attraper toutes les nouveautés
-		  ...cLibres,
-		  
-		  // Et on garde tes valeurs par défaut historiques de sécurité :
-		  rangs: cLibres.rangs || {},
-		  choixPredilection: cLibres.choixPredilection || {},
-		  choixSpecialite: cLibres.choixSpecialite || {},
-		  choixSpecialiteUser: cLibres.choixSpecialiteUser || {},
-		  
-		  // ✨ LE LAISSEZ-PASSER EXPLICITE EST LÀ :
-		  specialiteMetier: cLibres.specialite_metier || cLibres.specialiteMetier || null
-		},
-
-        competencesFutiles: {
-            rangs: cFutiles.rangs || {},
-            choixPredilection: cFutiles.choixPredilection || {},
-            personnalisees: cFutiles.personnalisees || []
-        },
-
-        capaciteChoisie: source.capacite_choisie || source.capaciteChoisie || '',
-        pouvoirs: source.pouvoirs || [],
-
-		atouts: source.atouts || [],
-		vieSociale: source.vie_sociale || source.vieSociale || {},
-		fortune: source.fortune || 0,
-
-        isPublic: source.is_public || source.isPublic || false,
-	    statut: source.statut || 'brouillon',
-        
-		xp_total: source.xp_total || 0,
-        xp_depense: source.xp_depense || 0,
-
-	    ownerUsername: source.profiles?.username || 'Inconnu',
-
-        data: source.data || {},
-        
-        // Dates : Gestion souple
-        created_at: source.created_at || new Date().toISOString(),
-        updated_at: source.updated_at || new Date().toISOString()
-    };
+    vieSociale: source.vie_sociale || source.vieSociale || {},
+    fortune: source.fortune || 0,
+    isPublic: source.is_public || source.isPublic || false,
+    statut: source.statut || 'brouillon',
+    xp_total: source.xp_total || 0,
+    xp_depense: source.xp_depense || 0,
+    
+    // ✨ FIX : On récupère enfin le vrai pseudo grâce à la jointure SQL
+    ownerUsername: source.profiles?.username || 'Inconnu',
+    
+    data: source.data || {},
+    created_at: source.created_at || new Date().toISOString(),
+    updated_at: source.updated_at || new Date().toISOString()
+  };
 };
 
 // ============================================================================
@@ -187,9 +164,10 @@ export const getPublicCharacters = async () => {
 };
 
 export const saveCharacterToSupabase = async (character) => {
-    // 1. Préparation des données (Nettoyage)
-    const cleaned = cleanupCharacterData(character);
-    const idTemp = character.id || `temp_${Date.now()}`;
+  // 1. ✨ LE NOUVEAU DOGME : La Vérité Absolue (On ne nettoie plus rien !)
+  const cleaned = character; 
+  
+  const idTemp = character.id || `temp_${Date.now()}`;
 
     // 2. SAUVEGARDE LOCALE IMMÉDIATE (Sécurité Mobile)
     const currentCache = getOfflineMirror();
@@ -205,48 +183,77 @@ export const saveCharacterToSupabase = async (character) => {
     updateOfflineMirror([charToCache, ...otherChars]);
 
     try {
-        // 3. Tentative de sauvegarde Cloud
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Utilisateur non connecté (Sauvegarde locale uniquement)');
+      // 3. Tentative de sauvegarde Cloud
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Utilisateur non connecté (Sauvegarde locale uniquement)');
 
-        const characterData = {
-            user_id: user.id,
-            nom: cleaned.nom,
-            sexe: cleaned.sexe,
-            type_fee: cleaned.typeFee,
-            anciennete: cleaned.anciennete,
-            
-            // --- CHAMPS IDENTITÉ FÉÉRIQUE & APPARENCE ---
-            nom_feerique: cleaned.nomFeerique,
-            genre_humain: cleaned.genreHumain,
-            traits_feeriques: cleaned.traitsFeeriques,
-            
-            apparence: cleaned.apparence,
-            taille: cleaned.taille,
-            poids: cleaned.poids,
-            // --------------------------------------------
+      // 🧠 L'ULTIME VÉRITÉ : Le Calculateur de Combat pour l'Export JSON !
+      // On calcule l'Esquive, la Parade, l'Initiative et les PV pour les figer dans l'archive.
+      const stats = cleaned.computedStats?.competencesTotal || {};
+      const getS = (comp) => stats[comp] || 0;
+      const agi = cleaned.caracteristiques?.agilite || 1;
+      const con = cleaned.caracteristiques?.constitution || 1;
+      const esp = cleaned.caracteristiques?.esprit || 1;
+      const sf = cleaned.caracteristiques?.sangFroid || 1;
 
-            caracteristiques: cleaned.caracteristiques,
-            profils: cleaned.profils,
-            competences_libres: cleaned.competencesLibres,
-            competences_futiles: cleaned.competencesFutiles,
-            
-            capacite_choisie: cleaned.capaciteChoisie,
-            pouvoirs: cleaned.pouvoirs,
- 		    
-			atouts: cleaned.atouts,
-			vie_sociale: cleaned.vieSociale,
-			fortune: cleaned.fortune,
-            
-            is_public: cleaned.isPublic || false,
-			statut: cleaned.statut || 'brouillon',
+      const combatStats = {
+          esquive: getS('Mouvement') + agi + 5,
+          parade: getS('Mêlée') + agi + 5,
+          resPhys: getS('Ressort') + con + 5,
+          resPsych: getS('Fortitude') + esp + 5,
+          initiative: getS('Art de la guerre') + sf,
+          pvMax: (3 * con) + 9
+      };
 
-            xp_total: character.xp_total || 0,
-            xp_depense: character.xp_depense || 0,
-            data: cleaned.data || {},
-	  
-            updated_at: new Date().toISOString()
-        };
+      const absoluteComputedStats = {
+          ...(cleaned.computedStats || {}),
+          combat: combatStats
+      };
+
+      // 🧠 LE COMPACTEUR JSONB : On fige la vérité mathématique dans Supabase
+      const newDataJson = {
+        ...(cleaned.data || {}),
+        avantages: cleaned.avantages || [],
+        desavantages: cleaned.desavantages || [],
+        transfer_code: cleaned.transfer_code || null,
+        portrait_masked_url: cleaned.portrait_masked_url || '',
+        portrait_unmasked_url: cleaned.portrait_unmasked_url || '',
+        is_unmasked_revealed: cleaned.is_unmasked_revealed || false,
+        is_insolite: cleaned.is_insolite || false,
+        species_ids: cleaned.species_ids || [],
+        // ✨ LA VÉRITÉ ABSOLUE : On exporte tous les totaux calculés par le moteur !
+        computed_stats: absoluteComputedStats 
+      };
+
+      const characterData = {
+        user_id: user.id,
+        nom: cleaned.nom,
+        sexe: cleaned.sexe,
+        type_fee: cleaned.typeFee,
+        anciennete: cleaned.anciennete,
+        nom_feerique: cleaned.nomFeerique,
+        genre_humain: cleaned.genreHumain,
+        traits_feeriques: cleaned.traitsFeeriques,
+        apparence: cleaned.apparence,
+        taille: cleaned.taille,
+        poids: cleaned.poids,
+        caracteristiques: cleaned.caracteristiques,
+        profils: cleaned.profils,
+        competences_libres: cleaned.competencesLibres,
+        competences_futiles: cleaned.competencesFutiles,
+        capacite_choisie: cleaned.capaciteChoisie,
+        pouvoirs: cleaned.pouvoirs,
+        atouts: cleaned.atouts,
+        vie_sociale: cleaned.vieSociale,
+        fortune: cleaned.fortune,
+        is_public: cleaned.isPublic || false,
+        statut: cleaned.statut || 'brouillon',
+        xp_total: character.xp_total || 0,
+        xp_depense: character.xp_depense || 0,
+        data: newDataJson, // ✨ FIX : On envoie le JSONB recompilé avec 100% de l'ADN !
+        updated_at: new Date().toISOString()
+      };
+
 
         let savedData;
 
@@ -328,7 +335,8 @@ export const getFullCharacter = async (characterId) => {
   try {
     const { data, error } = await supabase
       .from('characters')
-      .select('*')
+      // ✨ FIX : La jointure indispensable pour récupérer le vrai ownerUsername !
+      .select('*, profiles(username)') 
       .eq('id', characterId)
       .single();
 

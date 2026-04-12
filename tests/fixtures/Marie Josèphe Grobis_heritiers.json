@@ -4,14 +4,29 @@
   "nom": "Marie Josèphe Grobis",
   "sexe": "Femme",
   "nomFeerique": "",
-  "genreHumain": "",
-  "traitsFeeriques": [],
+  "genreHumain": "Féminin",
+  "traitsFeeriques": [
+    "Malicieux/Malicieuse",
+    "Paresseux/Paresseuse"
+  ],
   "typeFee": "Bastet",
   "anciennete": "",
   "apparence": "",
   "taille": "",
   "poids": "",
-  "caracteristiques": {},
+  "caracteristiques": {
+    "force": 3,
+    "esprit": 2,
+    "feerie": 3,
+    "masque": 4,
+    "agilite": 4,
+    "precision": 3,
+    "prestance": 3,
+    "sangFroid": 3,
+    "tricherie": 3,
+    "perception": 5,
+    "constitution": 3
+  },
   "profils": {
     "majeur": {
       "nom": "Aventurier",
@@ -36,28 +51,294 @@
     "activiteDomaine": "Braconnier"
   },
   "competencesLibres": {
-    "rangs": {},
-    "choixPredilection": {},
+    "rangs": {
+      "Survie": 1,
+      "Mêlée": 2,
+      "Ressort": 1,
+      "Comédie": 3,
+      "Fortitude": 1,
+      "Mouvement": 1,
+      "Discrétion": 1,
+      "Observation": 1,
+      "Rhétorique": 1,
+      "Sensibilité": 1,
+      "Art de la guerre": 1
+    },
     "choixSpecialite": {},
-    "choixSpecialiteUser": {},
-    "specialiteMetier": null
+    "specialiteMetier": {
+      "nom": "Premiers soins",
+      "comp": "Survie"
+    },
+    "choixPredilection": {},
+    "choixSpecialiteUser": {
+      "Survie": [],
+      "Mêlée": [
+        "Armes naturelles"
+      ],
+      "Comédie": [],
+      "Conduite": [
+        "Conduite d'attelage*"
+      ]
+    }
   },
   "competencesFutiles": {
-    "rangs": {},
-    "choixPredilection": {},
-    "personnalisees": []
+    "rangs": {
+      "Jeux": 1,
+      "Couture": 2,
+      "Ménage": 2,
+      "Agriculture": 2,
+      "Potins mondains": 3
+    },
+    "precisions": {},
+    "personnalisees": [],
+    "choixPredilection": {
+      "0": "Potins mondains"
+    }
   },
-  "capaciteChoisie": "",
-  "pouvoirs": [],
-  "atouts": [],
-  "vieSociale": {},
-  "fortune": 0,
+  "capaciteChoisie": "Perception accrue",
+  "pouvoirs": [
+    "Métamorphose en chat",
+    "Réflexe surhumain",
+    "Prédation"
+  ],
+  "atouts": [
+    "Ami des chats",
+    "Spécialités typiques (bastet)"
+  ],
+  "avantages": [],
+  "desavantages": [],
+  "transfer_code": null,
+  "portrait_masked_url": "",
+  "portrait_unmasked_url": "",
+  "is_unmasked_revealed": false,
+  "is_insolite": false,
+  "species_ids": [],
+  "vieSociale": {
+    "Roublard": [
+      "a8d71db5-8ac7-4605-8883-7d0aeb75899b",
+      "474ed9ac-88fa-4dbf-b923-f9cc60a226d4",
+      "9cc2a68e-7b6a-4461-8c47-d6bf3a67c451"
+    ],
+    "Aventurier": [
+      "2b00a36b-6425-4044-ace4-0405344d5158",
+      "314e94d9-4d64-43f2-adb3-30b4a74390f4"
+    ]
+  },
+  "fortune": 3,
   "isPublic": false,
   "statut": "scelle",
   "xp_total": 0,
   "xp_depense": 0,
-  "ownerUsername": "Inconnu",
-  "data": {},
+  "ownerUsername": "Azghâl",
+  "data": {
+    "avantages": [],
+    "is_insolite": false,
+    "species_ids": [],
+    "desavantages": [],
+    "transfer_code": null,
+    "computed_stats": {
+      "combat": {
+        "pvMax": 18,
+        "parade": 11,
+        "esquive": 12,
+        "resPhys": 11,
+        "resPsych": 8,
+        "initiative": 4
+      },
+      "budgetsPP": {
+        "Savant": 0,
+        "Érudit": 0,
+        "Roublard": 6,
+        "Gentleman": 1,
+        "Aventurier": 11,
+        "Combattant": 0
+      },
+      "futilesBase": {
+        "Jeux": 2,
+        "Couture": 0,
+        "Ménage": 0,
+        "Agriculture": 0,
+        "Potins mondains": 2
+      },
+      "predFinales": [
+        "Classe",
+        "Habiletés",
+        "Larcin",
+        "Séduction",
+        "Survie"
+      ],
+      "futilesTotal": {
+        "Jeux": 3,
+        "Couture": 2,
+        "Ménage": 2,
+        "Agriculture": 2,
+        "Potins mondains": 5
+      },
+      "rangsProfils": {
+        "Savant": 0,
+        "Érudit": 0,
+        "Roublard": 2,
+        "Gentleman": 1,
+        "Aventurier": 3,
+        "Combattant": 0
+      },
+      "bible_autonome": {
+        "avantages_innes": [
+          "Belle mine (+2 pour séduire quelqu'un)",
+          "Contorsionniste (entre dans tout passage dont le diamètre minimal laisse passer sa tête)"
+        ],
+        "capacites_innees": [
+          "Pattes de velours",
+          "Vision nocturne"
+        ],
+        "desavantages_innes": [
+          "Paresseux/Paresseuse (refuse toute activité sale, humiliante ou fatigante, -1 s'il s'y force)",
+          "Joueur/Joueuse (s'amuse de tout, surtout si dangereux/inutile, fortitude + sang-froid pour résister à la tentation du jeu)"
+        ],
+        "inventaire_lisible": {
+          "titres": [],
+          "langues": [
+            "Argot",
+            "1 Langue européenne"
+          ],
+          "contacts": [
+            "Un informateur (Humain)",
+            "Un informateur (Fée Paria)"
+          ],
+          "armes_equipements": [
+            "Braconnier"
+          ]
+        },
+        "specialites_globales": [
+          "Survie : Premiers soins (Métier)",
+          "Mêlée : Armes naturelles (Acquise)",
+          "Conduite : Conduite d'attelage* (Acquise)",
+          "Classe : Elégance (Innée)",
+          "Habiletés : Ingéniosité (Innée)",
+          "Survie : Chasse (Atout)",
+          "Habiletés : Moyens improvisés (Atout)"
+        ]
+      },
+      "entregentTotal": 0,
+      "competencesBase": {
+        "Tir": 0,
+        "Classe": 2,
+        "Larcin": 3,
+        "Survie": 4,
+        "Culture": 0,
+        "Mêlée": 0,
+        "Ressort": 2,
+        "Comédie": 1,
+        "Conduite": 2,
+        "Sciences": 0,
+        "Autorité": 0,
+        "Entregent": 0,
+        "Fortitude": 0,
+        "Mouvement": 2,
+        "Médecine": 0,
+        "Habiletés": 2,
+        "Occultisme": 0,
+        "Séduction": 2,
+        "Discrétion": 1,
+        "Observation": 0,
+        "Rhétorique": 0,
+        "Sensibilité": 0,
+        "Monde du crime": 1,
+        "Art de la guerre": 0
+      },
+      "competencesTotal": {
+        "Tir": 0,
+        "Classe": 2,
+        "Larcin": 3,
+        "Survie": 5,
+        "Culture": 0,
+        "Mêlée": 2,
+        "Ressort": 3,
+        "Comédie": 4,
+        "Conduite": 2,
+        "Sciences": 0,
+        "Autorité": 0,
+        "Entregent": 0,
+        "Fortitude": 1,
+        "Mouvement": 3,
+        "Médecine": 0,
+        "Habiletés": 2,
+        "Occultisme": 0,
+        "Séduction": 2,
+        "Discrétion": 2,
+        "Observation": 1,
+        "Rhétorique": 1,
+        "Sensibilité": 1,
+        "Monde du crime": 1,
+        "Art de la guerre": 1
+      },
+      "contactsGratuits": 0,
+      "futilesPredFinales": [
+        "Potins mondains",
+        "Jeux"
+      ]
+    },
+    "stats_scellees": {
+      "atouts": [
+        "Ami des chats",
+        "Spécialités typiques (bastet)"
+      ],
+      "pouvoirs": [
+        "Métamorphose en chat",
+        "Réflexe surhumain",
+        "Prédation"
+      ],
+      "capaciteChoisie": "Perception accrue",
+      "caracteristiques": {
+        "force": 3,
+        "esprit": 2,
+        "feerie": 3,
+        "masque": 4,
+        "agilite": 4,
+        "precision": 3,
+        "prestance": 3,
+        "sangFroid": 3,
+        "tricherie": 3,
+        "perception": 5,
+        "constitution": 3
+      },
+      "competencesLibres": {
+        "rangs": {
+          "Survie": 1,
+          "Mêlée": 2,
+          "Ressort": 1,
+          "Comédie": 3,
+          "Entregent": 0,
+          "Fortitude": 1,
+          "Mouvement": 1,
+          "Discrétion": 1,
+          "Observation": 1,
+          "Rhétorique": 1,
+          "Sensibilité": 1,
+          "Art de la guerre": 1
+        },
+        "choixSpecialite": {},
+        "specialiteMetier": {
+          "nom": "Chasse",
+          "comp": "Survie"
+        },
+        "choixPredilection": {},
+        "choixSpecialiteUser": {
+          "Survie": [],
+          "Mêlée": [
+            "Armes naturelles"
+          ],
+          "Comédie": [],
+          "Conduite": [
+            "Conduite d'attelage*"
+          ]
+        }
+      }
+    },
+    "portrait_masked_url": "",
+    "is_unmasked_revealed": false,
+    "portrait_unmasked_url": ""
+  },
   "created_at": "2026-03-31T10:44:35.852482+00:00",
-  "updated_at": "2026-03-31T14:35:14.128087+00:00"
+  "updated_at": "2026-04-12T10:23:08.182721+00:00"
 }
