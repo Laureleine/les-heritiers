@@ -1,7 +1,4 @@
 // src/utils/sqlGenerator.js
-// 10.5.0 // 10.10.0
-// 12.1.0
-// 13.0.3
 
 export const generateApprovalSQL = (change, seal = false) => {
   // ✨ L'OUBLI ÉTAIT ICI : On déballe toutes les variables nécessaires
@@ -35,14 +32,18 @@ export const generateApprovalSQL = (change, seal = false) => {
       const setClauses = Object.entries(mainData).map(([key, value]) => {
         return `${key} = ${formatSQLValue(value)}`;
       }).join(',\n  ');
-      sqlQuery += `UPDATE public.${change.table_name}\nSET ${setClauses}\nWHERE id = '${targetId}';\n`;
+
+      // ✨ FIX 1 : On ne génère le UPDATE que s'il y a de vraies colonnes à modifier !
+      if (setClauses.length > 0) {
+        sqlQuery += `UPDATE public.${change.table_name}\nSET ${setClauses}\nWHERE id = '${targetId}';\n`;
+      }
     }
-  }
+  } // 👈 Fin stricte du grand bloc "if (Object.keys(mainData).length > 0)"
 
   if (_relations) {
-	// ... Fées -> Relations sortantes ...
-	if (_relations.capacites) {
-	  sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE fairy_type_id = '${targetId}';\n`;
+    // 🔗 ICI on attaque directement les relations, SANS refaire d'UPDATE !
+    if (_relations.capacites) {
+      sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE fairy_type_id = '${targetId}';\n`;
 	  if (_relations.capacites.length > 0) {
 		const inserts = _relations.capacites.map(c => `('${targetId}', '${c.id}', '${c.type}')`).join(', ');
 		sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
@@ -161,43 +162,45 @@ export const generateApprovalSQL = (change, seal = false) => {
       }
     }
 	
-	// 🔗 NOUVEAU : GESTION DES RELATIONS INVERSÉES (Lier à une Fée)
+  // 🔗 NOUVEAU : GESTION DES RELATIONS INVERSÉES (Lier à une Fée)
   if (_relations.fairyIds !== undefined) {
-	const isArray = Array.isArray(_relations.fairyIds);
-	const removed = isArray ? [] : (_relations.fairyIds.removed || []);
-	const added = isArray ? _relations.fairyIds : (_relations.fairyIds.added || []);
+    const isArray = Array.isArray(_relations.fairyIds);
+    const removed = isArray ? [] : (_relations.fairyIds.removed || []);
+    const added = isArray ? _relations.fairyIds : (_relations.fairyIds.added || []);
 
-	if (change.table_name === 'fairy_capacites') {
-	  if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}';\n`;
-	  else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
-	  
-	  if (added.length > 0) {
-		const inserts = added.map(fId => `('${fId}', '${targetId}', 'choix')`).join(', ');
-		sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
-	  }
-	}
+    if (change.table_name === 'fairy_capacites') {
+      if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}';\n`;
+      else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_capacites WHERE capacite_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
 
-	if (change.table_name === 'fairy_powers') {
-	  if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}';\n`;
-	  else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
-	  
-	  if (added.length > 0) {
-		const inserts = added.map(fId => `('${fId}', '${targetId}')`).join(', ');
-		sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
-	  }
-	}
+      if (added.length > 0) {
+        const inserts = added.map(fId => `('${fId}', '${targetId}', 'choix')`).join(', ');
+        sqlQuery += `INSERT INTO public.fairy_type_capacites (fairy_type_id, capacite_id, capacite_type) VALUES ${inserts};\n`;
+      }
+    } 
+    // ✨ FIX 2 : On ajoute la prise en charge des Pouvoirs !
+    else if (change.table_name === 'fairy_powers') {
+      if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}';\n`;
+      else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_powers WHERE power_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
 
-	if (change.table_name === 'fairy_assets') {
-	  if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}';\n`;
-	  else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
-	  
-	  if (added.length > 0) {
-		const inserts = added.map(fId => `('${fId}', '${targetId}')`).join(', ');
-		sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
-	  }
-	}
+      if (added.length > 0) {
+        const inserts = added.map(fId => `('${fId}', '${targetId}')`).join(', ');
+        sqlQuery += `INSERT INTO public.fairy_type_powers (fairy_type_id, power_id) VALUES ${inserts};\n`;
+      }
+    }
+    // ✨ FIX 3 : On ajoute la prise en charge des Atouts !
+    else if (change.table_name === 'fairy_assets') {
+      if (isArray) sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}';\n`;
+      else if (removed.length > 0) sqlQuery += `\nDELETE FROM public.fairy_type_assets WHERE asset_id = '${targetId}' AND fairy_type_id IN (${removed.map(id => `'${id}'`).join(', ')});\n`;
+
+      if (added.length > 0) {
+        const inserts = added.map(fId => `('${fId}', '${targetId}')`).join(', ');
+        sqlQuery += `INSERT INTO public.fairy_type_assets (fairy_type_id, asset_id) VALUES ${inserts};\n`;
+      }
+    }
   }
-}
+
+  return sqlQuery;
+};
 
   // 🛡️ Scellage de l'élément si demandé par le Conseil
   if (seal) {
