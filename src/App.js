@@ -7,7 +7,7 @@ import { saveCharacterToSupabase, toggleCharacterVisibility } from './utils/supa
 import { useAutoUpdate } from './hooks/useAutoUpdate';
 import { showInAppNotification } from './utils/SystemeServices';
 import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
-import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import * as LucideIcons from 'lucide-react';
 
 // --- IMPORTS STATIQUES (Essentiels au démarrage) ---
@@ -23,7 +23,7 @@ import JournalAmeModal from './components/JournalAmeModal'; // ✨ L'INCISION : 
 import { exportToPDF } from './utils/pdfGenerator';
 import { STEP_CONFIG } from './data/DictionnaireJeu';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
-import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock, Bug } from 'lucide-react';
+import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock } from 'lucide-react';
 
 // ✨ FIX : LE CODE SPLITTING (Lazy Loading)
 // Ces composants lourds ne seront téléchargés par le navigateur QUE lorsque le joueur cliquera dessus !
@@ -37,9 +37,10 @@ const RegistrePage = lazy(() => import('./components/forge/RegistrePage'));
 
 // --- IMPORTS DES ÉTAPES ---
 const Step1 = lazy(() => import('./components/Step1'));
-const Step2 = lazy(() => import('./components/StepMagie').then(module => ({ default: module.Step2 })));
-const Step3 = lazy(() => import('./components/StepMagie').then(module => ({ default: module.Step3 })));
-const StepAtouts = lazy(() => import('./components/StepMagie').then(module => ({ default: module.StepAtouts })));
+// ✨ FIX : Finies les promesses imbriquées complexes, on appelle les composants isolés !
+const StepCapacites = lazy(() => import('./components/StepCapacites'));
+const StepPouvoirs = lazy(() => import('./components/StepPouvoirs'));
+const StepAtouts = lazy(() => import('./components/StepAtouts'));
 const StepCaracteristiques = lazy(() => import('./components/StepCaracteristiques'));
 const StepProfils = lazy(() => import('./components/StepProfils'));
 const StepCompetencesLibres = lazy(() => import('./components/competencesLibres/StepCompetencesLibres'));
@@ -58,7 +59,6 @@ function App() {
   const [globalLoading, setGlobalLoading] = useState(true);
   const [loadingStep, setLoadingStep] = useState('Démarrage...');
   const navigate = useNavigate();
-  const location = useLocation();
   const [step, setStep] = useState(1);
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -98,9 +98,9 @@ function App() {
     isInitializingRef.current = true; 
 
     const safetyTimer = setTimeout(() => {
-      if (mounted && globalLoading) {
+      if (mounted) {
         setGlobalLoading(false);
-        isInitializingRef.current = false; 
+        isInitializingRef.current = false;
       }
     }, 30000);
 
@@ -257,15 +257,11 @@ function App() {
 
   // 🌟 LE DICTIONNAIRE DES ÉTAPES (Protégé par useMemo)
   const stepComponents = useMemo(() => ({
-    1: <Step1 />, 2: <Step2 />, 3: <Step3 />, 4: <StepAtouts />,
+    1: <Step1 />, 2: <StepCapacites />, 3: <StepPouvoirs />, 4: <StepAtouts />,
     5: <StepCaracteristiques />, 6: <StepProfils />, 7: <StepCompetencesLibres />,
     8: <StepCompetencesFutiles />, 9: <StepVieSociale />, 10: <StepPersonnalisation />,
     11: <StepRecapitulatif />
-  }), [
-    Step1, Step2, Step3, StepAtouts, StepCaracteristiques,
-    StepProfils, StepCompetencesLibres, StepCompetencesFutiles,
-    StepVieSociale, StepPersonnalisation, StepRecapitulatif
-  ]);
+  }), []); // ✨ FIX : On vide le tableau ! Les composants Lazy globaux ne mutent jamais.
 
   // ========================================================================
   // ✨ GESTION MANUELLE DE L'EXPÉRIENCE (LE PUITS DES ÂMES)

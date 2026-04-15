@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.14 - "La Décapitation du Monstre 🐉"',
+    date: '15 Avril 2026',
+    changes: [
+      '🏗️ **Architecture (Refactoring) :** Éclatement du "God Component" historique `StepMagie.js`. Les étapes de Capacités Naturelles, Pouvoirs et Atouts possèdent désormais leurs propres fichiers isolés et autonomes.',
+      '⚡ **Performances (Code Splitting) :** Grâce à cette séparation structurelle, le mécanisme de chargement asynchrone (Lazy Loading) fonctionne enfin de manière optimale. Le navigateur ne télécharge désormais le code de la magie qu\'au moment exact où l\'Héritier pose le pied sur l\'étape correspondante, allégeant drastiquement le poids de la page.'
+    ]
+  },  {
+    version: '15.8.13 - "Le Garde à la Porte 🚪"',
+    date: '12 Avril 2026',
+    changes: [
+      '🛡️ **Télégraphe Pneumatique (Sécurité) :** Résolution d\'une brèche de confidentialité causée par le moteur Temps Réel. Les canaux réservés (comme le Cercle des Initiés) sont désormais rigoureusement masqués de l\'affichage en mode "Flux Unifié" pour les Héritiers ne disposant pas de l\'accréditation adéquate.',
+      '⚙️ **Télégraphe Pneumatique (Fiabilité) :** Le moteur de rapatriement des archives interroge désormais explicitement la base de données pour charger l\'historique des conversations du Cercle des Initiés lors d\'une nouvelle connexion.'
+    ]
+  },  {
     version: '15.8.12 - "Le Sexe des Fées 🧚"',
     date: '12 Avril 2026',
     changes: [
