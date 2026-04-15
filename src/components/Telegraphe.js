@@ -76,12 +76,13 @@ export default function Telegraphe({ session, userProfile }) {
       if (cercleIds.length > 0) {
         queryOr += `,and(type.eq.cercle,cercle_id.in.(${cercleIds.join(',')}))`;
       }
-      
-      // ✨ NOUVEAU : On ajoute le canal VIP si l'Héritier a le droit !
+
+      // ✨ FIX 1 : On ordonne au douanier Supabase de nous envoyer les archives des Initiés !
       if (isInitiated) {
         queryOr += `,type.eq.initie`;
       }
 
+      // 🐛 FIX (Le Linter) : On restaure "chatData" et "chatError" !
       const { data: chatData, error: chatError } = await supabase
         .from('chat_channels')
         .select('*')
@@ -450,16 +451,23 @@ export default function Telegraphe({ session, userProfile }) {
                   <ShieldAlert size={18} /> Signaler un problème au Conseil
                 </button>
 
-                <div className="space-y-3">
-                  {channels.filter(c => uiMode === 'unified' || c.type === activeTab).length === 0 && (
-                    <p className="text-center text-gray-500 italic mt-4">Aucune correspondance dans cette section.</p>
-                  )}
-                  {channels.filter(c => uiMode === 'unified' || c.type === activeTab).map(c => (
-                    <div
-                      key={c.id}
-                      onClick={() => fetchMessages(c)}
-                      className="p-3 bg-white border border-stone-200 rounded-lg hover:border-amber-400 hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
-                    >
+				<div className="space-y-3">
+				  {channels
+					.filter(c => isInitiated || c.type !== 'initie') // 🛡️ FIX 2 : LE VIDEUR ANTI-FUITE !
+					.filter(c => uiMode === 'unified' || c.type === activeTab)
+					.length === 0 && (
+					<p className="text-center text-gray-500 italic mt-4">Aucune correspondance dans cette section.</p>
+				  )}
+
+				  {channels
+					.filter(c => isInitiated || c.type !== 'initie') // 🛡️ FIX 2 : LE VIDEUR ANTI-FUITE !
+					.filter(c => uiMode === 'unified' || c.type === activeTab)
+					.map(c => (
+					<div
+					  key={c.id}
+					  onClick={() => fetchMessages(c)} 
+					  className="p-3 bg-white border border-stone-200 rounded-lg hover:border-amber-400 hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
+					>
                       <div className="p-2 bg-stone-50 rounded-full border border-stone-100 shrink-0">
                         {getChannelIcon(c.type)}
                       </div>
