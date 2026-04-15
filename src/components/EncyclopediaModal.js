@@ -1,12 +1,12 @@
 // src/components/EncyclopediaModal.js
 
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Save, Star, TestTubeDiagonal, Search, Plus } from 'lucide-react'; // ✨ Ajouts : Search, Plus
-import QuickForgeModal from './QuickForgeModal'; // ✨ L'import de la Poupée Russe
-import { supabase } from '../config/supabase';
+import { X, Sparkles, Save, Star, Search, Plus } from 'lucide-react';
+import QuickForgeModal from './QuickForgeModal';
 import BonusBuilder from './BonusBuilder';
 import { logger, showInAppNotification, translateError } from '../utils/SystemeServices';
 import { useCharacter } from '../context/CharacterContext';
+import { submitEncyclopediaProposal } from '../utils/encyclopediaEngine';
 
 export default function EncyclopediaModal({
   activeTab,
@@ -27,8 +27,6 @@ export default function EncyclopediaModal({
 }) {
 
   const { gameData } = useCharacter(); // ✨ CONNEXION AU NUAGE
-
-  const [justificationError, setJustificationError] = useState(false);
 
   // ✨ INCISION : Les barres de recherche et la gestion de la Poupée Russe
   const [searchPouvoirs, setSearchPouvoirs] = useState('');
@@ -68,252 +66,43 @@ export default function EncyclopediaModal({
   }));
   const usefulSkills = Object.keys(gameData.competences || {});
   
-  // --- LA FONCTION CHIRURGIEN ---
+  // --- LA FONCTION CHIRURGIEN (Déléguée au Cerveau Séparé) ---
   const handleSubmitProposal = async () => {
     if (!justification.trim()) {
       showInAppNotification("Veuillez expliquer brièvement la raison de cette modification.", "warning");
       return;
     }
 
-    const surgicalData = {};
-
-    // 🧠 NOUVEAU : Helper pour calculer le "Delta" (ce qu'on ajoute, ce qu'on retire)
-    const getDiff = (oldArr, newArr) => ({
-      added: newArr.filter(x => !oldArr.includes(x)),
-      removed: oldArr.filter(x => !newArr.includes(x))
+    // ✨ MAGIE : On délègue tout le travail algorithmique au Cerveau Séparé !
+    const result = await submitEncyclopediaProposal({
+      activeTab,
+      isCreating,
+      proposal,
+      editingItem,
+      justification,
+      userProfile,
+      parsedTech,
+      allCompFutiles
     });
 
-    const arraysEqual = (a, b) => {
-      const arrA = Array.isArray(a) && a.length > 0 ? a : [];
-      const arrB = Array.isArray(b) && b.length > 0 ? b : [];
-      return JSON.stringify(arrA) === JSON.stringify(arrB);
-    };
-
-    // 1. GESTION DU NOM (Adaptatif : name vs nom)
-    const nameColumn = activeTab === 'fairy_types' ? 'name' : 'nom';
-
-    if (isCreating) {
-      if (!proposal.name?.trim()) {
-        showInAppNotification("Le nom de l'élément est obligatoire !", "warning");
-        return;
-      }
-      surgicalData[nameColumn] = proposal.name.trim();
-      if (activeTab === 'fairy_powers') surgicalData.type_pouvoir = proposal.type_pouvoir;
-    } else if (proposal.name && proposal.name !== (editingItem.name || editingItem.nom)) {
-      surgicalData[nameColumn] = proposal.name;
-    }
-
-    if (activeTab === 'fairy_types') {
-      const newTraits = proposal.traits ? proposal.traits.split(',').map(t => t.trim()).filter(Boolean) : [];
-      const newAvantages = proposal.avantages ? proposal.avantages.split('\n').map(a => a.trim()).filter(Boolean) : [];
-      const newDesavantages = proposal.desavantages ? proposal.desavantages.split('\n').map(d => d.trim()).filter(Boolean) : [];
-
-      if (proposal.description !== editingItem.description) surgicalData.description = proposal.description;
-      if (proposal.taille !== (editingItem.taille_categorie || 'Moyenne')) surgicalData.taille_categorie = proposal.taille;
-      if (proposal.era !== editingItem.era) surgicalData.era = proposal.era || 'traditionnelle';
-      if (proposal.is_secret !== (editingItem.is_secret || false)) surgicalData.is_secret = proposal.is_secret;
-      if (!arraysEqual(proposal.allowedGenders, editingItem.allowed_genders)) surgicalData.allowed_genders = proposal.allowedGenders;
-      if (!arraysEqual(newTraits, editingItem.traits)) surgicalData.traits = newTraits;
-      if (!arraysEqual(newAvantages, editingItem.avantages)) surgicalData.avantages = newAvantages;
-      if (!arraysEqual(newDesavantages, editingItem.desavantages)) surgicalData.desavantages = newDesavantages;
-
-      const stats = [
-        { sql: 'agilite', ui: 'agilite' }, { sql: 'constitution', ui: 'constitution' },
-        { sql: 'force', ui: 'force' }, { sql: 'precision', ui: 'precision' },
-        { sql: 'esprit', ui: 'esprit' }, { sql: 'perception', ui: 'perception' },
-        { sql: 'prestance', ui: 'prestance' }, { sql: 'sang_froid', ui: 'sangFroid' }
-      ];
-
-      stats.forEach(stat => {
-        const newMin = proposal.caracteristiques?.[stat.ui]?.min || 1;
-        const newMax = proposal.caracteristiques?.[stat.ui]?.max || 6;
-        
-        if (isCreating) {
-          surgicalData[`${stat.sql}_min`] = newMin;
-          surgicalData[`${stat.sql}_max`] = newMax;
-        } else {
-          if (newMin !== (editingItem[`${stat.sql}_min`] || 1)) surgicalData[`${stat.sql}_min`] = newMin;
-          if (newMax !== (editingItem[`${stat.sql}_max`] || 6)) surgicalData[`${stat.sql}_max`] = newMax;
-        }
-      });
-	  
-      const newCapacites = [];
-      if (proposal.capaciteFixe1) newCapacites.push({ id: proposal.capaciteFixe1, type: 'fixe1' });
-      if (proposal.capaciteFixe2) newCapacites.push({ id: proposal.capaciteFixe2, type: 'fixe2' });
-      (proposal.capacitesChoixIds || []).forEach(id => newCapacites.push({ id, type: 'choix' }));
-
-      const oldCapacites = (editingItem.fairy_type_capacites || []).map(link => ({ id: link.capacite?.id, type: link.capacite_type }));
-      const sortCaps = (a, b) => a.id.localeCompare(b.id);
-      const isCapacitesEqual = JSON.stringify(oldCapacites.sort(sortCaps)) === JSON.stringify(newCapacites.sort(sortCaps));
-
-
-    const oldPouvoirs = (editingItem.fairy_type_powers || []).map(link => link.power?.id).filter(Boolean).sort();
-    const newPouvoirs = [...(proposal.pouvoirsIds || [])].sort();
-
-    const oldAtouts = (editingItem.fairy_type_assets || []).map(link => link.asset?.id).filter(Boolean).sort();
-    const newAtouts = [...(proposal.atoutsIds || [])].sort();
-
-    const changedRelations = {};
-
-    // Pour les capacités, on garde l'ancien système car il gère aussi les notions de "fixe1", "fixe2", etc.
-    if (!isCapacitesEqual) changedRelations.capacites = newCapacites;
-
-    // ✨ MAGIE : On n'envoie plus tout le tableau, on envoie uniquement les Différences !
-    if (!arraysEqual(newPouvoirs, oldPouvoirs)) changedRelations.pouvoirs = getDiff(oldPouvoirs, newPouvoirs);
-    if (!arraysEqual(newAtouts, oldAtouts)) changedRelations.atouts = getDiff(oldAtouts, newAtouts);
-
-	  // --- C. COMPÉTENCES UTILES (Via le BonusBuilder) ---
-		const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection) : '[]';
-		
-		// ✨ MAGIE : On fusionne les briques fuchsia et dorées !
-		const newUtilesArray = [...(parsedTech.predilections || [])];
-		if (parsedTech.specialites) {
-		  parsedTech.specialites.forEach(s => {
-			newUtilesArray.push({
-			  nom: s.competence,
-			  specialite: s.nom,
-			  isChoix: false,
-			  isOnlySpecialty: true // 👈 LE DRAPEAU SECRET
-			});
-		  });
-		}
-		
-		const newUtiles = JSON.stringify(newUtilesArray);
-		if (newUtiles !== oldUtiles) {
-		  changedRelations.competencesUtiles = newUtiles;
-		}
-		
-	  // --- D. COMPÉTENCES FUTILES (Via le BonusBuilder) ---
-		const newFutiles = (parsedTech.futiles || []).map(f => {
-		  if (f.isChoix) return { is_choice: true, choice_options: f.options || [], competence_futile_id: null };
-		  
-		  // ✨ LE CORRECTIF EST ICI : Le Nuage parle français (c.nom), mais on garde c.name par sécurité !
-		  const found = allCompFutiles.find(c => c.nom === f.nom || c.name === f.nom);
-		  
-		  return { is_choice: false, choice_options: null, competence_futile_id: found ? found.id : null };
-		});
-
-	  const oldFutiles = (editingItem.fairy_competences_futiles_predilection || []).map(f => ({
-		is_choice: f.is_choice, competence_futile_id: f.competence_futile_id || null, choice_options: f.choice_options || []
-	  }));
-
-	  const normalizeFutiles = (arr) => arr.map(a => JSON.stringify(a)).sort().join('|');
-
-	  if (normalizeFutiles(newFutiles) !== normalizeFutiles(oldFutiles)) {
-		changedRelations.competencesFutiles = newFutiles;
-	  }
-
-         // ✨ FIX : SAUVEGARDE DE L'ADN BRUT (Fortune, etc.) POUR LES ESPÈCES
-          const newEffetsTech = { ...parsedTech };
-          delete newEffetsTech.predilections;
-          delete newEffetsTech.specialites;
-          delete newEffetsTech.futiles;
-
-          const oldEffetsTech = { ...(editingItem.effets_techniques || {}) };
-          delete oldEffetsTech.predilections;
-          delete oldEffetsTech.specialites;
-          delete oldEffetsTech.futiles;
-
-          // Si le reste du JSON (Fortune, etc.) a changé, on le glisse dans l'enveloppe !
-          if (JSON.stringify(newEffetsTech) !== JSON.stringify(oldEffetsTech)) {
-            surgicalData.effets_techniques = Object.keys(newEffetsTech).length > 0 ? newEffetsTech : null;
-          }
-
-          // (La suite de ton code existant)
-          if (Object.keys(changedRelations).length > 0) {
-            surgicalData._relations = changedRelations;
-          }
-    } else {
-      // Formulaire simple (Capacités, Pouvoirs, Atouts)
-      if (proposal.description !== (editingItem.description || editingItem.desc || '')) {
-        surgicalData.description = proposal.description;
-      }
-
-      // 👇 NOUVEAU : Sauvegarde intelligente des champs Atouts
-      if (activeTab === 'fairy_assets') {
-        if (proposal.effets !== (editingItem.effets || '')) {
-          surgicalData.effets = proposal.effets;
-        }
-        
-        // Vérification et parsing du JSON
-        const oldTech = editingItem.effets_techniques ? JSON.stringify(editingItem.effets_techniques, null, 2) : '';
-        if (proposal.effets_techniques !== oldTech) {
-          if (proposal.effets_techniques && proposal.effets_techniques.trim() !== '') {
-            try {
-              surgicalData.effets_techniques = JSON.parse(proposal.effets_techniques);
-            } catch (e) {
-			  showInAppNotification("Le champ 'Effets Techniques' doit être un format JSON valide !", "error");
-              return; // On bloque l'envoi
-            }
-          } else {
-            surgicalData.effets_techniques = null; // Si on vide la case
-          }
-        }
-      }
-      
-      // 👈 NOUVEAU : Relations Inversées (Lier aux Fées directement)
-      if (['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab)) {
-         let oldIds = [];
-         if (!isCreating && editingItem) {
-            if (activeTab === 'fairy_capacites') oldIds = editingItem.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-            if (activeTab === 'fairy_powers') oldIds = editingItem.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-            if (activeTab === 'fairy_assets') oldIds = editingItem.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-         }
-        const newIds = [...(proposal.fairyIds || [])].sort();
-        oldIds = oldIds.sort();
-
-        if (JSON.stringify(oldIds) !== JSON.stringify(newIds)) {
-          if (!surgicalData._relations) surgicalData._relations = {};
-          // ✨ MAGIE : On utilise aussi le Delta ici !
-          surgicalData._relations.fairyIds = getDiff(oldIds, newIds);
-        }
-      }
-    }
-
-    // 💡 LE COUP DE GÉNIE ÉTENDU : Générer l'ID pour TOUTES les nouvelles créations !
-    const generateId = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); });
-    
-    let finalRecordId = isCreating ? null : editingItem.id;
-
-    if (isCreating) {
-      const newId = generateId();
-      surgicalData.id = newId;  
-      finalRecordId = newId;    
-    }
-
-    if (Object.keys(surgicalData).length === 0) {
-      showInAppNotification("Aucune modification n'a été détectée par rapport à la version actuelle.", "warning");
-      return;
-    }
-
-    try {
-      const payload = {
-        user_id: userProfile?.id,
-        table_name: activeTab,
-        record_id: finalRecordId,
-        record_name: isCreating ? (proposal.name || proposal.nom) : (editingItem.name || editingItem.nom),
-        new_data: surgicalData,
-        justification: justification,
-        status: 'pending'
-      };
-
-      const { error } = await supabase.from('data_change_requests').insert([payload]);
-      if (error) throw error;
-
-      logger.info("✅ Proposition envoyée :", payload.record_name);
+    if (result.success) {
+      logger.info("✅ Proposition envoyée :", result.recordName);
       showInAppNotification("Votre proposition a été envoyée aux Gardiens du Savoir !", "success");
-    
-      // 👈 NOUVEAU : On utilise onSuccess s'il existe pour mettre à jour les cadenas
+      
+      // On met à jour les cadenas si besoin
       if (onSuccess) {
         onSuccess();
       } else {
         setEditingItem(null);
       }
-    } catch (error) {
-      logger.error("❌ Erreur envoi proposition :", error);
-      showInAppNotification(translateError(error), "error");
+    } else if (result.warning) {
+      showInAppNotification(result.message, "warning");
+    } else {
+      logger.error("❌ Erreur envoi proposition :", result.error);
+      showInAppNotification(translateError(result.error), "error");
     }
   };
+
 
   // 🧠 NOUVEAU : PARSING UNIFIÉ POUR LE BUILDER
   let parsedTech = {};
