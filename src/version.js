@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.16 - "Le Chien à Trois Têtes 🐕‍🦺"',
+    date: '15 Avril 2026',
+    changes: [
+      '🧠 **Architecture (Cerveau Séparé) :** Extraction totale de la logique métier de l\'Étape 11 (Bilan & Scellage) vers un Hook système autonome (`useCerbere.js`). Ce nouveau "cerveau" gère désormais de manière invisible et isolée la validation mathématique de la fiche et les requêtes de sauvegarde vers le Nuage (Snapshots).',
+      '🪶 **Allègement Visuel :** Le composant historique `StepRecapitulatif.js` a été délesté de la moitié de son code. Débarrassé de sa charge algorithmique, il redevient une interface purement dédiée à l\'affichage et au confort de lecture.'
+    ]
+  }, {
+    version: '15.8.15 - "L\'Intégrité de l\'Architecte 📐"',
+    date: '15 Avril 2026',
+    changes: [
+      '🏗️ **Architecture (Magie) :** Achèvement de la scission du module de Pouvoirs. La redoutable mécanique de l\'Anomalie Féérique possède désormais son propre widget autonome (`AnomalieFeeriqueWidget.jsx`), libérant le composant principal de sa lourdeur algorithmique.',
+      '🎨 **Intégrité Visuelle :** Restauration stricte et à l\'identique de l\'ergonomie, des espacements (paddings) et de la charte graphique de la page des Pouvoirs originelle, suite à une initiative de compression non sollicitée. Le code est purifié, le confort de lecture est sauf.'
+    ]
+  },{
     version: '15.8.14 - "La Décapitation du Monstre 🐉"',
     date: '15 Avril 2026',
     changes: [
