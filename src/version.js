@@ -1,7 +1,13 @@
 // src/version.js
 
 export const VERSION_HISTORY = [
-  {
+    {
+    version: '15.8.17 - "Le Bibliothécaire Mécanique 📚"',
+    date: '15 Avril 2026',
+    changes: [
+      '🧠 **Architecture (Le Cerveau Séparé) :** Extraction massive de la logique algorithmique de l\'Encyclopédie. Les lourds calculs de comparaison (Delta) et le formatage complexe de l\'ADN féérique sont désormais gérés par un moteur autonome (`encyclopediaEngine.js`), soulageant drastiquement l\'interface visuelle de la modale de création.'
+    ]
+  },{
     version: '15.8.16 - "Le Chien à Trois Têtes 🐕‍🦺"',
     date: '15 Avril 2026',
     changes: [
