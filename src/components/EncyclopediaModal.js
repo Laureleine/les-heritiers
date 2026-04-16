@@ -32,6 +32,7 @@ export default function EncyclopediaModal({
   const [searchPouvoirs, setSearchPouvoirs] = useState('');
   const [searchAtouts, setSearchAtouts] = useState('');
   const [searchCapacites, setSearchCapacites] = useState('');
+  const [hasPendingTech, setHasPendingTech] = useState(false);
 
   // ✨ LE CERVEAU SÉPARÉ : On copie les listes globales pour pouvoir y injecter nos nouvelles créations en temps réel !
   const [localPouvoirs, setLocalPouvoirs] = useState(allPouvoirs || []);
@@ -68,6 +69,13 @@ export default function EncyclopediaModal({
   
   // --- LA FONCTION CHIRURGIEN (Déléguée au Cerveau Séparé) ---
   const handleSubmitProposal = async () => {
+
+    // ✨ LE GARDE-FOU ANTI-BOULET
+    if (hasPendingTech) {
+      showInAppNotification("⚠️ Modifications en attente : Veuillez cliquer sur 'Compiler les Effets' dans les règles techniques avant de valider votre proposition !", "error");
+      return;
+    }
+
     if (!justification.trim()) {
       showInAppNotification("Veuillez expliquer brièvement la raison de cette modification.", "warning");
       return;
@@ -299,6 +307,7 @@ export default function EncyclopediaModal({
 					  competencesData={competencesData}
 					  usefulSkills={usefulSkills}
 					  futilesSkills={allCompFutiles ? allCompFutiles.map(c => c.nom || c.name) : []}
+					  onPendingChanges={setHasPendingTech}
 					/>
                 </div>
 

@@ -1,80 +1,83 @@
 // src/components/BonusBuilder.js
-// 10.2.0 // 10.3.0 // 10.4.0
-// 11.1.0
-// 12.1.0 // 12.5.0
-// 14.11.0 // 14.12.0
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles, AlertCircle } from 'lucide-react';
 import { addGlobalSpeciality, addCompetenceFutile } from '../utils/supabaseGameData';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { showInAppNotification } from '../utils/SystemeServices';
 
-// ✨ Générateur d'ID robuste (remplace Math.random)
 const generateId = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substring(2);
 
-// ✨ FIX : Signature propre avec toutes les props et valeurs par défaut
-export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonChange, usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData = null }) {
-
+export default function BonusBuilder({ 
+  parsedTech, updateTech, rawJson, onJsonChange, 
+  usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData = null,
+  onPendingChanges
+}) {
   // ==========================================
   // 1. TOUS LES ÉTATS (DÉCLARATION)
   // ==========================================
   const [creatingFutileId, setCreatingFutileId] = useState(null);
   const [newFutileName, setNewFutileName] = useState('');
+  const [newFutileDesc, setNewFutileDesc] = useState(''); 
   const [localCreatedFutiles, setLocalCreatedFutiles] = useState([]);
   const [showMenu, setShowMenu] = useState(false);
   const [blocks, setBlocks] = useState([]);
   const [creatingSpecFor, setCreatingSpecFor] = useState(null);
   const [newSpecName, setNewSpecName] = useState('');
+  
+  // ✨ LE BOUCLIER DE SYNCHRONISATION
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const allFutiles = Array.from(new Set([...futilesSkills, ...localCreatedFutiles]));
-  const debounceTimer = useRef(null);
-  const isInternalChange = useRef(false); // 🛡️ LE DISJONCTEUR
+
+  // ✨ AJOUTE CE BLOC ICI : On prévient le parent à chaque changement d'état
+  useEffect(() => {
+    if (onPendingChanges) {
+      onPendingChanges(hasUnsavedChanges);
+    }
+  }, [hasUnsavedChanges, onPendingChanges]);
   
   // ==========================================
-  // 2. INITIALISATION & SYNCHRONISATION
+  // 2. INITIALISATION & SYNCHRONISATION (Pure & Sûre)
   // ==========================================
   useEffect(() => {
-    // ✨ FIX 3 : Coupe-circuit ! Si on vient d'ajouter une brique, on ne recrée pas tout !
-    if (isInternalChange.current) {
-      isInternalChange.current = false;
-      return; 
+    let currentParsed = {};
+    try {
+      // 🛡️ On s'affranchit de parsedTech (qui change de réf. à chaque frappe du parent)
+      // On se base strictement sur le string brut !
+      currentParsed = rawJson ? JSON.parse(rawJson) : (parsedTech || {});
+    } catch (e) {
+      currentParsed = parsedTech || {};
     }
 
     const initialBlocks = [];
-    if (parsedTech?.caracteristiques) {
-      Object.entries(parsedTech.caracteristiques).forEach(([key, val]) => {
+    if (currentParsed?.caracteristiques) {
+      Object.entries(currentParsed.caracteristiques).forEach(([key, val]) => {
         initialBlocks.push({ id: generateId(), type: 'carac', key, val });
       });
     }
-    if (parsedTech?.competences) {
-      Object.entries(parsedTech.competences).forEach(([key, val]) => {
+    if (currentParsed?.competences) {
+      Object.entries(currentParsed.competences).forEach(([key, val]) => {
         initialBlocks.push({ id: generateId(), type: 'comp', key, val });
       });
     }
-    // ✨ FIX : Le scanner doit reconnaître TOUTES les terminologies de Fortune
-    const fortuneVal = parsedTech?.fortune ?? parsedTech?.fortune_bonus ?? parsedTech?.fortune_score;
-    if (fortuneVal !== undefined && fortuneVal !== null) {
-      initialBlocks.push({ id: generateId(), type: 'fortune', val: Number(fortuneVal) });
+    if (currentParsed?.fortune_bonus) {
+      initialBlocks.push({ id: generateId(), type: 'fortune', key: 'fortune', val: currentParsed.fortune_bonus });
+    } else if (currentParsed?.fortune) {
+      initialBlocks.push({ id: generateId(), type: 'fortune', key: 'fortune', val: currentParsed.fortune });
     }
-    if (parsedTech?.specialites) {
-      parsedTech.specialites.forEach(spec => {
-        initialBlocks.push({ id: generateId(), type: 'spec', comp: spec.competence, nom: spec.nom });
+    if (currentParsed?.specialites) {
+      currentParsed.specialites.forEach(s => {
+        initialBlocks.push({ id: generateId(), type: 'spec', key: s.competence, nom: s.nom });
       });
     }
-    if (parsedTech?.predilections) {
-      parsedTech.predilections.forEach(p => {
-        if (p.isChoix) {
-          initialBlocks.push({ id: generateId(), type: 'pred_choix', options: p.options || [] });
-        } else if (p.isSpecialiteChoix) {
-          initialBlocks.push({ id: generateId(), type: 'pred_spec_choix', comp: p.nom, options: p.options || [] });
-        } else {
-          initialBlocks.push({ id: generateId(), type: 'pred_fixe', key: p.nom, nom: p.specialite || '' });
-        }
+    if (currentParsed?.predilections) {
+      currentParsed.predilections.forEach(p => {
+        initialBlocks.push({ id: generateId(), type: 'predilection_fixe', key: p });
       });
     }
-    if (parsedTech?.futiles) {
-      parsedTech.futiles.forEach(f => {
+    if (currentParsed?.futiles) {
+      currentParsed.futiles.forEach(f => {
         if (f.isChoix) {
           initialBlocks.push({ id: generateId(), type: 'futile_choix', options: f.options || [] });
         } else {
@@ -83,119 +86,92 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
       });
     }
     setBlocks(initialBlocks);
-  }, [parsedTech]); // ✨ FIX 2 : Dépendance ajoutée pour éviter les états figés !
+    setHasUnsavedChanges(false);
+    
+    // 🛡️ BOUCLIER ANTI-BOUCLE : On interdit formellement à ESLint de réclamer "parsedTech".
+    // C'est le secret de notre architecture "Uncontrolled" pour éviter les crashs de rendu !
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawJson]); 
 
-  // ✨ FIX : LE CERVEAU (Traduction des Legos en JSON Universel) DOUBLE VITESSE
-  useEffect(() => {
-    return () => { if (debounceTimer.current) clearTimeout(debounceTimer.current); };
-  }, []);
-
-  // 🧠 2.A. Le Générateur Pur (Synchrone)
+  // ==========================================
+  // 3. LE GÉNÉRATEUR PUR (Synchrone)
+  // ==========================================
   const generateTechJson = (currentBlocks) => {
     const newTech = {};
-
     currentBlocks.forEach(b => {
       if (b.type === 'carac') {
         if (!newTech.caracteristiques) newTech.caracteristiques = {};
         newTech.caracteristiques[b.key] = parseInt(b.val) || 0;
-      }
-      if (b.type === 'comp') {
+      } else if (b.type === 'comp') {
         if (!newTech.competences) newTech.competences = {};
         newTech.competences[b.key] = parseInt(b.val) || 0;
-      }
-      
-      // ✨ FIX : On standardise l'export en "fortune_bonus" pour alignement avec l'Héritage
-      if (b.type === 'fortune') {
+      } else if (b.type === 'fortune') {
         newTech.fortune_bonus = parseInt(b.val) || 0;
-      }
-      
-      if (b.type === 'spec') {
+      } else if (b.type === 'spec' && b.key && b.nom) {
         if (!newTech.specialites) newTech.specialites = [];
-        if (b.comp && b.nom) newTech.specialites.push({ competence: b.comp, nom: b.nom });
-      }
-      if (b.type === 'pred_fixe') {
+        newTech.specialites.push({ competence: b.key, nom: b.nom });
+      } else if (b.type === 'predilection_fixe' && b.key) {
         if (!newTech.predilections) newTech.predilections = [];
-        newTech.predilections.push({ nom: b.key, isChoix: false, specialite: b.nom || null });
-      }
-      if (b.type === 'pred_choix') {
-        if (!newTech.predilections) newTech.predilections = [];
-        newTech.predilections.push({ isChoix: true, options: b.options || [] });
-      }
-      if (b.type === 'pred_spec_choix') {
-        if (!newTech.predilections) newTech.predilections = [];
-        newTech.predilections.push({ nom: b.comp, isSpecialiteChoix: true, options: b.options || [] });
-      }
-      if (b.type === 'futile_fixe') {
+        if (!newTech.predilections.includes(b.key)) newTech.predilections.push(b.key);
+      } else if (b.type === 'futile_fixe' && b.key) {
         if (!newTech.futiles) newTech.futiles = [];
-        newTech.futiles.push({ nom: b.key, isChoix: false });
-      }
-      if (b.type === 'futile_choix') {
+        newTech.futiles.push({ nom: b.key });
+      } else if (b.type === 'futile_choix') {
         if (!newTech.futiles) newTech.futiles = [];
         newTech.futiles.push({ isChoix: true, options: b.options || [] });
       }
     });
-
     return newTech;
   };
-  const compileImmediate = (currentBlocks) => {
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    isInternalChange.current = true; // 🛡️ On arme le disjoncteur !
-    const newTech = generateTechJson(currentBlocks);
-    updateTech(newTech); // (Si tu l'as toujours)
+
+  // ✨ LE BOUTON D'ENVOI MANUEL (La fin de l'usine à gaz)
+  const handleValidateBlocks = () => {
+    const newTech = generateTechJson(blocks);
+    if (updateTech) updateTech(newTech);
     if (onJsonChange) onJsonChange(JSON.stringify(newTech, null, 2));
+    setHasUnsavedChanges(false);
+    showInAppNotification("Briques techniques compilées avec succès !", "success");
   };
 
-  // ⏳ 2.C. Exécution Différée (Debounce)
-  const compileLazy = (currentBlocks) => {
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    debounceTimer.current = setTimeout(() => {
-      isInternalChange.current = true; // 🛡️ On arme le disjoncteur !
-      const newTech = generateTechJson(currentBlocks);
-      updateTech(newTech); // (Si tu l'as toujours)
-      if (onJsonChange) onJsonChange(JSON.stringify(newTech, null, 2));
-    }, 400); // (ou 500 selon ce que tu avais mis)
-  };
-
-  // 3. GESTION DES ÉVÉNEMENTS
+  // ==========================================
+  // 4. GESTION DES ÉVÉNEMENTS (Uncontrolled Local)
+  // ==========================================
   const addBlock = (type) => {
     const newBlock = { id: generateId(), type, key: '', val: 1, comp: '', nom: '', options: [] };
-    
     if (type === 'carac') newBlock.key = 'force';
-    // ✨ FIX : On utilise .at(0) au lieu de l'index strict banni !
     if (type === 'comp') newBlock.key = usefulSkills.at(0) || 'Observation';
-
-    const newBlocks = [...blocks, newBlock];
-    setBlocks(newBlocks);
-    compileImmediate(newBlocks); // ⚡ Action instantanée
+    setBlocks(prev => [...prev, newBlock]);
+    setHasUnsavedChanges(true);
     setShowMenu(false);
   };
 
   const updateBlock = (id, field, value) => {
-    const newBlocks = blocks.map(b => b.id === id ? { ...b, [field]: value } : b);
-    setBlocks(newBlocks);
-    compileLazy(newBlocks); // ⏳ Action retardée (clavier)
+    setBlocks(prev => prev.map(b => b.id === id ? { ...b, [field]: value } : b));
+    setHasUnsavedChanges(true);
   };
 
   const removeBlock = (id) => {
-    const newBlocks = blocks.filter(b => b.id !== id);
-    setBlocks(newBlocks);
-    compileImmediate(newBlocks); // ⚡ Action instantanée
+    setBlocks(prev => prev.filter(b => b.id !== id));
+    setHasUnsavedChanges(true);
   };
 
-  // ✨ FIX 1 : Déplacé ici, APRÈS les useState et APRÈS updateBlock !
   const handleCreateFutile = async (blockId, isArray = false) => {
     if (!newFutileName.trim()) return;
     try {
-      const newComp = await addCompetenceFutile(newFutileName.trim(), 'Créée depuis le Constructeur de Lego');
+      const newComp = await addCompetenceFutile(newFutileName, newFutileDesc);
       setLocalCreatedFutiles(prev => [...prev, newComp.nom]);
+
       if (isArray) {
         const block = blocks.find(b => b.id === blockId);
-        updateBlock(blockId, 'options', [...(block.options || []), newComp.nom]);
+        const currentOptions = block.options || [];
+        updateBlock(blockId, 'options', [...currentOptions, newComp.nom]);
       } else {
         updateBlock(blockId, 'key', newComp.nom);
       }
+
       setCreatingFutileId(null);
       setNewFutileName('');
+      setNewFutileDesc('');
       showInAppNotification(`Compétence futile "${newComp.nom}" forgée avec succès !`, "success");
     } catch (error) {
       showInAppNotification("Erreur lors de la création : " + error.message, "error");
@@ -205,7 +181,6 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
   const handleCreateGlobalSpeciality = async (blockId, compName, specName) => {
     const compData = competencesData.find(c => c.name === compName);
     if (!compData || !compData.id) return;
-
     try {
       const newSpecObj = await addGlobalSpeciality(compData.id, specName);
       if (setCompetencesData) {
@@ -219,7 +194,8 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
     }
   };
 
-  // 4. LE CATALOGUE DE BRIQUES
+  // -------------------------------------------------------------
+  // 4. LE CATALOGUE DE BRIQUES (Garde tout le reste intact en bas !)
   const BLOCK_TYPES = [
     { id: 'carac', label: 'Bonus Caractéristique', icon: <Activity size={14}/>, color: 'bg-red-100 text-red-800 border-red-200' },
     { id: 'comp', label: 'Bonus Compétence', icon: <BookOpen size={14}/>, color: 'bg-blue-100 text-blue-800 border-blue-200' },
@@ -233,7 +209,24 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
   ];
 
   return (
-    <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 shadow-inner">
+    <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 shadow-inner relative pb-4">
+      
+      {/* ✨ LE BOUCLIER DE VALIDATION */}
+      {hasUnsavedChanges && (
+        <div className="p-3 mb-4 bg-amber-50 border border-amber-400 rounded-lg flex justify-between items-center animate-fade-in shadow-sm sticky top-0 z-10">
+          <span className="text-sm text-amber-800 font-bold flex items-center gap-2">
+            <AlertCircle size={16}/> Modifications en attente de compilation
+          </span>
+          <button
+            onClick={handleValidateBlocks}
+            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold shadow-sm transition-colors flex items-center gap-2"
+          >
+            <GitMerge size={16}/> Compiler les Effets
+          </button>
+        </div>
+      )}
+
+      {/* L'EN-TÊTE ET LE BOUTON D'AJOUT */}
       <div className="flex justify-between items-center mb-4">
         <label className="font-serif font-bold text-stone-800 flex items-center gap-2">
           <Settings size={18} className="text-stone-500"/> Règles Techniques (Effets)
@@ -247,8 +240,8 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
           >
             <Plus size={16} /> Ajouter une règle <ChevronDown size={14} />
           </button>
-          
-          {/* ✨ FIX : Le calque invisible (Overlay) pour fermer le menu en douceur */}
+
+          {/* Le calque invisible (Overlay) pour fermer le menu en douceur */}
           {showMenu && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)}></div>
@@ -271,6 +264,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
       </div>
 
       <div className="space-y-3">
+        
         {blocks.length === 0 && (
           <div className="text-center py-6 text-stone-400 text-sm italic border-2 border-dashed border-stone-200 rounded-lg">
             Aucun effet technique configuré. Cliquez sur "Ajouter une règle".
@@ -281,10 +275,12 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
         <datalist id="utiles-list">
           {usefulSkills.map(s => <option key={s} value={s} />)}
         </datalist>
+
         <datalist id="futiles-list">
           {futilesSkills.map(s => <option key={s} value={s} />)}
         </datalist>
 
+        {/* LE RENDU DES BRIQUES (MAP) */}
         {blocks.map(block => (
           <div key={block.id} className="flex items-center gap-3 bg-white p-2 rounded-lg shadow-sm border border-stone-200 animate-fade-in group">
             
@@ -337,7 +333,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                       const val = e.target.value;
                       const newBlocks = blocks.map(b => b.id === block.id ? { ...b, comp: val, nom: '' } : b);
                       setBlocks(newBlocks);
-                      compileImmediate(newBlocks); // ⚡ On compile direct pour les selects complexes !
+                      setHasUnsavedChanges(true);
                     }}
                     className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-amber-200 outline-none w-1/3"
                   >
@@ -373,7 +369,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                         else {
                           const newBlocks = blocks.map(b => b.id === block.id ? { ...b, nom: e.target.value } : b);
                           setBlocks(newBlocks);
-                          compileImmediate(newBlocks);
+                          setHasUnsavedChanges(true);
                         }
                       }}
                       className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-amber-200 outline-none flex-1"
@@ -404,7 +400,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                       <button type="button" onClick={() => {
                         const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
                         setBlocks(newBlocks);
-                        compileImmediate(newBlocks);
+                        setHasUnsavedChanges(true);
                       }} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
                     </span>
                   ))}
@@ -419,7 +415,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                         if (!(block.options || []).includes(val)) {
                           const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), val] } : b);
                           setBlocks(newBlocks);
-                          compileImmediate(newBlocks);
+                          setHasUnsavedChanges(true);
                         }
                         e.target.value = '';
                       }
@@ -434,6 +430,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
             {block.type === 'pred_spec_choix' && (() => {
               const compData = competencesData?.find(c => c.name === block.comp) || {};
               const availableSpecs = compData.specialites || [];
+
               return (
                 <>
                   <div className="bg-pink-100 text-pink-800 p-2 rounded border border-pink-200"><Star size={18}/></div>
@@ -444,14 +441,14 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                       const val = e.target.value;
                       const newBlocks = blocks.map(b => b.id === block.id ? { ...b, comp: val, options: [] } : b);
                       setBlocks(newBlocks);
-                      compileImmediate(newBlocks);
+                      setHasUnsavedChanges(true);
                     }}
                     className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-pink-200 outline-none w-1/4"
                   >
                     <option value="">Compétence...</option>
                     {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
-                  
+
                   <div className="flex flex-wrap gap-1 flex-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[42px] shadow-inner">
                     {(block.options || []).map(opt => (
                       <span key={opt} className="bg-pink-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm animate-fade-in">
@@ -459,7 +456,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                         <button type="button" onClick={() => {
                           const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
                           setBlocks(newBlocks);
-                          compileImmediate(newBlocks);
+                          setHasUnsavedChanges(true);
                         }} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
                       </span>
                     ))}
@@ -477,7 +474,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                               if (!(block.options || []).includes(val)) {
                                 const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), val] } : b);
                                 setBlocks(newBlocks);
-                                compileImmediate(newBlocks);
+                                setHasUnsavedChanges(true);
                               }
                               e.target.value = '';
                             }
@@ -494,104 +491,96 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
               );
             })()}
 
-        {/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
-        {block.type === 'pred_fixe' && (() => {
-          // 🧠 1. On récupère les données de la compétence sélectionnée
-          const compData = competencesData?.find(c => c.name === block.key) || {};
-          const availableSpecs = compData.specialites || [];
-          const isCreating = creatingSpecFor === block.id;
+            {/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
+            {block.type === 'pred_fixe' && (() => {
+              const compData = competencesData?.find(c => c.name === block.key) || {};
+              const availableSpecs = compData.specialites || [];
+              const isCreating = creatingSpecFor === block.id;
 
-          return (
-            <>
-              <div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200">
-                <BookOpen size={18}/>
-              </div>
-              <span className="text-sm font-bold text-fuchsia-900">Utile Imposée :</span>
-
-              <select
-                value={block.key || ''}
-                onChange={(e) => {
-                  // ✨ FIX : On change la compétence et on purge la spécialité précédente pour éviter les incohérences
-                  const newBlocks = blocks.map(b => b.id === block.id ? { ...b, key: e.target.value, nom: '' } : b);
-                  setBlocks(newBlocks);
-                  compileImmediate(newBlocks);
-                }}
-                className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
-              >
-                <option value="">Sélectionner...</option>
-                {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-
-              <span className="text-stone-400 font-bold">▶</span>
-
-              {/* ✨ 2. LE MOTEUR INTELLIGENT DE SPÉCIALITÉ (Identique à la brique dorée) */}
-              {!block.key ? (
-                <span className="text-sm italic text-stone-400 flex-1">Sélectionnez d'abord la compétence...</span>
-              ) : isCreating ? (
-                <div className="flex gap-1 flex-1 animate-fade-in">
-                  <input
-                    type="text"
-                    autoFocus
-                    placeholder="Nouvelle spécialité..."
-                    value={newSpecName}
-                    onChange={(e) => setNewSpecName(e.target.value)}
-                    className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                        handleCreateGlobalSpeciality(block.id, block.key, e.currentTarget.value.trim());
-                      }
-                      if (e.key === 'Escape') {
-                        setCreatingSpecFor(null);
-                        setNewSpecName('');
-                      }
+              return (
+                <>
+                  <div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200">
+                    <BookOpen size={18}/>
+                  </div>
+                  <span className="text-sm font-bold text-fuchsia-900">Utile Imposée :</span>
+                  <select
+                    value={block.key || ''}
+                    onChange={(e) => {
+                      const newBlocks = blocks.map(b => b.id === block.id ? { ...b, key: e.target.value, nom: '' } : b);
+                      setBlocks(newBlocks);
+                      setHasUnsavedChanges(true);
                     }}
-                  />
-                  <button 
-                    onClick={() => {
-                      if (newSpecName.trim()) handleCreateGlobalSpeciality(block.id, block.key, newSpecName.trim());
-                    }} 
-                    className="bg-fuchsia-600 text-white px-2 py-1 rounded text-[10px] font-bold"
+                    className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
                   >
-                    Créer
-                  </button>
-                  <button 
-                    onClick={() => { setCreatingSpecFor(null); setNewSpecName(''); }} 
-                    className="bg-stone-200 text-stone-600 px-2 py-1 rounded text-[10px] font-bold"
-                  >
-                    X
-                  </button>
-                </div>
-              ) : (
-                <select
-                  value={block.nom || ''}
-                  onChange={(e) => {
-                    if (e.target.value === '__CREATE_NEW__') {
-                      setCreatingSpecFor(block.id);
-                      setNewSpecName('');
-                    } else {
-                      updateBlock(block.id, 'nom', e.target.value);
-                    }
-                  }}
-                  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none flex-1"
-                >
-                  <option value="">Spécialité (Optionnelle)...</option>
-                  <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
-                  {availableSpecs.filter(s => s.is_official).length > 0 && (
-                    <optgroup label="📚 Officielles">
-                      {availableSpecs.filter(s => s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
-                    </optgroup>
-                  )}
-                  {availableSpecs.filter(s => !s.is_official).length > 0 && (
-                    <optgroup label="👥 Communauté">
-                      {availableSpecs.filter(s => !s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
-                    </optgroup>
-                  )}
-                </select>
-              )}
-            </>
-          );
-        })()}
+                    <option value="">Sélectionner...</option>
+                    {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <span className="text-stone-400 font-bold">▶</span>
 
+                  {!block.key ? (
+                    <span className="text-sm italic text-stone-400 flex-1">Sélectionnez d'abord la compétence...</span>
+                  ) : isCreating ? (
+                    <div className="flex gap-1 flex-1 animate-fade-in">
+                      <input
+                        type="text"
+                        autoFocus
+                        placeholder="Nouvelle spécialité..."
+                        value={newSpecName}
+                        onChange={(e) => setNewSpecName(e.target.value)}
+                        className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                            handleCreateGlobalSpeciality(block.id, block.key, e.currentTarget.value.trim());
+                          }
+                          if (e.key === 'Escape') {
+                            setCreatingSpecFor(null);
+                            setNewSpecName('');
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={() => { if (newSpecName.trim()) handleCreateGlobalSpeciality(block.id, block.key, newSpecName.trim()); }}
+                        className="bg-fuchsia-600 text-white px-2 py-1 rounded text-[10px] font-bold"
+                      >
+                        Créer
+                      </button>
+                      <button
+                        onClick={() => { setCreatingSpecFor(null); setNewSpecName(''); }}
+                        className="bg-stone-200 text-stone-600 px-2 py-1 rounded text-[10px] font-bold"
+                      >
+                        X
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={block.nom || ''}
+                      onChange={(e) => {
+                        if (e.target.value === '__CREATE_NEW__') {
+                          setCreatingSpecFor(block.id);
+                          setNewSpecName('');
+                        } else {
+                          updateBlock(block.id, 'nom', e.target.value);
+                        }
+                      }}
+                      className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none flex-1"
+                    >
+                      <option value="">Spécialité (Optionnelle)...</option>
+                      <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
+                      {availableSpecs.filter(s => s.is_official).length > 0 && (
+                        <optgroup label="📚 Officielles">
+                          {availableSpecs.filter(s => s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+                        </optgroup>
+                      )}
+                      {availableSpecs.filter(s => !s.is_official).length > 0 && (
+                        <optgroup label="👥 Communauté">
+                          {availableSpecs.filter(s => !s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
+                        </optgroup>
+                      )}
+                    </select>
+                  )}
+                </>
+              );
+            })()}
 
             {/* ✨ Lego Choix de Futile (Teal/Cyan) ✨ */}
             {block.type === 'futile_choix' && (
@@ -605,7 +594,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                       <button type="button" onClick={() => {
                         const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
                         setBlocks(newBlocks);
-                        compileImmediate(newBlocks);
+                        setHasUnsavedChanges(true);
                       }} className="hover:text-red-300 ml-1 transition-colors">&times;</button>
                     </span>
                   ))}
@@ -639,7 +628,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                           if (!(block.options || []).includes(val)) {
                             const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), val] } : b);
                             setBlocks(newBlocks);
-                            compileImmediate(newBlocks);
+                            setHasUnsavedChanges(true);
                           }
                         }
                       }}
@@ -686,7 +675,7 @@ export default function BonusBuilder({ parsedTech, updateTech, rawJson, onJsonCh
                       } else {
                         const newBlocks = blocks.map(b => b.id === block.id ? { ...b, key: e.target.value } : b);
                         setBlocks(newBlocks);
-                        compileImmediate(newBlocks);
+                        setHasUnsavedChanges(true);
                       }
                     }}
                     className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-cyan-200 outline-none flex-1"

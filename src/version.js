@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.20 - "Le Disjoncteur Manuel 🔌"',
+    date: '16 Avril 2026',
+    changes: [
+      '⚙️ **Architecture (BonusBuilder) :** Refonte intégrale du constructeur de règles techniques. Le composant est désormais totalement autonome (*Uncontrolled Component*) et ne provoque plus de ralentissements liés à la synchronisation asynchrone des frappes clavier.',
+      '🛡️ **Sécurité (Garde-fou) :** Ajout d\'un bouton de validation "Compiler les Effets" obligatoire lors de la fabrication ou modification d\'une brique technique. Une alarme de sécurité bloque la soumission globale de la fiche à l\'Encyclopédie tant que les travaux de construction ne sont pas terminés.',
+      '🧹 **Optimisation (Rendu) :** Suppression de l\'ancien moteur complexe et de ses timers de délai d\'attente (`debounceTimer`). L\'interface respire mieux et le risque de boucle infinie lors de la création d\'Atouts ou de Fées complexes est définitivement écarté.'
+    ]
+  },  {
     version: '15.8.19 - "Le Télégraphe Cristallin 📯"',
     date: '16 Avril 2026',
     changes: [
