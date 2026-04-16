@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.19 - "Le Télégraphe Cristallin 📯"',
+    date: '16 Avril 2026',
+    changes: [
+      '🧠 **Architecture (Cerveau Séparé) :** Restructuration massive du système de messagerie. Toute la logique complexe des WebSockets Supabase (temps réel) et des fusions de canaux a été extraite du composant visuel vers un moteur autonome (`useTelegraphe.js`), évitant les surcharges de rendu.',
+      '🎨 **Interface (Hub Pneumatique) :** Le Télégraphe a subi une cure d\'amaigrissement. Son interface est désormais plus fluide, avec l\'intégration d\'un horodatage précis et dynamique (date et heure claires) à côté des pseudos pour un meilleur suivi des correspondances.',
+      '👁️ **Administration (Dashboard) :** Optimisation drastique de la hauteur des lignes dans le registre des utilisateurs. Les multiples boutons d\'action des Super Admins et Gardiens sont désormais regroupés dans une élégante ligne horizontale intelligente (responsive), tout en préservant le précieux sceau visuel des emails et des connexions.'
+    ]
+  },  {
     version: '15.8.18 - "Le Broyeur d\'Archives 🗑️"',
     date: '16 Avril 2026',
     changes: [
