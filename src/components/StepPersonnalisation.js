@@ -1,12 +1,9 @@
 // src/components/StepPersonnalisation.js
-// 10.1.0 // 10.6.0
-// 13.0.0
-// 14.10.0
-// 15.2.0
 
 import React from 'react';
 import { User, Feather, Briefcase } from 'lucide-react'; 
 import { useCharacter } from '../context/CharacterContext'; 
+import WidgetLangues from './personnalisation/WidgetLangues';
 
 export default function StepPersonnalisation() { 
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter(); 
@@ -152,18 +149,17 @@ export default function StepPersonnalisation() {
                   <option value="">Compétence...</option>
                   {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
-
-<select
-  value={character.competencesLibres?.specialiteMetier?.nom || ''}
-  onChange={(e) => updateSpecialiteMetier(character.competencesLibres?.specialiteMetier?.comp || '', e.target.value)}
-  disabled={isReadOnly || !character.competencesLibres?.specialiteMetier?.comp}
-  className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
->
-  <option value="">Spécialité...</option>
-  {getSpecsDisponiblesPourMetier(character.competencesLibres?.specialiteMetier?.comp).map(spec => (
-    <option key={spec.id || spec.nom} value={spec.nom}>{spec.nom}</option>
-  ))}
-</select>
+				<select
+				  value={character.competencesLibres?.specialiteMetier?.nom || ''}
+				  onChange={(e) => updateSpecialiteMetier(character.competencesLibres?.specialiteMetier?.comp || '', e.target.value)}
+				  disabled={isReadOnly || !character.competencesLibres?.specialiteMetier?.comp}
+				  className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
+				>
+				  <option value="">Spécialité...</option>
+				  {getSpecsDisponiblesPourMetier(character.competencesLibres?.specialiteMetier?.comp).map(spec => (
+					<option key={spec.id || spec.nom} value={spec.nom}>{spec.nom}</option>
+				  ))}
+				</select>
               </div>
             </div>
 
@@ -171,6 +167,14 @@ export default function StepPersonnalisation() {
         </div>
       </div>
 
+      {/* ✨ L'INTEGRATION DU WIDGET DES LANGUES */}
+      <WidgetLangues 
+        character={character} 
+        dispatchCharacter={dispatchCharacter} 
+        gameData={gameData} 
+        isReadOnly={isReadOnly} 
+      />
+	  
       {/* L'ENCART IDENTITÉ & APPARENCE (INTACT) */}
       <div className="bg-white rounded-xl shadow-md border border-amber-100 overflow-hidden">
         <div className="bg-amber-50 p-4 border-b border-amber-100">
