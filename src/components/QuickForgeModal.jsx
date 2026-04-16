@@ -1,4 +1,5 @@
 // src/components/QuickForgeModal.jsx
+
 import React, { useState } from 'react';
 import { X, Save, Sparkles, Star, Wand2 } from 'lucide-react';
 import { supabase } from '../config/supabase';
@@ -27,28 +28,54 @@ export default function QuickForgeModal({ isOpen, onClose, type, onSuccess }) {
 
     setLoading(true);
     try {
-      const payload = {
+      // 1. On récupère l'identité du forgeron
+      const { data: authData } = await supabase.auth.getUser();
+      const userId = authData?.user?.id;
+
+      if (!userId) throw new Error("Vous devez être connecté pour forger.");
+
+      // 2. On génère un UUID fantôme pour lier cet élément avant même qu'il ne soit validé !
+      const ghostId = window.crypto?.randomUUID 
+        ? window.crypto.randomUUID() 
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            const r = Math.random() * 16 | 0;
+            // eslint-disable-next-line no-mixed-operators
+            return (c === 'x' ? r : ((r & 0x3) | 0x8)).toString(16);
+          });
+
+      // 3. On prépare la coquille pure de la donnée
+      const payloadData = {
+        id: ghostId,
         nom: nom.trim(),
-        description: description.trim(),
-        is_official: false, // Création à la volée par définition communautaire
-        is_sealed: false
+        description: description.trim()
       };
 
       if (type === 'fairy_powers') {
-        payload.type_pouvoir = typePouvoir;
+        payloadData.type_pouvoir = typePouvoir;
       }
 
-      // ✨ L'Incision Supabase : On pousse directement la coquille vide
-      const { data, error } = await supabase
-        .from(type)
-        .insert([payload])
-        .select()
-        .single();
+      // ✨ 4. LE CONTOURNEMENT RLS : On crée un ticket officiel pour le Conseil !
+      const requestPayload = {
+        user_id: userId,
+        table_name: type,
+        record_id: ghostId,
+        record_name: nom.trim(),
+        new_data: payloadData,
+        justification: 'Création à la volée (Poupée Russe)',
+        status: 'pending'
+      };
+
+      const { error } = await supabase
+        .from('data_change_requests')
+        .insert([requestPayload]);
 
       if (error) throw error;
 
-      showInAppNotification(`${config.titre} forgé avec succès !`, "success");
-      onSuccess(data, type);
+      showInAppNotification(`${config.titre} proposé au Conseil avec succès !`, "success");
+      
+      // 5. On renvoie l'objet fantôme au parent pour cocher la case visuellement !
+      onSuccess(payloadData, type);
+      
       setNom('');
       setDescription('');
       onClose();

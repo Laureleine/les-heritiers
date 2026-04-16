@@ -90,7 +90,8 @@ export default function EncyclopediaModal({
       justification,
       userProfile,
       parsedTech,
-      allCompFutiles
+      allCompFutiles,
+	  gameData 
     });
 
     if (result.success) {

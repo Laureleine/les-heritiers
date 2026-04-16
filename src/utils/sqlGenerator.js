@@ -99,8 +99,11 @@ export const generateApprovalSQL = (change, seal = false) => {
         const utilesList = typeof _relations.competencesUtiles === 'string' ? JSON.parse(_relations.competencesUtiles) : _relations.competencesUtiles;
 
         if (utilesList && utilesList.length > 0) {
-          // ✨ 1. LE FILTRE ANTI-VIDE (On ignore les blocs non remplis)
-          const validUtiles = utilesList.filter(comp => {
+          
+          // ✨ LE BLINDAGE : On s'assure que tout est un objet avant le filtre strict
+          const normalizedUtiles = utilesList.map(comp => typeof comp === 'string' ? { nom: comp } : comp);
+
+          const validUtiles = normalizedUtiles.filter(comp => {
             if (!comp.isChoix && !comp.nom) return false;
             if (comp.isChoix && (!comp.options || comp.options.length === 0)) return false;
             if (comp.isSpecialiteChoix && (!comp.nom || !comp.options || comp.options.length === 0)) return false;
@@ -110,26 +113,37 @@ export const generateApprovalSQL = (change, seal = false) => {
           if (validUtiles.length > 0) {
             const utilesInserts = validUtiles.map(comp => {
               const isChoice = comp.isChoix ? 'true' : 'false';
-              const isSpecChoice = comp.isSpecialiteChoix ? 'true' : 'false';
-              const compQuery = comp.nom ? `(SELECT id FROM public.competences WHERE name = '${comp.nom.replace(/'/g, "''")}' LIMIT 1)` : 'null';
+              const isSpecChoice = comp.isSpecialiteChoix ? 'true' : 'false'; // ✨ LA PIÈCE MANQUANTE EST DE RETOUR !
+              
+              let compQuery = 'null';
+
+              // ✨ LE BLINDAGE ABSOLU : Si on a l'ID (trouvé en RAM), on l'utilise direct !
+              if (comp.competence_id) {
+                compQuery = `'${comp.competence_id}'`;
+              } else if (comp.nom) {
+                // Fallback de survie (avec ILIKE pour tolérer la casse)
+                const safeNom = comp.nom.replace(/'/g, "''");
+                compQuery = `(SELECT id FROM public.competences WHERE name ILIKE '${safeNom}' LIMIT 1)`;
+              }
+
               const specialite = comp.specialite ? `'${comp.specialite.replace(/'/g, "''")}'` : 'null';
 
               let choiceIds = 'null';
               let choiceOptions = 'null';
 
-          if (comp.isChoix && comp.options && comp.options.length > 0) {
-            const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
-            choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
-          } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
-            const opts = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
-            choiceOptions = `ARRAY[${opts}]::text[]`;
-          } else if (comp.isOnlySpecialty) {
-            // ✨ LE DRAPEAU SECRET GRAVÉ DANS SUPABASE
-            choiceOptions = `ARRAY['PURE_SPEC']::text[]`;
-          }
+              if (comp.isChoix && comp.options && comp.options.length > 0) {
+                const namesList = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+                choiceIds = `ARRAY(SELECT id FROM public.competences WHERE name IN (${namesList}))::uuid[]`;
+              } else if (comp.isSpecialiteChoix && comp.options && comp.options.length > 0) {
+                const opts = comp.options.map(o => `'${o.replace(/'/g, "''")}'`).join(', ');
+                choiceOptions = `ARRAY[${opts}]::text[]`;
+              } else if (comp.isOnlySpecialty) {
+                // ✨ LE DRAPEAU SECRET GRAVÉ DANS SUPABASE
+                choiceOptions = `ARRAY['PURE_SPEC']::text[]`;
+              }
 
-          return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
-		}).join(',\n  ');
+              return `('${targetId}', ${compQuery}, ${specialite}, ${isChoice}, ${isSpecChoice}, ${choiceIds}, ${choiceOptions})`;
+            }).join(',\n  ');
 
             sqlQuery += `INSERT INTO public.fairy_competences_predilection (fairy_type_id, competence_id, specialite, is_choice, is_specialite_choice, choice_ids, choice_options) VALUES \n  ${utilesInserts};\n`;
           }
@@ -142,9 +156,10 @@ export const generateApprovalSQL = (change, seal = false) => {
     if (_relations.competencesFutiles !== undefined) {
       sqlQuery += `\nDELETE FROM public.fairy_competences_futiles_predilection WHERE fairy_type_id = '${targetId}';\n`;
 
-      // ✨ 3. LE FILTRE ANTI-VIDE POUR LES FUTILES
+      // ✨ 3. LE FILTRE ANTI-VIDE (TOLÉRANT AU NOM)
       const validFutiles = _relations.competencesFutiles.filter(fut => {
-        if (!fut.is_choice && !fut.competence_futile_id) return false;
+        // On valide si on a soit l'ID soit le nom exact de la compétence !
+        if (!fut.is_choice && !fut.competence_futile_id && !fut.competence_name) return false;
         if (fut.is_choice && (!fut.choice_options || fut.choice_options.length === 0)) return false;
         return true;
       });
@@ -152,13 +167,22 @@ export const generateApprovalSQL = (change, seal = false) => {
       if (validFutiles.length > 0) {
         const futInserts = validFutiles.map(fut => {
           const isChoice = fut.is_choice ? 'true' : 'false';
-          const compQuery = fut.competence_futile_id ? `'${fut.competence_futile_id}'` : 'null';
+          let compQuery = 'null';
+
+          // 🧠 L'INTELLIGENCE SQL : Si on n'a pas l'ID, on dit à PostgreSQL de le trouver tout seul !
+          if (fut.competence_futile_id) {
+            compQuery = `'${fut.competence_futile_id}'`;
+          } else if (fut.competence_name) {
+            compQuery = `(SELECT id FROM public.competences_futiles WHERE name = '${fut.competence_name.replace(/'/g, "''")}' LIMIT 1)`;
+          }
+
+          const compNameSql = fut.competence_name ? `'${fut.competence_name.replace(/'/g, "''")}'` : 'null';
           const choiceOptions = fut.choice_options ? `'${JSON.stringify(fut.choice_options).replace(/'/g, "''")}'::jsonb` : 'null';
           
-          return `('${targetId}', ${compQuery}, ${isChoice}, ${choiceOptions})`;
+          return `('${targetId}', ${compQuery}, ${compNameSql}, ${isChoice}, ${choiceOptions})`;
         }).join(',\n  ');
 
-        sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, is_choice, choice_options) VALUES \n  ${futInserts};\n`;
+        sqlQuery += `INSERT INTO public.fairy_competences_futiles_predilection (fairy_type_id, competence_futile_id, competence_name, is_choice, choice_options) VALUES \n  ${futInserts};\n`;
       }
     }
 	
