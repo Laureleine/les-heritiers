@@ -229,7 +229,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         capaciteFixe2: '',
         capacitesChoixIds: [],
         pouvoirsIds: [],
-        atoutsIds: [],
+        assetsIds: [],
         techData: JSON.stringify({ predilections: [], futiles: [] }, null, 2)
       });
     } else {
@@ -295,7 +295,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         capaciteFixe2: item.fairy_type_capacites?.find(l => l.capacite_type === 'fixe2')?.capacite?.id || '',
         capacitesChoixIds: item.fairy_type_capacites?.filter(l => l.capacite_type === 'choix').map(l => l.capacite?.id).filter(Boolean) || [],
         pouvoirsIds: item.fairy_type_powers ? item.fairy_type_powers.map(link => link.power?.id).filter(Boolean) : [],
-        atoutsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
+        assetsIds: item.fairy_type_assets ? item.fairy_type_assets.map(link => link.asset?.id).filter(Boolean) : [],
         
         // ✨ ON INJECTE LES BRIQUES DORÉES ET L'ADN BRUT
         techData: JSON.stringify({
