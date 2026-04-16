@@ -2,6 +2,45 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.26 - "L\'Étiquette d\'Argent 🏷️"',
+    date: '16 Avril 2026',
+    changes: [
+      '🐛 **Encyclopédie (Hotfix) :** Résolution du quiproquo linguistique entre le Cerveau (préparateur de données) et l\'Interface Visuelle. Les Fées affichent désormais correctement leurs atouts cochés grâce à l\'harmonisation de la clé `assetsIds`.',
+      '✨ **Création de Chimères :** Le constructeur de nouvelles espèces (Étape 1 de l\'Encyclopédie) initialise désormais proprement le registre des atouts, empêchant tout plantage silencieux lors de la création d\'une fée de A à Z.'
+    ]
+  },  {
+    version: '15.8.25 - "La Chirurgie des Atouts 🪪"',
+    date: '16 Avril 2026',
+    changes: [
+      '🐛 **Traducteur SQL (Hotfix) :** Résolution d\'une perte de données silencieuse lors de l\'assignation d\'un Atout à une Fée dans l\'Encyclopédie. Le générateur SQL est désormais capable de lire le "Format Chirurgical" (Ajouts/Retraits ciblés) émis par le moteur d\'encyclopédie pour la table `fairy_type_assets`.',
+      '👁️ **Audit Visuel (Gardiens) :** Déploiement d\'un traducteur visuel pour les relations d\'Atouts et de Pouvoirs. Le Delta du Conseil différencie désormais proprement les Ajouts (vert) et les Retraits (rouge) en traduisant les UUIDs en noms lisibles.',
+      '🛡️ **Alerte de Forgeron (Gardiens) :** Si une modification fait appel à un élément qui n\'existe pas encore dans les archives (Création à la volée), le Delta affiche désormais un avertissement clair au lieu de masquer l\'information.'
+    ]
+  },  {
+    version: '15.8.24 - "La Préséance des Atouts 🪪"',
+    date: '16 Avril 2026',
+    changes: [
+      '👁️ **Audit Visuel (Gardiens) :** Déploiement d\'un traducteur visuel "Format Chirurgical" pour les relations d\'Atouts et de Pouvoirs. Le Delta du Conseil différencie désormais proprement les Ajouts (vert) et les Retraits (rouge) en traduisant les UUIDs en noms lisibles.',
+      '🛡️ **Alerte de Forgeron (Gardiens) :** Si une modification fait appel à un élément qui n\'existe pas encore dans les archives (ex: une Capacité forgée à la volée non validée), le Delta affiche désormais un avertissement clair au lieu de masquer l\'information.',
+      '🐛 **Traducteur SQL (Hotfix) :** Résolution de l\'affichage des identifiants bruts (UUIDs) pour les capacités de prédilection de la fée. Le système croise de nouveau correctement les clés avec le dictionnaire local pour garantir une lecture humaine.'
+    ]
+  },  {
+    version: '15.8.23 - "L\'Enfer de l\'Unicode 🔤"',
+    date: '16 Avril 2026',
+    changes: [
+      '🐛 **Générateur SQL (Hotfix) :** Résolution d\'un conflit critique d\'encodage Unicode (NFC vs NFD) entre le navigateur et la base de données PostgreSQL. Ce conflit rendait impossible l\'enregistrement des compétences possédant des accents (ex: "Discrétion") malgré une interface visuellement valide.',
+      '🧠 **Moteur de Résolution :** L\'Encyclopédie ne délègue plus la recherche d\'identifiants à Supabase via des chaînes de caractères. Le moteur résout désormais les IDs en RAM locale en purgeant dynamiquement tous les accents et la casse avant comparaison.',
+      '🛡️ **Sécurité des Briques :** Les spécialités offertes par les Atouts et les fées bénéficient également de cette normalisation orthographique, garantissant un enregistrement SQL fiable à 100%.'
+    ]
+  },  {
+    version: '15.8.22 - "La Clarté du Conseil 👁️"',
+    date: '16 Avril 2026',
+    changes: [
+      '🐛 **Forge des Fées (Hotfix) :** Résolution de l\'amnésie du Constructeur Lego (`BonusBuilder`). Les briques configurant des compétences Utiles ou de Spécialité ne sont plus ignorées lors de la compilation JSON.',
+      '👁️ **Audit Visuel (Gardiens) :** Refonte majeure de l\'affichage du "Delta" dans le Conseil des Gardiens. Les relations complexes (Compétences Utiles, Compétences Futiles, Choix multiples) ne sont plus résumées par un message obsolète, mais affichées sous forme de listes lisibles, détaillées et traduites en langage humain.',
+      '⚙️ **Moteur Algorithmique :** Le comparateur de l\'Encyclopédie transmet désormais les données sous forme de tableaux structurés au lieu de chaînes brutes, permettant une lecture croisée parfaite entre la base de données et l\'interface d\'administration.'
+    ]
+  },  {
     version: '15.8.21 - "La Tour de Babel 🗼"',
     date: '16 Avril 2026',
     changes: [
