@@ -1,381 +1,92 @@
 // src/components/Telegraphe.js
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, LayoutList, ListFilter, Settings, Key } from 'lucide-react';
-import { supabase } from '../config/supabase';
-import { showInAppNotification, translateError } from '../utils/SystemeServices';
+import { LayoutList, MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, ListFilter, Settings, Key } from 'lucide-react';
+
+// ✨ MAGIE : On importe notre Cerveau autonome !
+import { useTelegraphe } from '../hooks/useTelegraphe';
 
 // Sécurisation du LocalStorage (Anti-crash SSR/Incognito)
 const getSafeUiMode = () => {
-  try { return localStorage.getItem('telegraphe_ui_mode') || 'tabs'; } 
+  try { return localStorage.getItem('telegraphe_ui_mode') || 'tabs'; }
   catch (e) { return 'tabs'; }
 };
 
 export default function Telegraphe({ session, userProfile }) {
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState('list');
-
-  const [channels, setChannels] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [activeChannel, setActiveChannel] = useState(null);
-
   const [newSujet, setNewSujet] = useState('');
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-
   const [uiMode, setUiMode] = useState(getSafeUiMode());
   const [activeTab, setActiveTab] = useState('global');
-  
   const messagesEndRef = useRef(null);
-  const isAdmin = userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien';
-  // ✨ L'INCISION : Le laissez-passer des VIP
-  const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin;
 
   // ==========================================================================
-  // 🧠 LATEST REF PATTERN : On mémorise les états pour les WebSockets
+  // 🧠 LE CERVEAU CONNECTÉ
   // ==========================================================================
-  const activeChannelRef = useRef(activeChannel);
-  useEffect(() => { activeChannelRef.current = activeChannel; }, [activeChannel]);
+  const {
+    channels, messages, activeChannel, setActiveChannel,
+    loading, isAdmin, isInitiated,
+    fetchMessages, startPrivateChat, createSupportTicket, sendReply
+  } = useTelegraphe(session, userProfile);
 
   // ==========================================================================
-  // 📡 LES MOTEURS DE REQUÊTES BLINDÉS (Avec Mode Silencieux)
+  // 🖱️ GESTION DE L'INTERFACE ET DES VUES
   // ==========================================================================
-  const fetchChannels = async (isSilent = false) => {
-    if (!isSilent) setLoading(true);
-    try {
-      const myId = session.user.id;
 
-      // 1. On récupère les Cercles dont je suis le Docte
-      const { data: docteCercles } = await supabase
-        .from('cercles')
-        .select('id, nom')
-        .eq('docte_id', myId);
-
-      // 2. On récupère les Cercles dont je suis Membre
-      const { data: memberData } = await supabase
-        .from('cercle_membres')
-        .select('cercles(id, nom)')
-        .eq('user_id', myId);
-
-      // Fusion propre sans doublons
-      const myCercles = [...(docteCercles || [])];
-      if (memberData) {
-        memberData.forEach(m => {
-          if (m.cercles && !myCercles.find(c => c.id === m.cercles.id)) {
-            myCercles.push(m.cercles);
-          }
-        });
-      }
-      const cercleIds = myCercles.map(c => c.id);
-
-      // 3. On construit la requête dynamique pour chat_channels
-      let queryOr = isAdmin
-        ? `type.eq.global,type.eq.support,and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`
-        : `type.eq.global,and(type.eq.support,participant_1.eq.${myId}),and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`;
-
-      if (cercleIds.length > 0) {
-        queryOr += `,and(type.eq.cercle,cercle_id.in.(${cercleIds.join(',')}))`;
-      }
-
-      // ✨ FIX 1 : On ordonne au douanier Supabase de nous envoyer les archives des Initiés !
-      if (isInitiated) {
-        queryOr += `,type.eq.initie`;
-      }
-
-      // 🐛 FIX (Le Linter) : On restaure "chatData" et "chatError" !
-      const { data: chatData, error: chatError } = await supabase
-        .from('chat_channels')
-        .select('*')
-        .or(queryOr)
-        .order('last_message_at', { ascending: false });
-
-      if (chatError) throw chatError;
-
-      let finalChannels = [...(chatData || [])];
-
-      // ✨ 4. L'ASTUCE : On invente les "Canaux Virtuels" pour les historiques vides
-      myCercles.forEach(cercle => {
-        const exists = finalChannels.find(chan => chan.type === 'cercle' && chan.cercle_id === cercle.id);
-        if (!exists) {
-          finalChannels.push({
-            id: `virtual_${cercle.id}`, is_virtual: true, type: 'cercle',
-            name: `Table : ${cercle.nom}`, cercle_id: cercle.id,
-            last_message_at: new Date(0).toISOString()
-          });
-        }
-      });
-
-      // ✨ NOUVEAU : Le Canal Virtuel des Initiés
-      if (isInitiated) {
-        const existsInitie = finalChannels.find(chan => chan.type === 'initie');
-        if (!existsInitie) {
-          finalChannels.push({
-            id: 'virtual_initie', is_virtual: true, type: 'initie',
-            name: 'Le Cercle des Initiés', cercle_id: null,
-            last_message_at: new Date(0).toISOString()
-          });
-        }
-      }
-
-      // On retrie le tout fraîchement
-      finalChannels.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
-      setChannels(finalChannels);
-
-    } catch (err) {
-      showInAppNotification("Erreur de lecture des correspondances : " + translateError(err), "error");
-    } finally {
-      if (!isSilent) setLoading(false);
-    }
-  };
-
-  const updateChannelStatus = async (id, status) => {
-    try {
-      const { error } = await supabase.from('chat_channels').update({ status }).eq('id', id);
-      if (error) throw error;
-      fetchChannels(true); // Actualisation silencieuse
-    } catch (err) {
-      console.error("Erreur de mise à jour du statut:", err);
-    }
-  };
-
-  const fetchMessages = async (channel, isSilent = false) => {
-    if (!isSilent) setLoading(true);
-    setActiveChannel(channel);
-
-    // ✨ FIX : Le Court-circuit pour les canaux fantômes !
-    // Si c'est un salon virtuel, il est vide par définition. On ne dérange pas Supabase !
-    if (channel.is_virtual) {
-      setMessages([]);
-      setView('chat');
-      if (!isSilent) setLoading(false);
-      return; 
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('chat_messages')
-        .select('*, profiles(username)')
-        .eq('channel_id', channel.id)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-
-      if (data) {
-        setMessages(data);
-        setView('chat');
-        
-        // Mise à jour du statut pour le support (inchangé)
-        if (channel.type === 'support') {
-          if (isAdmin && channel.status === 'nouveau') updateChannelStatus(channel.id, 'lu');
-          else if (!isAdmin && channel.status === 'lu') updateChannelStatus(channel.id, 'consulte');
-        }
-      }
-    } catch (err) {
-      showInAppNotification("Erreur de lecture des missives : " + translateError(err), "error");
-    } finally {
-      if (!isSilent) setLoading(false);
-    }
-  };
-  const startPrivateChat = async (targetUser) => {
-    setLoading(true);
-    const myId = session.user.id;
-    try {
-      const { data: existing, error: searchError } = await supabase.from('chat_channels')
-        .select('*')
-        .eq('type', 'private')
-        .or(`and(participant_1.eq.${myId},participant_2.eq.${targetUser.id}),and(participant_1.eq.${targetUser.id},participant_2.eq.${myId})`)
-        .maybeSingle();
-
-      if (searchError && searchError.code !== 'PGRST116') throw searchError;
-
-      if (existing) {
-        fetchMessages(existing);
-      } else {
-        const { data: newChannel, error: insertError } = await supabase.from('chat_channels')
-          .insert([{
-            type: 'private',
-            name: `Correspondance avec ${targetUser.username}`,
-            participant_1: myId,
-            participant_2: targetUser.id
-          }])
-          .select().single();
-
-        if (insertError) throw insertError;
-        
-        if (newChannel) {
-          fetchChannels();
-          fetchMessages(newChannel);
-        }
-      }
-    } catch (err) {
-      showInAppNotification("Erreur lors de la création du canal privé : " + translateError(err), "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 🧠 LATEST REF PATTERN : Mémorisation des fonctions pour les écouteurs
-  const startPrivateChatRef = useRef(startPrivateChat);
-  const fetchChannelsRef = useRef(fetchChannels);
-  const fetchMessagesRef = useRef(fetchMessages);
-
+  // Défilement automatique vers le bas lors d'un nouveau message
   useEffect(() => {
-    startPrivateChatRef.current = startPrivateChat;
-    fetchChannelsRef.current = fetchChannels;
-    fetchMessagesRef.current = fetchMessages;
-  });
+    if (view === 'chat' && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, view]);
 
-  // ==========================================================================
-  // ✨ INITIALISATION ET TEMPS RÉEL (SUPABASE REALTIME)
-  // ==========================================================================
-  useEffect(() => {
-    if (!session?.user?.id) return;
-    
-    // 1. On charge les canaux sans faire flasher la fenêtre au montage
-    fetchChannelsRef.current(true);
-
-    // 2. On écoute le Temps Réel (Toujours en mode silencieux !)
-    const chatSubscription = supabase.channel('telegraphe-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_messages' }, (payload) => {
-        fetchChannelsRef.current(true);
-        
-        if (activeChannelRef.current && payload.new.channel_id === activeChannelRef.current.id) {
-          fetchMessagesRef.current(activeChannelRef.current, true);
-        }
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_channels' }, () => {
-        fetchChannelsRef.current(true);
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(chatSubscription); };
-  }, [session?.user?.id]);
-
-
-  // ==========================================================================
-  // ✨ ÉCOUTEUR D'ÉVÉNEMENT EXTERNE SÉCURISÉ
-  // ==========================================================================
+  // Écouteur magique pour s'ouvrir depuis n'importe où dans l'application
   useEffect(() => {
     const handleOpenTelegraphe = async (e) => {
       const { targetUser, targetCercle } = e.detail || {};
       setIsOpen(true);
       
-      // Cas A : Raccourci vers un joueur précis
-      if (targetUser && startPrivateChatRef.current) {
-        await startPrivateChatRef.current(targetUser);
-      } 
-      // ✨ FIX (Cas B) : Raccourci vers le Hub du Cercle !
-      else if (targetCercle) {
+      if (targetUser) {
+        await startPrivateChat(targetUser);
+        setView('chat');
+      } else if (targetCercle) {
         setActiveTab('cercle');
-        setView('list'); // On s'assure d'être sur la vue liste pour voir sa Table
+        setView('list');
       }
     };
-
     window.addEventListener('open-telegraphe', handleOpenTelegraphe);
     return () => window.removeEventListener('open-telegraphe', handleOpenTelegraphe);
-  }, []);
+  }, [startPrivateChat]);
 
-  // ==========================================================================
-  // ✉️ ENVOI DE MESSAGES
-  // ==========================================================================
-  const createSupportTicket = async () => {
-    if (!newSujet.trim() || !newMessage.trim()) return;
-    setLoading(true);
-    try {
-      const { data: channelData, error: channelError } = await supabase
-        .from('chat_channels')
-        .insert([{ type: 'support', name: newSujet, participant_1: session.user.id, status: 'nouveau' }])
-        .select().single();
+  // Wrappers d'action pour coordonner le Cerveau et la Vue
+  const handleOpenChannel = async (channel) => {
+    await fetchMessages(channel);
+    setView('chat');
+  };
 
-      if (channelError) throw channelError;
-
-      const { error: msgError } = await supabase.from('chat_messages').insert([{
-        channel_id: channelData.id,
-        user_id: session.user.id,
-        message: newMessage,
-        is_admin: false
-      }]);
-
-      if (msgError) throw msgError;
-
+  const handleCreateTicket = async () => {
+    const success = await createSupportTicket(newSujet, newMessage);
+    if (success) {
       setNewSujet('');
       setNewMessage('');
       setView('list');
-      showInAppNotification("Missive de support expédiée au Conseil.", "success");
-      // ✨ FIX : On rafraîchit immédiatement la liste des correspondances
-      if (fetchChannelsRef.current) fetchChannelsRef.current(true);
-
-    } catch (err) {
-      showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
-    } finally {
-      setLoading(false);
     }
   };
 
-  const sendReply = async () => {
-    if (!newMessage.trim() || !activeChannel) return;
-    setLoading(true);
-
-    try {
-      let actualChannelId = activeChannel.id;
-
-      // ✨ FIX : Si c'est un canal Virtuel, on le grave dynamiquement !
-      if (activeChannel.is_virtual) {
-        const { data: newChan, error: chanError } = await supabase.from('chat_channels').insert([{
-          type: activeChannel.type, // 👈 C'était hardcodé en 'cercle' avant !
-          name: activeChannel.name,
-          cercle_id: activeChannel.cercle_id || null, 
-          status: 'open',
-          last_message_at: new Date().toISOString()
-        }]).select().single();
-
-        if (chanError) throw chanError;
-        actualChannelId = newChan.id;
-        setActiveChannel(newChan); 
-      }
-	  
-      // Envoi du message classique
-      const { error: msgError } = await supabase.from('chat_messages').insert([{
-        channel_id: actualChannelId,
-        user_id: session.user.id,
-        message: newMessage,
-        is_admin: isAdmin || false
-      }]);
-
-      if (msgError) throw msgError;
-
-      // Mise à jour de la date du canal (seulement s'il n'est pas tout neuf !)
-      if (!activeChannel.is_virtual) {
-        const newStatus = activeChannel.type === 'support' ? (isAdmin ? 'lu' : 'nouveau') : 'open';
-        const { error: updateError } = await supabase.from('chat_channels').update({
-          last_message_at: new Date().toISOString(),
-          status: newStatus
-        }).eq('id', actualChannelId);
-
-        if (updateError) throw updateError;
-      }
-
+  const handleSendReply = async () => {
+    const success = await sendReply(newMessage);
+    if (success) {
       setNewMessage('');
-
-      // Rafraîchissement asynchrone des vues
-      if (fetchMessagesRef.current) {
-        fetchMessagesRef.current({ id: actualChannelId, type: activeChannel.type }, true);
-      }
-      if (fetchChannelsRef.current) fetchChannelsRef.current(true);
-
-    } catch (err) {
-      showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
-    } finally {
-      setLoading(false);
     }
   };
-  
+
   const getChannelIcon = (type) => {
     if (type === 'global') return <Globe size={16} className="text-blue-600" />;
     if (type === 'support') return <ShieldAlert size={16} className="text-amber-600" />;
     if (type === 'private') return <User size={16} className="text-emerald-600" />;
-    if (type === 'cercle') return <Users size={16} className="text-purple-600" />; 
-    if (type === 'initie') return <Key size={16} className="text-emerald-600" />; // ✨ NOUVEAU
+    if (type === 'cercle') return <Users size={16} className="text-purple-600" />;
+    if (type === 'initie') return <Key size={16} className="text-emerald-600" />;
     return <MessageCircle size={16} className="text-gray-600" />;
   };
 
@@ -383,14 +94,15 @@ export default function Telegraphe({ session, userProfile }) {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
+      
       {/* BOUTON FLOTTANT */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
+        <button 
+          onClick={() => setIsOpen(true)} 
           className="bg-amber-800 text-amber-50 p-4 rounded-full shadow-2xl hover:bg-amber-700 transition-transform transform hover:scale-110 border-2 border-amber-600 flex items-center gap-2"
         >
           <MessageCircle size={28} />
-          {((isAdmin && channels.some(c => c.type === 'support' && c.status === 'nouveau')) ||
+          {((isAdmin && channels.some(c => c.type === 'support' && c.status === 'nouveau')) || 
             (!isAdmin && channels.some(c => c.type === 'support' && c.status === 'lu'))) && (
             <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-bounce">!</span>
           )}
@@ -427,7 +139,6 @@ export default function Telegraphe({ session, userProfile }) {
                   {[
                     { id: 'global', label: 'Public', icon: <Globe size={14}/> },
                     { id: 'cercle', label: 'Mes Tables', icon: <Users size={14}/> },
-                    // ✨ L'ONGLET VIP conditionnel !
                     ...(isInitiated ? [{ id: 'initie', label: 'Initiés', icon: <Key size={14}/> }] : []),
                     { id: 'private', label: 'Privé', icon: <User size={14}/> },
                     { id: 'support', label: 'Conseil', icon: <Shield size={14}/> }
@@ -437,50 +148,48 @@ export default function Telegraphe({ session, userProfile }) {
                       onClick={() => setActiveTab(tab.id)}
                       className={`flex-1 min-w-[80px] flex justify-center items-center gap-1.5 py-2 px-3 text-xs font-bold rounded transition-all ${activeTab === tab.id ? 'bg-white text-amber-900 shadow-sm border border-stone-200' : 'text-stone-500 hover:bg-stone-200 hover:text-stone-700'}`}
                     >
-                      {tab.icon} <span className="hidden sm:inline">{tab.label}</span>
+                      {tab.icon} <span className="hidden md:inline">{tab.label}</span>
                     </button>
                   ))}
                 </div>
               )}
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-                <button
-                  onClick={() => setView('new')}
-                  className="w-full mb-2 py-2 border-2 border-dashed border-amber-600 text-amber-800 font-bold rounded hover:bg-amber-100 flex items-center justify-center gap-2 transition-colors"
-                >
-                  <ShieldAlert size={18} /> Signaler un problème au Conseil
-                </button>
+              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                {!isAdmin && (uiMode === 'unified' || activeTab === 'support') && (
+                  <button onClick={() => setView('new')} className="w-full mb-4 bg-amber-100 hover:bg-amber-200 text-amber-900 py-3 rounded-xl border-2 border-amber-300 font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                    <ShieldAlert size={18} /> Signaler un problème au Conseil
+                  </button>
+                )}
 
-				<div className="space-y-3">
-				  {channels
-					.filter(c => isInitiated || c.type !== 'initie') // 🛡️ FIX 2 : LE VIDEUR ANTI-FUITE !
-					.filter(c => uiMode === 'unified' || c.type === activeTab)
-					.length === 0 && (
-					<p className="text-center text-gray-500 italic mt-4">Aucune correspondance dans cette section.</p>
-				  )}
+                <div className="space-y-3">
+                  {channels
+                    .filter(c => isInitiated || c.type !== 'initie')
+                    .filter(c => uiMode === 'unified' || c.type === activeTab)
+                    .length === 0 && (
+                      <p className="text-center text-gray-500 italic mt-4">Aucune correspondance dans cette section.</p>
+                  )}
 
-				  {channels
-					.filter(c => isInitiated || c.type !== 'initie') // 🛡️ FIX 2 : LE VIDEUR ANTI-FUITE !
-					.filter(c => uiMode === 'unified' || c.type === activeTab)
-					.map(c => (
-					<div
-					  key={c.id}
-					  onClick={() => fetchMessages(c)} 
-					  className="p-3 bg-white border border-stone-200 rounded-lg hover:border-amber-400 hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
-					>
-                      <div className="p-2 bg-stone-50 rounded-full border border-stone-100 shrink-0">
-                        {getChannelIcon(c.type)}
+                  {channels
+                    .filter(c => isInitiated || c.type !== 'initie')
+                    .filter(c => uiMode === 'unified' || c.type === activeTab)
+                    .map(c => (
+                      <div 
+                        key={c.id} 
+                        onClick={() => handleOpenChannel(c)}
+                        className="p-3 bg-white border border-stone-200 rounded-lg hover:border-amber-400 hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
+                      >
+                        <div className="p-2 bg-stone-50 rounded-full border border-stone-100 shrink-0">
+                          {getChannelIcon(c.type)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-bold text-amber-900 truncate">{c.name || 'Conversation'}</h4>
+                          <p className="text-xs text-stone-500 truncate mt-0.5 flex justify-between">
+                            <span>Dernier message : {new Date(c.last_message_at).toLocaleDateString('fr-FR')} à {new Date(c.last_message_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}</span>
+                            {c.type === 'support' && c.status === 'nouveau' && <span className="text-red-600 font-bold">En attente</span>}
+                          </p>
+                        </div>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-bold text-amber-900 truncate">{c.name || 'Conversation'}</h4>
-                        <p className="text-xs text-stone-500 truncate mt-0.5 flex justify-between">
-                          {/* Format inébranlable de la date */}
-                          <span>Dernier message : {new Date(c.last_message_at).toLocaleDateString('fr-FR')} à {new Date(c.last_message_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}</span>
-                          {c.type === 'support' && c.status === 'nouveau' && <span className="text-red-600 font-bold">En attente</span>}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </div>
@@ -494,12 +203,12 @@ export default function Telegraphe({ session, userProfile }) {
               <div className="bg-amber-100 p-2 rounded text-xs text-amber-800 border border-amber-200">
                 Utilisez ce formulaire uniquement pour contacter les Gardiens (Bug, Règle, Support technique).
               </div>
-
+              
               <input
-                type="text" 
+                type="text"
                 placeholder="Sujet du problème..."
                 className="p-3 border border-amber-400 rounded-lg bg-white text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-amber-600 shadow-sm"
-                value={newSujet} 
+                value={newSujet}
                 onChange={(e) => setNewSujet(e.target.value)}
                 disabled={loading}
               />
@@ -507,14 +216,14 @@ export default function Telegraphe({ session, userProfile }) {
               <textarea
                 placeholder="Décrivez votre requête en détail..."
                 className="flex-1 p-3 border border-amber-400 rounded-lg bg-white text-stone-900 resize-none focus:outline-none focus:ring-2 focus:ring-amber-600 custom-scrollbar shadow-sm"
-                value={newMessage} 
+                value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 disabled={loading}
               />
               
-              <button
-                onClick={createSupportTicket} 
-                disabled={loading || !newSujet.trim() || !newMessage.trim()}
+              <button 
+                onClick={handleCreateTicket} 
+                disabled={loading || !newSujet.trim() || !newMessage.trim()} 
                 className="bg-amber-800 text-white p-3 rounded-lg hover:bg-amber-700 font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
               >
                 <Send size={18} /> {loading ? 'Envoi...' : 'Expédier la requête'}
@@ -525,33 +234,41 @@ export default function Telegraphe({ session, userProfile }) {
           {/* VUE 3 : LE CHAT */}
           {view === 'chat' && (
             <div className="flex-1 flex flex-col min-h-0 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
-              
               <div className="bg-amber-100 border-b border-amber-300 p-2 flex justify-between items-center shadow-sm shrink-0">
                 <button onClick={() => { setView('list'); setActiveChannel(null); }} className="text-sm text-amber-800 hover:text-amber-600 font-bold flex items-center gap-1">← Retour</button>
                 <span className="font-bold text-amber-900 truncate flex-1 text-right text-sm px-2">{activeChannel?.name}</span>
               </div>
-
+              
               <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                 {messages.map((m) => {
                   const isMe = m.user_id === session.user.id;
-					let displayName = isMe ? 'Vous' : (m.profiles?.username || 'Anonyme');
-					
-					// ✨ FIX : On dévoile le pseudo du modérateur tout en gardant son titre officiel !
-					if (activeChannel?.type === 'support' && !isMe) {
-					  displayName = m.profiles?.username 
-						? `${m.profiles.username} (Garde des Sceaux)` 
-						: 'Garde des Sceaux';
-					}
+                  let displayName = isMe ? 'Vous' : (m.profiles?.username || 'Anonyme');
+                  
+                  // Dévoile le pseudo du Gardien s'il est masqué
+                  if (activeChannel?.type === 'support' && !isMe) {
+                    displayName = m.profiles?.username
+                      ? `${m.profiles.username} (Garde des Sceaux)`
+                      : 'Garde des Sceaux';
+                  }
 
                   return (
-                    <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                      <span className="text-[10px] text-stone-500 font-bold mb-0.5 px-1">{displayName}</span>
+                    <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 animate-fade-in`}>
+                      
+                      {/* ✨ FIX : Typographie revue à la hausse pour la lisibilité ! */}
+                      <div className={`flex items-baseline gap-2 mb-1 px-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                        <span className="text-xs font-bold text-stone-500">{displayName}</span>
+                        <span className="text-[12px] text-stone-400 italic">
+                          le {new Date(m.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} à {new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}
+                        </span>
+                      </div>
+
+                      {/* La bulle de message */}
                       <div className={`p-3 rounded-xl max-w-[85%] text-sm shadow-sm whitespace-pre-wrap break-words ${
                         isMe 
-                          ? 'bg-amber-600 text-white rounded-br-none' 
+                          ? 'bg-amber-600 text-white rounded-tr-none' 
                           : m.is_admin 
-                            ? 'bg-red-800 text-white rounded-bl-none border border-red-900' 
-                            : 'bg-white text-stone-800 border border-stone-200 rounded-bl-none'
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300 rounded-tl-none font-bold' 
+                            : 'bg-white text-stone-800 border border-stone-200 rounded-tl-none'
                       }`}>
                         {m.message}
                       </div>
@@ -560,7 +277,7 @@ export default function Telegraphe({ session, userProfile }) {
                 })}
                 <div ref={messagesEndRef} />
               </div>
-
+              
               {activeChannel?.status !== 'resolu' ? (
                 <div className="p-3 bg-amber-50 border-t border-amber-300 flex gap-2 items-end shrink-0">
                   <textarea
@@ -570,17 +287,17 @@ export default function Telegraphe({ session, userProfile }) {
                     className="flex-1 p-3 border border-amber-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-inner bg-white text-stone-900 resize-none max-h-24 custom-scrollbar"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    disabled={loading}
-                    onKeyDown={(e) => { 
-                      if (e.key === 'Enter' && !e.shiftKey) { 
-                        e.preventDefault(); 
-                        sendReply(); 
-                      } 
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        if (newMessage.trim() && !loading) handleSendReply();
+                      }
                     }}
+                    disabled={loading}
                   />
-                  <button
-                    onClick={sendReply}
-                    disabled={loading || !newMessage.trim()}
+                  <button 
+                    onClick={handleSendReply} 
+                    disabled={loading || !newMessage.trim()} 
                     className="bg-amber-600 hover:bg-amber-700 text-white p-3 rounded-lg transition-colors shadow-sm disabled:opacity-50 h-full flex items-center justify-center shrink-0"
                   >
                     <Send size={20} />
@@ -613,7 +330,7 @@ export default function Telegraphe({ session, userProfile }) {
                       className={`p-3 rounded-lg border-2 flex flex-col items-center gap-2 transition-all ${uiMode === 'tabs' ? 'border-amber-600 bg-amber-50 text-amber-900 shadow-sm' : 'border-stone-200 bg-white text-stone-500 hover:border-amber-300 hover:text-amber-700'}`}
                     >
                       <LayoutList size={24} />
-                      <span className="text-xs font-bold uppercase tracking-wider">Onglets</span>
+                      <span className="text-xs font-bold uppercase tracking-wider">Par Onglets</span>
                     </button>
                     <button
                       onClick={() => {
@@ -631,6 +348,7 @@ export default function Telegraphe({ session, userProfile }) {
               </div>
             </div>
           )}
+
         </div>
       )}
     </div>
