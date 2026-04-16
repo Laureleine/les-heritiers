@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.21 - "La Tour de Babel 🗼"',
+    date: '16 Avril 2026',
+    changes: [
+      '🌍 **Personnalisation (Langues) :** Création du moteur autonome `WidgetLangues.js` pour l\'Étape 10. L\'interface gère désormais l\'arsenal linguistique du personnage en calculant intelligemment les emplacements gratuits selon son score de Culture et ses dons innés (Protys).',
+      '🪙 **Pont Marchand (Étape 9) :** Synchronisation absolue entre les achats de la Vie Sociale et l\'érudition. Les jetons de dialectes acquis (Rares, Courantes, Anciennes, Argots) sont convertis en emplacements d\'apprentissage spécifiques dans des menus déroulants dédiés.',
+      '🛡️ **Règles Féériques (Garde-Fou) :** Le système impose l\'inaliénable malédiction de l\'Argot gobelin à l\'espèce concernée, gère la définition de la Langue Maternelle (couronne), et intègre la tolérance du Livre de Base autorisant l\'apprentissage du Celte avec un simple jeton de langue courante.'
+    ]
+  },  {
     version: '15.8.20 - "Le Disjoncteur Manuel 🔌"',
     date: '16 Avril 2026',
     changes: [
