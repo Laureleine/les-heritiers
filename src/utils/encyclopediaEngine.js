@@ -31,7 +31,8 @@ export const submitEncyclopediaProposal = async ({
   justification,
   userProfile,
   parsedTech,
-  allCompFutiles
+  allCompFutiles,
+  gameData
 }) => {
   
   const surgicalData = {};
@@ -103,33 +104,69 @@ export const submitEncyclopediaProposal = async ({
     if (!arraysEqual(newPouvoirs, oldPouvoirs)) changedRelations.pouvoirs = getDiff(oldPouvoirs, newPouvoirs);
     if (!arraysEqual(newAtouts, oldAtouts)) changedRelations.atouts = getDiff(oldAtouts, newAtouts);
 
-    // Compétences Utiles
-    const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection) : '[]';
-    const newUtilesArray = [...(parsedTech.predilections || [])];
-    if (parsedTech.specialites) {
-      parsedTech.specialites.forEach(s => {
-        newUtilesArray.push({ nom: s.competence, specialite: s.nom, isChoix: false, isOnlySpecialty: true });
-      });
-    }
-    const newUtiles = JSON.stringify(newUtilesArray);
-    if (newUtiles !== oldUtiles) changedRelations.competencesUtiles = newUtiles;
+      // Compétences Utiles
+      const oldUtiles = editingItem.competencesPredilection ? JSON.stringify(editingItem.competencesPredilection) : '[]';
+      
+      // ✨ LE BOUCLIER ANTI-UNICODE : On charge le dictionnaire de la RAM
+      const allCompUtiles = Object.values(gameData.competences || {}); 
+      const normalizeStr = (str) => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 
+      const newUtilesArray = (parsedTech.predilections || []).map(p => {
+        const compObj = typeof p === 'string' ? { nom: p } : { ...p };
+
+        // 🧠 L'Intelligence Artificielle : On trouve l'ID exact sans se soucier des accents !
+        if (compObj.nom && !compObj.competence_id) {
+          const searchName = normalizeStr(compObj.nom);
+          const found = allCompUtiles.find(c => normalizeStr(c.nom) === searchName);
+          
+          if (found) {
+            compObj.competence_id = found.id;
+            compObj.nom = found.nom; // On force l'orthographe stricte de la base (NFC/NFD)
+          }
+        }
+        return compObj;
+      });
+
+      if (parsedTech.specialites) {
+        parsedTech.specialites.forEach(s => {
+          const searchName = normalizeStr(s.competence);
+          const found = allCompUtiles.find(c => normalizeStr(c.nom) === searchName);
+          
+          newUtilesArray.push({ 
+            nom: found ? found.nom : s.competence, 
+            competence_id: found ? found.id : null,
+            specialite: s.nom, 
+            isChoix: false, 
+            isOnlySpecialty: true 
+          });
+        });
+      }
+
+      const newUtilesStr = JSON.stringify(newUtilesArray);
+      if (newUtilesStr !== oldUtiles) changedRelations.competencesUtiles = newUtilesArray; 
+
+      // Compétences Futiles
     // Compétences Futiles
     const newFutiles = (parsedTech.futiles || []).map(f => {
-      if (f.isChoix) return { is_choice: true, choice_options: f.options || [], competence_futile_id: null };
-      const found = allCompFutiles.find(c => c.nom === f.nom || c.name === f.nom);
-      return { is_choice: false, choice_options: [], competence_futile_id: found ? found.id : null };
+        if (f.isChoix) return { is_choice: true, choice_options: f.options || [], competence_futile_id: null, competence_name: null };
+        const found = allCompFutiles.find(c => c.nom === f.nom || c.name === f.nom);
+        return { is_choice: false, choice_options: [], competence_futile_id: found ? found.id : null, competence_name: f.nom };
     });
-    
+
     const oldFutilesRaw = editingItem.fairy_competences_futiles_predilection || [];
     const oldFutiles = oldFutilesRaw.map(f => ({
-      is_choice: f.is_choice, choice_options: f.choice_options || [], competence_futile_id: f.competence_futile_id
+        is_choice: f.is_choice, choice_options: f.choice_options || [], competence_futile_id: f.competence_futile_id
     }));
-    
-    if (JSON.stringify(newFutiles) !== JSON.stringify(oldFutiles)) {
-      changedRelations.competencesFutiles = newFutiles;
-    }
 
+      // ✨ LE BOUCLIER D'ÉQUIVALENCE : On crée un clone sans le nom pour comparer proprement les deltas
+    const compareNewFutiles = newFutiles.map(f => ({
+        is_choice: f.is_choice, choice_options: f.choice_options, competence_futile_id: f.competence_futile_id
+    }));
+
+    if (JSON.stringify(compareNewFutiles) !== JSON.stringify(oldFutiles)) {
+        changedRelations.competencesFutiles = newFutiles; // On transmet la version complète avec le Nom au générateur SQL !
+    }
+    
     const newEffetsTech = { ...parsedTech };
     delete newEffetsTech.predilections;
     delete newEffetsTech.specialites;

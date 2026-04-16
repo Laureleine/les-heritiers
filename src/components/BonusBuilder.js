@@ -43,8 +43,6 @@ export default function BonusBuilder({
   useEffect(() => {
     let currentParsed = {};
     try {
-      // 🛡️ On s'affranchit de parsedTech (qui change de réf. à chaque frappe du parent)
-      // On se base strictement sur le string brut !
       currentParsed = rawJson ? JSON.parse(rawJson) : (parsedTech || {});
     } catch (e) {
       currentParsed = parsedTech || {};
@@ -68,14 +66,26 @@ export default function BonusBuilder({
     }
     if (currentParsed?.specialites) {
       currentParsed.specialites.forEach(s => {
-        initialBlocks.push({ id: generateId(), type: 'spec', key: s.competence, nom: s.nom });
+        // ✨ FIX : La clé de destination est bien "comp", pas "key" !
+        initialBlocks.push({ id: generateId(), type: 'spec', comp: s.competence, nom: s.nom });
       });
     }
+    
+    // ✨ FIX : On rétablit la lecture complète des compétences utiles !
     if (currentParsed?.predilections) {
       currentParsed.predilections.forEach(p => {
-        initialBlocks.push({ id: generateId(), type: 'predilection_fixe', key: p });
+        if (typeof p === 'string') {
+          initialBlocks.push({ id: generateId(), type: 'pred_fixe', key: p });
+        } else if (p.isChoix) {
+          initialBlocks.push({ id: generateId(), type: 'pred_choix', options: p.options || [] });
+        } else if (p.isSpecialiteChoix) {
+          initialBlocks.push({ id: generateId(), type: 'pred_spec_choix', comp: p.nom, options: p.options || [] });
+        } else if (p.nom) {
+          initialBlocks.push({ id: generateId(), type: 'pred_fixe', key: p.nom, nom: p.specialite || '' });
+        }
       });
     }
+
     if (currentParsed?.futiles) {
       currentParsed.futiles.forEach(f => {
         if (f.isChoix) {
@@ -87,9 +97,6 @@ export default function BonusBuilder({
     }
     setBlocks(initialBlocks);
     setHasUnsavedChanges(false);
-    
-    // 🛡️ BOUCLIER ANTI-BOUCLE : On interdit formellement à ESLint de réclamer "parsedTech".
-    // C'est le secret de notre architecture "Uncontrolled" pour éviter les crashs de rendu !
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawJson]); 
 
@@ -107,13 +114,24 @@ export default function BonusBuilder({
         newTech.competences[b.key] = parseInt(b.val) || 0;
       } else if (b.type === 'fortune') {
         newTech.fortune_bonus = parseInt(b.val) || 0;
-      } else if (b.type === 'spec' && b.key && b.nom) {
+      } else if (b.type === 'spec' && b.comp && b.nom) {
         if (!newTech.specialites) newTech.specialites = [];
-        newTech.specialites.push({ competence: b.key, nom: b.nom });
-      } else if (b.type === 'predilection_fixe' && b.key) {
+        newTech.specialites.push({ competence: b.comp, nom: b.nom });
+      } 
+      // ✨ FIX : On rétablit la compilation exacte des compétences utiles !
+      else if (b.type === 'pred_fixe' && b.key) {
         if (!newTech.predilections) newTech.predilections = [];
-        if (!newTech.predilections.includes(b.key)) newTech.predilections.push(b.key);
-      } else if (b.type === 'futile_fixe' && b.key) {
+        if (b.nom) newTech.predilections.push({ nom: b.key, specialite: b.nom });
+        else newTech.predilections.push(b.key);
+      } else if (b.type === 'pred_choix') {
+        if (!newTech.predilections) newTech.predilections = [];
+        newTech.predilections.push({ isChoix: true, options: b.options || [] });
+      } else if (b.type === 'pred_spec_choix' && b.comp) {
+        if (!newTech.predilections) newTech.predilections = [];
+        newTech.predilections.push({ nom: b.comp, isSpecialiteChoix: true, options: b.options || [] });
+      } 
+      // Futiles
+      else if (b.type === 'futile_fixe' && b.key) {
         if (!newTech.futiles) newTech.futiles = [];
         newTech.futiles.push({ nom: b.key });
       } else if (b.type === 'futile_choix') {
@@ -491,97 +509,100 @@ export default function BonusBuilder({
               );
             })()}
 
-            {/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
-            {block.type === 'pred_fixe' && (() => {
-              const compData = competencesData?.find(c => c.name === block.key) || {};
-              const availableSpecs = compData.specialites || [];
-              const isCreating = creatingSpecFor === block.id;
+			{/* ✨ Lego Prédilection Fixe Utile (Fuchsia) ✨ */}
+			{block.type === 'pred_fixe' && (() => {
+			  // 🛡️ BOUCLIER ANTI-UNICODE : On normalise la clé en NFC pour correspondre au navigateur !
+			  const safeKey = typeof block.key === 'string' ? block.key.normalize('NFC') : '';
+			  const safeUsefulSkills = usefulSkills.map(s => typeof s === 'string' ? s.normalize('NFC') : s);
+			  
+			  const compData = competencesData?.find(c => (c.name || '').normalize('NFC') === safeKey) || {};
+			  const availableSpecs = compData.specialites || [];
+			  const isCreating = creatingSpecFor === block.id;
 
-              return (
-                <>
-                  <div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200">
-                    <BookOpen size={18}/>
-                  </div>
-                  <span className="text-sm font-bold text-fuchsia-900">Utile Imposée :</span>
-                  <select
-                    value={block.key || ''}
-                    onChange={(e) => {
-                      const newBlocks = blocks.map(b => b.id === block.id ? { ...b, key: e.target.value, nom: '' } : b);
-                      setBlocks(newBlocks);
-                      setHasUnsavedChanges(true);
-                    }}
-                    className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none w-1/3"
-                  >
-                    <option value="">Sélectionner...</option>
-                    {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                  <span className="text-stone-400 font-bold">▶</span>
+			  return (
+				<>
+				  {/* ✨ FIX : On ajoute shrink-0 pour que les icônes et textes ne soient jamais écrasés */}
+				  <div className="bg-fuchsia-100 text-fuchsia-800 p-2 rounded border border-fuchsia-200 shrink-0">
+					<BookOpen size={18}/>
+				  </div>
+				  <span className="text-sm font-bold text-fuchsia-900 shrink-0">Utile Imposée :</span>
 
-                  {!block.key ? (
-                    <span className="text-sm italic text-stone-400 flex-1">Sélectionnez d'abord la compétence...</span>
-                  ) : isCreating ? (
-                    <div className="flex gap-1 flex-1 animate-fade-in">
-                      <input
-                        type="text"
-                        autoFocus
-                        placeholder="Nouvelle spécialité..."
-                        value={newSpecName}
-                        onChange={(e) => setNewSpecName(e.target.value)}
-                        className="p-1.5 border border-stone-200 rounded text-sm flex-1 focus:ring-2 focus:ring-fuchsia-200 outline-none"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                            handleCreateGlobalSpeciality(block.id, block.key, e.currentTarget.value.trim());
-                          }
-                          if (e.key === 'Escape') {
-                            setCreatingSpecFor(null);
-                            setNewSpecName('');
-                          }
-                        }}
-                      />
-                      <button
-                        onClick={() => { if (newSpecName.trim()) handleCreateGlobalSpeciality(block.id, block.key, newSpecName.trim()); }}
-                        className="bg-fuchsia-600 text-white px-2 py-1 rounded text-[10px] font-bold"
-                      >
-                        Créer
-                      </button>
-                      <button
-                        onClick={() => { setCreatingSpecFor(null); setNewSpecName(''); }}
-                        className="bg-stone-200 text-stone-600 px-2 py-1 rounded text-[10px] font-bold"
-                      >
-                        X
-                      </button>
-                    </div>
-                  ) : (
-                    <select
-                      value={block.nom || ''}
-                      onChange={(e) => {
-                        if (e.target.value === '__CREATE_NEW__') {
-                          setCreatingSpecFor(block.id);
-                          setNewSpecName('');
-                        } else {
-                          updateBlock(block.id, 'nom', e.target.value);
-                        }
-                      }}
-                      className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none flex-1"
-                    >
-                      <option value="">Spécialité (Optionnelle)...</option>
-                      <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
-                      {availableSpecs.filter(s => s.is_official).length > 0 && (
-                        <optgroup label="📚 Officielles">
-                          {availableSpecs.filter(s => s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
-                        </optgroup>
-                      )}
-                      {availableSpecs.filter(s => !s.is_official).length > 0 && (
-                        <optgroup label="👥 Communauté">
-                          {availableSpecs.filter(s => !s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}
-                        </optgroup>
-                      )}
-                    </select>
-                  )}
-                </>
-              );
-            })()}
+				  {/* ✨ FIX : min-w-[140px] empêche la boîte de disparaître même si elle est vide */}
+				  <select
+					value={safeKey}
+					onChange={(e) => updateBlock(block.id, 'key', e.target.value)}
+					className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none flex-1 min-w-[140px]"
+				  >
+					<option value="">Sélectionner...</option>
+					{safeUsefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+				  </select>
 
+				  <span className="text-stone-400 font-bold shrink-0">▶</span>
+
+				  {!safeKey ? (
+					<span className="text-sm italic text-stone-400 flex-1 min-w-[140px]">Sélectionnez d'abord...</span>
+				  ) : isCreating ? (
+					<div className="flex gap-1 flex-1 animate-fade-in min-w-[140px]">
+					  <input
+						type="text"
+						value={newSpecName}
+						onChange={(e) => setNewSpecName(e.target.value)}
+						placeholder="Nouvelle spé..."
+						className="p-1.5 border border-stone-200 rounded text-[11px] font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none flex-1"
+						autoFocus
+					  />
+					  <button
+						onClick={() => {
+						  if (newSpecName.trim()) {
+							updateBlock(block.id, 'nom', newSpecName.trim());
+							setCreatingSpecFor(null);
+							setNewSpecName('');
+						  }
+						}}
+						className="bg-fuchsia-600 text-white px-2 py-1 rounded text-[10px] font-bold shadow-sm"
+					  >
+						Créer
+					  </button>
+					  <button
+						onClick={() => { setCreatingSpecFor(null); setNewSpecName(''); }}
+						className="bg-stone-200 text-stone-600 px-2 py-1 rounded text-[10px] font-bold"
+					  >
+						X
+					  </button>
+					</div>
+				  ) : (
+					<select
+					  value={typeof block.nom === 'string' ? block.nom.normalize('NFC') : ''}
+					  onChange={(e) => {
+						if (e.target.value === '__CREATE_NEW__') {
+						  setCreatingSpecFor(block.id);
+						  setNewSpecName('');
+						} else {
+						  updateBlock(block.id, 'nom', e.target.value);
+						}
+					  }}
+					  className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-fuchsia-200 outline-none flex-1 min-w-[140px]"
+					>
+					  <option value="">Spécialité (Optionnelle)...</option>
+					  <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
+					  
+					  {/* ✨ FIX : On normalise également le catalogue de spécialités ! */}
+					  {availableSpecs.filter(s => s.is_official).length > 0 && (
+						<optgroup label="📚 Officielles">
+						  {availableSpecs.filter(s => s.is_official).map(s => <option key={s.id || s.nom} value={s.nom.normalize('NFC')}>{s.nom.normalize('NFC')}</option>)}
+						</optgroup>
+					  )}
+					  {availableSpecs.filter(s => !s.is_official).length > 0 && (
+						<optgroup label="👥 Communauté">
+						  {availableSpecs.filter(s => !s.is_official).map(s => <option key={s.id || s.nom} value={s.nom.normalize('NFC')}>{s.nom.normalize('NFC')}</option>)}
+						</optgroup>
+					  )}
+					</select>
+				  )}
+				</>
+			  );
+			})()}
+		
             {/* ✨ Lego Choix de Futile (Teal/Cyan) ✨ */}
             {block.type === 'futile_choix' && (
               <>

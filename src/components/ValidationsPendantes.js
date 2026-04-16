@@ -1,16 +1,9 @@
 // src/components/ValidationsPendantes.js
-// 8.23.0 // 8.26.0 // 8.29.0 // 8.32.0 // 8.33.0 
-// 9.3.0 // 9.6.0 // 9.7.0 // 9.8.0
-// 10.0.0 // 10.2.0 // 10.4.0 // 10.5.0 // 10.7.0
-// 11.1.0 // 11.3.0 // 11.4.0
-// 12.1.0 // 12.2.0 // 12.3.0 // 12.4.0
-// 13.1.0 // 13.10.0
-// 15.1.0
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Check, X, ArrowLeft, Shield, User, Plus, Minus, TestTubeDiagonal, ShieldAlert } from 'lucide-react';
 import { supabase } from '../config/supabase';
-import { invalidateAllCaches } from '../utils/supabaseGameData';
+import { invalidateAllCaches, loadCoreGameData, loadHeavyLoreData } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';
 import { generateApprovalSQL } from '../utils/sqlGenerator';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -43,8 +36,8 @@ const notifyEscalation = async (change, errorMsg, currentUserId) => {
 // 🟠 LE COMPOSANT ENFANT ÉPURÉ ET MÉMOÏSÉ (React.memo)
 // ======================================================================
 const ChangeCard = React.memo(({ change, context, actions }) => {
-  // ✨ FIX : On récupère dbBadges du contexte
-  const { originalRecords, referenceNames, myRole, currentUserId, dbBadges } = context;
+  // ✨ FIX ESLint : On a retiré 'currentUserId' qui ne servait à rien ici !
+  const { originalRecords, referenceNames, myRole, dbBadges } = context;
   const { onReject, onApprove, onArchive, onRestore } = actions;
 
   const pData = change.new_data || change.proposed_data || {};
@@ -174,13 +167,63 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
               <ul className="mt-2 space-y-2">
                 {Object.keys(pData._relations).map((relName) => {
                   const relData = pData._relations[relName];
-                  if (Array.isArray(relData)) {
-                    return (
-                      <li key={relName} className="text-sm p-2 bg-gray-50 rounded border border-gray-200">
-                        <span className="font-bold capitalize">{relName} :</span> Mise à jour complète (Ancien format)
-                      </li>
-                    );
-                  }
+                    if (Array.isArray(relData)) {
+                      return (
+                        <li key={relName} className="text-sm p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-sm mb-3">
+                          <span className="font-bold capitalize text-indigo-700 flex items-center gap-2 mb-2">
+                             <TestTubeDiagonal size={16}/> {relName.replace(/([A-Z])/g, ' $1').trim()} (Remplacement)
+                          </span>
+                          <ul className="space-y-1.5 pl-2">
+                            {relData.length === 0 ? (
+                               <li className="text-xs italic text-red-500 font-bold bg-red-50 p-2 rounded border border-red-100">Purge complète (Liste vidée)</li>
+                            ) : relData.map((item, idx) => {
+                               // 🧠 Traducteur Humain : On parse tous les cas possibles !
+                               let texte = "";
+                               // ✨ FIX : Si c'est un ID brut (UUID), on le traduit avec le dictionnaire !
+                               if (typeof item === 'string') texte = referenceNames[item] || item;
+                               else if (item.nom && item.specialite) texte = `${item.nom} (Spécialité imposée : ${item.specialite})`;
+                               else if (item.nom && item.isSpecialiteChoix) texte = `${item.nom} (Spécialité au choix parmi : ${(item.options || []).join(', ')})`;
+                               else if (item.nom && item.isOnlySpecialty) texte = `Spécialité offerte : ${item.nom} ➔ ${item.specialite}`;
+                               else if (item.nom) texte = item.nom;
+                               else if (item.competence_name) texte = item.competence_name;
+                               else if (item.is_choice || item.isChoix) texte = `Choix parmi : ${(item.choice_options || item.options || []).join(' OU ')}`;
+                               else texte = JSON.stringify(item);
+
+                               return (
+                                 <li key={idx} className="text-xs font-medium text-gray-700 bg-white border border-gray-200 px-3 py-2 rounded-md shadow-sm flex items-start gap-2">
+                                   <Check size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                                   <span>{texte}</span>
+                                 </li>
+                               );
+                            })}
+                          </ul>
+                        </li>
+                      );
+                    }
+                    // ✨ L'INCISION MAGIQUE : Le Traducteur Chirurgical (Atouts, Pouvoirs, Fées)
+                    else if (typeof relData === 'object' && relData !== null && (relData.added || relData.removed)) {
+                      return (
+                        <li key={relName} className="text-sm p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-sm mb-3">
+                          <span className="font-bold capitalize text-indigo-700 flex items-center gap-2 mb-2">
+                             <TestTubeDiagonal size={16}/> {relName.replace(/([A-Z])/g, ' $1').trim()} (Ajustement)
+                          </span>
+                          <div className="space-y-1.5 pl-2">
+                            {relData.added?.length > 0 && (
+                              <div className="flex items-start gap-2 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-1.5 rounded border border-emerald-100 shadow-sm">
+                                <Plus size={14} className="shrink-0 mt-0.5" />
+                                <span>{relData.added.map(id => referenceNames[id] || "Nouvel élément (Création à la volée)").join(', ')}</span>
+                              </div>
+                            )}
+                            {relData.removed?.length > 0 && (
+                              <div className="flex items-start gap-2 text-xs font-medium text-red-700 bg-red-50 px-2 py-1.5 rounded border border-red-100 shadow-sm">
+                                <Minus size={14} className="shrink-0 mt-0.5" />
+                                <span>{relData.removed.map(id => referenceNames[id] || id).join(', ')}</span>
+                              </div>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    }
 
                   const added = relData.added || [];
                   const removed = relData.removed || [];
@@ -282,7 +325,7 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
 // 🛡️ LE CONSEIL DES GARDIENS (Parent)
 // ======================================================================
 export default function ValidationsPendantes({ session, onBack }) {
-  const { gameData } = useCharacter(); // ✨ LE CERVEAU
+  const { gameData, setGameData } = useCharacter(); 
 
   const [pendingChanges, setPendingChanges] = useState([]);
   const [approvedChanges, setApprovedChanges] = useState([]);
@@ -446,6 +489,17 @@ export default function ValidationsPendantes({ session, onBack }) {
       if (archiveError) throw archiveError;
 
       invalidateAllCaches();
+      if (archiveError) throw archiveError;
+
+      invalidateAllCaches();
+
+      // ✨ LE VACCIN ANTI-F5 : On recharge le Cerveau Global en temps réel !
+      const core = await loadCoreGameData();
+      if (core) {
+        const heavy = await loadHeavyLoreData(core);
+        if (heavy) setGameData(heavy);
+      }
+
       loadChanges();
       showInAppNotification("L'incantation SQL a été exécutée et archivée avec succès !", "success");
     } catch (error) {
@@ -460,7 +514,7 @@ export default function ValidationsPendantes({ session, onBack }) {
       await notifyEscalation(change, error.message, session.user.id);
       loadChanges();
     }
-  }, [session.user.id, loadChanges]);
+  }, [session.user.id, loadChanges, setGameData]); 
 
   const handleArchiveClick = useCallback((change) => {
     setConfirmState({

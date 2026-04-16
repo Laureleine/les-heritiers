@@ -15,10 +15,59 @@ export default function StepRecapitulatif() {
     showPhotoModal, setShowPhotoModal, photoTitle, setPhotoTitle,
     handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal
   } = useCerbere();
+  
+  // ✨ NOUVEAU : Récupération universelle de TOUTES les spécialités du personnage !
+  const allSpecialties = [];
+
+  // 1. Manuelles (Achetées ou acquises librement)
+  Object.entries(character.competencesLibres?.choixSpecialiteUser || {}).forEach(([nomComp, specs]) => {
+    specs.forEach(spec => allSpecialties.push({ comp: nomComp, nom: spec, source: 'Acquise', color: 'bg-blue-50 text-blue-800 border-blue-200' }));
+  });
+
+  // 2. Métier
+  const specMetier = character.competencesLibres?.specialiteMetier;
+  if (specMetier && specMetier.comp && specMetier.nom) {
+    allSpecialties.push({ comp: specMetier.comp, nom: specMetier.nom, source: 'Métier', color: 'bg-emerald-50 text-emerald-900 border-emerald-300', icon: <Briefcase size={12} className="text-emerald-700" /> });
+  }
+
+  // 3. Innées (Liées à l'espèce)
+  if (feeData?.competencesPredilection) {
+    feeData.competencesPredilection.forEach((pred, idx) => {
+      const feeSpec = pred.specialite || (pred.isSpecialiteChoix ? character.competencesLibres?.choixSpecialite?.[idx] : null);
+      if (feeSpec) {
+        allSpecialties.push({ comp: pred.nom, nom: feeSpec, source: 'Innée', color: 'bg-amber-50 text-amber-900 border-amber-300', icon: <Star size={12} className="text-amber-600 fill-amber-600" /> });
+      }
+    });
+  }
+
+  // 4. Atouts Féériques
+  (character.atouts || []).forEach(atoutId => {
+    const atoutDef = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
+    if (atoutDef?.effets_techniques) {
+      try {
+        const tech = typeof atoutDef.effets_techniques === 'string' ? JSON.parse(atoutDef.effets_techniques) : atoutDef.effets_techniques;
+        if (tech.specialites) {
+          tech.specialites.forEach(s => {
+            allSpecialties.push({ comp: s.competence, nom: s.nom, source: 'Atout', color: 'bg-purple-50 text-purple-900 border-purple-300', icon: <Sparkles size={12} className="text-purple-600" /> });
+          });
+        }
+      } catch(e) {}
+    }
+  });
+
+  // Déduplication (Sécurité pour éviter les doublons accidentels)
+  const uniqueSpecialties = [];
+  const seenSpecs = new Set();
+  allSpecialties.forEach(s => {
+    const key = `${s.comp}-${s.nom}`;
+    if (!seenSpecs.has(key)) {
+      seenSpecs.add(key);
+      uniqueSpecialties.push(s);
+    }
+  });
 
   const genreActuel = character.genreHumain || character.sexe;
 
-  // 👇 LA CARROSSERIE RESTE INTACTE À PARTIR D'ICI 👇
   return (
     <div className="space-y-8 animate-fade-in max-w-5xl mx-auto pb-12">
       <div className="text-center mb-8">
@@ -183,53 +232,51 @@ export default function StepRecapitulatif() {
             </div>
           </div>
 
-          {/* Compétences Utiles */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
-            <h3 className="font-serif font-bold text-lg mb-4 text-blue-900 border-b border-blue-100 pb-2 flex items-center gap-2">
-              <User size={18} className="text-blue-600" /> Compétences Utiles
-            </h3>
-            {character.computedStats?.competencesTotal && Object.values(character.computedStats.competencesTotal).some(v => v > 0) ? (
-              <div className="grid grid-cols-2 gap-2">
-                {Object.entries(character.computedStats.competencesTotal)
-                  .filter(([nom, total]) => total > 0)
-                  .sort(([nomA], [nomB]) => nomA.localeCompare(nomB))
-                  .map(([nom, total]) => (
-                    <div key={nom} className="flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200 text-sm shadow-sm">
-                      <span className="font-semibold text-gray-700 truncate pr-2" title={nom}>{nom}</span>
-                      <span className="text-blue-800 font-bold bg-blue-100 px-2 py-0.5 rounded border border-blue-200">{total}</span>
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-400 italic text-center">Aucune compétence utile acquise.</p>
-            )}
+			{/* Compétences Utiles */}
+			<div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+			  <h3 className="font-serif font-bold text-lg mb-4 text-blue-900 border-b border-blue-100 pb-2 flex items-center gap-2">
+				<User size={18} className="text-blue-600" /> Compétences Utiles
+			  </h3>
 
-            {/* SPÉCIALITÉS ACQUISES */}
-            {((character.competencesLibres?.choixSpecialiteUser && Object.keys(character.competencesLibres.choixSpecialiteUser).length > 0) || (character.competencesLibres?.specialiteMetier?.nom)) && (
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Spécialités acquises</h4>
-                <div className="flex flex-wrap gap-1">
-                  {Object.entries(character.competencesLibres?.choixSpecialiteUser || {}).map(([nomComp, specs]) =>
-                    specs.map(spec => (
-                      <span key={`${nomComp}-${spec}`} className="text-[11px] bg-blue-50 text-blue-800 border border-blue-200 px-2 py-1 rounded-full">
-                        {nomComp} : <strong>{spec}</strong>
-                      </span>
-                    ))
-                  )}
-                  
-                  {/* Pastille Métier */}
-                  {character.competencesLibres?.specialiteMetier?.comp && character.competencesLibres?.specialiteMetier?.nom && (
-                    <span className="text-[11px] bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                      <Briefcase size={10} className="text-emerald-700" />
-                      {character.competencesLibres.specialiteMetier.comp} : <strong>{character.competencesLibres.specialiteMetier.nom}</strong>
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+			  {character.computedStats?.competencesTotal && Object.values(character.computedStats.competencesTotal).some(v => v > 0) ? (
+				<div className="grid grid-cols-2 gap-2">
+				  {Object.entries(character.computedStats.competencesTotal)
+					.filter(([nom, total]) => total > 0)
+					.sort(([nomA], [nomB]) => nomA.localeCompare(nomB))
+					.map(([nom, total]) => (
+					  <div key={nom} className="flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200 text-sm shadow-sm">
+						<span className="font-semibold text-gray-700 truncate pr-2" title={nom}>{nom}</span>
+						<span className="text-blue-800 font-bold bg-blue-100 px-2 py-0.5 rounded border border-blue-200">{total}</span>
+					  </div>
+					))}
+				</div>
+			  ) : (
+				<p className="text-sm text-gray-400 italic text-center">Aucune compétence utile acquise.</p>
+			  )}
 
+			  {/* SPÉCIALITÉS GLOBALES (Acquises, Innées, Atouts, Métier) */}
+			  {uniqueSpecialties.length > 0 && (
+				<div className="mt-4 pt-4 border-t border-gray-100">
+				  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Spécialités Maîtrisées</h4>
+				  <div className="flex flex-wrap gap-2">
+					{uniqueSpecialties.map((spec, idx) => (
+					  <span 
+						key={idx} 
+						className={`text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm border ${spec.color}`} 
+						title={`Source : ${spec.source}`}
+					  >
+						{spec.icon}
+						<span>{spec.comp} : <strong>{spec.nom}</strong></span>
+					  </span>
+					))}
+				  </div>
+				</div>
+			  )}
+
+			</div>
+
+		  </div>
+		  
         {/* ============================================================== */}
         {/* ✨ LA PORTE DE L'EXPÉRIENCE (LE SCEAU ET LE CERBÈRE) ✨        */}
         {/* ============================================================== */}
