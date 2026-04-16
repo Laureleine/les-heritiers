@@ -1,7 +1,15 @@
 // src/version.js
 
 export const VERSION_HISTORY = [
-    {
+  {
+    version: '15.8.18 - "Le Broyeur d\'Archives 🗑️"',
+    date: '16 Avril 2026',
+    changes: [
+      '🔥 **Administration (Destruction) :** Implémentation d\'une fonction d\'éradication absolue dans l\'Encyclopédie. Les "Super Admins" disposent désormais d\'un bouton pour détruire définitivement une fée, un atout, un pouvoir ou une capacité. L\'action purge automatiquement toutes les tables de jointure (relations) pour préserver l\'intégrité de la base de données.',
+      '🛡️ **Sécurité (Anti-Fantômes) :** Renforcement des règles RLS (Row Level Security) sur les requêtes de suppression (`DELETE`). Le code vérifie désormais le retour strict de PostgreSQL via un `.select()` pour empêcher les faux succès silencieux.',
+      '🔍 **Confort (Tri Universel) :** Ajout d\'un filtre "Universel (Non lié)" dans le Nuage d\'étiquettes de l\'Encyclopédie, permettant aux Gardiens d\'isoler instantanément les éléments orphelins ou génériques qui n\'appartiennent à aucune espèce de Fée.'
+    ]
+  },    {
     version: '15.8.17 - "Le Bibliothécaire Mécanique 📚"',
     date: '15 Avril 2026',
     changes: [

@@ -1,15 +1,8 @@
 // src/components/Encyclopedia.js
-// 8.20.0 // 8.26.0 // 8.27.0 // 8.28.0 
-// 9.4.0 // 9.6.0
-// 10.4.0 // 10.8.0 // 10.9.0
-// 11.2.0
-// 12.1.0
-// 13.0.0 // 13.0.1 // 13.0.3
-// 14.2.0 // 14.9.0 // 14.12.0
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { Book, Search, X, Shield, Sparkles, Plus, FileText } from 'lucide-react';
+import { Book, Search, X, Shield, Plus, FileText } from 'lucide-react';
 import EncyclopediaModal from './EncyclopediaModal'; 
 import EncyclopediaCard from './EncyclopediaCard';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
@@ -95,38 +88,97 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
   // 🧠 LE MOTEUR DE FILTRAGE COMBINÉ (Texte + Boutons)
   const filteredData = data.filter(item => {
-    // 1. Le filtre textuel (ta recherche existante)
     const matchesSearch = (item.name || item.nom || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                           (item.description || item.desc || '').toLowerCase().includes(searchTerm.toLowerCase());
 
-    // 2. ✨ Le nouveau filtre par Fée
+    // ✨ Le nouveau filtre par Fée avec prise en charge des Éléments Génériques
     let matchesFairy = true;
     if (selectedFairyFilter !== '') {
-      if (activeTab === 'fairy_capacites') {
-        matchesFairy = item.fairy_type_capacites?.some(link => link.fairy_types?.name === selectedFairyFilter);
-      } else if (activeTab === 'fairy_powers') {
-        matchesFairy = item.fairy_type_powers?.some(link => link.fairy_types?.name === selectedFairyFilter);
-      } else if (activeTab === 'fairy_assets') {
-        matchesFairy = item.fairy_type_assets?.some(link => link.fairy_types?.name === selectedFairyFilter);
+      if (selectedFairyFilter === '__UNLINKED__') {
+        // Le joueur cherche les éléments qui n'appartiennent à AUCUNE fée (Génériques/Universels)
+        if (activeTab === 'fairy_capacites') matchesFairy = !item.fairy_type_capacites || item.fairy_type_capacites.length === 0;
+        else if (activeTab === 'fairy_powers') matchesFairy = !item.fairy_type_powers || item.fairy_type_powers.length === 0;
+        else if (activeTab === 'fairy_assets') matchesFairy = !item.fairy_type_assets || item.fairy_type_assets.length === 0;
+      } else {
+        // Recherche classique d'une fée spécifique
+        if (activeTab === 'fairy_capacites') matchesFairy = item.fairy_type_capacites?.some(link => link.fairy_types?.name === selectedFairyFilter);
+        else if (activeTab === 'fairy_powers') matchesFairy = item.fairy_type_powers?.some(link => link.fairy_types?.name === selectedFairyFilter);
+        else if (activeTab === 'fairy_assets') matchesFairy = item.fairy_type_assets?.some(link => link.fairy_types?.name === selectedFairyFilter);
       }
     }
-
     return matchesSearch && matchesFairy;
   });
+  
   // ----------------------------------------------------------------------
   // 🛡️ LE MARTEAU DES GARDIENS (Préparation de la modale)
   // ----------------------------------------------------------------------
   const handleToggleSealClick = (item, tabName) => {
     const action = item.is_sealed ? 'briser le sceau de' : 'sceller définitivement';
-    
-    // Au lieu du laid window.confirm, on ouvre notre modale magique :
     setConfirmState({
       isOpen: true,
+      title: item.is_sealed ? "Briser le Sceau" : "Apposer le Sceau", // ✨ NOUVEAU
       message: `En tant que Gardien, voulez-vous vraiment ${action} "${item.name || item.nom}" ?`,
-      action: () => executeToggleSeal(item, tabName) // On mémorise le sortilège à lancer
+      action: () => executeToggleSeal(item, tabName),
+      confirmText: "Que ma volonté soit faite" // ✨ NOUVEAU
     });
   };
 
+  // ----------------------------------------------------------------------
+  // ✨ LA DESTRUCTION ABSOLUE (Privilège Admin)
+  // ----------------------------------------------------------------------
+  const handleDeleteClick = (item, tabName) => {
+    setConfirmState({
+      isOpen: true,
+      title: "Destruction d'Archive",
+      message: `Gardien, êtes-vous absolument certain de vouloir éradiquer "${item.name || item.nom}" ? Cette action pulvérisera l'élément et rompra instantanément tous les liens avec les Fées associées. C'est irréversible.`,
+      action: () => executeDelete(item, tabName),
+      confirmText: "Oui, éradiquer définitivement"
+    });
+  };
+
+  const executeDelete = async (item, tabName) => {
+    setConfirmState({ isOpen: false, action: null, message: '', title: '', confirmText: '' });
+    setLoading(true);
+    try {
+      // 1. Purge chirurgicale des relations (On évite l'Erreur 23503)
+      if (['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(tabName)) {
+        const relationTable = tabName === 'fairy_capacites' ? 'fairy_type_capacites' :
+                              tabName === 'fairy_powers' ? 'fairy_type_powers' : 'fairy_type_assets';
+        const idColumn = tabName === 'fairy_capacites' ? 'capacite_id' :
+                         tabName === 'fairy_powers' ? 'power_id' : 'asset_id';
+        await supabase.from(relationTable).delete().eq(idColumn, item.id);
+      } else if (tabName === 'fairy_types') {
+        // En cas de suppression d'une fée complète, on purge toutes ses tables de liaison !
+        await Promise.all([
+          supabase.from('fairy_type_capacites').delete().eq('fairy_type_id', item.id),
+          supabase.from('fairy_type_powers').delete().eq('fairy_type_id', item.id),
+          supabase.from('fairy_type_assets').delete().eq('fairy_type_id', item.id),
+          supabase.from('fairy_competences_predilection').delete().eq('fairy_type_id', item.id),
+          supabase.from('fairy_competences_futiles_predilection').delete().eq('fairy_type_id', item.id)
+        ]);
+      }
+
+      // 2. Destruction de l'entité mère avec renvoi obligatoire des données (.select)
+      const { data, error } = await supabase.from(tabName).delete().eq('id', item.id).select();
+      
+      if (error) throw error;
+
+      // 🛡️ LE DÉTECTEUR DE FAUX SUCCÈS (RLS)
+      if (!data || data.length === 0) {
+        throw new Error("Action bloquée par la base de données (RLS). Vous n'avez pas les droits de destruction (DELETE) sur cette table !");
+      }
+
+      showInAppNotification("L'archive a été effacée de la trame temporelle.", "success");
+      invalidateAllCaches(); // Force le rafraîchissement global du Nuage
+      fetchData(); // Recharge la vue actuelle
+    } catch (err) {
+      logger.error("Erreur de suppression:", err);
+      showInAppNotification("La destruction a échoué : " + err.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   // ----------------------------------------------------------------------
   // ✨ L'EXÉCUTION (Si le Gardien confirme)
   // ----------------------------------------------------------------------
@@ -361,7 +413,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
             )}
           </div> 
 
-          {/* ✨ NOUVEAU : LE NUAGE D'ÉTIQUETTES (Scénario B) ✨ */}
+          {/* ✨ NOUVEAU : LE NUAGE D'ÉTIQUETTES ✨ */}
           {['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && (
             <div className="flex flex-wrap gap-2 mb-6 animate-fade-in">
               <button
@@ -374,6 +426,18 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
             >
               Toutes les fées
             </button>
+
+			  {/* 👈 LE BOUTON GÉNÉRIQUE EST ICI */}
+			  <button
+				onClick={() => setSelectedFairyFilter('__UNLINKED__')}
+				className={`px-3 py-1.5 text-xs font-bold rounded-full transition-all border shadow-sm ${
+				  selectedFairyFilter === '__UNLINKED__'
+					? 'bg-purple-600 text-white border-purple-700'
+					: 'bg-white text-stone-600 border-stone-200 hover:bg-stone-100 hover:border-stone-300'
+				}`}
+			  >
+				Aucune fée (Non lié)
+			  </button>
             
             {/* On boucle sur toutes les fées de la base de données */}
             {gameData.encyclopediaRefs?.fairies?.map(fairy => (
@@ -423,6 +487,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                 onOpenEdit={handleOpenEdit}
                 isLocked={pendingLocks.includes(item.id)} // 👈 NOUVEAU : Transmission du verrou
                 onToggleSeal={handleToggleSealClick} /* ✅ La bonne fonction ! */
+				onDeleteClick={handleDeleteClick}
                 userProfile={userProfile} 
               />
             ))}
@@ -460,14 +525,14 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
       )}
 	  
 	  {/* LA MODALE DE CONFIRMATION DES GARDIENS */}
-      <ConfirmModal 
+      <ConfirmModal
         isOpen={confirmState.isOpen}
-        title="Apposer le Sceau"
+        title={confirmState.title || "Apposer le Sceau"}
         message={confirmState.message}
         onConfirm={confirmState.action}
-        onCancel={() => setConfirmState({ isOpen: false })}
-        confirmText="Que ma volonté soit faite"
-        cancelText="Finalement, non"
+        onCancel={() => setConfirmState({ isOpen: false, action: null, message: '', title: '', confirmText: '' })}
+        confirmText={confirmState.confirmText || "Que ma volonté soit faite"}
+        cancelText="Annuler"
       />
     </div>
   );

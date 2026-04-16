@@ -1,13 +1,9 @@
 // src/components/EncyclopediaCard.js
-// 8.20.0 
-// 9.6.0
-// 10.8.0
-// 14.9.0
 
 import React from 'react';
-import { Feather, Sparkles, Star, Lock, ShieldCheck, ShieldAlert, Unlock } from 'lucide-react';
+import { Feather, Sparkles, Star, Lock, ShieldCheck, ShieldAlert, Unlock, Trash2 } from 'lucide-react';
 
-const EncyclopediaCard = ({ item, activeTab, onOpenEdit, isLocked, onToggleSeal, userProfile }) => {
+const EncyclopediaCard = ({ item, activeTab, onOpenEdit, isLocked, onToggleSeal, onDeleteClick, userProfile }) => {
   const title = item.name || item.nom;
   const desc = item.description || item.desc;
   const isRestricted = item.is_official === false;
@@ -137,20 +133,34 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, isLocked, onToggleSeal,
         )}
       </div>
 
-      {/* 3. LE PRIVILÈGE DES GARDIENS (Pour Briser ou Apposer le sceau manuellement) */}
+      {/* 3. LE PRIVILÈGE DES GARDIENS (Pour Briser, Apposer ou Détruire) */}
       {(userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien') && (
-        <button
-          onClick={() => onToggleSeal(item, activeTab)} /* 👈 LA MAGIE OPÈRE ICI */
-          className={`flex items-center gap-2 px-4 py-2 mt-3 text-xs font-bold font-serif uppercase tracking-wider rounded-lg transition-all border w-full justify-center
-            ${item.is_sealed 
-              ? 'bg-stone-900 text-amber-400 border-amber-700 hover:bg-stone-800' 
-              : 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'}`}
-        >
-          {item.is_sealed ? <Unlock size={14}/> : <Lock size={14}/>}
-          {item.is_sealed ? 'Briser le Sceau' : 'Apposer le Sceau'}
-        </button>
-      )}	  
-	  
+        <div className="flex gap-2 mt-3 w-full">
+          
+          {/* Action Commune : Gestion des Sceaux */}
+          <button
+            onClick={() => onToggleSeal(item, activeTab)}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold font-serif uppercase tracking-wider rounded-lg transition-all border shadow-sm
+              ${item.is_sealed
+                ? 'bg-stone-900 text-amber-400 border-amber-700 hover:bg-stone-800'
+                : 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'}`}
+          >
+            {item.is_sealed ? <Unlock size={14}/> : <Lock size={14}/>}
+            <span className="hidden sm:inline">{item.is_sealed ? 'Briser le Sceau' : 'Apposer le Sceau'}</span>
+          </button>
+          
+          {/* Action Restreinte : Le broyeur absolu (Super Admin Uniquement) */}
+          {userProfile?.profile?.role === 'super_admin' && (
+            <button 
+              onClick={() => onDeleteClick(item, activeTab)} 
+              className="flex items-center justify-center px-3 py-2 bg-stone-100 text-red-500 border border-stone-200 hover:bg-red-50 hover:border-red-300 hover:text-red-600 rounded-lg transition-colors shrink-0 shadow-sm" 
+              title="Détruire définitivement l'archive"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
