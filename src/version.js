@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.27 - "La Pierre de Rosette 🪨"',
+    date: '17 Avril 2026',
+    changes: [
+      '🌍 **Linguistique (Bilan) :** Création d\'un tout nouvel encart "Érudition & Langues" sur la fiche récapitulative du personnage. L\'ensemble des dialectes maîtrisés s\'affiche désormais proprement, avec une mise en valeur dorée pour la Langue Maternelle.',
+      '🖨️ **Imprimerie (PDF) :** Le générateur de fiches a été recâblé sur le nouveau moteur linguistique de l\'Étape 10. Les langues de l\'Héritier ne sont plus lues depuis son inventaire d\'équipement, mais directement depuis son ADN culturel.',
+      '🧬 **Séquençage (JSON) :** L\'exportation numérique autonome (pour les VTT) compile de nouveau correctement les langues du personnage dans la section de l\'inventaire lisible.'
+    ]
+  },  {
     version: '15.8.26 - "L\'Étiquette d\'Argent 🏷️"',
     date: '16 Avril 2026',
     changes: [

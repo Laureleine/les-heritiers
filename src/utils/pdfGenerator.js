@@ -1,6 +1,6 @@
 // src/utils/pdfGenerator.js
-import { supabase } from '../config/supabase';
-import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
+
+import { accorderTexte } from '../data/DictionnaireJeu';
 
 export const exportToPDF = (character, gameData = {}) => {
   const genreActuel = character.genreHumain || character.sexe;
@@ -18,7 +18,7 @@ export const exportToPDF = (character, gameData = {}) => {
 
   const agi = getCarac('agilite');
   const con = getCarac('constitution');
-  const esp = getCarac('esprit');
+  // const esp = getCarac('esprit');
   const sf = getCarac('sangFroid');
 
   // 3. L'Extracteur Social (Les JSONB d'équipement)
@@ -26,10 +26,14 @@ export const exportToPDF = (character, gameData = {}) => {
   const socialItems = gameData?.socialItems || [];
   const boughtItems = socialItems.filter(item => allBoughtIds.includes(item.id));
 
-  const langues = boughtItems.filter(i => i.categorie === 'langue').map(i => i.nom);
+  // ✨ LE FIX : Lecture des langues depuis le profil !
+  const languesArray = character.profils?.langues || [];
+  const langueMaternelle = character.profils?.langueMaternelle || '';
+  const autresLangues = languesArray.filter(l => l !== langueMaternelle);
+
   const equipements = boughtItems.filter(i => i.categorie !== 'langue' && i.categorie !== 'contact').map(i => i.nom);
   const contacts = boughtItems.filter(i => i.categorie === 'contact').map(i => i.nom);
-
+  
   // 4. La Map des Profils
   const profilsMap = {
     'Aventurier': ['Conduite', 'Mouvement', 'Ressort', 'Survie'],
@@ -74,8 +78,11 @@ export const exportToPDF = (character, gameData = {}) => {
 
   const esquive = getS('Mouvement') + agi + 5;
   const parade = getS('Mêlée') + agi + 5;
-  const resPhys = getS('Ressort') + con + 5;
-  const resPsych = getS('Fortitude') + esp + 5;
+  
+  // ✨ FIX ESLint : On met en veille les résistances en attendant de leur faire une place sur la maquette PDF !
+  // const resPhys = getS('Ressort') + con + 5;
+  // const resPsych = getS('Fortitude') + esp + 5;
+  
   const init = getS('Art de la guerre') + sf;
 
   const printWindow = window.open('', '_blank');
@@ -394,12 +401,12 @@ export const exportToPDF = (character, gameData = {}) => {
               return `<li>${displayNom} <b>(${val})</b></li>`;
             }).join('') || '<li><i>Aucune</i></li>'}
           </ul>
-          <span class="field-label" style="margin-top: 15px;">Langues maîtrisées</span>
-          <div class="list-items" style="margin-top: 5px;">
-            Français (Maternelle)<br/>
-            ${langues.length > 0 ? langues.join('<br/>') + '<br/>' : ''}
-            <div class="empty-lines"></div>
-          </div>
+		  <span class="field-label" style="margin-top: 15px;">Langues maîtrisées</span>
+		  <div class="list-items" style="margin-top: 5px;">
+			${langueMaternelle ? `<b>${langueMaternelle}</b> (Maternelle)<br/>` : ''}
+			${autresLangues.length > 0 ? autresLangues.join('<br/>') + '<br/>' : ''}
+			${!langueMaternelle && autresLangues.length === 0 ? '<i>Aucune</i><br/>' : ''}
+		  <div class="empty-lines"></div>
         </div>
 
         <div class="box">

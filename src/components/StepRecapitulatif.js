@@ -1,7 +1,7 @@
 // src/components/StepRecapitulatif.js
 
 import React from 'react';
-import { Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert } from 'lucide-react';
+import { Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert, MessageCircle, Crown } from 'lucide-react';
 import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
 import ConfirmModal from './ConfirmModal';
 import { useCerbere } from '../hooks/useCerbere'; // ✨ NOUVEAU
@@ -154,6 +154,26 @@ export default function StepRecapitulatif() {
             </div>
           </div>
 
+          {/* Érudition & Langues */}
+          {character.profils?.langues && character.profils.langues.length > 0 && (
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+              <h3 className="font-serif font-bold text-lg mb-4 text-sky-900 border-b border-sky-100 pb-2 flex items-center gap-2">
+                <MessageCircle size={18} className="text-sky-600" /> Érudition & Langues
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {character.profils.langues.map(lang => {
+                  const isMaternelle = lang === character.profils.langueMaternelle;
+                  return (
+                    <span key={lang} className={`px-3 py-1 rounded-full text-sm font-bold shadow-sm border flex items-center gap-1.5 ${isMaternelle ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-sky-50 text-sky-900 border-sky-200'}`}>
+                      {isMaternelle && <Crown size={14} className="text-amber-600" />}
+                      {lang}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+		  
           {/* Compétences Futiles */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
             <h3 className="font-serif font-bold text-lg mb-4 text-emerald-900 border-b border-emerald-100 pb-2 flex items-center gap-2">
