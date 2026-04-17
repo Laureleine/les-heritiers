@@ -5,7 +5,6 @@ import { Check, X, ArrowLeft, Shield, User, Plus, Minus, TestTubeDiagonal, Shiel
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches, loadCoreGameData, loadHeavyLoreData } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';
-import { generateApprovalSQL } from '../utils/sqlGenerator';
 import { showInAppNotification } from '../utils/SystemeServices';
 
 // ✨ NOUVEAU : On branche le Cerveau et le générateur d'icônes
@@ -38,7 +37,7 @@ const notifyEscalation = async (change, errorMsg, currentUserId) => {
 const ChangeCard = React.memo(({ change, context, actions }) => {
   // ✨ FIX ESLint : On a retiré 'currentUserId' qui ne servait à rien ici !
   const { originalRecords, referenceNames, myRole, dbBadges } = context;
-  const { onReject, onApprove, onArchive, onRestore } = actions;
+  const { onReject, onApprove, onRestore } = actions;
 
   const pData = change.new_data || change.proposed_data || {};
   const standardFields = Object.keys(pData).filter(k => k !== '_relations' && k !== 'id');
@@ -290,20 +289,14 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
         )}
         {change.status === 'approved' && (
           <>
-            <button onClick={() => onArchive(change)} className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm animate-pulse ml-auto">
-              <Check size={18} /> Exécuter le SQL (Archiver)
-            </button>
-            <button onClick={() => onRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
+            <button onClick={() => onRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
               <ArrowLeft size={16} /> Remettre en attente
             </button>
           </>
         )}
         {change.status === 'escalated' && myRole === 'super_admin' && (
           <>
-            <button onClick={() => onArchive(change)} className="px-6 py-2 bg-red-800 text-white hover:bg-red-900 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
-              <TestTubeDiagonal size={18} /> Retenter le SQL
-            </button>
-            <button onClick={() => onReject(change)} className="px-4 py-2 bg-gray-100 text-red-600 hover:bg-red-50 rounded-lg font-bold flex items-center gap-2 transition-colors">
+            <button onClick={() => onReject(change)} className="px-4 py-2 bg-gray-100 text-red-600 hover:bg-red-50 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
               <X size={16} /> Rejeter définitivement
             </button>
             <button onClick={() => onRestore(change.id)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold flex items-center gap-2 transition-colors">
@@ -444,20 +437,41 @@ export default function ValidationsPendantes({ session, onBack }) {
   const executeApprove = useCallback(async (change, seal = false) => {
     setConfirmState(prev => ({ ...prev, isOpen: false }));
     try {
-      const sqlQuery = generateApprovalSQL(change, seal);
-      if (!sqlQuery) throw new Error("Le générateur SQL n'a retourné aucune incantation valide.");
+      showInAppNotification("Altération de la trame en cours via Edge Function...", "info");
 
-      const { error } = await supabase
-        .from(TABLE_NAME)
-        .update({ status: 'approved', generated_sql: sqlQuery })
-        .eq('id', change.id);
+      // ✨ L'APPEL ONE-CLICK : Validation, exécution et archivage simultanés !
+      const { data, error } = await supabase.functions.invoke('apply-encyclopedia-change', {
+        body: { requestId: change.id, sealRequested: seal }
+      });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      // ✨ LE VACCIN ANTI-F5 : On purge le cache local et on recharge le Cerveau
+      invalidateAllCaches();
+      const core = await loadCoreGameData();
+      if (core) {
+        const heavy = await loadHeavyLoreData(core);
+        if (heavy) setGameData(heavy);
+      }
+      
       loadChanges();
+      showInAppNotification("L'archive a été validée et intégrée avec succès !", "success");
+
     } catch (error) {
-      showInAppNotification("Erreur lors de la validation : " + error.message, "error");
+      console.error("Erreur Edge Function :", error);
+      showInAppNotification("La magie a échoué ! Escalade au Super Architecte en cours...", "error");
+      
+      // On bascule le ticket en escalade
+      await supabase.from('data_change_requests').update({
+        status: 'escalated',
+        rejection_reason: error.message || error.toString()
+      }).eq('id', change.id);
+      
+      await notifyEscalation(change, error.message, session.user.id);
+      loadChanges();
     }
-  }, [loadChanges]);
+  }, [session.user.id, loadChanges, setGameData]);
 
   const handleApproveClick = useCallback((change, seal = false) => {
     const isSelfApproval = change.user_id === session.user.id;
@@ -473,58 +487,6 @@ export default function ValidationsPendantes({ session, onBack }) {
       action: () => executeApprove(change, seal)
     });
   }, [session.user.id, executeApprove]);
-
-  const executeArchive = useCallback(async (change) => {
-    setConfirmState(prev => ({ ...prev, isOpen: false }));
-    try {
-      const cleanSQL = change.generated_sql.replaceAll('BEGIN;', '').replaceAll('COMMIT;', '').trim();
-      const { error: sqlError } = await supabase.rpc('execute_dynamic_sql', { sql_query: cleanSQL });
-      if (sqlError) throw sqlError;
-
-      const { error: archiveError } = await supabase
-        .from('data_change_requests')
-        .update({ status: 'archived', approved_by: session.user.id, approved_at: new Date().toISOString() })
-        .eq('id', change.id);
-
-      if (archiveError) throw archiveError;
-
-      invalidateAllCaches();
-      if (archiveError) throw archiveError;
-
-      invalidateAllCaches();
-
-      // ✨ LE VACCIN ANTI-F5 : On recharge le Cerveau Global en temps réel !
-      const core = await loadCoreGameData();
-      if (core) {
-        const heavy = await loadHeavyLoreData(core);
-        if (heavy) setGameData(heavy);
-      }
-
-      loadChanges();
-      showInAppNotification("L'incantation SQL a été exécutée et archivée avec succès !", "success");
-    } catch (error) {
-      console.error("Erreur lors de l'exécution SQL :", error);
-      showInAppNotification("La magie a échoué ! Escalade au Super Architecte en cours...", "error");
-      
-      await supabase.from('data_change_requests').update({
-        status: 'escalated',
-        rejection_reason: error.message
-      }).eq('id', change.id);
-
-      await notifyEscalation(change, error.message, session.user.id);
-      loadChanges();
-    }
-  }, [session.user.id, loadChanges, setGameData]); 
-
-  const handleArchiveClick = useCallback((change) => {
-    setConfirmState({
-      isOpen: true,
-      title: "Exécuter et Archiver",
-      message: "Voulez-vous lancer l'incantation SQL directement dans la base de données ? Si une erreur survient, la proposition sera escaladée au Super Admin.",
-      confirmText: "Oui, exécuter l'incantation",
-      action: () => executeArchive(change)
-    });
-  }, [executeArchive]);
 
   const handleRestore = useCallback(async (changeId) => {
     const { error } = await supabase.from(TABLE_NAME).update({ status: 'pending' }).eq('id', changeId);
@@ -592,9 +554,8 @@ export default function ValidationsPendantes({ session, onBack }) {
   const cardActions = useMemo(() => ({
     onReject: handleRejectClick,
     onApprove: handleApproveClick,
-    onArchive: handleArchiveClick,
     onRestore: handleRestore
-  }), [handleRejectClick, handleApproveClick, handleArchiveClick, handleRestore]);
+  }), [handleRejectClick, handleApproveClick, handleRestore]);
 
   if (loading) return <div className="p-8 text-center text-gray-500 font-serif animate-pulse">Ouverture du Conseil...</div>;
 
@@ -625,9 +586,6 @@ export default function ValidationsPendantes({ session, onBack }) {
           1. En attente ({pendingChanges.length})
         </button>
         <button onClick={() => setActiveTab('approved')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'approved' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
-          2. À Exécuter ({approvedChanges.length})
-        </button>
-        <button onClick={() => setActiveTab('history')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'history' ? 'text-gray-800 border-b-2 border-gray-800' : 'text-gray-400 hover:text-gray-600'}`}>
           3. Historique ({historyChanges.length})
         </button>
         {myRole === 'super_admin' && (
