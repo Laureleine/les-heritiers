@@ -348,14 +348,18 @@ export function characterReducer(state, action) {
       // On traduit les UUIDs de l'inventaire en noms lisibles
       const inventaireLisible = { armes_equipements: [], contacts: [], langues: [], titres: [] };
       const allBoughtIds = Object.values(newState.vieSociale || {}).flat();
+
       if (action.gameData?.socialItems) {
         const boughtItems = action.gameData.socialItems.filter(item => allBoughtIds.includes(item.id));
-        inventaireLisible.langues = boughtItems.filter(i => i.categorie === 'langue').map(i => i.nom);
+        
+        // ✨ LE FIX : L'ADN JSON tire désormais les langues directement de leur nouvel emplacement !
+        inventaireLisible.langues = newState.profils?.langues || [];
+        
         inventaireLisible.contacts = boughtItems.filter(i => i.categorie === 'contact').map(i => i.nom);
         inventaireLisible.titres = boughtItems.filter(i => i.categorie === 'titre').map(i => i.nom);
         inventaireLisible.armes_equipements = boughtItems.filter(i => !['langue', 'contact', 'titre'].includes(i.categorie)).map(i => i.nom);
       }
-
+	  
       const bibleAutonome = {
         capacites_innees: capacitesInnees,
         avantages_innes: avantagesInnes,
