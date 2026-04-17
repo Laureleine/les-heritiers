@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.9.1 - "Le Séquençage Parfait 🧬"',
+    date: '18 Avril 2026',
+    changes: [
+      '🎨 **Génétique Visuelle :** Refonte des encarts d\'Avantages et Désavantages sur le Récapitulatif et les fiches PDF imprimables. L\'ADN de votre Fée s\'affiche désormais dans d\'élégantes boîtes émeraudes et écarlates, avec un algorithme mettant automatiquement en gras le nom de chaque trait.',
+      '🧠 **Cerveau Algorithmique (Gardiens) :** Le moteur de comparaison de l\'Encyclopédie a reçu un doctorat en linguistique. Il traduit désormais à la volée les identifiants en noms lisibles et aplatit les caractéristiques, éradiquant définitivement les fausses alertes de remplacement sur les données inchangées.',
+      '🛡️ **Sécurité Serveur (Edge Function) :** Chirurgie vitale sur le validateur Supabase. Les compétences à choix multiples (ex: "Mêlée OU Tir") sont désormais parfaitement converties et insérées dans la base de données, empêchant la suppression accidentelle du savoir de l\'Héritier lors d\'une évolution.',
+      '🖨️ **Imprimerie (Combat) :** L\'Esquive Démasquée possède désormais son propre cercle de calcul sur la première page du PDF grâce à l\'intégration d\'une nouvelle structure géométrique à six colonnes.'
+    ]
+  },  {
     version: '15.9.0 - "L\'Ascension du Cerveau 🌩️"',
     date: '17 Avril 2026',
     changes: [

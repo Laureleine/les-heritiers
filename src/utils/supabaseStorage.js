@@ -1,4 +1,5 @@
 // src/utils/supabaseStorage.js
+
 import { supabase } from '../config/supabase';
 
 // ============================================================================
@@ -187,23 +188,36 @@ export const saveCharacterToSupabase = async (character) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Utilisateur non connecté (Sauvegarde locale uniquement)');
 
-      // 🧠 L'ULTIME VÉRITÉ : Le Calculateur de Combat pour l'Export JSON !
-      // On calcule l'Esquive, la Parade, l'Initiative et les PV pour les figer dans l'archive.
-      const stats = cleaned.computedStats?.competencesTotal || {};
-      const getS = (comp) => stats[comp] || 0;
-      const agi = cleaned.caracteristiques?.agilite || 1;
-      const con = cleaned.caracteristiques?.constitution || 1;
-      const esp = cleaned.caracteristiques?.esprit || 1;
-      const sf = cleaned.caracteristiques?.sangFroid || 1;
+    // 🧠 L'ULTIME VÉRITÉ : Le Calculateur de Combat pour l'Export JSON !
+    const stats = cleaned.computedStats?.competencesTotal || {};
+    const getS = (comp) => stats[comp] || 0;
 
-      const combatStats = {
-          esquive: getS('Mouvement') + agi + 5,
-          parade: getS('Mêlée') + agi + 5,
-          resPhys: getS('Ressort') + con + 5,
-          resPsych: getS('Fortitude') + esp + 5,
-          initiative: getS('Art de la guerre') + sf,
-          pvMax: (3 * con) + 9
-      };
+    const agi = cleaned.caracteristiques?.agilite || 1;
+    const con = cleaned.caracteristiques?.constitution || 1;
+    const esp = cleaned.caracteristiques?.esprit || 1;
+    const sf = cleaned.caracteristiques?.sangFroid || 1;
+    const masque = cleaned.caracteristiques?.masque || 4;
+
+    // ✨ Les Bonus Mathématiques
+    const bonusMasqueResist = Math.max(0, masque - 5);
+    
+    let modTaille = 0;
+    if (cleaned.taille === 'Petite') modTaille = 1;
+    else if (cleaned.taille === 'Grande') modTaille = -1;
+    else if (cleaned.taille === 'Très Grande') modTaille = -2;
+
+    const esquiveMasquee = getS('Mouvement') + agi + 5;
+    const esquiveDemasquee = esquiveMasquee + modTaille;
+
+    const combatStats = {
+      esquive_masquee: esquiveMasquee,
+      esquive_demasquee: esquiveDemasquee,
+      parade: getS('Mêlée') + agi + 5,
+      res_phys: getS('Ressort') + con + 5 + bonusMasqueResist,
+      res_psych: getS('Fortitude') + esp + 5 + bonusMasqueResist,
+      initiative: getS('Art de la guerre') + sf,
+      pv_max: (3 * con) + 9
+    };
 
       const absoluteComputedStats = {
           ...(cleaned.computedStats || {}),

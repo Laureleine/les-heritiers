@@ -252,18 +252,22 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
   // 📝 Gestion de l'édition d'un élément existant
   const handleOpenEdit = (item) => {
-    setEditingItem(item);
-    setIsCreating(false);
+    setIsCreating(false); // On sort ça du if pour que ça s'applique partout
 
     if (activeTab === 'fairy_types') {
-      
       const fairyCloudData = gameData.fairyData?.[item.name || item.nom];
+      
+      // ✨ LE VRAI FIX EST LÀ : On écrase l'item brut (amnésique) par une 
+      // version enrichie contenant la mémoire parfaite des compétences !
+      setEditingItem({
+        ...item,
+        competencesPredilection: fairyCloudData?.competencesPredilection || []
+      });
 
-      // 🛡️ SÉPARATION DES PRÉDILECTIONS ET DES SPÉCIALITÉS PURES
-      const vraiesPredilections = (fairyCloudData?.competencesPredilection || []).filter(p => !p.isOnlySpecialty);
-      const specialitesPures = (fairyCloudData?.competencesPredilection || [])
-        .filter(p => p.isOnlySpecialty)
-        .map(p => ({ competence: p.nom, nom: p.specialite })); // Format attendu par la brique dorée
+      // 🛡️ SÉPARATION STRICTE DES PRÉDILECTIONS ET DES SPÉCIALITÉS PURES
+      // ✨ LE FIX 1 : On filtre les spécialités pures pour ne pas les envoyer en double au Lego !
+      const vraiesPredilections = fairyCloudData?.competencesPredilection?.filter(p => !p.isOnlySpecialty) || [];
+      const specialitesPures = fairyCloudData?.competencesPredilection?.filter(p => p.isOnlySpecialty).map(p => ({ competence: p.nom, nom: p.specialite })) || [];
 
       const futilesFormatees = (fairyCloudData?.competencesFutilesPredilection || []).map(f => {
         if (typeof f === 'string') return { isChoix: false, nom: f }; 
@@ -307,14 +311,17 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
           futiles: futilesFormatees
         }, null, 2)
       });
-      } else {
-        // Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
-        let existingFairyIds = [];
-        if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-        if (activeTab === 'fairy_powers') existingFairyIds = item.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-        if (activeTab === 'fairy_assets') existingFairyIds = item.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
+    } else {
+      // Pour les autres onglets (Pouvoirs, Atouts...), le comportement reste normal
+      setEditingItem(item);
 
-        setProposal({
+      // Extraire les fées déjà liées pour les Capacités, Pouvoirs et Atouts
+      let existingFairyIds = [];
+      if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
+      if (activeTab === 'fairy_powers') existingFairyIds = item.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
+      if (activeTab === 'fairy_assets') existingFairyIds = item.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
+
+      setProposal({
           name: item.name || item.nom || '',
           description: item.description || item.desc || '',
           type_pouvoir: item.type_pouvoir || 'masque',
@@ -324,7 +331,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
           // ✨ FIX 1 : On initialise le tuyau de communication du BonusBuilder !
           techData: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '{}',
           fairyIds: existingFairyIds
-        });
+      });
       }
     setJustification('Mise à jour suite à...');
   };
