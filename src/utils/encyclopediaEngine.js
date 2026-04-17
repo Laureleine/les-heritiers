@@ -96,7 +96,7 @@ export const submitEncyclopediaProposal = async ({
     const oldPouvoirs = (editingItem.fairy_type_powers || []).map(link => link.power?.id).filter(Boolean).sort();
     const newPouvoirs = [...(proposal.pouvoirsIds || [])].sort();
     const oldAtouts = (editingItem.fairy_type_assets || []).map(link => link.asset?.id).filter(Boolean).sort();
-    const newAtouts = [...(proposal.atoutsIds || [])].sort();
+    const newAtouts = [...(proposal.assetsIds || [])].sort();
 
     const changedRelations = {};
 
@@ -142,10 +142,38 @@ export const submitEncyclopediaProposal = async ({
         });
       }
 
-      const newUtilesStr = JSON.stringify(newUtilesArray);
-      if (newUtilesStr !== oldUtiles) changedRelations.competencesUtiles = newUtilesArray; 
+	// ✨ LE FIX : LE BOUCLIER D'ÉQUIVALENCE BILINGUE (Anti-Faux Positifs V2)
+	const getUtilesSignature = (arr) => {
+		return (arr || []).map(c => {
+			// 1. Détection du flag "Choix"
+			const isChoix = c.isChoix || c.is_choice;
+			if (isChoix) {
+				const options = c.options || c.choice_options || [];
+				return `choix-[${options.sort().join(',')}]`;
+			}
 
-      // Compétences Futiles
+			// 2. ✨ LE VRAI FIX : La jointure Supabase s'appelle "competence.name" !
+			const rawName = c.nom || (c.competence && c.competence.name) || c.competence_id || 'inconnu';
+			
+			// 3. Normalisation absolue (on vire les majuscules et les accents)
+			const nom = rawName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+			const spe = (c.specialite || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
+			// 4. Extraction des flags complexes
+			const isSpeChoix = !!(c.isSpecialiteChoix || c.is_specialite_choice);
+			const isOnlySpe = !!c.isOnlySpecialty || (c.choice_options && c.choice_options.includes('PURE_SPEC'));
+
+			return `${nom}||${spe}||${isSpeChoix}||${isOnlySpe}`;
+		}).sort().join('###');
+	};
+
+	const oldUtilesSignature = getUtilesSignature(editingItem.competencesPredilection || []);
+	const newUtilesSignature = getUtilesSignature(newUtilesArray);
+
+	if (oldUtilesSignature !== newUtilesSignature) {
+		changedRelations.competencesUtiles = newUtilesArray;
+	}
+
     // Compétences Futiles
     const newFutiles = (parsedTech.futiles || []).map(f => {
         if (f.isChoix) return { is_choice: true, choice_options: f.options || [], competence_futile_id: null, competence_name: null };

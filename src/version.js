@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.9.0 - "L\'Ascension du Cerveau 🌩️"',
+    date: '17 Avril 2026',
+    changes: [
+      '🌩️ **Architecture (Edge Functions) :** Migration totale du moteur de validation du Conseil des Gardiens. L\'application client ne génère plus aucune requête SQL brute. Toute la logique de validation, d\'édition et d\'archivage communautaire est désormais confiée à un "Cerveau Serveur" autonome et hautement sécurisé, fonctionnant directement dans le Nuage.',
+      '⚡ **Conseil des Gardiens (Ergonomie) :** Le flux de modération devient immédiat (Déploiement du "One-Click Absolu"). Les Gardiens valident et archivent désormais les propositions de la communauté en une seule action fluide, avec un rechargement automatique des données de l\'application en temps réel.',
+      '🐛 **Chirurgie Relationnelle (Hotfix) :** Résolution d\'un conflit critique provoquant la disparition silencieuse des Atouts lors de la modification des traits textuels d\'une fée (harmonisation de la clé `assetsIds`).',
+      '🛡️ **Sécurité des Requêtes :** Les requêtes réseau du Conseil (CORS) bénéficient désormais d\'une tolérance élargie pour les navigateurs stricts, et intègrent un Cheval de Troie logiciel permettant de masquer les erreurs brutes de PostgreSQL pour les restituer proprement et en clair aux modérateurs.',
+      '🗄️ **Intégrité des Données :** Le moteur de base de données sépare désormais de façon chirurgicale et intelligente les requêtes de pure création (`INSERT`) et de simple mise à jour (`UPDATE`), évitant les violations de contraintes sur les colonnes obligatoires.'
+    ]
+  },  {
     version: '15.8.28 - "La Lorgnette de l\'Érudit 🔍"',
     date: '17 Avril 2026',
     changes: [
