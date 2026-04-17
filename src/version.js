@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.8.28 - "La Lorgnette de l\'Érudit 🔍"',
+    date: '17 Avril 2026',
+    changes: [
+      '👁️ **Archives (Consultation) :** Déploiement d\'une modale immersive de lecture pure (`EncyclopediaViewModal`). Un nouveau bouton "Consulter l\'archive" permet d\'explorer le lore de n\'importe quelle entrée sans ouvrir l\'interface de modification (y compris pour les savoirs scellés).',
+      '🧬 **Scanner Biométrique (Fées) :** La lorgnette s\'adapte dynamiquement au contenu. Lors de la consultation d\'une espèce féérique, elle affiche un tableau de bord complet révélant ses potentiels naturels (stats min/max), sa magie innée (capacités, pouvoirs, atouts), et ses avantages/désavantages.',
+      '🎨 **Typographie (Interface) :** Optimisation du rendu visuel des listes et des traits de personnalité avec l\'utilisation de conteneurs flexibles (`flex-col`) pour garantir des retours à la ligne propres et aérés.'
+    ]
+  },  {
     version: '15.8.27 - "La Pierre de Rosette 🪨"',
     date: '17 Avril 2026',
     changes: [
