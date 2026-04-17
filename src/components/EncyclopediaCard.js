@@ -1,9 +1,9 @@
 // src/components/EncyclopediaCard.js
 
 import React from 'react';
-import { Feather, Sparkles, Star, Lock, ShieldCheck, ShieldAlert, Unlock, Trash2 } from 'lucide-react';
+import { Feather, Sparkles, Star, Lock, ShieldCheck, ShieldAlert, Unlock, Trash2, Eye } from 'lucide-react';
 
-const EncyclopediaCard = ({ item, activeTab, onOpenEdit, isLocked, onToggleSeal, onDeleteClick, userProfile }) => {
+const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onToggleSeal, onDeleteClick, userProfile }) => {
   const title = item.name || item.nom;
   const desc = item.description || item.desc;
   const isRestricted = item.is_official === false;
@@ -113,25 +113,35 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, isLocked, onToggleSeal,
         </div>
       )}
 	  
-      {/* GESTION DES ÉTATS (Scellé / En révision / Éditable) */}
-      <div className="mt-6">
+      {/* GESTION DES ÉTATS ET LECTURE */}
+      <div className="mt-6 flex flex-col gap-2">
+        
+        {/* ✨ LE NOUVEAU BOUTON VISUALISER (Toujours disponible !) */}
+        <button
+          onClick={() => onView(item)}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-50 text-sky-700 border border-sky-200 rounded-lg hover:bg-sky-100 hover:border-sky-300 transition-all font-serif font-bold text-sm shadow-sm"
+        >
+          <Eye size={16} /> Consulter l'archive
+        </button>
+
         {item.is_sealed ? (
-          <div className="text-sm font-serif font-bold text-amber-900/70 flex items-center justify-center gap-2 py-3 rounded-lg border border-amber-900/20 bg-gradient-to-r from-amber-50 to-orange-50 shadow-inner">
-            <ShieldCheck size={18} className="text-amber-700" /> Savoir scellé par le Conseil
+          <div className="text-sm font-serif font-bold text-amber-900/70 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-amber-900/20 bg-gradient-to-r from-amber-50 to-orange-50 shadow-inner">
+            <ShieldCheck size={18} className="text-amber-700" /> Savoir scellé
           </div>
         ) : isLocked ? (
-          <div className="text-sm font-serif italic text-stone-500 flex items-center justify-center gap-2 py-3 rounded-lg border border-stone-200 bg-stone-50">
-            <Lock size={16} /> En cours de révision par un Héritier
+          <div className="text-sm font-serif italic text-stone-500 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-stone-200 bg-stone-50">
+            <Lock size={16} /> En cours de révision
           </div>
         ) : (
-          <button 
+          <button
             onClick={() => onOpenEdit(item)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-stone-100 text-stone-700 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-sm shadow-sm"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-100 text-stone-700 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-sm shadow-sm"
           >
             <Feather size={16} /> Suggérer une modification
           </button>
         )}
       </div>
+
 
       {/* 3. LE PRIVILÈGE DES GARDIENS (Pour Briser, Apposer ou Détruire) */}
       {(userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien') && (

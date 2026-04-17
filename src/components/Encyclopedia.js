@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { Book, Search, X, Shield, Plus, FileText } from 'lucide-react';
 import EncyclopediaModal from './EncyclopediaModal'; 
+import EncyclopediaViewModal from './EncyclopediaViewModal'; // ✨ NOUVEAU
 import EncyclopediaCard from './EncyclopediaCard';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';
@@ -18,6 +19,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
   const [activeTab, setActiveTab] = useState('fairy_types');
   const [data, setData] = useState([]);
   const [selectedFairyFilter, setSelectedFairyFilter] = useState(''); 
+  const [viewingItem, setViewingItem] = useState(null); // ✨ LE NOUVEAU CERVEAU DE LECTURE
 
   useEffect(() => {
     fetchData();
@@ -485,8 +487,9 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                 item={item}
                 activeTab={activeTab}
                 onOpenEdit={handleOpenEdit}
-                isLocked={pendingLocks.includes(item.id)} // 👈 NOUVEAU : Transmission du verrou
-                onToggleSeal={handleToggleSealClick} /* ✅ La bonne fonction ! */
+				onView={setViewingItem} 
+                isLocked={pendingLocks.includes(item.id)}
+                onToggleSeal={handleToggleSealClick}
 				onDeleteClick={handleDeleteClick}
                 userProfile={userProfile} 
               />
@@ -521,6 +524,15 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
           setEditingItem(null);
           fetchPendingLocks();      // Rafraîchit les cadenas instantanément !
           }}
+        />
+      )}
+
+      {/* ✨ NOUVELLE MODALE : LECTURE PURE */}
+      {viewingItem && (
+        <EncyclopediaViewModal
+          item={viewingItem}
+          activeTab={activeTab}
+          onClose={() => setViewingItem(null)}
         />
       )}
 	  
