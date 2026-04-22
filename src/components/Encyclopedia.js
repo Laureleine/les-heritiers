@@ -1,5 +1,6 @@
 // src/components/Encyclopedia.js
 
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { Book, Search, X, Shield, Plus, FileText } from 'lucide-react';

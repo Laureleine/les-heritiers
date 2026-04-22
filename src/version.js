@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.9.2 - "Les Privilèges du Sang 🏷️"',
+    date: '19 Avril 2026',
+    changes: [
+      '🛍️ **Économie Féérique (Vie Sociale) :** L\'interface de la boutique gère désormais les privilèges liés à votre ADN. Si un Atout (comme celui du Smog) vous offre une réduction sur un métier ou un statut, le prix d\'origine s\'affiche élégamment barré et le nouveau tarif brille d\'une lueur fuchsia.',
+      '🔒 **Verrous de Destinée (Prérequis) :** Les objets et statuts sociaux peuvent désormais exiger des conditions strictes (ex: posséder un Profil Savant). Si l\'Héritier ne les remplit pas, la carte est grisée et protégée par un cadenas interactif révélant ce qu\'il manque (sans pop-up intrusif).',
+      '⚙️ **Forge (BonusBuilder) :** Ajout d\'une nouvelle brique rose "Ajustement Prix Boutique" dans les règles techniques. Les Gardiens peuvent dorénavant appliquer des bons de réduction à la volée sur n\'importe quel Atout via le Nuage.',
+      '🧠 **Cerveau Algorithmique (Moteur) :** Le `characterEngine` a appris à lire et extraire les ajustements de prix cachés dans les Atouts pour constituer un "portefeuille de réductions" avant même d\'afficher l\'Étape 9.'
+    ]
+  },  {
     version: '15.9.1 - "Le Séquençage Parfait 🧬"',
     date: '18 Avril 2026',
     changes: [
