@@ -220,21 +220,30 @@ export function characterReducer(state, action) {
       const bonusEntregent = Math.max(0, entregent - 3);
 
       // --- C. LE SUPER-CALCULATEUR DE PROFILS ET PP CENTRALISÉ ---
-      const atoutsRangs = {};
-      (newState.atouts || []).forEach(atoutId => {
-        const atout = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
-        if (atout && atout.effets_techniques) {
-          try {
-            const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques) : atout.effets_techniques;
-            if (tech.competences) {
-              Object.entries(tech.competences).forEach(([comp, val]) => {
-                atoutsRangs[comp] = (atoutsRangs[comp] || 0) + val;
-              });
-            }
-          } catch(e) {}
-        }
-      });
+    // 3. Bonus issus des Atouts Féériques
+    const atoutsRangs = {};
+    const priceModifiers = {}; // ✨ NOUVEAU : Le portefeuille de Bons de Réduction !
 
+    (newState.atouts || []).forEach(atoutId => {
+      const atout = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
+      if (atout && atout.effets_techniques) {
+        try {
+          const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques) : atout.effets_techniques;
+          if (tech.competences) {
+            Object.entries(tech.competences).forEach(([comp, val]) => {
+              atoutsRangs[comp] = (atoutsRangs[comp] || 0) + val;
+            });
+          }
+          // ✨ L'INCISION : On aspire les ajustements de prix de la Boutique !
+          if (tech.price_modifiers) {
+            Object.entries(tech.price_modifiers).forEach(([itemName, newPrice]) => {
+              priceModifiers[itemName] = newPrice;
+            });
+          }
+        } catch(e) {}
+      }
+    });
+	
     const predFinales = (feeData?.competencesPredilection || [])
       .filter(p => !p.isOnlySpecialty) // ✨ L'INTERDIT : On ignore les Spécialités Pures pour le bonus +2 !
       .map((p, i) => p.isChoix ? newState.competencesLibres?.choixPredilection?.[i] : p.nom )
@@ -381,6 +390,7 @@ export function characterReducer(state, action) {
         futilesPredFinales: futilesPredFinales,
         futilesBase: futilesBase,
         futilesTotal: futilesTotal,
+		priceModifiers: priceModifiers,		
         bible_autonome: bibleAutonome // ✨ ON RANGE LA BIBLE ICI !
       };
     }

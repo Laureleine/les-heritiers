@@ -1,44 +1,86 @@
-// 14.12.0
+// src/components/vieSociale/StepVieSociale.js
 
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown } from 'lucide-react';
+import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown, Check, Lock, Sparkles } from 'lucide-react';
 import { useVieSociale } from './useVieSociale';
 import { getFortuneCost } from '../../utils/xpCalculator';
+import { showInAppNotification } from '../../utils/SystemeServices';
 
-// 🎨 LE RETOUR DE L'ACCORDÉON ORIGINAL
-const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, freeContactsRemaining }) => {
+// 🎨 LE RETOUR DE L'ACCORDÉON ORIGINAL (Maintenant avec un cerveau connecté !)
+const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, freeContactsRemaining, character }) => {
   const [isOpen, setIsOpen] = useState(true);
+
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="mb-4 border border-amber-200 rounded-lg overflow-hidden shadow-sm">
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between p-3 bg-amber-50 hover:bg-amber-100 transition-colors text-amber-900 font-bold font-serif">
-        <div className="flex items-center gap-2">{icon} {title} ({items.length})</div>
-        {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+    <div className="mb-4 bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-3 bg-stone-50 flex items-center justify-between hover:bg-amber-50 transition-colors"
+      >
+        <div className="flex items-center gap-2 font-bold font-serif text-amber-900">
+          {icon} {title} <span className="text-xs text-stone-400 font-sans ml-2">({items.length})</span>
+        </div>
+        {isOpen ? <ChevronUp size={18} className="text-stone-400" /> : <ChevronDown size={18} className="text-stone-400" />}
       </button>
+
       {isOpen && (
         <div className="p-3 space-y-2 border-t border-amber-100 bg-white">
           {items.map(item => {
             const isOwned = myItems.includes(item.id);
-            const cost = getItemCost(item);
-            const effectiveCost = item.categorie === 'contact' ? Math.max(0, cost - freeContactsRemaining) : cost;
+            const baseCost = getItemCost(item);
+
+            // ✨ 1. LECTURE DES BONS DE RÉDUCTION (Scénario A)
+            const modifiedCost = character.computedStats?.priceModifiers?.[item.nom];
+            const hasDiscount = modifiedCost !== undefined;
+            const finalCost = hasDiscount ? modifiedCost : baseCost;
+
+            const effectiveCost = item.categorie === 'contact' ? Math.max(0, finalCost - freeContactsRemaining) : finalCost;
             const canAfford = reste >= effectiveCost;
+
+            // ✨ 2. LECTURE DU VIDEUR / PRÉREQUIS (Scénario B)
+            let isLocked = false;
+            let lockMessage = "";
+            if (item.requirements) {
+              try {
+                const reqs = typeof item.requirements === 'string' ? JSON.parse(item.requirements) : item.requirements;
+                if (reqs.profils && reqs.profils.length > 0) {
+                  const monMajeur = character.profils?.majeur?.nom;
+                  const monMineur = character.profils?.mineur?.nom;
+                  if (!reqs.profils.includes(monMajeur) && !reqs.profils.includes(monMineur)) {
+                    isLocked = true;
+                    lockMessage = `Cet accès exige le profil : ${reqs.profils.join(' ou ')}`;
+                  }
+                }
+              } catch(e) {}
+            }
 
             return (
               <div
                 key={item.id}
-                onClick={() => (isOwned || canAfford) && toggleAchat(item, profilNom)}
-                className={`p-3 border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
-                  isOwned
-                    ? 'border-amber-500 bg-amber-50 ring-1 ring-amber-400'
-                    : canAfford
-                    ? 'border-stone-200 hover:border-amber-300 hover:shadow-sm'
-                    : 'border-stone-100 bg-stone-50 opacity-60 cursor-not-allowed'
+                onClick={() => {
+                  if (isLocked) {
+                    showInAppNotification(lockMessage, "error");
+                    return; // ⛔ Le Videur bloque l'entrée (Pas de alert() !)
+                  }
+                  if (isOwned || canAfford) toggleAchat(item, profilNom);
+                }}
+                className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all ${
+                  isLocked 
+                    ? 'border-stone-200 bg-stone-100 opacity-60 grayscale cursor-not-allowed'
+                    : isOwned
+                      ? 'border-amber-500 bg-amber-50 shadow-md cursor-pointer'
+                      : canAfford
+                        ? 'border-gray-200 bg-white hover:border-amber-300 hover:shadow-sm cursor-pointer'
+                        : 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
                 }`}
               >
                 <div className="flex-1 pr-2">
                   <div className="font-bold text-sm text-gray-800 flex items-center flex-wrap gap-2">
+                    {isOwned && <Check size={16} className="text-amber-600" />}
+                    {isLocked && <Lock size={16} className="text-stone-500" />}
                     {item.nom}
+                    
                     {item.fortune_score != null && (
                       <span className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded uppercase tracking-wider">
                         Fortune {item.fortune_score}
@@ -49,25 +91,43 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
                         + {item.fortune_bonus} Fortune
                       </span>
                     )}
+                    {item.is_choix_multiple && (
+                      <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded">Multiples</span>
+                    )}
                     {item.is_secondaire && (
                       <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Secondaire</span>
                     )}
                   </div>
                   {item.description && <div className="text-xs text-gray-500 mt-1">{item.description}</div>}
                 </div>
-                <div className="flex items-center gap-3 ml-4">
-                  {item.categorie === 'contact' && !isOwned && freeContactsRemaining > 0 && effectiveCost < cost ? (
+
+                <div className="flex items-center gap-3 ml-4 shrink-0">
+                  {/* ✨ 3. AFFICHAGE DYNAMIQUE DES PRIX */}
+                  {isLocked ? (
+                     <Lock size={20} className="text-stone-400" />
+                  ) : item.categorie === 'contact' && !isOwned && freeContactsRemaining > 0 && effectiveCost < finalCost ? (
                     <div className="flex flex-col items-end leading-none">
-                      <span className="text-[10px] line-through text-gray-400">{cost} PP</span>
+                      <span className="text-[10px] line-through text-gray-400">{finalCost} PP</span>
                       <span className="text-xs font-bold text-emerald-600 uppercase">Gratuit</span>
+                    </div>
+                  ) : hasDiscount ? (
+                    <div className="flex flex-col items-end leading-none" title="Prix réduit par votre Héritage">
+                      <span className="text-[10px] line-through text-stone-400">{baseCost} PP</span>
+                      <span className="text-sm font-bold text-fuchsia-600 flex items-center gap-1">
+                        {effectiveCost} PP <Sparkles size={12}/>
+                      </span>
                     </div>
                   ) : (
                     <div className="font-bold text-amber-600 whitespace-nowrap">{effectiveCost} PP</div>
                   )}
-                  {isOwned ? (
-                    <Minus size={20} className="text-amber-600" />
-                  ) : (
-                    <Plus size={20} className={canAfford ? 'text-gray-400' : 'text-gray-300'} />
+
+                  {/* Le bouton d'action */}
+                  {!isLocked && (
+                    isOwned ? (
+                      <Minus size={20} className="text-amber-600" />
+                    ) : (
+                      <Plus size={20} className={canAfford ? 'text-gray-400' : 'text-gray-300'} />
+                    )
                   )}
                 </div>
               </div>
@@ -92,6 +152,7 @@ export default function StepVieSociale() {
 
   const renderCatalogue = (profilNom) => {
     const itemsDuProfil = catalogueParProfil[profilNom] || [];
+
     if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;
 
     const metiers = itemsDuProfil.filter(i => i.categorie === 'metier');
@@ -103,6 +164,7 @@ export default function StepVieSociale() {
     const reste = budgetsInfo.restes[profilNom];
     const budgetTotal = budgetsInfo.budgets[profilNom];
     const freeContactsRemaining = budgetsInfo.freeContactsRemaining;
+
     const myItems = achats[profilNom] || [];
 
     return (
@@ -128,11 +190,12 @@ export default function StepVieSociale() {
           </div>
         )}
 
-        <CategoryAccordion title="Métiers & Statuts" icon={<Briefcase size={16} className="text-amber-700"/>} items={metiers} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} />
-        <CategoryAccordion title="Objets & Propriétés" icon={<Package size={16} className="text-amber-700"/>} items={objets} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} />
-        <CategoryAccordion title="Contacts" icon={<Users size={16} className="text-amber-700"/>} items={contacts} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} />
-        <CategoryAccordion title="Langues & Dialectes" icon={<MessageCircle size={16} className="text-amber-700"/>} items={langues} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} />
-        <CategoryAccordion title="Familles, titres et statuts particuliers" icon={<Crown size={16} className="text-amber-700"/>} items={titres} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} />
+        {/* ✨ FIX : Le 'character' est maintenant passé à chaque accordéon ! */}
+        <CategoryAccordion title="Métiers & Statuts" icon={<Briefcase size={16} className="text-amber-700"/>} items={metiers} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} character={character} />
+        <CategoryAccordion title="Objets & Propriétés" icon={<Package size={16} className="text-amber-700"/>} items={objets} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} character={character} />
+        <CategoryAccordion title="Contacts" icon={<Users size={16} className="text-amber-700"/>} items={contacts} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} character={character} />
+        <CategoryAccordion title="Langues & Dialectes" icon={<MessageCircle size={16} className="text-amber-700"/>} items={langues} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} character={character} />
+        <CategoryAccordion title="Familles, titres et statuts particuliers" icon={<Crown size={16} className="text-amber-700"/>} items={titres} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} freeContactsRemaining={freeContactsRemaining} character={character} />
       </div>
     );
   };
@@ -148,7 +211,7 @@ export default function StepVieSociale() {
         </div>
       </div>
 
-      {/* LE CONTRÔLEUR DE FORTUNE (INLINE COMME AVANT) */}
+      {/* LE CONTRÔLEUR DE FORTUNE */}
       <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl flex items-center justify-between mb-6 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-100 p-2 rounded-lg text-emerald-700">
@@ -163,8 +226,8 @@ export default function StepVieSociale() {
             )}
           </div>
         </div>
+
         <div className="flex items-center gap-3">
-          {/* Bouton Moins (Remboursement) */}
           <button
             onClick={handleDowngradeFortune}
             disabled={isReadOnly || (isScelle && currentFortune <= (character.data?.stats_scellees?.fortune || 0)) || (!isScelle && currentFortune <= 0)}
@@ -173,20 +236,17 @@ export default function StepVieSociale() {
           >
             <Minus size={18} />
           </button>
-
-          {/* Score Actuel */}
+          
           <div className="w-8 text-center text-2xl font-serif font-black text-emerald-900">
             {currentFortune}
           </div>
 
-          {/* Bouton Plus (Avec Affichage Prédictif) */}
           <button
             onClick={handleUpgradeFortune}
             disabled={isReadOnly || currentFortune >= 15 || (isScelle && xpDispo < getFortuneCost(currentFortune, character.computedStats))}
             className="h-10 px-3 flex flex-col items-center justify-center rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-30 disabled:bg-gray-400 transition-colors shadow-md"
           >
             <Plus size={18} />
-            {/* On cache le prix si la richesse absolue est atteinte */}
             {isScelle && currentFortune < 15 && (
               <span className="text-[9px] font-bold -mt-1 tracking-wider">
                 ({getFortuneCost(currentFortune, character.computedStats)} XP)
@@ -233,8 +293,8 @@ export default function StepVieSociale() {
               <div className="space-y-4">
                 {Object.entries(achats).map(([profil, ids]) => {
                   if (ids.length === 0) return null;
-                  // Utilisation sécurisée de socialItems depuis le hook
                   const itemsOfProfil = ids.map(id => socialItems.find(i => i.id === id)).filter(Boolean);
+
                   return (
                     <div key={profil}>
                       <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">{getProfilDisplayName(profil)}</h4>
