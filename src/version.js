@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.9.3 - "L\'Exorcisme du Monstre 🧩"',
+    date: '22 Avril 2026',
+    changes: [
+      '🧩 **Architecture (Cerveau Séparé) :** Démembrement chirurgical du "God Component" colossal de l\'Encyclopédie. L\'interface obèse a été scindée en de multiples sous-composants purs (`FairyTypeForm`, `EntityForm`), transformant la modale principale en un simple chef d\'orchestre léger et lisible.',
+      '⚡ **Performances (Moteur de Rendu) :** Finies les saccades ! Grâce à l\'isolation des états et l\'utilisation rigoureuse de `React.memo` et `useCallback`, la saisie de texte ou la sélection de fées ne provoque plus le rechargement convulsif de toute l\'interface.',
+      '♻️ **Chasse aux Scories (DRY) :** Création d\'un module de recherche intelligent et universel (`RelationSelector`) remplaçant toutes les anciennes barres de filtrage qui polluaient le code en triple exemplaire.'
+    ]
+  },  {
     version: '15.9.2 - "Les Privilèges du Sang 🏷️"',
     date: '19 Avril 2026',
     changes: [
