@@ -2,6 +2,13 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.9.6 - "La Mesure de la Bête 🐺"',
+    date: '24 Avril 2026',
+    changes: [
+      '🐛 **Cerveau Mathématique (Hotfix) :** Correction du calcul de l\'Esquive Démasquée. Le moteur ignorait la véritable corpulence des créatures (comme le malus de taille Grande des Loups-Garous) en tentant de lire le champ de texte libre de l\'apparence humaine. Le calcul interroge désormais directement la génétique pure de l\'espèce dans le Nuage.',
+      '🛡️ **Stabilité (Archivage) :** Le module de sauvegarde absolue (`supabaseStorage.js`) a été rendu plus autonome. Il puise dorénavant le dictionnaire du jeu dans le "Grimoire de Poche" (cache local) pour fiabiliser ses calculs silencieux sans dépendre de l\'interface visuelle.'
+    ]
+  },  {
     version: '15.9.5 - "Le Piège Asynchrone 🪤"',
     date: '24 Avril 2026',
     changes: [
