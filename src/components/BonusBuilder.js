@@ -171,8 +171,9 @@ export default function BonusBuilder({
   };
 
   const updateBlock = (id, field, value) => {
-    const newBlocks = blocks.map(b => b.id === id ? { ...b, [field]: value } : b);
-    setBlocks(newBlocks);
+    // ✨ LE FIX : On utilise le callback 'prev' pour empiler les requêtes 
+    // proprement sans jamais écraser la mémoire asynchrone de React !
+    setBlocks(prev => prev.map(b => b.id === id ? { ...b, [field]: value } : b));
     setHasUnsavedChanges(true);
   };
 
