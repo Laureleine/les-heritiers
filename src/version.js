@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.9.5 - "Le Piège Asynchrone 🪤"',
+    date: '24 Avril 2026',
+    changes: [
+      '🐛 **Forge des Chimères (Hotfix) :** Résolution d\'une "Race Condition" React critique dans le Constructeur de Règles (BonusBuilder). Il est de nouveau possible de sélectionner une Compétence lors de la création d\'une brique "Spécialité Offerte" ou "Choix de Spécialité". L\'horlogerie interne empile désormais correctement les modifications asynchrones sans s\'auto-écraser.'
+    ]
+  },  {
+    version: '15.9.4 - "Le Masque Imperturbable 🎭"',
+    date: '22 Avril 2026',
+    changes: [
+      '⚡ **Performances (Bouclier CPU) :** Purge d\'une fuite de performance majeure à l\'Étape 10. Les algorithmes lourds (comme le calcul croisé des spécialités de métier) ont été encapsulés et mémoïsés dans un Cerveau Séparé (`usePersonnalisation.js`). Taper son Nom Féérique ou sa description ne provoque plus le rechargement compulsif de toute la page.',
+      '🧩 **Architecture (God Component) :** Le composant `StepPersonnalisation.js` a été délesté de sa logique métier. Il redevient une interface d\'affichage pure, claire et dédiée uniquement au rendu visuel (JSX/Tailwind).'
+    ]
+  },  {
     version: '15.9.3 - "L\'Exorcisme du Monstre 🧩"',
     date: '22 Avril 2026',
     changes: [
