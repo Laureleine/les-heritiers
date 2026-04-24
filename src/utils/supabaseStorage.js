@@ -198,17 +198,27 @@ export const saveCharacterToSupabase = async (character) => {
     const sf = cleaned.caracteristiques?.sangFroid || 1;
     const masque = cleaned.caracteristiques?.masque || 4;
 
-    // ✨ Les Bonus Mathématiques
-    const bonusMasqueResist = Math.max(0, masque - 5);
-    
-    let modTaille = 0;
-    if (cleaned.taille === 'Petite') modTaille = 1;
-    else if (cleaned.taille === 'Grande') modTaille = -1;
-    else if (cleaned.taille === 'Très Grande') modTaille = -2;
+  // ✨ Les Bonus Mathématiques
+  const bonusMasqueResist = Math.max(0, masque - 5);
 
-    const esquiveMasquee = getS('Mouvement') + agi + 5;
-    const esquiveDemasquee = esquiveMasquee + modTaille;
+  // ✨ LE FIX : supabaseStorage n'a pas accès à gameData via React.
+  // On va donc fouiller discrètement le "Grimoire de Poche" dans le cache local !
+  let localGameData = {};
+  try { 
+    localGameData = JSON.parse(localStorage.getItem('heritiers_grimoire_cache')) || {}; 
+  } catch(e) {}
+  
+  const feeData = localGameData.fairyData?.[cleaned.typeFee];
+  const tailleFeerique = feeData?.taille || feeData?.taille_categorie || 'Moyenne';
+  
+  let modTailleFeerique = 0;
+  if (tailleFeerique === 'Petite') modTailleFeerique = 1;
+  else if (tailleFeerique === 'Grande') modTailleFeerique = -1;
+  else if (tailleFeerique === 'Très Grande') modTailleFeerique = -2;
 
+  const esquiveMasquee = getS('Mouvement') + agi + 5;
+  const esquiveDemasquee = esquiveMasquee + modTailleFeerique;
+  
     const combatStats = {
       esquive_masquee: esquiveMasquee,
       esquive_demasquee: esquiveDemasquee,

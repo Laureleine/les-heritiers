@@ -78,13 +78,18 @@ export default function StepRecapitulatif() {
   
   const bonusMasqueResist = Math.max(0, masque - 5);
   
-  let modTaille = 0;
-  if (character.taille === 'Petite') modTaille = 1;
-  else if (character.taille === 'Grande') modTaille = -1;
-  else if (character.taille === 'Très Grande') modTaille = -2;
+    // ✨ LE FIX : L'esquive démasquée écoute la génétique de l'espèce (Encyclopédie) !
+    // (feeData est déjà fourni par le hook useCerbere, on le lit directement)
+    const tailleFeerique = feeData?.taille || feeData?.taille_categorie || 'Moyenne';
+    
+    let modTailleFeerique = 0;
+    if (tailleFeerique === 'Petite') modTailleFeerique = 1;
+    else if (tailleFeerique === 'Grande') modTailleFeerique = -1;
+    else if (tailleFeerique === 'Très Grande') modTailleFeerique = -2;
 
-  const esquiveMasquee = getS('Mouvement') + agi + 5;
-  const esquiveDemasquee = esquiveMasquee + modTaille;
+    const esquiveMasquee = getS('Mouvement') + agi + 5;
+    const esquiveDemasquee = esquiveMasquee + modTailleFeerique;
+	
   const parade = getS('Mêlée') + agi + 5;
   const resPhys = getS('Ressort') + con + 5 + bonusMasqueResist;
   const resPsych = getS('Fortitude') + esp + 5 + bonusMasqueResist;

@@ -76,14 +76,17 @@ export const exportToPDF = (character, gameData = {}) => {
   // ✨ Le Cerveau Mathématique des Statistiques
   const bonusMasqueResist = Math.max(0, masque - 5);
   
-  let modTaille = 0;
-  const tailleFiche = character.taille || feeData?.taille_categorie || 'Moyenne';
-  if (tailleFiche === 'Petite') modTaille = 1;
-  else if (tailleFiche === 'Grande') modTaille = -1;
-  else if (tailleFiche === 'Très Grande') modTaille = -2;
+  // ✨ LE FIX : Le PDF ignore le texte libre du joueur pour le calcul
+  const tailleFeerique = feeData?.taille || feeData?.taille_categorie || 'Moyenne';
+  
+  let modTailleFeerique = 0;
+  if (tailleFeerique === 'Petite') modTailleFeerique = 1;
+  else if (tailleFeerique === 'Grande') modTailleFeerique = -1;
+  else if (tailleFeerique === 'Très Grande') modTailleFeerique = -2;
 
   const esquiveMasquee = getS('Mouvement') + agi + 5;
-  const esquiveDemasquee = esquiveMasquee + modTaille;
+  const esquiveDemasquee = esquiveMasquee + modTailleFeerique;
+
   const parade = getS('Mêlée') + agi + 5;
   const resPhys = getS('Ressort') + con + 5 + bonusMasqueResist;
   const resPsych = getS('Fortitude') + esp + 5 + bonusMasqueResist;
