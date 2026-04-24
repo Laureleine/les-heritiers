@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.9.7 - "Le Libre Arbitre Social 🤝"',
+    date: '24 Avril 2026',
+    changes: [
+      '🤝 **Vie Sociale (Libre Arbitre) :** Le système ne dépense plus vos points gratuits de Contacts de manière aveugle dans l\'ordre des profils. Vous disposez désormais d\'un widget "Contacts Gratuits" pour allouer manuellement vos réductions sur les profils de votre choix !',
+      '🐛 **Vie Sociale (Hotfix) :** Résolution d\'une erreur de dépendance (`xp_total undefined`) causée par un glissement de scalpel dans le découplage du Cerveau `useVieSociale.js`. L\'ensemble des variables d\'état et du module de Fortune sont de nouveau parfaitement branchés à l\'interface.',
+      '🛡️ **Stabilité (Fortune) :** Le calcul du plancher de Fortune ignore désormais prudemment les métadonnées structurelles (`allocationsContacts`) pour éviter toute corruption lors de la recherche des objets sociaux en base.'
+    ]
+  },  {
     version: '15.9.6 - "La Mesure de la Bête 🐺"',
     date: '24 Avril 2026',
     changes: [
