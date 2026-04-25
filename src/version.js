@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.11.0 - "La Paranoïa de l\'Architecte 🕵️‍♀️"',
+    date: '25 Avril 2026',
+    changes: [
+      '🪚 **Architecture (God Component) :** Découplage définitif de `AccountSettings.js`. Le composant est désormais une interface pure, alimentée par son propre Cerveau `useAccountSettings.js`.',
+      '⚡ **Performances Absolues :** Immunisation du Cerveau des paramètres contre le piège de la référence d\'objet vide (`{}`). L\'interface ne provoque plus de re-calculs superflus à chaque tic d\'horloge.',
+      '🔔 **Corbeau Messager :** Refonte et isolation du module de préférences de notifications. La rustine temporelle a été éradiquée au profit de notre composant immersif standardisé.',
+      '🛡️ **Stabilité (UX) :** Les Modales de confirmation brutes (`window.confirm`) du navigateur ont été éradiquées de l\'application au profit de nos parchemins immersifs.'
+    ]
+  },  {
     version: '15.10.0 - "L\'Exorcisme du Routeur 🗺️"',
     date: '25 Avril 2026',
     changes: [
