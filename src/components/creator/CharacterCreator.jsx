@@ -1,7 +1,9 @@
 // src/components/creator/CharacterCreator.jsx
 import React, { useState, useMemo, useCallback, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useCharacter } from '../../context/CharacterContext';
+import { Printer } from 'lucide-react';
+import { exportToPDF } from '../../utils/pdfGenerator';
+import { useCharacter } from '../../context/CharacterContext'; 
 import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { STEP_CONFIG } from '../../data/DictionnaireJeu';
@@ -112,14 +114,32 @@ export default function CharacterCreator({ session, userProfile }) {
     <div className="max-w-4xl mx-auto pb-8">
       {/* HEADER CRÉATEUR */}
       <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        
+        {/* BOUTON GAUCHE : Retour */}
         <button onClick={handleBackToArchives} className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm shadow-sm">
           <List size={16} /> <span className="hidden sm:inline">Retour aux Archives</span>
         </button>
-        {!isReadOnly && (
-          <button onClick={handleSave} className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
-            <Save size={18} /> <span className="hidden sm:inline">Sauvegarder</span>
+
+        {/* GROUPE DROITE : Actions globales */}
+        <div className="flex items-center gap-3 ml-auto">
+            
+          {/* ✨ NOUVEAU BOUTON : IMPRIMER (Mauve) */}
+          <button 
+            onClick={() => exportToPDF(character, gameData)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm font-bold shadow-sm border border-purple-500" 
+            title="Générer le parchemin PDF"
+          >
+            <Printer size={18} />
+            <span className="hidden sm:inline">Imprimer</span>
           </button>
-        )}
+
+          {/* BOUTON SAUVEGARDER */}
+          {!isReadOnly && (
+            <button onClick={handleSave} className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
+              <Save size={18} /> <span className="hidden sm:inline">Sauvegarder</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* LA BARRE DE PROGRESSION MAGIQUE */}
@@ -166,6 +186,7 @@ export default function CharacterCreator({ session, userProfile }) {
             </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4 bg-stone-950 px-2 py-1.5 rounded-md border border-stone-700 shadow-inner">
+
             <button onClick={() => setShowJournalAme(true)} className="flex items-center gap-1.5 px-3 py-1 bg-stone-800 hover:bg-amber-900/40 text-amber-500 rounded transition-colors text-xs font-bold border border-amber-900/50 shadow-sm" title="Consulter le Journal des Flux de l'Âme">
               <BookOpen size={14} /> <span className="hidden sm:inline">Registre</span>
             </button>

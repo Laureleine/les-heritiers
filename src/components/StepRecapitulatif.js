@@ -1,19 +1,22 @@
 // src/components/StepRecapitulatif.js
 import React from 'react';
-import { BookOpen, Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert, MessageCircle, Crown, Info, X } from 'lucide-react';
+import { Printer, BookOpen, Camera, Clock, Plus, Copy, User, Star, Award, Sparkles, Shield, Zap, CheckCircle, Briefcase, Lock, Unlock, ShieldAlert, MessageCircle, Crown, Info, X } from 'lucide-react';
 import { CARAC_LIST, accorderTexte } from '../data/DictionnaireJeu';
 import ConfirmModal from './ConfirmModal';
 import { useCerbere } from '../hooks/useCerbere';
+import { exportToPDF } from '../utils/pdfGenerator';
 
 export default function StepRecapitulatif() {
-  // ✨ LA MAGIE : On branche le cerveau !
-  const {
-    character, feeData, isScelle, getCarac, uniqueFutiles,
-    showConfirmSeal, setShowConfirmSeal,
-    snapshots, loadingSnapshots,
-    showPhotoModal, setShowPhotoModal, photoTitle, setPhotoTitle,
-    handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal
-  } = useCerbere();
+
+    // ✨ LA MAGIE : On branche le cerveau !
+    const {
+        character, feeData, isScelle, getCarac, uniqueFutiles,
+        showConfirmSeal, setShowConfirmSeal,
+        snapshots, loadingSnapshots,
+        showPhotoModal, setShowPhotoModal, photoTitle, setPhotoTitle,
+        handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal,
+        gameData // ✨ ET RÉCUPÈRE-LE ICI !
+    } = useCerbere();
 
   // ✨ Récupération universelle de TOUTES les spécialités du personnage !
   const allSpecialties = [];
@@ -403,6 +406,26 @@ export default function StepRecapitulatif() {
             )}
           </div>
         </div>
+
+		{/* ============================================================== */}
+		{/* ✨ L'IMPRIMERIE (GÉNÉRATION PDF À LA VOLÉE) ✨                 */}
+		{/* ============================================================== */}
+		<div className="lg:col-span-2 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-stone-200 mb-2 flex flex-col md:flex-row items-center justify-between gap-6">
+			<div>
+				<h3 className="text-xl font-serif font-bold text-stone-800 flex items-center gap-2 mb-2">
+					<Printer className="text-stone-600" /> Imprimer le Registre
+				</h3>
+				<p className="text-sm text-stone-600 leading-relaxed">
+					Vous pouvez générer un parchemin numérique (PDF) à tout moment pour admirer votre Héritier sous son format papier, et ce, même s'il n'est pas encore définitivement scellé.
+				</p>
+			</div>
+			<button
+				onClick={() => exportToPDF(character, gameData)}
+				className="shrink-0 px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold rounded-xl border border-stone-300 shadow-sm flex items-center gap-2 transition-all active:scale-95"
+			>
+				<Printer size={18} /> Générer le PDF
+			</button>
+		</div>
         
         {/* ============================================================== */}
         {/* ✨ LA PORTE DE L'EXPÉRIENCE (LE SCEAU ET LE CERBÈRE) ✨        */}

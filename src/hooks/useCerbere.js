@@ -238,11 +238,12 @@ export function useCerbere() {
   };
 
   // On retourne uniquement ce dont l'UI a besoin
-  return {
-    character, feeData, isScelle, getCarac, uniqueFutiles,
-    showConfirmSeal, setShowConfirmSeal,
-    snapshots, loadingSnapshots,
-    showPhotoModal, setShowPhotoModal, photoTitle, setPhotoTitle,
-    handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal
-  };
+    return {
+        character, feeData, isScelle, getCarac, uniqueFutiles,
+        showConfirmSeal, setShowConfirmSeal,
+        snapshots, loadingSnapshots,
+        showPhotoModal, setShowPhotoModal, photoTitle, setPhotoTitle,
+        handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal,
+        gameData // ✨ AJOUTE SIMPLEMENT CE MOT ICI !
+    };
 }
