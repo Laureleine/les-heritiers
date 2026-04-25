@@ -1,300 +1,23 @@
 // src/App.js
-import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
-import { useCharacter } from './context/CharacterContext';
-import { supabase } from './config/supabase';
-import { loadCoreGameData, loadHeavyLoreData } from './utils/supabaseGameData';
-import { saveCharacterToSupabase, toggleCharacterVisibility } from './utils/supabaseStorage';
-import { useAutoUpdate } from './hooks/useAutoUpdate';
-import { showInAppNotification } from './utils/SystemeServices';
-import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-import * as LucideIcons from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, X, Sparkles } from 'lucide-react';
+import { useAppInit } from './hooks/useAppInit';
+import AppRouter from './AppRouter';
 
-// --- IMPORTS STATIQUES (Essentiels au démarrage) ---
 import Auth from './components/Auth';
-import CharacterList from './components/CharacterList';
+import BackgroundDecor from './components/BackgroundDecor';
 import Telegraphe from './components/Telegraphe';
 import DiceRoller from './components/DiceRoller';
-import PixieAssistant from './components/PixieAssistant';
-import BackgroundDecor from './components/BackgroundDecor';
 import WidgetAnomalie from './components/forge/WidgetAnomalie';
-import JournalAmeModal from './components/JournalAmeModal'; // ✨ L'INCISION : La Modale du Puits des Âmes
-
-import { exportToPDF } from './utils/pdfGenerator';
-import { STEP_CONFIG } from './data/DictionnaireJeu';
+import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
-import { Sparkles, List, FileText, Globe, Save, ArrowLeft, ArrowRight, BookOpen, X, Lock } from 'lucide-react';
 
-// ✨ FIX : LE CODE SPLITTING (Lazy Loading)
-// Ces composants lourds ne seront téléchargés par le navigateur QUE lorsque le joueur cliquera dessus !
-const Encyclopedia = lazy(() => import('./components/Encyclopedia'));
-const ValidationsPendantes = lazy(() => import('./components/ValidationsPendantes'));
-const AccountSettings = lazy(() => import('./components/AccountSettings'));
-const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
-const CerclesDashboard = lazy(() => import('./components/CerclesDashboard'));
-const MesPropositions = lazy(() => import('./components/MesPropositions'));
-const RegistrePage = lazy(() => import('./components/forge/RegistrePage'));
-
-// --- IMPORTS DES ÉTAPES ---
-const Step1 = lazy(() => import('./components/Step1'));
-// ✨ FIX : Finies les promesses imbriquées complexes, on appelle les composants isolés !
-const StepCapacites = lazy(() => import('./components/StepCapacites'));
-const StepPouvoirs = lazy(() => import('./components/StepPouvoirs'));
-const StepAtouts = lazy(() => import('./components/StepAtouts'));
-const StepCaracteristiques = lazy(() => import('./components/StepCaracteristiques'));
-const StepProfils = lazy(() => import('./components/StepProfils'));
-const StepCompetencesLibres = lazy(() => import('./components/competencesLibres/StepCompetencesLibres'));
-const StepCompetencesFutiles = lazy(() => import('./components/StepCompetencesFutiles'));
-const StepVieSociale = lazy(() => import('./components/vieSociale/StepVieSociale'));
-const StepPersonnalisation = lazy(() => import('./components/StepPersonnalisation'));
-const StepRecapitulatif = lazy(() => import('./components/StepRecapitulatif'));
-
-function App() {
-  // --- 1. ÉTATS GLOBAUX DU NUAGE (CONTEXT API) ---
-  const { character, dispatchCharacter, gameData, setGameData, isReadOnly, setIsReadOnly, initialCharacterState } = useCharacter();
-
-  // --- 2. ÉTATS DE L'APPLICATION ---
-  const [session, setSession] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
-  const [globalLoading, setGlobalLoading] = useState(true);
-  const [loadingStep, setLoadingStep] = useState('Démarrage...');
-  const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+export default function App() {
+  const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate } = useAppInit();
   const [showVersionModal, setShowVersionModal] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
-  
-  // ✨ LA NOUVELLE MÉMOIRE POUR LE REGISTRE
-  const [showJournalAme, setShowJournalAme] = useState(false);
+  const navigate = useNavigate();
 
-  const [initTrigger, setInitTrigger] = useState(0);
-  const sessionRef = useRef(null);
-  const isInitializingRef = useRef(false);
-
-  const refreshUserProfile = async () => {
-    if (!session?.user?.id) return;
-    const { data: profile } = await supabase
-      .from('profiles').select('*')
-      .eq('id', session.user.id).single();
-    if (profile) setUserProfile({ ...session.user, profile });
-  };
-
-  // --- SYSTÈME DE MISE À JOUR AUTOMATIQUE ---
-  const { updateAvailable, applyUpdate } = useAutoUpdate(60000);
-
-  useEffect(() => {
-    if (updateAvailable) {
-      console.log("Nouvelle version détectée ! Déclenchement de la purge...");
-      applyUpdate();
-    }
-  }, [updateAvailable, applyUpdate]);
-
-  useEffect(() => {
-    sessionRef.current = session;
-  }, [session]);
-
-  useEffect(() => {
-    if (isInitialized || isInitializingRef.current) return;
-    let mounted = true;
-    isInitializingRef.current = true; 
-
-    const safetyTimer = setTimeout(() => {
-      if (mounted) {
-        setGlobalLoading(false);
-        isInitializingRef.current = false;
-      }
-    }, 30000);
-
-    const initializeApp = async () => {
-      try {
-        setLoadingStep("Vérification connexion...");
-        const { data: { session: activeSession } } = await supabase.auth.getSession();
-        
-        if (!activeSession) {
-          if (mounted) setGlobalLoading(false);
-          isInitializingRef.current = false;
-          return;
-        }
-
-        setLoadingStep("Allumage du Noyau...");
-        const coreData = await loadCoreGameData();
-
-        if (mounted) {
-          setGameData(coreData);
-          setSession(activeSession);
-          
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', activeSession.user.id)
-            .single();
-            
-          if (profileData) {
-            setUserProfile({ ...activeSession.user, profile: profileData });
-          }
-          
-          setIsInitialized(true);
-          setGlobalLoading(false);
-        }
-
-        loadHeavyLoreData(coreData).then(heavyData => {
-          // ✨ LE FIX : On retire le "&& mounted" qui assassinait la promesse !
-          // App.js ne se démonte jamais, il est donc 100% sûr de mettre à jour l'état du jeu ici,
-          // même si le useEffect d'origine a été nettoyé entre-temps.
-          if (heavyData) {
-            setGameData(heavyData);
-            console.log("✨ Moteur d'Érudition connecté : Lore injecté !");
-          }
-        });
-		
-        isInitializingRef.current = false;
-      } catch (error) {
-        console.error("❌ Init failed:", error);
-        if (mounted) {
-          setGlobalLoading(false);
-          setIsInitialized(false);
-        }
-        isInitializingRef.current = false;
-      }
-    };
-
-    initializeApp();
-
-    return () => {
-      mounted = false;
-      clearTimeout(safetyTimer);
-      // ✨ LE VACCIN ANTI-DEADLOCK : On rend les clés de la porte !
-      // Si React coupe ce useEffect en plein vol (à cause d'un SIGNED_IN intempestif),
-      // le prochain useEffect aura l'autorisation de s'exécuter.
-      isInitializingRef.current = false;
-    };
-  }, [isInitialized, setGameData, initTrigger]);
-
-  // --- ÉCOUTEUR D'AUTHENTIFICATION ---
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      
-      if (event === 'SIGNED_IN') {
-        console.log("✨ Nouvel Héritier connecté ! Redémarrage du Noyau...");
-        // ✨ LE VACCIN : On désinitialise l'app et on incrémente le trigger.
-        // Cela va forcer le grand useEffect 'initializeApp' situé plus haut à se relancer
-        // pour télécharger le lourd Lore de l'Encyclopédie !
-        setIsInitialized(false);
-        setInitTrigger(prev => prev + 1);
-      } 
-      
-      else if (event === 'SIGNED_OUT') {
-        setSession(null);
-        setUserProfile(null);
-        setIsInitialized(false);
-      }
-      
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-  
-  // --- TRAQUEUR D'ACTIVITÉ ---
-  useEffect(() => {
-    if (!session?.user?.id) return;
-    let lastActivity = Date.now();
-    let isThrottled = false;
-
-    const handleActivity = () => {
-      if (!isThrottled) {
-        lastActivity = Date.now();
-        isThrottled = true;
-        setTimeout(() => { isThrottled = false; }, 2000);
-      }
-    };
-
-    window.addEventListener('mousemove', handleActivity);
-
-    const interval = setInterval(() => {
-      if (Date.now() - lastActivity < 300000) {
-        supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', session.user.id).then();
-      }
-    }, 300000);
-
-    return () => {
-      window.removeEventListener('mousemove', handleActivity);
-      clearInterval(interval);
-    };
-  }, [session]);
-
-  // --- SAUVEGARDE GLOBALE ---
-  const handleSave = async () => {
-    if (isReadOnly) return;
-    if (!character.nom.trim() || !character.sexe || !character.typeFee) {
-      showInAppNotification("Impossible de sauvegarder : votre Héritier a besoin d'un Nom, d'un Sexe et d'un Héritage (Étape 1) !", "warning");
-      return;
-    }
-    try {
-      const saved = await saveCharacterToSupabase(character);
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'id', value: saved.id, gameData });
-      showInAppNotification("✓ L'Héritier a été sauvegardé avec succès !", "success");
-    } catch (e) {
-      showInAppNotification("Les fluides éthérés refusent l'enregistrement : " + e.message, "error");
-    }
-  };
-
-  // --- VALIDATIONS DE NAVIGATION ---
-  const canProceedStep1 = character.nom && character.sexe && character.typeFee;
-  const totalSteps = STEP_CONFIG.length;
-
-  const nextStep = () => {
-    if (step === 1 && !canProceedStep1) {
-      showInAppNotification("Les pages suivantes sont scellées. Renseignez d'abord votre Nom, Sexe et Héritage féérique !", "warning");
-      return;
-    }
-    setStep(s => Math.min(totalSteps, s + 1));
-    window.scrollTo(0, 0);
-  };
-
-  const prevStep = () => {
-    setStep(s => Math.max(1, s - 1));
-    window.scrollTo(0, 0);
-  };
-
-  // 🌟 LE DICTIONNAIRE DES ÉTAPES (Protégé par useMemo)
-  const stepComponents = useMemo(() => ({
-    1: <Step1 />, 2: <StepCapacites />, 3: <StepPouvoirs />, 4: <StepAtouts />,
-    5: <StepCaracteristiques />, 6: <StepProfils />, 7: <StepCompetencesLibres />,
-    8: <StepCompetencesFutiles />, 9: <StepVieSociale />, 10: <StepPersonnalisation />,
-    11: <StepRecapitulatif />
-  }), []); // ✨ FIX : On vide le tableau ! Les composants Lazy globaux ne mutent jamais.
-
-  // ========================================================================
-  // ✨ GESTION MANUELLE DE L'EXPÉRIENCE (LE PUITS DES ÂMES)
-  // ========================================================================
-  const handleAdjustXP = useCallback((amount) => {
-    const currentTotal = character.xp_total || 0;
-    const depense = character.xp_depense || 0;
-    const newTotal = Math.max(depense, currentTotal + amount);
-    
-    if (newTotal === currentTotal) {
-      if (amount < 0) showInAppNotification("Vous ne pouvez pas réduire votre Expérience en dessous des points déjà dépensés !", "warning");
-      return;
-    }
-
-    // ✨ L'INCISION DU CERVEAU : On passe par le Journal !
-    const typeMouvement = amount > 0 ? 'GAIN' : 'REMBOURSEMENT';
-    const labelMouvement = amount > 0 ? 'Ajustement Manuel (Puits des Âmes)' : 'Correction Manuelle (Puits des Âmes)';
-
-    dispatchCharacter({
-      type: 'LOG_XP_TRANSACTION',
-      transaction: {
-        type: typeMouvement,
-        label: labelMouvement,
-        valeur: Math.abs(amount)
-      },
-      gameData
-    });
-
-    if (amount > 0) showInAppNotification(`Gling ! +${amount} XP ajoutés au Journal.`, "success");
-    else showInAppNotification(`Ajustement : ${Math.abs(amount)} XP retirés du Journal.`, "info");
-  }, [character.xp_total, character.xp_depense, dispatchCharacter, gameData]);
-
-  // --- RENDU ÉCRAN DE CHARGEMENT ---
   if (globalLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
@@ -306,7 +29,6 @@ function App() {
     );
   }
 
-  // --- RENDU AUTHENTIFICATION ---
   if (!session || !userProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
@@ -315,15 +37,25 @@ function App() {
     );
   }
 
-  // --- RENDU DE L'APPLICATION ---
   return (
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
+      
+      {updateAvailable && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in-down w-11/12 max-w-md">
+          <button
+            onClick={applyUpdate}
+            className="w-full bg-amber-600 text-white px-4 py-3 rounded-xl shadow-2xl font-serif font-bold flex items-center justify-center gap-3 hover:bg-amber-700 transition-all border-2 border-amber-300"
+          >
+            <Sparkles size={20} /> Savoir mis à jour ! Cliquez ici pour recharger le Grimoire.
+          </button>
+        </div>
+      )}
+
       <AlertSystem userProfile={userProfile} />
       <PWAPrompt />
       <DisclaimerModal />
       <BackgroundDecor />
 
-      {/* 1. L'EN-TÊTE GLOBAL FIXE */}
       <div className="pt-6 pb-4 text-center animate-fade-in relative z-10">
         <div className="flex flex-wrap justify-center items-baseline gap-4">
           <h1
@@ -340,370 +72,62 @@ function App() {
             Version {APP_VERSION} • {BUILD_DATE} <BookOpen size={12} />
           </button>
         </div>
-
-        {/* ZONE DES RÔLES ET BADGES */}
         <div className="flex flex-wrap justify-center items-center gap-2 mt-3 max-w-2xl mx-auto">
           {userProfile?.profile?.role === 'super_admin' && (
             <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 shadow-sm">Super Admin</span>
           )}
-          {userProfile?.profile?.role === 'gardien' && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full border border-blue-200 shadow-sm">Gardien du Savoir</span>
-          )}
-          
-          {(() => {
-            const userBadges = userProfile?.profile?.badges || [];
-            const activeBadgeId = userProfile?.profile?.active_badge;
-            const sortedBadges = [...userBadges].sort((a, b) => {
-              if (a === activeBadgeId) return -1;
-              if (b === activeBadgeId) return 1;
-              return 0;
-            });
-
-            return sortedBadges.map((badgeId) => {
-              const badgeDef = gameData?.badges?.find(b => b.id === badgeId);
-              if (!badgeDef) return null;
-              const isActive = badgeId === activeBadgeId;
-              const isLegacy = !badgeDef.icon_name; 
-              const DynamicIcon = !isLegacy && badgeDef.icon_name && LucideIcons[badgeDef.icon_name] ? LucideIcons[badgeDef.icon_name] : null;
-              const colorClass = isLegacy ? badgeDef.color : badgeDef.color_classes;
-
-              return (
-                <span
-                  key={badgeId}
-                  className={`inline-flex items-center gap-1 border font-bold transition-all cursor-help ${colorClass} ${isActive ? 'px-3 py-1 text-xs rounded-full shadow-sm ring-2 ring-offset-1 ring-amber-400 scale-105' : 'px-2 py-0.5 text-[10px] rounded-full opacity-60 hover:opacity-100'}`}
-                  title={isActive ? "Titre Actif" : "Titre Possédé"}
-                >
-                  {!isLegacy && DynamicIcon && <DynamicIcon size={12} />}
-                  {isLegacy ? badgeDef.label : badgeDef.label}
-                </span>
-              );
-            });
-          })()}
         </div>
       </div>
 
-      {/* 2. LE CONTENEUR CENTRAL */}
       <div className="max-w-5xl mx-auto px-4 w-full animate-fade-in relative z-10">
-        <Suspense fallback={
-          <div className="flex flex-col items-center justify-center py-32 animate-pulse">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-600 mb-4"></div>
-            <p className="text-amber-900 font-serif font-bold text-lg">Dépliage des parchemins...</p>
-          </div>
-        }>
-
-          {/* ✨ LE NOUVEAU MOTEUR DE ROUTAGE ✨ */}
-          <Routes>
-            {/* ROUTE 1 : ACCUEIL (LISTE) */}
-            <Route path="/" element={
-              <CharacterList
-                session={session}
-                userProfile={userProfile}
-                profils={gameData.profils}
-                gameData={gameData}
-                onSelectCharacter={(c, readOnly = false) => {
-                  dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c, gameData });
-                  setIsReadOnly(readOnly);
-                  setStep(1);
-                  navigate('/creator');
-                  window.scrollTo(0, 0);
-                }}
-                onNewCharacter={() => {
-                  dispatchCharacter({ type: 'RESET_CHARACTER', payload: initialCharacterState });
-                  setIsReadOnly(false);
-                  setStep(1);
-                  navigate('/creator');
-                }}
-                onSignOut={() => supabase.auth.signOut()}
-                onOpenAccount={() => navigate('/account')}
-                onOpenEncyclopedia={() => navigate('/encyclopedia')}
-                onOpenAdmin={() => navigate('/admin_dashboard')}
-                onOpenCercles={() => navigate('/cercles')}
-                onOpenBureau={() => navigate('/bureau_anomalies')}
-              />
-            } />
-
-            {/* ROUTE 2 : ENCYCLOPÉDIE (Avec protection Docte) */}
-            <Route path="/encyclopedia" element={
-              userProfile?.profile?.is_docte ? (
-                <Encyclopedia
-                  userProfile={userProfile}
-                  onBack={() => navigate('/')}
-                  onOpenValidations={() => navigate('/validations')}
-                  onOpenMesPropositions={() => navigate('/mes_propositions')}
-                />
-              ) : (
-                <div className="max-w-2xl mx-auto p-8 mt-12 bg-[#2a1313] rounded-2xl border-2 border-red-900/50 shadow-2xl text-center animate-fade-in-up relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
-                  <div className="relative z-10 flex flex-col items-center">
-                    <Lock size={64} className="text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
-                    <h2 className="text-3xl font-serif text-red-100 mb-4">Savoir sous le Sceau du Silence</h2>
-                    <p className="text-red-200/80 mb-8 italic font-serif leading-relaxed">
-                      Ce pan de la Féérie échappe à votre compréhension et l'accès à ces archives vous est interdit.<br/>
-                      Seul un Docte peut vous y initier en vous invitant dans son Cercle.
-                    </p>
-                    <div className="bg-red-950/50 p-6 rounded-xl border border-red-900/50 w-full">
-                      <p className="text-sm text-red-300 mb-4 font-bold uppercase tracking-wider">Êtes-vous vous-même un Docte ?</p>
-                      <button onClick={() => navigate('/account')} className="bg-red-900 hover:bg-red-800 text-red-100 px-6 py-3 rounded-lg font-serif font-bold transition-colors shadow-md">
-                        Révélez votre Voie dans Mon Grimoire
-                      </button>
-                    </div>
-                    <button onClick={() => navigate('/')} className="mt-8 text-gray-400 hover:text-white transition-colors text-sm">
-                      ← Retourner à l'accueil
-                    </button>
-                  </div>
-                </div>
-              )
-            } />
-
-            {/* ROUTE 3 : AUTRES PAGES */}
-            <Route path="/validations" element={<ValidationsPendantes session={session} onBack={() => navigate('/encyclopedia')} />} />
-            <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={refreshUserProfile} onBack={() => navigate('/')} />} />
-            <Route path="/admin_dashboard" element={<AdminDashboard session={session} onBack={() => navigate('/')} />} />
-            <Route path="/cercles" element={
-              <CerclesDashboard
-                session={session}
-                onBack={() => navigate('/')}
-                onViewCharacter={(c) => {
-                  dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c, gameData });
-                  setIsReadOnly(true);
-                  setStep(1);
-                  navigate('/creator');
-                  window.scrollTo(0, 0);
-                }}
-              />
-            } />
-            <Route path="/mes_propositions" element={<MesPropositions session={session} onBack={() => navigate('/encyclopedia')} />} />
-
-            {/* ROUTE 4 : CRÉATEUR DE PERSONNAGE */}
-            <Route path="/creator" element={
-              <div className="max-w-4xl mx-auto pb-8">
-                <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-                  <button onClick={() => navigate('/')} className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm shadow-sm">
-                    <List size={16} /> <span className="hidden sm:inline">Retour aux Archives</span>
-                  </button>
-
-                  <div className="flex flex-wrap gap-2">
-                    <button onClick={() => exportToPDF(character, gameData)} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-serif font-bold text-sm shadow-sm" title="Exporter en PDF">
-                      <FileText size={16} /> <span className="hidden sm:inline">Exporter PDF</span>
-                    </button>
-
-                    <button
-                      onClick={async () => {
-                        const wasPublic = character.isPublic;
-                        const newPublic = !wasPublic;
-                        dispatchCharacter({ type: 'UPDATE_FIELD', field: 'isPublic', value: newPublic, gameData });
-                        if (character.id && !character.id.toString().startsWith('temp_')) {
-                          await toggleCharacterVisibility(character.id, newPublic);
-                        }
-                      }}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all font-serif font-bold text-sm shadow-sm border ${character.isPublic ? 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}`}
-                      title={character.isPublic ? "Rendre Privé" : "Rendre Public"}
-                    >
-                      <Globe size={16} /> <span className="hidden sm:inline">{character.isPublic ? 'Public' : 'Privé'}</span>
-                    </button>
-
-                    {!isReadOnly && (
-                      <button onClick={handleSave} className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
-                        <Save size={18} /> <span className="hidden sm:inline">Sauvegarder</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* BARRE DE PROGRESSION MAGIQUE ET CONNECTÉE */}
-                <div className="relative flex justify-between items-center w-full max-w-4xl mx-auto py-4 px-2 mb-10 mt-4">
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-stone-200 z-0 rounded-full"></div>
-                  <div
-                    className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-500 z-0 transition-all duration-700 ease-in-out rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]"
-                    style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
-                  ></div>
-
-                  {STEP_CONFIG.map((s) => {
-                    const isActive = step === s.id;
-                    const isPast = step > s.id;
-                    return (
-                      <div key={s.id} className="relative z-10 flex flex-col items-center group">
-                        <button
-                          onClick={() => {
-                            if (s.id > 1 && !canProceedStep1) {
-                              showInAppNotification("La magie bloque le passage. Terminez l'Étape 1 (Nom, Sexe, Fée) avant de sauter les pages.", "warning");
-                              return;
-                            }
-                            setStep(s.id);
-                            window.scrollTo(0, 0);
-                          }}
-                          className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${isActive ? 'bg-amber-500 text-white scale-125 ring-4 ring-amber-200' : isPast ? 'bg-amber-100 text-amber-700 border-2 border-amber-300 hover:bg-amber-200' : 'bg-white border-stone-300 text-stone-400 hover:border-amber-300 hover:text-amber-500'}`}
-                          title={s.label}
-                        >
-                          {s.icon}
-                        </button>
-                        {isActive && (
-                          <span className="absolute top-12 font-serif font-bold text-amber-900 text-xs uppercase tracking-widest whitespace-nowrap animate-fade-in-up">
-                            {s.label}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* ✨ LA JAUGE D'XP GLOBALE INTERACTIVE (RUBAN COMPACT) ✨ */}
-                {(character.statut === 'scelle' || character.statut === 'scellé') && (
-                  <div className="mb-4 bg-gradient-to-r from-stone-900 to-stone-800 rounded-lg px-3 py-2 shadow-md border border-amber-700 flex flex-col md:flex-row justify-between items-center gap-3 text-amber-50 animate-fade-in">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="text-amber-400 animate-pulse" size={18} />
-                      <span className="font-serif font-bold text-amber-500">
-                        Le Puits des Âmes
-                        <span className="hidden sm:inline text-stone-400 font-sans font-normal text-sm ml-2">
-                          — Mode Évolution
-                        </span>
-                      </span>
-                    </div>
-
-                    {/* ✨ NOUVEAU : LES CONTRÔLES INTÉGRÉS AU RUBAN ! */}
-                    <div className="flex items-center gap-2 sm:gap-4 bg-stone-950 px-2 py-1.5 rounded-md border border-stone-700 shadow-inner">
-                      
-                      {/* ✨ L'INCISION DU LIVRE DE COMPTES : Le Bouton d'accès au Registre */}
-                      <button 
-                        onClick={() => setShowJournalAme(true)} 
-                        className="flex items-center gap-1.5 px-3 py-1 bg-stone-800 hover:bg-amber-900/40 text-amber-500 rounded transition-colors text-xs font-bold border border-amber-900/50 shadow-sm"
-                        title="Consulter le Journal des Flux de l'Âme"
-                      >
-                        <BookOpen size={14} />
-                        <span className="hidden sm:inline">Registre</span>
-                      </button>
-
-                      <div className="w-px h-6 bg-stone-700 mx-1"></div>
-
-                      <button onClick={() => handleAdjustXP(-1)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-stone-400 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm" title="Retirer 1 XP">-1</button>
-
-                      <div className="flex items-baseline gap-2 px-2">
-                        <span className="hidden sm:inline text-xs uppercase tracking-widest font-bold text-stone-400">Disponible :</span>
-                        <span className="text-2xl font-black font-serif text-amber-400 leading-none mt-0.5">
-                          {(character.xp_total || 0) - (character.xp_depense || 0)}
-                        </span>
-                      </div>
-
-                      <div className="flex gap-1.5">
-                        <button onClick={() => handleAdjustXP(1)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm" title="Ajouter 1 XP">+1</button>
-                        <button onClick={() => handleAdjustXP(5)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-amber-400 rounded transition-colors text-xs font-bold border border-amber-900 shadow-sm" title="Ajouter 5 XP">+5</button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* LE CORPS DE L'ÉTAPE */}
-                <main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
-                  <Suspense fallback={
-                    <div className="flex flex-col items-center justify-center h-64 animate-pulse">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mb-4"></div>
-                      <p className="text-amber-900 font-serif text-lg font-bold">Dépliage du parchemin...</p>
-                    </div>
-                  }>
-                    {stepComponents[step]}
-                  </Suspense>
-                </main>
-
-                {/* BOUTONS PRÉCÉDENT / SUIVANT */}
-                <div className="flex justify-between mt-8">
-                  <button
-                    onClick={prevStep}
-                    disabled={step === 1}
-                    className="flex items-center space-x-2 px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-serif font-bold shadow-sm"
-                  >
-                    <ArrowLeft size={18} /> <span>Précédent</span>
-                  </button>
-                  <button
-                    onClick={nextStep}
-                    disabled={step === totalSteps}
-                    className="flex items-center space-x-2 px-6 py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-serif font-bold shadow-sm"
-                  >
-                    <span>Suivant</span> <ArrowRight size={18} />
-                  </button>
-                </div>
-              </div>
-            } />
-
-            {/* ROUTE DE SÉCURITÉ */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-
-            {/* ✨ LA NOUVELLE FORGE UNIFIÉE (Remplace l'ancien Bureau) */}
-            <Route path="/bureau_anomalies" element={
-              <RegistrePage
-                onBack={() => navigate('/')}
-                userProfile={userProfile}
-              />
-            } />
-          </Routes>
-        </Suspense>
+        <AppRouter session={session} userProfile={userProfile} refreshUserProfile={refreshUserProfile} />
       </div>
 
-      {/* 3. TÉLÉGRAPHE PNEUMATIQUE */}
       {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
-
-      {/* ✨ 3.bis. L'ESPION DE LA FORGE */}
-      {session && <WidgetAnomalie userProfile={userProfile} />} 
-
-      {/* 🎲 PISTE DE DÉ FLOTTANTE */}
+      {session && <WidgetAnomalie userProfile={userProfile} />}
       <DiceRoller use3DDice={userProfile?.profile?.use_3d_dice} diceTheme={userProfile?.profile?.dice_theme} />
 
-      {/* ✨ 4. NOTRE PIXIE QUI VOLE PARTOUT */}
-      {userProfile?.profile?.show_pixie !== false && (
-        <PixieAssistant
-          character={character}
-          step={step}
-          session={session}
-          onSleep={() => setUserProfile({ ...userProfile, profile: { ...userProfile.profile, show_pixie: false } })}
-          fairyData={gameData?.fairyData}
-        />
-      )}
-
-      {/* ✨ LA MODALE DU JOURNAL DES FLUX DE L'ÂME */}
-      <JournalAmeModal
-        isOpen={showJournalAme}
-        onClose={() => setShowJournalAme(false)}
-        historiqueXp={character?.data?.historique_xp || []}
-      />
-
-      {/* ✨ 5. MODALE DU JOURNAL DES VERSIONS ✨ */}
+      {/* 4. MODALE DU JOURNAL DES VERSIONS */}
       {showVersionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-[#fdfbf7] max-w-2xl w-full max-h-[80vh] rounded-xl shadow-2xl border-2 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up">
-            <div className="bg-amber-900 text-amber-50 p-4 flex justify-between items-center shadow-md z-10">
+            <div className="bg-amber-900 text-amber-50 p-4 flex justify-between items-center shadow-md z-10 shrink-0">
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">
                 <BookOpen size={18} className="text-amber-300" /> Registre des Mises à jour
               </h3>
               <button onClick={() => setShowVersionModal(false)} className="hover:text-red-400 bg-amber-800/50 p-1.5 rounded-lg transition-colors">
-                <X size={20}/>
+                <X size={18} />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto custom-scrollbar space-y-6 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
-              {VERSION_HISTORY.map((v, idx) => (
-                <div key={idx} className="mb-6 border-b border-stone-200 pb-6 last:border-0 last:pb-0">
-                  <h4 className="text-lg font-serif font-bold text-amber-900 mb-1">{v.version}</h4>
-                  <p className="text-xs text-stone-500 mb-3">{v.date}</p>
-                  <ul className="space-y-2">
-                    {v.changes.map((change, cIdx) => (
-                      <li key={cIdx} className="text-sm text-stone-700 flex items-start gap-2 leading-relaxed">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0 shadow-sm" />
-                        <span dangerouslySetInnerHTML={{
-                          __html: change
-                            .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                            .replace(/`(.*?)`/g, '<code class="bg-amber-100 text-amber-900 px-1 rounded">$1</code>')
-                        }} />
-                      </li>
-                    ))}
+            
+            {/* ✨ LE FIX : On ouvre le parchemin et on affiche le vrai historique ! */}
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+              {VERSION_HISTORY.map((entry, index) => (
+                <div key={index} className="mb-6 last:mb-0">
+                  <h4 className="text-lg font-bold text-amber-900 font-serif border-b border-amber-200 pb-1 mb-3">
+                    {entry.version} <span className="text-sm font-normal text-amber-700 italic ml-2">({entry.date})</span>
+                  </h4>
+                  <ul className="space-y-3">
+                    {entry.changes.map((change, i) => {
+                      // Mini-parseur pour transformer nos "**" en texte gras 
+                      const parts = change.split('**');
+                      return (
+                        <li key={i} className="text-sm text-stone-700 leading-relaxed flex items-start gap-2">
+                          <span className="mt-0.5 text-amber-600 shrink-0">✦</span>
+                          <span>
+                            {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-stone-900 font-bold">{part}</strong> : part)}
+                          </span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}
             </div>
+            
           </div>
         </div>
       )}
-
     </div>
   );
 }
-
-export default App;

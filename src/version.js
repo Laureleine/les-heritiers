@@ -2,6 +2,21 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.10.0 - "L\'Exorcisme du Routeur 🗺️"',
+    date: '25 Avril 2026',
+    changes: [
+      '🪚 **Architecture Globale (God Component) :** Pulvérisation du fichier central `App.js`. L\'application est désormais gérée par un véritable Cerveau (`useAppInit.js`), un Plan de Route (`AppRouter.jsx`), et un Atelier de création indépendant. La création de personnage ne provoque plus le rechargement compulsif de toute la page à chaque clic !',
+      '🛡️ **Stabilité (Paradoxe du Videur) :** Sécurisation absolue du cycle de vie de la création de personnage via un "Laissez-passer" du routeur. En cas de rafraîchissement forcé (F5) et de perte de la mémoire RAM en pleine édition, l\'application expulse désormais en douceur le joueur vers le menu principal au lieu de crasher ou de corrompre sa sauvegarde.',
+      '🧚 **Sécurité de l\'Assistante :** Pixie ne provoquera plus le redoutable "Écran Blanc de la Mort" sur la page d\'accueil. Son esprit a été immunisé contre l\'absence de personnage actif, lui permettant de voletter librement dans les menus.',
+      '✨ **Mises à jour Immersives :** Le Grimoire ne vous forcera plus à recharger brutalement la page en pleine écriture lors du déploiement d\'un patch. Une élégante bannière vous laisse désormais le choix du moment opportun pour appliquer la mise à jour.'
+    ]
+  },  {
+    version: '15.9.9 - "Le Comptable Réveillé 🧮"',
+    date: '25 Avril 2026',
+    changes: [
+      '🤝 **Cerveau Comptable (Capitaine d\'Industrie) :** Le portefeuille de réductions (comme l\'Atout du Smog) est de nouveau pris en compte par le moteur de budget global. Le Cerveau déduit enfin correctement la réduction avant de calculer votre Reste à dépenser et d\'autoriser l\'achat, synchronisant le prix affiché avec le coût réel prélevé.'
+    ]
+  },  {
     version: '15.9.7 - "Le Libre Arbitre Social 🤝"',
     date: '24 Avril 2026',
     changes: [
