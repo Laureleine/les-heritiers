@@ -34,7 +34,7 @@ export function useVieSociale() {
     return dict;
   }, [socialItems, tousLesProfils]);
 
-  // ✨ LE FIX DU FIX : On lit les VRAIES colonnes `cout` et `cout_moderne` !
+  // ✨ FIX DU FIX : On lit les VRAIES colonnes `cout` et `cout_moderne` !
   const getItemCost = useCallback((itemId, pName) => {
     // Supporte à la fois un ID direct ou un objet entier passé par StepVieSociale
     const item = typeof itemId === 'object' ? itemId : socialItems.find(i => i.id === itemId);
@@ -78,14 +78,20 @@ export function useVieSociale() {
       depenses[p] = 0; depensesContacts[p] = 0; budgets[p] = character.computedStats?.budgetsPP?.[p] || 0;
     });
 
+    // 1. Calcul des dépenses brutes (avec vérification des réductions)
     tousLesProfils.forEach(pName => {
       const myItemsIds = achats[pName] || [];
       myItemsIds.forEach(id => {
         const item = socialItems.find(i => i.id === id);
         if (item) {
-          const cost = getItemCost(item.id, pName);
-          depenses[pName] += cost;
-          if (item.categorie === 'contact') depensesContacts[pName] += cost;
+          const baseCost = getItemCost(item.id, pName);
+          
+          // ✨ LE FIX (Smog) : L'algorithme vérifie si l'Héritier a un bon de réduction dans son portefeuille !
+          const modifiedCost = character.computedStats?.priceModifiers?.[item.nom];
+          const finalCost = modifiedCost !== undefined ? modifiedCost : baseCost;
+
+          depenses[pName] += finalCost;
+          if (item.categorie === 'contact') depensesContacts[pName] += finalCost;
         }
       });
     });
@@ -108,7 +114,7 @@ export function useVieSociale() {
     });
 
     return { depenses, budgets, restes, depensesContacts, safeAllocations, freeContactsRemaining: freeRemaining, freeContactsTotal };
-  }, [achats, socialItems, tousLesProfils, character.computedStats?.contactsGratuits, character.computedStats?.budgetsPP, character.caracteristiques?.prestance, character.caracteristiques?.entregent, getItemCost]);
+  }, [achats, socialItems, tousLesProfils, character.computedStats?.contactsGratuits, character.computedStats?.budgetsPP, character.computedStats?.priceModifiers, character.caracteristiques?.prestance, character.caracteristiques?.entregent, getItemCost]);
 
   // MOTEUR DE FORTUNE
   const getFortuneFromHeritage = useCallback(() => {
@@ -185,8 +191,14 @@ export function useVieSociale() {
     const isOwned = myProfilItems.includes(item.id);
 
     if (!isOwned) {
-      const cost = getItemCost(item.id, profil);
-      const effectiveCost = item.categorie === 'contact' ? Math.max(0, cost - budgetsInfo.freeContactsRemaining) : cost;
+      const baseCost = getItemCost(item.id, profil);
+      
+      // ✨ LE FIX (Smog) : On applique la réduction avant de vérifier si les poches sont pleines !
+      const modifiedCost = character.computedStats?.priceModifiers?.[item.nom];
+      const finalCost = modifiedCost !== undefined ? modifiedCost : baseCost;
+
+      const effectiveCost = item.categorie === 'contact' ? Math.max(0, finalCost - budgetsInfo.freeContactsRemaining) : finalCost;
+      
       if (budgetsInfo.restes[profil] < effectiveCost) {
         showInAppNotification(`Fonds insuffisants pour acquérir ceci via votre profil de ${profil} !`, "warning");
         return;
