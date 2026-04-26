@@ -1,249 +1,108 @@
 // src/hooks/useCerbere.js
-
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../config/supabase';
+import { useState, useCallback, useMemo } from 'react';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
-import { CARAC_LIST } from '../data/DictionnaireJeu';
+import { useSnapshots } from './useSnapshots';
+import { calculateFullCombatStats, calculateSkillScore } from '../utils/rulesEngine';
+import { calculateCharacterStats } from '../utils/bonusCalculator'; // ✨ Ajout
 
 export function useCerbere() {
-  const { character, gameData, dispatchCharacter } = useCharacter();
+    const { character, gameData, dispatchCharacter } = useCharacter();
+    const feeData = gameData?.fairyData?.[character.typeFee];
+    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
 
-  const [showConfirmSeal, setShowConfirmSeal] = useState(false);
-  const [snapshots, setSnapshots] = useState([]);
-  const [loadingSnapshots, setLoadingSnapshots] = useState(false);
-  const [showPhotoModal, setShowPhotoModal] = useState(false);
-  const [photoTitle, setPhotoTitle] = useState('');
+    const { snapshots, handleTakeSnapshot, handleCloneSnapshot } = useSnapshots(character.id, character.userId || character.user_id);
+    const [showConfirmSeal, setShowConfirmSeal] = useState(false);
 
-  const feeData = gameData?.fairyData ? gameData.fairyData[character.typeFee] : null;
-  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+    const handleSealClick = () => {
+        if (!character.id || character.id.toString().startsWith('temp_')) {
+            showInAppNotification("Veuillez sauvegarder avant de sceller.", "error");
+            return;
+        }
+        setShowConfirmSeal(true);
+    };
 
-  // ✨ L'Extracteur Génétique pour le Bilan
-  const getCarac = useCallback((key) => {
-    return character.caracteristiques?.[key]
-      || character.data?.stats_scellees?.caracteristiques?.[key]
-      || feeData?.caracteristiques?.[key]?.min
-      || 1;
-  }, [character, feeData]);
+    const executeSeal = async () => {
+        setShowConfirmSeal(false);
+        dispatchCharacter({ type: 'UPDATE_FIELD', field: 'statut', value: 'scelle', gameData });
+        showInAppNotification("Sceau apposé !", "success");
+    };
 
-  const uniqueFutiles = Object.keys(character.computedStats?.futilesTotal || {}).sort((a, b) => a.localeCompare(b));
+    // ✨ LE CERVEAU SÉPARÉ ABSORBE TON MOTEUR !
+    const finalStats = useMemo(() => calculateCharacterStats(character, gameData), [character, gameData]);
 
-  // ========================================================================
-  // ✨ MÉMOIRES DE L'ALBUM PHOTO (SNAPSTHOTS)
-  // ========================================================================
+    const getCarac = useCallback((key) => {
+        const base = character.caracteristiques?.[key] ||
+                     character.data?.stats_scellees?.caracteristiques?.[key] ||
+                     feeData?.caracteristiques?.[key]?.min || 1;
+        const bonus = finalStats.caracteristiques.bonus[key]?.reduce((acc, b) => acc + b.value, 0) || 0;
+        return base + bonus;
+    }, [character.caracteristiques, character.data, feeData, finalStats]);
 
-  const fetchSnapshots = useCallback(async () => {
-    if (!character.id) return;
-    setLoadingSnapshots(true);
-    try {
-      const { data, error } = await supabase
-        .from('character_snapshots')
-        .select('id, titre, created_at')
-        .eq('character_id', character.id)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      setSnapshots(data || []);
-    } catch (err) {
-      console.error("Erreur snapshots:", err);
-    } finally {
-      setLoadingSnapshots(false);
-    }
-  }, [character.id]);
+    // ✨ FIX : On envoie la bibliothèque entière (gameData) au rulesEngine !
+    const liveCombatStats = useMemo(() => calculateFullCombatStats(character, gameData), [character, gameData]);
 
-  useEffect(() => {
-    if (isScelle) fetchSnapshots();
-  }, [isScelle, fetchSnapshots]);
+    const isPredilection = useCallback((nomComp) => {
+        const inFee = feeData?.competencesPredilection?.some(p => p.nom === nomComp);
+        const inChoix = Object.values(character.competencesLibres?.choixPredilection || {}).includes(nomComp);
+        return inFee || inChoix;
+    }, [character.competencesLibres, feeData]);
 
-  const handleTakeSnapshot = async () => {
-    if (!photoTitle.trim()) {
-      showInAppNotification("Veuillez donner un titre à cette archive !", "warning");
-      return;
-    }
-    if (!character.id || character.id.toString().startsWith('temp_')) {
-      showInAppNotification("Impossible d'archiver un fantôme. Veuillez sauvegarder l'Héritier !", "error");
-      return;
-    }
+    const specialtiesByComp = useMemo(() => {
+        const map = {};
+        const addSpec = (comp, nom, label) => {
+            if (!comp || !nom) return;
+            if (!map[comp]) map[comp] = [];
+            const displayNom = label ? `${nom} (${label})` : nom;
+            if (!map[comp].includes(displayNom)) map[comp].push(displayNom);
+        };
 
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) {
-      showInAppNotification("Erreur : Utilisateur non identifié.", "error");
-      return;
-    }
+        if (character.competencesLibres?.choixSpecialiteUser) {
+            Object.entries(character.competencesLibres.choixSpecialiteUser).forEach(([comp, list]) => {
+                list.forEach(s => addSpec(comp, s, null));
+            });
+        }
 
-    try {
-      const nouveauPlancher = {
-        caracteristiques: { ...character.caracteristiques },
-        atouts: [...(character.atouts || [])],
-        competencesLibres: { ...character.competencesLibres }
-      };
+        if (character.competencesLibres?.specialiteMetier?.nom) {
+            const sm = character.competencesLibres.specialiteMetier;
+            addSpec(sm.comp, sm.nom, 'Métier');
+        }
 
-      const snapshotData = {
-        ...character,
-        stats_scellees: nouveauPlancher
-      };
+        if (feeData?.competencesPredilection) {
+            feeData.competencesPredilection.forEach((p, idx) => {
+                const nomSpec = p.specialite || character.competencesLibres?.choixSpecialite?.[idx];
+                if (nomSpec) addSpec(p.nom, nomSpec, 'Inné');
+            });
+        }
 
-      const { error: snapError } = await supabase.from('character_snapshots').insert([{
-        character_id: character.id,
-        user_id: session.user.id,
-        titre: photoTitle.trim(),
-        character_data: snapshotData
-      }]);
-      if (snapError) throw snapError;
+        (character.atouts || []).forEach(atoutId => {
+            const def = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
+            if (def?.effets_techniques) {
+                try {
+                    const tech = typeof def.effets_techniques === 'string' ? JSON.parse(def.effets_techniques) : def.effets_techniques;
+                    tech.specialites?.forEach(s => addSpec(s.competence, s.nom, 'Atout'));
+                } catch(e) {}
+            }
+        });
 
-      const newData = { ...(character.data || {}), stats_scellees: nouveauPlancher };
-      const { error: charError } = await supabase
-        .from('characters')
-        .update({ data: newData })
-        .eq('id', character.id);
-      if (charError) throw charError;
+        // ✨ AJOUT DES SPÉCIALITÉS GRATUITES DÉTECTÉES PAR LE BONUS CALCULATOR !
+        if (finalStats.specialites?.gratuites) {
+            Object.entries(finalStats.specialites.gratuites).forEach(([comp, list]) => {
+                list.forEach(s => addSpec(comp, s.specialite, s.source));
+            });
+        }
 
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'data', value: newData, gameData });
-      showInAppNotification("📸 Clic clac ! L'archive est gravée et le Plancher de Verre est mis à jour.", "success");
-      setShowPhotoModal(false);
-      setPhotoTitle('');
-      fetchSnapshots();
-    } catch (err) {
-      showInAppNotification("Erreur lors de la capture temporelle : " + err.message, "error");
-    }
-  };
+        return map;
+    }, [character, feeData, finalStats]);
 
-  const handleCloneSnapshot = async (snapshotId, snapshotTitre) => {
-    try {
-      const { data: snapData, error: snapError } = await supabase
-        .from('character_snapshots')
-        .select('character_data')
-        .eq('id', snapshotId)
-        .single();
-      if (snapError) throw snapError;
+    const uniqueFutiles = useMemo(() => {
+        if (!character.computedStats?.futilesTotal) return [];
+        return Object.keys(character.computedStats.futilesTotal).sort((a, b) => a.localeCompare(b));
+    }, [character.computedStats]);
 
-      const archiveData = snapData.character_data;
-      const clonedCharacter = {
-        ...archiveData,
-        nom: `${archiveData.nom} (Archive : ${snapshotTitre})`
-      };
-
-      delete clonedCharacter.id;
-      delete clonedCharacter.created_at;
-      delete clonedCharacter.updated_at;
-      clonedCharacter.statut = 'brouillon';
-      clonedCharacter.is_public = false;
-
-      const { error: insertError } = await supabase
-        .from('characters')
-        .insert([clonedCharacter]);
-      if (insertError) throw insertError;
-
-      showInAppNotification(`✨ L'archive temporelle "${snapshotTitre}" a été ressuscitée avec succès dans votre Grimoire !`, "success");
-    } catch (err) {
-      showInAppNotification("Erreur lors de la résurrection de l'archive : " + err.message, "error");
-    }
-  };
-
-  // ========================================================================
-  // ✨ LA DOUANE DE VÉRIFICATION AVANT SCELLAGE (LE CERBÈRE)
-  // ========================================================================
-
-  const handleSealClick = () => {
-    if (!character.id || character.id.toString().startsWith('temp_')) {
-      showInAppNotification("Votre Héritier n'existe que dans vos rêves ! Sauvegardez-le d'abord avant de pouvoir le sceller.", "error");
-      return;
-    }
-    if (isScelle) {
-      showInAppNotification("Le sceau a déjà été apposé sur cette fiche !", "warning");
-      return;
-    }
-
-    let caracsRestants = 10;
-    if (feeData && feeData.caracteristiques) {
-      CARAC_LIST.forEach(carac => {
-        const min = feeData.caracteristiques[carac.key]?.min || 1;
-        const current = character.caracteristiques?.[carac.key] || min;
-        caracsRestants -= (current - min);
-      });
-    }
-
-    let futilesRestants = 10;
-    Object.values(character.competencesFutiles?.rangs || {}).forEach(v => futilesRestants -= v);
-
-    const esprit = Number(character.caracteristiques?.esprit || 0);
-    const bonusEspritMax = Math.max(0, esprit - 3);
-    let investissementEligibleEsprit = 0;
-    let investissementStandard = 0;
-    const SKILLS_ESPRIT = ['Culture', 'Occultisme', 'Fortitude', 'Rhétorique', 'Habiletés', 'Médecine', 'Observation', 'Sciences'];
-
-    Object.entries(character.competencesLibres?.rangs || {}).forEach(([nom, val]) => {
-      if (SKILLS_ESPRIT.includes(nom)) investissementEligibleEsprit += val;
-      else investissementStandard += val;
-    });
-
-    Object.entries(character.competencesLibres?.choixSpecialiteUser || {}).forEach(([nom, specs]) => {
-      let count = specs.length;
-      if (nom === 'Conduite' && count > 0) {
-        const baseScore = character.computedStats?.competencesBase?.['Conduite'] || 0;
-        const rangs = character.competencesLibres?.rangs?.['Conduite'] || 0;
-        if ((baseScore + rangs) > 0) count -= 1;
-      }
-      if (SKILLS_ESPRIT.includes(nom)) investissementEligibleEsprit += count;
-      else investissementStandard += count;
-    });
-
-    const pointsVioletsUtilises = Math.min(investissementEligibleEsprit, bonusEspritMax);
-    const debordementEspritVersVert = investissementEligibleEsprit - pointsVioletsUtilises;
-    const totalVertUtilise = investissementStandard + debordementEspritVersVert;
-
-    const utilesRestants = 15 - totalVertUtilise;
-    const violetsRestants = bonusEspritMax - pointsVioletsUtilises;
-
-    let missingMessages = [];
-    if (caracsRestants > 0) missingMessages.push(`${caracsRestants} pt(s) de Caractéristique`);
-    if (utilesRestants > 0) missingMessages.push(`${utilesRestants} pt(s) de Compétence Utile`);
-    if (violetsRestants > 0) missingMessages.push(`${violetsRestants} pt(s) de Bonus d'Esprit`);
-    if (futilesRestants > 0) missingMessages.push(`${futilesRestants} pt(s) de Compétence Futile`);
-
-    if (missingMessages.length > 0) {
-      showInAppNotification(`Sceau refusé ! Il vous reste à dépenser : ${missingMessages.join(' | ')}.`, "error");
-      return;
-    }
-
-    setShowConfirmSeal(true);
-  };
-
-  const executeSeal = async () => {
-    setShowConfirmSeal(false);
-    try {
-      const snapshot = {
-        atouts: character.atouts || [],
-        pouvoirs: character.pouvoirs || [],
-        capaciteChoisie: character.capaciteChoisie || null,
-        caracteristiques: character.caracteristiques || {},
-        competencesLibres: character.competencesLibres || {}
-      };
-      const newData = { ...(character.data || {}), stats_scellees: snapshot };
-
-      const { error } = await supabase
-        .from('characters')
-        .update({ statut: 'scelle', xp_total: 0, xp_depense: 0, data: newData })
-        .eq('id', character.id);
-      if (error) throw error;
-
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'statut', value: 'scelle' });
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'xp_total', value: 0 });
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'xp_depense', value: 0 });
-      dispatchCharacter({ type: 'UPDATE_FIELD', field: 'data', value: newData });
-
-      showInAppNotification("L'Héritier est scellé ! Le Grimoire s'ouvre à l'expérience...", "success");
-    } catch (err) {
-      showInAppNotification("Erreur lors du scellage : " + err.message, "error");
-    }
-  };
-
-  // On retourne uniquement ce dont l'UI a besoin
     return {
-        character, feeData, isScelle, getCarac, uniqueFutiles,
-        showConfirmSeal, setShowConfirmSeal,
-        snapshots, loadingSnapshots,
-        showPhotoModal, setShowPhotoModal, photoTitle, setPhotoTitle,
-        handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal,
-        gameData // ✨ AJOUTE SIMPLEMENT CE MOT ICI !
+        character, feeData, gameData, isScelle, getCarac, uniqueFutiles, specialtiesByComp, liveCombatStats, isPredilection,
+        showConfirmSeal, setShowConfirmSeal, snapshots, handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal,
+        calculateSkillScore: (nom) => calculateSkillScore(nom, character, gameData) // ✨ FIX: gameData !
     };
 }
