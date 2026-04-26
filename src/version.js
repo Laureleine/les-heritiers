@@ -1,7 +1,15 @@
 // src/version.js
 
 export const VERSION_HISTORY = [
-  {
+    {
+        version: '15.12.0 - "La Fontaine du DRY ⛲"',
+        date: '26 Avril 2026',
+        changes: [
+            '🧠 **Architecture (Cerveau Centralisé) :** Éradication totale des calculs de combat en doublon. Le moteur central (Reducer) compile désormais de manière autonome l\'Esquive, la Parade et les Points de Vie dès qu\'une compétence évolue, devenant l\'unique dépositaire de la Vérité Absolue.',
+            '☁️ **Base de Données (Purge) :** Le compacteur de sauvegarde vers Supabase a été allégé de ses redondances mathématiques. Il photographie dorénavant l\'état exact du Cerveau sans recalculer le combat, garantissant une intégrité absolue des données JSONB.',
+            '📜 **Parchemin (Pureté Front-End) :** La page du Bilan Visuel a été délestée de son usine à gaz algorithmique. Elle redevient une interface React pure (JSX/Tailwind) qui se contente d\'afficher les statistiques pré-calculées, supprimant toute divergence entre l\'affichage à l\'écran et le PDF imprimé.'
+        ]
+    },  {
     version: '15.11.0 - "La Paranoïa de l\'Architecte 🕵️‍♀️"',
     date: '25 Avril 2026',
     changes: [
