@@ -1,0 +1,26 @@
+0.06 Flexibilité narrative
+--------------------------------------------------------------------------------
+Voici les ordres de Marie Cha' :
+1. Le Mémorandum (Grimoire & Contacts) : Flexibilité Narratives
+Besoin métier : Lever les restrictions des catégories prédéfinies pour permettre aux joueurs de s'approprier leur lore.
+Interface Joueur :
+Dans les menus déroulants des Notes (Indices, Lieux, Rumeurs...) et des Contacts (Allié, Hostile, Neutre...), ajouter une option terminale « Autre... ».
+La sélection de « Autre... » doit faire apparaître un champ de saisie libre permettant de créer une étiquette personnalisée (ex: "Dette d'honneur", "Lieu maudit", "Énigme insoluble").
+Interface Docte (Contrôle du Cercle) :
+Permettre au Docte de définir, dans les paramètres de son Cercle, des « Catégories de Campagne ».
+Ces catégories "officielles" s'ajouteront automatiquement aux menus déroulants de tous les joueurs appartenant à ce Cercle.
+2. Offrandes de l'Ombre : Champs Spécifiques du MJ
+Besoin métier : Permettre au Docte de distribuer des items ou secrets avec une intention narrative et technique précise.
+Champs de la Modale Docte :
+Nom et Description : Identité de l'objet ou du secret.
+Note du Docte (Champ MJ uniquement) : Zone de texte libre pour que le Meneur note les conditions de déclenchement ou l'origine occulte de l'item.
+Gestion des Sceaux (Visibilité) :
+Case à cocher : « Cacher au groupe » (L'item n'apparaît que sur la fiche du porteur).
+Case à cocher : « Cacher au porteur » (L'item est invisible pour le joueur, présent uniquement pour le Docte).
+Impact Technique Immédiat :
+Modificateur d'XP : Champ numérique pour ajouter ou déduire de l'XP du Puits des Âmes lors de la réception.
+Briques de Bonus : Intégration du BonusBuilder pour lier des effets aux caractéristiques ou compétences (ex: +1 en Discrétion).
+3. Expérience Utilisateur (UX) et Design
+Organisation visuelle : Les étiquettes créées via l'option "Autre" doivent adopter une couleur neutre (gris parchemin) pour ne pas briser l'harmonie de l'interface.
+Révélation : Le Docte doit disposer d'un bouton « Briser le Sceau » sur chaque item pour changer sa visibilité instantanément durant la partie.
+--------------------------------------------------------------------------------

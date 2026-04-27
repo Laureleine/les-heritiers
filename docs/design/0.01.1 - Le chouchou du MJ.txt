@@ -1,0 +1,14 @@
+0.1 - Le chouchou du MJ
+-------------------------------------------------------------------------------
+Voici les ordres de Marie Cha' :
+Besoin métier : Permettre au Docte, au sein d'un Cercle de jeu, de distribuer des récompenses (objets, contacts, secrets, titres) à un Héritier de manière totalement invisible pour le reste de la table, et optionnellement invisible pour le joueur lui-même (jusqu'à une révélation dramatique).
+Champs techniques nécessaires (Stockage JSONB dans Supabase) :
+is_secret (Boolean) : Si l'item est caché aux autres membres du Cercle.
+visible_by_player (Boolean) : Si le joueur peut voir l'item dans son propre inventaire ou si seul le Docte en a connaissance (ex: un objet maudit ou un héritage inconscient).
+source_cercle_id (UUID) : Pour lier l'objet à la campagne spécifique et ne pas polluer la fiche de base du personnage s'il change de table.
+note_du_docte (Text) : Un champ de texte libre pour que le Docte puisse justifier l'item ou noter des conditions de déclenchement.
+Expérience Utilisateur (UX) attendue :
+Côté Docte : Dans le tableau de bord du Cercle, en cliquant sur un personnage de sa table, le Docte accède à un bouton « Faire une Offrande de l'Ombre ». Il peut piocher dans le dictionnaire officiel ou créer un item personnalisé. Avant de valider, il coche deux options : « Cacher au groupe » et « Cacher au porteur ».
+Côté Joueur : Si l'item lui est visible, il apparaît dans son inventaire sous un onglet spécial marqué d'un œil barré (icône EyeOff), signifiant que c'est un secret de campagne. Si l'item est caché au joueur, sa fiche ne change pas, mais un badge discret apparaît pour le Docte lors de l'inspection de la table.
+La Révélation : Le Docte dispose d'une action « Briser le Sceau » pour rendre l'objet visible par le joueur ou par tout le groupe au moment opportun de la narration.
+------------------------------------------------------------------------------

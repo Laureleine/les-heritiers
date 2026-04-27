@@ -1,0 +1,22 @@
+0.00.2 Suivi des dépenses
+--------------------------------------------------------------------------------
+Voici les ordres de Marie Cha' :
+Besoin métier : Instaurer une traçabilité complète et immersive de la destinée de l'Héritier en créant un Journal des Flux de l'Âme. Ce module doit consigner chaque gain d'expérience (provenant des Chroniques) et chaque dépense (achats techniques) pour offrir une transparence totale au joueur.
+Structure des données (Extension du JSONB data**) :**
+historique_xp (Array) : Un tableau d'objets stockant chaque mouvement.
+date_mouvement (Date) : Pour le classement chronologique.
+type (Enum) : 'GAIN' (venant des Chroniques), 'DEPENSE' (évolution), 'REMBOURSEMENT' (annulation via le Plancher de Verre).
+label (Text) : Libellé narratif (ex: "Scénario : Le Mystère du Trocadéro", "Augmentation : Force", "Acquisition : Atout Anomalie").
+valeur (Integer) : Montant des XP concernés.
+rang_final (Integer, Optionnel) : Le niveau atteint après l'achat.
+Expérience Utilisateur (UX) attendue :
+Point d'accès : Ajouter un bouton "Consulter le Registre" sur le bandeau persistant du Puits des Âmes ou dans l'onglet Bilan.
+Affichage "Livre de Comptes" : Les entrées doivent être présentées par ordre antéchronologique (les plus récentes en haut).
+Utiliser une couleur émeraude pour les gains et ambre/ocre pour les dépenses.
+Lien Automatique (Logic) :
+Dès qu'un Docte valide un xp_acquis dans le registre des Chroniques, une entrée 'GAIN' est automatiquement générée.
+Chaque clic validé dans la boutique d'XP (PocShop ou StepCaracteristiques) doit déclencher une entrée 'DEPENSE' via l'utilitaire xpCalculator.js.
+Intégrité temporelle : Les dépenses effectuées avant le scellage (points de création gratuits) ne figurent pas dans ce journal. Le journal débute au moment de l'apposition du premier Sceau.
+Directive technique pour Azghâl :
+S'assurer que le calcul du solde (xp_total - xp_depense) correspond systématiquement à la somme algébrique des entrées du journal pour éviter toute désynchronisation de la base de données.
+--------------------------------------------------------------------------------

@@ -1,0 +1,52 @@
+    // 🧠 LE FIX ABSOLU : La Modale devient totalement autonome et intelligente !
+    // Elle prend les colonnes plates de Supabase et reconstruit le "Tiroir 3D" pour le formulaire.
+    const [proposal, setProposal] = useState(() => {
+        if (!editingItem) return {};
+        const init = { ...editingItem };
+        
+        // ✨ LE TRADUCTEUR MULTILINGUE (Colonnes SQL -> Objet React)
+        if (activeTab === 'fairy_types') {
+            
+            // 1. RECONSTRUCTION DU TIROIR (C'est ça qui manquait au formulaire !)
+            init.caracteristiques = {
+                agilite: { min: init.agilite_min || 1, max: init.agilite_max || 6 },
+                constitution: { min: init.constitution_min || 1, max: init.constitution_max || 6 },
+                force: { min: init.force_min || 1, max: init.force_max || 6 },
+                precision: { min: init.precision_min || 1, max: init.precision_max || 6 },
+                esprit: { min: init.esprit_min || 1, max: init.esprit_max || 6 },
+                perception: { min: init.perception_min || 1, max: init.perception_max || 6 },
+                prestance: { min: init.prestance_min || 1, max: init.prestance_max || 6 },
+                sangFroid: { min: init.sang_froid_min || 1, max: init.sang_froid_max || 6 },
+                feerie: { min: init.feerie_min || 1, max: init.feerie_max || 8 },
+                masque: { min: init.masque_min || 1, max: init.masque_max || 10 }
+            };
+
+            // 2. RECONSTRUCTION DES MÉTADONNÉES
+            init.nameMasculine = init.name_masculine || init.name;
+            init.nameFeminine = init.name_feminine || init.name;
+            init.allowedGenders = init.allowed_genders || ['Homme', 'Femme'];
+
+            // 3. RECONSTRUCTION DES RELATIONS (Atouts, Pouvoirs, Capacités)
+            init.pouvoirsIds = (editingItem.fairy_type_powers || []).map(link => link.power?.id).filter(Boolean);
+            init.assetsIds = (editingItem.fairy_type_assets || []).map(link => link.asset?.id).filter(Boolean);
+            init.capacitesChoixIds = (editingItem.fairy_type_capacites || [])
+                .filter(link => link.capacite_type === 'choix')
+                .map(link => link.capacite?.id).filter(Boolean);
+            
+            const fixe1 = (editingItem.fairy_type_capacites || []).find(l => l.capacite_type === 'fixe1');
+            const fixe2 = (editingItem.fairy_type_capacites || []).find(l => l.capacite_type === 'fixe2');
+            if (fixe1) init.capaciteFixe1Id = fixe1.capacite?.id;
+            if (fixe2) init.capaciteFixe2Id = fixe2.capacite?.id;
+
+        } else {
+            // Relations inversées (Pour les autres onglets)
+            init.fairyIds = [];
+            if (activeTab === 'fairy_powers') init.fairyIds = (editingItem.fairy_type_powers || []).map(l => l.fairy_types?.id).filter(Boolean);
+            if (activeTab === 'fairy_assets') init.fairyIds = (editingItem.fairy_type_assets || []).map(l => l.fairy_types?.id).filter(Boolean);
+            if (activeTab === 'fairy_capacites') init.fairyIds = (editingItem.fairy_type_capacites || []).map(l => l.fairy_types?.id).filter(Boolean);
+        }
+        
+        return init;
+    });
+
+    const [justification, setJustification] = useState('');

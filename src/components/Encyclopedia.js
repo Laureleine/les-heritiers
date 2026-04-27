@@ -20,82 +20,38 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
     const isDocte = userProfile?.profile?.is_docte === true;
 
     return (
-        <div className="max-w-6xl mx-auto p-4 animate-fade-in pb-20">
-            {/* L'ENTÊTE */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-stone-900 text-stone-100 p-6 rounded-2xl shadow-xl">
-                <div className="flex items-center gap-4">
-                    <Book size={32} className="text-amber-500" />
-                    <div>
-                        <h2 className="text-2xl md:text-3xl font-serif font-bold text-amber-500">L'Encyclopédie</h2>
-                        <p className="text-sm text-stone-400 mt-1">Le compendium absolu des savoirs de la Belle Époque</p>
-                    </div>
-                </div>
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                    <button onClick={onOpenMesPropositions} className="px-4 py-2 bg-stone-800 text-stone-200 border border-stone-700 rounded-lg hover:bg-stone-700 transition-colors font-bold text-sm flex items-center gap-2">
+        <div className="max-w-6xl mx-auto p-4 md:p-6 pb-24 animate-fade-in">
+            
+            {/* L'ENTÊTE SIMPLE ET ÉPURÉ */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-amber-900 flex items-center gap-3">
+                    <Book className="text-amber-600" /> L'Encyclopédie
+                </h2>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                    <button onClick={onOpenMesPropositions} className="px-4 py-2 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 transition-colors font-bold text-sm flex items-center gap-2">
                         <FileText size={16} /> Mes Propositions
                     </button>
                     {isDocte && (
-                        <button onClick={onOpenValidations} className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-bold text-sm shadow-md flex items-center gap-2">
+                        <button onClick={onOpenValidations} className="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition-colors font-bold text-sm flex items-center gap-2">
                             <Shield size={16} /> Conseil des Gardiens
                         </button>
                     )}
-                    <button onClick={onBack} className="px-4 py-2 bg-white text-stone-900 rounded-lg hover:bg-stone-100 transition-colors font-bold text-sm shadow-md">
-                        Retour au Menu
+                    <button onClick={onBack} className="px-4 py-2 bg-white border border-stone-200 text-stone-600 rounded-lg hover:bg-stone-50 transition-colors font-bold text-sm">
+                        Retour
                     </button>
                 </div>
             </div>
 
-            {/* BARRE DE RECHERCHE, CRÉATION ET FILTRE */}
-            <div className="flex flex-col gap-4 mb-6">
-                <div className="flex flex-col md:flex-row justify-between gap-4">
-                    <div className="relative flex-1 max-w-xl">
-                        <Search className="absolute left-3 top-3 text-stone-400" size={20} />
-                        <input 
-                            type="text" 
-                            placeholder="Rechercher dans les archives..." 
-                            value={state.searchTerm}
-                            onChange={(e) => setters.setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none shadow-sm transition-all"
-                        />
-                    </div>
-                    <button 
-                        onClick={handlers.handleCreateNew}
-                        className="flex items-center justify-center gap-2 px-6 py-3 bg-stone-800 hover:bg-stone-900 text-white rounded-xl shadow-md transition-all font-bold"
-                    >
-                        <Plus size={20} /> Forger une Entité
-                    </button>
-                </div>
-                
-                {state.activeTab !== 'fairy_types' && (
-                    <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-stone-200 shadow-sm w-fit">
-                        <Filter size={16} className="text-stone-400 ml-2" />
-                        <select
-                            value={state.selectedFairyFilter}
-                            onChange={(e) => setters.setSelectedFairyFilter(e.target.value)}
-                            className="bg-transparent border-none text-sm font-bold text-stone-600 outline-none focus:ring-0 cursor-pointer pr-4"
-                        >
-                            <option value="">Toutes les fées</option>
-                            <option value="__UNLINKED__">✨ Aucune fée (Universel)</option>
-                            <optgroup label="Espèces">
-                                {state.encyclopediaRefs?.fairies?.map(f => (
-                                    <option key={f.id} value={f.name}>{f.name}</option>
-                                ))}
-                            </optgroup>
-                        </select>
-                    </div>
-                )}
-            </div>
-
-            {/* NAVIGATION DES ONGLETS */}
-            <div className="flex overflow-x-auto custom-scrollbar mb-6 bg-white p-2 rounded-xl shadow-sm border border-stone-200 gap-2">
+            {/* NAVIGATION DES ONGLETS (Style classique souligné) */}
+            <div className="flex gap-6 border-b border-stone-200 mb-6 overflow-x-auto custom-scrollbar">
                 {tabs.map(t => (
                     <button
                         key={t.id}
                         onClick={() => setters.setActiveTab(t.id)}
-                        className={`whitespace-nowrap px-6 py-3 rounded-lg font-bold transition-all ${
-                            state.activeTab === t.id 
-                                ? 'bg-amber-100 text-amber-900 shadow-sm border border-amber-200' 
-                                : 'text-stone-600 hover:bg-stone-50'
+                        className={`pb-3 font-bold text-sm uppercase tracking-wider whitespace-nowrap transition-colors border-b-2 ${
+                            state.activeTab === t.id
+                                ? 'text-amber-900 border-amber-600'
+                                : 'text-stone-400 border-transparent hover:text-stone-700 hover:border-stone-300'
                         }`}
                     >
                         {t.label}
@@ -103,6 +59,64 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                 ))}
             </div>
 
+            {/* RECHERCHE ET CRÉATION */}
+            <div className="flex flex-col sm:flex-row gap-3 items-center mb-6">
+                <div className="flex-1 relative w-full">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={20} />
+                    <input
+                        type="text"
+                        placeholder="Rechercher dans les archives..."
+                        value={state.searchTerm}
+                        onChange={(e) => setters.setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none shadow-sm"
+                    />
+                </div>
+                <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
+                    <Plus size={20} /> Forger une Entité
+                </button>
+            </div>
+
+            {/* ✨ LES FAMEUX BOUTONS DE FILTRAGE PAR FÉE (Pills/Chips Multilignes) */}
+            {state.activeTab !== 'fairy_types' && (
+                <div className="flex flex-wrap items-center gap-2 mb-6 pb-2">
+                    <Filter size={16} className="text-stone-400 mr-1" />
+                    
+                    <button
+                        onClick={() => setters.setSelectedFairyFilter('')}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                            state.selectedFairyFilter === '' ? 'bg-stone-800 text-white shadow-sm' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                        }`}
+                    >
+                        Toutes
+                    </button>
+                    
+                    <button
+                        onClick={() => setters.setSelectedFairyFilter('__UNLINKED__')}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                            state.selectedFairyFilter === '__UNLINKED__' ? 'bg-purple-600 text-white shadow-sm' : 'bg-purple-50 text-purple-600 hover:bg-purple-100 border border-purple-200'
+                        }`}
+                    >
+                        ✨ Universel
+                    </button>
+                    
+                    <div className="hidden sm:block w-px h-6 bg-stone-200 mx-1"></div>
+                    
+                    {state.encyclopediaRefs?.fairies?.map(f => (
+                        <button
+                            key={f.id}
+                            onClick={() => setters.setSelectedFairyFilter(f.name)}
+                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors border ${
+                                state.selectedFairyFilter === f.name
+                                    ? 'bg-amber-100 text-amber-900 border-amber-400 shadow-sm'
+                                    : 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50 hover:border-stone-300'
+                            }`}
+                        >
+                            {f.name}
+                        </button>
+                    ))}
+                </div>
+            )}
+			
             {/* CONTENU (GRILLE DES CARTES) */}
             {state.loading ? (
                 <div className="flex justify-center items-center py-20">
