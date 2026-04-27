@@ -1,9 +1,4 @@
-// 10.6.0 // 10.9.0 // 10.10.0
-// 11.0.0
-// 12.6.0
-// 13.3.0 // 13.9.0
-// 15.1.0
-
+// src/data/DictionnaireJeu.js
 import React from 'react';
 import {Camera, Gift, Bug, BookOpen, Sparkles, Gem, TestTubeDiagonal, Bomb, Dices, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle, Compass } from 'lucide-react';
 
@@ -104,3 +99,30 @@ export const STEP_CONFIG = [
   { id: 10, label: "Masque", icon: <VenetianMask size={18} /> },
   { id: 11, label: "Bilan", icon: <CheckCircle size={18} /> }
 ];
+
+// ============================================================================
+// 5. MOTEUR DE BADGES MAGIQUES (DRY)
+// ============================================================================
+export const getMagicBadges = (typeStr) => {
+    if (!typeStr) return [];
+    const str = typeStr.toLowerCase();
+    
+    // Décodage de l'ADN magique
+    const isDemasque = str.includes('demasque');
+    const isMasque = !isDemasque;
+    const isProfond = str.includes('profond');
+    const isLegendaire = str.includes('legendaire') || str.includes('légendaire');
+
+    const badges = [];
+
+    // 🌟 BADGE 1 : Le Niveau de Puissance
+    if (isProfond) badges.push({ label: '🔮 Profond', color: 'bg-indigo-100 text-indigo-800 border-indigo-300' });
+    else if (isLegendaire) badges.push({ label: '👑 Légendaire', color: 'bg-amber-100 text-amber-800 border-amber-300' });
+    else badges.push({ label: '✨ Standard', color: 'bg-emerald-100 text-emerald-800 border-emerald-300' });
+
+    // 🎭 BADGE 2 : La Règle de Visibilité
+    if (isMasque) badges.push({ label: '🎭 Masqué', color: 'bg-purple-100 text-purple-800 border-purple-300' });
+    else badges.push({ label: '🔥 Démasqué', color: 'bg-rose-100 text-rose-800 border-rose-300' });
+
+    return badges;
+};

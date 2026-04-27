@@ -1,6 +1,6 @@
 // src/components/AccountSettings.js
 import React from 'react';
-import { User, Lock, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, X, BellOff, Smartphone, MessageCircle, ArrowLeft } from 'lucide-react';
+import { User, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, BellOff, Smartphone, MessageCircle, ArrowLeft } from 'lucide-react';
 import { useAccountSettings } from '../hooks/useAccountSettings';
 import * as LucideIcons from 'lucide-react';
 

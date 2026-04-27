@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity } from 'lucide-react';
+import { getMagicBadges } from '../data/DictionnaireJeu';
 
 export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
   if (!item) return null;
@@ -69,13 +70,16 @@ export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
                 Taille : {item.taille_categorie}
               </span>
             )}
-            {item.type_pouvoir && (
-              <span className="text-xs font-bold text-purple-800 bg-purple-100 px-3 py-1 rounded-full border border-purple-200 uppercase tracking-wider shadow-sm">
-                {item.type_pouvoir.replace('_', ' ')}
-              </span>
-            )}
-          </div>
-
+			{item.type_pouvoir && (
+				<div className="flex gap-2">
+					{getMagicBadges(item.type_pouvoir).map((badge, idx) => (
+						<span key={idx} className={`text-xs font-bold px-3 py-1 rounded-full border uppercase tracking-wider shadow-sm ${badge.color}`}>
+							{badge.label}
+						</span>
+					))}
+				</div>
+			)}
+		  </div>
           {/* Description Narrative (Commune à tous) */}
           <div>
             <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Savoir & Lore</h4>
