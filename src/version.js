@@ -2,6 +2,23 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.15.0 - "La Fée Indépendante 🧚‍♀️"',
+        date: '27 Avril 2026',
+        changes: [
+            '✂️ **Architecture (Découpage) :** Exorcisme majeur de l\'Étape 1. Le panneau des détails de la fée a été extrait vers un composant visuel autonome (`FairyDetailsPanel.js`), allégeant drastiquement le chef d\'orchestre principal.',
+            '🧹 **Purification (Code Mort) :** Nettoyage par le vide des variables orphelines, des imports d\'icônes inutilisés et de l\'ancien code de bascule pour le sexe biologique de la fée.',
+            '🧠 **Performances (React) :** Sécurisation absolue des Hooks (`useCallback`, `useEffect`) sur l\'assistant Pixie et sur la piste de dés tridimensionnelle pour éviter les re-rendus infinis et satisfaire les règles strictes de compilation.'
+        ]
+    },
+    {
+        version: '15.14.0 - "La Magie Décomposée 🔮"',
+        date: '27 Avril 2026',
+        changes: [
+            '🔮 **Lisibilité (Magie) :** Le statut des Pouvoirs n\'est plus résumé sur une seule étiquette étouffante. Chaque pouvoir affiche désormais fièrement deux sceaux distincts : son Niveau (Standard, Profond, Légendaire) et sa Visibilité (Masqué, Démasqué).',
+            '♻️ **Architecture (DRY) :** Centralisation du moteur de badges magiques dans le Dictionnaire du Jeu. Les composants de l\'Encyclopédie et de la Création de personnage se délestent de dizaines de lignes de code redondantes.',
+            '🎨 **Design System :** Application d\'une charte colorimétrique claire pour les nouveaux doubles badges : Émeraude pour le Standard, Indigo pour le Profond, et Doré pour le Légendaire.'
+        ]
+    },    {
         version: '15.13.0 - "La Mémoire Intacte 🧠"',
         date: '27 Avril 2026',
         changes: [
