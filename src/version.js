@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.13.0 - "La Mémoire Intacte 🧠"',
+        date: '27 Avril 2026',
+        changes: [
+            '🛡️ **Stabilité Temporelle (Anti-Amnésie) :** Vos brouillons de personnages et signalements de bugs sont désormais en sécurité. Le noyau du jeu ne se réinitialise plus inutilement lorsque vous basculez d\'un onglet à l\'autre (ex: pour lire vos PDF).',
+            '🧠 **Architecture (Cerveau Séparé) :** Exorcisme majeur de la Modale de l\'Encyclopédie. Toute l\'énorme machinerie traduisant les données brutes de la base de données vers l\'interface visuelle a été isolée dans un Hook autonome (`useEncyclopediaModal`).',
+            '🧲 **Ergonomie (Tri Magnétique) :** Lors de l\'édition d\'une Fée, les Atouts, Pouvoirs et Capacités déjà acquis sont dorénavant aimantés au sommet de la liste, classés par ordre alphabétique, évitant de longues recherches.',
+            '✨ **Éditeur Narratif (Auto-Formateur) :** Finies les longues lignes condensées et illisibles ! Les Avantages et Désavantages s\'affichent sous forme de puces élégantes, et l\'éditeur ajoute dynamiquement la puce suivante via la touche Entrée.',
+            '🧹 **Nettoyage (Console) :** Purge des fonctions génératrices de clés (UUID) obsolètes dans le moteur de l\'Encyclopédie pour apaiser le compilateur.'
+        ]
+    },    {
         version: '15.12.0 - "La Fontaine du DRY ⛲"',
         date: '26 Avril 2026',
         changes: [
