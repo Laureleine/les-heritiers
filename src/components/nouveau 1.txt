@@ -1,0 +1,84 @@
+src\components\StepCaracteristiques.js
+  Line 22:9:  The 'currentCaracs' logical expression could make the dependencies of useMemo Hook (at line 40) change on every render. To fix this, wrap the initialization of 'currentCaracs' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+src\components\StepCompetencesFutiles.js
+  Line 10:10:   'getCompetencesFutiles' is defined but never used              no-unused-vars
+  Line 10:54:   'invalidateCompetencesFutilesCache' is defined but never used  no-unused-vars
+  Line 103:11:  'maxAllowed' is assigned a value but never used                no-unused-vars
+
+src\components\StepProfils.js
+  Line 4:29:  'Briefcase' is defined but never used              no-unused-vars
+  Line 14:9:  'usefulSkills' is assigned a value but never used  no-unused-vars
+
+src\components\admin\TabUsers.js
+  Line 21:18:  'setSortBy' is assigned a value but never used  no-unused-vars
+
+src\components\cercle\GrimoirePersonnel.js
+  Line 17:28:  'loading' is assigned a value but never used          no-unused-vars
+  Line 52:9:   'handleShareNote' is assigned a value but never used  no-unused-vars
+
+src\components\competencesLibres\StepCompetencesLibres.js
+  Line 6:16:   'Minus' is defined but never used                no-unused-vars
+  Line 6:47:   'Briefcase' is defined but never used            no-unused-vars
+  Line 8:10:   'getUtileCost' is defined but never used         no-unused-vars
+  Line 51:14:  'current' is assigned a value but never used     no-unused-vars
+  Line 51:72:  'maxAllowed' is assigned a value but never used  no-unused-vars
+  Line 51:84:  'plancher' is assigned a value but never used    no-unused-vars
+
+src\components\competencesLibres\useCompetencesLibres.js
+  Line 27:9:  The 'lib' logical expression could make the dependencies of useCallback Hook (at line 123) change on every render. To fix this, wrap the initialization of 'lib' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  Line 27:9:  The 'lib' logical expression could make the dependencies of useCallback Hook (at line 150) change on every render. To fix this, wrap the initialization of 'lib' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  Line 27:9:  The 'lib' logical expression could make the dependencies of useCallback Hook (at line 170) change on every render. To fix this, wrap the initialization of 'lib' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  Line 27:9:  The 'lib' logical expression could make the dependencies of useCallback Hook (at line 187) change on every render. To fix this, wrap the initialization of 'lib' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  Line 27:9:  The 'lib' logical expression could make the dependencies of useCallback Hook (at line 236) change on every render. To fix this, wrap the initialization of 'lib' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+src\components\forge\RegistrePage.jsx
+  Line 4:10:  'useCharacter' is defined but never used  no-unused-vars
+
+src\components\forge\WidgetAnomalie.jsx
+  Line 5:10:  'useCharacter' is defined but never used  no-unused-vars
+
+src\components\personnalisation\WidgetLangues.js
+  Line 3:27:  'Info' is defined but never used      no-unused-vars
+  Line 3:53:  'Sparkles' is defined but never used  no-unused-vars
+
+src\components\recap\FicheParchemin.jsx
+  Line 8:11:  The 'feeData' logical expression could make the dependencies of useMemo Hook (at line 94) change on every render. To fix this, wrap the initialization of 'feeData' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+src\components\vieSociale\StepVieSociale.js
+  Line 147:9:  'xpDispo' is assigned a value but never used  no-unused-vars
+
+src\components\vieSociale\useVieSociale.js
+  Line 117:6:  React Hook useMemo has a missing dependency: 'character.computedStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\context\ForgeContext.jsx
+  Line 45:23:  'uploadData' is assigned a value but never used  no-unused-vars
+
+src\data\DictionnaireJeu.js
+  Line 8:9:    'Camera' is defined but never used            no-unused-vars
+  Line 8:17:   'Gift' is defined but never used              no-unused-vars
+  Line 8:23:   'Bug' is defined but never used               no-unused-vars
+  Line 8:48:   'Gem' is defined but never used               no-unused-vars
+  Line 8:53:   'TestTubeDiagonal' is defined but never used  no-unused-vars
+  Line 8:71:   'Bomb' is defined but never used              no-unused-vars
+  Line 8:77:   'Dices' is defined but never used             no-unused-vars
+  Line 8:165:  'Compass' is defined but never used           no-unused-vars
+
+src\hooks\useAutoUpdate.js
+  Line 1:20:  'useEffect' is defined but never used                no-unused-vars
+  Line 8:9:   'checkForUpdate' is assigned a value but never used  no-unused-vars
+
+src\utils\pixieBrain.js
+  Line 332:5:  Expected a default case  default-case
+  Line 363:3:  Expected a default case  default-case
+
+src\utils\supabaseGameData.js
+  Line 15:7:   'createCompetenceLookup' is assigned a value but never used  no-unused-vars
+  Line 24:7:   'resolveAndValidate' is assigned a value but never used      no-unused-vars
+  Line 385:3:  Duplicate key 'id'                                           no-dupe-keys
+  Line 455:5:  'cachedProfils' is assigned a value but never used           no-unused-vars
+  Line 456:5:  'cachedCompetences' is assigned a value but never used       no-unused-vars
+  Line 457:5:  'cachedFairyTypes' is assigned a value but never used        no-unused-vars
+  Line 458:5:  'cachedSocialItems' is assigned a value but never used       no-unused-vars
+  Line 459:5:  'cachedEncyclopediaRefs' is assigned a value but never used  no-unused-vars
+  Line 460:5:  'cachedBadges' is assigned a value but never used            no-unused-vars

@@ -22,11 +22,22 @@ export const exportToPDF = (character, gameData = {}) => {
                 body { background: #5c4d3c; padding: 20px; }
                 @media print {
                     body { background: white; padding: 0; margin: 0; }
+                    .no-print { display: none !important; }
                 }
             </style>
         </head>
         <body>
+            <!-- ✨ LE RETOUR DU BOUTON D'ÉVASION MOBILE (Invisible à l'impression) -->
+            <button 
+                onclick="window.close()" 
+                class="no-print" 
+                style="position: fixed; top: 15px; right: 15px; background: #b45309; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; border: 2px solid #78350f; box-shadow: 0 4px 6px rgba(0,0,0,0.4); z-index: 1000; cursor: pointer; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px;"
+            >
+                ✕ Fermer le Parchemin
+            </button>
+
             ${htmlContent}
+
             <script>
                 // On laisse une seconde magique à Tailwind pour analyser et générer son CSS
                 setTimeout(() => {

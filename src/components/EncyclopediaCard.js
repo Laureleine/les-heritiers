@@ -1,57 +1,41 @@
-// src/components/EncyclopediaCard.js
-
 import React from 'react';
-import { Feather, Sparkles, Star, Lock, ShieldCheck, ShieldAlert, Unlock, Trash2, Eye } from 'lucide-react';
+import { Feather, Sparkles, Star, Lock, ShieldCheck, Unlock, Trash2, Eye } from 'lucide-react';
+import { getMagicBadges } from '../data/DictionnaireJeu'; // ✨ NOUVEL IMPORT
 
 const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onToggleSeal, onDeleteClick, userProfile }) => {
-  const title = item.name || item.nom;
-  const desc = item.description || item.desc;
-  const isRestricted = item.is_official === false;
-  
-  // Détection si c'est un pouvoir
-  let typeBadge = null;
-  if (activeTab === 'fairy_powers' && item.type_pouvoir) {
-    // Détection corrigée pour éviter que "demasque" ne valide "masque"
-    const isDemasque = item.type_pouvoir.includes('demasque');
-    const isMasque = !isDemasque;
-    
-    const isProfond = item.type_pouvoir.includes('profond');
-    const isLegendaire = item.type_pouvoir.includes('legendaire');
-    
-    let label = isProfond ? '🔮 Profond' : isLegendaire ? '👑 Légendaire' : 'Standard';
-    label += isMasque ? ' (🎭 Masqué)' : ' (🔥 Démasqué)';
-    
-    const colorClass = isMasque 
-      ? 'bg-purple-100 text-purple-800 border-purple-200' 
-      : 'bg-rose-100 text-rose-800 border-rose-200';
+    const title = item.name || item.nom;
+    const desc = item.description || item.desc;
+    const isRestricted = item.is_official === false;
 
-    typeBadge = (
-      <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${colorClass}`}>
-        {label}
-      </span>
-    );
-  }
+    // ✨ LA FONTAINE DU DRY : On appelle l'Usine à Badges !
+    const powerBadges = (activeTab === 'fairy_powers' && item.type_pouvoir) 
+        ? getMagicBadges(item.type_pouvoir) 
+        : [];
 
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group flex flex-col h-full">
-      {/* LE SCEAU VISUEL EN HAUT DE LA CARTE */}
-      {item.is_sealed && (
-        <div className="absolute top-3 right-3 text-amber-700/80 z-10" title="Savoir cristallisé par les Gardiens">
-           <ShieldCheck size={28} className="drop-shadow-md" />
-        </div>
-      )}
-	  
-	  <div className="flex justify-between items-start mb-3">
-        <h3 className="font-serif font-bold text-lg text-amber-900">{title}</h3>
-        <div className="flex gap-2">
-          {typeBadge && <span className="text-[10px] bg-purple-100 text-purple-800 px-2 py-1 rounded-full uppercase font-bold tracking-wider">{typeBadge}</span>}
-          {isRestricted && <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-1 rounded-full uppercase font-bold tracking-wider">Community</span>}
-        </div>
-      </div>
+    return (
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group flex flex-col h-full">
+            
+            {item.is_sealed && (
+                <div className="absolute top-3 right-3 text-amber-700/80 z-10" title="Savoir cristallisé par les Gardiens">
+                    <ShieldCheck size={28} className="drop-shadow-md" />
+                </div>
+            )}
 
-      <p className="text-gray-600 text-sm mb-4 line-clamp-4 flex-1 whitespace-pre-wrap">
-        {desc || <span className="italic text-gray-400">Aucune description disponible.</span>}
-      </p>
+            <div className="flex justify-between items-start mb-3">
+                <h3 className="font-serif font-bold text-lg text-amber-900">{title}</h3>
+                <div className="flex gap-2">
+                    {/* ✨ AFFICHAGE DES DEUX BADGES SÉPARÉS */}
+                    {powerBadges.map((badge, index) => (
+                        <span key={index} className={`text-[10px] px-2 py-1 rounded-full uppercase font-bold tracking-wider border shadow-sm ${badge.color}`}>
+                            {badge.label}
+                        </span>
+                    ))}
+                </div>
+            </div>
+
+            <div className="text-sm text-gray-600 line-clamp-3 mb-4 leading-relaxed font-serif flex-1">
+                {desc || <span className="italic text-gray-400">Aucune description disponible...</span>}
+            </div>
 
       {/* 🌟 LISTE DES FÉES COMPATIBLES (Onglet Capacités) */}
       {activeTab === 'fairy_capacites' && item.fairy_type_capacites && item.fairy_type_capacites.length > 0 && (
