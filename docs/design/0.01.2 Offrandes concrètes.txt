@@ -1,0 +1,14 @@
+0.3 Offrandes concrètes
+--------------------------------------------------------------------------------
+Voici les ordres de Marie Cha' :
+Besoin métier : Permettre au Docte, lorsqu'il distribue un item caché (Offrande de l'Ombre), d'y attacher des effets techniques automatiques. Cela inclut des modifications de statistiques, des ajustements de la réserve d'XP, ou l'activation de règles d'exception.
+Champs techniques nécessaires (Extension du JSONB de l'item) :
+effets_techniques (JSONB) : Utiliser la structure existante du bonusCalculator pour modifier les caracteristiques (ex: +1 Force), les competences (ex: +1 Discrétion) ou offrir des specialites.
+xp_modifier (Integer) : Une valeur (positive ou négative) qui s'ajoute ou se déduit immédiatement de la colonne xp_total du personnage lors de la réception de l'item.
+rule_override (String/Slug) : Pour activer des mécaniques spécifiques (ex: ignore_d8_critical_fail ou double_tricherie_gain).
+Expérience Utilisateur (UX) attendue :
+Côté Docte : Dans la modale de création d'une "Offrande de l'Ombre", un bouton « Ajouter un effet mécanique » ouvre le constructeur de bonus (le système de "briques Lego" déjà utilisé dans l'Encyclopédie). Le Docte peut aussi saisir un montant d'XP à donner ou retirer en même temps que l'objet.
+Côté Joueur (La Conséquence) :
+Si l'item est visible, un message système s'affiche : « Vous avez reçu [Nom de l'item]. Votre expérience augmente de X XP ! ». Ses statistiques sont mises à jour en temps réel par le characterEngine.
+Si l'item est caché au joueur, le bonus technique est appliqué "en sourdine". Le joueur voit ses totaux augmenter (ex: sa Parade passe de 13 à 14) sans savoir quel objet secret en est la cause, renforçant le mystère de sa progression.
+--------------------------------------------------------------------------------

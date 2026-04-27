@@ -26,13 +26,6 @@ const parseSafeArray = (val) => {
 // Bouclier d'équivalence bilingue (Anti-Faux Positifs Unicode/Casse)
 const safeNormalize = (str) => String(str || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 
-const generateId = () => typeof crypto !== 'undefined' && crypto.randomUUID
-  ? crypto.randomUUID()
-  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-      const r = Math.random() * 16 | 0;
-      return (c === 'x' ? r : ((r & 0x3) | 0x8)).toString(16);
-    });
-
 // ✨ LE MOTEUR CENTRAL DE PROPOSITION
 export const submitEncyclopediaProposal = async ({
   activeTab,
@@ -66,17 +59,22 @@ export const submitEncyclopediaProposal = async ({
       if (proposal.era !== editingItem.era) surgicalData.era = proposal.era;
       if (proposal.taille_categorie !== editingItem.taille_categorie) surgicalData.taille_categorie = proposal.taille_categorie;
 
-      const oldTraits = parseSafeArray(editingItem.traits);
-      const newTraits = proposal.traits ? proposal.traits.split(',').map(t => t.trim()).filter(Boolean) : [];
-      if (!arraysEqual(newTraits, oldTraits)) surgicalData.traits = newTraits;
+	const oldTraits = parseSafeArray(editingItem.traits);
+	const newTraits = proposal.traits ? proposal.traits.split(',').map(t => t.trim()).filter(Boolean) : [];
+	if (!arraysEqual(newTraits, oldTraits)) surgicalData.traits = newTraits;
 
-      const oldAvantages = parseSafeArray(editingItem.avantages);
-      const newAvantages = proposal.avantages ? proposal.avantages.split('\n').map(a => a.trim()).filter(Boolean) : [];
-      if (!arraysEqual(newAvantages, oldAvantages)) surgicalData.avantages = newAvantages;
+	// ✨ LE NETTOYEUR : On retire les puces esthétiques avant de sceller dans Supabase
+	const oldAvantages = parseSafeArray(editingItem.avantages);
+	const newAvantages = proposal.avantages 
+		? proposal.avantages.split('\n').map(a => a.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean) 
+		: [];
+	if (!arraysEqual(newAvantages, oldAvantages)) surgicalData.avantages = newAvantages;
 
-      const oldDesavantages = parseSafeArray(editingItem.desavantages);
-      const newDesavantages = proposal.desavantages ? proposal.desavantages.split('\n').map(d => d.trim()).filter(Boolean) : [];
-      if (!arraysEqual(newDesavantages, oldDesavantages)) surgicalData.desavantages = newDesavantages;
+	const oldDesavantages = parseSafeArray(editingItem.desavantages);
+	const newDesavantages = proposal.desavantages 
+		? proposal.desavantages.split('\n').map(d => d.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean) 
+		: [];
+	if (!arraysEqual(newDesavantages, oldDesavantages)) surgicalData.desavantages = newDesavantages;
 
       // COMPARAISON DES CARACTÉRISTIQUES
       const checkAndAddCarac = (key, dbKey) => {
