@@ -13,21 +13,18 @@ export function useEncyclopedia() {
     const [activeTab, setActiveTab] = useState('fairy_types');
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
-    
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFairyFilter, setSelectedFairyFilter] = useState('');
-    
+    const [selectedProfileFilter, setSelectedProfileFilter] = useState('');
+    const [selectedCategoryFilter, setSelectedCategoryFilter] = useState(''); // ✨ NOUVEAU : Le filtre de catégorie
     const [editingItem, setEditingItem] = useState(null);
     const [viewingItem, setViewingItem] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
-    
     const [pendingLocks, setPendingLocks] = useState([]);
-    
-    const [confirmState, setConfirmState] = useState({ 
+    const [confirmState, setConfirmState] = useState({
         isOpen: false, action: null, message: '', title: '', confirmText: ''
     });
 
-    // 🧠 2. RÉCUPÉRATION DES DONNÉES
     const fetchPendingLocks = useCallback(async () => {
         const { data } = await supabase.from('data_change_requests').select('record_id').eq('status', 'pending');
         if (data) setPendingLocks(data.map(req => req.record_id));
@@ -37,12 +34,26 @@ export function useEncyclopedia() {
         setLoading(true);
         try {
             let query;
-            if (activeTab === 'fairy_types') query = supabase.from('fairy_types').select('*');
-            else if (activeTab === 'fairy_capacites') query = supabase.from('fairy_capacites').select('*, fairy_type_capacites(fairy_types(id, name))');
-            else if (activeTab === 'fairy_powers') query = supabase.from('fairy_powers').select('*, fairy_type_powers(fairy_types(id, name))');
-            else if (activeTab === 'fairy_assets') query = supabase.from('fairy_assets').select('*, fairy_type_assets(fairy_types(id, name))');
+            
+            if (activeTab === 'fairy_types') {
+                query = supabase.from('fairy_types').select(`
+                    *,
+                    fairy_type_capacites ( capacite_type, capacite:fairy_capacites ( id, nom, description, bonus ) ),
+                    fairy_type_powers ( power:fairy_powers ( id, nom, description, type_pouvoir ) ),
+                    fairy_type_assets ( asset:fairy_assets ( id, nom, description, effets, effets_techniques ) )
+                `);
+            } else if (activeTab === 'social_items') {
+                query = supabase.from('social_items').select('*, profils(name_masculine)');
+            } else if (activeTab === 'fairy_capacites') {
+                query = supabase.from('fairy_capacites').select('*, fairy_type_capacites(fairy_types(id, name))');
+            } else if (activeTab === 'fairy_powers') {
+                query = supabase.from('fairy_powers').select('*, fairy_type_powers(fairy_types(id, name))');
+            } else if (activeTab === 'fairy_assets') {
+                query = supabase.from('fairy_assets').select('*, fairy_type_assets(fairy_types(id, name))');
+            }
 
             if (activeTab === 'fairy_types') query = query.order('name');
+            else if (activeTab === 'social_items') query = query.order('cout', { ascending: true }).order('nom');
             else query = query.order('nom');
 
             const { data: results, error } = await query;
@@ -62,15 +73,15 @@ export function useEncyclopedia() {
         fetchPendingLocks();
     }, [fetchData, fetchPendingLocks]);
 
-    // 🧠 3. LE MOTEUR DE FILTRAGE COMBINÉ
+    // 🧠 3. LE MOTEUR DE FILTRAGE COMBINÉ ET BLINDÉ
     const filteredData = useMemo(() => {
         return data.filter(item => {
             const searchStr = searchTerm.toLowerCase();
             const matchesSearch = (item.name || item.nom || '').toLowerCase().includes(searchStr) ||
-                                  (item.description || item.desc || '').toLowerCase().includes(searchStr);
+                (item.description || item.desc || '').toLowerCase().includes(searchStr);
 
             let matchesFairy = true;
-            if (selectedFairyFilter !== '') {
+            if (['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(activeTab) && selectedFairyFilter !== '') {
                 if (selectedFairyFilter === '__UNLINKED__') {
                     if (activeTab === 'fairy_capacites') matchesFairy = !item.fairy_type_capacites || item.fairy_type_capacites.length === 0;
                     else if (activeTab === 'fairy_powers') matchesFairy = !item.fairy_type_powers || item.fairy_type_powers.length === 0;
@@ -81,11 +92,40 @@ export function useEncyclopedia() {
                     else if (activeTab === 'fairy_assets') matchesFairy = item.fairy_type_assets?.some(link => link.fairy_types?.name === selectedFairyFilter);
                 }
             }
-            return matchesSearch && matchesFairy;
-        });
-    }, [data, searchTerm, selectedFairyFilter, activeTab]);
 
-    // 🧠 4. PRÉPARATION À L'ÉDITION (L'Aspiration d'ADN)
+            let matchesProfile = true;
+            let matchesCategory = true; // ✨ NOUVEAU : Le verrou des Catégories
+            
+            if (activeTab === 'social_items') {
+                // Filtre des Profils
+                if (selectedProfileFilter !== '') {
+                    const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
+                    let autorises = [];
+                    if (Array.isArray(item.profils_autorises)) {
+                        autorises = item.profils_autorises;
+                    } else if (typeof item.profils_autorises === 'string') {
+                        try { autorises = JSON.parse(item.profils_autorises); } 
+                        catch(e) { autorises = [item.profils_autorises]; }
+                    }
+                    
+                    if (selectedProfileFilter === '__UNLINKED__') {
+                        matchesProfile = autorises.length === 0 && !legacyProfile;
+                    } else {
+                        matchesProfile = autorises.includes(selectedProfileFilter) || legacyProfile === selectedProfileFilter;
+                    }
+                }
+
+                // ✨ Filtre des Catégories
+                if (selectedCategoryFilter !== '') {
+                    matchesCategory = item.categorie === selectedCategoryFilter;
+                }
+            }
+
+            return matchesSearch && matchesFairy && matchesProfile && matchesCategory; // Combinaison intégrale !
+        });
+    }, [data, searchTerm, selectedFairyFilter, selectedProfileFilter, selectedCategoryFilter, activeTab]);
+
+    // 🧠 4. PRÉPARATION À L'ÉDITION
     const handleOpenEdit = useCallback((item) => {
         setIsCreating(false);
         if (activeTab === 'fairy_types') {
@@ -94,12 +134,33 @@ export function useEncyclopedia() {
                 ...item,
                 competencesPredilection: fairyCloudData?.competencesPredilection || []
             });
+        } else if (activeTab === 'social_items') {
+            // ✨ LE FIX ABSOLU : On pré-mâche les profils pour que le formulaire coche les cases !
+            let autorises = [];
+            if (Array.isArray(item.profils_autorises)) {
+                autorises = [...item.profils_autorises];
+            } else if (typeof item.profils_autorises === 'string') {
+                try { autorises = JSON.parse(item.profils_autorises); } 
+                catch(e) { autorises = [item.profils_autorises]; }
+            }
+            
+            // Rétrocompatibilité : On ajoute l'ancien profil unique s'il existe
+            const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
+            if (legacyProfile && !autorises.includes(legacyProfile)) {
+                autorises.push(legacyProfile);
+            }
+
+            setEditingItem({
+                ...item,
+                profils_autorises: autorises, // Le formulaire recevra un tableau propre !
+                techData: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '{}'
+            });
         } else {
             let existingFairyIds = [];
             if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
             else if (activeTab === 'fairy_powers') existingFairyIds = item.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
             else if (activeTab === 'fairy_assets') existingFairyIds = item.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-
+            
             setEditingItem({
                 ...item,
                 techData: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '{}',
@@ -107,14 +168,12 @@ export function useEncyclopedia() {
             });
         }
     }, [activeTab, fairyData]);
-
+	
     const handleCreateNew = useCallback(() => {
         setIsCreating(true);
         setEditingItem(null);
     }, []);
 
-    // 🧠 5. ACTIONS SÉCURISÉES VIA RPC (Transactions)
-    
     const executeDelete = useCallback(async (item, tabName) => {
         setConfirmState(prev => ({ ...prev, isOpen: false }));
         setLoading(true);
@@ -176,16 +235,20 @@ export function useEncyclopedia() {
     }, [activeTab, executeToggleSeal]);
 
     return {
-        state: { 
-            activeTab, data, loading, searchTerm, selectedFairyFilter, editingItem, viewingItem, 
-            isCreating, confirmState, filteredData, encyclopediaRefs, competencesFutiles, pendingLocks 
+        state: {
+            activeTab, data, loading, searchTerm, selectedFairyFilter, 
+            selectedProfileFilter, selectedCategoryFilter, // ✨ EXPORTÉ ICI !
+            editingItem, viewingItem,
+            isCreating, confirmState, filteredData, encyclopediaRefs, competencesFutiles, pendingLocks
         },
-        setters: { 
-            setActiveTab, setSearchTerm, setSelectedFairyFilter, setEditingItem, setViewingItem, 
-            setIsCreating, setConfirmState 
+        setters: {
+            setActiveTab, setSearchTerm, setSelectedFairyFilter, 
+            setSelectedProfileFilter, setSelectedCategoryFilter, // ✨ EXPORTÉ ICI !
+            setEditingItem, setViewingItem,
+            setIsCreating, setConfirmState
         },
-        handlers: { 
-            fetchData, fetchPendingLocks, handleOpenEdit, handleCreateNew, triggerDelete, triggerToggleSeal 
+        handlers: {
+            fetchData, fetchPendingLocks, handleOpenEdit, handleCreateNew, triggerDelete, triggerToggleSeal
         }
     };
 }

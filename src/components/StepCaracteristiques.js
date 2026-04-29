@@ -1,312 +1,307 @@
-// src/compoents/StepCaracteristiques.js
-
+// src/components/StepCaracteristiques.js
 import React, { useState, useMemo } from 'react';
 import { Plus, Minus, RotateCcw } from 'lucide-react';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
-
-// ✨ Point 1 : On utilise ton utilitaire externe !
 import { getCaracCost } from '../utils/xpCalculator';
 
 const POINTS_A_REPARTIR = 10;
 const MAX_SCORE_INVESTISSEMENT = 5;
 
 export default function StepCaracteristiques() {
-  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
-  const fairyData = gameData.fairyData;
-  const [showConfirm, setShowConfirm] = useState(false);
+    const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+    const fairyData = gameData.fairyData;
+    const [showConfirm, setShowConfirm] = useState(false);
 
-  const feeData = fairyData?.[character.typeFee];
-  const currentCaracs = character.caracteristiques || {};
-  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+    const feeData = fairyData?.[character.typeFee];
 
-  // Variables XP (Centralisées proprement)
-  const xpTotal = character.xp_total || 0;
-  const xpDepense = character.xp_depense || 0;
-  const xpDispo = xpTotal - xpDepense;
+    // ✨ LE FIX ABSOLU : On mémoïse l'objet pour empêcher la recréation du `{}` à chaque rendu !
+    const currentCaracs = useMemo(() => character.caracteristiques || {}, [character.caracteristiques]);
 
-  // ✨ RÈGLE D'OR DE REACT : Le Hook est déclaré AVANT le early return !
-  const pointsDepenses = useMemo(() => {
-    // Sécurité interne au Hook
-    if (!feeData?.caracteristiques) return 0; 
+    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
 
-    return CARAC_LIST.reduce((sum, carac) => {
-      const min = feeData.caracteristiques[carac.key]?.min || 1;
-      const currentBase = currentCaracs[carac.key] || min;
-      return sum + (currentBase - min);
-    }, 0);
-  }, [currentCaracs, feeData]); // On a mis feeData au lieu de feeData.caracteristiques pour éviter un crash de dépendance
+    // Variables XP (Centralisées proprement)
+    const xpTotal = character.xp_total || 0;
+    const xpDepense = character.xp_depense || 0;
+    const xpDispo = xpTotal - xpDepense;
 
-  const pointsRestants = POINTS_A_REPARTIR - pointsDepenses;
+    // ✨ RÈGLE D'OR DE REACT : Le Hook est déclaré AVANT le early return !
+    const pointsDepenses = useMemo(() => {
+        // Sécurité interne au Hook
+        if (!feeData?.caracteristiques) return 0;
+        return CARAC_LIST.reduce((sum, carac) => {
+            const min = feeData.caracteristiques[carac.key]?.min || 1;
+            const currentBase = currentCaracs[carac.key] || min;
+            return sum + (currentBase - min);
+        }, 0);
+    }, [currentCaracs, feeData]); // On a mis feeData au lieu de feeData.caracteristiques pour éviter un crash de dépendance
 
-  // 🛡️ LA DOUANE EST ICI (Early return) : Placée obligatoirement APRÈS les Hooks !
-  if (!feeData || !feeData.caracteristiques) {
-    return <div className="p-4 text-red-600 font-serif">Données de fée manquantes. Veuillez revenir à l'étape 1.</div>;
-  }
+    const pointsRestants = POINTS_A_REPARTIR - pointsDepenses;
 
-  // ========================================================================
-  // 🧠 SÉPARATION DES RESPONSABILITÉS (Les Handlers)
-  // ========================================================================
-
-  const handleEvolutionChange = (key, delta, currentBase, newValue, maxGenetique) => {
-
-    // 🛡️ Point 3 : Protection absolue de l'Héritier
-    if (isReadOnly) {
-      showInAppNotification("Les sceaux sont verrouillés, la fiche est en lecture seule.", "warning");
-      return;
+    // 🛡️ LA DOUANE EST ICI (Early return) : Placée obligatoirement APRÈS les Hooks !
+    if (!feeData || !feeData.caracteristiques) {
+        return <div className="p-4 text-red-600 font-serif">Données de fée manquantes. Veuillez revenir à l'étape 1.</div>;
     }
 
-    // ✨ FIX 1 : On va chercher le "Plancher de Verre" dans la BONNE archive du Nuage
-    // S'il n'y a pas d'archive, on utilise le minimum naturel de l'espèce.
-    const minGenetique = feeData?.caracteristiques?.[key]?.min || 1;
-    const plancherScelle = character.data?.stats_scellees?.caracteristiques?.[key] || minGenetique;
+    // ========================================================================
+    // 🧠 SÉPARATION DES RESPONSABILITÉS (Les Handlers)
+    // ========================================================================
 
-    // On récupère le joli nom de la caractéristique pour le journal
-    const caracName = CARAC_LIST.find(c => c.key === key)?.label || key;
+    const handleEvolutionChange = (key, delta, currentBase, newValue, maxGenetique) => {
+        // 🛡️ Point 3 : Protection absolue de l'Héritier
+        if (isReadOnly) {
+            showInAppNotification("Les sceaux sont verrouillés, la fiche est en lecture seule.", "warning");
+            return;
+        }
 
-    // 🔙 Rétrogradation (Remboursement)
-    if (delta < 0) {
-      if (newValue < plancherScelle) {
-        showInAppNotification("Vos capacités passées sont figées, vous ne pouvez pas les désapprendre !", "warning");
-        return;
-      }
+        // ✨ FIX 1 : On va chercher le "Plancher de Verre" dans la BONNE archive du Nuage
+        // S'il n'y a pas d'archive, on utilise le minimum naturel de l'espèce.
+        const minGenetique = feeData?.caracteristiques?.[key]?.min || 1;
+        const plancherScelle = character.data?.stats_scellees?.caracteristiques?.[key] || minGenetique;
 
-      const costToRefund = getCaracCost(newValue);
+        // On récupère le joli nom de la caractéristique pour le journal
+        const caracName = CARAC_LIST.find(c => c.key === key)?.label || key;
 
-      // 1. On met à jour le score de la caractéristique
-      dispatchCharacter({
-        type: 'UPDATE_MULTIPLE',
-        payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
-        gameData
-      });
+        // 🔙 Rétrogradation (Remboursement)
+        if (delta < 0) {
+            if (newValue < plancherScelle) {
+                showInAppNotification("Vos capacités passées sont figées, vous ne pouvez pas les désapprendre !", "warning");
+                return;
+            }
 
-      // 2. ✨ LE CERVEAU CENTRAL : On consigne le remboursement (qui recalculera xp_depense)
-      dispatchCharacter({
-        type: 'LOG_XP_TRANSACTION',
-        transaction: {
-          type: 'REMBOURSEMENT',
-          label: `Annulation : ${caracName}`,
-          valeur: costToRefund
-        },
-        gameData
-      });
+            const costToRefund = getCaracCost(newValue);
 
-      showInAppNotification(`Dépense annulée : +${costToRefund} XP récupérés !`, "success");
-      return;
-    }
+            // 1. On met à jour le score de la caractéristique
+            dispatchCharacter({
+                type: 'UPDATE_MULTIPLE',
+                payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
+                gameData
+            });
 
-    // 📈 Progression (Achat)
-    if (delta > 0) {
-      if (newValue > maxGenetique) {
-        showInAppNotification(`Limites physiologiques de votre espèce atteintes (${maxGenetique}).`, "warning");
-        return;
-      }
+            // 2. ✨ LE CERVEAU CENTRAL : On consigne le remboursement (qui recalculera xp_depense)
+            dispatchCharacter({
+                type: 'LOG_XP_TRANSACTION',
+                transaction: {
+                    type: 'REMBOURSEMENT',
+                    label: `Annulation : ${caracName}`,
+                    valeur: costToRefund
+                },
+                gameData
+            });
 
-      const cost = getCaracCost(currentBase);
-      if (xpDispo < cost) {
-        showInAppNotification(`Il vous faut ${cost} XP pour atteindre ce rang !`, "error");
-        return;
-      }
+            showInAppNotification(`Dépense annulée : +${costToRefund} XP récupérés !`, "success");
+            return;
+        }
 
-      // 1. On met à jour le score de la caractéristique
-      dispatchCharacter({
-        type: 'UPDATE_MULTIPLE',
-        payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
-        gameData
-      });
+        // 📈 Progression (Achat)
+        if (delta > 0) {
+            if (newValue > maxGenetique) {
+                showInAppNotification(`Limites physiologiques de votre espèce atteintes (${maxGenetique}).`, "warning");
+                return;
+            }
 
-      // 2. ✨ LE CERVEAU CENTRAL : On consigne l'achat (qui recalculera xp_depense)
-      dispatchCharacter({
-        type: 'LOG_XP_TRANSACTION',
-        transaction: {
-          type: 'DEPENSE',
-          label: `Augmentation : ${caracName}`,
-          valeur: cost,
-          rang_final: newValue
-        },
-        gameData
-      });
+            const cost = getCaracCost(currentBase);
 
-      showInAppNotification(`Évolution acquise pour ${cost} XP !`, "success");
-    }
-  };
-  
-  const handleCreationChange = (key, delta, newValue, maxGenetique) => {
-    // 🛡️ Protection supplémentaire
-    if (isReadOnly) return;
+            if (xpDispo < cost) {
+                showInAppNotification(`Il vous faut ${cost} XP pour atteindre ce rang !`, "error");
+                return;
+            }
 
-    const plafondCreation = Math.min(MAX_SCORE_INVESTISSEMENT, maxGenetique);
-    
-    if (newValue > plafondCreation) {
-       showInAppNotification(`Limité à ${plafondCreation} à la création.`, "warning");
-       return;
-    }
-    if (delta > 0 && pointsRestants <= 0) {
-       showInAppNotification("Votre budget de points est épuisé !", "error");
-       return;
-    }
+            // 1. On met à jour le score de la caractéristique
+            dispatchCharacter({
+                type: 'UPDATE_MULTIPLE',
+                payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
+                gameData
+            });
 
-    dispatchCharacter({ 
-      type: 'UPDATE_MULTIPLE', 
-      payload: { caracteristiques: { ...currentCaracs, [key]: newValue } }, 
-      gameData 
-    });
-  };
+            // 2. ✨ LE CERVEAU CENTRAL : On consigne l'achat (qui recalculera xp_depense)
+            dispatchCharacter({
+                type: 'LOG_XP_TRANSACTION',
+                transaction: {
+                    type: 'DEPENSE',
+                    label: `Augmentation : ${caracName}`,
+                    valeur: cost,
+                    rang_final: newValue
+                },
+                gameData
+            });
 
-  // 🚦 Le Routeur d'action principal
-  const handleChange = (key, delta) => {
-    const minGenetique = feeData.caracteristiques[key]?.min || 1;
-    const maxGenetique = feeData.caracteristiques[key]?.max || 6;
-    const currentBase = currentCaracs[key] || minGenetique;
-    const newValue = currentBase + delta;
+            showInAppNotification(`Évolution acquise pour ${cost} XP !`, "success");
+        }
+    };
 
-    // Plancher absolu de l'espèce
-    if (newValue < minGenetique) return;
+    const handleCreationChange = (key, delta, newValue, maxGenetique) => {
+        // 🛡️ Protection supplémentaire
+        if (isReadOnly) return;
 
-    // Aiguillage
-    if (isScelle) {
-      handleEvolutionChange(key, delta, currentBase, newValue, maxGenetique);
-    } else {
-      handleCreationChange(key, delta, newValue, maxGenetique);
-    }
-  };
+        const plafondCreation = Math.min(MAX_SCORE_INVESTISSEMENT, maxGenetique);
 
-  // --- Actions annexes ---
-  const handleResetClick = () => {
-    if (!isReadOnly) setShowConfirm(true);
-  };
+        if (newValue > plafondCreation) {
+            showInAppNotification(`Limité à ${plafondCreation} à la création.`, "warning");
+            return;
+        }
 
-  const executeReset = () => {
-    dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: {} }, gameData });
-    setShowConfirm(false);
-  };
+        if (delta > 0 && pointsRestants <= 0) {
+            showInAppNotification("Votre budget de points est épuisé !", "error");
+            return;
+        }
 
-  return (
-    <div className="max-w-4xl mx-auto">
+        dispatchCharacter({
+            type: 'UPDATE_MULTIPLE',
+            payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
+            gameData
+        });
+    };
 
-      {/* Header avec Compteurs (Adaptatif Création / XP) */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-amber-50 p-4 rounded-lg border border-amber-200 gap-4">
-        <div>
-          <h2 className="text-2xl font-serif text-amber-900">Caractéristiques</h2>
-          {isScelle ? (
-            <p className="text-sm text-amber-700 font-bold">
-              Améliorez vos caractéristiques physiologiques en dépensant de l'expérience (XP).
-            </p>
-          ) : (
-            <p className="text-sm text-amber-700">
-              Ajoutez 10 points aux minimums de votre fée. (Investissement max : 5).
-            </p>
-          )}
-        </div>
+    // 🚦 Le Routeur d'action principal
+    const handleChange = (key, delta) => {
+        const minGenetique = feeData.caracteristiques[key]?.min || 1;
+        const maxGenetique = feeData.caracteristiques[key]?.max || 6;
+        const currentBase = currentCaracs[key] || minGenetique;
+        const newValue = currentBase + delta;
 
-        {!isScelle && (
-          <div className="flex gap-4 items-center">
-            <button
-              onClick={handleResetClick}
-              className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200 shadow-sm"
-              title="Réinitialiser les caractéristiques"
-            >
-              <RotateCcw size={16} />
-              <span className="hidden sm:inline">Réinitialiser</span>
-            </button>
+        // Plancher absolu de l'espèce
+        if (newValue < minGenetique) return;
 
-            <div className={`px-4 py-2 rounded-lg font-bold border-2 flex flex-col items-center min-w-[80px] ${
-              pointsRestants === 0
-                ? 'bg-green-100 text-green-700 border-green-300'
-                : pointsRestants < 0
-                ? 'bg-red-100 text-red-700 border-red-300'
-                : 'bg-white text-amber-600 border-amber-300'
-            }`}>
-              <span className="text-2xl">{pointsRestants}</span>
-              <span className="text-xs uppercase">Points</span>
-            </div>
-          </div>
-        )}
-      </div>
+        // Aiguillage
+        if (isScelle) {
+            handleEvolutionChange(key, delta, currentBase, newValue, maxGenetique);
+        } else {
+            handleCreationChange(key, delta, newValue, maxGenetique);
+        }
+    };
 
-      {/* Grille des Caractéristiques */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {CARAC_LIST.map((carac) => {
-          const minGenetique = feeData.caracteristiques[carac.key]?.min || 1;
-          const maxGenetique = feeData.caracteristiques[carac.key]?.max || 6;
-          const current = currentCaracs[carac.key] || minGenetique;
-          const investis = current - minGenetique;
+    // --- Actions annexes ---
+    const handleResetClick = () => {
+        if (!isReadOnly) setShowConfirm(true);
+    };
 
-		  const plancher = isScelle
-			? (character.data?.stats_scellees?.caracteristiques?.[carac.key] || minGenetique)
-			: minGenetique;
+    const executeReset = () => {
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: {} }, gameData });
+        setShowConfirm(false);
+    };
 
-          const plafond = isScelle 
-            ? maxGenetique 
-            : Math.min(MAX_SCORE_INVESTISSEMENT, maxGenetique);
-
-          const isMinusDisabled = current <= plancher;
-          const isPlusDisabled = isScelle 
-            ? current >= plafond 
-            : (pointsRestants <= 0 || current >= plafond);
-
-          return (
-            <div key={carac.key} className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
-              
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{carac.icon}</span>
+    return (
+        <div className="max-w-4xl mx-auto">
+            {/* Header avec Compteurs (Adaptatif Création / XP) */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-amber-50 p-4 rounded-lg border border-amber-200 gap-4">
                 <div>
-                  {/* ✨ FIX : On met le label ET le cadenas dans un même conteneur flex ! */}
-                  <div className="font-bold text-gray-800 flex items-center gap-2">
-                    {carac.label}
-                  </div>
-                  
-                  <div className="text-xs font-bold text-gray-400">
-                    Min {minGenetique} <span className="text-gray-300 font-normal">/</span> Max {maxGenetique}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleChange(carac.key, -1)}
-                  disabled={isMinusDisabled}
-                  className="h-10 w-10 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-600 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
-                >
-                  <Minus size={18} />
-                </button>
-
-                <div className="flex flex-col items-center w-12 text-center">
-                  <span className="text-xl font-bold text-amber-900">{current}</span>
-                  {!isScelle && investis > 0 && (
-                    <div className="text-[10px] text-green-600 font-bold">+{investis} pts</div>
-                  )}
+                    <h2 className="text-2xl font-serif text-amber-900">Caractéristiques</h2>
+                    {isScelle ? (
+                        <p className="text-sm text-amber-700 font-bold">
+                            Améliorez vos caractéristiques physiologiques en dépensant de l'expérience (XP).
+                        </p>
+                    ) : (
+                        <p className="text-sm text-amber-700">
+                            Ajoutez 10 points aux minimums de votre fée. (Investissement max : 5).
+                        </p>
+                    )}
                 </div>
 
-                <button
-                  onClick={() => handleChange(carac.key, 1)}
-                  disabled={isPlusDisabled}
-                  className="h-10 w-10 flex flex-col items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors font-bold"
-                >
-                  <Plus size={18} />
-                  {isScelle && current < plafond && (
-                    <span className="text-[9px] font-bold -mt-1">({getCaracCost(current)} XP)</span>
-                  )}
-                </button>
+                {!isScelle && (
+                    <div className="flex gap-4 items-center">
+                        <button
+                            onClick={handleResetClick}
+                            className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors text-sm font-bold border border-red-200 shadow-sm"
+                            title="Réinitialiser les caractéristiques"
+                        >
+                            <RotateCcw size={16} />
+                            <span className="hidden sm:inline">Réinitialiser</span>
+                        </button>
 
-              </div>
-
+                        <div className={`px-4 py-2 rounded-lg font-bold border-2 flex flex-col items-center min-w-[80px] ${
+                            pointsRestants === 0
+                                ? 'bg-green-100 text-green-700 border-green-300'
+                                : pointsRestants < 0
+                                ? 'bg-red-100 text-red-700 border-red-300'
+                                : 'bg-white text-amber-600 border-amber-300'
+                        }`}>
+                            <span className="text-2xl">{pointsRestants}</span>
+                            <span className="text-xs uppercase">Points</span>
+                        </div>
+                    </div>
+                )}
             </div>
-          );
-        })}
-      </div>
 
-      <ConfirmModal
-        isOpen={showConfirm}
-        title="Réinitialiser les Attributs"
-        message="Voulez-vous vraiment retirer tous vos points investis ? Vos caractéristiques reviendront aux valeurs de base de votre Fée."
-        onConfirm={executeReset}
-        onCancel={() => setShowConfirm(false)}
-        confirmText="Oui, réinitialiser"
-        cancelText="Finalement, non"
-      />
-    </div>
-  );
+            {/* Grille des Caractéristiques */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {CARAC_LIST.map((carac) => {
+                    const minGenetique = feeData.caracteristiques[carac.key]?.min || 1;
+                    const maxGenetique = feeData.caracteristiques[carac.key]?.max || 6;
+                    const current = currentCaracs[carac.key] || minGenetique;
+                    const investis = current - minGenetique;
+
+                    const plancher = isScelle
+                        ? (character.data?.stats_scellees?.caracteristiques?.[carac.key] || minGenetique)
+                        : minGenetique;
+
+                    const plafond = isScelle
+                        ? maxGenetique
+                        : Math.min(MAX_SCORE_INVESTISSEMENT, maxGenetique);
+
+                    const isMinusDisabled = current <= plancher;
+                    const isPlusDisabled = isScelle
+                        ? current >= plafond
+                        : (pointsRestants <= 0 || current >= plafond);
+
+                    return (
+                        <div key={carac.key} className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <span className="text-2xl">{carac.icon}</span>
+                                <div>
+                                    {/* ✨ FIX : On met le label ET le cadenas dans un même conteneur flex ! */}
+                                    <div className="font-bold text-gray-800 flex items-center gap-2">
+                                        {carac.label}
+                                    </div>
+                                    <div className="text-xs font-bold text-gray-400">
+                                        Min {minGenetique} <span className="text-gray-300 font-normal">/</span> Max {maxGenetique}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => handleChange(carac.key, -1)}
+                                    disabled={isMinusDisabled}
+                                    className="h-10 w-10 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-600 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
+                                >
+                                    <Minus size={18} />
+                                </button>
+
+                                <div className="flex flex-col items-center w-12 text-center">
+                                    <span className="text-xl font-bold text-amber-900">{current}</span>
+                                    {!isScelle && investis > 0 && (
+                                        <div className="text-[10px] text-green-600 font-bold">+{investis} pts</div>
+                                    )}
+                                </div>
+
+                                <button
+                                    onClick={() => handleChange(carac.key, 1)}
+                                    disabled={isPlusDisabled}
+                                    className="h-10 w-10 flex flex-col items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors font-bold"
+                                >
+                                    <Plus size={18} />
+                                    {isScelle && current < plafond && (
+                                        <span className="text-[9px] font-bold -mt-1">({getCaracCost(current)} XP)</span>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            <ConfirmModal
+                isOpen={showConfirm}
+                title="Réinitialiser les Attributs"
+                message="Voulez-vous vraiment retirer tous vos points investis ? Vos caractéristiques reviendront aux valeurs de base de votre Fée."
+                onConfirm={executeReset}
+                onCancel={() => setShowConfirm(false)}
+                confirmText="Oui, réinitialiser"
+                cancelText="Finalement, non"
+            />
+        </div>
+    );
 }

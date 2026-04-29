@@ -1,7 +1,6 @@
 // src/utils/characterEngine.js
-
 import { reconstructHistory } from './historyReconstructor';
-import { calculateCharacterStats } from './bonusCalculator'; // ✨ NOUVEAU : Import de ton moteur de calcul
+import { calculateCharacterStats } from './bonusCalculator';
 
 // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
 export function characterReducer(state, action) {
@@ -12,7 +11,7 @@ export function characterReducer(state, action) {
         case 'LOAD_CHARACTER': {
             let loadedState = { ...action.payload };
             const isScelle = loadedState.statut === 'scelle' || loadedState.statut === 'scellé';
-
+            
             // Si c'est un vieux personnage déjà en jeu...
             if (isScelle) {
                 if (!loadedState.data) loadedState.data = {};
@@ -20,9 +19,10 @@ export function characterReducer(state, action) {
                 if (!loadedState.data.historique_xp || loadedState.data.historique_xp.length === 0) {
                     const pastTotal = loadedState.xp_total || 0;
                     const pastDepense = loadedState.xp_depense || 0;
-
+                    
                     if (pastTotal > 0 || pastDepense > 0) {
                         loadedState.data.historique_xp = [];
+                        
                         // 1. Le Gain Originel
                         if (pastTotal > 0) {
                             loadedState.data.historique_xp.push({
@@ -32,12 +32,13 @@ export function characterReducer(state, action) {
                                 date_mouvement: new Date(Date.now() - 200000).toISOString()
                             });
                         }
+                        
                         // 2. La Fouille Archéologique
                         if (pastDepense > 0) {
                             const reconstructedTxs = reconstructHistory(loadedState, action.gameData);
+                            
                             // 3. L'Intégrité Mathématique (Le Solde de Tout Compte)
                             const sumReconstructed = reconstructedTxs.reduce((acc, tx) => acc + tx.valeur, 0);
-
                             if (sumReconstructed !== pastDepense) {
                                 const difference = pastDepense - sumReconstructed;
                                 reconstructedTxs.push({
@@ -47,6 +48,7 @@ export function characterReducer(state, action) {
                                     date_mouvement: new Date(Date.now() - 1000).toISOString() // La toute dernière ligne du passé
                                 });
                             }
+                            
                             // On injecte les lignes du passé en antéchronologique (les plus récentes d'abord)
                             reconstructedTxs.reverse().forEach(tx => {
                                 loadedState.data.historique_xp.unshift(tx);
@@ -59,19 +61,17 @@ export function characterReducer(state, action) {
             break;
         }
 
-        case 'RESET_CHARACTER':
-            newState = { ...action.payload };
-            break;
-
-        case 'UPDATE_FIELD':
+        case 'UPDATE_FIELD': {
             newState[action.field] = action.value;
             break;
+        }
 
-        case 'UPDATE_MULTIPLE':
+        case 'UPDATE_MULTIPLE': {
             newState = { ...newState, ...action.payload };
             break;
+        }
 
-        case 'TOGGLE_ARRAY_ITEM':
+        case 'TOGGLE_ARRAY_ITEM': {
             const currentArray = newState[action.field] || [];
             if (currentArray.includes(action.value)) {
                 newState[action.field] = currentArray.filter(item => item !== action.value);
@@ -79,6 +79,12 @@ export function characterReducer(state, action) {
                 newState[action.field] = [...currentArray, action.value];
             }
             break;
+        }
+
+        case 'RESET_CHARACTER': {
+            newState = { ...(action.payload || {}) };
+            break;
+        }
 
         // ==========================================================
         // ✨ LE GRAND REGISTRE (JOURNAL DES FLUX DE L'ÂME)
@@ -96,7 +102,7 @@ export function characterReducer(state, action) {
                 ...transaction,
                 date_mouvement: new Date().toISOString()
             };
-            
+
             // On l'ajoute au début du tableau pour avoir le plus récent en premier
             newState.data.historique_xp = [newTx, ...newState.data.historique_xp];
 
@@ -115,7 +121,7 @@ export function characterReducer(state, action) {
         }
 
         default:
-            return state;
+            break; 
     }
 
     // ✨ L'HYDRATATION ABSOLUE (Le Dogme de l'Architecte)
@@ -159,7 +165,6 @@ export function characterReducer(state, action) {
 
                 // Fusion sans écraser les investissements réels
                 newState.caracteristiques = { ...baseCaracs, ...(newState.caracteristiques || {}) };
-
                 const tricherieBase = feeData.caracteristiques.tricherie?.min || Math.floor((newState.caracteristiques.feerie + newState.caracteristiques.masque) / 2);
                 newState.caracteristiques.tricherie = Math.max(tricherieBase, Math.floor((newState.caracteristiques.feerie + newState.caracteristiques.masque) / 2));
 
@@ -192,7 +197,6 @@ export function characterReducer(state, action) {
         let entregent = newState.competencesLibres?.rangs?.['Entregent'] || 0;
         if (newState.profils?.majeur?.nom === 'Gentleman') entregent += 2;
         if (newState.profils?.mineur?.nom === 'Gentleman') entregent += 1;
-        
         const hasEntregentPredilection =
             feeData?.competencesPredilection?.some(p => p.nom === 'Entregent' && !p.isChoix) ||
             Object.values(newState.competencesLibres?.choixPredilection || {}).includes('Entregent');
@@ -206,7 +210,6 @@ export function characterReducer(state, action) {
         // --- C. LE SUPER-CALCULATEUR DE PROFILS ET PP CENTRALISÉ ---
         const atoutsRangs = {};
         const priceModifiers = {};
-
         (newState.atouts || []).forEach(atoutId => {
             const atout = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
             if (atout && atout.effets_techniques) {
@@ -242,8 +245,8 @@ export function characterReducer(state, action) {
 
         const rangsProfils = {};
         const budgetsPP = {};
-        const competencesBase = {}; 
-        const competencesTotal = {}; 
+        const competencesBase = {};
+        const competencesTotal = {};
 
         Object.keys(compsMap).forEach(profilNom => {
             let somme = 0;
@@ -258,6 +261,7 @@ export function characterReducer(state, action) {
 
                 const baseScore = bonusProfil + bonusPred + bonusAtout;
                 const totalScore = baseScore + investis;
+
                 competencesBase[nomComp] = baseScore;
                 competencesTotal[nomComp] = totalScore;
                 somme += totalScore;
@@ -305,6 +309,7 @@ export function characterReducer(state, action) {
 
         const toutesLesSpecialites = [];
         if (newState.competencesLibres?.specialiteMetier?.nom) toutesLesSpecialites.push(`${newState.competencesLibres.specialiteMetier.comp} : ${newState.competencesLibres.specialiteMetier.nom} (Métier)`);
+
         Object.entries(newState.competencesLibres?.choixSpecialiteUser || {}).forEach(([comp, specs]) => {
             specs.forEach(s => toutesLesSpecialites.push(`${comp} : ${s} (Acquise)`));
         });
@@ -374,6 +379,7 @@ export function characterReducer(state, action) {
 
         const bonusMasqueResist = Math.max(0, masque - 5);
         const tailleFeerique = feeData?.taille || feeData?.taille_categorie || 'Moyenne';
+
         let modTailleFeerique = 0;
         if (tailleFeerique === 'Petite') modTailleFeerique = 1;
         else if (tailleFeerique === 'Grande') modTailleFeerique = -1;
@@ -408,6 +414,6 @@ export function characterReducer(state, action) {
             combat: combatStats // ✨ LA VÉRITÉ ABSOLUE EST MAINTENANT ICI !
         };
     }
-
+    
     return newState;
 }

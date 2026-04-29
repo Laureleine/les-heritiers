@@ -1,5 +1,3 @@
-// 10.6.0 // 10.9.0
-
 import React, { createContext, useContext, useReducer, useState } from 'react';
 import { characterReducer } from '../utils/characterEngine';
 
@@ -17,6 +15,7 @@ export const initialCharacterState = {
   pouvoirs: [],
   vieSociale: {}, fortune: 0,
   atouts: [],
+  data: { choixEquipement: {} }, // ✨ NOUVEAU : La mémoire de l'équipement
   isPublic: false
 };
 

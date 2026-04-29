@@ -2,6 +2,21 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.7 - "Le Carrefour des Spécialités 🛤️"',
+        date: '29 Avril 2026',
+        changes: [
+            '🛤️ **Forge (BonusBuilder) :** La brique rose "Choix de Spécialité" a été totalement refondue. Les Gardiens peuvent désormais proposer un choix entre des spécialités appartenant à des compétences mères totalement différentes (ex: *Mêlée: Épée* OU *Tir: Pistolet*). La migration des anciennes briques vers le nouveau format se fait automatiquement à l\'ouverture de l\'outil.',
+            '🧠 **Cerveau Central (Cerbère) :** Le moteur d\'analyse du personnage a appris à scinder dynamiquement les chaînes composites (grâce au séparateur `:`) pour affecter la spécialité choisie à la bonne compétence de base dans le Bilan.',
+            '🖨️ **Parchemins (PDF & JSON) :** La Bible Autonome et le générateur PDF ont été recâblés sur ce nouveau format universel, garantissant que ces choix croisés s\'impriment correctement sur la feuille de personnage finale.'
+        ]
+    },    {
+        version: '15.16.1 - "Le Tri Social 👔"',
+        date: '29 Avril 2026',
+        changes: [
+            '👔 **Ergonomie (Vie Sociale) :** Remplacement intelligent du filtre de l\'Encyclopédie. L\'onglet de Vie Sociale et d\'Équipement ne propose plus de filtrer par Espèce Féérique, mais propose dorénavant un tri logique par "Profils Autorisés" (Aventurier, Savant, Gentleman...).',
+            '🧠 **Cerveau Séparé :** Optimisation du hook `useEncyclopedia`. Le moteur de recherche (useMemo) englobe désormais la matrice de filtrage des profils, et nettoie automatiquement les listes affichées à l\'écran sans le moindre temps de latence.'
+        ]
+    },    {
         version: '15.15.0 - "La Fée Indépendante 🧚‍♀️"',
         date: '27 Avril 2026',
         changes: [

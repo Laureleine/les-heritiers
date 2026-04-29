@@ -1,7 +1,7 @@
 // src/components/BonusBuilder.js
 
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles, AlertCircle, Tag } from 'lucide-react';
+import { X, Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles, AlertCircle, Tag, Lock } from 'lucide-react';
 import { addGlobalSpeciality, addCompetenceFutile } from '../utils/supabaseGameData';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -66,11 +66,16 @@ export default function BonusBuilder({
     }
 
     // ✨ NOUVEAU : Lecture des Ajustements de Prix
-    if (currentParsed?.price_modifiers) {
-      Object.entries(currentParsed.price_modifiers).forEach(([key, val]) => {
-        initialBlocks.push({ id: generateId(), type: 'price_modifier', key, val });
-      });
-    }
+	if (currentParsed?.price_modifiers) {
+		Object.entries(currentParsed.price_modifiers).forEach(([key, val]) => {
+			initialBlocks.push({ id: generateId(), type: 'price_modifier', key, val });
+		});
+	}
+
+	// ✨ ON AJOUTE LA LECTURE DU PRÉREQUIS
+	if (currentParsed?.prerequis) {
+		initialBlocks.push({ id: generateId(), type: 'prerequis', key: 'prerequis', val: currentParsed.prerequis });
+	}
 
     if (currentParsed?.predilections) {
       currentParsed.predilections.forEach(p => {
@@ -78,9 +83,15 @@ export default function BonusBuilder({
           initialBlocks.push({ id: generateId(), type: 'pred_fixe', key: p });
         } else if (p.isChoix) {
           initialBlocks.push({ id: generateId(), type: 'pred_choix', options: p.options || [] });
-        } else if (p.isSpecialiteChoix) {
-          initialBlocks.push({ id: generateId(), type: 'pred_spec_choix', comp: p.nom, options: p.options || [] });
-        } else if (p.nom) {
+		} else if (p.isSpecialiteChoix) {
+			// ✨ MIGRATION AUTOMATIQUE : On convertit les anciennes données au nouveau format "Compétence: Spécialité"
+			const optionsFormattees = (p.options || []).map(opt => {
+				if (opt.includes(':')) return opt;
+				if (p.nom) return `${p.nom}: ${opt}`;
+				return opt;
+			});
+			initialBlocks.push({ id: generateId(), type: 'pred_spec_choix', options: optionsFormattees, comp: '', nom: '' });
+		} else if (p.nom) {
           initialBlocks.push({ id: generateId(), type: 'pred_fixe', key: p.nom, nom: p.specialite || '' });
         }
       });
@@ -125,6 +136,10 @@ export default function BonusBuilder({
         if (!newTech.price_modifiers) newTech.price_modifiers = {};
         newTech.price_modifiers[b.key] = parseInt(b.val) || 0;
       }
+	  // ✨ ON EXPORTE LE PRÉREQUIS
+	  else if (b.type === 'prerequis') {
+		newTech.prerequis = b.val;
+	  }
       else if (b.type === 'pred_fixe' && b.key) {
         if (!newTech.predilections) newTech.predilections = [];
         if (b.nom) newTech.predilections.push({ nom: b.key, specialite: b.nom });
@@ -132,10 +147,10 @@ export default function BonusBuilder({
       } else if (b.type === 'pred_choix') {
         if (!newTech.predilections) newTech.predilections = [];
         newTech.predilections.push({ isChoix: true, options: b.options || [] });
-      } else if (b.type === 'pred_spec_choix' && b.comp) {
-        if (!newTech.predilections) newTech.predilections = [];
-        newTech.predilections.push({ nom: b.comp, isSpecialiteChoix: true, options: b.options || [] });
-      }
+		} else if (b.type === 'pred_spec_choix') {
+			if (!newTech.predilections) newTech.predilections = [];
+			newTech.predilections.push({ isSpecialiteChoix: true, options: b.options || [] });
+		}
       else if (b.type === 'futile_fixe' && b.key) {
         if (!newTech.futiles) newTech.futiles = [];
         newTech.futiles.push({ nom: b.key });
@@ -199,11 +214,12 @@ export default function BonusBuilder({
   const allFutiles = futilesSkills;
 
   const BLOCK_TYPES = [
+    { id: 'prerequis', label: 'Prérequis (Condition)', icon: <Lock size={14}/>, color: 'bg-stone-100 text-stone-800 border-stone-300' },
+    { id: 'carac', label: 'Bonus Caractéristique', icon: <Activity size={14}/>, color: 'bg-red-100 text-red-800 border-red-200' },
     { id: 'carac', label: 'Bonus Caractéristique', icon: <Activity size={14}/>, color: 'bg-red-100 text-red-800 border-red-200' },
     { id: 'comp', label: 'Bonus Compétence', icon: <BookOpen size={14}/>, color: 'bg-blue-100 text-blue-800 border-blue-200' },
     { id: 'spec', label: 'Spécialité Offerte', icon: <Star size={14}/>, color: 'bg-amber-100 text-amber-800 border-amber-200' },
     { id: 'fortune', label: 'Bonus Fortune', icon: <Coins size={14}/>, color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-    // ✨ NOUVEAU : La Brique d'Ajustement de Prix
     { id: 'price_modifier', label: 'Ajustement Prix Boutique', icon: <Tag size={14}/>, color: 'bg-rose-100 text-rose-800 border-rose-200' },
     { id: 'pred_choix', label: 'Choix de Compétence Utile (OU)', icon: <GitMerge size={14}/>, color: 'bg-purple-100 text-purple-800 border-purple-200' },
     { id: 'pred_spec_choix', label: 'Choix de Spécialité (OU)', icon: <Star size={14}/>, color: 'bg-pink-100 text-pink-800 border-pink-200' },
@@ -282,7 +298,22 @@ export default function BonusBuilder({
         {blocks.map(block => (
           <div key={block.id} className="flex items-center gap-3 bg-white p-2 rounded-lg shadow-sm border border-stone-200 animate-fade-in group">
             
-            {block.type === 'carac' && (
+            {/* ✨ LA BRIQUE PRÉREQUIS */}
+			{block.type === 'prerequis' && (
+				<>
+					<div className="bg-stone-100 text-stone-800 p-2 rounded border border-stone-300 shrink-0"><Lock size={18}/></div>
+					<span className="text-sm font-bold text-stone-900 shrink-0">Condition :</span>
+					<input 
+						type="text" 
+						placeholder="Ex: Avoir 3 en Sciences..." 
+						value={block.val} 
+						onChange={(e) => updateBlock(block.id, 'val', e.target.value)} 
+						className="w-full p-1.5 border border-stone-300 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-stone-400 outline-none" 
+					/>
+				</>
+			)}			
+			
+			{block.type === 'carac' && (
               <>
                 <div className="bg-red-100 text-red-800 p-2 rounded border border-red-200"><Activity size={18}/></div>
                 <select value={block.key} onChange={(e) => updateBlock(block.id, 'key', e.target.value)} className="flex-1 p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-red-200 outline-none">
@@ -454,68 +485,74 @@ export default function BonusBuilder({
             )}
 
             {block.type === 'pred_spec_choix' && (() => {
-              const compData = competencesData.find(c => c.name === block.comp) || {};
-              const availableSpecs = compData.specialites || [];
-
-              return (
-                <>
-                  <div className="bg-pink-100 text-pink-800 p-2 rounded border border-pink-200"><Star size={18}/></div>
-                  <span className="text-sm font-bold text-pink-900">Choix (Spé) :</span>
-                  <div className="flex-1 flex flex-col gap-1">
-                    <select
-                      value={block.comp}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        const newBlocks = blocks.map(b => b.id === block.id ? { ...b, comp: val, options: [] } : b);
-                        setBlocks(newBlocks);
-                        setHasUnsavedChanges(true);
-                      }}
-                      className="p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-pink-200 outline-none w-1/4"
-                    >
-                      <option value="">Compétence...</option>
-                      {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-
-                    <div className="flex flex-wrap gap-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[32px] shadow-inner">
-                      {(block.options || []).map(opt => (
-                        <span key={opt} className="bg-pink-600 text-white text-[10px] px-2 py-0.5 rounded flex items-center gap-1 font-bold shadow-sm animate-fade-in">
-                          {opt === 'PURE_SPEC' ? 'Spécialité Pure (Sans bonus utile)' : opt}
-                          <button onClick={() => {
-                            const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
-                            setBlocks(newBlocks);
-                            setHasUnsavedChanges(true);
-                          }} className="hover:text-red-300 ml-1"><X size={10}/></button>
-                        </span>
-                      ))}
-                      {block.comp ? (
-                        <div className="flex items-center gap-1 flex-1 min-w-[140px]">
-                          <input
-                            type="text"
-                            placeholder="Laisser vide = Toutes"
-                            list={`specs-list-${block.id}`}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && e.target.value.trim()) {
-                                e.preventDefault();
-                                const val = e.target.value.trim();
-                                if (!(block.options || []).includes(val)) {
-                                  const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), val] } : b);
-                                  setBlocks(newBlocks);
-                                  setHasUnsavedChanges(true);
-                                }
-                                e.target.value = '';
-                              }
-                            }}
-                            className="text-xs bg-transparent outline-none focus:ring-0 font-bold text-stone-500 placeholder-stone-400 flex-1 border-none"
-                          />
-                          <datalist id={`specs-list-${block.id}`}>
-                            {availableSpecs.map(s => <option key={s.id || s.nom} value={s.nom} />)}
-                          </datalist>
+                const compData = competencesData.find(c => c.name === block.comp) || {};
+                const availableSpecs = compData.specialites || [];
+                return (
+                    <>
+                        <div className="bg-pink-100 text-pink-800 p-2 rounded border border-pink-200"><Star size={18}/></div>
+                        <span className="text-sm font-bold text-pink-900">Choix (Spé) :</span>
+                        <div className="flex-1 flex flex-col gap-1">
+                            <div className="flex flex-wrap gap-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[32px] shadow-inner">
+                                {(block.options || []).map(opt => (
+                                    <span key={opt} className="bg-pink-600 text-white text-[10px] px-2 py-0.5 rounded flex items-center gap-1 font-bold shadow-sm animate-fade-in">
+                                        {opt}
+                                        <button onClick={() => {
+                                            const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
+                                            setBlocks(newBlocks);
+                                            setHasUnsavedChanges(true);
+                                        }} className="hover:text-red-300 ml-1"><X size={10}/></button>
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-2 mt-1">
+                                <select
+                                    value={block.comp || ''}
+                                    onChange={(e) => updateBlock(block.id, 'comp', e.target.value)}
+                                    className="p-1 border border-stone-200 rounded text-xs bg-white outline-none w-full sm:w-1/3"
+                                >
+                                    <option value="">+ Compétence...</option>
+                                    {usefulSkills.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                                {block.comp && (
+                                    <div className="flex items-center gap-1 flex-1">
+                                        <input
+                                            type="text"
+                                            placeholder="Nom de la spécialité..."
+                                            list={`specs-list-${block.id}`}
+                                            value={block.nom || ''}
+                                            onChange={(e) => updateBlock(block.id, 'nom', e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && e.target.value.trim()) {
+                                                    e.preventDefault();
+                                                    const newOpt = `${block.comp}: ${e.target.value.trim()}`;
+                                                    if (!(block.options || []).includes(newOpt)) {
+                                                        const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), newOpt], nom: '' } : b);
+                                                        setBlocks(newBlocks);
+                                                        setHasUnsavedChanges(true);
+                                                    }
+                                                }
+                                            }}
+                                            className="text-xs p-1 border border-stone-200 rounded bg-white outline-none flex-1"
+                                        />
+                                        <datalist id={`specs-list-${block.id}`}>
+                                            {availableSpecs.map(s => <option key={s.id || s.nom} value={s.nom} />)}
+                                        </datalist>
+                                        <button onClick={() => {
+                                            if (block.nom?.trim()) {
+                                                const newOpt = `${block.comp}: ${block.nom.trim()}`;
+                                                if (!(block.options || []).includes(newOpt)) {
+                                                    const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), newOpt], nom: '' } : b);
+                                                    setBlocks(newBlocks);
+                                                    setHasUnsavedChanges(true);
+                                                }
+                                            }
+                                        }} className="bg-pink-600 text-white px-2 py-1 rounded text-[10px] font-bold shadow-sm">Ajouter</button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                      ) : <span className="text-xs italic text-stone-400 px-2">Sélectionnez la comp...</span>}
-                    </div>
-                  </div>
-                </>
-              );
+                    </>
+                );
             })()}
 
             {block.type === 'pred_fixe' && (() => {
@@ -676,7 +713,7 @@ export default function BonusBuilder({
                 )}
               </>
             )}
-
+			
             <button onClick={() => handleDeleteBlock(block.id)} className="ml-auto p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0">
               <Trash2 size={16} />
             </button>

@@ -68,12 +68,20 @@ export function useCerbere() {
             addSpec(sm.comp, sm.nom, 'Métier');
         }
 
-        if (feeData?.competencesPredilection) {
-            feeData.competencesPredilection.forEach((p, idx) => {
-                const nomSpec = p.specialite || character.competencesLibres?.choixSpecialite?.[idx];
-                if (nomSpec) addSpec(p.nom, nomSpec, 'Inné');
-            });
-        }
+		if (feeData?.competencesPredilection) {
+			feeData.competencesPredilection.forEach((p, idx) => {
+				const nomSpec = p.specialite || character.competencesLibres?.choixSpecialite?.[idx];
+				if (nomSpec) {
+					// ✨ LECTURE DU NOUVEAU FORMAT UNIVERSEL
+					if (p.isSpecialiteChoix && nomSpec.includes(':')) {
+						const [pComp, pSpec] = nomSpec.split(':').map(s => s.trim());
+						addSpec(pComp, pSpec, 'Inné');
+					} else {
+						addSpec(p.nom, nomSpec, 'Inné');
+					}
+				}
+			});
+		}
 
         (character.atouts || []).forEach(atoutId => {
             const def = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
@@ -85,6 +93,32 @@ export function useCerbere() {
             }
         });
 
+		// ✨ INJECTION VIE SOCIALE (Spécialités pour Cerbère et PDF)
+		const allBoughtIds = Object.values(character.vieSociale || {}).flat();
+		const boughtItems = gameData.socialItems?.filter(item => allBoughtIds.includes(item.id)) || [];
+		const choixEquipement = character.data?.choixEquipement || {};
+		
+		boughtItems.forEach(item => {
+			if (item.effets_techniques) {
+				try {
+					const tech = typeof item.effets_techniques === 'string' ? JSON.parse(item.effets_techniques) : item.effets_techniques;
+					if (tech.predilections) {
+						tech.predilections.forEach((pred, idx) => {
+							const chosenVal = choixEquipement[`${item.id}_${idx}`];
+							if (chosenVal && pred.isSpecialiteChoix) {
+								if (chosenVal.includes(':')) {
+									const [pComp, pSpec] = chosenVal.split(':').map(s => s.trim());
+									addSpec(pComp, pSpec, item.nom);
+								} else {
+									addSpec(pred.nom, chosenVal, item.nom);
+								}
+							}
+						});
+					}
+				} catch(e) {}
+			}
+		});
+		
         // ✨ AJOUT DES SPÉCIALITÉS GRATUITES DÉTECTÉES PAR LE BONUS CALCULATOR !
         if (finalStats.specialites?.gratuites) {
             Object.entries(finalStats.specialites.gratuites).forEach(([comp, list]) => {
@@ -93,9 +127,9 @@ export function useCerbere() {
         }
 
         return map;
-    }, [character, feeData, finalStats]);
-
-    const uniqueFutiles = useMemo(() => {
+	}, [character, feeData, finalStats, gameData.socialItems]); 
+    
+	const uniqueFutiles = useMemo(() => {
         if (!character.computedStats?.futilesTotal) return [];
         return Object.keys(character.computedStats.futilesTotal).sort((a, b) => a.localeCompare(b));
     }, [character.computedStats]);
