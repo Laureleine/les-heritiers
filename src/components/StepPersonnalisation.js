@@ -1,7 +1,7 @@
 // src/components/StepPersonnalisation.js
 
 import React from 'react';
-import { User, Feather, Briefcase } from 'lucide-react';
+import { User, Feather, Briefcase, Gift } from 'lucide-react'; // ✨ Ajout de Gift
 import WidgetLangues from './personnalisation/WidgetLangues';
 import { usePersonnalisation } from './personnalisation/usePersonnalisation';
 
@@ -10,7 +10,8 @@ export default function StepPersonnalisation() {
     character, dispatchCharacter, gameData, isReadOnly,
     usefulSkills, boughtMetiers,
     updateField, updateActiviteDomaine, updateActivitePrecision, updateSpecialiteMetier,
-    getSpecsDisponiblesPourMetier
+    getSpecsDisponiblesPourMetier,
+    pendingEquipementChoices, handleChoixEquipement // ✨ NOUVEAU
   } = usePersonnalisation();
 
   return (
@@ -93,6 +94,42 @@ export default function StepPersonnalisation() {
           </div>
         </div>
       </div>
+
+		{/* ✨ LE GUICHET DES BÉNÉFICES (Ordre de Marie Cha') */}
+		{pendingEquipementChoices.length > 0 && (
+			<div className="bg-white rounded-xl shadow-md border-2 border-purple-300 overflow-hidden bg-gradient-to-br from-purple-50 to-fuchsia-50 mb-8 animate-fade-in-up">
+				<div className="flex items-center gap-2 mb-4 p-4 border-b border-purple-200">
+					<Gift className="text-purple-600" size={24} />
+					<h3 className="text-xl font-serif text-purple-900 font-bold">
+						Héritage de votre rang social
+					</h3>
+				</div>
+				<div className="p-6 pt-2 space-y-4">
+					<p className="text-sm text-purple-800 mb-4 italic">
+						Certains statuts ou objets acquis dans votre Vie Sociale vous offrent des choix d'expertise.
+					</p>
+					{pendingEquipementChoices.map(choice => (
+						<div key={choice.predKey} className="bg-white p-4 rounded-lg border border-purple-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+							<label className="block text-sm font-bold text-purple-900 flex-1">
+								{choice.itemName} <br/>
+								<span className="font-normal text-purple-700 text-xs uppercase tracking-wider">
+									➔ {choice.isSpecialiteChoix ? "Spécialité au choix" : "Compétence au choix"}
+								</span>
+							</label>
+							<select
+								value={character.data?.choixEquipement?.[choice.predKey] || ''}
+								onChange={e => handleChoixEquipement(choice.predKey, e.target.value)}
+								disabled={isReadOnly}
+								className="w-full md:w-1/2 p-3 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm bg-purple-50/50 disabled:opacity-60 disabled:cursor-not-allowed font-bold text-purple-900"
+							>
+								<option value="">-- Faire un choix --</option>
+								{choice.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+							</select>
+						</div>
+					))}
+				</div>
+			</div>
+		)}
 
       {/* ✨ L'INTEGRATION DU WIDGET DES LANGUES */}
       <WidgetLangues

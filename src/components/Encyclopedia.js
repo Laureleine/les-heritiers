@@ -1,6 +1,6 @@
 // src/components/Encyclopedia.js
 import React from 'react';
-import { Book, Search, Plus, Shield, FileText, Filter } from 'lucide-react';
+import { Book, Search, Plus, Shield, FileText, ArrowLeft } from 'lucide-react';
 import EncyclopediaModal from './EncyclopediaModal';
 import EncyclopediaViewModal from './EncyclopediaViewModal';
 import EncyclopediaCard from './EncyclopediaCard';
@@ -14,30 +14,40 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         { id: 'fairy_types', label: 'Espèces Féériques' },
         { id: 'fairy_capacites', label: 'Capacités' },
         { id: 'fairy_powers', label: 'Pouvoirs' },
-        { id: 'fairy_assets', label: 'Atouts' }
+        { id: 'fairy_assets', label: 'Atouts' },
+        { id: 'social_items', label: 'Vie Sociale & Équipement' }
     ];
 
     const isDocte = userProfile?.profile?.is_docte === true;
 
+    const CATEGORIES = [
+        { id: 'metier', label: 'Métier' },
+        { id: 'statut', label: 'Statut' },
+        { id: 'objet', label: 'Objet / Arme' },
+        { id: 'contact', label: 'Contact' },
+        { id: 'langue', label: 'Langue' },
+        { id: 'titre', label: 'Titre' }
+    ];
+
     return (
-        <div className="max-w-6xl mx-auto p-4 md:p-6 pb-24 animate-fade-in">
+        <div className="max-w-6xl mx-auto p-4 animate-fade-in pb-20">
             
             {/* L'ENTÊTE SIMPLE ET ÉPURÉ */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <h2 className="text-2xl md:text-3xl font-serif font-bold text-amber-900 flex items-center gap-3">
-                    <Book className="text-amber-600" /> L'Encyclopédie
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                <h2 className="text-3xl font-serif font-bold text-amber-900 flex items-center gap-3">
+                    <Book className="text-amber-600" size={32} /> L'Encyclopédie
                 </h2>
-                <div className="flex flex-wrap items-center justify-center gap-2">
-                    <button onClick={onOpenMesPropositions} className="px-4 py-2 bg-stone-100 text-stone-600 rounded-lg hover:bg-stone-200 transition-colors font-bold text-sm flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-3">
+                    <button onClick={onOpenMesPropositions} className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg transition-colors font-bold text-sm border border-stone-200 flex items-center gap-2">
                         <FileText size={16} /> Mes Propositions
                     </button>
                     {isDocte && (
-                        <button onClick={onOpenValidations} className="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition-colors font-bold text-sm flex items-center gap-2">
+                        <button onClick={onOpenValidations} className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors font-bold text-sm shadow-md flex items-center gap-2">
                             <Shield size={16} /> Conseil des Gardiens
                         </button>
                     )}
-                    <button onClick={onBack} className="px-4 py-2 bg-white border border-stone-200 text-stone-600 rounded-lg hover:bg-stone-50 transition-colors font-bold text-sm">
-                        Retour
+                    <button onClick={onBack} className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-lg transition-colors font-bold text-sm shadow-md flex items-center gap-2">
+                        <ArrowLeft size={16} /> Retour
                     </button>
                 </div>
             </div>
@@ -71,16 +81,16 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                         className="w-full pl-10 pr-4 py-2.5 border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none shadow-sm"
                     />
                 </div>
-                <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
-                    <Plus size={20} /> Forger une Entité
-                </button>
+                {isDocte && (
+                    <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
+                        <Plus size={20} /> Forger une Entité
+                    </button>
+                )}
             </div>
 
-            {/* ✨ LES FAMEUX BOUTONS DE FILTRAGE PAR FÉE (Pills/Chips Multilignes) */}
-            {state.activeTab !== 'fairy_types' && (
-                <div className="flex flex-wrap items-center gap-2 mb-6 pb-2">
-                    <Filter size={16} className="text-stone-400 mr-1" />
-                    
+            {/* LES JOLIES PUCES DE FILTRAGE (FÉES) */}
+            {['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(state.activeTab) && (
+                <div className="flex flex-wrap gap-2 items-center mb-6 animate-fade-in">
                     <button
                         onClick={() => setters.setSelectedFairyFilter('')}
                         className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
@@ -116,7 +126,79 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                     ))}
                 </div>
             )}
-			
+
+            {/* LES JOLIES PUCES DE FILTRAGE (VIE SOCIALE) */}
+            {state.activeTab === 'social_items' && (
+                <div className="flex flex-col gap-3 mb-6 animate-fade-in">
+                    {/* LIGNE 1 : PROFILS */}
+                    <div className="flex flex-wrap gap-2 items-center bg-stone-50 p-2 rounded-xl border border-stone-200">
+                        <span className="text-xs font-bold text-stone-400 uppercase tracking-widest px-2">Profils :</span>
+                        <button
+                            onClick={() => setters.setSelectedProfileFilter('')}
+                            className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-sm ${
+                                state.selectedProfileFilter === '' ? 'bg-blue-800 text-white' : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
+                            }`}
+                        >
+                            Tous
+                        </button>
+                        
+                        <button
+                            onClick={() => setters.setSelectedProfileFilter('__UNLINKED__')}
+                            className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-sm ${
+                                state.selectedProfileFilter === '__UNLINKED__' ? 'bg-purple-600 text-white' : 'bg-white text-purple-600 hover:bg-purple-50 border border-purple-200'
+                            }`}
+                        >
+                            ✨ Universel
+                        </button>
+                        
+                        <div className="hidden sm:block w-px h-6 bg-stone-300 mx-1"></div>
+                        
+                        {['Aventurier', 'Combattant', 'Érudit', 'Gentleman', 'Roublard', 'Savant'].map(p => (
+                            <button
+                                key={p}
+                                onClick={() => setters.setSelectedProfileFilter(p)}
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors shadow-sm border ${
+                                    state.selectedProfileFilter === p
+                                        ? 'bg-blue-100 text-blue-900 border-blue-400'
+                                        : 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50 hover:border-stone-300'
+                                }`}
+                            >
+                                {p}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* LIGNE 2 : CATÉGORIES */}
+                    <div className="flex flex-wrap gap-2 items-center bg-stone-50 p-2 rounded-xl border border-stone-200">
+                        <span className="text-xs font-bold text-stone-400 uppercase tracking-widest px-2">Types :</span>
+                        <button
+                            onClick={() => setters.setSelectedCategoryFilter('')}
+                            className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-sm ${
+                                state.selectedCategoryFilter === '' ? 'bg-emerald-800 text-white' : 'bg-white text-stone-500 hover:bg-stone-100 border border-stone-200'
+                            }`}
+                        >
+                            Toutes Catégories
+                        </button>
+
+                        <div className="hidden sm:block w-px h-6 bg-stone-300 mx-1"></div>
+
+                        {CATEGORIES.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setters.setSelectedCategoryFilter(cat.id)}
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors shadow-sm border capitalize ${
+                                    state.selectedCategoryFilter === cat.id
+                                        ? 'bg-emerald-100 text-emerald-900 border-emerald-400'
+                                        : 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50 hover:border-stone-300'
+                                }`}
+                            >
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* CONTENU (GRILLE DES CARTES) */}
             {state.loading ? (
                 <div className="flex justify-center items-center py-20">
@@ -147,7 +229,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
             {/* MODALES D'ÉDITION ET DE LECTURE */}
             {(state.isCreating || state.editingItem) && (
-                <EncyclopediaModal 
+                <EncyclopediaModal
                     activeTab={state.activeTab}
                     editingItem={state.editingItem}
                     setEditingItem={setters.setEditingItem}
@@ -180,7 +262,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
             )}
 
             {/* MODALE DE CONFIRMATION IMMERSIVE */}
-            <ConfirmModal 
+            <ConfirmModal
                 isOpen={state.confirmState.isOpen}
                 title={state.confirmState.title}
                 message={state.confirmState.message}

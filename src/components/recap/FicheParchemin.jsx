@@ -5,7 +5,12 @@ import { CARAC_LIST, accorderTexte } from '../../data/DictionnaireJeu';
 import { calculateCharacterStats } from '../../utils/bonusCalculator';
 
 export default function FicheParchemin({ character, gameData }) {
-    const feeData = gameData?.fairyData?.[character.typeFee] || {};
+    
+    // ✨ LE FIX EST ICI : On stabilise la référence en mémoire !
+    const feeData = useMemo(() => {
+        return gameData?.fairyData?.[character.typeFee] || {};
+    }, [gameData?.fairyData, character.typeFee]);
+
     const genreActuel = character.genreHumain || character.sexe;
 
     // 🧠 LE CERVEAU POUR L'AFFICHAGE DÉTAILLÉ (Affiche les "+1" en vert sur le papier)
@@ -75,8 +80,14 @@ export default function FicheParchemin({ character, gameData }) {
             feeData.competencesPredilection.forEach((p, idx) => {
                 const nomSpec = p.specialite || (p.isSpecialiteChoix ? character.competencesLibres?.choixSpecialite?.[idx] : null);
                 if (nomSpec) {
-                    if (!map[p.nom]) map[p.nom] = [];
-                    map[p.nom].push(`${nomSpec} (Inné)`);
+                    if (p.isSpecialiteChoix && nomSpec.includes(':')) {
+                        const [pComp, pSpec] = nomSpec.split(':').map(s => s.trim());
+                        if (!map[pComp]) map[pComp] = [];
+                        map[pComp].push(`${pSpec} (Inné)`);
+                    } else {
+                        if (!map[p.nom]) map[p.nom] = [];
+                        map[p.nom].push(`${nomSpec} (Inné)`);
+                    }
                 }
             });
         }

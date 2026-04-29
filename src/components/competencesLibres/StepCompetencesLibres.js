@@ -1,7 +1,3 @@
-// 14.13.0
-// Optimisé
-// 15.2.0
-
 import React from 'react';
 import { Plus, Minus, Star, Brain, RotateCcw, Briefcase, Info, Lock } from 'lucide-react';
 import { useCompetencesLibres } from './useCompetencesLibres';
@@ -208,14 +204,14 @@ export default function StepCompetencesLibres() {
                   </select>
                 </div>
               );
-              if (p.isSpecialiteChoix) return (
-                <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-amber-100 pb-2 last:border-0">
-                  <span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">Spécialité en <strong className="text-amber-700">{p.nom}</strong> :</span>
-                  <select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm" value={lib.choixSpecialite?.[i] || ''} onChange={(e) => handlers.handleChoixChange(i, e.target.value, 'specialite')}>
-                    <option value="">-- Sélectionner --</option>{p.options?.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-              );
+				if (p.isSpecialiteChoix) return (
+					<div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-amber-100 pb-2 last:border-0">
+						<span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">Spécialité au choix :</span>
+						<select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm" value={lib.choixSpecialite?.[i] || ''} onChange={(e) => handlers.handleChoixChange(i, e.target.value, 'specialite')}>
+							<option value="">-- Sélectionner --</option>{p.options?.map(o => <option key={o} value={o}>{o}</option>)}
+						</select>
+					</div>
+				);
               return null;
             })}
           </div>
