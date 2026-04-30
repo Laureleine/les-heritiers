@@ -1,8 +1,4 @@
 // src/utils/pixieBrain.js
-// 9.4.0// 9.6.0
-// 10.2.0 // 10.9.0
-// 14.9.0
-// 15.0.0
 
 // ============================================================================
 // 🧠 1. DICTIONNAIRES DE VOCABULAIRE GENRÉ ET ALÉATOIRE
@@ -327,17 +323,18 @@ export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
   // D. RÉPLIQUES DE LORE, PROFILS ET ÉQUIPEMENT
   // ---------------------------------------------------------
 
-  // ✨ RÉPLIQUES SUR LES PROFILS (À partir de l'étape 6)
-  if (step >= 6 && c.profils?.majeur?.nom) {
-    switch (c.profils.majeur.nom) {
-      case 'Aventurier': pool.push("Un{e} Aventurier{e} ! J'espère qu'on va explorer des ruines secrètes pleines de {gadget}s !"); break;
-      case 'Combattant': pool.push("Ouh là là, un{e} Combattant{e} ! Je me cacherai derrière toi au premier coup de feu !"); break;
-      case 'Érudit': pool.push("Un{e} Érudit{e} ? Tu vas passer ton temps le nez dans les vieux bouquins d'Avalon ?"); break;
-      case 'Gentleman': pool.push("Quelle classe ! N'oublie pas de lever le petit doigt quand tu bois le thé !"); break;
-      case 'Roublard': pool.push("Un{e} Roublard{e}... Tu me promets de ne pas me voler mes trésors ?"); break;
-      case 'Savant': pool.push("Un{e} Savant{e} ! Tu vas inventer une machine à fabriquer des {gadget}s à l'infini ?"); break;
+    // ✨ RÉPLIQUES SUR LES PROFILS (À partir de l'étape 6)
+    if (step >= 6 && c.profils?.majeur?.nom) {
+        switch (c.profils.majeur.nom) {
+            case 'Aventurier': pool.push("Un{e} Aventurier{e} ! J'espère qu'on va explorer des ruines secrètes pleines de {gadget}s !"); break;
+            case 'Combattant': pool.push("Ouh là là, un{e} Combattant{e} ! Je me cacherai derrière toi au premier coup de feu !"); break;
+            case 'Érudit': pool.push("Un{e} Érudit{e} ? Tu vas passer ton temps le nez dans les vieux bouquins d'Avalon ?"); break;
+            case 'Gentleman': pool.push("Quelle classe ! N'oublie pas de lever le petit doigt quand tu bois le thé !"); break;
+            case 'Roublard': pool.push("Un{e} Roublard{e}... Tu me promets de ne pas me voler mes trésors ?"); break;
+            case 'Savant': pool.push("Un{e} Savant{e} ! Tu vas inventer une machine à fabriquer des {gadget}s à l'infini ?"); break;
+            default: break; // ✨ LE FIX ESLINT
+        }
     }
-  }
 
   // ✨ RÉPLIQUES SUR L'ANCIENNETÉ (Lecture sécurisée via le Dictionnaire)
   const feeAnciennete = typeData?.anciennete || fairyData[c.typeFee]?.anciennete;
@@ -379,6 +376,7 @@ export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
     case 'Sylve': pool.push("Tu sens bon la sève et l'écorce... C'est comme à la maison pour moi !"); break;
     case 'Troll': pool.push("Même si tu es {un} grand{e} {Type} brutal{e}, je sais que tu aimes les petites bêtes... comme moi !"); break;
     case 'Vampyr': pool.push("Tes dents brillent dans le noir ! Tu as mangé des chauves-souris ?"); break;
+    default: break; // ✨ LE FIX ESLINT
   }
 
   // Vérification magique des Atouts

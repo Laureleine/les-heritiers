@@ -2,6 +2,13 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.10 - "L\'Échelle de l\'Évolution 🪜"',
+        date: '30 Avril 2026',
+        changes: [
+            '📈 **Moteur de Jeu (Évolution) :** Application stricte de la règle du Livre de Base sur la progression des Profils. Lors d\'une dépense d\'expérience, l\'augmentation du Rang de Profil n\'octroie plus une simple addition linéaire, mais un cumul dynamique (le passage au Rang 3 offre 3 PP, et le passage ultérieur au Rang 4 offre 4 PP additionnels).',
+            '🧠 **Cerveau Central (Conscience Temporelle) :** Le super-calculateur a été doté d\'une mémoire absolue. Il analyse la photographie de votre Héritier au moment exact de son scellage (`stats_scellees`), puis la compare avec son niveau de maîtrise actuel post-dépenses d\'XP pour calculer et distribuer les budgets de Points de Personnage sans la moindre erreur.'
+        ]
+    },    {
         version: '15.16.7 - "Le Carrefour des Spécialités 🛤️"',
         date: '29 Avril 2026',
         changes: [

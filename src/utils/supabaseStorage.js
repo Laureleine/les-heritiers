@@ -8,13 +8,12 @@ import { supabase } from '../config/supabase';
 
 const LIGHT_SELECT = 'id, user_id, created_at, updated_at, nom, sexe, type_fee, anciennete, profils, is_public, statut, xp_total, xp_depense';
 const OFFLINE_STORAGE_KEY = 'heritiers_character_cache';
-let userCharactersCache = null;
 
 const mapDatabaseToCharacter = (char) => {
     const source = { ...char.data, ...char };
     const cLibres = source.competences_libres || source.competencesLibres || {};
     const cFutiles = source.competences_futiles || source.competencesFutiles || {};
-
+    
     return {
         id: source.id,
         userId: source.user_id,
@@ -102,10 +101,8 @@ export const getUserCharacters = async (forceRefresh = false) => {
         }
 
         const mappedData = (data || []).map(mapDatabaseToCharacter);
-        userCharactersCache = mappedData;
         updateOfflineMirror(mappedData);
         return mappedData;
-
     } catch (error) {
         console.error('Erreur getUserCharacters:', error);
         return getOfflineMirror();
@@ -131,7 +128,7 @@ export const getPublicCharacters = async () => {
 export const saveCharacterToSupabase = async (character) => {
     const cleaned = character;
     const idTemp = character.id || `temp_${Date.now()}`;
-
+    
     const currentCache = getOfflineMirror();
     const otherChars = currentCache.filter(c => c.id !== character.id);
     const charToCache = {
@@ -188,7 +185,7 @@ export const saveCharacterToSupabase = async (character) => {
             statut: cleaned.statut || 'brouillon',
             xp_total: character.xp_total || 0,
             xp_depense: character.xp_depense || 0,
-            data: newDataJson, 
+            data: newDataJson,
             updated_at: new Date().toISOString()
         };
 
@@ -214,10 +211,8 @@ export const saveCharacterToSupabase = async (character) => {
 
         const finalCache = getOfflineMirror().filter(c => c.id !== idTemp && c.id !== savedData.id);
         updateOfflineMirror([mapDatabaseToCharacter(savedData), ...finalCache]);
-        userCharactersCache = null;
-
+        
         return mapDatabaseToCharacter(savedData);
-
     } catch (error) {
         console.warn("Échec sauvegarde Cloud (Mode Hors-ligne activé):", error);
         return charToCache;
@@ -227,7 +222,6 @@ export const saveCharacterToSupabase = async (character) => {
 export const deleteCharacterFromSupabase = async (characterId) => {
     const { error } = await supabase.from('characters').delete().eq('id', characterId);
     if (error) throw error;
-    userCharactersCache = null;
     return true;
 };
 
@@ -252,8 +246,8 @@ export const toggleCharacterVisibility = async (characterId, isPublic) => {
         .update({ is_public: isPublic, updated_at: new Date().toISOString() })
         .eq('id', characterId)
         .select().single();
+        
     if (error) throw error;
-    userCharactersCache = null;
     return mapDatabaseToCharacter(data);
 };
 
