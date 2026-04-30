@@ -192,6 +192,7 @@ export function characterReducer(state, action) {
     // ⚙️ LE CALCULATEUR AUTOMATIQUE INTÉGRÉ
     if (action.gameData && action.gameData.fairyData && newState.typeFee) {
         const feeData = action.gameData.fairyData[newState.typeFee];
+        const isScelle = newState.statut === 'scelle' || newState.statut === 'scellé'; // On a besoin de savoir si on est en Évolution
 
         // --- A. Calcul de l'Entregent Total ---
         let entregent = newState.competencesLibres?.rangs?.['Entregent'] || 0;
@@ -229,6 +230,24 @@ export function characterReducer(state, action) {
             }
         });
 
+        // ✨ MÉMOIRE ORIGINELLE : On calcule les Atouts originels (Plancher) pour la progression des PP
+        const atoutsRangsBase = {};
+        if (isScelle) {
+            (newState.data?.stats_scellees?.atouts || []).forEach(atoutId => {
+                const atout = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
+                if (atout && atout.effets_techniques) {
+                    try {
+                        const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques) : atout.effets_techniques;
+                        if (tech.competences) {
+                            Object.entries(tech.competences).forEach(([comp, val]) => {
+                                atoutsRangsBase[comp] = (atoutsRangsBase[comp] || 0) + val;
+                            });
+                        }
+                    } catch(e) {}
+                }
+            });
+        }
+
         const predFinales = (feeData?.competencesPredilection || [])
             .filter(p => !p.isOnlySpecialty)
             .map((p, i) => p.isChoix ? newState.competencesLibres?.choixPredilection?.[i] : p.nom )
@@ -249,28 +268,51 @@ export function characterReducer(state, action) {
         const competencesTotal = {};
 
         Object.keys(compsMap).forEach(profilNom => {
-            let somme = 0;
+            let sommeActuelle = 0;
+            let sommeBase = 0;
             const isMajeur = newState.profils?.majeur?.nom === profilNom;
             const isMineur = newState.profils?.mineur?.nom === profilNom;
             const bonusProfil = isMajeur ? 2 : isMineur ? 1 : 0;
 
             compsMap[profilNom].forEach(nomComp => {
-                const investis = newState.competencesLibres?.rangs?.[nomComp] || 0;
+                const investisActuels = newState.competencesLibres?.rangs?.[nomComp] || 0;
+                // La douane temporelle : Quelle était la valeur à la création ?
+                const investisBase = isScelle ? (newState.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0) : investisActuels;
+
                 const bonusPred = predFinales.includes(nomComp) ? 2 : 0;
-                const bonusAtout = atoutsRangs[nomComp] || 0;
+                
+                const bonusAtoutActuel = atoutsRangs[nomComp] || 0;
+                const bonusAtoutBase = isScelle ? (atoutsRangsBase[nomComp] || 0) : bonusAtoutActuel;
 
-                const baseScore = bonusProfil + bonusPred + bonusAtout;
-                const totalScore = baseScore + investis;
+                const baseScoreActuel = bonusProfil + bonusPred + bonusAtoutActuel;
+                const baseScoreBase = bonusProfil + bonusPred + bonusAtoutBase;
 
-                competencesBase[nomComp] = baseScore;
-                competencesTotal[nomComp] = totalScore;
-                somme += totalScore;
+                const totalScoreActuel = baseScoreActuel + investisActuels;
+                const totalScoreBase = baseScoreBase + investisBase;
+
+                competencesBase[nomComp] = baseScoreActuel;
+                competencesTotal[nomComp] = totalScoreActuel;
+                
+                sommeActuelle += totalScoreActuel;
+                sommeBase += totalScoreBase;
             });
 
-            const rang = Math.floor(somme / 4);
-            rangsProfils[profilNom] = rang;
+            const rangActuel = Math.floor(sommeActuelle / 4);
+            const rangBase = Math.floor(sommeBase / 4);
+            
+            rangsProfils[profilNom] = rangActuel;
             const bonusPP = isMajeur ? 8 : isMineur ? 4 : 0;
-            budgetsPP[profilNom] = rang + bonusPP;
+            
+            let budgetTotal = bonusPP + rangBase;
+            
+            // ✨ LA RÈGLE D'ÉVOLUTION : Chaque nouveau rang R franchi donne R points de PP supplémentaires
+            if (isScelle && rangActuel > rangBase) {
+                for (let i = rangBase + 1; i <= rangActuel; i++) {
+                    budgetTotal += i;
+                }
+            }
+            
+            budgetsPP[profilNom] = budgetTotal;
         });
 
         // --- E. CALCUL DES COMPÉTENCES FUTILES (DRY) ---
@@ -369,7 +411,7 @@ export function characterReducer(state, action) {
         const con = getFinalCarac('constitution');
         const esp = getFinalCarac('esprit');
         const masque = getFinalCarac('masque');
-        const sf = getFinalCarac('sangFroid');
+        const sangFroid = getFinalCarac('sangFroid'); // Respect strict de la variable pour le calcul ci-dessous
 
         const sMouv = getFinalComp('Mouvement');
         const sMelee = getFinalComp('Mêlée');
@@ -393,7 +435,7 @@ export function characterReducer(state, action) {
             parade: sMelee + agi + 5,
             resPhys: sRes + con + 5 + bonusMasqueResist,
             resPsych: sFort + esp + 5 + bonusMasqueResist,
-            initiative: sArt + sf,
+            initiative: sArt + sangFroid,
             pvMax: (3 * con) + 9
         };
 
