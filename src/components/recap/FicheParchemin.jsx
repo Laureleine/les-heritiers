@@ -149,8 +149,23 @@ export default function FicheParchemin({ character, gameData }) {
                 .combat-label { text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 4px; color: #4a3b2c; }
                 @media print {
                     body { background: white !important; }
-                    .recap-page { box-shadow: none !important; margin: 0 !important; border: none !important; page-break-after: always; }
+                    
+                    /* ✨ LE FIX (Cure d'amaigrissement pour forcer le bloc sur la page 1) */
+                    @page { margin: 4mm; } 
+                    
+                    .recap-page { 
+                        box-shadow: none !important; 
+                        margin: 0 !important; 
+                        padding: 5mm !important; /* On réduit fortement les bordures internes de la page */
+                        border: none !important; 
+                        page-break-after: always; 
+                    }
                     .no-print { display: none !important; }
+                    
+                    /* Compression invisible à l'œil nu, mais vitale pour l'imprimante */
+                    .carac-main-title { margin-top: 8px !important; margin-bottom: 2px !important; font-size: 14px !important; }
+                    .recap-box { padding: 10px 12px !important; }
+                    .field { margin-bottom: 2px !important; }
                 }
             `}} />
 
@@ -227,15 +242,18 @@ export default function FicheParchemin({ character, gameData }) {
                     ))}
                 </div>
 
-                <div className="carac-main-title">Combat & Santé</div>
-                <div className="grid grid-cols-6 gap-2 recap-box" style={{background: '#e6e1d8', borderColor: '#4a3b2c'}}>
-                    <div><div className="combat-circle">{liveCombatStats.esquiveMasquee}</div><div className="combat-label">Esq. Masq.</div></div>
-                    <div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.esquiveDemasquee}</div><div className="combat-label" style={{color: '#b91c1c'}}>Esq. Dém.</div></div>
-                    <div><div className="combat-circle">{liveCombatStats.parade}</div><div className="combat-label">Parade</div></div>
-                    <div><div className="combat-circle">{liveCombatStats.resPhys}</div><div className="combat-label">Rés. Phys.</div></div>
-                    <div><div className="combat-circle">{liveCombatStats.resPsych}</div><div className="combat-label">Rés. Psych.</div></div>
-                    <div><div className="combat-circle" style={{borderColor: '#92400e', color: '#92400e'}}>{liveCombatStats.pvMax}</div><div className="combat-label" style={{color: '#92400e'}}>PV Max</div></div>
-                </div>
+				{/* ✨ LE FIX 2 : Le bloc insécable (break-inside-avoid) */}
+				<div style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} className="mt-2">
+					<div className="carac-main-title m-0">Combat & Santé</div>
+					<div className="grid grid-cols-6 gap-2 recap-box mt-1" style={{background: '#e6e1d8', borderColor: '#4a3b2c'}}>
+						<div><div className="combat-circle">{liveCombatStats.esquiveMasquee}</div><div className="combat-label">Esq. Masq.</div></div>
+						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.esquiveDemasquee}</div><div className="combat-label" style={{color: '#b91c1c'}}>Esq. Dém.</div></div>
+						<div><div className="combat-circle">{liveCombatStats.parade}</div><div className="combat-label">Parade</div></div>
+						<div><div className="combat-circle">{liveCombatStats.resPhys}</div><div className="combat-label">Rés. Phys.</div></div>
+						<div><div className="combat-circle">{liveCombatStats.resPsych}</div><div className="combat-label">Rés. Psych.</div></div>
+						<div><div className="combat-circle" style={{borderColor: '#92400e', color: '#92400e'}}>{liveCombatStats.pvMax}</div><div className="combat-label" style={{color: '#92400e'}}>PV Max</div></div>
+					</div>
+				</div>
             </div>
 
             {/* ======================= PAGE 2 : LA FÉE (FORME DÉMASQUÉE) ======================= */}
@@ -284,30 +302,70 @@ export default function FicheParchemin({ character, gameData }) {
                         </div>
                     </div>
                 </div>
+                {/* ============================================================== */}
+                {/* ✨ NOUVELLE DISPOSITION : BLOCS EN PLEINE LARGEUR               */}
+                {/* ============================================================== */}
 
-                <div className="carac-main-title" style={{background: '#166534'}}>Détails & Inventaire</div>
-                <div className="recap-box grid grid-cols-2 gap-6">
-                    <div>
-                        <span className="field-label">Compétences Futiles</span>
-                        <div className="text-[11px] mt-1 italic">
-                            {Object.entries(futilesMerged).map(([n, v]) => `${n} (${v})`).join(' • ')}
-                        </div>
-                    </div>
-                    <div>
-                        <span className="field-label">Équipement</span>
-                        <div className="text-[11px] italic">
-                            {equipements.map((e, i) => <div key={i}>- {e}</div>)}
-                        </div>
-                        <span className="field-label" style={{marginTop: '10px'}}>Contacts</span>
-                        <div className="text-[11px] italic">
-                            {contacts.map((c, i) => <div key={i}>- {c}</div>)}
-                        </div>
-                        <span className="field-label" style={{marginTop: '10px'}}>Langues</span>
-                        <div className="text-[11px] italic">
-                            <b>{langueMaternelle}</b> (Mat.), {autresLangues.join(', ')}
-                        </div>
+                {/* 1. Les Compétences Futiles */}
+                <div className="carac-main-title mt-4" style={{background: '#166534'}}>Compétences Futiles</div>
+                <div className="recap-box">
+                    <div className="text-sm font-serif leading-relaxed">
+                        {Object.keys(futilesMerged).length > 0 ? (
+                            Object.entries(futilesMerged).map(([k, v], i) => (
+                                <span key={k}>{k} ({v}){i < Object.keys(futilesMerged).length - 1 ? ' • ' : ''}</span>
+                            ))
+                        ) : (
+                            <span className="italic text-gray-400">Aucune compétence futile acquise.</span>
+                        )}
                     </div>
                 </div>
+
+                {/* 2. L'Équipement */}
+                <div className="carac-main-title mt-4" style={{background: '#166534'}}>Équipement & Possessions</div>
+                <div className="recap-box">
+                    <div className="text-sm font-serif space-y-1">
+                        {equipements.length > 0 ? equipements.map((e, idx) => (
+                            <div key={idx}>- {e}</div>
+                        )) : <div className="italic text-gray-400">Aucun équipement.</div>}
+                    </div>
+                </div>
+
+                {/* 3. Les Contacts */}
+                <div className="carac-main-title mt-4" style={{background: '#166534'}}>Contacts & Alliés</div>
+                <div className="recap-box">
+                    <div className="text-sm font-serif space-y-1">
+                        {contacts.length > 0 ? contacts.map((c, idx) => (
+                            <div key={idx}>- {c}</div>
+                        )) : <div className="italic text-gray-400">Aucun contact.</div>}
+                    </div>
+                </div>
+
+                {/* 4. Les Langues */}
+                <div className="carac-main-title mt-4" style={{background: '#166534'}}>Érudition & Langues</div>
+                <div className="recap-box">
+                    <div className="text-sm font-serif">
+                        {langueMaternelle ? (
+                            <span className="text-amber-800 font-bold">{langueMaternelle} <span className="text-xs text-amber-600/70">(Maternelle)</span></span>
+                        ) : null}
+                        {autresLangues.length > 0 ? (
+                            <span>{langueMaternelle ? ' • ' : ''}{autresLangues.join(' • ')}</span>
+                        ) : null}
+                    </div>
+                </div>
+
+                {/* 5. Les Titres (S'ils existent, sinon on masque la boîte) */}
+                {bible.titres && bible.titres.length > 0 && (
+                    <>
+                        <div className="carac-main-title mt-4" style={{background: '#166534'}}>Titres Honorifiques</div>
+                        <div className="recap-box">
+                            <div className="text-sm font-serif space-y-1">
+                                {bible.titres.map((t, idx) => (
+                                    <div key={idx}>- {t}</div>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

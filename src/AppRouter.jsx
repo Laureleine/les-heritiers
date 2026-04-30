@@ -80,7 +80,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
 
         <Route path="/validations" element={<ValidationsPendantes session={session} onBack={() => navigate('/encyclopedia')} />} />
         <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={refreshUserProfile} onBack={() => navigate('/')} />} />
-        <Route path="/admin_dashboard" element={<AdminDashboard session={session} onBack={() => navigate('/')} />} />
+        <Route path="/admin_dashboard" element={<AdminDashboard session={session} userProfile={userProfile} onBack={() => navigate('/')} />} />
         
         <Route path="/cercles" element={
           <CerclesDashboard

@@ -2,6 +2,33 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.14 - "La Diète de l\'Imprimeur 🖨️"',
+        date: '30 Avril 2026',
+        changes: [
+            '🖨️ **Imprimerie (PDF) :** Résolution des sauts de page disgracieux sur la fiche de personnage exportée. Le bloc "Combat & Santé" a été rendu techniquement insécable, garantissant que son titre ne se retrouve plus jamais séparé de ses cercles de statistiques.',
+            '📏 **Mise en page (CSS) :** Application d\'une cure d\'amaigrissement stricte sur les marges d\'impression de la première page. Cette récupération de quelques millimètres précieux permet d\'aspirer le bloc de combat vers le haut et d\'éviter la création intempestive d\'une page blanche.'
+        ]
+    },    {
+        version: '15.16.13 - "L\'Inventaire Déployé 🎒"',
+        date: '30 Avril 2026',
+        changes: [
+            '📄 **Parchemins (Bilan & PDF) :** Le bloc fourre-tout "Détails & Inventaire" a été entièrement démantelé. Les Compétences Futiles, l\'Équipement, les Contacts, les Langues et les Titres disposent désormais chacun de leur propre encart dédié.',
+            '📏 **Mise en page (UX) :** Ces nouveaux encarts s\'étendent désormais sur toute la largeur de la feuille de personnage, offrant une bien meilleure lisibilité et résolvant les problèmes de textes tronqués pour les Héritiers possédant de vastes inventaires.'
+        ]
+    },    {
+        version: '15.16.12 - "L\'Héritage Révélé 🧬"',
+        date: '30 Avril 2026',
+        changes: [
+            '👁️ **Encyclopédie (Consultation) :** Résolution de l\'anomalie rendant invisible la Magie et l\'Héritage Inné des espèces féériques lors de leur simple consultation dans la base de données.',
+            '🧠 **Cerveau Séparé (Hook) :** Alignement strict des alias de la requête SQL du composant `useEncyclopedia` sur ceux du moteur central (`supabaseGameData`). L\'interface visuelle parvient désormais à lire et afficher correctement les Capacités, Pouvoirs et Atouts de chaque fée explorée.'
+        ]
+    },    {
+        version: '15.16.11 - "La Vitrine aux Trophées 🏆"',
+        date: '30 Avril 2026',
+        changes: [
+            '🏆 **Communauté (Forge des Titres) :** La section d\'édition des badges honorifiques est dorénavant protégée par le sceau de l\'Architecte. Les joueurs peuvent y admirer l\'ensemble des trophées existants pour connaître les accomplissements à débloquer, mais l\'enclume de création et les pouvoirs de destruction restent l\'apanage exclusif du Super Administrateur.'
+        ]
+    },    {
         version: '15.16.10 - "L\'Échelle de l\'Évolution 🪜"',
         date: '30 Avril 2026',
         changes: [
