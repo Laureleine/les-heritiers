@@ -121,7 +121,7 @@ export function characterReducer(state, action) {
         }
 
         default:
-            break; 
+            break;
     }
 
     // ✨ L'HYDRATATION ABSOLUE (Le Dogme de l'Architecte)
@@ -377,7 +377,11 @@ export function characterReducer(state, action) {
         const allBoughtIds = Object.values(newState.vieSociale || {}).flat();
 
         if (action.gameData?.socialItems) {
-            const boughtItems = action.gameData.socialItems.filter(item => allBoughtIds.includes(item.id));
+            // ✨ FIX : On préserve formellement les doublons avec .map() pour les imprimer !
+            const boughtItems = allBoughtIds
+                .map(id => action.gameData.socialItems.find(i => i.id === id))
+                .filter(Boolean);
+
             inventaireLisible.langues = newState.profils?.langues || [];
             inventaireLisible.contacts = boughtItems.filter(i => i.categorie === 'contact').map(i => i.nom);
             inventaireLisible.titres = boughtItems.filter(i => i.categorie === 'titre').map(i => i.nom);

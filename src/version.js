@@ -2,6 +2,12 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.15 - "La Douane Linguistique 🌍"',
+        date: '1 Mai 2026',
+        changes: [
+            '🌍 **Langues & Érudition (Hotfix) :** L\'Étape 10 de personnalisation scanne de nouveau correctement l\'intégralité des achats multiples effectués dans la boutique. Il est dorénavant possible de débloquer plusieurs dialectes rares ou européens sans que le système n\'en compte qu\'un seul.'
+        ]
+    },    {
         version: '15.16.14 - "La Diète de l\'Imprimeur 🖨️"',
         date: '30 Avril 2026',
         changes: [

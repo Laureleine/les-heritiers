@@ -7,134 +7,96 @@ import { showInAppNotification } from '../../utils/SystemeServices';
 
 // 🎨 COMPOSANT D'ACCORDÉON
 const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, budgetsInfo, character }) => {
-  const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(true);
 
-  if (!items || items.length === 0) return null;
+    if (!items || items.length === 0) return null;
 
-  return (
-    <div className="mb-4 bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-3 bg-stone-50 flex items-center justify-between hover:bg-amber-50 transition-colors"
-      >
-        <div className="flex items-center gap-2 font-bold text-amber-900">
-          {icon} {title}
-        </div>
-        {isOpen ? <ChevronUp size={18} className="text-amber-700" /> : <ChevronDown size={18} className="text-amber-700" />}
-      </button>
-
-      {isOpen && (
-        <div className="divide-y divide-gray-100">
-          {items.map(item => {
-            const isOwned = myItems.includes(item.id);
-            const baseCost = getItemCost(item.id, profilNom);
-
-            // ✨ 1. LECTURE DES BONS DE RÉDUCTION
-            const modifiedCost = character.computedStats?.priceModifiers?.[item.nom];
-            const hasDiscount = modifiedCost !== undefined;
-            const finalCost = hasDiscount ? modifiedCost : baseCost;
-
-            // ✨ 2. LOGIQUE D'ACCESSIBILITÉ (Contacts gratuits manuels)
-            let canAfford = reste >= finalCost;
-            if (item.categorie === 'contact' && !isOwned) {
-               canAfford = (reste + budgetsInfo.freeContactsRemaining) >= finalCost;
-            }
-
-            // ✨ 3. LECTURE DU VIDEUR / PRÉREQUIS
-            let isLocked = false;
-            let lockMessage = "";
-
-            if (item.requirements) {
-              try {
-                const reqs = typeof item.requirements === 'string' ? JSON.parse(item.requirements) : item.requirements;
-                if (reqs.profils && reqs.profils.length > 0) {
-                  const monMajeur = character.profils?.majeur?.nom;
-                  const monMineur = character.profils?.mineur?.nom;
-                  if (!reqs.profils.includes(monMajeur) && !reqs.profils.includes(monMineur)) {
-                    isLocked = true;
-                    lockMessage = `Cet accès exige le profil : ${reqs.profils.join(' ou ')}`;
-                  }
-                }
-              } catch(e) {}
-            }
-
-            return (
-              <div
-                key={item.id}
-                onClick={() => {
-                  if (isLocked) {
-                    showInAppNotification(lockMessage, "error");
-                    return; 
-                  }
-                  if (isOwned || canAfford) toggleAchat(item, profilNom);
-                }}
-                className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all ${
-                  isLocked
-                    ? 'border-stone-200 bg-stone-100 opacity-60 grayscale cursor-not-allowed'
-                    : isOwned
-                    ? 'border-amber-500 bg-amber-50 shadow-md cursor-pointer'
-                    : canAfford
-                    ? 'border-transparent hover:border-amber-300 hover:bg-stone-50 cursor-pointer'
-                    : 'border-transparent opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="flex-1">
-                  <div className="font-bold text-gray-800 flex items-center gap-2">
-                    {isOwned && <Check size={16} className="text-amber-600" />}
-                    {item.nom}
-                    {item.fortune_bonus > 0 && (
-                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold shadow-sm border border-emerald-200 flex items-center gap-1">
-                        <Coins size={10} /> + {item.fortune_bonus} Fortune
-                      </span>
-                    )}
-                    {item.is_choix_multiple && (
-                      <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded">Multiples</span>
-                    )}
-                    {item.is_secondaire && (
-                      <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Secondaire</span>
-                    )}
-                  </div>
-                  {item.description && <div className="text-xs text-gray-500 mt-1">{item.description}</div>}
+    return (
+        <div className="mb-4 border border-stone-200 rounded-lg overflow-hidden shadow-sm bg-white">
+            <button onClick={() => setIsOpen(!isOpen)} className="w-full bg-stone-50 p-3 flex justify-between items-center hover:bg-stone-100 transition-colors border-b border-stone-200">
+                <div className="flex items-center gap-2 font-bold text-stone-800">{icon} {title}</div>
+                {isOpen ? <ChevronUp size={18} className="text-stone-500"/> : <ChevronDown size={18} className="text-stone-500"/>}
+            </button>
+            
+            {isOpen && (
+                <div className="divide-y divide-stone-100">
+                    {items.map(item => {
+                        const cost = getItemCost(item, profilNom);
+                        const count = myItems.filter(id => id === item.id).length;
+                        const hasItem = count > 0;
+                        const isMultiple = item.is_choix_multiple;
+                        const canAfford = reste >= cost;
+                        
+                        let isLocked = false;
+                        let lockMessage = "";
+                        try {
+                            if (item.effets_techniques) {
+                                const reqs = typeof item.effets_techniques === 'string' ? JSON.parse(item.effets_techniques) : item.effets_techniques;
+                                if (reqs.profils && reqs.profils.length > 0) {
+                                    const monMajeur = character.profils?.majeur?.nom;
+                                    const monMineur = character.profils?.mineur?.nom;
+                                    if (!reqs.profils.includes(monMajeur) && !reqs.profils.includes(monMineur)) {
+                                        isLocked = true;
+                                        lockMessage = `Exige le profil : ${reqs.profils.join(' ou ')}`;
+                                    }
+                                }
+                            }
+                        } catch(e) {}
+                        
+                        return (
+                            <div key={item.id} className={`p-3 flex justify-between items-center transition-colors ${hasItem ? 'bg-amber-50/50' : ''}`}>
+                                <div className="flex-1 pr-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className={`text-sm font-bold ${hasItem ? 'text-amber-900' : 'text-stone-700'}`}>{item.nom}</span>
+                                        {isMultiple && hasItem && (
+                                            <span className="text-[10px] bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full font-bold shadow-sm">x{count}</span>
+                                        )}
+                                    </div>
+                                    {item.description && <div className="text-xs text-stone-500 mt-1 italic leading-relaxed">{item.description}</div>}
+                                    {isLocked && <div className="text-[10px] text-red-500 mt-1 font-bold flex items-center gap-1 uppercase tracking-wider"><Lock size={10}/> {lockMessage}</div>}
+                                </div>
+                                
+                                <div className="flex items-center gap-3 shrink-0">
+                                    <div className="text-xs font-bold text-stone-500 bg-stone-100 px-2 py-1 rounded shadow-inner border border-stone-200">{cost} PP</div>
+                                    
+                                    {isMultiple ? (
+                                        <div className="flex items-center gap-1 bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden">
+                                            <button 
+                                                onClick={() => toggleAchat(item, profilNom, 'remove')} 
+                                                disabled={count === 0} 
+                                                className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-30 transition-colors"
+                                                title="Retirer"
+                                            >
+                                                <Minus size={14}/>
+                                            </button>
+                                            <span className="text-xs font-bold w-4 text-center text-stone-700">{count}</span>
+                                            <button 
+                                                onClick={() => toggleAchat(item, profilNom, 'add')} 
+                                                disabled={!canAfford || isLocked} 
+                                                className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 disabled:opacity-30 transition-colors"
+                                                title="Ajouter"
+                                            >
+                                                <Plus size={14}/>
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button 
+                                            onClick={() => toggleAchat(item, profilNom)}
+                                            disabled={!hasItem && (!canAfford || isLocked)}
+                                            className={`p-1.5 rounded-lg border transition-colors shadow-sm ${hasItem ? 'bg-amber-100 border-amber-300 text-amber-700 hover:bg-amber-200' : 'bg-white border-stone-200 text-stone-400 hover:border-emerald-300 hover:text-emerald-600 disabled:opacity-50'}`}
+                                        >
+                                            {hasItem ? <Check size={16}/> : <Plus size={16}/>}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
-
-                <div className="flex items-center gap-3 ml-4 shrink-0">
-                  {/* ✨ 4. AFFICHAGE DYNAMIQUE DES PRIX */}
-                  {isLocked ? (
-                    <Lock size={20} className="text-stone-400" />
-                  ) : item.categorie === 'contact' && !isOwned && budgetsInfo.freeContactsRemaining > 0 && !canAfford && (reste + budgetsInfo.freeContactsRemaining) >= finalCost ? (
-                    <div className="flex flex-col items-end leading-none">
-                      <span className="text-[10px] text-indigo-400">Remboursable</span>
-                      <span className="text-sm font-bold text-indigo-600">{finalCost} PP</span>
-                    </div>
-                  ) : hasDiscount ? (
-                    <div className="flex flex-col items-end leading-none" title="Prix réduit par votre Héritage">
-                      <span className="text-[10px] line-through text-stone-400">{baseCost} PP</span>
-                      <span className="text-sm font-bold text-fuchsia-600 flex items-center gap-1">
-                        {finalCost} PP <Sparkles size={12}/>
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="font-bold text-amber-600 whitespace-nowrap">{finalCost} PP</div>
-                  )}
-
-                  {/* Le bouton d'action */}
-                  {!isLocked && (
-                    isOwned ? (
-                      <Minus size={20} className="text-amber-600" />
-                    ) : (
-                      <Plus size={20} className={canAfford ? 'text-gray-400' : 'text-gray-300'} />
-                    )
-                  )}
-                </div>
-              </div>
-            );
-          })}
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
-
 // 🏛️ L'ORCHESTRATEUR PRINCIPAL
 export default function StepVieSociale() {
   const {
