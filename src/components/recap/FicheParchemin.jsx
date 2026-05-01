@@ -256,14 +256,30 @@ export default function FicheParchemin({ character, gameData }) {
 				</div>
             </div>
 
-            {/* ======================= PAGE 2 : LA FÉE (FORME DÉMASQUÉE) ======================= */}
-            <div className="recap-page">
-                <div className="carac-main-title" style={{background: '#1e3a8a'}}>Magie & Héritage</div>
-                <div className="recap-box">
-                    <span className="field-label">Apparence Démasquée</span>
-                    <div className="field-value" style={{minHeight: '44px', border: 'none', fontStyle: 'italic'}}>{character.apparence || feeData?.description || ''}</div>
-                </div>
+			{/* ======================= PAGE 2 : LA FÉE (FORME DÉMASQUÉE) ======================= */}
+			<div className="recap-page">
+				<div className="carac-main-title" style={{background: '#1e3a8a'}}>Magie & Héritage</div>
+				
+				{/* ✨ LE FIX 2 : L'encart des caractéristiques magiques */}
+				<div className="grid grid-cols-3 gap-2 mb-2">
+					<div className="recap-box flex flex-col items-center justify-center p-2">
+						<span className="field-label" style={{marginBottom: '2px'}}>Féérie</span>
+						<span className="text-2xl font-serif font-black" style={{color: '#1e3a8a', lineHeight: '1'}}>{character.caracteristiques?.feerie || 3}</span>
+					</div>
+					<div className="recap-box flex flex-col items-center justify-center p-2">
+						<span className="field-label" style={{marginBottom: '2px'}}>Masque</span>
+						<span className="text-2xl font-serif font-black" style={{color: '#1e3a8a', lineHeight: '1'}}>{character.caracteristiques?.masque || 4}</span>
+					</div>
+					<div className="recap-box flex flex-col items-center justify-center p-2">
+						<span className="field-label" style={{marginBottom: '2px'}}>Tricherie</span>
+						<span className="text-2xl font-serif font-black" style={{color: '#1e3a8a', lineHeight: '1'}}>{character.caracteristiques?.tricherie || Math.floor(((character.caracteristiques?.feerie || 3) + (character.caracteristiques?.masque || 4)) / 2)}</span>
+					</div>
+				</div>
 
+				<div className="recap-box mb-2">
+					<span className="field-label">Apparence Démasquée</span>
+					<div className="field-value" style={{minHeight: '44px', border: 'none', fontStyle: 'italic'}}>{character.apparence || feeData?.description || ''}</div>
+				</div>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="recap-box" style={{background: '#ecfdf5', borderColor: '#6ee7b7'}}>
                         <span className="field-label" style={{color: '#065f46'}}>Avantages Innés</span>

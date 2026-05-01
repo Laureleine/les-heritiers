@@ -2,6 +2,13 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.18 - "L\'Inquisiteur et le Masque 🎭"',
+        date: '1 Mai 2026',
+        changes: [
+            '🎭 **Attributs & Parchemins (Évolution) :** Suite au signalement de Chninkel, la caractéristique "Masque" possède désormais son propre contrôleur d\'expérience à l\'Étape 3 (Pouvoirs). De plus, le triptyque magique sacré (Féérie, Masque, Tricherie) s\'imprime enfin fièrement au sommet de la deuxième page de vos fiches PDF.',
+            '👻 **Purification du Code (Architecture) :** Une immense traque des fantômes algorithmiques a été menée par notre Inquisiteur syntaxique sur l\'ensemble du Grimoire. Les mémoires orphelines, imports inutilisés et dépendances asynchrones ont été purgés. Bonus : Le Grimoire Personnel profite désormais d\'un écran de déchiffrage fluide et immersif à son ouverture.'
+        ]
+    },    {
         version: '15.16.16 - "Le Sang Bleu Révélé 🩸"',
         date: '1 Mai 2026',
         changes: [
