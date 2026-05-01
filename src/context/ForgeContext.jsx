@@ -42,9 +42,10 @@ export function ForgeProvider({ children }) {
           
         const fileName = `${Date.now()}_${safeName}`;
         
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('bug_captures')
-          .upload(fileName, file);
+		// ✨ FIX ESLINT : On ne garde que l'erreur, on ignore la data renvoyée par Supabase
+		const { error: uploadError } = await supabase.storage
+			.from('bug_captures')
+			.upload(fileName, file);
 
         if (uploadError) throw new Error("L'envoi de la capture a échoué : " + uploadError.message);
         captureUrl = supabase.storage.from('bug_captures').getPublicUrl(fileName).data.publicUrl;

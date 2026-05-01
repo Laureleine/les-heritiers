@@ -353,10 +353,11 @@ export default function FicheParchemin({ character, gameData }) {
                     </div>
                 </div>
 
-                {/* 5. Les Titres (S'ils existent, sinon on masque la boîte) */}
+                {/* 5. Familles, Titres et Statuts (S'ils existent, sinon on masque la boîte) */}
                 {bible.titres && bible.titres.length > 0 && (
                     <>
-                        <div className="carac-main-title mt-4" style={{background: '#166534'}}>Titres Honorifiques</div>
+                        {/* ✨ LE FIX : Un nom majestueux et fidèle au Livre de Base */}
+                        <div className="carac-main-title mt-4" style={{background: '#166534'}}>Familles, Titres & Statuts</div>
                         <div className="recap-box">
                             <div className="text-sm font-serif space-y-1">
                                 {bible.titres.map((t, idx) => (

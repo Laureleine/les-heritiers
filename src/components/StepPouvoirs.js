@@ -1,6 +1,6 @@
 // src/components/StepPouvoirs.js
 import React from 'react';
-import { Star, Check, Sparkles, Plus, Minus } from 'lucide-react';
+import { Check, Sparkles, Plus, Minus } from 'lucide-react';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getFeerieCost, getCaracCost } from '../utils/xpCalculator';

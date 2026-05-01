@@ -1,8 +1,8 @@
 // src/components/forge/RegistrePage.jsx
 import React, { useState } from 'react';
 import { useForge } from '../../context/ForgeContext';
-import { useCharacter } from '../../context/CharacterContext';
-import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X, Copy, MessageCircle } from 'lucide-react'; // ✨ MessageCircle ajouté !
+// ✨ FIX ESLINT : L'import fantôme de 'useCharacter' a été pulvérisé !
+import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X, Copy, MessageCircle } from 'lucide-react'; 
 import ConfirmModal from '../ConfirmModal';
 import { showInAppNotification } from '../../utils/SystemeServices';
 

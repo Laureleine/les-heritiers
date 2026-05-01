@@ -114,7 +114,9 @@ export function useVieSociale() {
         });
 
         return { depenses, budgets, restes, depensesContacts, safeAllocations, freeContactsRemaining: freeRemaining, freeContactsTotal };
-    }, [achats, socialItems, tousLesProfils, character.computedStats?.contactsGratuits, character.computedStats?.budgetsPP, character.computedStats?.priceModifiers, character.caracteristiques?.prestance, character.caracteristiques?.entregent, getItemCost]);
+        
+    // ✨ FIX ESLINT : On englobe tout l'objet 'character.computedStats' au lieu d'écrire ses enfants un par un !
+    }, [achats, socialItems, tousLesProfils, character.computedStats, character.caracteristiques?.prestance, character.caracteristiques?.entregent, getItemCost]);
 
     // MOTEUR DE FORTUNE
     const getFortuneFromHeritage = useCallback(() => {

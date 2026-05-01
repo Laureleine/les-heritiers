@@ -2,6 +2,13 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.16 - "Le Sang Bleu Révélé 🩸"',
+        date: '1 Mai 2026',
+        changes: [
+            '👑 **Parchemins (PDF & Bilan) :** L\'encart des titres honorifiques s\'intitule désormais "Familles, Titres & Statuts" pour correspondre scrupuleusement à la terminologie officielle du Livre de Base.',
+            '🧠 **Cerveau Central (Filtre d\'Export) :** L\'algorithme de génération de la Bible Autonome capture désormais correctement les objets sociaux de catégorie "statut". Vos appartenances aux sociétés secrètes et vos ascendances nobles ne seront plus jamais noyées au milieu de l\'équipement matériel commun.'
+        ]
+    },    {
         version: '15.16.15 - "La Douane Linguistique 🌍"',
         date: '1 Mai 2026',
         changes: [
