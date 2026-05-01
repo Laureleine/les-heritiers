@@ -1,6 +1,6 @@
 // src/components/personnalisation/WidgetLangues.js
 import React, { useState, useEffect } from 'react';
-import { Globe, Crown, X, Info, AlertCircle, Coins, Sparkles } from 'lucide-react';
+import { Globe, Crown, X, AlertCircle, Coins } from 'lucide-react';
 
 const DICTIONNAIRE_LANGUES = {
     "Langues Courantes": ['Français', 'Anglais', 'Allemand', 'Espagnol', 'Italien', 'Russe', 'Portugais', 'Flamand'],

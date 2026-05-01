@@ -1,9 +1,8 @@
 // src/components/vieSociale/StepVieSociale.js
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown, Check, Lock, Sparkles } from 'lucide-react';
+import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown, Check, Lock } from 'lucide-react';
 import { useVieSociale } from './useVieSociale';
 import { getFortuneCost } from '../../utils/xpCalculator';
-import { showInAppNotification } from '../../utils/SystemeServices';
 
 // 🎨 COMPOSANT D'ACCORDÉON
 const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, budgetsInfo, character }) => {
@@ -99,17 +98,15 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
 };
 // 🏛️ L'ORCHESTRATEUR PRINCIPAL
 export default function StepVieSociale() {
-  const {
-    character, isScelle, isReadOnly, tousLesProfils, activeTab, setActiveTab, achats,
-    getProfilDisplayName, catalogueParProfil, getItemCost, budgetsInfo, plancherFortune,
-    handleToggleItem, handleUpgradeFortune, handleDowngradeFortune, updateContactAllocation,
-    socialItems // 👈 FIX : Extrait du cerveau !
-  } = useVieSociale();
+    const {
+        character, isScelle, isReadOnly, tousLesProfils, activeTab, setActiveTab, achats,
+        getProfilDisplayName, catalogueParProfil, getItemCost, budgetsInfo, plancherFortune,
+        handleToggleItem, handleUpgradeFortune, handleDowngradeFortune, updateContactAllocation,
+        socialItems 
+    } = useVieSociale();
 
-  const xpDispo = (character.xp_total || 0) - (character.xp_depense || 0);
-  const currentFortune = isScelle ? (character.fortune || 0) : plancherFortune;
-
-  const renderCatalogue = (profilNom) => {
+    const currentFortune = isScelle ? (character.fortune || 0) : plancherFortune;
+    const renderCatalogue = (profilNom) => {
     const itemsDuProfil = catalogueParProfil[profilNom] || [];
     if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;
 

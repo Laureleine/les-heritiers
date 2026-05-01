@@ -2,14 +2,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bug, Sparkles, X, Image as ImageIcon, Send, Key } from 'lucide-react'; // ✨ Ajout de Key
 import { useForge } from '../../context/ForgeContext';
-import { useCharacter } from '../../context/CharacterContext'; // ✨ Ajout du Nuage
+// ✨ FIX ESLINT : L'import fantôme de 'useCharacter' a été pulvérisé !
 
 export default function WidgetAnomalie({ userProfile }) {
   const { soumettreEntree } = useForge();
 
   // ✨ DÉTECTION DU VIP
   const isInitiated = userProfile?.profile?.is_initiated === true || ['super_admin', 'gardien'].includes(userProfile?.profile?.role);
-
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [typeEntree, setTypeEntree] = useState('Anomalie');

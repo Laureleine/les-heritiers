@@ -384,8 +384,10 @@ export function characterReducer(state, action) {
 
             inventaireLisible.langues = newState.profils?.langues || [];
             inventaireLisible.contacts = boughtItems.filter(i => i.categorie === 'contact').map(i => i.nom);
-            inventaireLisible.titres = boughtItems.filter(i => i.categorie === 'titre').map(i => i.nom);
-            inventaireLisible.armes_equipements = boughtItems.filter(i => !['langue', 'contact', 'titre'].includes(i.categorie)).map(i => i.nom);
+            
+            // ✨ LE FIX : L'entonnoir capture désormais les Titres ET les Statuts particuliers !
+            inventaireLisible.titres = boughtItems.filter(i => ['titre', 'statut'].includes(i.categorie)).map(i => i.nom);
+            inventaireLisible.armes_equipements = boughtItems.filter(i => !['langue', 'contact', 'titre', 'statut'].includes(i.categorie)).map(i => i.nom);
         }
 
         const bibleAutonome = {

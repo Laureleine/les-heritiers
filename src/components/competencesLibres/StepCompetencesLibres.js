@@ -1,7 +1,7 @@
+// src/components/competencesLibres/StepCompetencesLibres.js
 import React from 'react';
-import { Plus, Minus, Star, Brain, RotateCcw, Briefcase, Info, Lock } from 'lucide-react';
+import { Plus, Star, Brain, RotateCcw, Info, Lock } from 'lucide-react';
 import { useCompetencesLibres } from './useCompetencesLibres';
-import { getUtileCost } from '../../utils/xpCalculator';
 
 // ============================================================================
 // 🎨 WIDGET : COMPTOIRS DE BUDGET (Haute Densité)
@@ -43,11 +43,11 @@ const ComptoirsBudget = ({ budgetsInfo }) => (
 // 🎨 COMPOSANT RÉUTILISABLE : LIGNE DE COMPÉTENCE
 // ============================================================================
 const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingSpecFor, character }) => {
-  const {
-    nomComp, current, scoreBase, totalScore, isPred, isEspritEligible, maxAllowed, plancher,
-    fairySpecActuelle, specsFromAtouts, userSpecs, hasJobSpecHere, jobSpec, nextSpecCost, availableSpecs,
-    isMinusDisabled, isPlusDisabled, utileCost
-  } = data;
+    const {
+        nomComp, scoreBase, totalScore, isPred, isEspritEligible,
+        fairySpecActuelle, specsFromAtouts, userSpecs, hasJobSpecHere, jobSpec, nextSpecCost, availableSpecs,
+        isMinusDisabled, isPlusDisabled, utileCost
+    } = data;
 
   // ✨ LA MAGIE : On fusionne TOUTES les sources de spécialités !
   const toutesMesSpecs = [

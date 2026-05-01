@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../config/supabase';
-import { Search, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award, X } from 'lucide-react';
+import { Search, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award } from 'lucide-react';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import * as LucideIcons from 'lucide-react';
 
@@ -20,7 +20,8 @@ function TabUsers({ session }) {
 
     // Les mémoires du Triptyque de l'Inquisiteur
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortBy, setSortBy] = useState('last_seen');
+    // ✨ FIX : On retire simplement le modificateur 'setSortBy' inutilisé
+    const [sortBy] = useState('last_seen');
     const [filterMode, setFilterMode] = useState('all');
 
     // --- 2. LE MOTEUR DE TÉLÉCHARGEMENT BLINDÉ ET INTELLIGENT ---

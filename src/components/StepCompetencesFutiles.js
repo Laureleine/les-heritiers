@@ -1,13 +1,7 @@
 // src/components/StepCompetencesFutiles.js
-// 8.23.0 // 8.31.0 // 8.32.0
-// 9.11.0
-// 10.4.0 // 10.6.0 // 10.9.0
-// 11.1.0
-// 14.4.0 // 14.5.0 // 14.8.0 // 14.9.0 // 14.10.0
-
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
-import { getCompetencesFutiles, addCompetenceFutile, invalidateCompetencesFutilesCache } from '../utils/supabaseGameData';
+import { addCompetenceFutile } from '../utils/supabaseGameData';
 import { parseCompetencesFutilesPredilection } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -100,7 +94,6 @@ export default function StepCompetencesFutiles() {
     const scoreTotal = character.computedStats?.futilesTotal?.[nomComp] || 0;
     const isPred = competencesPredilection.includes(nomComp);
     const evolutionMax = isPred ? 7 : 6;
-    const maxAllowed = isScelle ? evolutionMax : (isPred ? 5 : 4);
 
     // 🛡️ MODE ÉVOLUTION (SCELLÉ)
     if (isScelle) {
