@@ -116,50 +116,63 @@ export default function StepPouvoirs() {
     const availablePowers = getAvailablePowers();
     if (!data) return null;
 
-    return (
-        <div className="space-y-8 animate-fade-in">
-            {/* EN-TÊTE : LA FÉÉRIE */}
-            <div>
-                <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-white p-2 rounded-full shadow-sm text-indigo-600">
-                            <Sparkles size={24} />
+        return (
+            <div className="space-y-8 animate-fade-in">
+                
+                {/* ✨ LE FIX 1 : EN-TÊTE FÉÉRIE & MASQUE */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
+                    
+                    {/* 1. LA FÉÉRIE */}
+                    <div className="flex flex-col">
+                        <h2 className="text-xl font-bold text-indigo-900 font-serif flex items-center gap-2">
+                            <Sparkles className="text-indigo-600"/> Féérie
+                        </h2>
+                        <span className="text-xs text-indigo-500 font-medium">— Gouverne vos Pouvoirs</span>
+                        <div className="flex items-center gap-3 mt-2">
+                            <span className="text-3xl font-black font-serif text-indigo-800">{currentFeerie}</span>
+                            {!isReadOnly && isScelle && (
+                                <div className="flex flex-col gap-1">
+                                    {currentFeerie > baseFeerie && (
+                                        <button onClick={() => handleDowngradeStat('feerie')} className="text-xs text-red-600 hover:bg-red-50 px-2 py-1 rounded border border-red-200 transition-colors flex items-center gap-1"><Minus size={12}/> Annuler</button>
+                                    )}
+                                    {currentFeerie < 8 && xpDispo >= getFeerieCost(currentFeerie) && (
+                                        <button onClick={() => handleUpgradeStat('feerie')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2 py-1 rounded border border-indigo-300 font-bold transition-colors flex items-center gap-1"><Plus size={12}/> Améliorer ({getFeerieCost(currentFeerie)} XP)</button>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                        <div>
-                            <div className="flex items-baseline gap-2">
-                                <span className="font-bold text-indigo-900 text-lg">Féérie</span>
-                                <span className="text-xs text-indigo-500 font-medium">— Gouverne vos Pouvoirs</span>
-                            </div>
-                            <div className="flex items-center gap-3 mt-1">
-                                <span className="text-2xl font-black font-serif text-indigo-800">{currentFeerie}</span>
-                                {!isReadOnly && isScelle && (
-                                    <div className="flex gap-1">
-                                        {currentFeerie > baseFeerie && (
-                                            <button onClick={() => handleDowngradeStat('feerie')} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title={`Récupérer ${getFeerieCost(currentFeerie - 1)} XP`}>
-                                                <Minus size={16} />
-                                            </button>
-                                        )}
-                                        {currentFeerie < 8 && (
-                                            <button onClick={() => handleUpgradeStat('feerie')} className="flex items-center gap-1 px-2 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded transition-colors text-xs font-bold" title={`Améliorer pour ${getFeerieCost(currentFeerie)} XP`}>
-                                                <Plus size={14} /> Améliorer ({getFeerieCost(currentFeerie)} XP)
-                                            </button>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                    </div>
+
+                    {/* 2. LE MASQUE */}
+                    <div className="flex flex-col border-t md:border-t-0 md:border-l border-indigo-200 pt-4 md:pt-0 md:pl-4">
+                        <h2 className="text-xl font-bold text-indigo-900 font-serif flex items-center gap-2">
+                            🎭 Masque
+                        </h2>
+                        <span className="text-xs text-indigo-500 font-medium">— Gouverne votre Dissimulation</span>
+                        <div className="flex items-center gap-3 mt-2">
+                            <span className="text-3xl font-black font-serif text-indigo-800">{currentMasque}</span>
+                            {!isReadOnly && isScelle && (
+                                <div className="flex flex-col gap-1">
+                                    {currentMasque > baseMasque && (
+                                        <button onClick={() => handleDowngradeStat('masque')} className="text-xs text-red-600 hover:bg-red-50 px-2 py-1 rounded border border-red-200 transition-colors flex items-center gap-1"><Minus size={12}/> Annuler</button>
+                                    )}
+                                    {currentMasque < 10 && xpDispo >= getCaracCost(currentMasque) && (
+                                        <button onClick={() => handleUpgradeStat('masque')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2 py-1 rounded border border-indigo-300 font-bold transition-colors flex items-center gap-1"><Plus size={12}/> Améliorer ({getCaracCost(currentMasque)} XP)</button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
                 {isScelle && (
-                    <p className="text-xs text-indigo-800 mt-4 italic text-center">
+                    <p className="text-xs text-indigo-800 italic text-center mt-2">
                         Améliorer vos Attributs Féériques consomme de l'Expérience. Augmenter la Féérie débloquera immédiatement un nouvel emplacement de Pouvoir.
                     </p>
                 )}
-            </div>
 
-            {/* INFO POUVOIRS */}
-            <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
+                {/* INFO POUVOIRS */}
+				<div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
                 <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
                 <div>
                     <h3 className="font-serif font-bold text-amber-900">Héritage Féérique</h3>
