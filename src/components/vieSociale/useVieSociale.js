@@ -30,7 +30,20 @@ export function useVieSociale() {
     const catalogueParProfil = useMemo(() => {
         const dict = {};
         tousLesProfils.forEach(p => {
-            dict[p] = socialItems.filter(item => item.profils?.name_masculine === p);
+            dict[p] = socialItems.filter(item => {
+                // ✨ LE FIX : On lit enfin notre colonne JSONB multi-profils !
+                let parsedArray = [];
+                if (Array.isArray(item.profils_autorises)) {
+                    parsedArray = item.profils_autorises;
+                } else if (typeof item.profils_autorises === 'string') {
+                    try { parsedArray = JSON.parse(item.profils_autorises); } catch(e) {}
+                }
+                
+                // Rétrocompatibilité avec l'ancienne clé étrangère unique
+                const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
+                
+                return parsedArray.includes(p) || legacyProfile === p;
+            });
         });
         return dict;
     }, [socialItems, tousLesProfils]);
