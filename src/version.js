@@ -2,6 +2,13 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.19 - "L\'Ombre des Sicaires 🗡️"',
+        date: '2 Mai 2026',
+        changes: [
+            '🗡️ **Vie Sociale & Équipement (Hotfix) :** L\'algorithme de la boutique lit désormais parfaitement la nouvelle architecture de la base de données permettant à un Contact (ou un objet) d\'appartenir à de multiples Profils professionnels. Les réductions octroyées par vos statuts secrets (comme Membre des Sicaires) s\'appliquent désormais avec une tolérance intelligente, même si le nom de l\'objet diffère légèrement selon votre métier.',
+            '🧠 **Forge (Constructeur Visuel) :** Le champ "Ajustement Prix Boutique" bénéficie dorénavant d\'un système d\'autocomplétion natif. Les Gardiens du Savoir peuvent désormais rechercher dynamiquement un objet ou un contact existant au fur et à mesure de leur frappe, éradiquant les erreurs d\'orthographe.'
+        ]
+    },    {
         version: '15.16.18 - "L\'Inquisiteur et le Masque 🎭"',
         date: '1 Mai 2026',
         changes: [
