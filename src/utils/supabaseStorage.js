@@ -185,6 +185,9 @@ export const saveCharacterToSupabase = async (character) => {
             statut: cleaned.statut || 'brouillon',
             xp_total: character.xp_total || 0,
             xp_depense: character.xp_depense || 0,
+            portrait_masked_url: cleaned.portrait_masked_url || null,
+            portrait_unmasked_url: cleaned.portrait_unmasked_url || null,
+            is_unmasked_revealed: cleaned.is_unmasked_revealed || false,
             data: newDataJson,
             updated_at: new Date().toISOString()
         };
