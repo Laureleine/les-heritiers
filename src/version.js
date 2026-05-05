@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.23 - "Le Daguerréotype Double 🖼️"',
+        date: '5 Mai 2026',
+        changes: [
+            '🖼️ **Personnalisation du Masque (Nouvelle Fonctionnalité) :** L\'étape 10 de création de personnage dispose désormais d\'un encart "Le Daguerréotype Double". Deux zones d\'import d\'image distinctes permettent d\'associer un portrait humain (L\'Apparence Sociale) et un portrait féérique (La Nature Profonde) à chaque Héritier.',
+            '👁️ **Loi du Silence :** Un bouton de bascule permet au joueur de choisir si sa véritable nature féérique est visible par les autres membres du Cercle, ou gardée secrète.',
+            '🗄️ **Architecture (Migration DB) :** Trois nouvelles colonnes dédiées sur la table `characters` (`portrait_masked_url`, `portrait_unmasked_url`, `is_unmasked_revealed`) et un bucket Supabase Storage sécurisé (`portraits`) accueillent désormais les images. Les RLS protègent les uploads de chaque joueur.'
+        ]
+    },
+    {
         version: '15.16.22 - "Le Notaire Réparé 📜"',
         date: '5 Mai 2026',
         changes: [

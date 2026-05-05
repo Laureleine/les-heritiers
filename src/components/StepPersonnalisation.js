@@ -1,9 +1,10 @@
 // src/components/StepPersonnalisation.js
 
-import React from 'react';
-import { User, Feather, Briefcase, Gift } from 'lucide-react'; // ✨ Ajout de Gift
+import React, { useRef, useState } from 'react';
+import { User, Feather, Briefcase, Gift, Camera, Eye, EyeOff, Loader } from 'lucide-react';
 import WidgetLangues from './personnalisation/WidgetLangues';
 import { usePersonnalisation } from './personnalisation/usePersonnalisation';
+import { showInAppNotification } from '../utils/SystemeServices';
 
 export default function StepPersonnalisation() {
   const {
@@ -11,8 +12,31 @@ export default function StepPersonnalisation() {
     usefulSkills, boughtMetiers,
     updateField, updateActiviteDomaine, updateActivitePrecision, updateSpecialiteMetier,
     getSpecsDisponiblesPourMetier,
-    pendingEquipementChoices, handleChoixEquipement // ✨ NOUVEAU
+    pendingEquipementChoices, handleChoixEquipement,
+    uploadPortrait // 📸
   } = usePersonnalisation();
+
+  // 📸 État de chargement par portrait
+  const [uploading, setUploading] = useState({ masked: false, unmasked: false });
+  const maskedInputRef  = useRef(null);
+  const unmaskedInputRef = useRef(null);
+
+  const handlePortraitChange = async (file, type) => {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showInAppNotification('Le portrait ne doit pas dépasser 5 Mo.', 'warning');
+      return;
+    }
+    setUploading(prev => ({ ...prev, [type]: true }));
+    try {
+      await uploadPortrait(file, type);
+      showInAppNotification('✓ Portrait enregistré dans le grimoire !', 'success');
+    } catch (err) {
+      showInAppNotification('Erreur lors du dépôt du portrait : ' + err.message, 'error');
+    } finally {
+      setUploading(prev => ({ ...prev, [type]: false }));
+    }
+  };
 
   return (
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-12">
@@ -139,14 +163,85 @@ export default function StepPersonnalisation() {
         isReadOnly={isReadOnly}
       />
 
-      {/* L'ENCART IDENTITÉ & APPARENCE (INTACT) */}
+      {/* L'ENCART IDENTITÉ & APPARENCE */}
       <div className="bg-white rounded-xl shadow-md border border-amber-100 overflow-hidden">
         <div className="bg-amber-50 p-4 border-b border-amber-100">
           <h3 className="font-serif font-bold text-lg text-amber-900 flex items-center gap-2">
             <User size={20} /> Identité & Apparence
           </h3>
         </div>
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* 📸 LE DAGUERRÉOTYPE DOUBLE */}
+        <div className="px-6 pt-6 pb-2">
+          <p className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Camera size={13} /> Le Daguerréotype Double
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            {/* Portrait Masqué */}
+            <div className="flex flex-col items-center gap-2">
+              <div
+                onClick={() => !isReadOnly && maskedInputRef.current?.click()}
+                className={`relative w-full aspect-[3/4] rounded-xl overflow-hidden border-2 border-dashed border-amber-300 bg-amber-50 flex flex-col items-center justify-center transition-all ${isReadOnly ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:border-amber-500 hover:bg-amber-100 group'}`}
+              >
+                {character.portrait_masked_url ? (
+                  <img src={character.portrait_masked_url} alt="Portrait masqué" className="absolute inset-0 w-full h-full object-cover" />
+                ) : null}
+                <div className={`${character.portrait_masked_url ? 'absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100' : ''} flex flex-col items-center justify-center gap-2 transition-opacity`}>
+                  {uploading.masked
+                    ? <Loader size={28} className="text-amber-400 animate-spin" />
+                    : <Camera size={28} className={character.portrait_masked_url ? 'text-white' : 'text-amber-400'} />
+                  }
+                  <span className={`text-xs font-bold ${character.portrait_masked_url ? 'text-white' : 'text-amber-600'}`}>
+                    {uploading.masked ? 'Dépôt en cours…' : character.portrait_masked_url ? 'Changer' : 'Ajouter'}
+                  </span>
+                </div>
+              </div>
+              <input ref={maskedInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                onChange={e => handlePortraitChange(e.target.files?.[0], 'masked')} />
+              <span className="text-xs font-bold text-amber-700 text-center">L'Apparence Sociale<br/><span className="font-normal text-stone-400">Portrait Humain</span></span>
+            </div>
+
+            {/* Portrait Démasqué */}
+            <div className="flex flex-col items-center gap-2">
+              <div
+                onClick={() => !isReadOnly && unmaskedInputRef.current?.click()}
+                className={`relative w-full aspect-[3/4] rounded-xl overflow-hidden border-2 border-dashed border-purple-300 bg-purple-50 flex flex-col items-center justify-center transition-all ${isReadOnly ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:border-purple-500 hover:bg-purple-100 group'}`}
+              >
+                {character.portrait_unmasked_url ? (
+                  <img src={character.portrait_unmasked_url} alt="Portrait féérique" className="absolute inset-0 w-full h-full object-cover" />
+                ) : null}
+                <div className={`${character.portrait_unmasked_url ? 'absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100' : ''} flex flex-col items-center justify-center gap-2 transition-opacity`}>
+                  {uploading.unmasked
+                    ? <Loader size={28} className="text-purple-400 animate-spin" />
+                    : <Camera size={28} className={character.portrait_unmasked_url ? 'text-white' : 'text-purple-400'} />
+                  }
+                  <span className={`text-xs font-bold ${character.portrait_unmasked_url ? 'text-white' : 'text-purple-600'}`}>
+                    {uploading.unmasked ? 'Dépôt en cours…' : character.portrait_unmasked_url ? 'Changer' : 'Ajouter'}
+                  </span>
+                </div>
+              </div>
+              <input ref={unmaskedInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                onChange={e => handlePortraitChange(e.target.files?.[0], 'unmasked')} />
+              <span className="text-xs font-bold text-purple-700 text-center">La Nature Profonde<br/><span className="font-normal text-stone-400">Forme Féérique</span></span>
+            </div>
+          </div>
+
+          {/* Toggle "Révéler la nature féérique" */}
+          {character.portrait_unmasked_url && (
+            <button
+              onClick={() => !isReadOnly && updateField('is_unmasked_revealed', !character.is_unmasked_revealed)}
+              disabled={isReadOnly}
+              className={`mt-3 w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-xs font-bold transition-all border ${character.is_unmasked_revealed ? 'bg-purple-100 border-purple-300 text-purple-800 hover:bg-purple-200' : 'bg-stone-50 border-stone-200 text-stone-500 hover:bg-stone-100'} disabled:opacity-60 disabled:cursor-not-allowed`}
+            >
+              {character.is_unmasked_revealed
+                ? <><Eye size={14} /> Nature féérique visible dans le Cercle</>
+                : <><EyeOff size={14} /> Nature féérique cachée (Loi du Silence)</>
+              }
+            </button>
+          )}
+        </div>
+
+        <div className="p-6 pt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nom Humain (Masque)</label>

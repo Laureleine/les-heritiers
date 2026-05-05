@@ -1,6 +1,7 @@
 // src/components/personnalisation/usePersonnalisation.js
 import { useCallback, useMemo } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
+import { supabase } from '../../config/supabase';
 
 export function usePersonnalisation() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -53,6 +54,27 @@ export function usePersonnalisation() {
             gameData
         });
     }, [isReadOnly, character.data, dispatchCharacter, gameData]);
+
+    // 📸 LE DAGUERRÉOTYPISTE : Upload d'un portrait vers Supabase Storage
+    const uploadPortrait = useCallback(async (file, type) => {
+        if (isReadOnly) return;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || !character.id) throw new Error('Personnage non sauvegardé — sauvegardez d\'abord votre Héritier.');
+
+        const ext = file.name.split('.').pop().toLowerCase();
+        const path = `${user.id}/${character.id}/${type}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from('portraits')
+            .upload(path, file, { upsert: true, contentType: file.type });
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage.from('portraits').getPublicUrl(path);
+        const field = type === 'masked' ? 'portrait_masked_url' : 'portrait_unmasked_url';
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { [field]: publicUrl }, gameData });
+        return publicUrl;
+    }, [isReadOnly, character.id, dispatchCharacter, gameData]);
 
     const updateField = useCallback((field, value) => {
         if (isReadOnly) return;
@@ -108,6 +130,7 @@ export function usePersonnalisation() {
         usefulSkills, boughtMetiers,
         updateField, updateActiviteDomaine, updateActivitePrecision, updateSpecialiteMetier,
         getSpecsDisponiblesPourMetier,
-        pendingEquipementChoices, handleChoixEquipement // ✨ EXPORTÉS ICI
+        pendingEquipementChoices, handleChoixEquipement,
+        uploadPortrait // 📸 LE DAGUERRÉOTYPISTE
     };
 }

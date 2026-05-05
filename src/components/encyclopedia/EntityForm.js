@@ -39,8 +39,8 @@ const EntityForm = ({
         <label className="block text-sm font-bold text-stone-700 mb-1">Nom de l'élément</label>
         <input
           type="text"
-          value={proposal.name || ''}
-          onChange={(e) => setProposal({ ...proposal, name: e.target.value })}
+          value={proposal.name || proposal.nom || ''}
+          onChange={(e) => setProposal({ ...proposal, name: e.target.value, nom: e.target.value })}
           className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none font-bold text-stone-800 bg-white shadow-sm transition-all"
           placeholder="Ex: Vision nocturne..."
         />
