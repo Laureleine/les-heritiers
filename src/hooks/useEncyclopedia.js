@@ -1,4 +1,5 @@
 // src/hooks/useEncyclopedia.js
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext';
@@ -16,7 +17,7 @@ export function useEncyclopedia() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFairyFilter, setSelectedFairyFilter] = useState('');
     const [selectedProfileFilter, setSelectedProfileFilter] = useState('');
-    const [selectedCategoryFilter, setSelectedCategoryFilter] = useState(''); // ✨ NOUVEAU : Le filtre de catégorie
+    const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('');
     const [editingItem, setEditingItem] = useState(null);
     const [viewingItem, setViewingItem] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -34,7 +35,6 @@ export function useEncyclopedia() {
         setLoading(true);
         try {
             let query;
-            
             if (activeTab === 'fairy_types') {
                 query = supabase.from('fairy_types').select(`
                     *,
@@ -58,7 +58,6 @@ export function useEncyclopedia() {
 
             const { data: results, error } = await query;
             if (error) throw error;
-            
             setData(results || []);
         } catch (error) {
             console.error("❌ Erreur chargement Encyclopédie:", error);
@@ -94,57 +93,110 @@ export function useEncyclopedia() {
             }
 
             let matchesProfile = true;
-            let matchesCategory = true; // ✨ NOUVEAU : Le verrou des Catégories
-            
+            let matchesCategory = true;
             if (activeTab === 'social_items') {
-                // Filtre des Profils
                 if (selectedProfileFilter !== '') {
                     const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
                     let autorises = [];
                     if (Array.isArray(item.profils_autorises)) {
                         autorises = item.profils_autorises;
                     } else if (typeof item.profils_autorises === 'string') {
-                        try { autorises = JSON.parse(item.profils_autorises); } 
+                        try { autorises = JSON.parse(item.profils_autorises); }
                         catch(e) { autorises = [item.profils_autorises]; }
                     }
-                    
                     if (selectedProfileFilter === '__UNLINKED__') {
                         matchesProfile = autorises.length === 0 && !legacyProfile;
                     } else {
                         matchesProfile = autorises.includes(selectedProfileFilter) || legacyProfile === selectedProfileFilter;
                     }
                 }
-
-                // ✨ Filtre des Catégories
                 if (selectedCategoryFilter !== '') {
                     matchesCategory = item.categorie === selectedCategoryFilter;
                 }
             }
-
-            return matchesSearch && matchesFairy && matchesProfile && matchesCategory; // Combinaison intégrale !
+            return matchesSearch && matchesFairy && matchesProfile && matchesCategory;
         });
     }, [data, searchTerm, selectedFairyFilter, selectedProfileFilter, selectedCategoryFilter, activeTab]);
 
     // 🧠 4. PRÉPARATION À L'ÉDITION
     const handleOpenEdit = useCallback((item) => {
         setIsCreating(false);
+
         if (activeTab === 'fairy_types') {
-            const fairyCloudData = fairyData?.[item.name || item.nom];
+            const fairyCloudData = fairyData?.[item.name || item.nom] || {};
+            
+            const pIds = item.fairy_type_powers?.map(link => link.power?.id).filter(Boolean) || [];
+            const aIds = item.fairy_type_assets?.map(link => link.asset?.id).filter(Boolean) || [];
+            
+            let capFixe1 = '';
+            let capFixe2 = '';
+            const cChoixIds = [];
+            
+            (item.fairy_type_capacites || []).forEach(link => {
+                if (link.capacite_type === 'fixe1') capFixe1 = link.capacite?.id;
+                else if (link.capacite_type === 'fixe2') capFixe2 = link.capacite?.id;
+                else if (link.capacite_type === 'choix') cChoixIds.push(link.capacite?.id);
+            });
+
+            // ✨ LE FIX POUR LES BRIQUES DE LÉGO : On recombine l'ADN !
+            let techObj = {};
+            if (item.effets_techniques) {
+                try {
+                    techObj = typeof item.effets_techniques === 'string' 
+                        ? JSON.parse(item.effets_techniques) 
+                        : { ...item.effets_techniques };
+                } catch(e) { techObj = {}; }
+            }
+            
+            // 🧠 LE TRADUCTEUR POUR LE BONUSBUILDER EST ICI
+            
+            // 1. Les Compétences Utiles et Spécialités Offertes
+            if (fairyCloudData.competencesPredilection?.length > 0) {
+                const preds = [];
+                const specs = techObj.specialites || []; // On récupère celles existantes au cas où
+                
+                fairyCloudData.competencesPredilection.forEach(p => {
+                    if (p.isOnlySpecialty) {
+                        // 🌟 Brique Dorée : C'est une Spécialité Offerte, on la remet dans la boîte des spécialités !
+                        specs.push({ competence: p.nom, nom: p.specialite });
+                    } else {
+                        // 🌟 Brique Fuchsia/Rose : C'est une vraie Prédilection
+                        preds.push(p);
+                    }
+                });
+                
+                if (preds.length > 0) techObj.predilections = preds;
+                if (specs.length > 0) techObj.specialites = specs;
+            }
+
+            // 2. Les Compétences Futiles
+            if (fairyCloudData.competencesFutilesPredilection?.length > 0) {
+                techObj.futiles = fairyCloudData.competencesFutilesPredilection.map(f => {
+                    // 🌟 Brique Turquoise : Le Nuage stocke du texte pur, le Lego attend un Objet !
+                    if (typeof f === 'string') return { nom: f };
+                    return f;
+                });
+            }
+
             setEditingItem({
                 ...item,
-                competencesPredilection: fairyCloudData?.competencesPredilection || []
+                competencesPredilection: fairyCloudData.competencesPredilection || [],
+                techData: JSON.stringify(techObj, null, 2),
+                pouvoirsIds: pIds,
+                assetsIds: aIds,
+                capaciteFixe1: capFixe1,
+                capaciteFixe2: capFixe2,
+                capacitesChoixIds: cChoixIds
             });
+
         } else if (activeTab === 'social_items') {
-            // ✨ LE FIX ABSOLU : On pré-mâche les profils pour que le formulaire coche les cases !
             let autorises = [];
             if (Array.isArray(item.profils_autorises)) {
                 autorises = [...item.profils_autorises];
             } else if (typeof item.profils_autorises === 'string') {
-                try { autorises = JSON.parse(item.profils_autorises); } 
+                try { autorises = JSON.parse(item.profils_autorises); }
                 catch(e) { autorises = [item.profils_autorises]; }
             }
-            
-            // Rétrocompatibilité : On ajoute l'ancien profil unique s'il existe
             const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
             if (legacyProfile && !autorises.includes(legacyProfile)) {
                 autorises.push(legacyProfile);
@@ -152,7 +204,7 @@ export function useEncyclopedia() {
 
             setEditingItem({
                 ...item,
-                profils_autorises: autorises, // Le formulaire recevra un tableau propre !
+                profils_autorises: autorises,
                 techData: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '{}'
             });
         } else {
@@ -160,7 +212,7 @@ export function useEncyclopedia() {
             if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];
             else if (activeTab === 'fairy_powers') existingFairyIds = item.fairy_type_powers?.map(link => link.fairy_types?.id).filter(Boolean) || [];
             else if (activeTab === 'fairy_assets') existingFairyIds = item.fairy_type_assets?.map(link => link.fairy_types?.id).filter(Boolean) || [];
-            
+
             setEditingItem({
                 ...item,
                 techData: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '{}',
@@ -168,7 +220,7 @@ export function useEncyclopedia() {
             });
         }
     }, [activeTab, fairyData]);
-	
+
     const handleCreateNew = useCallback(() => {
         setIsCreating(true);
         setEditingItem(null);
@@ -236,14 +288,14 @@ export function useEncyclopedia() {
 
     return {
         state: {
-            activeTab, data, loading, searchTerm, selectedFairyFilter, 
-            selectedProfileFilter, selectedCategoryFilter, // ✨ EXPORTÉ ICI !
+            activeTab, data, loading, searchTerm, selectedFairyFilter,
+            selectedProfileFilter, selectedCategoryFilter, 
             editingItem, viewingItem,
             isCreating, confirmState, filteredData, encyclopediaRefs, competencesFutiles, pendingLocks
         },
         setters: {
-            setActiveTab, setSearchTerm, setSelectedFairyFilter, 
-            setSelectedProfileFilter, setSelectedCategoryFilter, // ✨ EXPORTÉ ICI !
+            setActiveTab, setSearchTerm, setSelectedFairyFilter,
+            setSelectedProfileFilter, setSelectedCategoryFilter, 
             setEditingItem, setViewingItem,
             setIsCreating, setConfirmState
         },

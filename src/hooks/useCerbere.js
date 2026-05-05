@@ -43,7 +43,7 @@ export function useCerbere() {
     const liveCombatStats = useMemo(() => calculateFullCombatStats(character, gameData), [character, gameData]);
 
     const isPredilection = useCallback((nomComp) => {
-        const inFee = feeData?.competencesPredilection?.some(p => p.nom === nomComp);
+        const inFee = feeData?.competencesPredilection?.some(p => p.nom === nomComp && !p.isOnlySpecialty);
         const inChoix = Object.values(character.competencesLibres?.choixPredilection || {}).includes(nomComp);
         return inFee || inChoix;
     }, [character.competencesLibres, feeData]);

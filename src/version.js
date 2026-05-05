@@ -2,6 +2,25 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.22 - "Le Notaire Réparé 📜"',
+        date: '5 Mai 2026',
+        changes: [
+            '🐛 **Don de personnage (Bloquant) :** Correction d\'un bug introduit lors d\'une refonte antérieure — le code de don était écrit uniquement dans le JSONB `data`, alors que la RPC `claim_character_by_code` le cherche dans la colonne dédiée `transfer_code`. Le code est désormais écrit dans les deux emplacements simultanément. Les dons fonctionnent à nouveau normalement.'
+        ]
+    },
+    {
+        version: '15.16.21 - "Le Voile Levé 👁️"',
+        date: '4 Mai 2026',
+        changes: [
+            '👁️ **Connexion (UX) :** Le formulaire d\'authentification dispose désormais d\'un bouton Œil permettant de révéler ou masquer le mot de passe saisi. Fonctionne en mode Connexion comme en mode Inscription.'
+        ]
+    },    {
+        version: '15.16.20 - "Le Filtre du Marchand 🔍"',
+        date: '4 Mai 2026',
+        changes: [
+            '🔍 **Vie Sociale & Équipement (UX) :** La boutique d\'équipement dispose désormais d\'un champ de recherche instantané. Tapez quelques lettres pour filtrer dynamiquement l\'ensemble du catalogue du profil actif, toutes catégories confondues. Une croix de réinitialisation apparaît dès qu\'un filtre est actif.'
+        ]
+    },    {
         version: '15.16.19 - "L\'Ombre des Sicaires 🗡️"',
         date: '2 Mai 2026',
         changes: [

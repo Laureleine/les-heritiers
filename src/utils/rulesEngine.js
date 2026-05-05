@@ -26,8 +26,9 @@ export const calculateSkillScore = (nomComp, character, gameData) => {
         }
     });
 
-    const isPred = feeData?.competencesPredilection?.some(p => p.nom === nomComp) ||
-        Object.values(character.competencesLibres?.choixPredilection || {}).includes(nomComp);
+    const isPred = feeData?.competencesPredilection?.some(p => p.nom === nomComp && !p.isOnlySpecialty) ||
+                   Object.values(character.competencesLibres?.choixPredilection || {}).includes(nomComp);
+    
     const bonusPred = isPred ? 2 : 0;
 
     // ✨ INJECTION DU BONUS CALCULATOR : On aspire tous les modificateurs de Pouvoirs/Capacités/Atouts !
