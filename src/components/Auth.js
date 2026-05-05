@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
 import { APP_VERSION, BUILD_DATE } from '../version';
-import { Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 
 export default function Auth() {
@@ -13,6 +13,7 @@ export default function Auth() {
   const [error, setError] = useState('');
   const [resetMode, setResetMode] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // ✨ LE NETTOYEUR INTELLIGENT : On ne vide la mémoire qu'en Inscription !
   const handleModeSwitch = (modeInscription) => {
@@ -183,15 +184,22 @@ export default function Auth() {
 				  <div className="relative">
 					<Lock className="absolute left-3 top-3 text-gray-400" size={20} />
 					<input
-					  type="password"
+					  type={showPassword ? "text" : "password"}
 					  placeholder="Mot de passe"
 					  value={password}
 					  onChange={(e) => setPassword(e.target.value)}
-					  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+					  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
 					  required
-					  // ✨ FIX : Dit au navigateur de proposer le mot de passe existant en connexion
-					  autoComplete={isSignUp ? "new-password" : "current-password"} 
+					  autoComplete={isSignUp ? "new-password" : "current-password"}
 					/>
+					<button
+					  type="button"
+					  onClick={() => setShowPassword(v => !v)}
+					  className="absolute right-3 top-3 text-gray-400 hover:text-amber-600 transition-colors"
+					  tabIndex={-1}
+					>
+					  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+					</button>
 				  </div>
 				)}
 

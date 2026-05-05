@@ -1,6 +1,6 @@
 // src/components/vieSociale/StepVieSociale.js
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown, Check, Lock } from 'lucide-react';
+import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown, Check, Lock, Search, X } from 'lucide-react';
 import { useVieSociale } from './useVieSociale';
 import { getFortuneCost } from '../../utils/xpCalculator';
 
@@ -106,15 +106,20 @@ export default function StepVieSociale() {
     } = useVieSociale();
 
     const currentFortune = isScelle ? (character.fortune || 0) : plancherFortune;
+    const [filterText, setFilterText] = useState('');
+
     const renderCatalogue = (profilNom) => {
     const itemsDuProfil = catalogueParProfil[profilNom] || [];
+    const filteredItems = filterText.trim()
+        ? itemsDuProfil.filter(i => i.nom.toLowerCase().includes(filterText.toLowerCase()))
+        : itemsDuProfil;
     if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;
 
-    const metiers = itemsDuProfil.filter(i => i.categorie === 'metier');
-    const objets = itemsDuProfil.filter(i => i.categorie === 'objet');
-    const contacts = itemsDuProfil.filter(i => i.categorie === 'contact');
-    const langues = itemsDuProfil.filter(i => i.categorie === 'langue');
-    const titres = itemsDuProfil.filter(i => i.categorie === 'titre');
+    const metiers = filteredItems.filter(i => i.categorie === 'metier');
+    const objets = filteredItems.filter(i => i.categorie === 'objet');
+    const contacts = filteredItems.filter(i => i.categorie === 'contact');
+    const langues = filteredItems.filter(i => i.categorie === 'langue');
+    const titres = filteredItems.filter(i => i.categorie === 'titre');
 
     const reste = budgetsInfo.restes[profilNom];
     const budgetTotal = budgetsInfo.budgets[profilNom];
@@ -143,11 +148,32 @@ export default function StepVieSociale() {
           </div>
         )}
 
-        <CategoryAccordion title="Métiers & Statuts" icon={<Briefcase size={16} className="text-amber-700"/>} items={metiers} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
-        <CategoryAccordion title="Objets & Propriétés" icon={<Package size={16} className="text-amber-700"/>} items={objets} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
-        <CategoryAccordion title="Contacts" icon={<Users size={16} className="text-amber-700"/>} items={contacts} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
-        <CategoryAccordion title="Langues & Dialectes" icon={<MessageCircle size={16} className="text-amber-700"/>} items={langues} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
-        <CategoryAccordion title="Familles, titres et statuts particuliers" icon={<Crown size={16} className="text-amber-700"/>} items={titres} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
+        <div className="relative mb-4">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+          <input
+            type="text"
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            placeholder="Filtrer le catalogue..."
+            className="w-full pl-9 pr-8 py-2 text-sm border border-stone-200 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none text-stone-700"
+          />
+          {filterText && (
+            <button
+              onClick={() => setFilterText('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 transition-colors"
+            >
+              <X size={15} />
+            </button>
+          )}
+        </div>
+
+        <div className="overflow-y-auto max-h-[55vh] custom-scrollbar">
+          <CategoryAccordion title="Activité(s)" icon={<Briefcase size={16} className="text-amber-700"/>} items={metiers} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
+          <CategoryAccordion title="Équipement et possessions notables" icon={<Package size={16} className="text-amber-700"/>} items={objets} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
+          <CategoryAccordion title="Contacts" icon={<Users size={16} className="text-amber-700"/>} items={contacts} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
+          <CategoryAccordion title="Langues & Dialectes" icon={<MessageCircle size={16} className="text-amber-700"/>} items={langues} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
+          <CategoryAccordion title="Familles, titres et statuts particuliers" icon={<Crown size={16} className="text-amber-700"/>} items={titres} myItems={myItems} reste={reste} toggleAchat={handleToggleItem} profilNom={profilNom} getItemCost={getItemCost} budgetsInfo={budgetsInfo} character={character} />
+        </div>
       </div>
     );
   };
@@ -283,7 +309,7 @@ export default function StepVieSociale() {
         </div>
 
         {/* COLONNE CENTRALE : LE CATALOGUE */}
-        <div className="lg:col-span-6 bg-white p-4 rounded-xl shadow-sm border border-gray-200 min-h-[400px]">
+        <div className="lg:col-span-6 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
           {renderCatalogue(activeTab)}
         </div>
 

@@ -17,14 +17,46 @@ export default function FicheParchemin({ character, gameData }) {
     const finalStats = useMemo(() => calculateCharacterStats(character, gameData), [character, gameData]);
 
     const getCarac = (key) => {
-        const base = character.caracteristiques?.[key]
+        // 1. La base pure (Humaine) forcée en Nombre
+        const base = Number(character.caracteristiques?.[key]
             || character.data?.stats_scellees?.caracteristiques?.[key]
             || feeData?.caracteristiques?.[key]?.min
-            || 1;
-        const bonus = finalStats.caracteristiques.bonus[key]?.reduce((acc, b) => acc + b.value, 0) || 0;
-        return { total: base + bonus, base, bonus, sources: finalStats.caracteristiques.bonus[key] || [] };
-    };
+            || 1);
 
+        const sourcesList = finalStats.caracteristiques.bonus[key] || [];
+
+        // 2. Le détecteur Magique (Tolérance absolue)
+        const isCapacite = (sourceName) => {
+            if (!sourceName) return false;
+            
+            const sourceNorm = sourceName.toLowerCase().trim();
+            
+            // Bouclier absolu : Si ça contient "accru", c'est forcément la Capacité Féérique !
+            if (sourceNorm.includes('accru')) return true;
+
+            // Tolérance sur les autres capacités (insensible à la casse et aux espaces)
+            const caps = [
+                character.capaciteChoisie,
+                feeData?.capacites?.fixe1?.nom,
+                feeData?.capacites?.fixe2?.nom
+            ].filter(Boolean).map(c => c.toLowerCase().trim());
+
+            return caps.some(cap => sourceNorm.includes(cap));
+        };
+
+        // On force la conversion en Number() pour éviter tout risque de concaténation de texte
+        const bonusPermanent = sourcesList.filter(b => !isCapacite(b.source)).reduce((acc, b) => acc + Number(b.value), 0);
+        const bonusCapacite = sourcesList.filter(b => isCapacite(b.source)).reduce((acc, b) => acc + Number(b.value), 0);
+
+        // 3. Le rendu purifié
+        return {
+            total: base + bonusPermanent, // ✨ Le VRAI score total sous forme humaine
+            base: base,
+            bonus: bonusCapacite,         // ✨ Le bonus conditionnel féérique garanti !
+            sources: sourcesList.filter(b => isCapacite(b.source))
+        };
+    };
+	
     const profilsMap = {
         'Aventurier': ['Conduite', 'Mouvement', 'Ressort', 'Survie'],
         'Combattant': ['Art de la guerre', 'Autorité', 'Mêlée', 'Tir'],
@@ -35,8 +67,8 @@ export default function FicheParchemin({ character, gameData }) {
     };
 
     const isPredilection = (comp) => {
-        return feeData?.competencesPredilection?.some(p => p.nom === comp) ||
-            Object.values(character.competencesLibres?.choixPredilection || {}).includes(comp);
+        return feeData?.competencesPredilection?.some(p => p.nom === comp && !p.isOnlySpecialty) ||
+               Object.values(character.competencesLibres?.choixPredilection || {}).includes(comp);
     };
 
     const getCompScore = (comp) => {
@@ -203,11 +235,11 @@ export default function FicheParchemin({ character, gameData }) {
                         return (
                             <div key={key} className="carac-box">
                                 <div className="carac-label">{CARAC_LIST.find(c => c.key === key)?.label}</div>
-                                <div className="carac-score flex items-center justify-center gap-1">
-                                    {stat.total}
-                                    {/* Les bonus verts n'apparaitront pas sur le papier grâce à 'no-print' */}
-                                    {stat.bonus > 0 && <span className="no-print" style={{fontSize: '13px', color: '#16a34a'}} title={stat.sources.map(s => s.source).join(', ')}> (+{stat.bonus})</span>}
-                                </div>
+									<div className="carac-score flex items-center justify-center gap-1">
+										{/* ✨ FIX : On affiche le Total humain, et le Bonus de capacité à part ! */}
+										{stat.total}
+										{stat.bonus > 0 && <span style={{fontSize: '13px', color: '#16a34a'}} title={stat.sources.map(s => s.source).join(', ')}> (+{stat.bonus})</span>}
+									</div>
                             </div>
                         );
                     })}

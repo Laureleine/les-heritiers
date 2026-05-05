@@ -284,7 +284,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       const fullChar = await getFullCharacter(lightChar.id);
       const newData = { ...(fullChar.data || {}), transfer_code: code };
 
-      const { error } = await supabase.from('characters').update({ data: newData }).eq('id', lightChar.id);
+      const { error } = await supabase.from('characters').update({ data: newData, transfer_code: code }).eq('id', lightChar.id);
       
       if (error) throw error;
 
