@@ -7,6 +7,8 @@ import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCh
 import { exportToPDF } from '../utils/pdfGenerator';
 import { exportCharacter } from '../utils/utils';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
+import { isCharacterScelle } from '../utils/lockUtils';
+import { characterReducer } from '../utils/characterEngine';
 import ConfirmModal from './ConfirmModal';
 import GrimoirePersonnel from './cercle/GrimoirePersonnel';
 import CharacterCard from './CharacterCard';
@@ -113,17 +115,24 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     try {
       showInAppNotification("Copie du parchemin en cours...", "info");
       const fullChar = await getFullCharacter(lightChar.id);
-      const newChar = JSON.parse(JSON.stringify(fullChar));
+      // ✨ Reconstruction forcée : on vide l'historique Supabase pour que LOAD_CHARACTER
+      // reconstruise tout depuis stats_scellees. Sans ça, une historique partiel en base
+      // bloque la condition length === 0 du reducer.
+      const charForRecon = isCharacterScelle(fullChar) && gameData
+        ? { ...fullChar, data: { ...fullChar.data, historique_xp: [] } }
+        : fullChar;
+      const hydratedChar = characterReducer(charForRecon, { type: 'LOAD_CHARACTER', payload: charForRecon, gameData });
+      const newChar = JSON.parse(JSON.stringify(hydratedChar));
       newChar.id = null;
       newChar.nom = `${newChar.nom} (Copie)`;
-      newChar.statut = 'brouillon';
+      newChar.statut = isCharacterScelle(fullChar) ? fullChar.statut : 'brouillon';
       await saveCharacterToSupabase(newChar);
       await loadCharacters();
       showInAppNotification("L'Héritier a été dupliqué avec succès !", "success");
     } catch (error) {
       showInAppNotification(translateError(error), "error");
     }
-  }, [loadCharacters]);
+  }, [loadCharacters, gameData]);
 
   const handleCreateGiftCode = useCallback(async (lightChar) => {
     try {
@@ -194,11 +203,19 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       // 1. On télécharge la fiche originale complète
       const fullChar = await getFullCharacter(lightChar.id);
 
+      // ✨ Reconstruction forcée : on vide l'historique Supabase pour que LOAD_CHARACTER
+      // reconstruise tout depuis stats_scellees. Sans ça, une historique partiel en base
+      // bloque la condition length === 0 du reducer.
+      const charForRecon = isCharacterScelle(fullChar) && gameData
+        ? { ...fullChar, data: { ...fullChar.data, historique_xp: [] } }
+        : fullChar;
+      const hydratedChar = characterReducer(charForRecon, { type: 'LOAD_CHARACTER', payload: charForRecon, gameData });
+
       // 2. On clone l'ADN et on amnésie la fiche
-      const newChar = JSON.parse(JSON.stringify(fullChar));
+      const newChar = JSON.parse(JSON.stringify(hydratedChar));
       newChar.id = null; // C'est ça qui force Supabase à créer une nouvelle ligne
       newChar.nom = `${newChar.nom} (Saisie)`;
-      newChar.statut = 'brouillon';
+      newChar.statut = isCharacterScelle(fullChar) ? fullChar.statut : 'brouillon';
       newChar.isPublic = false; // On garde la copie privée par sécurité
 
       // 3. On sauvegarde (Supabase va automatiquement apposer ton user_id dessus !)
@@ -209,7 +226,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     } catch (error) {
       showInAppNotification(translateError(error), "error");
     }
-  }, [loadCharacters]);
+  }, [loadCharacters, gameData]);
 
   // 🧠 LE SÉQUENCEUR D'ADN ASYNCHRONE
   const handleExportJson = useCallback(async (lightChar) => {

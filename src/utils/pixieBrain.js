@@ -1,4 +1,5 @@
 // src/utils/pixieBrain.js
+import { getXpState } from './xpActions';
 
 // ============================================================================
 // 🧠 1. DICTIONNAIRES DE VOCABULAIRE GENRÉ ET ALÉATOIRE
@@ -255,7 +256,7 @@ export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
 
 	// ✨ NOUVEAU : LE RADAR D'EXPÉRIENCE (Ordre de Marie Cha')
 	if (c.statut === 'scelle' || c.statut === 'scellé') {
-	  const xpDispo = (c.xp_total || 0) - (c.xp_depense || 0);
+	  const { xpDispo } = getXpState(c);
 	  const currentFeerie = c.caracteristiques?.feerie || 3;
 	  const currentMasque = c.caracteristiques?.masque || 4;
 

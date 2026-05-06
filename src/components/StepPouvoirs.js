@@ -9,7 +9,7 @@ import AnomalieFeeriqueWidget from './AnomalieFeeriqueWidget';
 // ✨ L'IMPORT DRY (Usine à Badges)
 import { getMagicBadges } from '../data/DictionnaireJeu';
 import { isCharacterScelle } from '../utils/lockUtils';
-import { getXpState, spendXp, refundXp } from '../utils/xpActions';
+import { getXpState, XP_CODES } from '../utils/xpActions';
 
 export default function StepPouvoirs() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -53,9 +53,16 @@ export default function StepPouvoirs() {
 
         const newCaracs = { ...(character.caracteristiques || {}), [stat]: currentRank + 1 };
 
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
         dispatchCharacter({
-            type: 'UPDATE_MULTIPLE',
-            payload: { caracteristiques: newCaracs, xp_depense: spendXp(xpDepense, cost) },
+            type: 'LOG_XP_TRANSACTION',
+            transaction: {
+                type: 'DEPENSE',
+                code: stat === 'feerie' ? XP_CODES.FEERIE_EVEIL : XP_CODES.MASQUE_EPAISSISSEMENT,
+                label: stat === 'feerie' ? 'Éveil de la Féérie' : 'Épaississement du Masque',
+                valeur: cost,
+                rang_final: currentRank + 1
+            },
             gameData
         });
         showInAppNotification(`${stat === 'feerie' ? 'Féérie' : 'Masque'} augmenté(e) pour ${cost} XP !`, "success");
@@ -79,9 +86,16 @@ export default function StepPouvoirs() {
         const refund = stat === 'feerie' ? getFeerieCost(currentRank - 1) : getCaracCost(currentRank - 1);
         const newCaracs = { ...(character.caracteristiques || {}), [stat]: currentRank - 1 };
 
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
         dispatchCharacter({
-            type: 'UPDATE_MULTIPLE',
-            payload: { caracteristiques: newCaracs, xp_depense: refundXp(xpDepense, refund) },
+            type: 'LOG_XP_TRANSACTION',
+            transaction: {
+                type: 'REMBOURSEMENT',
+                code: stat === 'feerie' ? XP_CODES.FEERIE_EVEIL : XP_CODES.MASQUE_EPAISSISSEMENT,
+                label: stat === 'feerie' ? 'Éveil de la Féérie' : 'Épaississement du Masque',
+                valeur: refund,
+                rang_final: currentRank - 1
+            },
             gameData
         });
         showInAppNotification(`Niveau annulé : +${refund} XP récupérés !`, "success");

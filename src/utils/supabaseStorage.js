@@ -4,6 +4,53 @@ import { supabase } from '../config/supabase';
 import { getCurrentUser, requireCurrentUser } from './authUtils';
 
 // ============================================================================
+// 🏛️ CALCUL xp_depense DEPUIS LE JOURNAL (Source unique de vérité)
+// ============================================================================
+// xp_depense en base est un cache dérivé. On le recalcule toujours depuis
+// historique_xp avant chaque sauvegarde pour garantir la cohérence.
+const computeXpDepenseFromHistory = (historique) => {
+    if (!historique || historique.length === 0) return null; // null = pas de journal, garder la valeur existante
+    return Math.max(0, historique.reduce((acc, tx) => {
+        if (tx.type === 'DEPENSE')       return acc + tx.valeur;
+        if (tx.type === 'REMBOURSEMENT') return acc - tx.valeur;
+        return acc; // GAIN → ne touche pas aux dépenses
+    }, 0));
+};
+
+// ============================================================================
+// 📊 SYNCHRONISATION VERS LA TABLE xp_transactions (Write-to-both)
+// ============================================================================
+// La table xp_transactions est un miroir queryable du JSONB historique_xp.
+// Elle permet le filtrage SQL, l'analytics, et les index — sans remplacer
+// le JSONB qui reste la source primaire pour la lecture client.
+const syncXpTransactionsTable = async (characterId, historique) => {
+    if (!characterId || !historique || historique.length === 0) return;
+
+    try {
+        // Stratégie : delete-and-reinsert (pas de race condition critique car JSONB est primaire)
+        await supabase.from('xp_transactions').delete().eq('character_id', characterId);
+
+        const rows = historique.map(tx => ({
+            character_id: characterId,
+            type:          tx.type,
+            code:          tx.code || null,
+            label:         tx.label,
+            valeur:        tx.valeur,
+            rang_final:    tx.rang_final || null,
+            date_mouvement: tx.date_mouvement || new Date().toISOString()
+        }));
+
+        if (rows.length > 0) {
+            const { error } = await supabase.from('xp_transactions').insert(rows);
+            if (error) console.warn('⚠️ Sync xp_transactions partielle :', error.message);
+        }
+    } catch (e) {
+        // Non bloquant : le JSONB reste la source primaire
+        console.warn('⚠️ Sync xp_transactions échouée (non bloquant) :', e.message);
+    }
+};
+
+// ============================================================================
 // CONFIGURATION ET CACHE HORS-LIGNE
 // ============================================================================
 
@@ -185,7 +232,8 @@ export const saveCharacterToSupabase = async (character) => {
             is_public: cleaned.isPublic || false,
             statut: cleaned.statut || 'brouillon',
             xp_total: character.xp_total || 0,
-            xp_depense: character.xp_depense || 0,
+            // 🏛️ xp_depense recalculé depuis le journal — jamais copié depuis l'état (qui peut être stale)
+            xp_depense: computeXpDepenseFromHistory(cleaned.data?.historique_xp) ?? (character.xp_depense || 0),
             portrait_masked_url: cleaned.portrait_masked_url || null,
             portrait_unmasked_url: cleaned.portrait_unmasked_url || null,
             is_unmasked_revealed: cleaned.is_unmasked_revealed || false,
@@ -215,7 +263,10 @@ export const saveCharacterToSupabase = async (character) => {
 
         const finalCache = getOfflineMirror().filter(c => c.id !== idTemp && c.id !== savedData.id);
         updateOfflineMirror([mapDatabaseToCharacter(savedData), ...finalCache]);
-        
+
+        // 📊 Sync miroir SQL (non bloquant — le JSONB reste la source primaire)
+        syncXpTransactionsTable(savedData.id, cleaned.data?.historique_xp).catch(() => {});
+
         return mapDatabaseToCharacter(savedData);
     } catch (error) {
         console.warn("Échec sauvegarde Cloud (Mode Hors-ligne activé):", error);

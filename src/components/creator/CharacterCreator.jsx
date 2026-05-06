@@ -6,6 +6,7 @@ import { exportToPDF } from '../../utils/pdfGenerator';
 import { useCharacter } from '../../context/CharacterContext';
 import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
+import { getXpState } from '../../utils/xpActions';
 import { STEP_CONFIG } from '../../data/DictionnaireJeu';
 import JournalAmeModal from '../JournalAmeModal';
 import PixieAssistant from '../PixieAssistant';
@@ -76,7 +77,7 @@ export default function CharacterCreator({ session, userProfile }) {
 
   const handleAdjustXP = useCallback((amount) => {
     const currentTotal = character?.xp_total || 0;
-    const depense = character?.xp_depense || 0;
+    const { xpDepense: depense } = getXpState(character);
     const newTotal = Math.max(depense, currentTotal + amount);
     
     if (newTotal === currentTotal) {
@@ -89,13 +90,13 @@ export default function CharacterCreator({ session, userProfile }) {
 
     dispatchCharacter({
       type: 'LOG_XP_TRANSACTION',
-      transaction: { type: typeMouvement, label: labelMouvement, valeur: Math.abs(amount) },
+      transaction: { type: typeMouvement, code: amount > 0 ? 'XP_GAIN' : 'XP_AJUSTEMENT', label: labelMouvement, valeur: Math.abs(amount) },
       gameData
     });
 
     if (amount > 0) showInAppNotification(`Gling ! +${amount} XP ajoutés au Journal.`, "success");
     else showInAppNotification(`Ajustement : ${Math.abs(amount)} XP retirés du Journal.`, "info");
-  }, [character?.xp_total, character?.xp_depense, dispatchCharacter, gameData]);
+  }, [character?.xp_total, character?.data?.historique_xp, dispatchCharacter, gameData]);
 
   const handleBackToArchives = () => {
     dispatchCharacter({ type: 'RESET_CHARACTER', payload: {} });
@@ -192,7 +193,7 @@ export default function CharacterCreator({ session, userProfile }) {
             <div className="w-px h-6 bg-stone-700 mx-1"></div>
             <button onClick={() => handleAdjustXP(-1)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-stone-400 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm">-1</button>
             <div className="flex items-baseline gap-2 px-2">
-              <span className="text-2xl font-black font-serif text-emerald-400">{(character?.xp_total || 0) - (character?.xp_depense || 0)}</span>
+              <span className="text-2xl font-black font-serif text-emerald-400">{getXpState(character).xpDispo}</span>
               <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">XP</span>
             </div>
             <button onClick={() => handleAdjustXP(1)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-emerald-400 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm">+1</button>

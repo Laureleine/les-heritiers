@@ -243,7 +243,7 @@ const NotificationPreferences = ({ userEmail, preferences, onTogglePush, onToggl
                 </div>
 
                 {preferences.subscribe_to_updates && (
-                    <div className="bg-white p-4 rounded-lg border border-indigo-200 ml-8 shadow-sm animate-fade-in">
+                    <div className="bg-white p-4 rounded-lg border border-indigo-200 shadow-sm animate-fade-in">
                         <h4 className="font-serif font-bold text-indigo-900 mb-3 flex items-center gap-2">
                             <Mail size={18} /> Types de mises à jour
                         </h4>
@@ -267,7 +267,7 @@ const NotificationPreferences = ({ userEmail, preferences, onTogglePush, onToggl
                 )}
 
                 {pushSupported && preferences.subscribe_to_updates && (
-                    <div className="bg-white p-4 rounded-lg border border-purple-200 ml-8 shadow-sm animate-fade-in">
+                    <div className="bg-white p-4 rounded-lg border border-purple-200 shadow-sm animate-fade-in">
                         <h4 className="font-serif font-bold text-purple-900 mb-3 flex items-center gap-2">
                             <Smartphone size={18} /> Notifications dans l'application
                         </h4>

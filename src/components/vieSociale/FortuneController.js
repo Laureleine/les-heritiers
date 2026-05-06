@@ -4,6 +4,7 @@
 import React from 'react';
 import { Coins, Plus, Minus } from '../../config/icons';
 import { getFortuneCost } from '../../utils/xpCalculator';
+import { getXpState } from '../../utils/xpActions';
 
 export default function FortuneController({ 
   character, 
@@ -14,7 +15,7 @@ export default function FortuneController({
   onDowngrade 
 }) {
   const currentFortune = isScelle ? (character.fortune || 0) : plancherFortune;
-  const xpDispo = (character.xp_total || 0) - (character.xp_depense || 0);
+  const { xpDispo } = getXpState(character);
 
   return (
     <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-200 shadow-lg mb-8">

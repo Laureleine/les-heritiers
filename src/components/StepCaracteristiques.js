@@ -7,7 +7,7 @@ import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
 import { getCaracCost } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
-import { getXpState } from '../utils/xpActions';
+import { getXpState, XP_CODES } from '../utils/xpActions';
 
 const POINTS_A_REPARTIR = 10;
 const MAX_SCORE_INVESTISSEMENT = 5;
@@ -80,11 +80,12 @@ export default function StepCaracteristiques() {
                 gameData
             });
 
-            // 2. ✨ LE CERVEAU CENTRAL : On consigne le remboursement (qui recalculera xp_depense)
+            // 2. ✨ LE CERVEAU CENTRAL : On consigne le remboursement dans le journal
             dispatchCharacter({
                 type: 'LOG_XP_TRANSACTION',
                 transaction: {
                     type: 'REMBOURSEMENT',
+                    code: XP_CODES.CARAC_AUGMENTATION,
                     label: `Annulation : ${caracName}`,
                     valeur: costToRefund
                 },
@@ -116,11 +117,12 @@ export default function StepCaracteristiques() {
                 gameData
             });
 
-            // 2. ✨ LE CERVEAU CENTRAL : On consigne l'achat (qui recalculera xp_depense)
+            // 2. ✨ LE CERVEAU CENTRAL : On consigne l'achat dans le journal
             dispatchCharacter({
                 type: 'LOG_XP_TRANSACTION',
                 transaction: {
                     type: 'DEPENSE',
+                    code: XP_CODES.CARAC_AUGMENTATION,
                     label: `Augmentation : ${caracName}`,
                     valeur: cost,
                     rang_final: newValue

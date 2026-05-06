@@ -7,7 +7,7 @@ import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getFutileCost } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
-import { getXpState, spendXp, refundXp } from '../utils/xpActions';
+import { getXpState, XP_CODES } from '../utils/xpActions';
 
 const POINTS_TOTAUX = 10;
 
@@ -113,36 +113,24 @@ export default function StepCompetencesFutiles() {
         }
 
         const newRangs = { ...rangsInvestis, [nomComp]: current + 1 };
-        dispatchCharacter({
-          type: 'UPDATE_MULTIPLE',
-          payload: {
-            competencesFutiles: { ...character.competencesFutiles, rangs: newRangs },
-            xp_depense: spendXp(xpDepense, costXP)
-          },
-          gameData
-        });
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesFutiles: { ...character.competencesFutiles, rangs: newRangs } }, gameData });
+        dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'DEPENSE', code: XP_CODES.COMP_FUTILE_RANG, label: `Loisir : ${nomComp}`, valeur: costXP, rang_final: scoreTotal + 1 }, gameData });
         showInAppNotification(`Passion perfectionnée pour ${costXP} XP !`, "success");
-        
+
       } else if (delta < 0) {
         if (current <= plancher) {
           showInAppNotification("Savoir originel scellé ! Impossible d'oublier ce loisir.", "warning");
           return;
         }
-        
+
         const refundXP = getFutileCost(scoreTotal - 1);
         const newRangs = { ...rangsInvestis };
-        
+
         if (current - 1 === 0) delete newRangs[nomComp];
         else newRangs[nomComp] = current - 1;
 
-        dispatchCharacter({
-          type: 'UPDATE_MULTIPLE',
-          payload: {
-            competencesFutiles: { ...character.competencesFutiles, rangs: newRangs },
-            xp_depense: refundXp(xpDepense, refundXP)
-          },
-          gameData
-        });
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesFutiles: { ...character.competencesFutiles, rangs: newRangs } }, gameData });
+        dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'REMBOURSEMENT', code: XP_CODES.COMP_FUTILE_RANG, label: `Loisir : ${nomComp}`, valeur: refundXP, rang_final: scoreTotal - 1 }, gameData });
         showInAppNotification(`Dépense annulée. +${refundXP} XP récupérés.`, "info");
       }
       return;

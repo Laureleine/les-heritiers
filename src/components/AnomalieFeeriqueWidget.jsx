@@ -6,7 +6,7 @@ import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { FIXED_XP_COSTS } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
-import { getXpState, spendXp, refundXp } from '../utils/xpActions';
+import { getXpState, XP_CODES } from '../utils/xpActions';
 
 const MAX_ATOUTS_GLOBAL = 2;
 
@@ -69,7 +69,7 @@ export default function AnomalieFeeriqueWidget() {
 
     let newPouvoirs = character.pouvoirs ? [...character.pouvoirs] : [];
     let newAtouts = character.atouts ? [...character.atouts] : [];
-    let newXpDepense = xpDepense;
+    let xpTransaction = null; // { type, label, valeur }
 
     if (isSelected) {
       // ♻️ PURGE ET REVENTE
@@ -80,7 +80,7 @@ export default function AnomalieFeeriqueWidget() {
       const isAtoutInnate = innateAtouts.includes(anomalieId) || innateAtouts.includes('Anomalie féérique');
 
       if (isScelle && !isAtoutInnate) {
-        newXpDepense = refundXp(xpDepense, FIXED_XP_COSTS.nouvel_atout);
+        xpTransaction = { type: 'REMBOURSEMENT', code: XP_CODES.ANOMALIE_FEERIQUE, label: 'Acquisition : Atout Anomalie féérique', valeur: FIXED_XP_COSTS.nouvel_atout };
         showInAppNotification(`Anomalie purgée : +${FIXED_XP_COSTS.nouvel_atout} XP récupérés !`, "success");
       }
     } else {
@@ -99,7 +99,7 @@ export default function AnomalieFeeriqueWidget() {
               showInAppNotification(`L'Anomalie consomme un emplacement d'Atout. Il vous faut ${FIXED_XP_COSTS.nouvel_atout} XP !`, "error");
               return;
             }
-            newXpDepense = spendXp(xpDepense, FIXED_XP_COSTS.nouvel_atout);
+            xpTransaction = { type: 'DEPENSE', code: XP_CODES.ANOMALIE_FEERIQUE, label: 'Acquisition : Atout Anomalie féérique', valeur: FIXED_XP_COSTS.nouvel_atout };
             showInAppNotification(`Anomalie activée pour ${FIXED_XP_COSTS.nouvel_atout} XP !`, "success");
           } else {
             if (countAtouts >= MAX_ATOUTS_GLOBAL) {
@@ -114,11 +114,10 @@ export default function AnomalieFeeriqueWidget() {
       setShowAnomalie(false);
     }
 
-    dispatchCharacter({
-      type: 'UPDATE_MULTIPLE',
-      payload: { pouvoirs: newPouvoirs, atouts: newAtouts, xp_depense: newXpDepense },
-      gameData
-    });
+    dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { pouvoirs: newPouvoirs, atouts: newAtouts }, gameData });
+    if (xpTransaction) {
+      dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: xpTransaction, gameData });
+    }
   };
 
   return (
