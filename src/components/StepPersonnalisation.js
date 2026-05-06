@@ -1,10 +1,10 @@
 // src/components/StepPersonnalisation.js
 
-import React, { useRef, useState } from 'react';
-import { User, Feather, Briefcase, Gift, Camera, Eye, EyeOff, Loader } from 'lucide-react';
+import React, { useRef } from 'react';
+import { User, Feather, Briefcase, Gift, Camera, Eye, EyeOff, Loader } from '../config/icons';
 import WidgetLangues from './personnalisation/WidgetLangues';
 import { usePersonnalisation } from './personnalisation/usePersonnalisation';
-import { showInAppNotification } from '../utils/SystemeServices';
+import { useFileUpload } from '../hooks/useFileUpload';
 
 export default function StepPersonnalisation() {
   const {
@@ -16,27 +16,19 @@ export default function StepPersonnalisation() {
     uploadPortrait // 📸
   } = usePersonnalisation();
 
-  // 📸 État de chargement par portrait
-  const [uploading, setUploading] = useState({ masked: false, unmasked: false });
-  const maskedInputRef  = useRef(null);
+  // 📸 Upload portraits via hook centralisé
+  const { uploading, handleUpload } = useFileUpload({
+    maxSizeMB: 5,
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp']
+  });
+  const maskedInputRef   = useRef(null);
   const unmaskedInputRef = useRef(null);
 
-  const handlePortraitChange = async (file, type) => {
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      showInAppNotification('Le portrait ne doit pas dépasser 5 Mo.', 'warning');
-      return;
-    }
-    setUploading(prev => ({ ...prev, [type]: true }));
-    try {
-      await uploadPortrait(file, type);
-      showInAppNotification('✓ Portrait enregistré dans le grimoire !', 'success');
-    } catch (err) {
-      showInAppNotification('Erreur lors du dépôt du portrait : ' + err.message, 'error');
-    } finally {
-      setUploading(prev => ({ ...prev, [type]: false }));
-    }
-  };
+  const handlePortraitChange = (file, type) =>
+    handleUpload(file, (f) => uploadPortrait(f, type), type, {
+      success: '✓ Portrait enregistré dans le grimoire !',
+      error: (err) => `Erreur lors du dépôt du portrait : ${err.message}`
+    });
 
   return (
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-12">

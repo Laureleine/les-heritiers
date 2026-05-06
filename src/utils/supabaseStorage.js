@@ -1,6 +1,7 @@
 // src/utils/supabaseStorage.js
 
 import { supabase } from '../config/supabase';
+import { getCurrentUser, requireCurrentUser } from './authUtils';
 
 // ============================================================================
 // CONFIGURATION ET CACHE HORS-LIGNE
@@ -66,6 +67,7 @@ const mapDatabaseToCharacter = (char) => {
         xp_depense: source.xp_depense || 0,
         ownerUsername: source.profiles?.username || 'Inconnu',
         data: source.data || {},
+        computedStats: source.computed_stats || source.computedStats || {},
         created_at: source.created_at || new Date().toISOString(),
         updated_at: source.updated_at || new Date().toISOString()
     };
@@ -86,7 +88,7 @@ const getOfflineMirror = () => {
 
 export const getUserCharacters = async (forceRefresh = false) => {
     try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await getCurrentUser();
         if (!user) return getOfflineMirror();
 
         const { data, error } = await supabase
@@ -140,8 +142,7 @@ export const saveCharacterToSupabase = async (character) => {
     updateOfflineMirror([charToCache, ...otherChars]);
 
     try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Utilisateur non connecté (Sauvegarde locale uniquement)');
+        const user = await requireCurrentUser('Utilisateur non connecté (Sauvegarde locale uniquement)');
 
         // 🧠 L'ULTIME VÉRITÉ : Le Reducer a déjà tout calculé pour nous ! (DRY Absolu)
         const absoluteComputedStats = cleaned.computedStats || {};

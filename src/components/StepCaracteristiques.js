@@ -1,11 +1,13 @@
 // src/components/StepCaracteristiques.js
 import React, { useState, useMemo } from 'react';
-import { Plus, Minus, RotateCcw } from 'lucide-react';
+import { Plus, Minus, RotateCcw } from '../config/icons';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
 import { getCaracCost } from '../utils/xpCalculator';
+import { isCharacterScelle } from '../utils/lockUtils';
+import { getXpState } from '../utils/xpActions';
 
 const POINTS_A_REPARTIR = 10;
 const MAX_SCORE_INVESTISSEMENT = 5;
@@ -20,12 +22,10 @@ export default function StepCaracteristiques() {
     // ✨ LE FIX ABSOLU : On mémoïse l'objet pour empêcher la recréation du `{}` à chaque rendu !
     const currentCaracs = useMemo(() => character.caracteristiques || {}, [character.caracteristiques]);
 
-    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+    const isScelle = isCharacterScelle(character);
 
-    // Variables XP (Centralisées proprement)
-    const xpTotal = character.xp_total || 0;
-    const xpDepense = character.xp_depense || 0;
-    const xpDispo = xpTotal - xpDepense;
+    // Variables XP
+    const { xpDispo } = getXpState(character);
 
     // ✨ RÈGLE D'OR DE REACT : Le Hook est déclaré AVANT le early return !
     const pointsDepenses = useMemo(() => {

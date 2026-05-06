@@ -1,7 +1,7 @@
 // src/components/ValidationsPendantes.js
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Check, X, ArrowLeft, Shield, User, Plus, Minus, TestTubeDiagonal, ShieldAlert } from 'lucide-react';
+import { Check, X, ArrowLeft, Shield, User, Plus, Minus, TestTubeDiagonal, ShieldAlert } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { invalidateAllCaches, loadCoreGameData, loadHeavyLoreData } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';

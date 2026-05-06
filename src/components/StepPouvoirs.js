@@ -1,6 +1,6 @@
 // src/components/StepPouvoirs.js
 import React from 'react';
-import { Check, Sparkles, Plus, Minus } from 'lucide-react';
+import { Check, Sparkles, Plus, Minus } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getFeerieCost, getCaracCost } from '../utils/xpCalculator';
@@ -8,6 +8,8 @@ import AnomalieFeeriqueWidget from './AnomalieFeeriqueWidget';
 
 // ✨ L'IMPORT DRY (Usine à Badges)
 import { getMagicBadges } from '../data/DictionnaireJeu';
+import { isCharacterScelle } from '../utils/lockUtils';
+import { getXpState, spendXp, refundXp } from '../utils/xpActions';
 
 export default function StepPouvoirs() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -16,7 +18,7 @@ export default function StepPouvoirs() {
     const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 
     // 🛡️ LE PLANCHER DE VERRE ET LES VARIABLES XP
-    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+    const isScelle = isCharacterScelle(character);
     const innatePouvoirs = character.data?.stats_scellees?.pouvoirs || [];
 
     const baseFeerie = character.data?.stats_scellees?.caracteristiques?.feerie || 3;
@@ -25,9 +27,7 @@ export default function StepPouvoirs() {
     const currentFeerie = character.caracteristiques?.feerie || 3;
     const currentMasque = character.caracteristiques?.masque || 4;
 
-    const xpTotal = character.xp_total || 0;
-    const xpDepense = character.xp_depense || 0;
-    const xpDispo = xpTotal - xpDepense;
+    const { xpDepense, xpDispo } = getXpState(character);
 
     const maxPouvoirs = currentFeerie;
     const countSelected = character.pouvoirs?.length || 0;
@@ -55,7 +55,7 @@ export default function StepPouvoirs() {
 
         dispatchCharacter({
             type: 'UPDATE_MULTIPLE',
-            payload: { caracteristiques: newCaracs, xp_depense: xpDepense + cost },
+            payload: { caracteristiques: newCaracs, xp_depense: spendXp(xpDepense, cost) },
             gameData
         });
         showInAppNotification(`${stat === 'feerie' ? 'Féérie' : 'Masque'} augmenté(e) pour ${cost} XP !`, "success");
@@ -81,7 +81,7 @@ export default function StepPouvoirs() {
 
         dispatchCharacter({
             type: 'UPDATE_MULTIPLE',
-            payload: { caracteristiques: newCaracs, xp_depense: Math.max(0, xpDepense - refund) },
+            payload: { caracteristiques: newCaracs, xp_depense: refundXp(xpDepense, refund) },
             gameData
         });
         showInAppNotification(`Niveau annulé : +${refund} XP récupérés !`, "success");

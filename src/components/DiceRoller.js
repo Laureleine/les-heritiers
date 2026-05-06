@@ -1,6 +1,6 @@
 // src/components/DiceRoller.js
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Dices, RefreshCcw } from 'lucide-react'; // ✨ FIX : On ne garde que les icônes réellement utilisées
+import { X, Dices, RefreshCcw } from '../config/icons'; // ✨ FIX : On ne garde que les icônes réellement utilisées
 import DiceBox from '@3d-dice/dice-box';
 
 const parseAdj = (str) => str.split(',').map(n => parseInt(n.trim()));

@@ -1,11 +1,13 @@
 // src/components/EncyclopediaCard.js
 import React from 'react';
-import { Feather, Sparkles, Lock, ShieldCheck, Unlock, Trash2, Eye, Users, Coins, Tag } from 'lucide-react';
+import { Feather, Sparkles, Lock, ShieldCheck, Unlock, Trash2, Eye, Users, Coins, Tag } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
+import { safeParseArray } from '../utils/json';
 
 const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onToggleSeal, onDeleteClick, userProfile }) => {
     const title = item.name || item.nom;
     const desc = item.description || item.desc;
+    const isSpecialitesTab = activeTab === 'specialites';
     
     // Usine à Badges Magiques
     const powerBadges = (activeTab === 'fairy_powers' && item.type_pouvoir) 
@@ -16,12 +18,7 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
     let linkedProfiles = [];
     if (activeTab === 'social_items') {
         const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
-        let parsedArray = [];
-        if (Array.isArray(item.profils_autorises)) parsedArray = item.profils_autorises;
-        else if (typeof item.profils_autorises === 'string') {
-            try { parsedArray = JSON.parse(item.profils_autorises); } catch(e) {}
-        }
-        linkedProfiles = [...parsedArray];
+        linkedProfiles = [...safeParseArray(item.profils_autorises)];
         if (legacyProfile && !linkedProfiles.includes(legacyProfile)) {
             linkedProfiles.push(legacyProfile);
         }
@@ -57,6 +54,11 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
                                 <Tag size={10}/> {item.categorie || 'Objet'}
                             </span>
                         </>
+                    )}
+                    {isSpecialitesTab && item.competence && (
+                        <span className="text-[10px] px-2 py-1 rounded-full uppercase font-bold tracking-wider border shadow-sm bg-indigo-100 text-indigo-800 border-indigo-300">
+                            {item.competence}
+                        </span>
                     )}
                 </div>
             </div>
@@ -111,7 +113,14 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
                     <Eye size={16} /> Consulter l'archive
                 </button>
 
-                {item.is_sealed ? (
+                {isSpecialitesTab ? (
+                    <button
+                        onClick={() => onOpenEdit(item)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-100 text-stone-700 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-sm shadow-sm"
+                    >
+                        <Feather size={16} /> Suggérer une modification
+                    </button>
+                ) : item.is_sealed ? (
                     <div className="text-sm font-serif font-bold text-amber-900/70 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-amber-900/20 bg-gradient-to-r from-amber-50 to-orange-50 shadow-inner">
                         <ShieldCheck size={18} className="text-amber-700" /> Savoir scellé
                     </div>

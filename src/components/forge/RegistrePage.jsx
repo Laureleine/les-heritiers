@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useForge } from '../../context/ForgeContext';
 // ✨ FIX ESLINT : L'import fantôme de 'useCharacter' a été pulvérisé !
-import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X, Copy, MessageCircle } from 'lucide-react'; 
+import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X, Copy, MessageCircle } from '../../config/icons'; 
 import ConfirmModal from '../ConfirmModal';
 import { showInAppNotification } from '../../utils/SystemeServices';
 

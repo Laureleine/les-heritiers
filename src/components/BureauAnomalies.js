@@ -1,7 +1,7 @@
 // 15.0.0
 
 import React, { useState, useEffect } from 'react';
-import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft } from 'lucide-react';
+import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';

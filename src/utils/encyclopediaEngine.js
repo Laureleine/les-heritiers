@@ -1,5 +1,6 @@
 // src/utils/encyclopediaEngine.js
 import { supabase } from '../config/supabase';
+import { safeParseArray } from './json';
 
 // 🧠 Utilitaires isolés pour les calculs
 const getDiff = (oldArr, newArr) => ({
@@ -13,15 +14,21 @@ const arraysEqual = (a, b) => {
     return JSON.stringify(arrA) === JSON.stringify(arrB);
 };
 
-// Parseur universel pour survivre aux tableaux stringifiés de Supabase
-const parseSafeArray = (val) => {
-    if (!val) return [];
-    if (Array.isArray(val)) return val;
-    if (typeof val === 'string') {
-        try { return JSON.parse(val); } catch(e) { return [val]; }
+const normalizeTextListField = (value) => {
+    if (Array.isArray(value)) {
+        return value.map(entry => String(entry).trim()).filter(Boolean);
+    }
+    if (typeof value === 'string') {
+        return value
+            .split('\n')
+            .map(entry => entry.trim())
+            .filter(Boolean);
     }
     return [];
 };
+
+// Parseur universel → délégué à src/utils/json.js (DRY)
+const parseSafeArray = safeParseArray;
 
 // Bouclier d'équivalence bilingue (Anti-Faux Positifs Unicode/Casse)
 const safeNormalize = (str) => String(str || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
@@ -58,12 +65,12 @@ export const submitEncyclopediaProposal = async ({
         }
 
         if (activeTab === 'fairy_types') {
-            const newAvantages = typeof proposal.avantages === 'string' ? proposal.avantages.split('\n').map(s=>s.trim()).filter(Boolean) : (proposal.avantages || []);
-            const oldAvantages = editingItem.avantages || [];
+            const newAvantages = normalizeTextListField(proposal.avantages);
+            const oldAvantages = normalizeTextListField(editingItem.avantages);
             if (!arraysEqual(newAvantages, oldAvantages)) surgicalData.avantages = newAvantages;
 
-            const newDesavantages = typeof proposal.desavantages === 'string' ? proposal.desavantages.split('\n').map(s=>s.trim()).filter(Boolean) : (proposal.desavantages || []);
-            const oldDesavantages = editingItem.desavantages || [];
+            const newDesavantages = normalizeTextListField(proposal.desavantages);
+            const oldDesavantages = normalizeTextListField(editingItem.desavantages);
             if (!arraysEqual(newDesavantages, oldDesavantages)) surgicalData.desavantages = newDesavantages;
 
             // COMPARAISON DES CARACTÉRISTIQUES
@@ -204,6 +211,9 @@ export const submitEncyclopediaProposal = async ({
 
             const formatFutilesForSignature = (arr) => {
                 return arr.map(f => {
+                    if (typeof f === 'string') {
+                        return safeNormalize(f);
+                    }
                     if (f.is_choice || f.isChoix) {
                         const options = (f.choice_options || f.options || []).map(safeNormalize).sort();
                         return `choix-[${options.join(',')}]`;
@@ -249,6 +259,13 @@ export const submitEncyclopediaProposal = async ({
             }
             if (activeTab === 'fairy_assets' && proposal.effets !== editingItem.effets) {
                 surgicalData.effets = proposal.effets;
+            }
+
+            // ✨ Spécialités : compétence parente
+            if (activeTab === 'specialites') {
+                if (proposal.competence_id !== editingItem.competence_id) {
+                    surgicalData.competence_id = proposal.competence_id;
+                }
             }
 
             // ✨ LE FIX SAUVEGARDE : On capture les champs de la Vie Sociale !
@@ -308,10 +325,18 @@ export const submitEncyclopediaProposal = async ({
             status: 'pending'
         };
 
-        const { error } = await supabase.from('data_change_requests').insert([requestPayload]);
+        const { data: insertedRequests, error } = await supabase
+            .from('data_change_requests')
+            .insert([requestPayload])
+            .select('id')
+            .limit(1);
         if (error) throw error;
 
-        return { success: true, recordName: requestPayload.record_name };
+        return {
+            success: true,
+            recordName: requestPayload.record_name,
+            requestId: insertedRequests?.[0]?.id || null
+        };
 
     } catch (error) {
         console.error("Erreur Engine:", error);

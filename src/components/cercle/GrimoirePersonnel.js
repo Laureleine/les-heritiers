@@ -2,7 +2,7 @@
 // 14.6.0
 
 import React, { useState } from 'react';
-import { BookOpen, Users, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X } from 'lucide-react';
+import { BookOpen, Users, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X } from '../../config/icons';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
 

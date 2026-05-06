@@ -1,9 +1,11 @@
 // src/components/Step1.js
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Crown, CheckCircle, Lock } from 'lucide-react';
+import { Crown, CheckCircle, Lock } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { isCharacterScelle, isCharacterLocked } from '../utils/lockUtils';
+import { getCurrentUser } from '../utils/authUtils';
 import FairyDetailsPanel from './FairyDetailsPanel'; // ✨ NOTRE NOUVELLE VUE AUTONOME
 
 export default function Step1() {
@@ -14,13 +16,13 @@ export default function Step1() {
     const { fairyData, fairyTypesByAge } = gameData;
 
     // ✨ LE BOUCLIER DE L'IDENTITÉ (Mode XP)
-    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
-    const isLocked = isReadOnly || isScelle;
+    const isScelle = isCharacterScelle(character);
+    const isLocked = isCharacterLocked(character, isReadOnly);
 
     useEffect(() => {
         const verifierInitiation = async () => {
             try {
-                const { data: { user } } = await supabase.auth.getUser();
+                const user = await getCurrentUser();
                 if (!user) return;
 
                 const { data: profile } = await supabase

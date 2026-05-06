@@ -2,6 +2,8 @@
 import { useCallback, useMemo } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
 import { supabase } from '../../config/supabase';
+import { requireCurrentUser } from '../../utils/authUtils';
+import { parseIfString } from '../../utils/json';
 
 export function usePersonnalisation() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -24,7 +26,7 @@ export function usePersonnalisation() {
         boughtItems.forEach(item => {
             if (item.effets_techniques) {
                 try {
-                    const tech = typeof item.effets_techniques === 'string' ? JSON.parse(item.effets_techniques) : item.effets_techniques;
+                    const tech = parseIfString(item.effets_techniques, {});
                     if (tech.predilections) {
                         tech.predilections.forEach((pred, idx) => {
                             if (pred.isChoix || pred.isSpecialiteChoix) {
@@ -58,8 +60,8 @@ export function usePersonnalisation() {
     // 📸 LE DAGUERRÉOTYPISTE : Upload d'un portrait vers Supabase Storage
     const uploadPortrait = useCallback(async (file, type) => {
         if (isReadOnly) return;
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user || !character.id) throw new Error('Personnage non sauvegardé — sauvegardez d\'abord votre Héritier.');
+        const user = await requireCurrentUser('Personnage non sauvegardé — sauvegardez d\'abord votre Héritier.');
+        if (!character.id) throw new Error('Personnage non sauvegardé — sauvegardez d\'abord votre Héritier.');
 
         const ext = file.name.split('.').pop().toLowerCase();
         const path = `${user.id}/${character.id}/${type}.${ext}`;
@@ -115,7 +117,7 @@ export function usePersonnalisation() {
             const atoutDef = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
             if (atoutDef?.effets_techniques) {
                 try {
-                    const tech = typeof atoutDef.effets_techniques === 'string' ? JSON.parse(atoutDef.effets_techniques) : atoutDef.effets_techniques;
+                    const tech = parseIfString(atoutDef.effets_techniques, {});
                     if (tech.specialites) tech.specialites.forEach(s => { if (s.competence === compNom) specsAtouts.push(s.nom); });
                 } catch(e) {}
             }

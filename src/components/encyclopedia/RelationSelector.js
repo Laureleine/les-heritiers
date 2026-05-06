@@ -1,6 +1,6 @@
 // src/components/encyclopedia/RelationSelector.js
 import React, { useState, useMemo } from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '../../config/icons';
 
 const RelationSelector = ({
     title,

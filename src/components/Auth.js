@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../config/supabase';
 import { APP_VERSION, BUILD_DATE } from '../version';
-import { Mail, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, Eye, EyeOff } from '../config/icons';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 
 export default function Auth() {

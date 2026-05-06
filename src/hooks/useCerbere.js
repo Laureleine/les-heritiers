@@ -2,6 +2,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { isCharacterScelle } from '../utils/lockUtils';
+import { parseIfString } from '../utils/json';
 import { useSnapshots } from './useSnapshots';
 import { calculateFullCombatStats, calculateSkillScore } from '../utils/rulesEngine';
 import { calculateCharacterStats } from '../utils/bonusCalculator'; // ✨ Ajout
@@ -9,7 +11,7 @@ import { calculateCharacterStats } from '../utils/bonusCalculator'; // ✨ Ajout
 export function useCerbere() {
     const { character, gameData, dispatchCharacter } = useCharacter();
     const feeData = gameData?.fairyData?.[character.typeFee];
-    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+    const isScelle = isCharacterScelle(character);
 
     const { snapshots, handleTakeSnapshot, handleCloneSnapshot } = useSnapshots(character.id, character.userId || character.user_id);
     const [showConfirmSeal, setShowConfirmSeal] = useState(false);
@@ -87,7 +89,7 @@ export function useCerbere() {
             const def = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
             if (def?.effets_techniques) {
                 try {
-                    const tech = typeof def.effets_techniques === 'string' ? JSON.parse(def.effets_techniques) : def.effets_techniques;
+                    const tech = parseIfString(def.effets_techniques, {});
                     tech.specialites?.forEach(s => addSpec(s.competence, s.nom, 'Atout'));
                 } catch(e) {}
             }
@@ -101,7 +103,7 @@ export function useCerbere() {
 		boughtItems.forEach(item => {
 			if (item.effets_techniques) {
 				try {
-					const tech = typeof item.effets_techniques === 'string' ? JSON.parse(item.effets_techniques) : item.effets_techniques;
+					const tech = parseIfString(item.effets_techniques, {});
 					if (tech.predilections) {
 						tech.predilections.forEach((pred, idx) => {
 							const chosenVal = choixEquipement[`${item.id}_${idx}`];

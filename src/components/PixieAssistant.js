@@ -1,6 +1,6 @@
 // src/components/PixieAssistant.js
 import React, { useState, useEffect, useRef, useCallback } from 'react'; // ✨ FIX : Ajout de useCallback
-import { Sparkles, AlertCircle, CheckCircle2, Info, Moon } from 'lucide-react';
+import { Sparkles, AlertCircle, CheckCircle2, Info, Moon } from '../config/icons';
 import { getPixieAdvice } from '../utils/pixieBrain';
 import { supabase } from '../config/supabase';
 

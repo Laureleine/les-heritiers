@@ -1,6 +1,6 @@
 // src/components/encyclopedia/FairyTypeForm.js
 import React, { useCallback } from 'react';
-import { Star, Plus, Activity, Lock } from 'lucide-react';
+import { Star, Plus, Activity, Lock } from '../../config/icons';
 import BonusBuilder from '../BonusBuilder';
 import RelationSelector from './RelationSelector';
 

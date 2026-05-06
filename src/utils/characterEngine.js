@@ -1,6 +1,8 @@
 // src/utils/characterEngine.js
 import { reconstructHistory } from './historyReconstructor';
 import { calculateCharacterStats } from './bonusCalculator';
+import { isCharacterScelle } from './lockUtils';
+import { parseIfString } from './json';
 
 // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
 export function characterReducer(state, action) {
@@ -10,7 +12,7 @@ export function characterReducer(state, action) {
         // ✨ LA MIGRATION DOUCE ET INTELLIGENTE (Archéologie de l'Âme)
         case 'LOAD_CHARACTER': {
             let loadedState = { ...action.payload };
-            const isScelle = loadedState.statut === 'scelle' || loadedState.statut === 'scellé';
+            const isScelle = isCharacterScelle(loadedState);
             
             // Si c'est un vieux personnage déjà en jeu...
             if (isScelle) {
@@ -192,7 +194,7 @@ export function characterReducer(state, action) {
     // ⚙️ LE CALCULATEUR AUTOMATIQUE INTÉGRÉ
     if (action.gameData && action.gameData.fairyData && newState.typeFee) {
         const feeData = action.gameData.fairyData[newState.typeFee];
-        const isScelle = newState.statut === 'scelle' || newState.statut === 'scellé'; // On a besoin de savoir si on est en Évolution
+        const isScelle = isCharacterScelle(newState); // On a besoin de savoir si on est en Évolution
 
         // --- A. Calcul de l'Entregent Total ---
         let entregent = newState.competencesLibres?.rangs?.['Entregent'] || 0;
@@ -215,7 +217,7 @@ export function characterReducer(state, action) {
             const atout = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
             if (atout && atout.effets_techniques) {
                 try {
-                    const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques) : atout.effets_techniques;
+                    const tech = parseIfString(atout.effets_techniques, {});
                     if (tech.competences) {
                         Object.entries(tech.competences).forEach(([comp, val]) => {
                             atoutsRangs[comp] = (atoutsRangs[comp] || 0) + val;
@@ -237,7 +239,7 @@ export function characterReducer(state, action) {
                 const atout = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
                 if (atout && atout.effets_techniques) {
                     try {
-                        const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques) : atout.effets_techniques;
+                        const tech = parseIfString(atout.effets_techniques, {});
                         if (tech.competences) {
                             Object.entries(tech.competences).forEach(([comp, val]) => {
                                 atoutsRangsBase[comp] = (atoutsRangsBase[comp] || 0) + val;
@@ -367,7 +369,7 @@ export function characterReducer(state, action) {
             const atoutDef = feeData?.atouts?.find(a => a.id === atoutId || a.nom === atoutId);
             if (atoutDef?.effets_techniques) {
                 try {
-                    const tech = typeof atoutDef.effets_techniques === 'string' ? JSON.parse(atoutDef.effets_techniques) : atoutDef.effets_techniques;
+                    const tech = parseIfString(atoutDef.effets_techniques, {});
                     if (tech.specialites) tech.specialites.forEach(s => toutesLesSpecialites.push(`${s.competence} : ${s.nom} (Atout)`));
                 } catch(e) {}
             }

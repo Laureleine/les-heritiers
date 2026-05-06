@@ -1,7 +1,7 @@
 // src/components/AdminDashboard.js
 
 import React, { useState } from 'react';
-import { Shield, ArrowLeft, Crown, BarChart2, Award } from 'lucide-react';
+import { Shield, ArrowLeft, Crown, BarChart2, Award } from '../config/icons';
 import TabUsers from './admin/TabUsers';
 import TabStats from './admin/TabStats';
 import TabForgeTitres from './admin/TabForgeTitres';

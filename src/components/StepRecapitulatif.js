@@ -1,6 +1,6 @@
 // src/components/StepRecapitulatif.js
 import React from 'react';
-import { Printer, ShieldAlert } from 'lucide-react';
+import { Printer, ShieldAlert } from '../config/icons';
 import { useCerbere } from '../hooks/useCerbere';
 import { useCharacter } from '../context/CharacterContext';
 import { exportToPDF } from '../utils/pdfGenerator';

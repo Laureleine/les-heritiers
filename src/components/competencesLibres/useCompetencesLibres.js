@@ -5,6 +5,9 @@ import { useCharacter } from '../../context/CharacterContext';
 import { addGlobalSpeciality } from '../../utils/supabaseGameData';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { getUtileCost, FIXED_XP_COSTS } from '../../utils/xpCalculator';
+import { isCharacterScelle } from '../../utils/lockUtils';
+import { parseIfString } from '../../utils/json';
+import { getXpState, spendXp, refundXp } from '../../utils/xpActions';
 
 export const POINTS_TOTAUX = 15;
 export const SKILLS_ESPRIT = [
@@ -16,10 +19,8 @@ export function useCompetencesLibres() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
     const { profils, competences, competencesParProfil, fairyData, socialItems } = gameData;
 
-    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
-    const xpTotal = character.xp_total || 0;
-    const xpDepense = character.xp_depense || 0;
-    const xpDispo = xpTotal - xpDepense;
+    const isScelle = isCharacterScelle(character);
+    const { xpDepense, xpDispo } = getXpState(character);
 
     const [creatingSpecFor, setCreatingSpecFor] = useState(null);
 
@@ -48,7 +49,7 @@ export function useCompetencesLibres() {
         // A. Lecture des Atouts
         allFairyAtouts.forEach(atout => {
             if (activeAtoutsNames.includes(atout.nom)) {
-                const tech = typeof atout.effets_techniques === 'string' ? JSON.parse(atout.effets_techniques || '{}') : atout.effets_techniques;
+                const tech = parseIfString(atout.effets_techniques, {});
                 if (tech?.specialites) {
                     tech.specialites.forEach(s => specs.push({ nom: s.nom, competences: [s.competence], source: atout.nom }));
                 }
@@ -63,7 +64,7 @@ export function useCompetencesLibres() {
         boughtItems.forEach(item => {
             if (item.effets_techniques) {
                 try {
-                    const tech = typeof item.effets_techniques === 'string' ? JSON.parse(item.effets_techniques) : item.effets_techniques;
+                    const tech = parseIfString(item.effets_techniques, {});
                     if (tech.predilections) {
                         tech.predilections.forEach((pred, idx) => {
                             const chosenVal = choixEquipement[`${item.id}_${idx}`];
@@ -133,7 +134,7 @@ export function useCompetencesLibres() {
                 
                 dispatchCharacter({
                     type: 'UPDATE_MULTIPLE',
-                    payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + 1 } }, xp_depense: xpDepense + costXP },
+                    payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + 1 } }, xp_depense: spendXp(xpDepense, costXP) },
                     gameData
                 });
                 showInAppNotification(`Compétence améliorée pour ${costXP} XP !`, "success");
@@ -142,7 +143,7 @@ export function useCompetencesLibres() {
                 const refundXP = getUtileCost(totalScore - 1);
                 dispatchCharacter({
                     type: 'UPDATE_MULTIPLE',
-                    payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current - 1 } }, xp_depense: xpDepense - refundXP },
+                    payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current - 1 } }, xp_depense: refundXp(xpDepense, refundXP) },
                     gameData
                 });
                 showInAppNotification(`Amélioration annulée. +${refundXP} XP récupérés.`, "info");
@@ -172,7 +173,7 @@ export function useCompetencesLibres() {
             if (xpDispo < costXP) { showInAppNotification(`Il vous faut ${costXP} XP.`, "error"); return; }
             dispatchCharacter({
                 type: 'UPDATE_MULTIPLE',
-                payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] } }, xp_depense: xpDepense + costXP },
+                payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] } }, xp_depense: spendXp(xpDepense, costXP) },
                 gameData
             });
             if (costXP > 0) showInAppNotification(`Spécialité acquise pour ${costXP} XP !`, "success");
@@ -198,7 +199,7 @@ export function useCompetencesLibres() {
             if (plancherSpecs.includes(specToRemove)) { showInAppNotification("Savoir originel scellé !", "warning"); return; }
             dispatchCharacter({
                 type: 'UPDATE_MULTIPLE',
-                payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specToRemove) } }, xp_depense: xpDepense - refundXP },
+                payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specToRemove) } }, xp_depense: refundXp(xpDepense, refundXP) },
                 gameData
             });
             if (refundXP > 0) showInAppNotification(`Spécialité oubliée. +${refundXP} XP récupérés.`, "info");

@@ -1,13 +1,12 @@
 // src/components/creator/CharacterCreator.jsx
 import React, { useState, useMemo, useCallback, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Printer } from 'lucide-react';
+import { Printer, List, Save, Sparkles, BookOpen } from '../../config/icons';
 import { exportToPDF } from '../../utils/pdfGenerator';
-import { useCharacter } from '../../context/CharacterContext'; 
+import { useCharacter } from '../../context/CharacterContext';
 import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { STEP_CONFIG } from '../../data/DictionnaireJeu';
-import { List, Save, Sparkles, BookOpen } from 'lucide-react';
 import JournalAmeModal from '../JournalAmeModal';
 import PixieAssistant from '../PixieAssistant';
 

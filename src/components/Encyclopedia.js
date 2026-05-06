@@ -1,6 +1,6 @@
 // src/components/Encyclopedia.js
-import React from 'react';
-import { Book, Search, Plus, Shield, FileText, ArrowLeft } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Book, Search, Plus, Shield, FileText, ArrowLeft } from '../config/icons';
 import EncyclopediaModal from './EncyclopediaModal';
 import EncyclopediaViewModal from './EncyclopediaViewModal';
 import EncyclopediaCard from './EncyclopediaCard';
@@ -9,13 +9,15 @@ import { useEncyclopedia } from '../hooks/useEncyclopedia';
 
 export default function Encyclopedia({ userProfile, onBack, onOpenValidations, onOpenMesPropositions }) {
     const { state, setters, handlers } = useEncyclopedia();
+    const [groupSpecialitesByCompetence, setGroupSpecialitesByCompetence] = useState(false);
 
     const tabs = [
         { id: 'fairy_types', label: 'Espèces Féériques' },
         { id: 'fairy_capacites', label: 'Capacités' },
         { id: 'fairy_powers', label: 'Pouvoirs' },
         { id: 'fairy_assets', label: 'Atouts' },
-        { id: 'social_items', label: 'Vie Sociale & Équipement' }
+        { id: 'social_items', label: 'Vie Sociale & Équipement' },
+        { id: 'specialites', label: 'Spécialités' }
     ];
 
     const isDocte = userProfile?.profile?.is_docte === true;
@@ -28,6 +30,23 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
         { id: 'langue', label: 'Langue' },
         { id: 'titre', label: 'Titre' }
     ];
+
+    const groupedSpecialites = useMemo(() => {
+        if (state.activeTab !== 'specialites') return [];
+        const grouped = state.filteredData.reduce((acc, item) => {
+            const key = item.competence || 'Compétence inconnue';
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(item);
+            return acc;
+        }, {});
+
+        return Object.entries(grouped)
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([competence, items]) => ({
+                competence,
+                items: items.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''))
+            }));
+    }, [state.activeTab, state.filteredData]);
 
     return (
         <div className="max-w-6xl mx-auto p-4 animate-fade-in pb-20">
@@ -81,7 +100,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                         className="w-full pl-10 pr-4 py-2.5 border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none shadow-sm"
                     />
                 </div>
-                {isDocte && (
+                {isDocte && state.activeTab !== 'specialites' && (
                     <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
                         <Plus size={20} /> Forger une Entité
                     </button>
@@ -199,10 +218,58 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                 </div>
             )}
 
+            {state.activeTab === 'specialites' && (
+                <div className="flex items-center justify-end gap-2 mb-6 animate-fade-in">
+                    <span className="text-xs font-bold uppercase tracking-wider text-stone-500">Vue groupée</span>
+                    <button
+                        role="switch"
+                        aria-checked={groupSpecialitesByCompetence}
+                        onClick={() => setGroupSpecialitesByCompetence(prev => !prev)}
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 focus:outline-none ${
+                            groupSpecialitesByCompetence ? 'bg-indigo-600 border-indigo-700' : 'bg-stone-200 border-stone-300'
+                        }`}
+                    >
+                        <span className={`inline-block h-4 w-4 mt-0.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                            groupSpecialitesByCompetence ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                    </button>
+                </div>
+            )}
+
             {/* CONTENU (GRILLE DES CARTES) */}
             {state.loading ? (
                 <div className="flex justify-center items-center py-20">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+                </div>
+            ) : (state.activeTab === 'specialites' && groupSpecialitesByCompetence) ? (
+                <div className="space-y-8 animate-fade-in">
+                    {groupedSpecialites.map(group => (
+                        <section key={group.competence}>
+                            <h3 className="text-sm font-bold uppercase tracking-wider text-indigo-800 mb-3">
+                                {group.competence}
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {group.items.map(item => (
+                                    <EncyclopediaCard
+                                        key={item.id}
+                                        item={item}
+                                        activeTab={state.activeTab}
+                                        userProfile={userProfile}
+                                        onView={() => setters.setViewingItem(item)}
+                                        isLocked={state.pendingLocks.includes(item.id)}
+                                        onOpenEdit={() => handlers.handleOpenEdit(item)}
+                                        onToggleSeal={() => handlers.triggerToggleSeal(item)}
+                                        onDeleteClick={() => handlers.triggerDelete(item)}
+                                    />
+                                ))}
+                            </div>
+                        </section>
+                    ))}
+                    {groupedSpecialites.length === 0 && (
+                        <div className="col-span-full text-center py-12 text-stone-500 italic font-serif">
+                            Les archives sont silencieuses sur ce point...
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">

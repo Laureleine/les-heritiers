@@ -1,6 +1,6 @@
 // src/components/JournalAmeModal.jsx
 import React from 'react';
-import { X, BookOpen, TrendingUp, TrendingDown, RotateCcw, Clock } from 'lucide-react';
+import { X, BookOpen, TrendingUp, TrendingDown, RotateCcw, Clock } from '../config/icons';
 
 export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) {
   if (!isOpen) return null;

@@ -1,8 +1,9 @@
 // src/components/EncyclopediaModal.js
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Save } from 'lucide-react';
+import { X, Sparkles, Save } from '../config/icons';
 
 import QuickForgeModal from './QuickForgeModal';
+import { safeParse } from '../utils/json';
 import FairyTypeForm from './encyclopedia/FairyTypeForm';
 import EntityForm from './encyclopedia/EntityForm';
 import SocialItemForm from './encyclopedia/SocialItemForm';
@@ -10,6 +11,7 @@ import SocialItemForm from './encyclopedia/SocialItemForm';
 import { logger, showInAppNotification, translateError } from '../utils/SystemeServices';
 import { useCharacter } from '../context/CharacterContext';
 import { submitEncyclopediaProposal } from '../utils/encyclopediaEngine';
+import { supabase } from '../config/supabase';
 
 export default function EncyclopediaModal({
     activeTab,
@@ -26,6 +28,7 @@ export default function EncyclopediaModal({
     onClose
 }) {
     const { gameData } = useCharacter();
+    const isSuperAdmin = userProfile?.profile?.role === 'super_admin';
 
     // 🧠 ÉTATS LOCAUX PURIFIÉS (L'autonomie est de retour !)
     const [proposal, setProposal] = useState(editingItem || {});
@@ -67,10 +70,8 @@ export default function EncyclopediaModal({
     // 🧠 PARSEUR D'ADN TECHNIQUE (JSON)
     let parsedTech = {};
     if (['fairy_assets', 'fairy_powers', 'fairy_capacites', 'fairy_types', 'social_items'].includes(activeTab)) {
-        try {
-            const sourceData = activeTab === 'fairy_assets' ? proposal.effets_techniques : proposal.techData;
-            parsedTech = JSON.parse(sourceData || '{}');
-        } catch(e) { parsedTech = {}; }
+        const sourceData = activeTab === 'fairy_assets' ? proposal.effets_techniques : proposal.techData;
+        parsedTech = safeParse(sourceData, {});
     }
 
     const updateTech = (newObj) => {
@@ -93,18 +94,40 @@ export default function EncyclopediaModal({
             return;
         }
 
-        if (!justification.trim()) {
+        if (!isSuperAdmin && !justification.trim()) {
             showInAppNotification("Veuillez expliquer brièvement la raison de cette modification.", "warning");
             return;
         }
 
         const result = await submitEncyclopediaProposal({
-            activeTab, isCreating, proposal, editingItem, justification, userProfile, parsedTech, allCompFutiles, gameData
+            activeTab,
+            isCreating,
+            proposal,
+            editingItem,
+            justification: isSuperAdmin ? 'Modification directe Super Admin' : justification,
+            userProfile,
+            parsedTech,
+            allCompFutiles,
+            gameData
         });
 
         if (result.success) {
-            logger.info("✅ Proposition envoyée :", result.recordName);
-            showInAppNotification("Votre proposition a été envoyée aux Gardiens du Savoir !", "success");
+            if (isSuperAdmin && result.requestId) {
+                const { data, error } = await supabase.functions.invoke('apply-encyclopedia-change', {
+                    body: { requestId: result.requestId, sealRequested: false }
+                });
+
+                if (error || data?.error) {
+                    logger.error("❌ Échec application directe Super Admin :", error || data?.error);
+                    showInAppNotification("La proposition a été créée mais l'application directe a échoué. Le ticket reste disponible dans le Conseil.", "warning");
+                } else {
+                    logger.info("✅ Modification appliquée directement :", result.recordName);
+                    showInAppNotification("Modification appliquée immédiatement (mode Super Admin).", "success");
+                }
+            } else {
+                logger.info("✅ Proposition envoyée :", result.recordName);
+                showInAppNotification("Votre proposition a été envoyée aux Gardiens du Savoir !", "success");
+            }
             if (onSuccess) onSuccess();
             else handleClose();
         } else if (result.warning) {
@@ -134,10 +157,12 @@ export default function EncyclopediaModal({
 
                 {/* CORPS DE LA MODALE */}
                 <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
-                    <div className="mb-6 p-4 bg-amber-50 text-amber-800 rounded-lg text-sm flex gap-3 items-start border border-amber-100 shadow-sm">
-                        <Sparkles className="shrink-0 mt-0.5 text-amber-500" size={18} />
-                        <p>Vos propositions ne seront pas immédiates. Elles seront soumises à la validation des <em>Gardiens du Savoir</em>.</p>
-                    </div>
+                    {!isSuperAdmin && (
+                        <div className="mb-6 p-4 bg-amber-50 text-amber-800 rounded-lg text-sm flex gap-3 items-start border border-amber-100 shadow-sm">
+                            <Sparkles className="shrink-0 mt-0.5 text-amber-500" size={18} />
+                            <p>Vos propositions ne seront pas immédiates. Elles seront soumises à la validation des <em>Gardiens du Savoir</em>.</p>
+                        </div>
+                    )}
 
                     {/* 🔀 LE ROUTEUR DE FORMULAIRES */}
                     {activeTab === 'social_items' ? (
@@ -162,16 +187,18 @@ export default function EncyclopediaModal({
                     )}
 
                     {/* CHAMP DE JUSTIFICATION (Commun) */}
-                    <div className="mt-6 border-t border-gray-100 pt-6">
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Pourquoi cette modification ? <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text" value={justification} onChange={(e) => setJustification(e.target.value)}
-                            placeholder="Ex: Erreur de frappe, ajout du pouvoir manquant..."
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none shadow-sm"
-                        />
-                    </div>
+                    {!isSuperAdmin && (
+                        <div className="mt-6 border-t border-gray-100 pt-6">
+                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                                Pourquoi cette modification ? <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text" value={justification} onChange={(e) => setJustification(e.target.value)}
+                                placeholder="Ex: Erreur de frappe, ajout du pouvoir manquant..."
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none shadow-sm"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* PIED DE PAGE */}
@@ -180,7 +207,7 @@ export default function EncyclopediaModal({
                         Annuler
                     </button>
                     <button onClick={handleSubmitProposal} className="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-md flex items-center gap-2 transition-all active:scale-95">
-                        <Save size={18} /> Soumettre
+                        <Save size={18} /> {isSuperAdmin ? 'Appliquer' : 'Soumettre'}
                     </button>
                 </div>
             </div>
