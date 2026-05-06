@@ -2,6 +2,13 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.26 - "Le Polyglotte Corrigé 🌍"',
+        date: '6 Mai 2026',
+        changes: [
+            '🐛 **Fix — Érudition & Langues (PDF & Fiche) :** Correction d\'un bug dans `WidgetLangues.js` où la suppression de la langue maternelle stockait le tableau entier `["Français","Anglais","Italien"]` au lieu d\'une string. Résultat visible : `FrançaisAnglaisItalien (Maternelle) • Français • Anglais • Italien` sur la fiche et le PDF. Fix : `newLangues[0]` au lieu de `newLangues`. Requête SQL de migration fournie pour corriger les personnages déjà corrompus en base.'
+        ]
+    },
+    {
         version: '15.16.25 - "Le Grand Ménage de Printemps 🧹"',
         date: '6 Mai 2026',
         changes: [
