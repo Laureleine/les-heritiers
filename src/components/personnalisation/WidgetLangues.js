@@ -96,7 +96,7 @@ export default function WidgetLangues({ character, dispatchCharacter, gameData, 
     const handleUpdateLangues = (newLangues) => {
         let newMaternelle = maternelle;
         if (!newLangues.includes(maternelle)) {
-            newMaternelle = newLangues.length > 0 ? newLangues : '';
+            newMaternelle = newLangues.length > 0 ? newLangues[0] : '';
         }
         dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { profils: { ...character.profils, langues: newLangues, langueMaternelle: newMaternelle } }, gameData });
     };
