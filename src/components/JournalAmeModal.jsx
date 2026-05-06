@@ -8,6 +8,18 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) 
   // On s'assure d'avoir un tableau, et on le trie du plus récent au plus ancien
   const sortedHistorique = [...historiqueXp].sort((a, b) => new Date(b.date_mouvement) - new Date(a.date_mouvement));
 
+  // ✨ On fusionne les entrées consécutives de même nature (ex: plusieurs "Ajustement Manuel" d'affilée)
+  const groupedHistorique = sortedHistorique.reduce((acc, entry) => {
+    const last = acc[acc.length - 1];
+    if (last && last.label === entry.label && last.type === entry.type) {
+      last.valeur += entry.valeur;
+      last._count = (last._count || 1) + 1;
+    } else {
+      acc.push({ ...entry, _count: 1 });
+    }
+    return acc;
+  }, []);
+
   const getIconAndColor = (type) => {
     switch (type) {
       case 'GAIN': return { icon: <TrendingUp size={16} />, color: 'bg-emerald-50 text-emerald-800 border-emerald-200' };
@@ -34,19 +46,19 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) 
 
         {/* Le Registre */}
         <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
-          {sortedHistorique.length === 0 ? (
+          {groupedHistorique.length === 0 ? (
             <div className="text-center py-12 text-stone-400 font-serif italic flex flex-col items-center gap-3">
               <Clock size={32} className="opacity-20" />
               Les pages de ce journal sont encore vierges.
             </div>
           ) : (
             <div className="space-y-3">
-              {sortedHistorique.map((entree, idx) => {
+              {groupedHistorique.map((entree, idx) => {
                 const { icon, color } = getIconAndColor(entree.type);
-                
+
                 return (
                   <div key={idx} className={`p-3 rounded-xl border flex items-center justify-between gap-4 shadow-sm transition-all hover:scale-[1.01] ${color}`}>
-                    
+
                     {/* Icône & Date */}
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="p-2 bg-white/50 rounded-lg shadow-sm">
@@ -64,9 +76,16 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) 
 
                     {/* Libellé Narratif */}
                     <div className="flex-1 flex flex-col border-l border-current/20 pl-4 py-1">
-                      <span className="font-bold font-serif leading-tight">
-                        {entree.label}
-                      </span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold font-serif leading-tight">
+                          {entree.label}
+                        </span>
+                        {entree._count > 1 && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 bg-white/60 rounded-full opacity-70 border border-current/20 shrink-0">
+                            ×{entree._count}
+                          </span>
+                        )}
+                      </div>
                       {entree.rang_final != null && (
                         <span className="text-[10px] uppercase font-bold tracking-wider opacity-70 mt-0.5">
                           Rang atteint : {entree.rang_final}

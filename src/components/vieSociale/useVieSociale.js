@@ -5,7 +5,7 @@ import { showInAppNotification } from '../../utils/SystemeServices';
 import { getFortuneCost } from '../../utils/xpCalculator';
 import { isCharacterScelle } from '../../utils/lockUtils';
 import { safeParse, safeParseArray } from '../../utils/json';
-import { spendXp, refundXp } from '../../utils/xpActions';
+import { getXpState, XP_CODES } from '../../utils/xpActions';
 
 export function useVieSociale() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -282,13 +282,13 @@ export function useVieSociale() {
         const currentFortune = character.fortune || 0;
         if (currentFortune >= 15) { showInAppNotification("Votre Fortune a atteint son apogée !", "warning"); return; }
 
-        const xpDepense = character.xp_depense || 0;
-        const xpDispo = (character.xp_total || 0) - xpDepense;
+        const { xpDispo } = getXpState(character);
         const cost = getFortuneCost(currentFortune, character.computedStats);
 
         if (xpDispo < cost) { showInAppNotification(`Fonds insuffisants ! Il vous faut ${cost} XP.`, "error"); return; }
 
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { fortune: currentFortune + 1, xp_depense: spendXp(xpDepense, cost) }, gameData });
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { fortune: currentFortune + 1 }, gameData });
+        dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'DEPENSE', code: XP_CODES.FORTUNE_ELEVATION, label: 'Élévation Sociale : Fortune', valeur: cost, rang_final: currentFortune + 1 }, gameData });
         showInAppNotification(`Niveau de Fortune augmenté pour ${cost} XP !`, "success");
     };
 
@@ -296,11 +296,12 @@ export function useVieSociale() {
         if (isReadOnly || !isScelle) return;
         const currentFortune = character.fortune || 0;
         const originFloor = character.data?.stats_scellees?.fortune || 0;
-        
+
         if (currentFortune <= originFloor) { showInAppNotification("Votre Fortune originelle est scellée !", "warning"); return; }
 
         const refund = getFortuneCost(currentFortune - 1, character.computedStats);
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { fortune: currentFortune - 1, xp_depense: refundXp(character.xp_depense || 0, refund) }, gameData });
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { fortune: currentFortune - 1 }, gameData });
+        dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'REMBOURSEMENT', code: XP_CODES.FORTUNE_ELEVATION, label: 'Élévation Sociale : Fortune', valeur: refund, rang_final: currentFortune - 1 }, gameData });
         showInAppNotification(`Dépense annulée. +${refund} XP récupérés.`, "info");
     };
 

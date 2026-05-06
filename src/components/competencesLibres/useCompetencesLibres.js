@@ -7,7 +7,7 @@ import { showInAppNotification } from '../../utils/SystemeServices';
 import { getUtileCost, FIXED_XP_COSTS } from '../../utils/xpCalculator';
 import { isCharacterScelle } from '../../utils/lockUtils';
 import { parseIfString } from '../../utils/json';
-import { getXpState, spendXp, refundXp } from '../../utils/xpActions';
+import { getXpState, XP_CODES } from '../../utils/xpActions';
 
 export const POINTS_TOTAUX = 15;
 export const SKILLS_ESPRIT = [
@@ -131,21 +131,15 @@ export function useCompetencesLibres() {
                 if (totalScore >= evolutionMax) { showInAppNotification(`Excellence maximale atteinte (${evolutionMax}).`, "warning"); return; }
                 const costXP = getUtileCost(totalScore);
                 if (xpDispo < costXP) { showInAppNotification(`Il vous faut ${costXP} XP.`, "error"); return; }
-                
-                dispatchCharacter({
-                    type: 'UPDATE_MULTIPLE',
-                    payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + 1 } }, xp_depense: spendXp(xpDepense, costXP) },
-                    gameData
-                });
+
+                dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + 1 } } }, gameData });
+                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'DEPENSE', code: XP_CODES.COMP_UTILE_RANG, label: `Perfectionnement : ${nomComp}`, valeur: costXP, rang_final: totalScore + 1 }, gameData });
                 showInAppNotification(`Compétence améliorée pour ${costXP} XP !`, "success");
             } else if (delta < 0) {
                 if (current <= plancher) { showInAppNotification("Savoir originel scellé !", "warning"); return; }
                 const refundXP = getUtileCost(totalScore - 1);
-                dispatchCharacter({
-                    type: 'UPDATE_MULTIPLE',
-                    payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current - 1 } }, xp_depense: refundXp(xpDepense, refundXP) },
-                    gameData
-                });
+                dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current - 1 } } }, gameData });
+                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'REMBOURSEMENT', code: XP_CODES.COMP_UTILE_RANG, label: `Perfectionnement : ${nomComp}`, valeur: refundXP, rang_final: totalScore - 1 }, gameData });
                 showInAppNotification(`Amélioration annulée. +${refundXP} XP récupérés.`, "info");
             }
             return;
@@ -171,13 +165,13 @@ export function useCompetencesLibres() {
 
         if (isScelle) {
             if (xpDispo < costXP) { showInAppNotification(`Il vous faut ${costXP} XP.`, "error"); return; }
-            dispatchCharacter({
-                type: 'UPDATE_MULTIPLE',
-                payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] } }, xp_depense: spendXp(xpDepense, costXP) },
-                gameData
-            });
-            if (costXP > 0) showInAppNotification(`Spécialité acquise pour ${costXP} XP !`, "success");
-            else showInAppNotification("Spécialité de Conduite gratuite acquise !", "success");
+            dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] } } }, gameData });
+            if (costXP > 0) {
+                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'DEPENSE', code: XP_CODES.COMP_UTILE_SPECIALITE, label: `Spécialité acquise : ${nomComp} (${specName})`, valeur: costXP }, gameData });
+                showInAppNotification(`Spécialité acquise pour ${costXP} XP !`, "success");
+            } else {
+                showInAppNotification("Spécialité de Conduite gratuite acquise !", "success");
+            }
             return;
         }
 
@@ -197,12 +191,11 @@ export function useCompetencesLibres() {
         if (isScelle) {
             const plancherSpecs = character.data?.stats_scellees?.competencesLibres?.choixSpecialiteUser?.[nomComp] || [];
             if (plancherSpecs.includes(specToRemove)) { showInAppNotification("Savoir originel scellé !", "warning"); return; }
-            dispatchCharacter({
-                type: 'UPDATE_MULTIPLE',
-                payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specToRemove) } }, xp_depense: refundXp(xpDepense, refundXP) },
-                gameData
-            });
-            if (refundXP > 0) showInAppNotification(`Spécialité oubliée. +${refundXP} XP récupérés.`, "info");
+            dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specToRemove) } } }, gameData });
+            if (refundXP > 0) {
+                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'REMBOURSEMENT', code: XP_CODES.COMP_UTILE_SPECIALITE, label: `Spécialité acquise : ${nomComp} (${specToRemove})`, valeur: refundXP }, gameData });
+                showInAppNotification(`Spécialité oubliée. +${refundXP} XP récupérés.`, "info");
+            }
             return;
         }
         onCompetencesLibresChange({ ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specToRemove) } });

@@ -4,7 +4,7 @@ import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { FIXED_XP_COSTS } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
-import { getXpState, spendXp, refundXp } from '../utils/xpActions';
+import { getXpState, XP_CODES } from '../utils/xpActions';
 
 // 🛡️ Constante requise pour les Atouts
 const MAX_ATOUTS_GLOBAL = 2;
@@ -46,11 +46,14 @@ export default function StepAtouts() {
         
         // ✨ REVENTE DIRECTE ET INSTANTANÉE
         const newAtouts = character.atouts.filter(a => a !== valueToToggle);
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { atouts: newAtouts }, gameData });
         dispatchCharacter({
-          type: 'UPDATE_MULTIPLE',
-          payload: {
-            atouts: newAtouts,
-            xp_depense: refundXp(xpDepense, FIXED_XP_COSTS.nouvel_atout)
+          type: 'LOG_XP_TRANSACTION',
+          transaction: {
+            type: 'REMBOURSEMENT',
+            code: XP_CODES.ATOUT_ACQUISITION,
+            label: `Acquisition : Atout ${atout.nom}`,
+            valeur: FIXED_XP_COSTS.nouvel_atout
           },
           gameData
         });
@@ -63,11 +66,14 @@ export default function StepAtouts() {
           return;
         }
         const newAtouts = [...(character.atouts || []), atout.nom];
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { atouts: newAtouts }, gameData });
         dispatchCharacter({
-          type: 'UPDATE_MULTIPLE',
-          payload: {
-            atouts: newAtouts,
-            xp_depense: spendXp(xpDepense, FIXED_XP_COSTS.nouvel_atout)
+          type: 'LOG_XP_TRANSACTION',
+          transaction: {
+            type: 'DEPENSE',
+            code: XP_CODES.ATOUT_ACQUISITION,
+            label: `Acquisition : Atout ${atout.nom}`,
+            valeur: FIXED_XP_COSTS.nouvel_atout
           },
           gameData
         });

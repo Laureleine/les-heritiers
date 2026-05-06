@@ -3,6 +3,7 @@ import { reconstructHistory } from './historyReconstructor';
 import { calculateCharacterStats } from './bonusCalculator';
 import { isCharacterScelle } from './lockUtils';
 import { parseIfString } from './json';
+import { XP_CODES } from './xpActions';
 
 // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
 export function characterReducer(state, action) {
@@ -29,6 +30,7 @@ export function characterReducer(state, action) {
                         if (pastTotal > 0) {
                             loadedState.data.historique_xp.push({
                                 type: 'GAIN',
+                                code: XP_CODES.XP_HISTORIQUE,
                                 label: 'Expérience acquise avant l\'ouverture du Registre',
                                 valeur: pastTotal,
                                 date_mouvement: new Date(Date.now() - 200000).toISOString()
@@ -45,6 +47,7 @@ export function characterReducer(state, action) {
                                 const difference = pastDepense - sumReconstructed;
                                 reconstructedTxs.push({
                                     type: difference > 0 ? 'DEPENSE' : 'REMBOURSEMENT',
+                                    code: XP_CODES.XP_SOLDE,
                                     label: difference > 0 ? 'Ajustements manuels antérieurs (Passif)' : 'Remboursements antérieurs (Passif)',
                                     valeur: Math.abs(difference),
                                     date_mouvement: new Date(Date.now() - 1000).toISOString() // La toute dernière ligne du passé
@@ -108,17 +111,13 @@ export function characterReducer(state, action) {
             // On l'ajoute au début du tableau pour avoir le plus récent en premier
             newState.data.historique_xp = [newTx, ...newState.data.historique_xp];
 
-            // 3. LA VÉRITÉ UNIQUE : Le recalcul mathématique absolu
+            // 3. LA VÉRITÉ UNIQUE : Le journal fait foi — on ne mute plus xp_depense ici.
+            // getXpState() recalcule xp_depense depuis historique_xp à chaque lecture.
+            // xp_depense en base est mis à jour uniquement à la sauvegarde (supabaseStorage.js).
             if (transaction.type === 'GAIN') {
                 newState.xp_total = (newState.xp_total || 0) + transaction.valeur;
             }
-            else if (transaction.type === 'DEPENSE') {
-                newState.xp_depense = (newState.xp_depense || 0) + transaction.valeur;
-            }
-            else if (transaction.type === 'REMBOURSEMENT') {
-                // En cas d'annulation, on rembourse la dépense (sans jamais descendre sous 0)
-                newState.xp_depense = Math.max(0, (newState.xp_depense || 0) - transaction.valeur);
-            }
+            // DEPENSE et REMBOURSEMENT → le journal seul suffit, pas de mutation de xp_depense
             break;
         }
 

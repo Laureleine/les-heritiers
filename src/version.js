@@ -2,6 +2,31 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.28 - "La Source Unique 🏛️"',
+        date: '7 Mai 2026',
+        changes: [
+            '🏛️ **Refactor — Source unique de vérité (XP) :** `getXpState()` calcule désormais `xp_depense` depuis `historique_xp` (somme algébrique du journal) au lieu de lire le champ `xp_depense` en base. Le journal fait foi ; le champ DB n\'est plus qu\'un cache dérivé mis à jour à chaque sauvegarde.',
+            '🔕 **Refactor — Fin de la double-écriture :** `LOG_XP_TRANSACTION` dans le moteur ne mute plus `xp_depense` en mémoire. Un seul save → un seul calcul → une valeur cohérente.',
+            '🏷️ **Nouvelle fonctionnalité — Codes canoniques XP :** Chaque transaction possède désormais un champ `code` (ex: `CARAC_AUGMENTATION`, `FORTUNE_ELEVATION`, `ATOUT_ACQUISITION`…) permettant un filtrage programmatique sans fragile correspondance de strings. 15 codes définis dans `XP_CODES`.',
+            '📊 **Nouveau — Table SQL `xp_transactions` :** Miroir queryable de `historique_xp` (JSONB) synchronisé à chaque sauvegarde. Permet analytics cross-personnages, filtrage SQL par code/type, vues de synthèse (`xp_summary`). Architecture write-to-both : le JSONB reste source primaire.',
+            '🔧 **Nouveau — `adminMigration.js` :** Utilitaire one-shot `migrateXpHistories(gameData)` pour peupler `historique_xp` en base pour tous les anciens personnages scellés qui n\'en ont pas encore. Supporte mode `dryRun` et callbacks de progression.',
+            '🧹 **Nettoyage — Consumers XP :** `CharacterCreator.jsx`, `FortuneController.js` et `pixieBrain.js` utilisent maintenant `getXpState()` au lieu de calculer `(xp_total - xp_depense)` manuellement.'
+        ]
+    },
+    {
+        version: '15.16.27 - "Le Grand Livre des Âmes 📒"',
+        date: '7 Mai 2026',
+        changes: [
+            '🏗️ **Refactor majeur — Journal des Âmes (XP) :** Toutes les dépenses et remboursements d\'XP passent désormais par `LOG_XP_TRANSACTION` au lieu de muter `xp_depense` directement. 6 composants migrés : `StepPouvoirs`, `StepAtouts`, `AnomalieFeeriqueWidget`, `useCompetencesLibres`, `StepCompetencesFutiles`, `useVieSociale`. Le journal peut désormais reconstituer fidèlement l\'historique complet d\'un personnage.',
+            '🐛 **Fix — historyReconstructor (Fortune fantôme) :** La Fortune accordée par le métier/la Vie Sociale ne génère plus de fausses entrées XP dans le journal. Le plancher de Fortune est maintenant calculé depuis les achats réels (`fortune_score` + `fortune_bonus` des items).',
+            '🐛 **Fix — historyReconstructor (Fortune coût) :** Remplacement du coût fixe `10 XP` par la vraie formule `getFortuneCost()` (tenant compte des rangs Classe et Sciences).',
+            '🐛 **Fix — historyReconstructor (Futiles .rangs) :** La reconstruction lisait `competencesFutiles` (objet parent) au lieu de `competencesFutiles.rangs`, ce qui produisait un écart d\'1 XP. Corrigé avec `?.rangs`.',
+            '✨ **Fix — Journal des Âmes (Groupement) :** Les entrées consécutives de même nature dans le journal sont désormais fusionnées en une seule ligne avec un badge `×N`, pour une lecture plus claire.',
+            '🔒 **Fix — Dupliquer / Adopter un héritage :** Ces deux actions préservent maintenant le statut `scellé` d\'un personnage si l\'original l\'était. L\'historique XP est également forcé en reconstruction complète pour garantir un journal cohérent.',
+            '🎨 **Fix — Paramètres (Notifications) :** Suppression du décalage visuel (`ml-8`) sur les boîtes de réglages de notifications dans `AccountSettings.js`.'
+        ]
+    },
+    {
         version: '15.16.26 - "Le Polyglotte Corrigé 🌍"',
         date: '6 Mai 2026',
         changes: [
