@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../config/supabase';
-import { Search, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award } from 'lucide-react';
+import { Search, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award } from '../../config/icons';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import * as LucideIcons from 'lucide-react';
 

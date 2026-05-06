@@ -1,7 +1,7 @@
 // src/components/Telegraphe.js
 
 import React, { useState, useEffect, useRef } from 'react';
-import { LayoutList, MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, ListFilter, Settings, Key } from 'lucide-react';
+import { LayoutList, MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, ListFilter, Settings, Key } from '../config/icons';
 
 // ✨ MAGIE : On importe notre Cerveau autonome !
 import { useTelegraphe } from '../hooks/useTelegraphe';

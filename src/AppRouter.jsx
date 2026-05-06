@@ -3,7 +3,7 @@ import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useCharacter, initialCharacterState } from './context/CharacterContext';
 import { supabase } from './config/supabase';
-import { Lock } from 'lucide-react';
+import { Lock } from './config/icons';
 
 import CharacterList from './components/CharacterList';
 import PixieAssistant from './components/PixieAssistant';

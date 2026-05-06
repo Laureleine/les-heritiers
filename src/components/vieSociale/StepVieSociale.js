@@ -1,8 +1,9 @@
 // src/components/vieSociale/StepVieSociale.js
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown, Check, Lock, Search, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown, Check, Lock, Search, X } from '../../config/icons';
 import { useVieSociale } from './useVieSociale';
 import { getFortuneCost } from '../../utils/xpCalculator';
+import { parseIfString } from '../../utils/json';
 
 // 🎨 COMPOSANT D'ACCORDÉON
 const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, budgetsInfo, character }) => {
@@ -30,7 +31,7 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
                         let lockMessage = "";
                         try {
                             if (item.effets_techniques) {
-                                const reqs = typeof item.effets_techniques === 'string' ? JSON.parse(item.effets_techniques) : item.effets_techniques;
+                                const reqs = parseIfString(item.effets_techniques, {});
                                 if (reqs.profils && reqs.profils.length > 0) {
                                     const monMajeur = character.profils?.majeur?.nom;
                                     const monMineur = character.profils?.mineur?.nom;

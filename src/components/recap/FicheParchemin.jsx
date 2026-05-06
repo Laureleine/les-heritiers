@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import { CARAC_LIST, accorderTexte } from '../../data/DictionnaireJeu';
 import { calculateCharacterStats } from '../../utils/bonusCalculator';
+import { calculateFullCombatStats } from '../../utils/rulesEngine';
 
 export default function FicheParchemin({ character, gameData }) {
     
@@ -92,10 +93,8 @@ export default function FicheParchemin({ character, gameData }) {
         };
     };
 
-    // ✨ LA VÉRITÉ ABSOLUE DIRECTEMENT EXTRAITE DU CERVEAU (DRY)
-    const liveCombatStats = character.computedStats?.combat || {
-        esquiveMasquee: 0, esquiveDemasquee: 0, parade: 0, resPhys: 0, resPsych: 0, pvMax: 0
-    };
+    // ✨ CALCUL LIVE — même fonction que useCerbere (DRY, jamais de données périmées)
+    const liveCombatStats = useMemo(() => calculateFullCombatStats(character, gameData), [character, gameData]);
 
     const allSpecialties = useMemo(() => {
         const map = {};
@@ -161,49 +160,62 @@ export default function FicheParchemin({ character, gameData }) {
             <style dangerouslySetInnerHTML={{__html: `
                 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
                 .recap-page {
-                    width: 210mm; min-height: 297mm; background: #fdfbf7; padding: 15mm; margin: 0 auto 20px;
+                    width: 210mm; min-height: 297mm; background: #fdfbf7; padding: 12mm; margin: 0 auto 20px;
                     box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #d4c5b0; box-sizing: border-box;
                     font-family: 'Georgia', serif; color: #2c241b; position: relative;
                 }
-                .recap-header { text-align: center; border-bottom: 3px double #b5a287; padding-bottom: 10px; margin-bottom: 15px; }
-                .recap-char-name { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: #92400e; text-transform: uppercase; }
-                .carac-main-title { background: #92400e; color: white; font-family: 'Playfair Display', serif; font-size: 16px; font-weight: bold; padding: 4px 10px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
-                .carac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-                .carac-box { background: #fff; border: 1px solid #b5a287; border-radius: 4px; text-align: center; padding: 4px 8px; box-shadow: 2px 2px 0 rgba(139, 115, 85, 0.1); }
-                .carac-label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #8b7355; border-bottom: 1px solid #eee; padding-bottom: 2px; margin-bottom: 2px; letter-spacing: 0.5px; }
-                .carac-score { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: #4a3b2c; line-height: 1; margin-top: 2px; }
-                .recap-box { border: 1px solid #b5a287; padding: 10px; border-radius: 4px; background: rgba(255,255,255,0.5); margin-bottom: 15px; }
-                .field-label { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #8b7355; display: block; margin-bottom: 2px; }
-                .field-value { font-size: 14px; font-weight: bold; color: #2c241b; border-bottom: 1px dotted #b5a287; padding-bottom: 2px; min-height: 18px; }
-                .comp-line { display: flex; align-items: baseline; font-size: 13px; margin-bottom: 2px; }
-                .comp-dots { flex: 1; border-bottom: 1px dotted #b5a287; margin: 0 8px; position: relative; top: -4px; }
-                .combat-circle { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #4a3b2c; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; background: #fff; margin: 0 auto; }
-                .combat-label { text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 4px; color: #4a3b2c; }
+                .recap-header { text-align: center; border-bottom: 3px double #b5a287; padding-bottom: 6px; margin-bottom: 10px; }
+                .recap-char-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: #92400e; text-transform: uppercase; }
+                .carac-main-title { background: #92400e; color: white; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
+                .carac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+                .carac-box { background: #fff; border: 1px solid #b5a287; border-radius: 4px; text-align: center; padding: 3px 6px; box-shadow: 2px 2px 0 rgba(139, 115, 85, 0.1); }
+                .carac-label { font-size: 9px; font-weight: 600; text-transform: uppercase; color: #8b7355; border-bottom: 1px solid #eee; padding-bottom: 1px; margin-bottom: 1px; letter-spacing: 0.5px; }
+                .carac-score { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: #4a3b2c; line-height: 1; margin-top: 1px; }
+                .recap-box { border: 1px solid #b5a287; padding: 7px 9px; border-radius: 4px; background: rgba(255,255,255,0.5); margin-bottom: 8px; }
+                .field-label { font-size: 9px; font-weight: bold; text-transform: uppercase; color: #8b7355; display: block; margin-bottom: 1px; }
+                .field-value { font-size: 12px; font-weight: bold; color: #2c241b; border-bottom: 1px dotted #b5a287; padding-bottom: 1px; min-height: 15px; }
+                .comp-line { display: flex; align-items: baseline; font-size: 12px; margin-bottom: 1px; }
+                .comp-dots { flex: 1; border-bottom: 1px dotted #b5a287; margin: 0 6px; position: relative; top: -3px; }
+                .combat-circle { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #4a3b2c; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 900; background: #fff; margin: 0 auto; }
+                .combat-label { text-align: center; font-size: 8px; font-weight: bold; text-transform: uppercase; margin-top: 3px; color: #4a3b2c; }
                 @media print {
                     body { background: white !important; }
-                    
-                    /* ✨ LE FIX (Cure d'amaigrissement pour forcer le bloc sur la page 1) */
-                    @page { margin: 4mm; } 
-                    
-                    .recap-page { 
-                        box-shadow: none !important; 
-                        margin: 0 !important; 
-                        padding: 5mm !important; /* On réduit fortement les bordures internes de la page */
-                        border: none !important; 
-                        page-break-after: always; 
+                    @page { margin: 3mm; }
+                    .recap-page {
+                        box-shadow: none !important;
+                        margin: 0 !important;
+                        padding: 5mm !important;
+                        border: none !important;
+                        page-break-after: always;
                     }
                     .no-print { display: none !important; }
-                    
-                    /* Compression invisible à l'œil nu, mais vitale pour l'imprimante */
-                    .carac-main-title { margin-top: 8px !important; margin-bottom: 2px !important; font-size: 14px !important; }
-                    .recap-box { padding: 10px 12px !important; }
-                    .field { margin-bottom: 2px !important; }
+                    .recap-header { padding-bottom: 4px !important; margin-bottom: 6px !important; }
+                    .recap-char-name { font-size: 22px !important; }
+                    .carac-main-title { font-size: 11px !important; padding: 2px 7px !important; margin-bottom: 4px !important; margin-top: 4px !important; }
+                    .carac-grid { gap: 4px !important; margin-bottom: 6px !important; }
+                    .carac-box { padding: 2px 4px !important; }
+                    .carac-score { font-size: 15px !important; }
+                    .recap-box { padding: 5px 7px !important; margin-bottom: 5px !important; }
+                    .comp-line { font-size: 11px !important; margin-bottom: 0px !important; }
+                    .combat-circle { width: 30px !important; height: 30px !important; font-size: 13px !important; }
+                    .combat-label { font-size: 7px !important; margin-top: 2px !important; }
+                    .field { margin-bottom: 1px !important; }
                 }
             `}} />
 
             {/* ======================= PAGE 1 : LE MASQUE (FORME HUMAINE) ======================= */}
             <div className="recap-page">
-                <div className="recap-header"><div className="recap-char-name">{character.nom || 'Inconnu'}</div></div>
+                <div className="recap-header" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px'}}>
+                    {character.portrait_masked_url && (
+                        <img
+                            src={character.portrait_masked_url}
+                            alt="Portrait masqué"
+                            style={{width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #b5a287', flexShrink: 0}}
+                        />
+                    )}
+                    <div className="recap-char-name">{character.nom || 'Inconnu'}</div>
+                    {character.portrait_masked_url && <div style={{width: '64px', flexShrink: 0}} />}
+                </div>
                 <div className="recap-box">
                     <div className="grid grid-cols-3 gap-4">
                         <div className="field">
@@ -219,7 +231,7 @@ export default function FicheParchemin({ character, gameData }) {
                             <div className="field-value">Rang {character.fortune || 0}</div>
                         </div>
                     </div>
-                    <div className="field" style={{marginTop: '10px'}}>
+                    <div className="field" style={{marginTop: '5px'}}>
                         <span className="field-label">Traits de caractère</span>
                         <div className="field-value">
                             {[...(character.traitsFeeriques || []), character.profils?.majeur?.trait, character.profils?.mineur?.trait]
@@ -248,14 +260,14 @@ export default function FicheParchemin({ character, gameData }) {
                 <div className="carac-main-title">Compétences Utiles</div>
                 <div className="recap-box grid grid-cols-2 gap-x-10">
                     {Object.entries(profilsMap).map(([profil, comps]) => (
-                        <div key={profil} style={{marginBottom: '10px'}}>
-                            <div style={{fontFamily: 'Playfair Display, serif', fontSize: '14px', fontWeight: 'bold', color: '#92400e', borderBottom: '1px solid #d4c5b0', marginBottom: '6px', paddingBottom: '2px'}}>{profil}</div>
+                        <div key={profil} style={{marginBottom: '6px'}}>
+                            <div style={{fontFamily: 'Playfair Display, serif', fontSize: '12px', fontWeight: 'bold', color: '#92400e', borderBottom: '1px solid #d4c5b0', marginBottom: '3px', paddingBottom: '1px'}}>{profil}</div>
                             {comps.map(comp => {
                                 const stat = getCompScore(comp);
                                 const isPred = isPredilection(comp);
                                 const specs = allSpecialties[comp] || [];
                                 return (
-                                    <div key={comp} className="mb-2">
+                                    <div key={comp} className="mb-0.5">
                                         <div className="comp-line">
                                             <span style={{color: '#4a3b2c'}}>
                                                 {comp} {isPred && <span style={{fontSize: '10px', color: '#d97706', marginLeft: '4px'}}>★</span>}
@@ -290,8 +302,17 @@ export default function FicheParchemin({ character, gameData }) {
 
 			{/* ======================= PAGE 2 : LA FÉE (FORME DÉMASQUÉE) ======================= */}
 			<div className="recap-page">
-				<div className="carac-main-title" style={{background: '#1e3a8a'}}>Magie & Héritage</div>
-				
+				<div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px'}}>
+					<div className="carac-main-title" style={{background: '#1e3a8a', margin: 0}}>{character.typeFee || 'Magie & Héritage'}</div>
+					{character.portrait_unmasked_url && (
+						<img
+							src={character.portrait_unmasked_url}
+							alt="Portrait démasqué"
+							style={{width: '72px', height: '72px', borderRadius: '6px', objectFit: 'cover', border: '2px solid #3b82f6', marginLeft: 'auto'}}
+						/>
+					)}
+				</div>
+
 				{/* ✨ LE FIX 2 : L'encart des caractéristiques magiques */}
 				<div className="grid grid-cols-3 gap-2 mb-2">
 					<div className="recap-box flex flex-col items-center justify-center p-2">

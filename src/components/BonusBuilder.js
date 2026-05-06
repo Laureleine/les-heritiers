@@ -1,8 +1,9 @@
 // src/components/BonusBuilder.js
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles, AlertCircle, Tag, Lock } from 'lucide-react';
+import { X, Plus, Trash2, Activity, BookOpen, Coins, Star, Settings, ChevronDown, GitMerge, Sparkles, AlertCircle, Tag, Lock } from '../config/icons';
 import { addGlobalSpeciality, addCompetenceFutile } from '../utils/supabaseGameData';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
+import { safeParse } from '../utils/json';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { useCharacter } from '../context/CharacterContext'; // ✨ AJOUT DU CERVEAU CENTRAL
 
@@ -38,7 +39,7 @@ export default function BonusBuilder({
     useEffect(() => {
         let currentParsed = parsedTech;
         if (rawJson && typeof rawJson === 'string') {
-            try { currentParsed = JSON.parse(rawJson); } catch (e) {}
+            currentParsed = safeParse(rawJson, currentParsed);
         }
         
         const initialBlocks = [];

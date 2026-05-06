@@ -1,6 +1,6 @@
 // src/data/DictionnaireJeu.js
 import React from 'react';
-import {BookOpen, Sparkles, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from 'lucide-react';
+import {BookOpen, Sparkles, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from '../config/icons';
 
 // ============================================================================
 // 1. LES CONSTANTES ET CARACTÉRISTIQUES (Ancien constants.js)

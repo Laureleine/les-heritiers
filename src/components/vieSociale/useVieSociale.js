@@ -3,16 +3,13 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { getFortuneCost } from '../../utils/xpCalculator';
-
-const safeParse = (data) => {
-    if (!data) return {};
-    if (typeof data === 'object') return data;
-    try { return JSON.parse(data); } catch { return {}; }
-};
+import { isCharacterScelle } from '../../utils/lockUtils';
+import { safeParse, safeParseArray } from '../../utils/json';
+import { spendXp, refundXp } from '../../utils/xpActions';
 
 export function useVieSociale() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
-    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+    const isScelle = isCharacterScelle(character);
 
     const { fairyData, socialItems } = gameData;
     const feeData = fairyData?.[character.typeFee];
@@ -32,16 +29,11 @@ export function useVieSociale() {
         tousLesProfils.forEach(p => {
             dict[p] = socialItems.filter(item => {
                 // ✨ LE FIX : On lit enfin notre colonne JSONB multi-profils !
-                let parsedArray = [];
-                if (Array.isArray(item.profils_autorises)) {
-                    parsedArray = item.profils_autorises;
-                } else if (typeof item.profils_autorises === 'string') {
-                    try { parsedArray = JSON.parse(item.profils_autorises); } catch(e) {}
-                }
-                
+                const parsedArray = safeParseArray(item.profils_autorises);
+
                 // Rétrocompatibilité avec l'ancienne clé étrangère unique
                 const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
-                
+
                 return parsedArray.includes(p) || legacyProfile === p;
             });
         });
@@ -296,7 +288,7 @@ export function useVieSociale() {
 
         if (xpDispo < cost) { showInAppNotification(`Fonds insuffisants ! Il vous faut ${cost} XP.`, "error"); return; }
 
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { fortune: currentFortune + 1, xp_depense: xpDepense + cost }, gameData });
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { fortune: currentFortune + 1, xp_depense: spendXp(xpDepense, cost) }, gameData });
         showInAppNotification(`Niveau de Fortune augmenté pour ${cost} XP !`, "success");
     };
 
@@ -308,7 +300,7 @@ export function useVieSociale() {
         if (currentFortune <= originFloor) { showInAppNotification("Votre Fortune originelle est scellée !", "warning"); return; }
 
         const refund = getFortuneCost(currentFortune - 1, character.computedStats);
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { fortune: currentFortune - 1, xp_depense: (character.xp_depense || 0) - refund }, gameData });
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { fortune: currentFortune - 1, xp_depense: refundXp(character.xp_depense || 0, refund) }, gameData });
         showInAppNotification(`Dépense annulée. +${refund} XP récupérés.`, "info");
     };
 

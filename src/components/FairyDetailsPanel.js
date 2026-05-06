@@ -1,6 +1,6 @@
 // src/components/FairyDetailsPanel.js
 import React from 'react';
-import { Crown, Activity, ThumbsUp, ThumbsDown, Scaling, Info, Heart, CheckCircle, Lock } from 'lucide-react';
+import { Crown, Activity, ThumbsUp, ThumbsDown, Scaling, Info, Heart, CheckCircle, Lock } from '../config/icons';
 import { accorderTexte } from '../data/DictionnaireJeu';
 
 export default function FairyDetailsPanel({

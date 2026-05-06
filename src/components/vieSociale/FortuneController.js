@@ -2,7 +2,7 @@
 // Optimisé 
 
 import React from 'react';
-import { Coins, Plus, Minus } from 'lucide-react';
+import { Coins, Plus, Minus } from '../../config/icons';
 import { getFortuneCost } from '../../utils/xpCalculator';
 
 export default function FortuneController({ 

@@ -1,8 +1,10 @@
 import React from 'react';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Sparkles } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { FIXED_XP_COSTS } from '../utils/xpCalculator';
+import { isCharacterScelle } from '../utils/lockUtils';
+import { getXpState, spendXp, refundXp } from '../utils/xpActions';
 
 // 🛡️ Constante requise pour les Atouts
 const MAX_ATOUTS_GLOBAL = 2;
@@ -19,10 +21,8 @@ export default function StepAtouts() {
   const countSelected = character.atouts?.length || 0;
   
   // Variables XP
-  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
-  const xpTotal = character.xp_total || 0;
-  const xpDepense = character.xp_depense || 0;
-  const xpDispo = xpTotal - xpDepense;
+  const isScelle = isCharacterScelle(character);
+  const { xpDepense, xpDispo } = getXpState(character);
 
   const handleAtoutToggle = (atout) => {
     if (isReadOnly) return; // 🔒 FIX
@@ -50,7 +50,7 @@ export default function StepAtouts() {
           type: 'UPDATE_MULTIPLE',
           payload: {
             atouts: newAtouts,
-            xp_depense: Math.max(0, xpDepense - FIXED_XP_COSTS.nouvel_atout)
+            xp_depense: refundXp(xpDepense, FIXED_XP_COSTS.nouvel_atout)
           },
           gameData
         });
@@ -67,7 +67,7 @@ export default function StepAtouts() {
           type: 'UPDATE_MULTIPLE',
           payload: {
             atouts: newAtouts,
-            xp_depense: xpDepense + FIXED_XP_COSTS.nouvel_atout
+            xp_depense: spendXp(xpDepense, FIXED_XP_COSTS.nouvel_atout)
           },
           gameData
         });

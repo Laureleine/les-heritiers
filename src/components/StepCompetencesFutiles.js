@@ -1,11 +1,13 @@
 // src/components/StepCompetencesFutiles.js
 import React, { useState, useEffect } from 'react';
-import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 'lucide-react';
+import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from '../config/icons';
 import { addCompetenceFutile } from '../utils/supabaseGameData';
 import { parseCompetencesFutilesPredilection } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
-import { getFutileCost } from '../utils/xpCalculator'; 
+import { getFutileCost } from '../utils/xpCalculator';
+import { isCharacterScelle } from '../utils/lockUtils';
+import { getXpState, spendXp, refundXp } from '../utils/xpActions';
 
 const POINTS_TOTAUX = 10;
 
@@ -27,10 +29,8 @@ export default function StepCompetencesFutiles() {
   const feeData = fairyData[character.typeFee];
 
   // ✨ NOUVEAU : Variables du Puits des Âmes et du Plancher de Verre
-  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
-  const xpTotal = character.xp_total || 0;
-  const xpDepense = character.xp_depense || 0;
-  const xpDispo = xpTotal - xpDepense;
+  const isScelle = isCharacterScelle(character);
+  const { xpDepense, xpDispo } = getXpState(character);
   
   // 2. Gérer les compétences de prédilection
   const parsedPredilection = parseCompetencesFutilesPredilection(feeData?.competencesFutilesPredilection || []);
@@ -117,7 +117,7 @@ export default function StepCompetencesFutiles() {
           type: 'UPDATE_MULTIPLE',
           payload: {
             competencesFutiles: { ...character.competencesFutiles, rangs: newRangs },
-            xp_depense: xpDepense + costXP
+            xp_depense: spendXp(xpDepense, costXP)
           },
           gameData
         });
@@ -139,7 +139,7 @@ export default function StepCompetencesFutiles() {
           type: 'UPDATE_MULTIPLE',
           payload: {
             competencesFutiles: { ...character.competencesFutiles, rangs: newRangs },
-            xp_depense: xpDepense - refundXP
+            xp_depense: refundXp(xpDepense, refundXP)
           },
           gameData
         });

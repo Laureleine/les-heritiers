@@ -1,6 +1,6 @@
 // src/components/forge/WidgetAnomalie.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Bug, Sparkles, X, Image as ImageIcon, Send, Key } from 'lucide-react'; // ✨ Ajout de Key
+import { Bug, Sparkles, X, Image as ImageIcon, Send, Key } from '../../config/icons'; // ✨ Ajout de Key
 import { useForge } from '../../context/ForgeContext';
 // ✨ FIX ESLINT : L'import fantôme de 'useCharacter' a été pulvérisé !
 

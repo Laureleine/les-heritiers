@@ -1,7 +1,8 @@
 import React from 'react';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Sparkles } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { isCharacterScelle } from '../utils/lockUtils';
 
 // ============================================================================
 // --- ÉTAPE 2 : CAPACITÉS ---
@@ -13,7 +14,7 @@ export default function StepCapacites() {
   const data = fairyData[character.typeFee];
 
   // 🛡️ LE PLANCHER DE VERRE
-  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+  const isScelle = isCharacterScelle(character);
 
   if (!data) {
     return (

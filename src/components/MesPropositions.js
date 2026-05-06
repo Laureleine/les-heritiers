@@ -1,7 +1,7 @@
 // 12.1.0 // 12.2.0
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, CheckCircle, XCircle, Archive, MessageCircle, FileText } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, XCircle, Archive, MessageCircle, FileText } from '../config/icons';
 import { supabase } from '../config/supabase';
 
 export default function MesPropositions({ session, onBack }) {

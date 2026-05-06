@@ -1,6 +1,6 @@
 // src/components/competencesLibres/StepCompetencesLibres.js
 import React from 'react';
-import { Plus, Star, Brain, RotateCcw, Info, Lock } from 'lucide-react';
+import { Plus, Star, Brain, RotateCcw, Info, Lock } from '../../config/icons';
 import { useCompetencesLibres } from './useCompetencesLibres';
 
 // ============================================================================

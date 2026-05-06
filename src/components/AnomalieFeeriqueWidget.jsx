@@ -1,10 +1,12 @@
 // src/components/AnomalieFeeriqueWidget.jsx
 
 import React, { useState, useMemo } from 'react';
-import { Sparkles, Check } from 'lucide-react';
+import { Sparkles, Check } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { FIXED_XP_COSTS } from '../utils/xpCalculator';
+import { isCharacterScelle } from '../utils/lockUtils';
+import { getXpState, spendXp, refundXp } from '../utils/xpActions';
 
 const MAX_ATOUTS_GLOBAL = 2;
 
@@ -16,7 +18,7 @@ export default function AnomalieFeeriqueWidget() {
   const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 
   // 🛡️ Variables de Sceaux et d'XP
-  const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
+  const isScelle = isCharacterScelle(character);
   const innatePouvoirs = character.data?.stats_scellees?.pouvoirs || [];
   
   const currentFeerie = character.caracteristiques?.feerie || 3;
@@ -24,9 +26,7 @@ export default function AnomalieFeeriqueWidget() {
   const countSelected = character.pouvoirs?.length || 0;
   const countAtouts = character.atouts?.length || 0;
 
-  const xpTotal = character.xp_total || 0;
-  const xpDepense = character.xp_depense || 0;
-  const xpDispo = xpTotal - xpDepense;
+  const { xpDepense, xpDispo } = getXpState(character);
 
   const anomalieAtout = data?.atouts?.find(a => a.nom === 'Anomalie féérique');
   const anomalieId = anomalieAtout ? anomalieAtout.id : 'Anomalie féérique';
@@ -80,7 +80,7 @@ export default function AnomalieFeeriqueWidget() {
       const isAtoutInnate = innateAtouts.includes(anomalieId) || innateAtouts.includes('Anomalie féérique');
 
       if (isScelle && !isAtoutInnate) {
-        newXpDepense = Math.max(0, xpDepense - FIXED_XP_COSTS.nouvel_atout);
+        newXpDepense = refundXp(xpDepense, FIXED_XP_COSTS.nouvel_atout);
         showInAppNotification(`Anomalie purgée : +${FIXED_XP_COSTS.nouvel_atout} XP récupérés !`, "success");
       }
     } else {
@@ -99,7 +99,7 @@ export default function AnomalieFeeriqueWidget() {
               showInAppNotification(`L'Anomalie consomme un emplacement d'Atout. Il vous faut ${FIXED_XP_COSTS.nouvel_atout} XP !`, "error");
               return;
             }
-            newXpDepense = xpDepense + FIXED_XP_COSTS.nouvel_atout;
+            newXpDepense = spendXp(xpDepense, FIXED_XP_COSTS.nouvel_atout);
             showInAppNotification(`Anomalie activée pour ${FIXED_XP_COSTS.nouvel_atout} XP !`, "success");
           } else {
             if (countAtouts >= MAX_ATOUTS_GLOBAL) {

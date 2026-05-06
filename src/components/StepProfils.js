@@ -1,17 +1,18 @@
 // src/components/StepProfils.js
 import React from 'react';
-import { Info, Star, Award, Lock, CheckCircle } from 'lucide-react';
+import { Info, Star, Award, Lock, CheckCircle } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { accorderTexte } from '../data/DictionnaireJeu';
+import { isCharacterScelle, isCharacterLocked } from '../utils/lockUtils';
 
 export default function StepProfils() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
     const { profils, competencesParProfil } = gameData;
 
     // ✨ LE BOUCLIER DES PROFILS (Mode XP)
-    const isScelle = character.statut === 'scelle' || character.statut === 'scellé';
-    const isLocked = isReadOnly || isScelle;
+    const isScelle = isCharacterScelle(character);
+    const isLocked = isCharacterLocked(character, isReadOnly);
 
     const onProfilsChange = (p) => {
         if (isLocked) {

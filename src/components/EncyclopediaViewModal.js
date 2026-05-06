@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity } from 'lucide-react';
+import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
 
 export default function EncyclopediaViewModal({ item, activeTab, onClose }) {

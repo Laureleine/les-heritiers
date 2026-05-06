@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.24 - "Le Grimoire Illustré 📖"',
+        date: '6 Mai 2026',
+        changes: [
+            '🖼️ **Parchemin PDF — Portraits :** Les deux portraits du personnage (masqué et démasqué) apparaissent désormais sur le PDF exporté. Le portrait masqué orne l\'en-tête de la page 1, le portrait féérique s\'affiche en haut de la page 2.',
+            '⚔️ **Parchemin PDF — Stats de combat :** Les statistiques de combat affichées sur le PDF sont maintenant calculées en temps réel via le moteur de règles, garantissant une cohérence parfaite avec le Bilan. Compétences futiles, équipement et contacts s\'affichent correctement (ils étaient vides auparavant).',
+            '📐 **Parchemin PDF — Compression A4 :** La page 1 du PDF a été resserrée (tailles de police, marges, espacements) pour tenir confortablement sur une feuille A4 à l\'impression.',
+            '🎛️ **Encyclopédie — Spécialités (UI) :** Le bouton "Vue groupée" est remplacé par un élégant slider CSS sans texte. Le bouton "Catalogue de référence" est remplacé par le bouton standard "Suggérer une modification".',
+            '✏️ **Encyclopédie — Spécialités (Édition) :** Les spécialités sont désormais éditables ! La modale de proposition s\'ouvre correctement, avec un formulaire adapté : nom, description, et sélecteur de compétence parente (BonusBuilder et sélecteur de fées masqués, non pertinents ici).',
+            '🔧 **Refactoring DRY — Icônes :** Migration de 39 fichiers depuis les imports directs `lucide-react` vers le hub centralisé `src/config/icons.js`. Correction des erreurs ESLint associées (icône `Print` inexistante, BOM Unicode, imports inutilisés).'
+        ]
+    },
+    {
         version: '15.16.23 - "Le Daguerréotype Double 🖼️"',
         date: '5 Mai 2026',
         changes: [

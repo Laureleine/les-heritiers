@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { getCurrentUser } from '../utils/authUtils';
+import { sanitizeFileName } from '../hooks/useFileUpload';
 
 const ForgeContext = createContext();
 
@@ -28,19 +30,12 @@ export function ForgeProvider({ children }) {
 
   const soumettreEntree = async (data, file) => {
     try {
-      const { data: authData } = await supabase.auth.getUser();
-      const userId = authData?.user?.id;
+      const { id: userId } = await getCurrentUser() ?? {};
       if (!userId) throw new Error("Vous devez être identifié pour forger une entrée.");
 
       let captureUrl = null;
       if (file) {
-        // ✨ L'INCISION : La Moulinette de Nettoyage
-        const safeName = file.name
-          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^a-zA-Z0-9.-]/g, "_")
-          .toLowerCase();
-          
-        const fileName = `${Date.now()}_${safeName}`;
+        const fileName = `${Date.now()}_${sanitizeFileName(file.name)}`;
         
 		// ✨ FIX ESLINT : On ne garde que l'erreur, on ignore la data renvoyée par Supabase
 		const { error: uploadError } = await supabase.storage
@@ -118,9 +113,9 @@ export function ForgeProvider({ children }) {
   };
 
   const voterEntree = async (idCarte, typeVote) => {
-    const { data: authData } = await supabase.auth.getUser();
-    const userId = authData?.user?.id;
-    
+    const currentUser = await getCurrentUser();
+    const userId = currentUser?.id;
+
     if (!userId) {
       showInAppNotification("Il faut être formellement identifié pour voter !", "warning");
       return;

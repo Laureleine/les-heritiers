@@ -1,6 +1,6 @@
 // src/components/encyclopedia/SocialItemForm.js
 import React from 'react';
-import { Briefcase, Coins, Users, BookOpen } from 'lucide-react';
+import { Briefcase, Coins, Users, BookOpen } from '../../config/icons';
 import BonusBuilder from '../BonusBuilder';
 
 const CATEGORIES = [

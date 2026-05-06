@@ -1,11 +1,11 @@
 // src/components/CharacterList.js
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Bug, Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen, Download } from 'lucide-react';
+import { Bug, Info, Sparkles, User, Users, Trash2, Edit, FileText, LogOut, Globe, Calendar, Book, Crown, Copy, Gift, Plus, X, BarChart2, Eye, EyeOff, BookOpen, Download } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
-import { exportCharacter } from '../utils/utils'; 
+import { exportCharacter } from '../utils/utils';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
 import GrimoirePersonnel from './cercle/GrimoirePersonnel';
@@ -26,7 +26,8 @@ const CharacterCard = React.memo(({
   onDeleteClick,
   onOpenGrimoire,
   onAppropriate,
-  onExportJson 
+  onExportJson,
+  onExportPDF
 }) => {
 
   const getProfilInfo = (nomBrut, sexe) => {
@@ -98,7 +99,7 @@ const CharacterCard = React.memo(({
           <div className="flex items-center gap-0.5 shrink-0 bg-stone-50/50 p-0.5 rounded border border-stone-100">
             
             {/* Boutons Communs (PDF & JSON) */}
-            <button onClick={() => exportToPDF(char, gameData)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF">
+            <button onClick={() => onExportPDF(char)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF">
               <FileText size={15}/>
             </button>
             <button onClick={() => onExportJson(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN complet (Format JSON)">
@@ -367,6 +368,17 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       showInAppNotification("Impossible d'extraire l'ADN : " + translateError(error), "error");
     }
   }, []);
+
+  // 📜 LE GRAVEUR DE PARCHEMIN — Charge la fiche complète, exportToPDF hydrate lui-même
+  const handleExportPDF = useCallback(async (lightChar) => {
+    try {
+      showInAppNotification("Préparation du parchemin...", "info");
+      const fullChar = await getFullCharacter(lightChar.id);
+      exportToPDF(fullChar, gameData);
+    } catch (error) {
+      showInAppNotification("Impossible de graver le parchemin : " + translateError(error), "error");
+    }
+  }, [gameData]);
   
   return (
     <div className="animate-fade-in w-full">
@@ -470,6 +482,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onOpenGrimoire={setActiveGrimoireCharId}
                       onAppropriate={handleAppropriate}
 					  onExportJson={handleExportJson}
+					  onExportPDF={handleExportPDF}
                     />
                   </div>
                 ))}
@@ -501,6 +514,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onOpenGrimoire={setActiveGrimoireCharId}
                       onAppropriate={handleAppropriate} 
 					  onExportJson={handleExportJson}
+					  onExportPDF={handleExportPDF}
                     />
                   </div>
                 ))}
@@ -529,6 +543,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       onOpenGrimoire={setActiveGrimoireCharId}
                       onAppropriate={handleAppropriate}
 					  onExportJson={handleExportJson}
+					  onExportPDF={handleExportPDF}
                     />
                   </div>
                 ))}

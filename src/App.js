@@ -1,7 +1,7 @@
 // src/App.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, X, Sparkles } from 'lucide-react';
+import { BookOpen, X, Sparkles } from './config/icons';
 import { useAppInit } from './hooks/useAppInit';
 import AppRouter from './AppRouter';
 

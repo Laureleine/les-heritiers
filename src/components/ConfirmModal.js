@@ -4,7 +4,7 @@
 // Optimisé
 
 import React from 'react';
-import { HelpCircle, X, Check } from 'lucide-react';
+import { HelpCircle, X, Check } from '../config/icons';
 
 export default function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText = "Confirmer", cancelText = "Annuler" }) {
   if (!isOpen) return null;

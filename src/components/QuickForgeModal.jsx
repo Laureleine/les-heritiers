@@ -1,9 +1,10 @@
 // src/components/QuickForgeModal.jsx
 
 import React, { useState } from 'react';
-import { X, Save, Sparkles, Star, Wand2 } from 'lucide-react';
+import { X, Save, Sparkles, Star, Wand2 } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { getCurrentUser } from '../utils/authUtils';
 
 export default function QuickForgeModal({ isOpen, onClose, type, onSuccess }) {
   const [nom, setNom] = useState('');
@@ -29,8 +30,8 @@ export default function QuickForgeModal({ isOpen, onClose, type, onSuccess }) {
     setLoading(true);
     try {
       // 1. On récupère l'identité du forgeron
-      const { data: authData } = await supabase.auth.getUser();
-      const userId = authData?.user?.id;
+      const currentUser = await getCurrentUser();
+      const userId = currentUser?.id;
 
       if (!userId) throw new Error("Vous devez être connecté pour forger.");
 

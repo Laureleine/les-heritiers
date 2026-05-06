@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
-import { RefreshCcw, Users, FileText, Activity, BookOpen } from 'lucide-react';
+import { RefreshCcw, Users, FileText, Activity, BookOpen } from '../../config/icons';
 
 // ============================================================================
 // --- 2. ONGLET : STATISTIQUES (Ancien AdminStats) ---

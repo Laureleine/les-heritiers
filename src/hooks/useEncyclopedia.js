@@ -5,6 +5,96 @@ import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
+import { parseIfString, safeParseArray } from '../utils/json';
+
+const parseToBulletedList = (value) => {
+    if (!value) return '';
+    const list = Array.isArray(value) ? value : [value];
+    return list
+        .map(entry => `• ${String(entry).replace(/^[•\-*]\s*/, '').trim()}`)
+        .join('\n');
+};
+
+const buildCaracteristiquesForEdit = (item) => ({
+    agilite: { min: item.agilite_min || 1, max: item.agilite_max || 6 },
+    constitution: { min: item.constitution_min || 1, max: item.constitution_max || 6 },
+    force: { min: item.force_min || 1, max: item.force_max || 6 },
+    precision: { min: item.precision_min || 1, max: item.precision_max || 6 },
+    esprit: { min: item.esprit_min || 1, max: item.esprit_max || 6 },
+    perception: { min: item.perception_min || 1, max: item.perception_max || 6 },
+    prestance: { min: item.prestance_min || 1, max: item.prestance_max || 6 },
+    sangFroid: { min: item.sang_froid_min || 1, max: item.sang_froid_max || 6 },
+    feerie: { min: item.feerie_min || 1, max: item.feerie_max || 8 },
+    masque: { min: item.masque_min || 1, max: item.masque_max || 10 }
+});
+
+const buildFairyTypeEditingItem = (item, fairyCloudData) => {
+    const pIds = item.fairy_type_powers?.map(link => link.power?.id).filter(Boolean) || [];
+    const aIds = item.fairy_type_assets?.map(link => link.asset?.id).filter(Boolean) || [];
+
+    let capFixe1 = '';
+    let capFixe2 = '';
+    const cChoixIds = [];
+
+    (item.fairy_type_capacites || []).forEach(link => {
+        if (link.capacite_type === 'fixe1') capFixe1 = link.capacite?.id;
+        else if (link.capacite_type === 'fixe2') capFixe2 = link.capacite?.id;
+        else if (link.capacite_type === 'choix') cChoixIds.push(link.capacite?.id);
+    });
+
+    if (!capFixe1) capFixe1 = fairyCloudData.capacites?.fixe1?.id || '';
+    if (!capFixe2) capFixe2 = fairyCloudData.capacites?.fixe2?.id || '';
+    if (cChoixIds.length === 0) {
+        cChoixIds.push(
+            ...(fairyCloudData.capacites?.choix || [])
+                .map(cap => cap?.id)
+                .filter(Boolean)
+        );
+    }
+
+    const techObj = parseIfString(item.effets_techniques, {});
+
+    if (fairyCloudData.competencesPredilection?.length > 0) {
+        const preds = [];
+        const specs = techObj.specialites || [];
+
+        fairyCloudData.competencesPredilection.forEach(predilection => {
+            if (predilection.isOnlySpecialty) {
+                specs.push({ competence: predilection.nom, nom: predilection.specialite });
+            } else {
+                preds.push(predilection);
+            }
+        });
+
+        if (preds.length > 0) techObj.predilections = preds;
+        if (specs.length > 0) techObj.specialites = specs;
+    }
+
+    if (fairyCloudData.competencesFutilesPredilection?.length > 0) {
+        techObj.futiles = fairyCloudData.competencesFutilesPredilection.map(futile => {
+            if (typeof futile === 'string') return { nom: futile };
+            return futile;
+        });
+    }
+
+    return {
+        ...item,
+        competencesPredilection: fairyCloudData.competencesPredilection || [],
+        techData: JSON.stringify(techObj, null, 2),
+        caracteristiques: buildCaracteristiquesForEdit(item),
+        nameMasculine: item.name_masculine || item.name,
+        nameFeminine: item.name_feminine || item.name,
+        allowedGenders: item.allowed_genders || ['Homme', 'Femme'],
+        avantages: parseToBulletedList(item.avantages),
+        desavantages: parseToBulletedList(item.desavantages),
+        traits: Array.isArray(item.traits) ? item.traits.join(', ') : item.traits,
+        pouvoirsIds: pIds,
+        assetsIds: aIds,
+        capaciteFixe1: capFixe1,
+        capaciteFixe2: capFixe2,
+        capacitesChoixIds: cChoixIds
+    };
+};
 
 export function useEncyclopedia() {
     const { gameData } = useCharacter();
@@ -34,6 +124,47 @@ export function useEncyclopedia() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
+            if (activeTab === 'specialites') {
+                let results = [];
+                let error = null;
+
+                ({ data: results, error } = await supabase
+                    .from('specialites')
+                    .select('id, nom, is_official, is_sealed, competence_id')
+                    .order('nom'));
+
+                // Tolérance de migration: si des colonnes ne sont pas encore créées,
+                // on retombe sur une requête minimale au lieu de bloquer l'onglet.
+                if (error && /is_official|is_sealed/i.test(error.message || '')) {
+                    ({ data: results, error } = await supabase
+                        .from('specialites')
+                        .select('id, nom, competence_id')
+                        .order('nom'));
+                }
+                if (error) throw error;
+
+                const { data: competences, error: compError } = await supabase
+                    .from('competences')
+                    .select('id, name');
+                if (compError) throw compError;
+
+                const competenceMap = {};
+                (competences || []).forEach(comp => {
+                    competenceMap[comp.id] = comp.name;
+                });
+
+                const allSpecialites = (results || []).map(specialite => ({
+                    ...specialite,
+                    is_official: specialite.is_official ?? true,
+                    is_sealed: specialite.is_sealed ?? false,
+                    competence: competenceMap[specialite.competence_id] || 'Compétence inconnue',
+                    description: `Spécialité rattachée à la compétence ${competenceMap[specialite.competence_id] || 'inconnue'}.`
+                }));
+
+                setData(allSpecialites);
+                return;
+            }
+
             let query;
             if (activeTab === 'fairy_types') {
                 query = supabase.from('fairy_types').select(`
@@ -65,7 +196,7 @@ export function useEncyclopedia() {
         } finally {
             setLoading(false);
         }
-    }, [activeTab]);
+    }, [activeTab, gameData]);
 
     useEffect(() => {
         fetchData();
@@ -97,13 +228,7 @@ export function useEncyclopedia() {
             if (activeTab === 'social_items') {
                 if (selectedProfileFilter !== '') {
                     const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
-                    let autorises = [];
-                    if (Array.isArray(item.profils_autorises)) {
-                        autorises = item.profils_autorises;
-                    } else if (typeof item.profils_autorises === 'string') {
-                        try { autorises = JSON.parse(item.profils_autorises); }
-                        catch(e) { autorises = [item.profils_autorises]; }
-                    }
+                    const autorises = safeParseArray(item.profils_autorises);
                     if (selectedProfileFilter === '__UNLINKED__') {
                         matchesProfile = autorises.length === 0 && !legacyProfile;
                     } else {
@@ -124,79 +249,13 @@ export function useEncyclopedia() {
 
         if (activeTab === 'fairy_types') {
             const fairyCloudData = fairyData?.[item.name || item.nom] || {};
-            
-            const pIds = item.fairy_type_powers?.map(link => link.power?.id).filter(Boolean) || [];
-            const aIds = item.fairy_type_assets?.map(link => link.asset?.id).filter(Boolean) || [];
-            
-            let capFixe1 = '';
-            let capFixe2 = '';
-            const cChoixIds = [];
-            
-            (item.fairy_type_capacites || []).forEach(link => {
-                if (link.capacite_type === 'fixe1') capFixe1 = link.capacite?.id;
-                else if (link.capacite_type === 'fixe2') capFixe2 = link.capacite?.id;
-                else if (link.capacite_type === 'choix') cChoixIds.push(link.capacite?.id);
-            });
+            setEditingItem(buildFairyTypeEditingItem(item, fairyCloudData));
 
-            // ✨ LE FIX POUR LES BRIQUES DE LÉGO : On recombine l'ADN !
-            let techObj = {};
-            if (item.effets_techniques) {
-                try {
-                    techObj = typeof item.effets_techniques === 'string' 
-                        ? JSON.parse(item.effets_techniques) 
-                        : { ...item.effets_techniques };
-                } catch(e) { techObj = {}; }
-            }
-            
-            // 🧠 LE TRADUCTEUR POUR LE BONUSBUILDER EST ICI
-            
-            // 1. Les Compétences Utiles et Spécialités Offertes
-            if (fairyCloudData.competencesPredilection?.length > 0) {
-                const preds = [];
-                const specs = techObj.specialites || []; // On récupère celles existantes au cas où
-                
-                fairyCloudData.competencesPredilection.forEach(p => {
-                    if (p.isOnlySpecialty) {
-                        // 🌟 Brique Dorée : C'est une Spécialité Offerte, on la remet dans la boîte des spécialités !
-                        specs.push({ competence: p.nom, nom: p.specialite });
-                    } else {
-                        // 🌟 Brique Fuchsia/Rose : C'est une vraie Prédilection
-                        preds.push(p);
-                    }
-                });
-                
-                if (preds.length > 0) techObj.predilections = preds;
-                if (specs.length > 0) techObj.specialites = specs;
-            }
-
-            // 2. Les Compétences Futiles
-            if (fairyCloudData.competencesFutilesPredilection?.length > 0) {
-                techObj.futiles = fairyCloudData.competencesFutilesPredilection.map(f => {
-                    // 🌟 Brique Turquoise : Le Nuage stocke du texte pur, le Lego attend un Objet !
-                    if (typeof f === 'string') return { nom: f };
-                    return f;
-                });
-            }
-
-            setEditingItem({
-                ...item,
-                competencesPredilection: fairyCloudData.competencesPredilection || [],
-                techData: JSON.stringify(techObj, null, 2),
-                pouvoirsIds: pIds,
-                assetsIds: aIds,
-                capaciteFixe1: capFixe1,
-                capaciteFixe2: capFixe2,
-                capacitesChoixIds: cChoixIds
-            });
+        } else if (activeTab === 'specialites') {
+            setEditingItem({ ...item });
 
         } else if (activeTab === 'social_items') {
-            let autorises = [];
-            if (Array.isArray(item.profils_autorises)) {
-                autorises = [...item.profils_autorises];
-            } else if (typeof item.profils_autorises === 'string') {
-                try { autorises = JSON.parse(item.profils_autorises); }
-                catch(e) { autorises = [item.profils_autorises]; }
-            }
+            const autorises = safeParseArray(item.profils_autorises);
             const legacyProfile = item.profils?.name_masculine || item.profils?.nom;
             if (legacyProfile && !autorises.includes(legacyProfile)) {
                 autorises.push(legacyProfile);

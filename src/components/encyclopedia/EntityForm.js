@@ -1,7 +1,7 @@
 // src/components/encyclopedia/EntityForm.js
 
 import React, { useCallback } from 'react';
-import { Star, Sparkles } from 'lucide-react';
+import { Star, Sparkles } from '../../config/icons';
 import BonusBuilder from '../BonusBuilder';
 import RelationSelector from './RelationSelector';
 
@@ -93,29 +93,50 @@ const EntityForm = ({
         </div>
       )}
 
-      {/* 5. CONSTRUCTEUR LEGO (BonusBuilder) */}
-      <div className="mt-4">
-        <BonusBuilder
-          parsedTech={parsedTech}
-          updateTech={updateTech}
-          rawJson={proposal.techData}
-          onJsonChange={(val) => setProposal({ ...proposal, techData: val, effets_techniques: val })}
-          competencesData={competencesData}
-          usefulSkills={usefulSkills}
-          futilesSkills={allCompFutiles ? allCompFutiles.map(c => c.nom || c.name) : []}
-        />
-      </div>
+      {/* 5. COMPÉTENCE PARENTE (Spécialités uniquement) */}
+      {activeTab === 'specialites' && (
+        <div className="animate-fade-in">
+          <label className="block text-sm font-bold text-indigo-800 mb-1">Compétence parente</label>
+          <select
+            value={proposal.competence_id || ''}
+            onChange={(e) => setProposal({ ...proposal, competence_id: e.target.value })}
+            className="w-full p-2 border border-indigo-200 bg-white rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-indigo-200 outline-none font-bold text-indigo-900"
+          >
+            <option value="">— Sélectionner une compétence —</option>
+            {(competencesData || []).map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
-      {/* 6. RELATION INVERSÉE : FÉES COMPATIBLES (Avec notre nouveau composant !) */}
-      <div className="mt-6 h-[250px] animate-fade-in-up">
-        <RelationSelector
-          title={<span className="flex items-center gap-2 text-sm"><Sparkles size={16} className="text-indigo-500" /> Fées possédant cet élément (Optionnel)</span>}
-          items={allFairyTypes || []}
-          selectedIds={proposal.fairyIds || []}
-          onToggle={handleToggleFairy}
-          colorTheme="indigo"
-        />
-      </div>
+      {/* 5b. CONSTRUCTEUR LEGO (BonusBuilder — hors Spécialités) */}
+      {activeTab !== 'specialites' && (
+        <div className="mt-4">
+          <BonusBuilder
+            parsedTech={parsedTech}
+            updateTech={updateTech}
+            rawJson={proposal.techData}
+            onJsonChange={(val) => setProposal({ ...proposal, techData: val, effets_techniques: val })}
+            competencesData={competencesData}
+            usefulSkills={usefulSkills}
+            futilesSkills={allCompFutiles ? allCompFutiles.map(c => c.nom || c.name) : []}
+          />
+        </div>
+      )}
+
+      {/* 6. RELATION INVERSÉE : FÉES COMPATIBLES (hors Spécialités) */}
+      {activeTab !== 'specialites' && (
+        <div className="mt-6 h-[250px] animate-fade-in-up">
+          <RelationSelector
+            title={<span className="flex items-center gap-2 text-sm"><Sparkles size={16} className="text-indigo-500" /> Fées possédant cet élément (Optionnel)</span>}
+            items={allFairyTypes || []}
+            selectedIds={proposal.fairyIds || []}
+            onToggle={handleToggleFairy}
+            colorTheme="indigo"
+          />
+        </div>
+      )}
 
     </div>
   );

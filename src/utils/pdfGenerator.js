@@ -2,10 +2,15 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import FicheParchemin from '../components/recap/FicheParchemin';
+import { characterReducer } from './characterEngine';
 
 export const exportToPDF = (character, gameData = {}) => {
-    // 1. On transforme notre composant pur en chaîne HTML
-    const htmlContent = renderToString(<FicheParchemin character={character} gameData={gameData} />);
+    // 1. Hydratation via le reducer — recalcule computedStats (combat, futiles, bible…)
+    //    identique au chemin du contexte, qu'on vienne du Bilan ou de la liste de persos
+    const hydratedCharacter = characterReducer(character, { type: 'LOAD_CHARACTER', payload: character, gameData });
+
+    // 2. On transforme notre composant pur en chaîne HTML
+    const htmlContent = renderToString(<FicheParchemin character={hydratedCharacter} gameData={gameData} />);
 
     // 2. On prépare la fenêtre d'impression
     const printWindow = window.open('', '_blank');
