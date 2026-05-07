@@ -221,7 +221,7 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   // ✨ L'INCISION 3 : L'intercepteur qui charge le lourd lore
   const handleInspectCharacter = async (lightChar) => {
     if (!lightChar?.id) {
-      showInAppNotification("La fiche de cet Héritier est introuvable.", "error");
+      showInAppNotification("La fiche de cet Héritier n'est pas encore liée à ce Cercle. Le joueur doit choisir son Héritier.", "error");
       return;
     }
     try {
@@ -232,6 +232,22 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
       onViewCharacter(fullChar);
     } catch (error) {
       showInAppNotification("Le parchemin est illisible : " + error.message, "error");
+    }
+  };
+
+  // ✨ Permet à un joueur de changer l'Héritier qu'il présente dans ce Cercle
+  const handleUpdateMyCharacter = async (charId) => {
+    if (!charId || !activeTab) return;
+    try {
+      const { error } = await supabase
+        .from('cercle_membres')
+        .update({ character_id: charId })
+        .match({ cercle_id: activeTab, user_id: session.user.id });
+      if (error) throw error;
+      showInAppNotification("Votre Héritier a été mis à jour dans ce Cercle.", "success");
+      loadMembers(activeTab);
+    } catch (err) {
+      showInAppNotification("Erreur lors de la mise à jour : " + err.message, "error");
     }
   };
 
@@ -292,6 +308,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
               onDelete={handleDeleteCercle}
               onLeave={handleLeaveCercle}
               onViewCharacter={handleInspectCharacter}
+              myCharacters={myCharacters}
+              onUpdateMyCharacter={handleUpdateMyCharacter}
             />
           )}
         </>
