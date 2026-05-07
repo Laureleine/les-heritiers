@@ -127,20 +127,64 @@ export function useCompetencesLibres() {
 
         if (isScelle) {
             const plancher = character.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0;
-            if (delta > 0) {
-                if (totalScore >= evolutionMax) { showInAppNotification(`Excellence maximale atteinte (${evolutionMax}).`, "warning"); return; }
-                const costXP = getUtileCost(totalScore);
-                if (xpDispo < costXP) { showInAppNotification(`Il vous faut ${costXP} XP.`, "error"); return; }
 
-                dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + 1 } } }, gameData });
-                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'DEPENSE', code: XP_CODES.COMP_UTILE_RANG, label: `Perfectionnement : ${nomComp}`, valeur: costXP, rang_final: totalScore + 1 }, gameData });
-                showInAppNotification(`Compétence améliorée pour ${costXP} XP !`, "success");
-            } else if (delta < 0) {
-                if (current <= plancher) { showInAppNotification("Savoir originel scellé !", "warning"); return; }
-                const refundXP = getUtileCost(totalScore - 1);
-                dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current - 1 } } }, gameData });
-                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'REMBOURSEMENT', code: XP_CODES.COMP_UTILE_RANG, label: `Perfectionnement : ${nomComp}`, valeur: refundXP, rang_final: totalScore - 1 }, gameData });
-                showInAppNotification(`Amélioration annulée. +${refundXP} XP récupérés.`, "info");
+            // Guards préliminaires
+            if (delta > 0 && totalScore >= evolutionMax) { showInAppNotification(`Excellence maximale atteinte (${evolutionMax}).`, "warning"); return; }
+            if (delta < 0 && current <= plancher) { showInAppNotification("Savoir originel scellé !", "warning"); return; }
+
+            // ✨ BONUS ESPRIT : chaque rang d'Esprit au-dessus de 3 débloque 1 rang gratuit
+            //    dans les compétences d'Érudit et Savant, même acquis avec des XP post-scellage.
+            let estGratuit = false;
+            if (SKILLS_ESPRIT.includes(nomComp)) {
+                const espritScelle  = character.data?.stats_scellees?.caracteristiques?.esprit || 3;
+                const bonusEspritXP = Math.max(0,
+                    Math.max(0, (character.caracteristiques?.esprit || 3) - 3) -
+                    Math.max(0, espritScelle - 3)
+                );
+                if (bonusEspritXP > 0) {
+                    const scelleeRangs = character.data?.stats_scellees?.competencesLibres?.rangs || {};
+                    const investPost   = SKILLS_ESPRIT.reduce((acc, c) =>
+                        acc + Math.max(0, (lib.rangs[c] || 0) - (scelleeRangs[c] || 0)), 0);
+                    // Hausse : gratuit si points disponibles
+                    // Baisse : était gratuit si, une fois retiré, on est encore sous le seuil
+                    estGratuit = delta > 0 ? investPost < bonusEspritXP : (investPost - 1) < bonusEspritXP;
+                }
+            }
+
+            // Vérification XP (seulement pour un rang payant en hausse)
+            const costXP = getUtileCost(delta > 0 ? totalScore : totalScore - 1);
+            if (delta > 0 && !estGratuit && xpDispo < costXP) {
+                showInAppNotification(`Il vous faut ${costXP} XP.`, "error");
+                return;
+            }
+
+            // Mutation
+            dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + delta } } }, gameData });
+
+            // Journal XP (seulement si rang payant)
+            if (!estGratuit) {
+                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: {
+                    type: delta > 0 ? 'DEPENSE' : 'REMBOURSEMENT',
+                    code: XP_CODES.COMP_UTILE_RANG,
+                    label: `Perfectionnement : ${nomComp}`,
+                    valeur: costXP, rang_final: totalScore + delta
+                }, gameData });
+                showInAppNotification(
+                    delta > 0 ? `Compétence améliorée pour ${costXP} XP !` : `Amélioration annulée. +${costXP} XP récupérés.`,
+                    delta > 0 ? "success" : "info"
+                );
+            } else {
+                // Rang gratuit — journalisé à valeur 0 pour traçabilité
+                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: {
+                    type: delta > 0 ? 'DEPENSE' : 'REMBOURSEMENT',
+                    code: XP_CODES.ESPRIT_BONUS_UTILE,
+                    label: `Rang gratuit (bonus Esprit) : ${nomComp}`,
+                    valeur: 0, rang_final: totalScore + delta
+                }, gameData });
+                showInAppNotification(
+                    delta > 0 ? `Rang gratuit ! (bonus Esprit 🧠)` : `Rang gratuit (Esprit) oublié.`,
+                    delta > 0 ? "success" : "info"
+                );
             }
             return;
         }
@@ -265,12 +309,31 @@ export function useCompetencesLibres() {
         const isFirstConduite = nomComp === 'Conduite' && totalScore > 0 && userSpecs.length === 0;
         
         const nextSpecCost = isScelle ? (isFirstConduite ? 0 : FIXED_XP_COSTS.specialite_utile) : (isFirstConduite ? 0 : 1);
-        const utileCost = isScelle && totalScore < maxAllowed ? getUtileCost(totalScore) : null;
+
+        // ✨ BONUS ESPRIT : calcul du rang gratuit pour l'affichage
+        let rangEspritGratuitDispo = false;
+        if (isScelle && isEspritEligible) {
+            const espritScelle  = character.data?.stats_scellees?.caracteristiques?.esprit || 3;
+            const bonusEspritXP = Math.max(0,
+                Math.max(0, (character.caracteristiques?.esprit || 3) - 3) -
+                Math.max(0, espritScelle - 3)
+            );
+            if (bonusEspritXP > 0) {
+                const scelleeRangs = character.data?.stats_scellees?.competencesLibres?.rangs || {};
+                const investPost   = SKILLS_ESPRIT.reduce((acc, c) =>
+                    acc + Math.max(0, (lib.rangs[c] || 0) - (scelleeRangs[c] || 0)), 0);
+                rangEspritGratuitDispo = investPost < bonusEspritXP;
+            }
+        }
+
+        const utileCost = isScelle && totalScore < maxAllowed
+            ? (rangEspritGratuitDispo ? 0 : getUtileCost(totalScore))
+            : null;
 
         return {
             nomComp, current, scoreBase, totalScore, isPred, isEspritEligible, maxAllowed, plancher,
             fairySpecActuelle, specsFromAtouts: specsForAtouts, userSpecs, hasJobSpecHere, jobSpec, nextSpecCost,
-            utileCost,
+            utileCost, rangEspritGratuitDispo,
             availableSpecs: competences[nomComp]?.specialites || [],
             isMinusDisabled: isScelle ? (current <= plancher) : (current <= 0),
             isPlusDisabled: isReadOnly || totalScore >= maxAllowed || (!isScelle && budgetsInfo.pointsRestantsVerts <= 0 && (!isEspritEligible || budgetsInfo.pointsRestantsViolets <= 0))

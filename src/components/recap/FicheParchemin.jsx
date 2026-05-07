@@ -4,8 +4,9 @@ import React, { useMemo } from 'react';
 import { CARAC_LIST, accorderTexte } from '../../data/DictionnaireJeu';
 import { calculateCharacterStats } from '../../utils/bonusCalculator';
 import { calculateFullCombatStats } from '../../utils/rulesEngine';
+import { isCharacterScelle } from '../../utils/lockUtils';
 
-export default function FicheParchemin({ character, gameData }) {
+export default function FicheParchemin({ character, gameData, detailed = false }) {
     
     // ✨ LE FIX EST ICI : On stabilise la référence en mémoire !
     const feeData = useMemo(() => {
@@ -16,6 +17,106 @@ export default function FicheParchemin({ character, gameData }) {
 
     // 🧠 LE CERVEAU POUR L'AFFICHAGE DÉTAILLÉ (Affiche les "+1" en vert sur le papier)
     const finalStats = useMemo(() => calculateCharacterStats(character, gameData), [character, gameData]);
+
+    const isScelle = isCharacterScelle(character);
+    const scellees  = character.data?.stats_scellees || {};
+
+    // =========================================================================
+    // 🔍 HELPERS DE DÉCOMPOSITION (Mode Détaillé)
+    // =========================================================================
+
+    /** Décompose une caractéristique en 4 couches : base fée / création / XP / bonus magiques */
+    const getCaracBreakdown = (key) => {
+        const feeMin = Number(feeData?.caracteristiques?.[key]?.min || 1);
+        const currentVal = Number(character.caracteristiques?.[key] || feeMin);
+        const bonusSources = finalStats.caracteristiques.bonus[key] || [];
+
+        // Séparer bonus conditionnels (capacité) vs permanents (atouts/pouvoirs)
+        const isCapaciteSrc = (src) => {
+            if (!src) return false;
+            const s = src.toLowerCase();
+            if (s.includes('accru')) return true;
+            return [character.capaciteChoisie, feeData?.capacites?.fixe1?.nom, feeData?.capacites?.fixe2?.nom]
+                .filter(Boolean).some(c => s.includes(c.toLowerCase()));
+        };
+        const bonusPermanent = bonusSources.filter(b => !isCapaciteSrc(b.source)).reduce((acc, b) => acc + Number(b.value), 0);
+        const bonusCapacite  = bonusSources.filter(b =>  isCapaciteSrc(b.source)).reduce((acc, b) => acc + Number(b.value), 0);
+        const bonusPermaLabel = bonusSources.filter(b => !isCapaciteSrc(b.source)).map(b => `${b.value > 0 ? '+' : ''}${b.value} ${b.source}`).join(', ');
+        const bonusCapaLabel  = bonusSources.filter(b =>  isCapaciteSrc(b.source)).map(b => `${b.value > 0 ? '+' : ''}${b.value} ${b.source}`).join(', ');
+
+        let pointsCreation, pointsXP;
+        if (isScelle && scellees.caracteristiques) {
+            const scelleeVal = Number(scellees.caracteristiques[key] || feeMin);
+            pointsCreation = Math.max(0, scelleeVal - feeMin);
+            pointsXP       = Math.max(0, currentVal - scelleeVal);
+        } else {
+            pointsCreation = Math.max(0, currentVal - feeMin);
+            pointsXP       = 0;
+        }
+        return { feeMin, pointsCreation, pointsXP, bonusPermanent, bonusPermaLabel, bonusCapacite, bonusCapaLabel };
+    };
+
+    /** Décompose une compétence utile en : profil / prédilection / rangs création / rangs XP / bonus magique */
+    const getCompBreakdown = (comp) => {
+        const currentRangs = character.competencesLibres?.rangs?.[comp] || 0;
+        let rangsCreation, rangsXP;
+        if (isScelle && scellees.competencesLibres) {
+            rangsCreation = scellees.competencesLibres.rangs?.[comp] || 0;
+            rangsXP       = Math.max(0, currentRangs - rangsCreation);
+        } else {
+            rangsCreation = currentRangs;
+            rangsXP       = 0;
+        }
+        let bonusProfil = 0;
+        Object.entries(profilsMap).forEach(([pName, comps]) => {
+            if (comps.includes(comp)) {
+                if (character.profils?.majeur?.nom === pName) bonusProfil = 2;
+                else if (character.profils?.mineur?.nom === pName) bonusProfil = Math.max(bonusProfil, 1);
+            }
+        });
+        const bonusPred    = isPredilection(comp) ? 2 : 0;
+        const bonusSources = finalStats.competences.bonus[comp] || [];
+        const bonusMagique = bonusSources.reduce((acc, b) => acc + b.value, 0);
+        const bonusMagLabel = bonusSources.map(b => `+${b.value} ${b.source}`).join(', ');
+        return { bonusProfil, bonusPred, rangsCreation, rangsXP, bonusMagique, bonusMagLabel };
+    };
+
+    /** Décompose une compétence futile en : prédilection / rangs création / rangs XP / bonus magique */
+    const getFutileBreakdown = (comp) => {
+        const baseInvesti  = character.competencesFutiles?.rangs?.[comp] || 0;
+        const bonusPred    = (character.computedStats?.futilesPredFinales || []).includes(comp) ? 2 : 0;
+        const bonusSources = finalStats.competences.bonus[comp] || [];
+        const bonusMagique = bonusSources.reduce((acc, b) => acc + b.value, 0);
+        const bonusMagLabel = bonusSources.map(b => `+${b.value} ${b.source}`).join(', ');
+        let rangsCreation, rangsXP;
+        if (isScelle && scellees.competencesFutiles) {
+            // Snapshot présent → split exact création / XP
+            rangsCreation = scellees.competencesFutiles.rangs?.[comp] || 0;
+            rangsXP       = Math.max(0, baseInvesti - rangsCreation);
+        } else if (isScelle) {
+            // Snapshot absent (vieux perso) → on ne sait pas distinguer création / XP : tout en création
+            // Le correctif retroactif en base (stats_scellees.competencesFutiles) résout cela proprement
+            rangsCreation = baseInvesti;
+            rangsXP       = 0;
+        } else {
+            // Perso non scellé → tout est création (pas d'XP possible)
+            rangsCreation = baseInvesti;
+            rangsXP       = 0;
+        }
+        return { bonusPred, rangsCreation, rangsXP, bonusMagique, bonusMagLabel };
+    };
+
+    /** Décompose la Fortune en : plancher race / achat création / achat XP */
+    const getFortuneBreakdown = () => {
+        const feeMin       = feeData?.fortune_min || 1;
+        const currentFort  = character.fortune || 0;
+        if (isScelle && scellees.fortune != null) {
+            const pointsCreation = Math.max(0, scellees.fortune - feeMin);
+            const pointsXP       = Math.max(0, currentFort - scellees.fortune);
+            return { plancher: feeMin, pointsCreation, pointsXP };
+        }
+        return { plancher: feeMin, pointsCreation: Math.max(0, currentFort - feeMin), pointsXP: 0 };
+    };
 
     const getCarac = (key) => {
         // 1. La base pure (Humaine) forcée en Nombre
@@ -96,17 +197,30 @@ export default function FicheParchemin({ character, gameData }) {
     // ✨ CALCUL LIVE — même fonction que useCerbere (DRY, jamais de données périmées)
     const liveCombatStats = useMemo(() => calculateFullCombatStats(character, gameData), [character, gameData]);
 
+    // allSpecialties → map<comp, {nom, origine}[]>
+    // origine : 'Créa' | 'XP' | 'Inné' | 'Métier' | '✨ Source'
     const allSpecialties = useMemo(() => {
         const map = {};
+        // Snapshot scellé pour distinguer Créa vs XP
+        const specsBase = isScelle ? (scellees.competencesLibres?.choixSpecialiteUser || {}) : null;
+
+        // 1. Spécialités choisies par l'utilisateur (Créa ou XP)
         Object.entries(character.competencesLibres?.choixSpecialiteUser || {}).forEach(([c, list]) => {
             if (!map[c]) map[c] = [];
-            list.forEach(s => map[c].push(s));
+            list.forEach(s => {
+                const isXP = specsBase && !(specsBase[c] || []).includes(s);
+                map[c].push({ nom: s, origine: isXP ? 'XP' : 'Créa' });
+            });
         });
+
+        // 2. Spécialité de Métier
         if (character.competencesLibres?.specialiteMetier?.nom) {
             const sm = character.competencesLibres.specialiteMetier;
             if (!map[sm.comp]) map[sm.comp] = [];
-            map[sm.comp].push(`${sm.nom} (Métier)`);
+            map[sm.comp].push({ nom: sm.nom, origine: 'Métier' });
         }
+
+        // 3. Spécialités innées (prédilections fée)
         if (feeData?.competencesPredilection) {
             feeData.competencesPredilection.forEach((p, idx) => {
                 const nomSpec = p.specialite || (p.isSpecialiteChoix ? character.competencesLibres?.choixSpecialite?.[idx] : null);
@@ -114,26 +228,35 @@ export default function FicheParchemin({ character, gameData }) {
                     if (p.isSpecialiteChoix && nomSpec.includes(':')) {
                         const [pComp, pSpec] = nomSpec.split(':').map(s => s.trim());
                         if (!map[pComp]) map[pComp] = [];
-                        map[pComp].push(`${pSpec} (Inné)`);
+                        map[pComp].push({ nom: pSpec, origine: 'Inné' });
                     } else {
                         if (!map[p.nom]) map[p.nom] = [];
-                        map[p.nom].push(`${nomSpec} (Inné)`);
+                        map[p.nom].push({ nom: nomSpec, origine: 'Inné' });
                     }
                 }
             });
         }
+
+        // 4. Spécialités gratuites (atouts / pouvoirs)
         Object.entries(finalStats.specialites.gratuites || {}).forEach(([comp, list]) => {
             if (!map[comp]) map[comp] = [];
             list.forEach(s => {
-                map[comp].push(`${s.specialite} (✨ ${s.source})`);
+                map[comp].push({ nom: s.specialite, origine: `✨ ${s.source}` });
             });
         });
 
+        // Déduplication (nom + origine)
         Object.keys(map).forEach(comp => {
-            map[comp] = [...new Set(map[comp])]; // Déduplication
+            const seen = new Set();
+            map[comp] = map[comp].filter(s => {
+                const key = `${s.nom}|${s.origine}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
         });
         return map;
-    }, [character.competencesLibres, feeData, finalStats]);
+    }, [character.competencesLibres, feeData, finalStats, isScelle, scellees]);
 
     const bible = character.computedStats?.bible_autonome?.inventaire_lisible || {};
     const equipements = bible.armes_equipements || [];
@@ -178,6 +301,13 @@ export default function FicheParchemin({ character, gameData }) {
                 .comp-dots { flex: 1; border-bottom: 1px dotted #b5a287; margin: 0 6px; position: relative; top: -3px; }
                 .combat-circle { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #4a3b2c; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 900; background: #fff; margin: 0 auto; }
                 .combat-label { text-align: center; font-size: 8px; font-weight: bold; text-transform: uppercase; margin-top: 3px; color: #4a3b2c; }
+                .detail-row { font-size: 7px; color: #8b7355; margin-top: 2px; border-top: 1px dotted #d4c5b0; padding-top: 2px; line-height: 1.3; }
+                .detail-row span { margin-right: 3px; white-space: nowrap; }
+                .detail-tag { display: inline-block; background: #f5f0e8; border: 1px solid #d4c5b0; border-radius: 2px; padding: 0 2px; font-size: 7px; margin-right: 2px; }
+                .detail-tag.xp  { background: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
+                .detail-tag.mag { background: #fdf4ff; border-color: #e9d5ff; color: #6b21a8; }
+                .detail-tag.cre { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+                .detail-comp-row { font-size: 8px; color: #8b7355; margin-top: 1px; padding-left: 8px; }
                 @media print {
                     body { background: white !important; }
                     @page { margin: 3mm; }
@@ -229,6 +359,16 @@ export default function FicheParchemin({ character, gameData }) {
                         <div className="field">
                             <span className="field-label">Fortune</span>
                             <div className="field-value">Rang {character.fortune || 0}</div>
+                            {detailed && (() => {
+                                const bd = getFortuneBreakdown();
+                                return (
+                                    <div className="detail-row" style={{marginTop: '2px'}}>
+                                        <span className="detail-tag" title="Plancher accordé par la race/le métier">Planch.:{bd.plancher}</span>
+                                        {bd.pointsCreation > 0 && <span className="detail-tag cre" title="Rangs achetés à la création">Créa:+{bd.pointsCreation}</span>}
+                                        {bd.pointsXP       > 0 && <span className="detail-tag xp"  title="Rangs achetés avec l'XP">XP:+{bd.pointsXP}</span>}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
                     <div className="field" style={{marginTop: '5px'}}>
@@ -244,14 +384,23 @@ export default function FicheParchemin({ character, gameData }) {
                 <div className="carac-grid">
                     {['agilite', 'constitution', 'force', 'precision', 'esprit', 'perception', 'prestance', 'sangFroid'].map(key => {
                         const stat = getCarac(key);
+                        const bd   = detailed ? getCaracBreakdown(key) : null;
                         return (
                             <div key={key} className="carac-box">
                                 <div className="carac-label">{CARAC_LIST.find(c => c.key === key)?.label}</div>
-									<div className="carac-score flex items-center justify-center gap-1">
-										{/* ✨ FIX : On affiche le Total humain, et le Bonus de capacité à part ! */}
-										{stat.total}
-										{stat.bonus > 0 && <span style={{fontSize: '13px', color: '#16a34a'}} title={stat.sources.map(s => s.source).join(', ')}> (+{stat.bonus})</span>}
-									</div>
+                                <div className="carac-score flex items-center justify-center gap-1">
+                                    {stat.total}
+                                    {stat.bonus > 0 && <span style={{fontSize: '13px', color: '#16a34a'}} title={stat.sources.map(s => s.source).join(', ')}> (+{stat.bonus})</span>}
+                                </div>
+                                {detailed && bd && (
+                                    <div className="detail-row">
+                                        <span className="detail-tag" title="Base raciale">F:{bd.feeMin}</span>
+                                        {bd.pointsCreation > 0 && <span className="detail-tag cre" title="Points achetés à la création">C:+{bd.pointsCreation}</span>}
+                                        {bd.pointsXP       > 0 && <span className="detail-tag xp"  title="Points achetés avec l'XP">XP:+{bd.pointsXP}</span>}
+                                        {bd.bonusPermanent > 0 && <span className="detail-tag mag" title={bd.bonusPermaLabel}>✨+{bd.bonusPermanent}</span>}
+                                        {bd.bonusCapacite  > 0 && <span className="detail-tag mag" title={bd.bonusCapaLabel}>⚡+{bd.bonusCapacite}</span>}
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
@@ -263,15 +412,20 @@ export default function FicheParchemin({ character, gameData }) {
                         <div key={profil} style={{marginBottom: '6px'}}>
                             <div style={{fontFamily: 'Playfair Display, serif', fontSize: '12px', fontWeight: 'bold', color: '#92400e', borderBottom: '1px solid #d4c5b0', marginBottom: '3px', paddingBottom: '1px'}}>{profil}</div>
                             {comps.map(comp => {
-                                const stat = getCompScore(comp);
+                                const stat  = getCompScore(comp);
+                                const bd    = detailed ? getCompBreakdown(comp) : null;
                                 const isPred = isPredilection(comp);
                                 const specs = allSpecialties[comp] || [];
+                                // Texte pour comp-line : Créa/XP → nom brut ; Inné/Métier/✨ → nom (origine)
+                                const specsTexte = specs.map(s =>
+                                    (s.origine === 'Créa' || s.origine === 'XP') ? s.nom : `${s.nom} (${s.origine})`
+                                ).join(' • ');
                                 return (
                                     <div key={comp} className="mb-0.5">
                                         <div className="comp-line">
                                             <span style={{color: '#4a3b2c'}}>
                                                 {comp} {isPred && <span style={{fontSize: '10px', color: '#d97706', marginLeft: '4px'}}>★</span>}
-                                                {specs.length > 0 && <span style={{fontSize: '11px', color: '#8b7355', marginLeft: '6px', fontStyle: 'italic'}}>{specs.join(' • ')}</span>}
+                                                {specsTexte && <span style={{fontSize: '11px', color: '#8b7355', marginLeft: '6px', fontStyle: 'italic'}}>{specsTexte}</span>}
                                             </span>
                                             <div className="comp-dots"></div>
                                             <span style={{fontWeight: 'bold', color: '#4a3b2c'}}>
@@ -279,6 +433,29 @@ export default function FicheParchemin({ character, gameData }) {
                                                 {stat.bonusMagique > 0 && <span className="no-print" style={{fontSize: '11px', color: '#16a34a', marginLeft: '4px'}} title={stat.sources.map(s => s.source).join(', ')}> (+{stat.bonusMagique})</span>}
                                             </span>
                                         </div>
+                                        {detailed && bd && (
+                                            <div className="detail-comp-row">
+                                                {bd.bonusProfil  > 0 && <span className="detail-tag" title="Bonus de Profil">Prof.+{bd.bonusProfil}</span>}
+                                                {bd.bonusPred    > 0 && <span className="detail-tag" title="Compétence de Prédilection">Préd.+{bd.bonusPred}</span>}
+                                                {bd.rangsCreation > 0 && <span className="detail-tag cre" title="Rangs investis à la création">Créa:{bd.rangsCreation}</span>}
+                                                {bd.rangsXP       > 0 && <span className="detail-tag xp"  title="Rangs achetés avec l'XP">XP:+{bd.rangsXP}</span>}
+                                                {bd.bonusMagique  > 0 && <span className="detail-tag mag" title={bd.bonusMagLabel}>✨+{bd.bonusMagique}</span>}
+                                                {(bd.bonusProfil + bd.bonusPred + bd.rangsCreation + bd.rangsXP + bd.bonusMagique === 0) && <span style={{color: '#c7bfb5', fontStyle: 'italic'}}>non investie</span>}
+                                                {/* Spécialités avec leurs origines */}
+                                                {specs.length > 0 && (
+                                                    <span style={{borderLeft: '1px solid #e5d8c8', marginLeft: '4px', paddingLeft: '4px'}}>
+                                                        {specs.map((s, i) => {
+                                                            const tagCls = s.origine === 'XP' ? 'xp' : s.origine === 'Créa' ? 'cre' : s.origine.startsWith('✨') ? 'mag' : '';
+                                                            return (
+                                                                <span key={i} className={`detail-tag ${tagCls}`} title={`Origine : ${s.origine}`}>
+                                                                    {s.nom}{s.origine !== 'Créa' ? ` (${s.origine})` : ''}
+                                                                </span>
+                                                            );
+                                                        })}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             })}
@@ -315,17 +492,27 @@ export default function FicheParchemin({ character, gameData }) {
 
 				{/* ✨ LE FIX 2 : L'encart des caractéristiques magiques */}
 				<div className="grid grid-cols-3 gap-2 mb-2">
-					<div className="recap-box flex flex-col items-center justify-center p-2">
-						<span className="field-label" style={{marginBottom: '2px'}}>Féérie</span>
-						<span className="text-2xl font-serif font-black" style={{color: '#1e3a8a', lineHeight: '1'}}>{character.caracteristiques?.feerie || 3}</span>
-					</div>
-					<div className="recap-box flex flex-col items-center justify-center p-2">
-						<span className="field-label" style={{marginBottom: '2px'}}>Masque</span>
-						<span className="text-2xl font-serif font-black" style={{color: '#1e3a8a', lineHeight: '1'}}>{character.caracteristiques?.masque || 4}</span>
-					</div>
+					{[{key: 'feerie', label: 'Féérie'}, {key: 'masque', label: 'Masque'}].map(({key, label}) => {
+						const bd = detailed ? getCaracBreakdown(key) : null;
+						const val = character.caracteristiques?.[key] || (key === 'feerie' ? 3 : 4);
+						return (
+							<div key={key} className="recap-box flex flex-col items-center justify-center p-2">
+								<span className="field-label" style={{marginBottom: '2px'}}>{label}</span>
+								<span className="text-2xl font-serif font-black" style={{color: '#1e3a8a', lineHeight: '1'}}>{val}</span>
+								{detailed && bd && (
+									<div className="detail-row" style={{textAlign: 'center', marginTop: '4px'}}>
+										<span className="detail-tag" title="Base raciale">F:{bd.feeMin}</span>
+										{bd.pointsCreation > 0 && <span className="detail-tag cre">C:+{bd.pointsCreation}</span>}
+										{bd.pointsXP       > 0 && <span className="detail-tag xp">XP:+{bd.pointsXP}</span>}
+									</div>
+								)}
+							</div>
+						);
+					})}
 					<div className="recap-box flex flex-col items-center justify-center p-2">
 						<span className="field-label" style={{marginBottom: '2px'}}>Tricherie</span>
 						<span className="text-2xl font-serif font-black" style={{color: '#1e3a8a', lineHeight: '1'}}>{character.caracteristiques?.tricherie || Math.floor(((character.caracteristiques?.feerie || 3) + (character.caracteristiques?.masque || 4)) / 2)}</span>
+						{detailed && <div className="detail-row" style={{textAlign: 'center', marginTop: '4px', fontStyle: 'italic'}}>= (Fée + Masque) ÷ 2</div>}
 					</div>
 				</div>
 
@@ -378,15 +565,43 @@ export default function FicheParchemin({ character, gameData }) {
                 {/* 1. Les Compétences Futiles */}
                 <div className="carac-main-title mt-4" style={{background: '#166534'}}>Compétences Futiles</div>
                 <div className="recap-box">
-                    <div className="text-sm font-serif leading-relaxed">
-                        {Object.keys(futilesMerged).length > 0 ? (
-                            Object.entries(futilesMerged).map(([k, v], i) => (
-                                <span key={k}>{k} ({v}){i < Object.keys(futilesMerged).length - 1 ? ' • ' : ''}</span>
-                            ))
-                        ) : (
-                            <span className="italic text-gray-400">Aucune compétence futile acquise.</span>
-                        )}
-                    </div>
+                    {!detailed ? (
+                        <div className="text-sm font-serif leading-relaxed">
+                            {Object.keys(futilesMerged).length > 0 ? (
+                                Object.entries(futilesMerged).map(([k, v], i) => (
+                                    <span key={k}>{k} ({v}){i < Object.keys(futilesMerged).length - 1 ? ' • ' : ''}</span>
+                                ))
+                            ) : (
+                                <span className="italic text-gray-400">Aucune compétence futile acquise.</span>
+                            )}
+                        </div>
+                    ) : (
+                        <div>
+                            {Object.keys(futilesMerged).length > 0 ? (
+                                Object.entries(futilesMerged).map(([k, v]) => {
+                                    const bd = getFutileBreakdown(k);
+                                    return (
+                                        <div key={k} className="mb-1">
+                                            <div className="comp-line">
+                                                <span style={{color: '#4a3b2c', fontSize: '12px'}}>{k}</span>
+                                                <div className="comp-dots"></div>
+                                                <span style={{fontWeight: 'bold', color: '#4a3b2c', fontSize: '12px'}}>{v}</span>
+                                            </div>
+                                            <div className="detail-comp-row">
+                                                {bd.bonusPred     > 0 && <span className="detail-tag"     title="Compétence de Prédilection futile">Préd.+{bd.bonusPred}</span>}
+                                                {bd.rangsCreation > 0 && <span className="detail-tag cre" title="Rangs investis à la création">Créa:{bd.rangsCreation}</span>}
+                                                {bd.rangsXP       > 0 && <span className="detail-tag xp"  title="Rangs achetés avec l'XP">XP:+{bd.rangsXP}</span>}
+                                                {bd.bonusMagique  > 0 && <span className="detail-tag mag" title={bd.bonusMagLabel}>✨+{bd.bonusMagique}</span>}
+                                                {(bd.bonusPred + bd.rangsCreation + bd.rangsXP + bd.bonusMagique === 0) && <span style={{color: '#c7bfb5', fontStyle: 'italic'}}>prédilection seule</span>}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <span className="italic text-gray-400">Aucune compétence futile acquise.</span>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* 2. L'Équipement */}

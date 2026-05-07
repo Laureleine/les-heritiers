@@ -95,10 +95,16 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) 
 
                     {/* Valeur Mathématique */}
                     <div className="shrink-0 text-right pr-2">
-                      <span className="text-xl font-black font-serif">
-                        {entree.type === 'DEPENSE' ? '-' : '+'}{entree.valeur}
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest opacity-60 ml-1">XP</span>
+                      {entree.valeur === 0 ? (
+                        <span className="text-sm font-black font-serif text-purple-400">🧠 Gratuit</span>
+                      ) : (
+                        <>
+                          <span className="text-xl font-black font-serif">
+                            {entree.type === 'DEPENSE' ? '-' : '+'}{entree.valeur}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest opacity-60 ml-1">XP</span>
+                        </>
+                      )}
                     </div>
 
                   </div>

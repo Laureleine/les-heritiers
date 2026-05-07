@@ -19,9 +19,10 @@ export const XP_CODES = {
     ATOUT_ACQUISITION:     'ATOUT_ACQUISITION',      // Atout acquis/désappris
     ANOMALIE_FEERIQUE:     'ANOMALIE_FEERIQUE',      // Anomalie Féérique activée/purgée
     // --- Compétences ---
-    COMP_UTILE_RANG:       'COMP_UTILE_RANG',        // Compétence utile ↑↓
-    COMP_UTILE_SPECIALITE: 'COMP_UTILE_SPECIALITE',  // Spécialité utile acquise/oubliée
-    COMP_FUTILE_RANG:      'COMP_FUTILE_RANG',       // Loisir (compétence futile) ↑↓
+    COMP_UTILE_RANG:         'COMP_UTILE_RANG',          // Compétence utile ↑↓
+    COMP_UTILE_SPECIALITE:   'COMP_UTILE_SPECIALITE',    // Spécialité utile acquise/oubliée
+    COMP_FUTILE_RANG:        'COMP_FUTILE_RANG',         // Loisir (compétence futile) ↑↓
+    ESPRIT_BONUS_UTILE:      'ESPRIT_BONUS_UTILE',       // Rang gratuit Érudit/Savant (bonus Esprit, valeur=0)
     // --- Vie Sociale ---
     FORTUNE_ELEVATION:     'FORTUNE_ELEVATION',      // Fortune ↑↓
     // --- Entrées Système ---

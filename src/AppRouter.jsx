@@ -7,6 +7,7 @@ import { Lock } from './config/icons';
 
 import CharacterList from './components/CharacterList';
 import PixieAssistant from './components/PixieAssistant';
+import { isCharacterScelle } from './utils/lockUtils';
 
 // Code Splitting
 const Encyclopedia = lazy(() => import('./components/Encyclopedia'));
@@ -38,9 +39,15 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
               profils={gameData.profils}
               gameData={gameData}
               onSelectCharacter={(c, readOnly = false) => {
-                dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c, gameData });
+                // ✨ Si on ouvre en lecture seule un personnage scellé, on force la reconstruction
+                // complète du journal depuis stats_scellees (comme handleAppropriate), car le journal
+                // en base peut être partiel (non-vide → condition length===0 non déclenchée).
+                const charToLoad = (readOnly && isCharacterScelle(c) && gameData)
+                    ? { ...c, data: { ...c.data, historique_xp: [] } }
+                    : c;
+                dispatchCharacter({ type: 'LOAD_CHARACTER', payload: charToLoad, gameData });
                 setIsReadOnly(readOnly);
-                navigate('/creator', { state: { legitAccess: true } }); 
+                navigate('/creator', { state: { legitAccess: true } });
               }}
               onNewCharacter={() => {
                 dispatchCharacter({ type: 'RESET_CHARACTER', payload: { ...initialCharacterState } });
@@ -87,9 +94,13 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
             session={session}
             onBack={() => navigate('/')}
             onViewCharacter={(c) => {
-              dispatchCharacter({ type: 'LOAD_CHARACTER', payload: c, gameData });
+              // ✨ Idem : force la reconstruction du journal pour les fiches scellées en lecture seule.
+              const charToLoad = (isCharacterScelle(c) && gameData)
+                  ? { ...c, data: { ...c.data, historique_xp: [] } }
+                  : c;
+              dispatchCharacter({ type: 'LOAD_CHARACTER', payload: charToLoad, gameData });
               setIsReadOnly(true);
-              navigate('/creator', { state: { legitAccess: true } }); // ✨ LE FIX ABSOLU ÉTAIT ICI !
+              navigate('/creator', { state: { legitAccess: true, from: '/cercles' } });
             }}
           />
         } />
