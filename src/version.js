@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.32 - "L\'Œil du Docte 🔍"',
+        date: '7 Mai 2026',
+        changes: [
+            '🐛 **Fix — Fiche inconnue dans les Cercles :** Un joueur qui crée un personnage après avoir rejoint un cercle voyait sa fiche affichée comme "Inconnue" pour le Docte, qui ne pouvait pas l\'ouvrir. Cause : `cercle_membres.character_id` pointait vers l\'ancien perso. Fix en deux volets : UI défensive (carte orange + badge "Fiche non liée" + bouton "En attente…" désactivé côté Docte) et nouvelle feature permettant au joueur de changer son Héritier directement depuis la table virtuelle via un sélecteur.',
+            '✨ **Changer d\'Héritier dans un Cercle :** Sur sa propre carte, un joueur voit maintenant "Mon Héritier : [nom]" et un menu déroulant "Changer d\'Héritier…" qui met à jour `cercle_membres` en un clic et recharge la vue.',
+            '📊 **Audit des index BDD :** Analyse complète des 32 tables — identification de 2 doublons d\'index (admin_settings, cercle_membres), 3 index GIN lourds inutiles sur characters (data, caracteristiques, competences_libres), et ~15 FK sans index (character_snapshots, chat_messages, chat_channels, heritier_notes, registre_forge…). Migration recommandée prête à appliquer.',
+            '🚨 **Alerte sécurité identifiée :** RLS désactivé sur chat_channels, chat_messages et bug_reports — exposées publiquement. SQL de remédiation préparé, en attente de validation des politiques.',
+        ]
+    },
+    {
         version: '15.16.31 - "Le Gardien du Seuil 🛡️"',
         date: '7 Mai 2026',
         changes: [

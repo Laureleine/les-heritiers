@@ -2,7 +2,7 @@
 import React from 'react';
 import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle } from '../../config/icons';
 
-const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter }) => {
+const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter }) => {
   if (!cercle) return null;
   const isDocte = cercle.docte_id === session.user.id;
 
@@ -97,6 +97,8 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
             const pos = n > 1 ? (index / (n - 1)) * 2 - 1 : 0;
             const rotation = pos * 12 * arcDirection;
             const translateY = Math.abs(pos) * 40 * arcDirection;
+            const hasChar = !!member.characters?.id;
+            const isSelf = member.user_id === session.user.id;
 
             return (
               <div
@@ -104,9 +106,11 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                 style={{ transform: `translateY(${translateY}px) rotate(${rotation}deg)` }}
                 className="w-full sm:w-56 relative transition-all duration-300 hover:z-20 group"
               >
-                <div className="relative w-full p-4 border-2 border-stone-200 rounded-xl flex flex-col items-center bg-white shadow-md transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-4 group-hover:shadow-xl group-hover:border-amber-300">
+                <div className={`relative w-full p-4 border-2 rounded-xl flex flex-col items-center bg-white shadow-md transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-4 group-hover:shadow-xl ${
+                  !hasChar ? 'border-orange-300' : 'border-stone-200 group-hover:border-amber-300'
+                }`}>
 
-                  {member.user_id !== session.user.id && (
+                  {!isSelf && (
                     <button
                       onClick={() => window.dispatchEvent(new CustomEvent('open-telegraphe', { detail: { targetUser: { id: member.user_id, username: member.profiles?.username } } }))}
                       className="absolute top-2 right-2 p-1.5 bg-stone-50 text-stone-400 hover:text-amber-600 hover:bg-amber-100 rounded-full transition-colors border border-stone-200 shadow-sm z-30"
@@ -116,13 +120,15 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                     </button>
                   )}
 
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center text-stone-500 font-serif text-2xl border-4 border-white shadow-sm -mt-10 mb-2 group-hover:border-amber-100 transition-colors">
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center font-serif text-2xl border-4 border-white shadow-sm -mt-10 mb-2 group-hover:border-amber-100 transition-colors ${
+                    hasChar ? 'bg-gradient-to-br from-stone-100 to-stone-200 text-stone-500' : 'bg-gradient-to-br from-orange-100 to-orange-200 text-orange-500'
+                  }`}>
                     {member.characters?.nom?.charAt(0) || '?'}
                   </div>
 
                   <div className="flex-1 w-full text-center flex flex-col">
                     <div className="font-bold text-amber-900 font-serif text-lg truncate w-full" title={member.characters?.nom}>
-                      {member.characters?.nom}
+                      {member.characters?.nom || <span className="text-orange-500 italic text-sm">Aucun Héritier lié</span>}
                     </div>
                     <div className="text-[10px] text-stone-400 uppercase tracking-widest truncate mt-0.5">
                       Joué par {member.profiles?.username}
@@ -130,16 +136,43 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
 
                     {isDocte ? (
                       <div className="flex flex-col items-center gap-3 mt-4 w-full">
-                        <div className="text-[10px] text-purple-800 bg-purple-100 px-3 py-1 rounded-full font-bold uppercase tracking-wider border border-purple-200 shadow-sm">
-                          {member.characters?.typeFee || 'Inconnue'}
+                        <div className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider border shadow-sm ${
+                          hasChar
+                            ? 'text-purple-800 bg-purple-100 border-purple-200'
+                            : 'text-orange-700 bg-orange-100 border-orange-300'
+                        }`}>
+                          {member.characters?.typeFee || (hasChar ? 'Nature inconnue' : 'Fiche non liée')}
                         </div>
                         <button
-                          onClick={() => onViewCharacter(member.characters)}
-                          className="w-full py-2 bg-stone-50 text-purple-700 hover:bg-purple-600 hover:text-white rounded-lg border border-purple-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm"
-                          title="Inspecter la fiche complète"
+                          onClick={() => hasChar && onViewCharacter(member.characters)}
+                          disabled={!hasChar}
+                          className={`w-full py-2 rounded-lg border text-xs font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm ${
+                            hasChar
+                              ? 'bg-stone-50 text-purple-700 hover:bg-purple-600 hover:text-white border-purple-200 cursor-pointer'
+                              : 'bg-orange-50 text-orange-400 border-orange-200 cursor-not-allowed'
+                          }`}
+                          title={hasChar ? "Inspecter la fiche complète" : "Ce joueur n'a pas encore lié son Héritier à ce Cercle"}
                         >
-                          <Eye size={14} /> Consulter
+                          <Eye size={14} /> {hasChar ? 'Consulter' : 'En attente…'}
                         </button>
+                      </div>
+                    ) : isSelf ? (
+                      <div className="mt-3 w-full space-y-2">
+                        <div className="text-[10px] text-stone-500 text-center italic">
+                          {hasChar ? `Mon Héritier : ${member.characters.nom}` : 'Aucun Héritier lié à ce Cercle'}
+                        </div>
+                        {myCharacters.length > 0 && (
+                          <select
+                            defaultValue={member.characters?.id || ''}
+                            onChange={(e) => { if (e.target.value) onUpdateMyCharacter(e.target.value); }}
+                            className="w-full text-xs p-1.5 border border-stone-300 rounded-lg bg-white focus:ring-1 focus:ring-amber-400 outline-none"
+                          >
+                            <option value="">Changer d'Héritier…</option>
+                            {myCharacters.map(c => (
+                              <option key={c.id} value={c.id}>{c.nom} {c.typeFee ? `(${c.typeFee})` : ''}</option>
+                            ))}
+                          </select>
+                        )}
                       </div>
                     ) : (
                       <div className="mt-5 text-xs text-stone-400 flex justify-center items-center gap-1 italic bg-stone-50 p-2 rounded-lg border border-stone-100">
