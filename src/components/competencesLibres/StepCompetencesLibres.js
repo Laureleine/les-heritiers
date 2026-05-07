@@ -46,7 +46,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
     const {
         nomComp, scoreBase, totalScore, isPred, isEspritEligible,
         fairySpecActuelle, specsFromAtouts, userSpecs, hasJobSpecHere, jobSpec, nextSpecCost, availableSpecs,
-        isMinusDisabled, isPlusDisabled, utileCost
+        isMinusDisabled, isPlusDisabled, utileCost, rangEspritGratuitDispo
     } = data;
 
   // ✨ LA MAGIE : On fusionne TOUTES les sources de spécialités !
@@ -76,7 +76,8 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
             <button onClick={() => handlers.handleRangChange(nomComp, 1)} disabled={isPlusDisabled} className="p-0.5 px-1 hover:bg-emerald-50 text-emerald-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               <div className="flex items-center gap-1">
                 <Plus size={16} />
-                {isScelle && utileCost && <span className="text-[10px] font-bold text-emerald-700">({utileCost} XP)</span>}
+                {isScelle && rangEspritGratuitDispo && <span className="text-[10px] font-bold text-purple-600">🧠 Gratuit</span>}
+                {isScelle && !rangEspritGratuitDispo && utileCost > 0 && <span className="text-[10px] font-bold text-emerald-700">({utileCost} XP)</span>}
               </div>
             </button>
           </div>

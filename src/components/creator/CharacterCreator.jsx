@@ -100,7 +100,7 @@ export default function CharacterCreator({ session, userProfile }) {
 
   const handleBackToArchives = () => {
     dispatchCharacter({ type: 'RESET_CHARACTER', payload: {} });
-    navigate('/');
+    navigate(location.state?.from || '/');
   };
 
   const stepComponents = useMemo(() => ({
@@ -117,7 +117,7 @@ export default function CharacterCreator({ session, userProfile }) {
         
         {/* BOUTON GAUCHE : Retour */}
         <button onClick={handleBackToArchives} className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-serif font-bold text-sm shadow-sm">
-          <List size={16} /> <span className="hidden sm:inline">Retour aux Archives</span>
+          <List size={16} /> <span className="hidden sm:inline">{location.state?.from === '/cercles' ? 'Retour aux Cercles' : 'Retour aux Archives'}</span>
         </button>
 
         {/* GROUPE DROITE : Actions globales */}

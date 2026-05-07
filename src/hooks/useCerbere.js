@@ -6,7 +6,8 @@ import { isCharacterScelle } from '../utils/lockUtils';
 import { parseIfString } from '../utils/json';
 import { useSnapshots } from './useSnapshots';
 import { calculateFullCombatStats, calculateSkillScore } from '../utils/rulesEngine';
-import { calculateCharacterStats } from '../utils/bonusCalculator'; // ✨ Ajout
+import { calculateCharacterStats } from '../utils/bonusCalculator';
+import { validateBeforeSeal } from '../utils/sealValidation';
 
 export function useCerbere() {
     const { character, gameData, dispatchCharacter } = useCharacter();
@@ -15,18 +16,26 @@ export function useCerbere() {
 
     const { snapshots, handleTakeSnapshot, handleCloneSnapshot } = useSnapshots(character.id, character.userId || character.user_id);
     const [showConfirmSeal, setShowConfirmSeal] = useState(false);
+    const [sealErrors,   setSealErrors]   = useState([]);
+    const [sealWarnings, setSealWarnings] = useState([]);
 
     const handleSealClick = () => {
+        // Garde 0 — personnage non sauvegardé
         if (!character.id || character.id.toString().startsWith('temp_')) {
             showInAppNotification("Veuillez sauvegarder avant de sceller.", "error");
             return;
         }
+
+        // Validation complète pré-scellage
+        const { errors, warnings } = validateBeforeSeal(character, gameData, feeData);
+        setSealErrors(errors);
+        setSealWarnings(warnings);
         setShowConfirmSeal(true);
     };
 
     const executeSeal = async () => {
         setShowConfirmSeal(false);
-        dispatchCharacter({ type: 'UPDATE_FIELD', field: 'statut', value: 'scelle', gameData });
+        dispatchCharacter({ type: 'SEAL_CHARACTER', gameData });
         showInAppNotification("Sceau apposé !", "success");
     };
 
@@ -138,7 +147,8 @@ export function useCerbere() {
 
     return {
         character, feeData, gameData, isScelle, getCarac, uniqueFutiles, specialtiesByComp, liveCombatStats, isPredilection,
-        showConfirmSeal, setShowConfirmSeal, snapshots, handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal,
+        showConfirmSeal, setShowConfirmSeal, sealErrors, sealWarnings,
+        snapshots, handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal,
         calculateSkillScore: (nom) => calculateSkillScore(nom, character, gameData) // ✨ FIX: gameData !
     };
 }

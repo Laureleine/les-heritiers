@@ -35,6 +35,7 @@ export {
     CheckCircle,
     CheckCircle2,
     AlertCircle,
+    AlertTriangle,
     Info,
     HelpCircle,
     ShieldAlert,
@@ -116,4 +117,5 @@ export {
     BellOff,
     Smartphone,
     Palette,
+    Wrench,
 } from 'lucide-react';

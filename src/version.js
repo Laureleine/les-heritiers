@@ -2,6 +2,41 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.31 - "Le Gardien du Seuil 🛡️"',
+        date: '7 Mai 2026',
+        changes: [
+            '🛡️ **Validation pré-scellage complète :** `sealValidation.js` introduit un système de gardes multicouches avant l\'apposition du Sceau. Erreurs bloquantes (A→F) : type féérique reconnu, caractéristiques complètes, profils majeur ET mineur définis, 2 atouts féériques choisis, capacité féérique sélectionnée, pouvoirs = rang de Féérie (1 par rang), toutes les prédilections utiles/futiles au choix remplies.',
+            '⚠️ **Avertissements non-bloquants (G) :** Si des points restent non dépensés à la création (utiles verts, rangs gratuits Esprit 🧠, loisirs futiles), le joueur en est averti dans la modale de confirmation — il peut quand même sceller en connaissance de cause.',
+            '🎨 **ConfirmModal enrichie :** Nouvelle prop `errors[]` (liste rouge, bouton Confirmer masqué) et `warnings[]` (encart jaune, confirmation toujours possible). En-tête rouge si erreurs bloquantes, amber sinon. Rétrocompatible — aucun autre usage impacté.',
+            '🔧 **Fix — Atouts indépendants de Féérie :** La validation atouts utilise le constant `MAX_ATOUTS = 2` (fixe), sans lien avec le rang de Féérie. La Féérie détermine uniquement le nombre de Pouvoirs.',
+        ]
+    },
+    {
+        version: '15.16.30 - "L\'Archiviste du Passé 🔧"',
+        date: '7 Mai 2026',
+        changes: [
+            '🧠 **Bonus Esprit post-scellage :** Les points d\'Esprit achetés avec des XP après le scellage débloquent désormais des rangs gratuits dans les compétences d\'Érudit et de Savant (comme à la création). Le calcul compare `esprit_actuel` vs `esprit_scellé` et attribue les rangs via `bonusEspritXP` − `investPost`.',
+            '📓 **Journalisation des rangs gratuits (Esprit) :** Chaque rang gratuit est tracé dans le journal avec le nouveau code `ESPRIT_BONUS_UTILE` et `valeur: 0`. Affichage "🧠 Gratuit" dans le Journal des Flux de l\'Âme au lieu d\'une valeur XP nulle invisible.',
+            '👁️ **Fix — Journal incomplet en lecture seule :** Quand un personnage scellé est ouvert en lecture seule (par un autre joueur ou depuis les Cercles), le journal était tronqué si `historique_xp` en base était partiel (condition `length === 0` jamais déclenchée). On force désormais la reconstruction client-side avant le `LOAD_CHARACTER`, comme le fait `handleAppropriate`.',
+            '📜 **Nouveau — `CHARACTER_SCHEMA.md` :** Document vivant décrivant l\'intégralité du schéma personnage : colonnes Supabase, structure JSONB `data{}`, sous-schémas (`caracteristiques`, `competencesLibres`, `vieSociale`, `stats_scellees`, `computedStats`), tableau des origines de spécialités, flow de chargement, pièges connus.',
+            '🔒 **Refactor — Action `SEAL_CHARACTER` :** Le scellage est désormais une action dédiée dans `characterReducer` (remplace l\'intercept `UPDATE_FIELD`). Capture atomique et exhaustive de `stats_scellees` : caractéristiques, atouts, compétences libres, futiles, fortune, pouvoirs.',
+            '🛠️ **Nouveau — Outil admin de reconstruction des journaux :** `TabRepairJournaux` (super_admin uniquement) liste tous les personnages scellés, détecte les journaux incomplets, et permet de reconstruire les `DEPENSE` depuis `stats_scellees` — tout en préservant les `GAIN` existants. Recherche par nom, filtre "À réparer / Tous", et modale de confirmation avec tableau avant/après.',
+            '🔍 **Audit Supabase — 20 personnages identifiés :** Requête SQL d\'analyse sur l\'intégralité des personnages scellés : classification en "journal vide", "GAIN uniquement", "partiel" et "complet". Emet, Alafard, Louise Dubois, Maudierne, Una et ~15 autres bénéficieront de la reconstruction.',
+        ]
+    },
+    {
+        version: '15.16.29 - "Le Parchemin Complet 📜"',
+        date: '7 Mai 2026',
+        changes: [
+            '🐛 **Fix critique — Fiches des autres joueurs incomplètes :** Les onglets "Public" et "Admin" de `CharacterList` passaient le personnage light (13 colonnes) à `onSelectCharacter` au lieu de charger la fiche complète via `getFullCharacter()`. Résultat : compétences, atouts, pouvoirs, data et stats manquaient dans le récap et le PDF. Corrigé en routant ces deux onglets via `handleSelectCharacter` comme l\'onglet "Mes personnages".',
+            '✨ **Fix — Détail futiles (bonus magique) :** `getFutileBreakdown` ne comptabilisait pas les bonus magiques issus d\'atouts/pouvoirs sur les compétences futiles, causant un écart entre la valeur affichée et la somme de la décomposition. Ajout de `bonusMagique` et `bonusMagLabel` dans le breakdown.',
+            '✨ **Fix — Origines des spécialités en mode détaillé :** `allSpecialties` stocke désormais des objets `{nom, origine}` au lieu de simples strings. Les spécialités sont taguées Créa / XP / Métier / Inné / magique avec les couleurs correspondantes dans la vue détaillée.',
+            '🔒 **Fix — Snapshot scellage (futiles + fortune) :** Le reducer `UPDATE_FIELD` intercepte désormais le premier scellage pour capturer `competencesFutiles.rangs` et `fortune` dans `stats_scellees`. Les anciens personnages d\'Emet ont été corrigés rétroactivement en base.',
+            '🔍 **Fix — Ressort:1 d\'Emet à la création :** Preuve mathématique via XP_SOLDE, puis correction SQL de `stats_scellees.competencesLibres.rangs.Ressort` pour les copies d\'Emet.',
+            '🔙 **Fix — Retour aux Cercles :** Depuis un profil vu dans un Cercle, le bouton "Retour" ramène maintenant au Cercle (via `location.state.from`) au lieu des Archives. Le libellé s\'adapte dynamiquement.',
+        ]
+    },
+    {
         version: '15.16.28 - "La Source Unique 🏛️"',
         date: '7 Mai 2026',
         changes: [

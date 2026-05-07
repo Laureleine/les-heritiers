@@ -1,10 +1,11 @@
 // src/components/AdminDashboard.js
 
 import React, { useState } from 'react';
-import { Shield, ArrowLeft, Crown, BarChart2, Award } from '../config/icons';
+import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench } from '../config/icons';
 import TabUsers from './admin/TabUsers';
 import TabStats from './admin/TabStats';
 import TabForgeTitres from './admin/TabForgeTitres';
+import TabRepairJournaux from './admin/TabRepairJournaux';
 
 // ✨ FIX : On récupère userProfile depuis le routeur
 export default function AdminDashboard({ session, userProfile, onBack }) {
@@ -34,16 +35,20 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
                     <BarChart2 size={18} /> Métriques
                 </button>
                 <button onClick={() => setActiveTab('titres')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'titres' ? 'text-purple-900 border-purple-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
-                    {/* ✨ FIX : Le nom s'adapte ! */}
                     <Award size={18} /> {isSuperAdmin ? 'Forge des Titres' : 'Titres Honorifiques'}
                 </button>
+                {isSuperAdmin && (
+                    <button onClick={() => setActiveTab('repair')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'repair' ? 'text-red-900 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                        <Wrench size={18} /> Reconstruction XP
+                    </button>
+                )}
             </div>
 
             {/* Contenu de l'onglet actif */}
             {activeTab === 'users' && <TabUsers session={session} />}
             {activeTab === 'stats' && <TabStats />}
-            {/* ✨ FIX : On transmet le profil au forgeron ! */}
             {activeTab === 'titres' && <TabForgeTitres userProfile={userProfile} />}
+            {activeTab === 'repair' && isSuperAdmin && <TabRepairJournaux />}
         </div>
     );
 }

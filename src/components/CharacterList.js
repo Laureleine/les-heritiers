@@ -378,7 +378,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       userProfile={userProfile}
                       profils={profils}
                       gameData={gameData}
-                      onSelect={onSelectCharacter}
+                      onSelect={handleSelectCharacter}
                       onToggleVisibility={handleToggleVisibility}
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}
@@ -407,7 +407,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       userProfile={userProfile}
                       profils={profils}
                       gameData={gameData}
-                      onSelect={onSelectCharacter}
+                      onSelect={handleSelectCharacter}
                       onToggleVisibility={handleToggleVisibility}
                       onDuplicate={handleDuplicate}
                       onCreateGift={handleCreateGiftCode}

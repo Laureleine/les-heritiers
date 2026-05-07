@@ -71,6 +71,45 @@ export function characterReducer(state, action) {
             break;
         }
 
+        // ============================================================
+        // 🔒 LE SCEAU ABSOLU — Snapshot atomique du Plancher de Verre
+        // ============================================================
+        // Capture TOUT l'état de création en une seule action.
+        // Ne jamais dispatcher deux fois (useCerbere le protège).
+        // Chaque champ lu dans historyReconstructor / FicheParchemin DOIT être ici.
+        case 'SEAL_CHARACTER': {
+            newState.statut = 'scelle';
+            if (!newState.data) newState.data = {};
+
+            newState.data.stats_scellees = {
+                // 1. Caractéristiques (plancher pour upgrades XP + historyReconstructor)
+                caracteristiques: { ...(newState.caracteristiques || {}) },
+
+                // 2. Atouts originels (plancher pour StepAtouts + calcul PP base)
+                atouts: [...(newState.atouts || [])],
+
+                // 3. Compétences utiles (plancher rangs + spécialités → historyReconstructor)
+                competencesLibres: {
+                    rangs:               { ...(newState.competencesLibres?.rangs || {}) },
+                    choixSpecialiteUser: JSON.parse(JSON.stringify(newState.competencesLibres?.choixSpecialiteUser || {})),
+                    choixPredilection:   { ...(newState.competencesLibres?.choixPredilection || {}) },
+                    specialiteMetier:    newState.competencesLibres?.specialiteMetier || null,
+                },
+
+                // 4. Compétences futiles (plancher rangs → historyReconstructor + FicheParchemin)
+                competencesFutiles: {
+                    rangs: { ...(newState.competencesFutiles?.rangs || {}) },
+                },
+
+                // 5. Fortune (plancher → FortuneController + historyReconstructor)
+                fortune: newState.fortune || 0,
+
+                // 6. Pouvoirs originels (pour référence future, pas encore consommé)
+                pouvoirs: [...(newState.pouvoirs || [])],
+            };
+            break;
+        }
+
         case 'UPDATE_MULTIPLE': {
             newState = { ...newState, ...action.payload };
             break;
