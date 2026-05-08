@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.39 - "Le Daguerréotype Fidèle 📸"',
+        date: '2026-05-08',
+        description: 'Fix : changement de portrait impossible après 1er upload',
+        changes: [
+            '🐛 **Fix changement de portrait bloqué (La Nature Profonde & L\'Apparence Sociale) :** Une fois un portrait chargé, il était impossible d\'en sélectionner un nouveau — le premier restait figé. Deux causes combinées : le champ de fichier HTML conservait la valeur de la sélection précédente (empêchant le déclenchement de l\'événement si on re-sélectionnait le même fichier), et l\'URL Supabase étant identique après remplacement, le navigateur affichait son cache sans recharger. Corrigé via reset du champ après chaque sélection + cache-busting `?t=timestamp` sur l\'URL stockée.',
+        ]
+    },
+    {
         version: '15.16.38 - "Le Filtre du Marchande 🪙"',
         date: '2026-05-08',
         description: 'Vie sociale : filtre par budget PP restant',

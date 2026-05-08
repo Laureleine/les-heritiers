@@ -189,7 +189,7 @@ export default function StepPersonnalisation() {
                 </div>
               </div>
               <input ref={maskedInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
-                onChange={e => handlePortraitChange(e.target.files?.[0], 'masked')} />
+                onChange={e => { handlePortraitChange(e.target.files?.[0], 'masked'); e.target.value = ''; }} />
               <span className="text-xs font-bold text-amber-700 text-center">L'Apparence Sociale<br/><span className="font-normal text-stone-400">Portrait Humain</span></span>
             </div>
 
@@ -213,7 +213,7 @@ export default function StepPersonnalisation() {
                 </div>
               </div>
               <input ref={unmaskedInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
-                onChange={e => handlePortraitChange(e.target.files?.[0], 'unmasked')} />
+                onChange={e => { handlePortraitChange(e.target.files?.[0], 'unmasked'); e.target.value = ''; }} />
               <span className="text-xs font-bold text-purple-700 text-center">La Nature Profonde<br/><span className="font-normal text-stone-400">Forme Féérique</span></span>
             </div>
           </div>
