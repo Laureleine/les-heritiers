@@ -277,7 +277,17 @@ export default function BonusBuilder({
             </datalist>
             {/* ✨ NOUVEAU : La liste de suggestion intelligente pour le catalogue entier */}
             <datalist id="social-items-list">
-                {socialItems.map(item => <option key={item.id} value={item.nom} />)}
+                {socialItems.map(item => {
+                    const cout = item.cout ?? 0;
+                    const coutM = item.cout_moderne;
+                    const hasDiff = coutM !== null && coutM !== undefined && Number(coutM) !== cout;
+                    // La valeur inclut le prix de base pour distinguer les homonymes
+                    const displayKey = `${item.nom} (${cout} PP)`;
+                    const label = hasDiff
+                        ? `${item.nom} — ${cout} PP (moderne : ${coutM} PP)`
+                        : `${item.nom} — ${cout} PP`;
+                    return <option key={item.id} value={displayKey} label={label} />;
+                })}
             </datalist>
 
             {blocks.map(block => (
@@ -336,10 +346,21 @@ export default function BonusBuilder({
                             <span className="text-sm font-bold text-rose-900 shrink-0">Nouveau prix de :</span>
                             <input
                                 type="text"
-                                list="social-items-list" // ✨ ICI : La magie de l'autocomplétion native !
-                                placeholder="Ex: Capitaine d'industrie"
+                                list="social-items-list"
+                                placeholder="Ex: Capitaine d'industrie (5 PP)"
                                 value={block.key}
-                                onChange={(e) => updateBlock(block.id, 'key', e.target.value)}
+                                onChange={(e) => {
+                                    const newKey = e.target.value;
+                                    // Auto-initialise le nouveau prix avec le prix de base détecté
+                                    const priceMatch = newKey.match(/\((\d+)\s*PP\)$/);
+                                    setBlocks(prev => prev.map(b => {
+                                        if (b.id !== block.id) return b;
+                                        const updated = { ...b, key: newKey };
+                                        if (priceMatch) updated.val = parseInt(priceMatch[1], 10);
+                                        return updated;
+                                    }));
+                                    setHasUnsavedChanges(true);
+                                }}
                                 className="flex-1 min-w-[140px] p-1.5 border border-stone-200 rounded text-sm font-bold bg-stone-50 focus:ring-2 focus:ring-rose-200 outline-none"
                             />
                             <span className="text-stone-400 font-bold shrink-0">➡</span>
