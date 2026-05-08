@@ -1,7 +1,7 @@
 // src/components/CharacterList.js
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Eye } from '../config/icons';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Eye, Search, AlertTriangle, CheckCircle } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
@@ -9,9 +9,88 @@ import { exportCharacter } from '../utils/utils';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { characterReducer } from '../utils/characterEngine';
+import { mapDbCharForReconstruction, journalNeedsRepair, buildRepairedJournal, computeXpDepenseFromJournal } from '../utils/repairJournaux';
+import { loadFairyTypes, loadSocialItems } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';
 import GrimoirePersonnel from './cercle/GrimoirePersonnel';
 import CharacterCard from './CharacterCard';
+
+// ─── Constantes de réparation ───────────────────────────────────────────────
+const REPAIR_STATUS = {
+  PENDING:  'pending',
+  OK:       'ok',
+  REPAIRED: 'repaired',
+  SKIPPED:  'skipped',
+  ERROR:    'error',
+};
+
+// ─── Modale de confirmation de réparation (admin) ───────────────────────────
+function RepairConfirmModal({ target, onConfirm, onCancel }) {
+  if (!target) return null;
+  const { row, preview } = target;
+  const oldJournal   = row.dbChar.data?.historique_xp || [];
+  const gainsBefore  = oldJournal.filter(t => t.type === 'GAIN').length;
+  const depBefore    = oldJournal.filter(t => t.type === 'DEPENSE').length;
+  const gainsAfter   = preview.filter(t => t.type === 'GAIN').length;
+  const depAfter     = preview.filter(t => t.type === 'DEPENSE').length;
+  const newXpDepense = computeXpDepenseFromJournal(preview);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onCancel}>
+      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+        <div className="flex items-start gap-3 mb-4">
+          <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={22} />
+          <div>
+            <h3 className="font-serif font-bold text-gray-900 text-lg leading-tight">
+              Reconstruire le journal de<br />
+              <span className="text-amber-800">{row.dbChar.nom}</span> ?
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">Les dépenses actuelles seront remplacées.</p>
+          </div>
+        </div>
+
+        {/* Tableau avant / après */}
+        <div className="bg-stone-50 rounded-xl border border-stone-200 overflow-hidden mb-4">
+          <div className="grid grid-cols-3 text-[11px] font-bold text-stone-500 uppercase tracking-wider border-b border-stone-200">
+            <div className="p-2 border-r border-stone-200">Données</div>
+            <div className="p-2 text-center border-r border-stone-200">Avant</div>
+            <div className="p-2 text-center text-blue-700">Après</div>
+          </div>
+          <div className="grid grid-cols-3 text-sm divide-y divide-stone-100">
+            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">Entrées GAIN</div>
+            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{gainsBefore}</div>
+            <div className="p-2 text-center text-blue-700 font-bold">{gainsAfter}</div>
+
+            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">Entrées DÉPENSE</div>
+            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{depBefore}</div>
+            <div className="p-2 text-center text-blue-700 font-bold">{depAfter}</div>
+
+            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">Total entrées</div>
+            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{oldJournal.length}</div>
+            <div className="p-2 text-center text-blue-700 font-bold">{preview.length}</div>
+
+            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">XP dépensé</div>
+            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{row.dbChar.xp_depense}</div>
+            <div className="p-2 text-center text-blue-700 font-bold">{newXpDepense}</div>
+          </div>
+        </div>
+
+        <p className="text-xs text-stone-500 mb-5">
+          Les entrées <strong>GAIN</strong> sont préservées. Les <strong>DÉPENSES</strong> sont recalculées depuis le Plancher de Verre.
+        </p>
+
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 px-4 py-2.5 bg-stone-100 text-stone-700 rounded-lg font-bold hover:bg-stone-200 transition-colors">
+            Annuler
+          </button>
+          <button onClick={onConfirm} className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+            <CheckCircle size={16} /> Reconstruire
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
@@ -31,13 +110,39 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const [publicInfoModal, setPublicInfoModal] = useState({ isOpen: false, charName: '' });
   const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, charId: null });
 
+  // ✨ Filtre de recherche
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // ✨ Réparation XP (admin)
+  const [repairRows, setRepairRows] = useState({});      // { [charId]: { dbChar, mapped, status, detail } }
+  const [repairGameData, setRepairGameData] = useState(null);
+  const [repairConfirmTarget, setRepairConfirmTarget] = useState(null);
+
   // 🧠 FIX : Le "Latest Ref Pattern" pour isoler onSignOut du cycle de dépendances
   const onSignOutRef = useRef(onSignOut);
+  useEffect(() => { onSignOutRef.current = onSignOut; }, [onSignOut]);
 
-  useEffect(() => {
-    onSignOutRef.current = onSignOut;
-  }, [onSignOut]);
+  // ─── Changement d'onglet avec reset du filtre ────────────────────────────
+  const handleTabChange = useCallback((tab) => {
+    setActiveTab(tab);
+  }, []);
 
+  // ─── Filtre de recherche ─────────────────────────────────────────────────
+  const filterChars = useCallback((chars) => {
+    if (!searchQuery.trim()) return chars;
+    const q = searchQuery.toLowerCase();
+    return chars.filter(c =>
+      (c.nom || '').toLowerCase().includes(q) ||
+      (c.typeFee || '').toLowerCase().includes(q) ||
+      (c.ownerUsername || '').toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
+
+  const filteredMyChars     = useMemo(() => filterChars(myCharacters),     [filterChars, myCharacters]);
+  const filteredPublicChars = useMemo(() => filterChars(publicCharacters),  [filterChars, publicCharacters]);
+  const filteredAdminChars  = useMemo(() => filterChars(adminCharacters),   [filterChars, adminCharacters]);
+
+  // ─── Chargement des personnages ──────────────────────────────────────────
   const loadCharacters = useCallback(async (isMounted = true) => {
     if (!isMounted) return;
     setLoading(true);
@@ -81,19 +186,113 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     return () => { isMounted = false; };
   }, [loadCharacters]);
 
+  // ─── Réparation XP : chargement des statuts (admin seulement) ───────────
+  const loadRepairStatuses = useCallback(async () => {
+    try {
+      const { data: chars, error } = await supabase
+        .from('characters')
+        .select('*')
+        .in('statut', ['scelle', 'scellé'])
+        .order('nom');
+      if (error) throw error;
+
+      const rows = {};
+      for (const dbChar of (chars || [])) {
+        const mapped = mapDbCharForReconstruction(dbChar);
+        let status = REPAIR_STATUS.PENDING;
+        if (!dbChar.data?.stats_scellees)    status = REPAIR_STATUS.SKIPPED;
+        else if (!journalNeedsRepair(mapped)) status = REPAIR_STATUS.OK;
+        rows[dbChar.id] = { dbChar, mapped, status, detail: '' };
+      }
+      setRepairRows(rows);
+    } catch (e) {
+      console.error('Repair status load error:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) loadRepairStatuses();
+  }, [isAdmin, loadRepairStatuses]);
+
+  // ─── Réparation XP : demande de reconstruction pour une carte ────────────
+  const requestRepairOne = useCallback(async (charId) => {
+    const row = repairRows[charId];
+    if (!row) return;
+
+    try {
+      showInAppNotification("Analyse du journal en cours…", "info");
+
+      // Charge le gameData de réparation si pas encore disponible
+      let gd = repairGameData;
+      if (!gd) {
+        const [fairyResult, socialItems, atoutsResult] = await Promise.all([
+          loadFairyTypes(),
+          loadSocialItems(),
+          supabase.from('fairy_assets').select('id, nom').order('nom'),
+        ]);
+        gd = { fairyData: fairyResult.fairyData, socialItems, atouts: atoutsResult.data || [] };
+        setRepairGameData(gd);
+      }
+
+      const preview = buildRepairedJournal(row.mapped, gd);
+      if (!preview) {
+        showInAppNotification("Reconstruction impossible (plancher de verre absent).", "warning");
+        return;
+      }
+      setRepairConfirmTarget({ row, charId, preview });
+    } catch (e) {
+      showInAppNotification("Erreur d'analyse : " + e.message, "error");
+    }
+  }, [repairRows, repairGameData]);
+
+  // ─── Réparation XP : exécution après confirmation ────────────────────────
+  const executeRepair = useCallback(async () => {
+    if (!repairConfirmTarget) return;
+    const { row, charId, preview } = repairConfirmTarget;
+    setRepairConfirmTarget(null);
+
+    try {
+      const newXpDepense = computeXpDepenseFromJournal(preview);
+      const updatedData  = { ...row.dbChar.data, historique_xp: preview };
+
+      const { error } = await supabase
+        .from('characters')
+        .update({ data: updatedData, xp_depense: newXpDepense })
+        .eq('id', charId);
+      if (error) throw error;
+
+      const gains  = preview.filter(t => t.type === 'GAIN').length;
+      const deps   = preview.filter(t => t.type === 'DEPENSE').length;
+      const detail = `${preview.length} entrées (${gains} gains + ${deps} dépenses) — ${newXpDepense} XP dépensés`;
+
+      setRepairRows(prev => ({
+        ...prev,
+        [charId]: { ...prev[charId], status: REPAIR_STATUS.REPAIRED, detail }
+      }));
+      showInAppNotification(`✨ Journal reconstruit : ${detail}`, "success");
+    } catch (e) {
+      setRepairRows(prev => ({
+        ...prev,
+        [repairConfirmTarget?.charId]: { ...prev[repairConfirmTarget?.charId], status: REPAIR_STATUS.ERROR, detail: e.message }
+      }));
+      showInAppNotification("Erreur : " + e.message, "error");
+    }
+  }, [repairConfirmTarget]);
+
+  // ─── Actions sur les personnages ─────────────────────────────────────────
+
   // 🧠 FIX : Le Cerveau qui charge le reste du personnage uniquement au clic !
   const handleSelectCharacter = useCallback(async (lightChar, readOnly = false) => {
     try {
       showInAppNotification("Ouverture des archives...", "info");
       const fullChar = await getFullCharacter(lightChar.id);
-      fullChar.ownerUsername = lightChar.ownerUsername; // On préserve le nom du joueur
+      fullChar.ownerUsername = lightChar.ownerUsername;
       onSelectCharacter(fullChar, readOnly);
     } catch (error) {
       showInAppNotification("Le parchemin est illisible : " + error.message, "error");
     }
   }, [onSelectCharacter]);
 
-  // --- ACTIONS MÉMOÏSÉES ---
   const handleDeleteClick = useCallback((id) => {
     setConfirmDelete({ isOpen: true, charId: id });
   }, []);
@@ -115,9 +314,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     try {
       showInAppNotification("Copie du parchemin en cours...", "info");
       const fullChar = await getFullCharacter(lightChar.id);
-      // ✨ Reconstruction forcée : on vide l'historique Supabase pour que LOAD_CHARACTER
-      // reconstruise tout depuis stats_scellees. Sans ça, une historique partiel en base
-      // bloque la condition length === 0 du reducer.
       const charForRecon = isCharacterScelle(fullChar) && gameData
         ? { ...fullChar, data: { ...fullChar.data, historique_xp: [] } }
         : fullChar;
@@ -137,26 +333,16 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const handleCreateGiftCode = useCallback(async (lightChar) => {
     try {
       showInAppNotification("Préparation de l'offrande...", "info");
-      
-      // ✨ LA GÉNÉRATION DU CODE (Ce que j'avais remplacé par un commentaire !)
       const randomSegment = typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID().split('-')[0].toUpperCase()
         : Math.random().toString(36).substring(2, 6).toUpperCase();
-        
       const code = `DON-${randomSegment}`;
-
-      // ✨ LA RÉPARATION : On télécharge la fiche, on injecte le code dans 'data', et on met à jour le JSONB
       const fullChar = await getFullCharacter(lightChar.id);
       const newData = { ...(fullChar.data || {}), transfer_code: code };
-
       const { error } = await supabase.from('characters').update({ data: newData, transfer_code: code }).eq('id', lightChar.id);
-      
       if (error) throw error;
-
-      // On affiche la modale avec le code et on rafraîchit la liste
       setGiftCodeToShow({ nom: lightChar.nom, code });
       await loadCharacters();
-
     } catch (error) {
       showInAppNotification("Erreur lors de la création du don : " + error.message, "error");
     }
@@ -184,7 +370,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       const newPublicStatus = !currentlyPublic;
       await toggleCharacterVisibility(id, newPublicStatus);
       await loadCharacters();
-
       if (newPublicStatus) {
         setPublicInfoModal({ isOpen: true, charName: charName || 'Votre personnage' });
       } else {
@@ -195,53 +380,37 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     }
   }, [loadCharacters]);
 
-  // 🧠 LE PRIVILÈGE DE L'ARCHITECTE : L'Appropriation (Copie Silencieuse)
   const handleAppropriate = useCallback(async (lightChar) => {
     try {
       showInAppNotification("Saisie de l'Héritier en cours...", "info");
-
-      // 1. On télécharge la fiche originale complète
       const fullChar = await getFullCharacter(lightChar.id);
-
-      // ✨ Reconstruction forcée : on vide l'historique Supabase pour que LOAD_CHARACTER
-      // reconstruise tout depuis stats_scellees. Sans ça, une historique partiel en base
-      // bloque la condition length === 0 du reducer.
       const charForRecon = isCharacterScelle(fullChar) && gameData
         ? { ...fullChar, data: { ...fullChar.data, historique_xp: [] } }
         : fullChar;
       const hydratedChar = characterReducer(charForRecon, { type: 'LOAD_CHARACTER', payload: charForRecon, gameData });
-
-      // 2. On clone l'ADN et on amnésie la fiche
       const newChar = JSON.parse(JSON.stringify(hydratedChar));
-      newChar.id = null; // C'est ça qui force Supabase à créer une nouvelle ligne
+      newChar.id = null;
       newChar.nom = `${newChar.nom} (Saisie)`;
       newChar.statut = isCharacterScelle(fullChar) ? fullChar.statut : 'brouillon';
-      newChar.isPublic = false; // On garde la copie privée par sécurité
-
-      // 3. On sauvegarde (Supabase va automatiquement apposer ton user_id dessus !)
+      newChar.isPublic = false;
       await saveCharacterToSupabase(newChar);
       await loadCharacters();
-
       showInAppNotification("Appropriation réussie ! L'Héritier a rejoint votre Grimoire.", "success");
     } catch (error) {
       showInAppNotification(translateError(error), "error");
     }
   }, [loadCharacters, gameData]);
 
-  // 🧠 LE SÉQUENCEUR D'ADN ASYNCHRONE
   const handleExportJson = useCallback(async (lightChar) => {
     try {
       showInAppNotification("Séquençage de l'ADN en cours...", "info");
-      // On télécharge la fiche VRAIMENT complète depuis le Nuage
       const fullChar = await getFullCharacter(lightChar.id);
-      // On envoie la fiche complète à notre utilitaire de téléchargement
       exportCharacter(fullChar);
     } catch (error) {
       showInAppNotification("Impossible d'extraire l'ADN : " + translateError(error), "error");
     }
   }, []);
 
-  // 📜 LE GRAVEUR DE PARCHEMIN — Charge la fiche complète, exportToPDF hydrate lui-même
   const handleExportPDF = useCallback(async (lightChar) => {
     try {
       showInAppNotification("Préparation du parchemin...", "info");
@@ -251,10 +420,33 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       showInAppNotification("Impossible de graver le parchemin : " + translateError(error), "error");
     }
   }, [gameData]);
-  
+
+  // ─── Props communes pour CharacterCard ───────────────────────────────────
+  const commonCardProps = {
+    profils, gameData,
+    onSelect: handleSelectCharacter,
+    onToggleVisibility: handleToggleVisibility,
+    onDuplicate: handleDuplicate,
+    onCreateGift: handleCreateGiftCode,
+    onDeleteClick: handleDeleteClick,
+    onOpenGrimoire: setActiveGrimoireCharId,
+    onAppropriate: handleAppropriate,
+    onExportJson: handleExportJson,
+    onExportPDF: handleExportPDF,
+  };
+
+  // ─── Compteur de résultats filtrés ───────────────────────────────────────
+  const activeCount = {
+    my:     searchQuery ? filteredMyChars.length     : myCharacters.length,
+    public: searchQuery ? filteredPublicChars.length : publicCharacters.length,
+    admin:  searchQuery ? filteredAdminChars.length  : adminCharacters.length,
+  };
+
   return (
     <div className="animate-fade-in w-full">
       <div className="flex flex-col gap-6 mb-8 mt-2">
+
+        {/* ─── BARRE DE NAVIGATION ─────────────────────────────────────── */}
         <div className="relative z-50 flex flex-nowrap items-center gap-2 overflow-x-auto hide-scrollbar w-full pb-2">
           <button onClick={onNewCharacter} className="flex-shrink-0 mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
             <Plus size={18} /> <span className="hidden sm:inline">Nouveau</span>
@@ -279,24 +471,25 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
           </button>
         </div>
 
+        {/* ─── ONGLETS ─────────────────────────────────────────────────── */}
         <div className="flex gap-8 border-b border-gray-200 overflow-x-auto hide-scrollbar">
-          <button onClick={() => setActiveTab('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+          <button onClick={() => handleTabChange('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
             Mes personnages
             <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'my' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600'}`}>
-              {myCharacters.length}
+              {activeCount.my}
             </span>
           </button>
-          <button onClick={() => setActiveTab('public')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'public' ? 'text-blue-900 border-blue-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+          <button onClick={() => handleTabChange('public')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'public' ? 'text-blue-900 border-blue-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
             <Globe size={16} /> Publics
             <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'public' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
-              {publicCharacters.length}
+              {activeCount.public}
             </span>
           </button>
           {isAdmin && (
-            <button onClick={() => setActiveTab('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-red-900 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+            <button onClick={() => handleTabChange('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-red-900 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
               <Crown size={16} /> Admin
               <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'admin' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
-                {adminCharacters.length}
+                {activeCount.admin}
               </span>
             </button>
           )}
@@ -308,8 +501,29 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
             <Gift size={16} className={hasGiftsWaiting ? "animate-pulse drop-shadow-md" : ""} /> Recevoir
           </button>
         </div>
+
+        {/* ─── FILTRE DE RECHERCHE ─────────────────────────────────────── */}
+        <div className="relative -mt-3">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Filtrer les personnages… (nom, nature, joueur)"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="w-full pl-8 pr-8 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 bg-white font-serif"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
+      {/* ─── CONTENU ─────────────────────────────────────────────────────── */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-4">
           {[...Array(6)].map((_, i) => (
@@ -335,99 +549,98 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
         </div>
       ) : (
         <div className="py-4">
+
+          {/* ─── MES PERSONNAGES ─── */}
           {activeTab === 'my' && (
-            myCharacters.length > 0 ? (
+            filteredMyChars.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myCharacters.map((char) => (
+                {filteredMyChars.map((char) => (
                   <div key={char.id} className="h-full">
                     <CharacterCard
+                      {...commonCardProps}
                       char={char}
                       isMyCharacter={true}
                       userProfile={userProfile}
-                      profils={profils}
-                      gameData={gameData}
-                      onSelect={handleSelectCharacter}
-                      onToggleVisibility={handleToggleVisibility}
-                      onDuplicate={handleDuplicate}
-                      onCreateGift={handleCreateGiftCode}
-                      onDeleteClick={handleDeleteClick}
-                      onOpenGrimoire={setActiveGrimoireCharId}
-                      onAppropriate={handleAppropriate}
-					  onExportJson={handleExportJson}
-					  onExportPDF={handleExportPDF}
+                      repairStatus={isAdmin ? repairRows[char.id]?.status : undefined}
+                      onRepairRequest={isAdmin ? () => requestRepairOne(char.id) : undefined}
                     />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-300">
-                <p className="text-gray-500 font-serif mb-4">Vous n'avez pas encore créé de personnage.</p>
-                <button onClick={onNewCharacter} className="text-amber-600 font-bold hover:underline">Créer mon premier Héritier</button>
-              </div>
+              myCharacters.length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-300">
+                  <p className="text-gray-500 font-serif mb-4">Vous n'avez pas encore créé de personnage.</p>
+                  <button onClick={onNewCharacter} className="text-amber-600 font-bold hover:underline">Créer mon premier Héritier</button>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-stone-400 font-serif italic">
+                  Aucun personnage ne correspond à « {searchQuery} »
+                </div>
+              )
             )
           )}
 
+          {/* ─── PUBLICS ─── */}
           {activeTab === 'public' && (
-            publicCharacters.length > 0 ? (
+            filteredPublicChars.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {publicCharacters.map((char) => (
+                {filteredPublicChars.map((char) => (
                   <div key={char.id} className="h-full">
                     <CharacterCard
+                      {...commonCardProps}
                       char={char}
                       isMyCharacter={char.userId === session?.user?.id}
                       userProfile={userProfile}
-                      profils={profils}
-                      gameData={gameData}
-                      onSelect={handleSelectCharacter}
-                      onToggleVisibility={handleToggleVisibility}
-                      onDuplicate={handleDuplicate}
-                      onCreateGift={handleCreateGiftCode}
-                      onDeleteClick={handleDeleteClick}
-                      onOpenGrimoire={setActiveGrimoireCharId}
-                      onAppropriate={handleAppropriate} 
-					  onExportJson={handleExportJson}
-					  onExportPDF={handleExportPDF}
+                      repairStatus={isAdmin ? repairRows[char.id]?.status : undefined}
+                      onRepairRequest={isAdmin ? () => requestRepairOne(char.id) : undefined}
                     />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage public disponible pour le moment.</div>
+              publicCharacters.length === 0 ? (
+                <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage public disponible pour le moment.</div>
+              ) : (
+                <div className="text-center py-12 text-stone-400 font-serif italic">
+                  Aucun personnage ne correspond à « {searchQuery} »
+                </div>
+              )
             )
           )}
 
+          {/* ─── ADMIN ─── */}
           {activeTab === 'admin' && isAdmin && (
-            adminCharacters.length > 0 ? (
+            filteredAdminChars.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {adminCharacters.map((char) => (
+                {filteredAdminChars.map((char) => (
                   <div key={char.id} className="h-full">
                     <CharacterCard
+                      {...commonCardProps}
                       char={char}
                       isMyCharacter={char.userId === session?.user?.id}
                       userProfile={userProfile}
-                      profils={profils}
-                      gameData={gameData}
-                      onSelect={handleSelectCharacter}
-                      onToggleVisibility={handleToggleVisibility}
-                      onDuplicate={handleDuplicate}
-                      onCreateGift={handleCreateGiftCode}
-                      onDeleteClick={handleDeleteClick}
-                      onOpenGrimoire={setActiveGrimoireCharId}
-                      onAppropriate={handleAppropriate}
-					  onExportJson={handleExportJson}
-					  onExportPDF={handleExportPDF}
+                      repairStatus={repairRows[char.id]?.status}
+                      onRepairRequest={() => requestRepairOne(char.id)}
                     />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage masqué à afficher.</div>
+              adminCharacters.length === 0 ? (
+                <div className="text-center py-20 text-gray-500 font-serif italic">Aucun personnage masqué à afficher.</div>
+              ) : (
+                <div className="text-center py-12 text-stone-400 font-serif italic">
+                  Aucun personnage ne correspond à « {searchQuery} »
+                </div>
+              )
             )
           )}
         </div>
       )}
 
-      {/* MODALES D'INTERACTION */}
+      {/* ─── MODALES ─────────────────────────────────────────────────────── */}
+
       <ConfirmModal
         isOpen={confirmDelete.isOpen}
         title="Détruire le Sceau"
@@ -435,6 +648,13 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
         onConfirm={executeDelete}
         onCancel={() => setConfirmDelete({ isOpen: false, charId: null })}
         confirmText="Oui, l'effacer"
+      />
+
+      {/* ✨ Modale de confirmation de réparation XP */}
+      <RepairConfirmModal
+        target={repairConfirmTarget}
+        onConfirm={executeRepair}
+        onCancel={() => setRepairConfirmTarget(null)}
       />
 
       {showClaimModal && (
@@ -515,7 +735,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       {/* ✨ LA MODALE IMMERSIVE DU GRIMOIRE PERSONNEL (SOLO) ✨ */}
       {activeGrimoireCharId && (
         <div className="fixed inset-0 z-50 flex flex-col bg-stone-900/90 backdrop-blur-sm p-4 md:p-8 animate-fade-in">
-          {/* Bouton de fermeture de la surcouche */}
           <div className="flex justify-end mb-4">
             <button
               onClick={() => setActiveGrimoireCharId(null)}
@@ -524,11 +743,10 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               <X size={20} /> Refermer le Grimoire
             </button>
           </div>
-          {/* Le conteneur sécurisé */}
           <div className="flex-1 overflow-hidden max-w-5xl mx-auto w-full relative">
             <GrimoirePersonnel
               characterId={activeGrimoireCharId}
-              cercleId={null} /* 🛡️ On force le mode Solo pour le RLS */
+              cercleId={null}
               playerId={session?.user?.id}
             />
           </div>

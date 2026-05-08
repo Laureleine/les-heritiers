@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.33 - "La Vitrine de l\'Héritier 🃏"',
+        date: '2026-05-08',
+        description: 'Cartes personnages : réparation XP, télégraphe, filtre, XP lisibles',
+        changes: [
+            '🔧 **Badges réparation XP sur les cartes :** Le statut du journal XP (⏳ À réparer, ✅ Complet, ✨ Réparé…) est affiché directement sur chaque carte, visible uniquement par l\'admin. Le badge est cliquable pour lancer la reconstruction, avec modale de confirmation avant/après.',
+            '🗑️ **Suppression du bouton "Reconstruire" redondant :** La puce de statut devient elle-même le déclencheur — plus économe en espace.',
+            '💬 **Bouton Télégraphe dans le footer des cartes :** Une icône MessageCircle discrète apparaît à côté du pseudo du joueur sur les cartes qui ne m\'appartiennent pas, pour ouvrir une missive privée directement.',
+            '🔍 **Filtre de recherche par onglet :** Un champ de recherche persiste entre les onglets (Mes personnages / Publics / Admin) et filtre par nom, nature féerique ou pseudo du joueur. Le compteur d\'onglet reflète les résultats filtrés.',
+            '✨ **XP lisible sur les cartes :** Le badge XP affiche désormais `✨ restants / total XP` en un seul badge bicolore — les XP disponibles en amber, le total acquis en vert.',
+        ]
+    },
+    {
         version: '15.16.32 - "L\'Œil du Docte 🔍"',
         date: '7 Mai 2026',
         changes: [

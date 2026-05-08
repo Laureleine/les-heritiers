@@ -1,6 +1,22 @@
 // src/components/CharacterCard.js
 import React from 'react';
-import { Globe, Sparkles, Edit, Eye, FileText, Download, EyeOff, BookOpen, Copy, Gift, Trash2, User, Calendar } from '../config/icons';
+import { Globe, Sparkles, Edit, Eye, FileText, Download, EyeOff, BookOpen, Copy, Gift, Trash2, User, Calendar, MessageCircle } from '../config/icons';
+
+// ─── Constantes admin (badges de réparation XP) ────────────────────────────
+const REPAIR_BADGE = {
+  pending:  'bg-orange-100 text-orange-700 border-orange-200',
+  ok:       'bg-emerald-100 text-emerald-700 border-emerald-200',
+  repaired: 'bg-blue-100 text-blue-700 border-blue-200',
+  skipped:  'bg-amber-100 text-amber-700 border-amber-200',
+  error:    'bg-red-100 text-red-700 border-red-200',
+};
+const REPAIR_LABEL = {
+  pending:  '⏳ Journal à réparer',
+  ok:       '✅ Journal complet',
+  repaired: '✨ Journal réparé',
+  skipped:  '⚠️ Sans plancher',
+  error:    '❌ Erreur journal',
+};
 
 const CharacterCard = React.memo(({
   char,
@@ -16,7 +32,10 @@ const CharacterCard = React.memo(({
   onOpenGrimoire,
   onAppropriate,
   onExportJson,
-  onExportPDF
+  onExportPDF,
+  // ✨ Nouvelles props admin (undefined pour les non-admins)
+  repairStatus,    // 'pending'|'ok'|'repaired'|'skipped'|'error'
+  onRepairRequest, // () => void
 }) => {
 
   const getProfilInfo = (nomBrut, sexe) => {
@@ -30,8 +49,16 @@ const CharacterCard = React.memo(({
   const majeur = getProfilInfo(char.profils?.majeur?.nom, char.sexe);
   const mineur = getProfilInfo(char.profils?.mineur?.nom, char.sexe);
 
+  const handleTelegraphe = (e) => {
+    e.stopPropagation();
+    window.dispatchEvent(new CustomEvent('open-telegraphe', {
+      detail: { targetUser: { id: char.userId, username: char.ownerUsername } }
+    }));
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
+
       {/* 1. EN-TÊTE */}
       <div className="p-4 pb-1 border-b border-stone-100">
         <div className="flex justify-between items-start mb-1 gap-2">
@@ -47,13 +74,42 @@ const CharacterCard = React.memo(({
           <div className="text-sm text-amber-700 font-serif italic">
             {char.typeFee || 'Inconnu'} • {char.sexe || '?'}
           </div>
-          {(char.statut === 'scelle' || char.statut === 'scellé') && (
-            <div className="flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 shadow-sm" title={`Acquis : ${char.xp_total || 0} XP | Dépensés : ${char.xp_depense || 0} XP`}>
-              <Sparkles size={12} className="text-amber-500" />
-              {(char.xp_total || 0) - (char.xp_depense || 0)} XP
-            </div>
-          )}
+          {(char.statut === 'scelle' || char.statut === 'scellé') && (() => {
+            const total     = char.xp_total || 0;
+            const remaining = total - (char.xp_depense || 0);
+            return (
+              <div
+                className="flex items-center gap-1 text-xs font-bold bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200 shadow-sm"
+                title={`${remaining} XP disponibles sur ${total} acquis`}
+              >
+                <Sparkles size={12} className="text-amber-500" />
+                <span className="text-amber-700">{remaining}</span>
+                <span className="text-stone-300">/</span>
+                <span className="text-green-600">{total}</span>
+                <span className="text-stone-400">XP</span>
+              </div>
+            );
+          })()}
         </div>
+
+        {/* ✨ Badge de réparation XP (admin seulement) — cliquable si réparation possible */}
+        {repairStatus && (
+          <div className="mt-1.5">
+            {(repairStatus === 'pending' || repairStatus === 'error') && onRepairRequest ? (
+              <button
+                onClick={onRepairRequest}
+                className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer hover:brightness-95 active:scale-95 transition-all ${REPAIR_BADGE[repairStatus]}`}
+                title="Cliquer pour reconstruire le journal XP"
+              >
+                {REPAIR_LABEL[repairStatus]}
+              </button>
+            ) : (
+              <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border ${REPAIR_BADGE[repairStatus] || ''}`}>
+                {REPAIR_LABEL[repairStatus] || repairStatus}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 2. PROFILS */}
@@ -130,6 +186,14 @@ const CharacterCard = React.memo(({
         <div className="flex items-center gap-1.5">
           {!isMyCharacter && (
             <>
+              {/* ✨ Bouton Télégraphe discret à côté du pseudo */}
+              <button
+                onClick={handleTelegraphe}
+                className="p-0.5 text-blue-300 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                title={`Missive privée à ${char.ownerUsername}`}
+              >
+                <MessageCircle size={10} />
+              </button>
               <User size={10} className="text-blue-400"/>
               <span className="text-blue-900 font-bold">{char.ownerUsername || 'Inconnu'}</span>
             </>
