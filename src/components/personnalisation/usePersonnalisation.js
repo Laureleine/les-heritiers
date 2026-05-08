@@ -74,7 +74,10 @@ export function usePersonnalisation() {
 
         const { data: { publicUrl } } = supabase.storage.from('portraits').getPublicUrl(path);
         const field = type === 'masked' ? 'portrait_masked_url' : 'portrait_unmasked_url';
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { [field]: publicUrl }, gameData });
+        // Cache-busting : le chemin Supabase est identique après remplacement (upsert),
+        // donc on force le navigateur à recharger la nouvelle image avec un timestamp.
+        const bustUrl = `${publicUrl}?t=${Date.now()}`;
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { [field]: bustUrl }, gameData });
         return publicUrl;
     }, [isReadOnly, character.id, dispatchCharacter, gameData]);
 
