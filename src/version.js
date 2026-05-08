@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.38 - "Le Filtre du Marchande 🪙"',
+        date: '2026-05-08',
+        description: 'Vie sociale : filtre par budget PP restant',
+        changes: [
+            '🪙 **Filtre "budget restant" dans la boutique :** Un bouton compact (≤ PP) s\'affiche désormais sur la même ligne que la barre de recherche dans chaque boutique de vie sociale. Actif, il masque tous les items que tu ne peux pas te payer avec tes PP restants. Le chiffre exact de PP disponibles s\'affiche dans le bouton quand le filtre est actif.',
+        ]
+    },
+    {
         version: '15.16.37 - "La Brique Noire 🖤"',
         date: '2026-05-08',
         description: 'Brique noire : coût affiché, chargement effets, homonymes',

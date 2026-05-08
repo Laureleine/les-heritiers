@@ -108,21 +108,26 @@ export default function StepVieSociale() {
 
     const currentFortune = isScelle ? (character.fortune || 0) : plancherFortune;
     const [filterText, setFilterText] = useState('');
+    const [filterAffordable, setFilterAffordable] = useState(false);
 
     const renderCatalogue = (profilNom) => {
     const itemsDuProfil = catalogueParProfil[profilNom] || [];
-    const filteredItems = filterText.trim()
+    if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;
+
+    const reste = budgetsInfo.restes[profilNom];
+
+    const filteredByName = filterText.trim()
         ? itemsDuProfil.filter(i => i.nom.toLowerCase().includes(filterText.toLowerCase()))
         : itemsDuProfil;
-    if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;
+    const filteredItems = filterAffordable
+        ? filteredByName.filter(i => getItemCost(i, profilNom) <= reste)
+        : filteredByName;
 
     const metiers = filteredItems.filter(i => i.categorie === 'metier');
     const objets = filteredItems.filter(i => i.categorie === 'objet');
     const contacts = filteredItems.filter(i => i.categorie === 'contact');
     const langues = filteredItems.filter(i => i.categorie === 'langue');
     const titres = filteredItems.filter(i => i.categorie === 'titre');
-
-    const reste = budgetsInfo.restes[profilNom];
     const budgetTotal = budgetsInfo.budgets[profilNom];
     const myItems = achats[profilNom] || [];
 
@@ -149,23 +154,38 @@ export default function StepVieSociale() {
           </div>
         )}
 
-        <div className="relative mb-4">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
-          <input
-            type="text"
-            value={filterText}
-            onChange={(e) => setFilterText(e.target.value)}
-            placeholder="Filtrer le catalogue..."
-            className="w-full pl-9 pr-8 py-2 text-sm border border-stone-200 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none text-stone-700"
-          />
-          {filterText && (
-            <button
-              onClick={() => setFilterText('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 transition-colors"
-            >
-              <X size={15} />
-            </button>
-          )}
+        <div className="mb-4 flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+            <input
+              type="text"
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              placeholder="Filtrer le catalogue..."
+              className="w-full pl-9 pr-8 py-2 text-sm border border-stone-200 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none text-stone-700"
+            />
+            {filterText && (
+              <button
+                onClick={() => setFilterText('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-300 hover:text-stone-500 transition-colors"
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setFilterAffordable(v => !v)}
+            className={`shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border transition-colors ${
+              filterAffordable
+                ? 'bg-amber-100 border-amber-400 text-amber-800 shadow-sm'
+                : 'bg-white border-stone-200 text-stone-400 hover:border-amber-300 hover:text-amber-700'
+            }`}
+            title={filterAffordable ? "Afficher tous les items" : "Afficher uniquement les items dans mon budget"}
+          >
+            <Coins size={12} />
+            {filterAffordable ? `≤ ${reste} PP` : `≤ PP`}
+            {filterAffordable && <X size={11} className="ml-0.5" />}
+          </button>
         </div>
 
         <div className="overflow-y-auto max-h-[55vh] custom-scrollbar">
