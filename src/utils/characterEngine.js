@@ -262,8 +262,9 @@ export function characterReducer(state, action) {
                         });
                     }
                     if (tech.price_modifiers) {
-                        Object.entries(tech.price_modifiers).forEach(([itemName, newPrice]) => {
-                            priceModifiers[itemName] = newPrice;
+                        Object.entries(tech.price_modifiers).forEach(([key, newPrice]) => {
+                            // Clé au format "Nom (X PP)" (nouveau) ou "Nom" (legacy)
+                            priceModifiers[key] = newPrice;
                         });
                     }
                 } catch(e) {}

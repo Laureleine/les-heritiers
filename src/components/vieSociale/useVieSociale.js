@@ -91,8 +91,10 @@ export function useVieSociale() {
                 const item = socialItems.find(i => i.id === id);
                 if (item) {
                     const baseCost = getItemCost(item.id, pName);
-                    // ✨ LE FIX (Smog) : L'algorithme vérifie si l'Héritier a un bon de réduction dans son portefeuille !
-                    const modifiedCost = character.computedStats?.priceModifiers?.[item.nom];
+                    // Lookup : nouveau format "Nom (X PP)" en priorité, fallback legacy "Nom"
+                    const itemKey = `${item.nom} (${item.cout ?? 0} PP)`;
+                    const modifiedCost = character.computedStats?.priceModifiers?.[itemKey]
+                        ?? character.computedStats?.priceModifiers?.[item.nom];
                     const finalCost = modifiedCost !== undefined ? modifiedCost : baseCost;
                     depenses[pName] += finalCost;
                     if (item.categorie === 'contact') depensesContacts[pName] += finalCost;
@@ -205,7 +207,10 @@ export function useVieSociale() {
         const isMultiple = item.is_choix_multiple;
 
         // ✨ LE FIX 1 : On recalcule le VRAI coût (Réductions Héritage + Contacts Gratuits)
-        const modifiedCost = character.computedStats?.priceModifiers?.[item.nom];
+        // Lookup : nouveau format "Nom (X PP)" en priorité, fallback legacy "Nom"
+        const itemKey = `${item.nom} (${item.cout ?? 0} PP)`;
+        const modifiedCost = character.computedStats?.priceModifiers?.[itemKey]
+            ?? character.computedStats?.priceModifiers?.[item.nom];
         const finalCost = modifiedCost !== undefined ? modifiedCost : baseCost;
         const effectiveCost = item.categorie === 'contact' ? Math.max(0, finalCost - budgetsInfo.freeContactsRemaining) : finalCost;
 

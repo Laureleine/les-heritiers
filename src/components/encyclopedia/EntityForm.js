@@ -116,7 +116,7 @@ const EntityForm = ({
           <BonusBuilder
             parsedTech={parsedTech}
             updateTech={updateTech}
-            rawJson={proposal.techData}
+            rawJson={proposal.techData ?? proposal.effets_techniques}
             onJsonChange={(val) => setProposal({ ...proposal, techData: val, effets_techniques: val })}
             competencesData={competencesData}
             usefulSkills={usefulSkills}

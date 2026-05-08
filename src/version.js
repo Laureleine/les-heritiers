@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.37 - "La Brique Noire 🖤"',
+        date: '2026-05-08',
+        description: 'Brique noire : coût affiché, chargement effets, homonymes',
+        changes: [
+            '🏷️ **Coût affiché dans la liste déroulante :** La brique noire du constructeur affiche désormais le prix de base à côté de chaque item dans la liste déroulante (ex : "Capitaine d\'industrie (5 PP)"). Le prix proposé s\'initialise automatiquement avec ce coût de base dès la sélection.',
+            '🔑 **Items homonymes avec prix différents :** Deux items portant le même nom mais avec des coûts différents sont maintenant distingués par leur prix dans la clé de stockage ("Nom (X PP)"). Le moteur de jeu supporte les deux formats (nouveau + legacy) pour la rétrocompatibilité.',
+            '🐛 **Fix chargement des effets techniques :** Quand on revenait éditer un item existant dans l\'Encyclopédie, les effets compilés n\'apparaissaient plus dans le BonusBuilder. Le formulaire lisait `techData` (absent de la DB) au lieu de `effets_techniques`. Corrigé avec un fallback `techData ?? effets_techniques` dans `EncyclopediaModal`, `SocialItemForm` et `EntityForm`.',
+        ]
+    },
+    {
         version: '15.16.36 - "La Plume du Docte 🖋️"',
         date: '2026-05-08',
         description: 'Fix notification correction joueur + CheckCheck icône',

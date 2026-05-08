@@ -70,7 +70,8 @@ export default function EncyclopediaModal({
     // 🧠 PARSEUR D'ADN TECHNIQUE (JSON)
     let parsedTech = {};
     if (['fairy_assets', 'fairy_powers', 'fairy_capacites', 'fairy_types', 'social_items'].includes(activeTab)) {
-        const sourceData = activeTab === 'fairy_assets' ? proposal.effets_techniques : proposal.techData;
+        // Fallback : techData (copie de travail) → effets_techniques (champ DB)
+        const sourceData = proposal.techData ?? proposal.effets_techniques;
         parsedTech = safeParse(sourceData, {});
     }
 
