@@ -74,11 +74,18 @@ function TabUsers({ session }) {
         let result = [...users];
 
         // 1. Les Filtres Rapides
-        if (filterMode === 'staff') {
-            result = result.filter(u => u.role === 'super_admin' || u.role === 'gardien');
+        if (filterMode === 'super_admin') {
+            result = result.filter(u => u.role === 'super_admin');
+        } else if (filterMode === 'gardien') {
+            result = result.filter(u => u.role === 'gardien');
+        } else if (filterMode === 'initie') {
+            result = result.filter(u => u.is_initiated === true);
+        } else if (filterMode === 'joueur') {
+            result = result.filter(u => u.role !== 'super_admin' && u.role !== 'gardien');
         } else if (filterMode === 'unverified') {
             result = result.filter(u => !u.is_verified);
         }
+        // filterMode === 'all' → aucun filtre appliqué
 
         // 2. La Recherche Textuelle (Pseudo OU Email)
         if (searchTerm.trim()) {

@@ -34,6 +34,9 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
   const gainsAfter   = preview.filter(t => t.type === 'GAIN').length;
   const depAfter     = preview.filter(t => t.type === 'DEPENSE').length;
   const newXpDepense = computeXpDepenseFromJournal(preview);
+  const oldXpTotal   = row.dbChar.xp_total || 0;
+  const newXpTotal   = Math.max(oldXpTotal, newXpDepense);
+  const xpTotalBumped = newXpTotal > oldXpTotal;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onCancel}>
@@ -72,8 +75,23 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
             <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">XP dépensé</div>
             <div className="p-2 text-center text-stone-700 border-r border-stone-200">{row.dbChar.xp_depense}</div>
             <div className="p-2 text-center text-blue-700 font-bold">{newXpDepense}</div>
+
+            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">XP total</div>
+            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{oldXpTotal}</div>
+            <div className={`p-2 text-center font-bold ${xpTotalBumped ? 'text-amber-600' : 'text-blue-700'}`}>
+              {newXpTotal}{xpTotalBumped && ' ↑'}
+            </div>
           </div>
         </div>
+
+        {xpTotalBumped && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 mb-4 flex items-start gap-2">
+            <AlertTriangle size={14} className="shrink-0 mt-0.5 text-amber-600" />
+            <span>
+              Le XP total sera relevé de <strong>{oldXpTotal}</strong> à <strong>{newXpTotal}</strong> pour rester cohérent avec les dépenses reconstruites (contrainte de base de données).
+            </span>
+          </div>
+        )}
 
         <p className="text-xs text-stone-500 mb-5">
           Les entrées <strong>GAIN</strong> sont préservées. Les <strong>DÉPENSES</strong> sont recalculées depuis le Plancher de Verre.
@@ -253,11 +271,13 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
     try {
       const newXpDepense = computeXpDepenseFromJournal(preview);
+      // ⚡ Garantit xp_depense ≤ xp_total (contrainte check_xp_coherence)
+      const newXpTotal   = Math.max(row.dbChar.xp_total || 0, newXpDepense);
       const updatedData  = { ...row.dbChar.data, historique_xp: preview };
 
       const { error } = await supabase
         .from('characters')
-        .update({ data: updatedData, xp_depense: newXpDepense })
+        .update({ data: updatedData, xp_depense: newXpDepense, xp_total: newXpTotal })
         .eq('id', charId);
       if (error) throw error;
 

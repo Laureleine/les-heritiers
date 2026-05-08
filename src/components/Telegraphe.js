@@ -1,7 +1,7 @@
 // src/components/Telegraphe.js
 
 import React, { useState, useEffect, useRef } from 'react';
-import { LayoutList, MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, ListFilter, Settings, Key } from '../config/icons';
+import { LayoutList, MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, ListFilter, Settings, Key, Check, CheckCheck } from '../config/icons';
 
 // ✨ MAGIE : On importe notre Cerveau autonome !
 import { useTelegraphe } from '../hooks/useTelegraphe';
@@ -26,7 +26,7 @@ export default function Telegraphe({ session, userProfile }) {
   // ==========================================================================
   const {
     channels, messages, activeChannel, setActiveChannel,
-    loading, isAdmin, isInitiated,
+    loading, isAdmin, isInitiated, messageReads,
     fetchMessages, startPrivateChat, createSupportTicket, sendReply
   } = useTelegraphe(session, userProfile);
 
@@ -243,7 +243,7 @@ export default function Telegraphe({ session, userProfile }) {
                 {messages.map((m) => {
                   const isMe = m.user_id === session.user.id;
                   let displayName = isMe ? 'Vous' : (m.profiles?.username || 'Anonyme');
-                  
+
                   // Dévoile le pseudo du Gardien s'il est masqué
                   if (activeChannel?.type === 'support' && !isMe) {
                     displayName = m.profiles?.username
@@ -251,10 +251,22 @@ export default function Telegraphe({ session, userProfile }) {
                       : 'Garde des Sceaux';
                   }
 
+                  // ── Accusé de réception (uniquement sur MES messages, hors salon global) ──
+                  const showReceipt = isMe && activeChannel?.type !== 'global';
+                  const readers = showReceipt ? (messageReads[m.id] || []) : [];
+                  // Pour les canaux privés : l'autre participant
+                  const myId = session.user.id;
+                  const otherParticipantId = activeChannel?.type === 'private'
+                    ? (activeChannel.participant_1 === myId ? activeChannel.participant_2 : activeChannel.participant_1)
+                    : null;
+                  const isPrivate = activeChannel?.type === 'private';
+                  const allRead = isPrivate
+                    ? readers.includes(otherParticipantId)
+                    : false;
+
                   return (
                     <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 animate-fade-in`}>
-                      
-                      {/* ✨ FIX : Typographie revue à la hausse pour la lisibilité ! */}
+
                       <div className={`flex items-baseline gap-2 mb-1 px-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
                         <span className="text-xs font-bold text-stone-500">{displayName}</span>
                         <span className="text-[12px] text-stone-400 italic">
@@ -264,14 +276,39 @@ export default function Telegraphe({ session, userProfile }) {
 
                       {/* La bulle de message */}
                       <div className={`p-3 rounded-xl max-w-[85%] text-sm shadow-sm whitespace-pre-wrap break-words ${
-                        isMe 
-                          ? 'bg-amber-600 text-white rounded-tr-none' 
-                          : m.is_admin 
-                            ? 'bg-amber-100 text-amber-900 border border-amber-300 rounded-tl-none font-bold' 
+                        isMe
+                          ? 'bg-amber-600 text-white rounded-tr-none'
+                          : m.is_admin
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300 rounded-tl-none font-bold'
                             : 'bg-white text-stone-800 border border-stone-200 rounded-tl-none'
                       }`}>
                         {m.message}
                       </div>
+
+                      {/* ── Coche(s) de lecture ── */}
+                      {showReceipt && (
+                        <div className="flex items-center gap-0.5 mt-0.5 px-1">
+                          {readers.length === 0 ? (
+                            /* Envoyé, pas encore lu */
+                            <Check size={12} className="text-white/50" />
+                          ) : isPrivate ? (
+                            /* Canal privé : ✓✓ amber = lu, gris = délivré */
+                            <CheckCheck
+                              size={13}
+                              className={allRead ? 'text-amber-200' : 'text-white/50'}
+                              title={allRead ? 'Lu' : 'Délivré'}
+                            />
+                          ) : (
+                            /* Canal groupe : ✓✓ + compteur de lecteurs */
+                            <>
+                              <CheckCheck size={13} className="text-amber-200" />
+                              <span className="text-[10px] text-white/70 font-bold leading-none">
+                                {readers.length}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
