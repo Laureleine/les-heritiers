@@ -12,6 +12,7 @@ export default function Step1() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
     const [unlockedFairies, setUnlockedFairies] = useState([]);
     const [isUserDocte, setIsUserDocte] = useState(false);
+    const [isInitiated, setIsInitiated] = useState(false);
 
     const { fairyData, fairyTypesByAge } = gameData;
 
@@ -27,7 +28,7 @@ export default function Step1() {
 
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('role, is_docte, unlocked_fairies')
+                    .select('role, is_docte, unlocked_fairies, is_initiated')
                     .eq('id', user.id)
                     .single();
 
@@ -35,6 +36,7 @@ export default function Step1() {
                     const hasAccess = profile.is_docte === true || ['super_admin', 'gardien'].includes(profile.role);
                     setIsUserDocte(hasAccess);
                     setUnlockedFairies(profile.unlocked_fairies || []);
+                    setIsInitiated(profile.is_initiated === true || profile.role === 'super_admin');
                 }
             } catch (error) {
                 console.error("❌ Erreur de vérification des Sceaux :", error);
@@ -224,11 +226,12 @@ export default function Step1() {
 
                 {/* PANNEAU DE DROITE : NOTRE NOUVELLE VUE SÉPARÉE ✨ */}
                 <div className="lg:col-span-8 h-full">
-                    <FairyDetailsPanel 
+                    <FairyDetailsPanel
                         previewData={previewData}
                         selectedPreview={selectedPreview}
                         character={character}
                         isLocked={isLocked}
+                        isInitiated={isInitiated}
                         onSexeChange={onSexeChange}
                         onTraitsFeeriquesChange={onTraitsFeeriquesChange}
                         onTypeFeeChange={onTypeFeeChange}

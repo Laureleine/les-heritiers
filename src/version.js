@@ -2,6 +2,39 @@
 
 export const VERSION_HISTORY = [
     {
+        version: '15.16.36 - "La Plume du Docte 🖋️"',
+        date: '2026-05-08',
+        description: 'Fix notification correction joueur + CheckCheck icône',
+        changes: [
+            '🔔 **Notification de correction au joueur :** Quand le Docte marque un personnage comme "Corrigé", le joueur reçoit désormais un toast de succès au prochain login (✨ "Bonne nouvelle ! X a été corrigé par le Docte."). La notification est consommée automatiquement après affichage.',
+            '🔁 **Fix re-détection après correction :** Un flag `correction_done` empêche l\'auto-détection de re-signaler indéfiniment les mêmes personnages après qu\'ils ont été traités par le Docte.',
+            '🔧 **Fix icône CheckCheck manquante :** L\'icône de double coche du Télégraphe (`CheckCheck`) était absente du hub d\'icônes centralisé — ajoutée dans `config/icons.js`, la compilation ne plante plus.',
+        ]
+    },
+    {
+        version: '15.16.35 - "Le Sceau des Lectures ✉️"',
+        date: '2026-05-08',
+        description: 'Read receipts, corrections, filtres, bug XP repair',
+        changes: [
+            '✅ **Coches de lecture (Télégraphe) :** Les messages privés et de groupe affichent désormais des accusés de réception style WhatsApp — ✓ gris = envoyé, ✓✓ amber = lu. Pour les salons de groupe, un compteur indique combien de membres ont lu. Désactivé sur le salon public global.',
+            '🛠️ **Système de correction de personnages :** Quand un personnage présente un problème (fée sans fiche Docte, données incohérentes), le joueur voit une modale au login demandant l\'autorisation de corriger. Le Docte reçoit une notification avec la liste des personnages autorisés à corriger.',
+            '🔧 **Correction filtre Communauté & Métriques :** Les filtres par type d\'utilisateur (Super Admin, Gardien, Initié, Héritier) dans l\'onglet Utilisateurs fonctionnent à nouveau — le code traitait un ancien mode "staff" qui n\'existait plus dans le menu.',
+            '⚡ **Fix crash réparation XP :** La reconstruction du journal ne plante plus avec l\'erreur `check_xp_coherence`. Quand les dépenses reconstruites dépassent le XP total enregistré, le total est automatiquement relevé — affiché clairement dans la modale de confirmation.',
+            '✨ **Fiches Docte dans la Galerie des Fées :** Les Initiés voient maintenant la fiche complète (apparence, caractère, capacités, pouvoirs, atouts) de chaque type de fée directement dans l\'étape 1 de création.',
+        ]
+    },
+    {
+        version: '15.16.34 - "Le Grimoire du Docte 📖"',
+        date: '2026-05-08',
+        description: 'Indexation du Manuel du Joueur — lore & règles documentés',
+        changes: [
+            '📖 **Lecture complète du Manuel du Joueur (280 p.) :** Le PDF a été extrait et indexé en intégralité — 26 types de fées, 6 étapes de création, toutes les formules de jeu.',
+            '📋 **REGLES_INDEX.md :** Fichier mémoire technique créé : types de fées, coûts XP, formules de combat, vérification de l\'implémentation code vs règles.',
+            '🌿 **LORE_HERITIERS.md :** Fichier mémoire lore créé : univers Belle Époque, vocabulaire féérique, personnalités par type de fée, formules de messages suggérées.',
+            '✅ **Vérification implémentation :** Toutes les formules XP, combat et stats ont été comparées au manuel — conformité 100% confirmée (xpCalculator.js, rulesEngine.js).',
+        ]
+    },
+    {
         version: '15.16.33 - "La Vitrine de l\'Héritier 🃏"',
         date: '2026-05-08',
         description: 'Cartes personnages : réparation XP, télégraphe, filtre, XP lisibles',

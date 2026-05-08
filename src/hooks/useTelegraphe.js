@@ -8,6 +8,8 @@ export function useTelegraphe(session, userProfile) {
   const [messages, setMessages] = useState([]);
   const [activeChannel, setActiveChannel] = useState(null);
   const [loading, setLoading] = useState(false);
+  // Accusés de réception : { [messageId]: [userId, ...] }
+  const [messageReads, setMessageReads] = useState({});
 
   // Le Laissez-passer des VIP
   const isAdmin = userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien';
@@ -114,9 +116,12 @@ export function useTelegraphe(session, userProfile) {
     // Court-circuit pour les canaux fantômes !
     if (channel.is_virtual) {
       setMessages([]);
+      setMessageReads({});
       if (!isSilent) setLoading(false);
       return;
     }
+
+    const myId = session?.user?.id;
 
     try {
       const { data, error } = await supabase
@@ -128,6 +133,36 @@ export function useTelegraphe(session, userProfile) {
       if (error) throw error;
       if (data) {
         setMessages(data);
+
+        // ── ACCUSÉS DE RÉCEPTION (désactivés pour le salon global) ──────────
+        if (channel.type !== 'global' && data.length > 0) {
+          // 1. Marquer comme lus les messages reçus (pas les miens)
+          const toMark = data
+            .filter(m => m.user_id !== myId)
+            .map(m => ({ message_id: m.id, user_id: myId }));
+          if (toMark.length > 0) {
+            supabase.from('chat_message_reads')
+              .upsert(toMark, { onConflict: 'message_id,user_id', ignoreDuplicates: true })
+              .then(); // fire-and-forget
+          }
+
+          // 2. Charger les lectures existantes pour afficher les coches
+          const { data: readsData } = await supabase
+            .from('chat_message_reads')
+            .select('message_id, user_id')
+            .in('message_id', data.map(m => m.id));
+
+          const readsMap = {};
+          readsData?.forEach(r => {
+            if (!readsMap[r.message_id]) readsMap[r.message_id] = [];
+            readsMap[r.message_id].push(r.user_id);
+          });
+          setMessageReads(readsMap);
+        } else {
+          setMessageReads({});
+        }
+        // ────────────────────────────────────────────────────────────────────
+
         if (channel.type === 'support') {
           if (isAdmin && channel.status === 'nouveau') updateChannelStatus(channel.id, 'lu');
           else if (!isAdmin && channel.status === 'lu') updateChannelStatus(channel.id, 'consulte');
@@ -138,7 +173,7 @@ export function useTelegraphe(session, userProfile) {
     } finally {
       if (!isSilent) setLoading(false);
     }
-  }, [isAdmin, updateChannelStatus]);
+  }, [session?.user?.id, isAdmin, updateChannelStatus]);
 
   // ==========================================================================
   // ✉️ ACTIONS (NOUVEAU CHAT, TICKET, REPONSE)
@@ -281,12 +316,21 @@ export function useTelegraphe(session, userProfile) {
     const chatSubscription = supabase.channel('telegraphe-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_messages' }, (payload) => {
         fetchChannelsRef.current(true);
-        if (activeChannelRef.current && payload.new.channel_id === activeChannelRef.current.id) {
+        if (activeChannelRef.current && payload.new?.channel_id === activeChannelRef.current.id) {
           fetchMessagesRef.current(activeChannelRef.current, true);
         }
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_channels' }, () => {
         fetchChannelsRef.current(true);
+      })
+      // ── Mises à jour en temps réel des accusés de réception ──
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_message_reads' }, (payload) => {
+        const { message_id, user_id } = payload.new;
+        setMessageReads(prev => {
+          const prevReaders = prev[message_id] || [];
+          if (prevReaders.includes(user_id)) return prev; // déjà connu
+          return { ...prev, [message_id]: [...prevReaders, user_id] };
+        });
       })
       .subscribe();
 
@@ -302,6 +346,7 @@ export function useTelegraphe(session, userProfile) {
     loading,
     isAdmin,
     isInitiated,
+    messageReads,
     fetchMessages,
     startPrivateChat,
     createSupportTicket,

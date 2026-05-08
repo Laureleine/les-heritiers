@@ -32,6 +32,7 @@ export {
 
     // État & feedback
     Check,
+    CheckCheck,
     CheckCircle,
     CheckCircle2,
     AlertCircle,

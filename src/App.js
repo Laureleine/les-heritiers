@@ -12,10 +12,16 @@ import DiceRoller from './components/DiceRoller';
 import WidgetAnomalie from './components/forge/WidgetAnomalie';
 import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
 import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
+import { useCorrectionCheck } from './hooks/useCorrectionCheck';
+import CorrectionRequestModal from './components/CorrectionRequestModal';
+import AdminCorrectionWidget from './components/AdminCorrectionWidget';
 
 export default function App() {
   const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate } = useAppInit();
   const [showVersionModal, setShowVersionModal] = useState(false);
+
+  // Système de correction : joueur + admin
+  const { pendingCorrections, adminQueue, respondToCorrection, markCorrected } = useCorrectionCheck(userProfile);
   const navigate = useNavigate();
 
   if (globalLoading) {
@@ -54,6 +60,20 @@ export default function App() {
       <AlertSystem userProfile={userProfile} />
       <PWAPrompt />
       <DisclaimerModal />
+
+      {/* Modale de demande d'autorisation de correction (joueur) */}
+      {pendingCorrections.length > 0 && (
+        <CorrectionRequestModal
+          corrections={pendingCorrections}
+          onRespond={respondToCorrection}
+        />
+      )}
+
+      {/* Widget Docte : personnages autorisés à corriger (admin seulement) */}
+      <AdminCorrectionWidget
+        adminQueue={adminQueue}
+        onMarkCorrected={markCorrected}
+      />
       <BackgroundDecor />
 
       <div className="pt-6 pb-4 text-center animate-fade-in relative z-10">

@@ -2,16 +2,19 @@
 import React from 'react';
 import { Crown, Activity, ThumbsUp, ThumbsDown, Scaling, Info, Heart, CheckCircle, Lock } from '../config/icons';
 import { accorderTexte } from '../data/DictionnaireJeu';
+import FairyLoreSection from './FairyLoreSection';
 
 export default function FairyDetailsPanel({
     previewData,
     selectedPreview,
     character,
     isLocked,
+    isInitiated,
     onSexeChange,
     onTraitsFeeriquesChange,
     onTypeFeeChange
 }) {
+
     // Si aucune fée n'est sélectionnée (État initial)
     if (!previewData) return (
         <div className="flex flex-col items-center justify-center h-full text-gray-400">
@@ -123,6 +126,12 @@ export default function FairyDetailsPanel({
                         </ul>
                     </div>
                 </div>
+
+                {/* SECTION INITIÉS : Fiche complète du Docte */}
+                {isInitiated && (
+                    <FairyLoreSection fairyName={selectedPreview} />
+                )}
+
             </div>
 
             {/* PIED DE PAGE : CHOIX SEXE, TRAITS ET VALIDATION */}
