@@ -259,11 +259,11 @@ export default function Telegraphe({ session, userProfile }) {
                     <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 animate-fade-in`}>
 
                       <div className={`flex items-baseline gap-2 mb-1 px-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                        {/* Indicateur visuel pour les messages entrants */}
+                        {/* Indicateur visuel pour les messages entrants - AMÉLIORATION DE VISIBILITÉ */}
                         <span className="text-xs font-bold text-stone-500 flex items-center gap-1">
                             {displayName}
                             {isIncomingMessage && (
-                                <span title="Nouveau message" className="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-md"></span>
+                                <span title="Nouveau message" className="inline-block w-2 h-2 bg-red-600 rounded-full animate-[pulse_1s_infinite] shadow-lg ring-2 ring-red-300"></span>
                             )}
                         </span>
                         <span className="text-[12px] text-stone-400 italic">
@@ -277,8 +277,8 @@ export default function Telegraphe({ session, userProfile }) {
                           ? 'bg-amber-600 text-white rounded-tr-none'
                           : m.is_admin
                             ? 'bg-amber-100 text-amber-900 border border-amber-300 rounded-tl-none font-bold'
-                            // Ajout d'une classe pour les messages entrants (non admin)
-                            : `bg-white text-stone-800 border border-stone-200 rounded-tl-none ${isIncomingMessage ? 'animate-pop-in shadow-lg' : ''}`
+                            // Ajout d'une classe pour les messages entrants (non admin) - AMÉLIORATION DE L'EFFET D'ARRIVÉE
+                            : `bg-white text-stone-800 border border-stone-200 rounded-tl-none ${isIncomingMessage ? 'animate-pop-in shadow-xl scale-[1.01]' : ''}`
                       }`}>
                         {m.message}
                       </div >
