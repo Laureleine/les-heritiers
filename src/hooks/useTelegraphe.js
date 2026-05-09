@@ -1,7 +1,9 @@
 // src/hooks/useTelegraphe.js
 
 import { useState, useEffect, useCallback } from 'react';
-import supabase from '../utils/supabaseClient'; // Assurez-vous que ce chemin est correct
+// ATTENTION : VÉRIFIEZ CE CHEMIN D'IMPORTATION ! 
+// Si l'erreur persiste, le chemin '../utils/supabaseClient' est incorrect.
+import supabase from '../utils/supabaseClient'; 
 
 /**
  * Hook personnalisé pour gérer la connexion temps réel et les données de messagerie du Télégraphe.
@@ -68,7 +70,7 @@ export const useTelegraphe = (session, userProfile) => {
       .subscribe();
 
     // Fonction de nettoyage : Désabonnement des écouteurs
-    return () => {
+    return () => { 
       supabase.removeChannel(messageChannel);
       supabase.removeChannel(channelListChannel);
     };
@@ -102,7 +104,6 @@ export const useTelegraphe = (session, userProfile) => {
       let finalChannels = chatData || [];
 
       // 2. Ajout des canaux virtuels manquant (pour l'UX)
-      // Cette partie devrait être plus complète en fonction de votre schéma réel
       const virtualChannels = [
         { id: 'virtual_global', is_virtual: true, type: 'global', name: 'Public', last_message_at: new Date(0).toISOString() },
         ...(isInitiated ? [{ id: 'virtual_initie', is_virtual: true, type: 'initie', name: 'Le Cercle des Initiés', last_message_at: new Date(0).toISOString() }] : [])
@@ -121,7 +122,7 @@ export const useTelegraphe = (session, userProfile) => {
     } finally {
       if (!isSilent) setLoading(false);
     }
-  }, [session?.user?.id, isAdmin, isInitiated]);
+  }, [supabase, isAdmin, isInitiated]);
 
 
   /** ---------------------------------------------------
@@ -243,7 +244,7 @@ export const useTelegraphe = (session, userProfile) => {
         created_at: new Date().toISOString(),
       }]);
 
-      // 3. Mettre à jour le statut du canal (pour l'affichage)
+      // 3. Mettre à jour le statut et de l'horodatage du canal (pour l'affichage)
       await supabase.from('chat_channels').update({ status: 'ouvert', last_message_at: new Date().toISOString() }).eq('id', channelData.id);
 
 
