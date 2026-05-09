@@ -175,6 +175,37 @@ export function useTelegraphe(session, userProfile) {
     }
   }, [session?.user?.id, isAdmin, updateChannelStatus]);
 
+
+  // ==========================================================================
+  // ✨ NOUVEAU : GESTION DU STATUT DE LECTURE (READ RECEIPTS)
+  // Ce hook s'assure que l'utilisateur marque les messages comme lus lorsqu'il ouvre le chat.
+  // ==========================================================================
+  useEffect(() => {
+    if (!activeChannel || activeChannel.type === 'global') return;
+
+    const myId = session?.user?.id;
+    const messagesToMark = messages.filter(m => m.user_id !== myId); // On ne marque que les messages des autres
+
+    if (messagesToMark.length > 0) {
+      // Créer une liste de paires { message_id, user_id } pour l'upsert
+      const toMark = messagesToMark.map(m => ({ 
+        message_id: m.id, 
+        user_id: myId 
+      }));
+
+      // Marquer tous les messages reçus comme lus (UPSERT)
+      supabase.from('chat_message_reads')
+        .upsert(toMark, { onConflict: 'message_id,user_id', ignoreDuplicates: true })
+        .then(() => {
+          console.log("Statut de lecture mis à jour : Tous les messages reçus marqués comme lus.");
+        })
+        .catch(err => {
+          showInAppNotification("Erreur lors du marquage des lectures : " + translateError(err), "error");
+        });
+    }
+  }, [activeChannel, messages, session?.user?.id]);
+
+
   // ==========================================================================
   // ✉️ ACTIONS (NOUVEAU CHAT, TICKET, REPONSE)
   // ==========================================================================
@@ -323,7 +354,7 @@ export function useTelegraphe(session, userProfile) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_channels' }, () => {
         fetchChannelsRef.current(true);
       })
-      // ── Mises à jour en temps réel des accusés de réception ──
+      // ── Mises à jour en temps réel des accusés de réception (Ceci est le récepteur) ──
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_message_reads' }, (payload) => {
         const { message_id, user_id } = payload.new;
         setMessageReads(prev => {
