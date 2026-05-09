@@ -21,6 +21,11 @@ export default function Telegraphe({ session, userProfile }) {
   const [activeTab, setActiveTab] = useState('global');
   const messagesEndRef = useRef(null);
 
+  // 🔊 Gestion du son de notification
+  const audioRef = useRef(new Audio('/sounds/notification.mp3')); // Assurez-vous que ce fichier existe !
+  audioRef.current.volume = 0.8;
+
+
   // ==========================================================================
   // 🧠 LE CERVEAU CONNECTÉ
   // ==========================================================================
@@ -40,6 +45,21 @@ export default function Telegraphe({ session, userProfile }) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, view]);
+
+  // 🔔 Effet de son et visuel lors de l'arrivée d'un message
+  useEffect(() => {
+    if (view === 'chat' && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      const isIncoming = !lastMessage.user_id === session.user.id;
+
+      // Jouer le son si c'est un message entrant et que nous sommes ouverts
+      if (isIncoming && isOpen) {
+        audioRef.current.currentTime = 0; // Rembobiner au début
+        audioRef.current.play().catch(e => console.warn("Erreur de lecture audio:", e));
+      }
+    }
+  }, [messages, view, isOpen]);
+
 
   // Écouteur magique pour s'ouvrir depuis n'importe où dans l'application
   useEffect(() => {
@@ -232,7 +252,8 @@ export default function Telegraphe({ session, userProfile }) {
                 <span className="font-bold text-amber-900 truncate flex-1 text-right text-sm px-2">{activeChannel?.name}</span>
               </div>
               
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+              {/* Ajout d'une classe pour le feedback global de notification */}
+              <div className={`flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar ${messages.length > 0 && messages[messages.length - 1].user_id !== session.user.id ? 'animate-flash-incoming' : ''}`}>
                 {messages.map((m) => {
                   const isMe = m.user_id === session.user.id;
                   let displayName = isMe ? 'Vous' : (m.profiles?.username || 'Anonyme');
