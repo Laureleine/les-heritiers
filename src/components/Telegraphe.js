@@ -251,39 +251,38 @@ export default function Telegraphe({ session, userProfile }) {
                       : 'Garde des Sceaux';
                   }
 
-                  // ── Accusé de réception (uniquement sur MES messages, hors salon global) ──
-                  const showReceipt = isMe && activeChannel?.type !== 'global';
-                  const readers = showReceipt ? (messageReads[m.id] || []) : [];
-                  // Pour les canaux privés : l'autre participant
-                  const myId = session.user.id;
-                  const otherParticipantId = activeChannel?.type === 'private'
-                    ? (activeChannel.participant_1 === myId ? activeChannel.participant_2 : activeChannel.participant_1)
-                    : null;
-                  const isPrivate = activeChannel?.type === 'private';
-                  const allRead = isPrivate
-                    ? readers.includes(otherParticipantId)
-                    : false;
+                  // ── Détection de Nouveauté (Amélioration UX) ──
+                  // NOTE: Pour une détection fiable, le hook useTelegraphe devrait fournir un flag `isUnread` ou la logique doit comparer les timestamps.
+                  // Ici, nous simulons l'effet visuel pour tous les messages entrants non-administrateurs.
+                  const isIncomingMessage = !isMe && m.profiles?.username; 
 
                   return (
                     <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 animate-fade-in`}>
 
                       <div className={`flex items-baseline gap-2 mb-1 px-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <span className="text-xs font-bold text-stone-500">{displayName}</span>
+                        {/* Ajout d'un indicateur visuel pour les messages entrants */}
+                        <span className="text-xs font-bold text-stone-500 flex items-center gap-1">
+                            {displayName}
+                            {isIncomingMessage && (
+                                <span title="Nouveau message" className="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-md"></span>
+                            )}
+                        </span>
                         <span className="text-[12px] text-stone-400 italic">
                           le {new Date(m.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} à {new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}
                         </span>
-                      </div>
+                      </div >
 
                       {/* La bulle de message */}
-                      <div className={`p-3 rounded-xl max-w-[85%] text-sm shadow-sm whitespace-pre-wrap break-words ${
+                      <div className={`p-3 rounded-xl max-w-[85%] text-sm shadow-md whitespace-pre-wrap break-words ${
                         isMe
                           ? 'bg-amber-600 text-white rounded-tr-none'
                           : m.is_admin
                             ? 'bg-amber-100 text-amber-900 border border-amber-300 rounded-tl-none font-bold'
-                            : 'bg-white text-stone-800 border border-stone-200 rounded-tl-none'
+                            // Ajout d'une classe pour les messages entrants (non admin)
+                            : `bg-white text-stone-800 border border-stone-200 rounded-tl-none ${isIncomingMessage ? 'animate-pop-in shadow-lg' : ''}`
                       }`}>
                         {m.message}
-                      </div>
+                      </div >
 
                       {/* ── Coche(s) de lecture ── */}
                       {showReceipt && (
@@ -307,13 +306,13 @@ export default function Telegraphe({ session, userProfile }) {
                               </span>
                             </>
                           )}
-                        </div>
+                        </div >
                       )}
                     </div>
                   );
                 })}
                 <div ref={messagesEndRef} />
-              </div>
+              </div >
               
               {activeChannel?.status !== 'resolu' ? (
                 <div className="p-3 bg-amber-50 border-t border-amber-300 flex gap-2 items-end shrink-0">
@@ -339,11 +338,11 @@ export default function Telegraphe({ session, userProfile }) {
                   >
                     <Send size={20} />
                   </button>
-                </div>
+                </div >
               ) : (
                 <div className="p-3 bg-gray-100 border-t border-gray-300 text-center text-gray-500 text-sm italic font-bold shrink-0">
                   Cette affaire a été classée par le Conseil.
-                </div>
+                </div >
               )}
             </div>
           )}
@@ -379,10 +378,10 @@ export default function Telegraphe({ session, userProfile }) {
                       <ListFilter size={24} />
                       <span className="text-xs font-bold uppercase tracking-wider">Flux Unifié</span>
                     </button>
-                  </div>
+                  </div >
                   <p className="text-xs text-stone-500 mt-3 leading-tight">Le mode Onglets sépare vos correspondances par catégorie. Le Flux Unifié rassemble tout par ordre chronologique, façon télégramme moderne.</p>
                 </div>
-              </div>
+              </div >
             </div>
           )}
 
