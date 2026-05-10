@@ -104,17 +104,15 @@ else
 
   echo "🎉 $TOTAL fichiers synchronisés en .md !"
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # NOTEBOOKLM (Appel groupé)
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  # NOTEBOOKLM
-  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
   echo ""
   echo "🔄 NotebookLM..."
   if [ -f "notebooklm_refresh.py" ]; then
-    while IFS= read -r file; do
-      [ -n "$file" ] || continue
-      python notebooklm_refresh.py "$file" || echo "⚠️ Erreur NotebookLM pour $file (non bloquant)"
-    done <<< "$CHANGED_FILES"
+    # On passe TOUTE la liste des fichiers d'un coup au script Python
+    # au lieu de boucler en Bash
+    python notebooklm_refresh.py $CHANGED_FILES
   else
     echo "⚠️ notebooklm_refresh.py introuvable"
   fi
