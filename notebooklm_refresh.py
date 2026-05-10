@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Rafraîchit ou ajoute les sources NotebookLM correspondant aux fichiers modifiés.
-Version avec diagnostic complet des échecs d'ajout (add-drive).
+Version corrigée : Gestion de l'erreur 'Invalid source data: None' avec retry.
 """
 
 import sys
@@ -10,6 +10,7 @@ import subprocess
 import urllib.request
 import urllib.parse
 import os
+import time
 
 def load_env():
     env = {}
@@ -88,24 +89,35 @@ def refresh_source(source_id, title, notebook_id):
     )
     if result.returncode != 0:
         print(f"  ⚠️ Échec refresh : {result.stdout.strip()} {result.stderr.strip()}")
+    else:
+        print(f"  ✅ Source rafraîchie.")
 
-def add_source(drive_id, title, notebook_id):
+def add_source(drive_id, title, notebook_id, retry=True):
     print(f" ➕ Ajout : {title}...")
-    # On capture tout pour diagnostiquer l'échec vide
     result = subprocess.run(
         ["python", "-m", "notebooklm", "source", "add-drive", drive_id, title, "--notebook", notebook_id],
         capture_output=True, text=True, encoding="utf-8", errors="replace"
     )
     
+    output = (result.stdout or "").strip() + " " + (result.stderr or "").strip()
+    
     if result.returncode != 0:
-        error_msg = (result.stdout or "").strip() + " " + (result.stderr or "").strip()
-        print(f"  ⚠️ Échec de l'ajout : {error_msg if error_msg.strip() else 'Erreur inconnue (Vérifiez les permissions Drive du compte NotebookLM)'}")
+        # Si l'erreur est "None", on attend 3 secondes et on réessaie une fois
+        if "None" in output and retry:
+            print("  ⏳ Fichier non stabilisé sur Drive. Nouvel essai dans 3s...")
+            time.sleep(3)
+            return add_source(drive_id, title, notebook_id, retry=False)
+        
+        print(f"  ⚠️ Échec de l'ajout : {output}")
     else:
         print(f"  ✅ Source ajoutée.")
 
 def file_to_title(filepath):
+    """Calcule le nom attendu (.md) basé sur le chemin src/."""
     rel = filepath.replace("src/", "", 1)
-    clean_name = rel.replace("/", "_").replace("\\", "_").replace(".", "_")
+    # On imite strictement le renommage fait par heritiers.sh
+    # sed 's|/|_|g' | sed 's|\.|_|g'
+    clean_name = rel.replace("/", "_").replace(".", "_")
     return f"{clean_name}.md"
 
 def main():
@@ -121,9 +133,16 @@ def main():
     
     print(f"🔍 Connexion au Notebook : {notebook_id}")
     sources = get_sources(notebook_id)
-    source_map = { (s.get("title") or s.get("name")): s["id"] for s in sources if "id" in s }
+    
+    # Création d'un dictionnaire de correspondance des sources actuelles
+    source_map = {}
+    for s in sources:
+        name = s.get("title") or s.get("name")
+        if name and "id" in s:
+            source_map[name] = s["id"]
 
     for filepath in files:
+        # On ignore les fichiers non-code
         if not any(filepath.endswith(ext) for ext in [".js", ".jsx", ".ts", ".tsx", ".md"]):
             continue
 
@@ -131,13 +150,15 @@ def main():
         source_id = source_map.get(title)
 
         if source_id:
+            # Le fichier existe déjà dans NotebookLM -> REFRESH
             refresh_source(source_id, title, notebook_id)
         else:
+            # Le fichier n'existe pas encore -> ADD
             drive_id = find_drive_id(token, folder_id, title)
             if drive_id:
                 add_source(drive_id, title, notebook_id)
             else:
-                print(f" ⏭️ Drive introuvable : {title}")
+                print(f" ⏭️ Drive introuvable (pas encore uploadé ?) : {title}")
 
 if __name__ == "__main__":
     main()
