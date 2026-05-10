@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Rafraîchit ou ajoute les sources NotebookLM correspondant aux fichiers modifiés.
-Correction : Ajout de l'argument TITLE manquant dans la commande add-drive.
+Version avec diagnostic complet des échecs d'ajout (add-drive).
 """
 
 import sys
@@ -66,10 +66,11 @@ def get_sources(notebook_id):
     result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     
     if result.returncode != 0:
-        if "expired" in (result.stdout + result.stderr).lower():
+        output = (result.stdout or "") + (result.stderr or "")
+        if "expired" in output.lower():
             ensure_authenticated()
             return get_sources(notebook_id)
-        print(f"❌ Erreur liste sources : {result.stderr}")
+        print(f"❌ Erreur liste sources : {output}")
         sys.exit(1)
     
     try:
@@ -81,20 +82,24 @@ def get_sources(notebook_id):
 
 def refresh_source(source_id, title, notebook_id):
     print(f" 🔄 Rafraîchissement : {title}...")
-    subprocess.run(
+    result = subprocess.run(
         ["python", "-m", "notebooklm", "source", "refresh", source_id, "--notebook", notebook_id],
-        capture_output=True, encoding="utf-8"
+        capture_output=True, text=True, encoding="utf-8", errors="replace"
     )
+    if result.returncode != 0:
+        print(f"  ⚠️ Échec refresh : {result.stdout.strip()} {result.stderr.strip()}")
 
 def add_source(drive_id, title, notebook_id):
-    """Correction : Ajout de 'title' dans les arguments de la commande."""
     print(f" ➕ Ajout : {title}...")
+    # On capture tout pour diagnostiquer l'échec vide
     result = subprocess.run(
         ["python", "-m", "notebooklm", "source", "add-drive", drive_id, title, "--notebook", notebook_id],
         capture_output=True, text=True, encoding="utf-8", errors="replace"
     )
+    
     if result.returncode != 0:
-        print(f"  ⚠️ Échec de l'ajout : {result.stderr.strip()}")
+        error_msg = (result.stdout or "").strip() + " " + (result.stderr or "").strip()
+        print(f"  ⚠️ Échec de l'ajout : {error_msg if error_msg.strip() else 'Erreur inconnue (Vérifiez les permissions Drive du compte NotebookLM)'}")
     else:
         print(f"  ✅ Source ajoutée.")
 
