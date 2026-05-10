@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
 Rafraîchit ou ajoute les sources NotebookLM correspondant aux fichiers modifiés.
-Version corrigée : Gestion de l'erreur 'Invalid source data: None' avec retry.
+Version finale optimisée :
+- Détection automatique (Refresh vs Add).
+- Encodage UTF-8 pour Windows.
+- Gestion des erreurs 'Invalid source data: None' avec pause de stabilisation.
+- Titrage cohérent avec le script Shell.
 """
 
 import sys
@@ -102,7 +106,7 @@ def add_source(drive_id, title, notebook_id, retry=True):
     output = (result.stdout or "").strip() + " " + (result.stderr or "").strip()
     
     if result.returncode != 0:
-        # Si l'erreur est "None", on attend 3 secondes et on réessaie une fois
+        # Gestion du délai de propagation Drive
         if "None" in output and retry:
             print("  ⏳ Fichier non stabilisé sur Drive. Nouvel essai dans 3s...")
             time.sleep(3)
@@ -115,8 +119,7 @@ def add_source(drive_id, title, notebook_id, retry=True):
 def file_to_title(filepath):
     """Calcule le nom attendu (.md) basé sur le chemin src/."""
     rel = filepath.replace("src/", "", 1)
-    # On imite strictement le renommage fait par heritiers.sh
-    # sed 's|/|_|g' | sed 's|\.|_|g'
+    # Strictement identique au sed du script Shell
     clean_name = rel.replace("/", "_").replace(".", "_")
     return f"{clean_name}.md"
 
@@ -134,7 +137,7 @@ def main():
     print(f"🔍 Connexion au Notebook : {notebook_id}")
     sources = get_sources(notebook_id)
     
-    # Création d'un dictionnaire de correspondance des sources actuelles
+    # Création du dictionnaire des sources existantes { titre: id }
     source_map = {}
     for s in sources:
         name = s.get("title") or s.get("name")
@@ -142,7 +145,6 @@ def main():
             source_map[name] = s["id"]
 
     for filepath in files:
-        # On ignore les fichiers non-code
         if not any(filepath.endswith(ext) for ext in [".js", ".jsx", ".ts", ".tsx", ".md"]):
             continue
 
@@ -150,15 +152,13 @@ def main():
         source_id = source_map.get(title)
 
         if source_id:
-            # Le fichier existe déjà dans NotebookLM -> REFRESH
             refresh_source(source_id, title, notebook_id)
         else:
-            # Le fichier n'existe pas encore -> ADD
             drive_id = find_drive_id(token, folder_id, title)
             if drive_id:
                 add_source(drive_id, title, notebook_id)
             else:
-                print(f" ⏭️ Drive introuvable (pas encore uploadé ?) : {title}")
+                print(f" ⏭️ Drive introuvable : {title}")
 
 if __name__ == "__main__":
     main()
