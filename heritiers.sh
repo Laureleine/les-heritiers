@@ -104,14 +104,13 @@ else
 
   echo "🎉 $TOTAL fichiers synchronisés en .md !"
 
-  # ── 6. Refresh NotebookLM ──────────────────────────────────────────────────
-  # Note : Comme expliqué, cela nécessite un script python spécifique (notebooklm_refresh.py)
-  # utilisant une bibliothèque de simulation de navigateur (Playwright/Selenium)
+# ── 6. Refresh NotebookLM ──────────────────────────────────────────────────
   if [ -f "notebooklm_refresh.py" ]; then
-    echo "🔄 Tentative de refresh NotebookLM via script externe..."
-    python notebooklm_refresh.py $JS_FILES
+    echo "🔄 Refresh NotebookLM..."
+    # On essaie python3, si échec on essaie python
+    python3 notebooklm_refresh.py $JS_FILES || python notebooklm_refresh.py $JS_FILES
   else
-    echo "ℹ️ notebooklm_refresh.py non trouvé, refresh automatique ignoré."
+    echo "ℹ️ notebooklm_refresh.py non trouvé."
   fi
 fi
 
