@@ -104,16 +104,17 @@ else
 
   echo "🎉 $TOTAL fichiers synchronisés en .md !"
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# NOTEBOOKLM
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+	# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+	# NOTEBOOKLM
+	# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-echo ""
-echo "🔄 NotebookLM..."
-if [ -f "notebooklm_refresh.py" ]; then
-  python notebooklm_refresh.py $CHANGED_FILES || echo "⚠️ Erreur NotebookLM (non bloquant)"
-else
-  echo "⚠️ notebooklm_refresh.py introuvable"
+	echo ""
+	echo "🔄 NotebookLM..."
+	if [ -f "notebooklm_refresh.py" ]; then
+	  python notebooklm_refresh.py $CHANGED_FILES || echo "⚠️ Erreur NotebookLM (non bloquant)"
+	else
+	  echo "⚠️ notebooklm_refresh.py introuvable"
+	fi
 fi
 
 echo ""
