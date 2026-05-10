@@ -1,5 +1,4 @@
 // src/components/SystemeModales.js
-
 import React, { useState, useEffect } from 'react';
 import { Download, X, Smartphone, Share, AlertCircle, CheckCircle, Info, BookOpen, Check } from '../config/icons';
 import { supabase } from '../config/supabase';

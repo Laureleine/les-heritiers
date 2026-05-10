@@ -109,7 +109,7 @@ else
   # utilisant une bibliothèque de simulation de navigateur (Playwright/Selenium)
   if [ -f "notebooklm_refresh.py" ]; then
     echo "🔄 Tentative de refresh NotebookLM via script externe..."
-    python3 notebooklm_refresh.py $JS_FILES
+    python notebooklm_refresh.py $JS_FILES
   else
     echo "ℹ️ notebooklm_refresh.py non trouvé, refresh automatique ignoré."
   fi
