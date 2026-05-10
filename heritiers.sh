@@ -66,7 +66,7 @@ else
     [ ! -f "$FILE" ] && { echo "[$COUNT/$TOTAL] ⏭️ $FILE"; continue; }
 
     REL_PATH="${FILE#src/}"
-    NAME=$(echo "$REL_PATH" | sed 's|/|_|g' | sed 's|\.|_|g').gdoc
+    NAME=$(echo "$REL_PATH" | sed 's|/|_|g' | sed 's|\.|_|g').md
     echo "[$COUNT/$TOTAL] 📤 $FILE → '$NAME'"
 
     echo "  🔍 Recherche existant..."
