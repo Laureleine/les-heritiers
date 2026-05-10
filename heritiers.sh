@@ -104,14 +104,16 @@ else
 
   echo "🎉 $TOTAL fichiers synchronisés en .md !"
 
-# ── 6. Refresh NotebookLM ──────────────────────────────────────────────────
-  if [ -f "notebooklm_refresh.py" ]; then
-    echo "🔄 Refresh NotebookLM..."
-    # On essaie python3, si échec on essaie python
-    python3 notebooklm_refresh.py $JS_FILES || python notebooklm_refresh.py $JS_FILES
-  else
-    echo "ℹ️ notebooklm_refresh.py non trouvé."
-  fi
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# NOTEBOOKLM
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+echo ""
+echo "🔄 NotebookLM..."
+if [ -f "notebooklm_refresh.py" ]; then
+  python notebooklm_refresh.py $CHANGED_FILES || echo "⚠️ Erreur NotebookLM (non bloquant)"
+else
+  echo "⚠️ notebooklm_refresh.py introuvable"
 fi
 
 echo ""
