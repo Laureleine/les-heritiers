@@ -35,14 +35,13 @@ def get_access_token(env):
 
 def find_drive_id(token, folder_id, name):
     q = urllib.parse.quote(
-        f"name='{name}' and '{folder_id}' in parents "
-        f"and mimeType='application/vnd.google-apps.document'"
+        f"name='{name}' and '{folder_id}' in parents"
     )
-    url = f"https://www.googleapis.com/drive/v3/files?q={q}&fields=files(id)"
+    url = f"https://www.googleapis.com/drive/v3/files?q={q}&fields=files(id,name,mimeType)"
     req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
     with urllib.request.urlopen(req) as r:
         files = json.loads(r.read()).get("files", [])
-        return files[0]["id"] if files else None
+    return files[0]["id"] if files else None
 
 
 def ensure_authenticated():
@@ -51,7 +50,7 @@ def ensure_authenticated():
         capture_output=True, text=True
     )
     if result.returncode != 0 or "expired" in result.stdout.lower() or "expired" in result.stderr.lower():
-        print("⚠️  Session expirée — login requis...")
+        print("⚠️ Session expirée — login requis...")
         subprocess.run(["python", "-m", "notebooklm", "login"])
         print("✅ Login OK, on reprend...")
 
@@ -82,9 +81,9 @@ def refresh_source(source_id, title, notebook_id):
             ensure_authenticated()
             refresh_source(source_id, title, notebook_id)
             return
-        print(f"  ⚠️  Refresh échoué ({title}): {result.stderr.strip()}")
+        print(f" ⚠️ Refresh échoué ({title}): {result.stderr.strip()}")
     else:
-        print(f"  🔄 Refreshed: {title}")
+        print(f" 🔄 Refreshed: {title}")
 
 
 def add_source(drive_doc_id, title, notebook_id):
@@ -98,21 +97,21 @@ def add_source(drive_doc_id, title, notebook_id):
             ensure_authenticated()
             add_source(drive_doc_id, title, notebook_id)
             return
-        print(f"  ⚠️  Ajout échoué ({title}): {result.stderr.strip()}")
+        print(f" ⚠️ Ajout échoué ({title}): {result.stderr.strip()}")
     else:
-        print(f"  ➕ Ajouté: {title}")
+        print(f" ➕ Ajouté: {title}")
 
 
 def file_to_title(filepath):
-    """Convertit un chemin de fichier en titre GDoc (même convention que diegesis.sh)."""
+    """Convertit un chemin de fichier en titre attendu par NotebookLM."""
     rel = filepath.replace("src/", "", 1)
-    return rel.replace("/", "_").replace(".", "_") + ".gdoc"
+    return rel.replace("/", "_")
 
 
 def main():
     files = sys.argv[1:]
     if not files:
-        print("ℹ️  Aucun fichier à rafraîchir")
+        print("ℹ️ Aucun fichier à rafraîchir")
         return
 
     env = load_env()
@@ -132,8 +131,12 @@ def main():
     source_map = {s["title"]: s["id"] for s in sources}
 
     for filepath in files:
+        if not filepath.endswith(".md"):
+            continue
+
         title = file_to_title(filepath)
         source_id = source_map.get(title)
+
         if source_id:
             refresh_source(source_id, title, notebook_id)
         else:
@@ -141,7 +144,7 @@ def main():
             if drive_id:
                 add_source(drive_id, title, notebook_id)
             else:
-                print(f"  ⏭️  Absent du Drive: {title}")
+                print(f" ⏭️ Absent du Drive: {title}")
 
 
 if __name__ == "__main__":
