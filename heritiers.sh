@@ -15,7 +15,7 @@ echo "📦 Les Héritiers v$VERSION"
 echo "🔨 npm run prebuild..."
 npm run prebuild
 
-# ── 2. Token Google Drive ─────────────────────────────────────────────────────
+# ── 3. Token Google Drive ─────────────────────────────────────────────────────
 echo ""
 echo "🔑 Token Drive..."
 RESPONSE=$(curl -s -X POST \
@@ -29,10 +29,11 @@ ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
 [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ] && { echo "❌ Token invalide"; exit 1; }
 echo "🔓 Token OK"
 
-# ── 3. Git ────────────────────────────────────────────────────────────────────
+# ── 4. Git ────────────────────────────────────────────────────────────────────
 echo ""
 echo "➕ git add ."
 git add .
+# On récupère la liste des fichiers modifiés AVANT le commit
 CHANGED_FILES=$(git diff --name-only --cached 2>/dev/null || echo "")
 [ -z "$CHANGED_FILES" ] && { echo "ℹ️ Rien à committer"; exit 0; }
 
@@ -42,72 +43,77 @@ git commit -m "Les Héritiers v${VERSION}"
 echo "⬇️ git pull origin main"
 if ! git pull origin main; then
   echo "❌ Conflit lors du merge !"
-  echo "   Résous les conflits manuellement (ex: 'code .' dans VS Code),"
-  echo "   puis 'git add .' et relance le script."
   exit 1
 fi
 
 echo "🚀 git push origin main"
 git push origin main
-echo "✅ Push OK → Google Docs..."
 
-# ── 4. Sync fichiers JS vers Google Drive ─────────────────────────────────────
-JS_FILES=$(echo "$CHANGED_FILES" | grep -E '\.(js|jsx)$' || true)
+# ── 5. Sync fichiers vers Google Drive en Markdown ───────────────────────────
+# Ajout de jsx et tsx
+JS_FILES=$(echo "$CHANGED_FILES" | grep -E '\.(js|jsx|tsx)$' || true)
 
 if [[ -z "$JS_FILES" ]]; then
-  echo "⚠️  Aucun fichier .js modifié, sync Drive ignorée."
+  echo "⚠️  Aucun fichier de code modifié, sync Drive ignorée."
 else
   COUNT=0
   TOTAL=$(echo "$JS_FILES" | wc -l)
-  echo "📂 $TOTAL fichiers JS"
+  echo "📂 $TOTAL fichiers de code à synchroniser"
 
   while IFS= read -r FILE; do
     COUNT=$((COUNT + 1))
     [ ! -f "$FILE" ] && { echo "[$COUNT/$TOTAL] ⏭️ $FILE"; continue; }
 
+    # Formatage du nom : src/auth/login.js -> auth_login_js.md
     REL_PATH="${FILE#src/}"
     NAME=$(echo "$REL_PATH" | sed 's|/|_|g' | sed 's|\.|_|g').md
     echo "[$COUNT/$TOTAL] 📤 $FILE → '$NAME'"
 
     echo "  🔍 Recherche existant..."
+    # Correction : Recherche par mimeType text/markdown
     SEARCH_RESP=$(curl -s --max-time 10 -G \
-    "https://www.googleapis.com/drive/v3/files" \
-    --data-urlencode "q=name='${NAME}' and '${GOOGLE_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.document' and trashed=false" \
-    -d "fields=files(id,webViewLink)" \
-    -H "Authorization: Bearer ${ACCESS_TOKEN}")
+      "https://www.googleapis.com/drive/v3/files" \
+      --data-urlencode "q=name='${NAME}' and '${GOOGLE_FOLDER_ID}' in parents and mimeType='text/markdown' and trashed=false" \
+      -d "fields=files(id)" \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}")
 
-    EXISTING_ID=$(echo "$SEARCH_RESP" | tr -d '\n\r ' | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+    FILE_ID=$(echo "$SEARCH_RESP" | jq -r '.files[0].id // empty')
 
     if [ -n "$FILE_ID" ] && [ "$FILE_ID" != "null" ]; then
       echo "  ♻️  Existant (ID: $FILE_ID) → écrasement"
     else
       echo "  🆕 Création..."
       CREATE_RESP=$(curl -s -X POST \
-	  "https://www.googleapis.com/drive/v3/files?fields=id,webViewLink" \
-      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-      -H "Content-Type: application/json" \
-      -d "{\"name\":\"${NAME}\",\"mimeType\":\"application/vnd.google-apps.document\",\"parents\":[\"${GOOGLE_FOLDER_ID}\"]}")
-
-       FILE_ID=$(echo "$CREATE_RESP" | tr -d '\n\r ' | sed 's/.*"id":"\([^"]*\)".*/\1/')
+        "https://www.googleapis.com/drive/v3/files?fields=id" \
+        -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d "{\"name\":\"${NAME}\",\"mimeType\":\"text/markdown\",\"parents\":[\"${GOOGLE_FOLDER_ID}\"]}")
+      FILE_ID=$(echo "$CREATE_RESP" | jq -r '.id')
       echo "  🆕 ID: $FILE_ID"
     fi
 
-    echo "  📤 Écrasement contenu..."
+    echo "  📤 Upload contenu..."
     curl -s --max-time 60 -X PATCH \
       "https://www.googleapis.com/upload/drive/v3/files/${FILE_ID}?uploadType=media" \
       -H "Authorization: Bearer $ACCESS_TOKEN" \
-      -H "Content-Type: text/plain" \
+      -H "Content-Type: text/markdown" \
       --data-binary "@$FILE" >/dev/null
 
     echo "  ✅ OK"
-    echo ""
   done <<< "$JS_FILES"
 
-  echo "🎉 $COUNT/$TOTAL synchronisés !"
+  echo "🎉 $TOTAL fichiers synchronisés en .md !"
 
-  echo "🔄 Refresh NotebookLM..."
-  python notebooklm_refresh.py $JS_FILES
+  # ── 6. Refresh NotebookLM ──────────────────────────────────────────────────
+  # Note : Comme expliqué, cela nécessite un script python spécifique (notebooklm_refresh.py)
+  # utilisant une bibliothèque de simulation de navigateur (Playwright/Selenium)
+  if [ -f "notebooklm_refresh.py" ]; then
+    echo "🔄 Tentative de refresh NotebookLM via script externe..."
+    python3 notebooklm_refresh.py $JS_FILES
+  else
+    echo "ℹ️ notebooklm_refresh.py non trouvé, refresh automatique ignoré."
+  fi
 fi
 
 echo ""
-echo "🏁 Les Héritiers v${VERSION} terminé !"
+echo "🏁 Fin du processus !"
