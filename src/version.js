@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
     {
+    version: '15.16.40 - "Le Voyant Rouge 🔴"',
+    date: '10 Mai 2026',
+    description: 'Fix de la pastille de notification du Télégraphe.',
+    changes: [
+      '🔴 **Pastille de Notification (Télégraphe) :** Le voyant d\'alerte de l\'icône du Télégraphe signale désormais tous les messages privés ou de cercle en attente, et n\'est plus limité aux seuls tickets de support de l\'administration.',
+      '💾 **Curseur Temporel Hors-Ligne :** Le système mémorise intelligemment le moment exact de votre dernière lecture (via `localStorage`) pour réafficher la pastille rouge lors de votre prochaine connexion si un message a été reçu pendant votre absence (sans surcharger Supabase).'
+    ]
+  },{
         version: '15.16.39 - "Le Daguerréotype Fidèle 📸"',
         date: '2026-05-08',
         description: 'Fix : changement de portrait impossible après 1er upload',

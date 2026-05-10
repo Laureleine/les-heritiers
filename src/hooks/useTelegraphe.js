@@ -1,98 +1,67 @@
 // src/hooks/useTelegraphe.js
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { supabase } from '../config/supabase';
+import { showInAppNotification, translateError } from '../utils/SystemeServices';
 
-import { useState, useEffect, useCallback } from 'react';
-// ATTENTION : VÉRIFIEZ CE CHEMIN D'IMPORTATION ! 
-// Si l'erreur persiste, le chemin '../utils/supabaseClient' est incorrect.
-import supabase from '../utils/supabaseClient'; 
-
-/**
- * Hook personnalisé pour gérer la connexion temps réel et les données de messagerie du Télégraphe.
- * @param {object} session - L'objet session utilisateur Supabase.
- * @param {object} userProfile - Le profil utilisateur actuel.
- * @returns {object} Contient tous les états et fonctions nécessaires pour le composant Telegraphe.
- */
-export const useTelegraphe = (session, userProfile) => {
+export function useTelegraphe(session, userProfile) {
+  const [channels, setChannels] = useState([]);
   const [messages, setMessages] = useState([]);
   const [activeChannel, setActiveChannel] = useState(null);
-  const [loading, setLoading] = useState(true);
-  // État des canaux (pour la vue liste)
-  const [channels, setChannels] = useState([]); 
-  // État pour les accusés de réception : { [messageId]: [userId, ...] }
+  const [loading, setLoading] = useState(false);
   const [messageReads, setMessageReads] = useState({});
+  
+  // ✨ NOUVEAU : La mémoire visuelle des non-lus
+  const [hasUnread, setHasUnread] = useState(false);
 
-  // --- Détermination des rôles et statuts ---
   const isAdmin = userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien';
   const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin;
 
+  const activeChannelRef = useRef(activeChannel);
+  useEffect(() => { activeChannelRef.current = activeChannel; }, [activeChannel]);
 
-  /** ---------------------------------------------------
-   * ÉCOUTEUR TEMPS RÉEL (LE CŒUR DU SYSTÈME)
-   * Gère l'abonnement aux changements de messages et de canaux.
-   * --------------------------------------------------- */
-  useEffect(() => {
-    if (!session || !userProfile) return () => {};
+  // ✨ NOUVEAU : Le marqueur temporel de lecture
+  const markTelegrapheAsOpened = useCallback(() => {
+    setHasUnread(false);
+    if (session?.user?.id) {
+      try {
+        localStorage.setItem(`telegraphe_last_opened_${session.user.id}`, new Date().toISOString());
+      } catch(e) {}
+    }
+  }, [session?.user?.id]);
 
-    // --- Abonnement aux nouveaux messages ---
-    const messageChannel = supabase
-      .channel('messages_realtime')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
-          // Vérification de la pertinence du message avant de mettre à jour l'état
-          const newMessage = payload.new;
-
-          if (newMessage && newMessage.user_id !== session.user.id) {
-            console.log("✅ Nouveau message reçu en temps réel:", newMessage);
-            setMessages(prevMessages => [...prevMessages, newMessage]);
-          }
-        },
-        { payload: (payload) => {
-             console.warn("Message reçu via Realtime:", payload);
-        }}
-      )
-      .subscribe();
-
-    // --- Abonnement aux changements de canaux (pour la vue liste) ---
-    const channelListChannel = supabase
-      .channel('channels_realtime')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'channels' },
-        (payload) => {
-          console.log("✅ Nouveau canal détecté:", payload.new);
-          setChannels(prevChannels => [...prevChannels, payload.new]);
-        },
-        { payload: (payload) => {
-             console.warn("Canal détecté via Realtime:", payload);
-        }}
-      )
-      .subscribe();
-
-    // Fonction de nettoyage : Désabonnement des écouteurs
-    return () => { 
-      supabase.removeChannel(messageChannel);
-      supabase.removeChannel(channelListChannel);
-    };
-  }, [session, userProfile]);
-
-
-  /** ---------------------------------------------------
-   * RÉCUPÉRATION DES DONNÉES (CANAUX ET MESSAGES)
-   * --------------------------------------------------- */
-
+  // ==========================================================================
+  // 📡 LECTURE DES CANAUX
+  // ==========================================================================
   const fetchChannels = useCallback(async (isSilent = false) => {
     if (!isSilent) setLoading(true);
     try {
       const myId = session?.user?.id;
       if (!myId) return;
 
-      // 1. Récupération des Cercles et Canaux privés/groupes
+      const { data: docteCercles } = await supabase.from('cercles').select('id, nom').eq('docte_id', myId);
+      const { data: memberData } = await supabase.from('cercle_membres').select('cercles(id, nom)').eq('user_id', myId);
+      
+      const myCercles = [...(docteCercles || [])];
+      if (memberData) {
+        memberData.forEach(m => {
+          if (m.cercles && !myCercles.find(c => c.id === m.cercles.id)) {
+            myCercles.push(m.cercles);
+          }
+        });
+      }
+      const cercleIds = myCercles.map(c => c.id);
+
       let queryOr = isAdmin
         ? `type.eq.global,type.eq.support,and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`
         : `type.eq.global,and(type.eq.support,participant_1.eq.${myId}),and(type.eq.private,or(participant_1.eq.${myId},participant_2.eq.${myId}))`;
+      
+      if (cercleIds.length > 0) {
+        queryOr += `,and(type.eq.cercle,cercle_id.in.(${cercleIds.join(',')}))`;
+      }
+      if (isInitiated) {
+        queryOr += `,type.eq.initie`;
+      }
 
-      // Logique de filtrage des cercles (simplifiée pour l'exemple)
       const { data: chatData, error: chatError } = await supabase
         .from('chat_channels')
         .select('*')
@@ -101,176 +70,212 @@ export const useTelegraphe = (session, userProfile) => {
 
       if (chatError) throw chatError;
 
-      let finalChannels = chatData || [];
+      let finalChannels = [...(chatData || [])];
 
-      // 2. Ajout des canaux virtuels manquant (pour l'UX)
-      const virtualChannels = [
-        { id: 'virtual_global', is_virtual: true, type: 'global', name: 'Public', last_message_at: new Date(0).toISOString() },
-        ...(isInitiated ? [{ id: 'virtual_initie', is_virtual: true, type: 'initie', name: 'Le Cercle des Initiés', last_message_at: new Date(0).toISOString() }] : [])
-      ];
+      myCercles.forEach(cercle => {
+        const exists = finalChannels.find(chan => chan.type === 'cercle' && chan.cercle_id === cercle.id);
+        if (!exists) {
+          finalChannels.push({
+            id: `virtual_${cercle.id}`, is_virtual: true, type: 'cercle',
+            name: `Table : ${cercle.nom}`, cercle_id: cercle.id,
+            last_message_at: new Date(0).toISOString()
+          });
+        }
+      });
 
-      finalChannels = [...finalChannels, ...virtualChannels].filter((c, index, self) => 
-        self.findIndex((t) => (
-          t.id === c.id && t.is_virtual === c.is_virtual
-        ))
-      );
+      if (isInitiated) {
+        const existsInitie = finalChannels.find(chan => chan.type === 'initie');
+        if (!existsInitie) {
+          finalChannels.push({
+            id: 'virtual_initie', is_virtual: true, type: 'initie',
+            name: 'Le Cercle des Initiés', cercle_id: null,
+            last_message_at: new Date(0).toISOString()
+          });
+        }
+      }
 
+      finalChannels.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+      
+      // ✨ LE DÉTECTEUR HORS-LIGNE DE MESSAGES NON LUS
+      try {
+        const lastOpened = localStorage.getItem(`telegraphe_last_opened_${myId}`);
+        if (lastOpened && finalChannels.length > 0) {
+          const hasRecent = finalChannels.some(c => 
+             c.type !== 'global' && 
+             new Date(c.last_message_at).getTime() > new Date(lastOpened).getTime()
+          );
+          if (hasRecent) setHasUnread(true);
+        }
+      } catch(e) {}
 
       setChannels(finalChannels);
     } catch (err) {
-      console.error("Erreur lors de la récupération des canaux:", err);
+      showInAppNotification("Erreur de lecture des correspondances : " + translateError(err), "error");
     } finally {
       if (!isSilent) setLoading(false);
     }
-  }, [supabase, isAdmin, isInitiated]);
+  }, [session?.user?.id, isAdmin, isInitiated]);
 
-
-  /** ---------------------------------------------------
-   * MISE À JOUR DES MESSAGES ET STATUT DE LECTURE
-   * --------------------------------------------------- */
-
-  const fetchMessages = useCallback(async (channelId) => {
-    if (!activeChannel || activeChannel.id !== channelId) {
-        setActiveChannel({ id: channelId, name: 'Conversation', type: 'global', status: 'actif' });
+  const updateChannelStatus = useCallback(async (id, status) => {
+    try {
+      const { error } = await supabase.from('chat_channels').update({ status }).eq('id', id);
+      if (error) throw error;
+      fetchChannels(true);
+    } catch (err) {
+      console.error("Erreur de mise à jour du statut:", err);
     }
-    setLoading(true);
+  }, [fetchChannels]);
+
+  // ==========================================================================
+  // 📡 LECTURE DES MESSAGES
+  // ==========================================================================
+  const fetchMessages = useCallback(async (channel, isSilent = false) => {
+    if (!isSilent) setLoading(true);
+    setActiveChannel(channel);
+
+    if (channel.is_virtual) {
+      setMessages([]);
+      setMessageReads({});
+      if (!isSilent) setLoading(false);
+      return;
+    }
+
+    const myId = session?.user?.id;
 
     try {
-      let query = supabase
-        .from('messages')
-        .select(`*, profiles:profiles (username, user_id)`)
-        .eq('channel_id', channelId)
-        .order('created_at', { ascending: true })
-        .limit(100);
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*, profiles(username)')
+        .eq('channel_id', channel.id)
+        .order('created_at', { ascending: true });
 
-      const { data, error } = await query;
       if (error) throw error;
+      if (data) {
+        setMessages(data);
 
-      setMessages(data || []);
-    } catch (error) {
-      console.error("Erreur lors de la récupération des messages:", error);
-      setMessages([]);
+        if (channel.type !== 'global' && data.length > 0) {
+          const toMark = data
+            .filter(m => m.user_id !== myId)
+            .map(m => ({ message_id: m.id, user_id: myId }));
+
+          if (toMark.length > 0) {
+            supabase.from('chat_message_reads')
+              .upsert(toMark, { onConflict: 'message_id,user_id', ignoreDuplicates: true })
+              .then(); 
+          }
+
+          const { data: readsData } = await supabase
+            .from('chat_message_reads')
+            .select('message_id, user_id')
+            .in('message_id', data.map(m => m.id));
+
+          const readsMap = {};
+          readsData?.forEach(r => {
+            if (!readsMap[r.message_id]) readsMap[r.message_id] = [];
+            readsMap[r.message_id].push(r.user_id);
+          });
+          setMessageReads(readsMap);
+        } else {
+          setMessageReads({});
+        }
+
+        if (channel.type === 'support') {
+          if (isAdmin && channel.status === 'nouveau') updateChannelStatus(channel.id, 'lu');
+          else if (!isAdmin && channel.status === 'lu') updateChannelStatus(channel.id, 'consulte');
+        }
+      }
+    } catch (err) {
+      showInAppNotification("Erreur de lecture des missives : " + translateError(err), "error");
+    } finally {
+      if (!isSilent) setLoading(false);
+    }
+  }, [session?.user?.id, isAdmin, updateChannelStatus]);
+
+  // ==========================================================================
+  // ✉️ ACTIONS (NOUVEAU CHAT, TICKET, REPONSE)
+  // ==========================================================================
+  const startPrivateChat = useCallback(async (targetUser) => {
+    setLoading(true);
+    try {
+      const myId = session?.user?.id;
+      if (!myId || !targetUser?.id) return;
+
+      const { data: existingChannels, error: searchError } = await supabase
+        .from('chat_channels')
+        .select('*')
+        .eq('type', 'private')
+        .or(`and(participant_1.eq.${myId},participant_2.eq.${targetUser.id}),and(participant_1.eq.${targetUser.id},participant_2.eq.${myId})`);
+
+      if (searchError) throw searchError;
+
+      // ✨ LE FIX EST ICI : On cible correctement l'index du tableau !
+      const existing = existingChannels?.[0];
+
+      if (existing) {
+        fetchMessages(existing);
+      } else {
+        const { data: newChannel, error: insertError } = await supabase.from('chat_channels')
+          .insert([{
+            type: 'private',
+            name: `Correspondance avec ${targetUser.username}`,
+            participant_1: myId,
+            participant_2: targetUser.id
+          }])
+          .select().single();
+
+        if (insertError) throw insertError;
+        if (newChannel) {
+          fetchChannels();
+          fetchMessages(newChannel);
+        }
+      }
+    } catch (err) {
+      showInAppNotification("Erreur lors de la création du canal privé : " + translateError(err), "error");
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
-
-
-  /** ---------------------------------------------------
-   * GESTION DES ACCUSÉS DE RÉCEPTION (READ RECEIPTS)
-   * Déclenché après la récupération des messages.
-   * --------------------------------------------------- */
-  const markMessagesAsRead = useCallback(async () => {
-    if (!activeChannel || activeChannel.type === 'global') return;
-
-    const myId = session?.user?.id;
-    // On ne marque que les messages reçus (qui n'ont pas été envoyés par moi)
-    const messagesToMark = messages.filter(m => m.user_id !== myId); 
-
-    if (messagesToMark.length > 0) {
-      try {
-        const toMark = messagesToMark.map(m => ({ 
-          message_id: m.id, 
-          user_id: myId 
-        }));
-
-        // Utilisation de upsert pour insérer ou mettre à jour le statut de lecture
-        await supabase.from('chat_message_reads')
-          .upsert(toMark, { onConflict: 'message_id,user_id', ignoreDuplicates: true });
-      } catch (err) {
-        console.error("Erreur lors du marquage des lectures:", err);
-      }
-    }
-  }, [activeChannel, messages]);
-
-
-  /** ---------------------------------------------------
-   * ACTIONS DE COMMUNICATION
-   * --------------------------------------------------- */
-
-  const startPrivateChat = useCallback(async (targetUser) => {
-    console.log(`Tentative de démarrage d'un chat privé avec ${targetUser.email}`);
-    setActiveChannel({ id: 'private_chat', name: targetUser.username || 'Utilisateur Privé', type: 'private', status: 'actif' });
-
-    // Logique pour trouver ou créer un canal privé entre l'utilisateur et la cible.
+  }, [session?.user?.id, fetchChannels, fetchMessages]);
+  
+  const createSupportTicket = async (newSujet, newMessage) => {
+    setLoading(true);
     try {
-        const myId = session?.user?.id;
-        if (!myId) throw new Error("Session utilisateur manquante.");
-
-        let existingChannel = await supabase.from('chat_channels')
-            .select('*')
-            .eq('type', 'private')
-            .or(`and(participant_1.eq.${myId},participant_2.eq.${targetUser.id}),and(participant_1.eq.${targetUser.id},participant_2.eq.${myId})`)
-            .maybeSingle();
-
-        if (existingChannel) {
-            await fetchMessages(existingChannel.id);
-        } else {
-            const { data: newChannel, error: insertError } = await supabase.from('chat_channels')
-                .insert([{
-                    type: 'private',
-                    name: `Correspondance avec ${targetUser.username}`,
-                    participant_1: myId,
-                    participant_2: targetUser.id
-                  }])
-                  .select().single();
-
-            if (insertError) throw insertError;
-            await fetchMessages(newChannel.id);
-        }
-    } catch (err) {
-      console.error("Erreur lors de la gestion du chat privé:", err);
-    }
-  }, [supabase, fetchMessages]);
-
-
-  const createSupportTicket = useCallback(async (subject, content) => {
-    try {
-      // 1. Créer le canal dans la DB
       const { data: channelData, error: channelError } = await supabase
         .from('chat_channels')
-        .insert([{ type: 'support', name: subject, participant_1: session.user.id, status: 'nouveau' }])
+        .insert([{ type: 'support', name: newSujet, participant_1: session.user.id, status: 'nouveau' }])
         .select().single();
 
       if (channelError) throw channelError;
 
-      // 2. Envoyer le premier message dans ce canal
-      await supabase.from('messages').insert([{
+      const { error: msgError } = await supabase.from('chat_messages').insert([{
         channel_id: channelData.id,
         user_id: session.user.id,
-        message: content,
-        is_admin: false,
-        profiles: { username: userProfile?.username }, 
-        created_at: new Date().toISOString(),
+        message: newMessage,
+        is_admin: false
       }]);
 
-      // 3. Mettre à jour le statut et de l'horodatage du canal (pour l'affichage)
-      await supabase.from('chat_channels').update({ status: 'ouvert', last_message_at: new Date().toISOString() }).eq('id', channelData.id);
-
+      if (msgError) throw msgError;
 
       showInAppNotification("Missive de support expédiée au Conseil.", "success");
-      // Recharger les canaux pour voir le nouveau ticket
-      await fetchChannels(true); 
-      return true; // Succès !
+      fetchChannels(true);
+      return true; 
     } catch (err) {
-      console.error("Erreur d'expédition du ticket:", err);
       showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
-      return false; // Échec
+      return false; 
+    } finally {
+      setLoading(false);
     }
-  }, [supabase, fetchChannels, showInAppNotification, session?.user?.id]);
+  };
 
-
-  const sendReply = useCallback(async (messageContent) => {
-    if (!activeChannel || !session) return false;
-
+  const sendReply = async (newMessage) => {
+    if (!activeChannel) return false;
+    setLoading(true);
     try {
       let actualChannelId = activeChannel.id;
       let currentChannel = activeChannel;
 
-      // Si c'est un canal Virtuel, on le grave dynamiquement !
       if (activeChannel.is_virtual) {
         const { data: newChan, error: chanError } = await supabase.from('chat_channels').insert([{
-          type: activeChannel.type, 
+          type: activeChannel.type,
           name: activeChannel.name,
           cercle_id: activeChannel.cercle_id || null,
           status: 'open',
@@ -280,132 +285,107 @@ export const useTelegraphe = (session, userProfile) => {
         if (chanError) throw chanError;
         actualChannelId = newChan.id;
         currentChannel = newChan;
-        setActiveChannel(newChan); // Mise à jour de l'état actif
+        setActiveChannel(newChan);
       }
 
-      // 1. Insertion du message
-      await supabase.from('messages').insert({
+      const { error: msgError } = await supabase.from('chat_messages').insert([{
         channel_id: actualChannelId,
         user_id: session.user.id,
-        message: messageContent,
-        is_admin: isAdmin || false,
-        profiles: { username: userProfile?.username }, 
-        created_at: new Date().toISOString(),
-      });
+        message: newMessage,
+        is_admin: isAdmin || false
+      }]);
 
-      // 2. Mise à jour du statut et de l'horodatage du canal (sauf si c'est un chat privé)
-      if (!activeChannel.is_virtual && activeChannel.type !== 'private') {
+      if (msgError) throw msgError;
+
+      if (!activeChannel.is_virtual) {
         const newStatus = activeChannel.type === 'support' ? (isAdmin ? 'lu' : 'nouveau') : 'open';
-        await supabase.from('chat_channels').update({
+        const { error: updateError } = await supabase.from('chat_channels').update({
           last_message_at: new Date().toISOString(),
           status: newStatus
         }).eq('id', actualChannelId);
+        if (updateError) throw updateError;
       }
 
-      // 3. Récupération des messages mis à jour (pour le défilement)
-      await fetchMessages(actualChannelId);
-      await fetchChannels(true); // Mise à jour de la liste des canaux
-      return true; // Succès !
+      fetchMessages(currentChannel, true);
+      fetchChannels(true);
+      return true; 
     } catch (err) {
-      console.error("Erreur d'expédition du message:", err);
-      showInAppNotification("Échec de l'envoi : " + translateError(err), "error");
-      return false; // Échec
+      showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
+      return false; 
+    } finally {
+      setLoading(false);
     }
-  }, [activeChannel, session, userProfile, isAdmin, fetchMessages, supabase, showInAppNotification]);
-
+  };
 
   // ==========================================================================
-  // 🔗 SUPABASE REALTIME (WebSockets) - GESTION DES SUBSCRIPTIONS
+  // 🔗 SUPABASE REALTIME (WebSockets)
   // ==========================================================================
+  const fetchChannelsRef = useRef(fetchChannels);
+  const fetchMessagesRef = useRef(fetchMessages);
+  const channelsRef = useRef(channels);
+
   useEffect(() => {
-    if (!session?.user?.id) return () => {};
+    fetchChannelsRef.current = fetchChannels;
+    fetchMessagesRef.current = fetchMessages;
+    channelsRef.current = channels;
+  });
 
-    const myId = session.user.id;
+  useEffect(() => {
+    if (!session?.user?.id) return;
 
-    // --- Abonnement aux messages en temps réel ---
-    const messageChannel = supabase
-      .channel('messages_realtime')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
-          // 1. Vérification de la pertinence du message (doit être pour un canal actif et ne pas venir de moi)
-          const newMessage = payload.new;
+    fetchChannelsRef.current(true);
 
-          if (newMessage && newMessage.user_id !== myId) {
-            console.log("✅ Nouveau message reçu en temps réel:", newMessage);
-            // 2. Mise à jour de l'état des messages pour déclencher le composant Telegraphe
-            setMessages(prevMessages => [...prevMessages, newMessage]);
+    const chatSubscription = supabase.channel('telegraphe-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_messages' }, (payload) => {
+        fetchChannelsRef.current(true);
+
+        if (activeChannelRef.current && payload.new?.channel_id === activeChannelRef.current.id) {
+          fetchMessagesRef.current(activeChannelRef.current, true);
+        }
+
+        // ✨ LE FILTRE INTELLIGENT DE NOTIFICATION
+        if (payload.eventType === 'INSERT') {
+          if (payload.new.user_id !== session.user.id) {
+            const targetChannel = channelsRef.current.find(c => c.id === payload.new.channel_id);
+            if (!targetChannel || targetChannel.type !== 'global') {
+              if (userProfile?.profile?.notify_telegraphe !== false) {
+                showInAppNotification("📠 Une nouvelle missive pneumatique vient d'arriver !", 'info');
+              }
+              setHasUnread(true); // ✨ LA PASTILLE ROUGE VISUELLE
+            }
           }
-        },
-        { payload: (payload) => {
-             console.warn("Message reçu via Realtime:", payload);
-        }}
-      )
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_channels' }, () => {
+        fetchChannelsRef.current(true);
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_message_reads' }, (payload) => {
+        const { message_id, user_id } = payload.new;
+        setMessageReads(prev => {
+          const prevReaders = prev[message_id] || [];
+          if (prevReaders.includes(user_id)) return prev; 
+          return { ...prev, [message_id]: [...prevReaders, user_id] };
+        });
+      })
       .subscribe();
 
-    // --- Abonnement aux changements de canaux et au statut des lectures ---
-    const channelListChannel = supabase
-      .channel('channels_realtime')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'channels' },
-        (payload) => {
-          console.log("✅ Nouveau canal détecté:", payload.new);
-          setChannels(prevChannels => [...prevChannels, payload.new]);
-        },
-        { payload: (payload) => {
-             console.warn("Canal détecté via Realtime:", payload);
-        }}
-      )
-      .subscribe();
-
-    // --- Abonnement aux accusés de réception (READ RECEIPTS) ---
-    const readReceiptChannel = supabase
-      .channel('message_reads_realtime')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'chat_message_reads' },
-        (payload) => {
-          console.log("✅ Accusé de réception reçu en temps réel:", payload.new);
-          setMessageReads(prev => {
-            const { message_id, user_id } = payload.new;
-            const prevReaders = prev[message_id] || [];
-            if (prevReaders.includes(user_id)) return prev; // Déjà connu
-            return { ...prev, [message_id]: [...prevReaders, user_id] };
-          });
-        },
-        { payload: (payload) => {
-             console.warn("Accusé de réception détecté via Realtime:", payload);
-        }}
-      )
-      .subscribe();
-
-    // Fonction de nettoyage : Désabonnement des écouteurs
-    return () => { 
-      supabase.removeChannel(messageChannel);
-      supabase.removeChannel(channelListChannel);
-      supabase.removeChannel(readReceiptChannel);
-    };
-  }, [supabase, session?.user?.id]);
-
-
-  // ==========================================================================
-  // EXPOSITION DES DONNÉES ET FONCTIONS
-  // ==========================================================================
+    return () => { supabase.removeChannel(chatSubscription); };
+  }, [session?.user?.id]);
 
   return {
-    messages, 
-    activeChannel, 
+    channels,
+    messages,
+    activeChannel,
     setActiveChannel,
-    loading, 
-    isAdmin, 
-    isInitiated, 
+    loading,
+    isAdmin,
+    isInitiated,
     messageReads,
-    fetchMessages, 
-    startPrivateChat, 
-    createSupportTicket, 
+    fetchMessages,
+    startPrivateChat,
+    createSupportTicket,
     sendReply,
-    channels: getChannelsList() // Exposer la liste des canaux mise à jour en temps réel
+    hasUnread, // ✨ EXPORTÉ
+    markTelegrapheAsOpened // ✨ EXPORTÉ
   };
 }

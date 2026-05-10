@@ -1,12 +1,8 @@
 // src/components/Telegraphe.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import { LayoutList, MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, ListFilter, Settings, Key, Check, CheckCheck } from '../config/icons';
-
-// ✨ MAGIE : On importe notre Cerveau autonome !
 import { useTelegraphe } from '../hooks/useTelegraphe';
 
-// Sécurisation du LocalStorage (Anti-crash SSR/Incognito)
 const getSafeUiMode = () => {
   try { return localStorage.getItem('telegraphe_ui_mode') || 'tabs'; }
   catch (e) { return 'tabs'; }
@@ -21,52 +17,25 @@ export default function Telegraphe({ session, userProfile }) {
   const [activeTab, setActiveTab] = useState('global');
   const messagesEndRef = useRef(null);
 
-  // 🔊 Gestion du son de notification
-  const audioRef = useRef(new Audio('/sounds/notification.mp3')); // Assurez-vous que ce fichier existe !
-  audioRef.current.volume = 0.8;
-
-
-  // ==========================================================================
-  // 🧠 LE CERVEAU CONNECTÉ
-  // ==========================================================================
   const {
     channels, messages, activeChannel, setActiveChannel,
     loading, isAdmin, isInitiated, messageReads,
-    fetchMessages, startPrivateChat, createSupportTicket, sendReply
+    fetchMessages, startPrivateChat, createSupportTicket, sendReply,
+    hasUnread, markTelegrapheAsOpened // ✨ LES NOUVEAUTÉS CONNECTÉES !
   } = useTelegraphe(session, userProfile);
 
-  // ==========================================================================
-  // 🖱️ GESTION DE L'INTERFACE ET DES VUES
-  // ==========================================================================
-
-  // Défilement automatique vers le bas lors d'un nouveau message
   useEffect(() => {
     if (view === 'chat' && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, view]);
 
-  // 🔔 Effet de son et visuel lors de l'arrivée d'un message
-  useEffect(() => {
-    if (view === 'chat' && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      const isIncoming = !lastMessage.user_id === session.user.id;
-
-      // Jouer le son si c'est un message entrant et que nous sommes ouverts
-      if (isIncoming && isOpen) {
-        audioRef.current.currentTime = 0; // Rembobiner au début
-        audioRef.current.play().catch(e => console.warn("Erreur de lecture audio:", e));
-      }
-    }
-  }, [messages, view, isOpen]);
-
-
   // Écouteur magique pour s'ouvrir depuis n'importe où dans l'application
   useEffect(() => {
     const handleOpenTelegraphe = async (e) => {
       const { targetUser, targetCercle } = e.detail || {};
       setIsOpen(true);
-      
+      markTelegrapheAsOpened(); // ✨ On purge l'alerte rouge
       if (targetUser) {
         await startPrivateChat(targetUser);
         setView('chat');
@@ -77,9 +46,14 @@ export default function Telegraphe({ session, userProfile }) {
     };
     window.addEventListener('open-telegraphe', handleOpenTelegraphe);
     return () => window.removeEventListener('open-telegraphe', handleOpenTelegraphe);
-  }, [startPrivateChat]);
+  }, [startPrivateChat, markTelegrapheAsOpened]);
 
-  // Wrappers d'action pour coordonner le Cerveau et la Vue
+  // ✨ MAINTIEN DE LA LECTURE PENDANT L'OUVERTURE
+  // Tant que le joueur regarde le Télégraphe, le curseur temporel avance !
+  useEffect(() => {
+    if (isOpen) markTelegrapheAsOpened();
+  }, [isOpen, messages, markTelegrapheAsOpened]);
+
   const handleOpenChannel = async (channel) => {
     await fetchMessages(channel);
     setView('chat');
@@ -110,19 +84,19 @@ export default function Telegraphe({ session, userProfile }) {
     return <MessageCircle size={16} className="text-gray-600" />;
   };
 
-  if (!session) return null;
-
   return (
     <div className="fixed bottom-6 right-6 z-50">
       
       {/* BOUTON FLOTTANT */}
       {!isOpen && (
-        <button 
-          onClick={() => setIsOpen(true)} 
+        <button
+          onClick={() => { setIsOpen(true); markTelegrapheAsOpened(); }} // ✨ Purge manuelle au clic
           className="bg-amber-800 text-amber-50 p-4 rounded-full shadow-2xl hover:bg-amber-700 transition-transform transform hover:scale-110 border-2 border-amber-600 flex items-center gap-2"
         >
           <MessageCircle size={28} />
-          {((isAdmin && channels.some(c => c.type === 'support' && c.status === 'nouveau')) || 
+          {/* ✨ LE FIX VISUEL INTÉGRAL ! Il surveille TOUT ! */}
+          {(hasUnread || 
+            (isAdmin && channels.some(c => c.type === 'support' && c.status === 'nouveau')) ||
             (!isAdmin && channels.some(c => c.type === 'support' && c.status === 'lu'))) && (
             <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-bounce">!</span>
           )}
@@ -139,44 +113,46 @@ export default function Telegraphe({ session, userProfile }) {
               {"Hub Pneumatique"}
             </h3>
             <div className="flex items-center gap-3">
-              {view === 'list' && (
-                <button onClick={() => setView('settings')} className="text-amber-300 hover:text-white transition-colors" title="Réglages du Télégraphe">
-                  <Settings size={18}/>
-                </button>
-              )}
-              <button onClick={() => setIsOpen(false)} className="hover:text-red-400 transition-colors">
+              <button onClick={() => setView('settings')} className="text-amber-300 hover:text-white transition-colors" title="Paramètres du Télégraphe">
+                <Settings size={18} />
+              </button>
+              <button onClick={() => setIsOpen(false)} className="text-amber-300 hover:text-white transition-colors">
                 <X size={24} />
               </button>
             </div>
           </div>
 
-          {/* VUE 1 : LISTE DES SALONS */}
+          {/* VUE 1 : LISTE DES CANAUX */}
           {view === 'list' && (
             <div className="flex-1 flex flex-col min-h-0 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
               
               {uiMode === 'tabs' && (
-                <div className="flex bg-stone-100 border-b border-stone-200 p-1 shrink-0 overflow-x-auto hide-scrollbar">
-                  {[
-                    { id: 'global', label: 'Public', icon: <Globe size={14}/> },
-                    { id: 'cercle', label: 'Mes Tables', icon: <Users size={14}/> },
-                    ...(isInitiated ? [{ id: 'initie', label: 'Initiés', icon: <Key size={14}/> }] : []),
-                    { id: 'private', label: 'Privé', icon: <User size={14}/> },
-                    { id: 'support', label: 'Conseil', icon: <Shield size={14}/> }
-                  ].map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex-1 min-w-[80px] flex justify-center items-center gap-1.5 py-2 px-3 text-xs font-bold rounded transition-all ${activeTab === tab.id ? 'bg-white text-amber-900 shadow-sm border border-stone-200' : 'text-stone-500 hover:bg-stone-200 hover:text-stone-700'}`}
-                    >
-                      {tab.icon} <span className="hidden md:inline">{tab.label}</span>
+                <div className="flex bg-amber-800 text-amber-100 text-xs font-bold uppercase tracking-wider shrink-0 overflow-x-auto hide-scrollbar">
+                  <button onClick={() => setActiveTab('global')} className={`px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'global' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                    <Globe size={14} /> Public
+                  </button>
+                  <button onClick={() => setActiveTab('private')} className={`px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'private' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                    <User size={14} /> Privé
+                  </button>
+                  <button onClick={() => setActiveTab('cercle')} className={`px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'cercle' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                    <Users size={14} /> Cercles
+                  </button>
+                  <button onClick={() => setActiveTab('support')} className={`px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'support' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                    {isAdmin ? <Shield size={14} /> : <ShieldAlert size={14} />} 
+                    Conseil {isAdmin && channels.some(c => c.type === 'support' && c.status === 'nouveau') && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                  </button>
+                  {isInitiated && (
+                    <button onClick={() => setActiveTab('initie')} className={`px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'initie' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                      <Key size={14} /> Initiés
                     </button>
-                  ))}
+                  )}
                 </div>
               )}
 
-              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+                
                 {!isAdmin && (uiMode === 'unified' || activeTab === 'support') && (
-                  <button onClick={() => setView('new')} className="w-full mb-4 bg-amber-100 hover:bg-amber-200 text-amber-900 py-3 rounded-xl border-2 border-amber-300 font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                  <button onClick={() => setView('new')} className="w-full mb-3 p-3 border-2 border-dashed border-amber-400 text-amber-700 hover:bg-amber-100 rounded-lg flex items-center justify-center gap-2 font-bold transition-colors shadow-sm">
                     <ShieldAlert size={18} /> Signaler un problème au Conseil
                   </button>
                 )}
@@ -185,24 +161,31 @@ export default function Telegraphe({ session, userProfile }) {
                   {channels
                     .filter(c => isInitiated || c.type !== 'initie')
                     .filter(c => uiMode === 'unified' || c.type === activeTab)
+                    .length === 0 && (
+                      <p className="text-center text-gray-500 italic mt-4">Aucune correspondance dans cette section.</p>
+                  )}
+
+                  {channels
+                    .filter(c => isInitiated || c.type !== 'initie')
+                    .filter(c => uiMode === 'unified' || c.type === activeTab)
                     .map(c => (
-                      <div 
-                        key={c.id} 
-                        onClick={() => handleOpenChannel(c)}
-                        className="p-3 bg-white border border-stone-200 rounded-lg hover:border-amber-400 hover:shadow-md cursor-pointer transition-all flex items-center gap-3"
-                      >
-                        <div className="p-2 bg-stone-50 rounded-full border border-stone-100 shrink-0">
-                          {getChannelIcon(c.type)}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-bold text-amber-900 truncate">{c.name || 'Conversation'}</h4>
-                          <p className="text-xs text-stone-500 truncate mt-0.5 flex justify-between">
-                            <span>Dernier message : {new Date(c.last_message_at).toLocaleDateString('fr-FR')} à {new Date(c.last_message_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}</span>
-                            {c.type === 'support' && c.status === 'nouveau' && <span className="text-red-600 font-bold">En attente</span>}
-                          </p>
-                        </div>
+                    <div 
+                      key={c.id} 
+                      onClick={() => handleOpenChannel(c)}
+                      className="bg-white p-3 rounded-lg border border-stone-200 shadow-sm cursor-pointer hover:shadow-md hover:border-amber-300 transition-all flex items-center gap-3 group"
+                    >
+                      <div className="p-2 bg-stone-50 rounded-full border border-stone-100 shrink-0">
+                        {getChannelIcon(c.type)}
                       </div>
-                    ))}
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-amber-900 truncate">{c.name || 'Conversation'}</h4>
+                        <p className="text-xs text-stone-500 truncate mt-0.5 flex justify-between">
+                          <span>Dernier message : {new Date(c.last_message_at).toLocaleDateString('fr-FR')} à {new Date(c.last_message_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}</span>
+                          {c.type === 'support' && c.status === 'nouveau' && <span className="text-red-600 font-bold">En attente</span>}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -216,27 +199,25 @@ export default function Telegraphe({ session, userProfile }) {
               <div className="bg-amber-100 p-2 rounded text-xs text-amber-800 border border-amber-200">
                 Utilisez ce formulaire uniquement pour contacter les Gardiens (Bug, Règle, Support technique).
               </div>
-              
-              <input
-                type="text"
-                placeholder="Sujet du problème..."
+
+              <input 
+                type="text" 
+                placeholder="Sujet du problème..." 
                 className="p-3 border border-amber-400 rounded-lg bg-white text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-amber-600 shadow-sm"
                 value={newSujet}
                 onChange={(e) => setNewSujet(e.target.value)}
                 disabled={loading}
               />
-              
-              <textarea
-                placeholder="Décrivez votre requête en détail..."
+              <textarea 
+                placeholder="Décrivez votre requête en détail..." 
                 className="flex-1 p-3 border border-amber-400 rounded-lg bg-white text-stone-900 resize-none focus:outline-none focus:ring-2 focus:ring-amber-600 custom-scrollbar shadow-sm"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 disabled={loading}
               />
-              
               <button 
                 onClick={handleCreateTicket} 
-                disabled={loading || !newSujet.trim() || !newMessage.trim()} 
+                disabled={loading || !newSujet.trim() || !newMessage.trim()}
                 className="bg-amber-800 text-white p-3 rounded-lg hover:bg-amber-700 font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
               >
                 <Send size={18} /> {loading ? 'Envoi...' : 'Expédier la requête'}
@@ -252,88 +233,80 @@ export default function Telegraphe({ session, userProfile }) {
                 <span className="font-bold text-amber-900 truncate flex-1 text-right text-sm px-2">{activeChannel?.name}</span>
               </div>
               
-              {/* Ajout d'une classe pour le feedback global de notification */}
-              <div className={`flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar ${messages.length > 0 && messages[messages.length - 1].user_id !== session.user.id ? 'animate-flash-incoming' : ''}`}>
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                 {messages.map((m) => {
                   const isMe = m.user_id === session.user.id;
                   let displayName = isMe ? 'Vous' : (m.profiles?.username || 'Anonyme');
 
-                  // Dévoile le pseudo du Gardien s'il est masqué
                   if (activeChannel?.type === 'support' && !isMe) {
-                    displayName = m.profiles?.username
-                      ? `${m.profiles.username} (Garde des Sceaux)`
+                    displayName = m.profiles?.username 
+                      ? `${m.profiles.username} (Garde des Sceaux)` 
                       : 'Garde des Sceaux';
                   }
 
-                  // ── Détection de Nouveauté et Variables d'Accusé de Lecture ──
-                  const isIncomingMessage = !isMe && m.profiles?.username; 
+                  // ── Accusé de réception (uniquement sur MES messages, hors salon global) ──
+                  const showReceipt = isMe && activeChannel?.type !== 'global';
+                  const readers = showReceipt ? (messageReads[m.id] || []) : [];
                   
-                  // Calculs pour résoudre les erreurs ESLint :
+                  const myId = session.user.id;
+                  const otherParticipantId = activeChannel?.type === 'private' 
+                    ? (activeChannel.participant_1 === myId ? activeChannel.participant_2 : activeChannel.participant_1)
+                    : null;
                   const isPrivate = activeChannel?.type === 'private';
-                  const showReceipt = isPrivate || activeChannel?.type === 'support' || (activeChannel?.type === 'global' && !isMe); // Afficher si privé, support ou groupe
-                  // NOTE: Dans un vrai contexte, ces valeurs devraient venir du hook useTelegraphe. 
-                  // Ici, nous les initialisons pour satisfaire le compilateur et maintenir la structure.
-                  const readers = []; 
-                  const allRead = isPrivate ? true : false;
+                  
+                  const allRead = isPrivate 
+                    ? readers.includes(otherParticipantId)
+                    : (readers.length > 0);
 
                   return (
-                    <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 animate-fade-in`}>
-
-                      <div className={`flex items-baseline gap-2 mb-1 px-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                        {/* Indicateur visuel pour les messages entrants - AMÉLIORATION DE VISIBILITÉ */}
-                        <span className="text-xs font-bold text-stone-500 flex items-center gap-1">
-                            {displayName}
-                            {isIncomingMessage && (
-                                <span title="Nouveau message" className="inline-block w-2 h-2 bg-red-600 rounded-full animate-[pulse_1s_infinite] shadow-lg ring-2 ring-red-300"></span>
-                            )}
+                    <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                      <div className="flex items-baseline gap-2 mb-1 px-1">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isMe ? 'text-amber-700' : m.is_admin ? 'text-red-700' : 'text-stone-500'}`}>
+                          {displayName}
                         </span>
-                        <span className="text-[12px] text-stone-400 italic">
-                          le {new Date(m.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} à {new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}
+                        <span className="text-[9px] text-stone-400">
+                          {new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}
                         </span>
-                      </div >
-
-                      {/* La bulle de message */}
-                      <div className={`p-3 rounded-xl max-w-[85%] text-sm shadow-md whitespace-pre-wrap break-words ${
-                        isMe
-                          ? 'bg-amber-600 text-white rounded-tr-none'
-                          : m.is_admin
-                            ? 'bg-amber-100 text-amber-900 border border-amber-300 rounded-tl-none font-bold'
-                            // Ajout d'une classe pour les messages entrants (non admin) - AMÉLIORATION DE L'EFFET D'ARRIVÉE
-                            : `bg-white text-stone-800 border border-stone-200 rounded-tl-none ${isIncomingMessage ? 'animate-pop-in shadow-xl scale-[1.01]' : ''}`
+                      </div>
+                      
+                      <div className={`p-3 rounded-xl max-w-[85%] text-sm shadow-sm whitespace-pre-wrap break-words ${
+                        isMe 
+                          ? 'bg-amber-600 text-white rounded-tr-none' 
+                          : m.is_admin 
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300 rounded-tl-none font-bold' 
+                            : 'bg-white text-stone-800 border border-stone-200 rounded-tl-none'
                       }`}>
                         {m.message}
-                      </div >
+                      </div>
 
                       {/* ── Coche(s) de lecture ── */}
                       {showReceipt && (
                         <div className="flex items-center gap-0.5 mt-0.5 px-1">
                           {readers.length === 0 ? (
-                            /* Envoyé, pas encore lu */
-                            <Check size={12} className="text-white/50" />
+                            <Check size={12} className="text-stone-300" />
                           ) : isPrivate ? (
-                            /* Canal privé : ✓✓ amber = lu, gris = délivré */
-                            <CheckCheck
-                              size={13}
-                              className={allRead ? 'text-amber-200' : 'text-white/50'}
+                            <CheckCheck 
+                              size={13} 
+                              className={allRead ? 'text-amber-500' : 'text-stone-300'} 
                               title={allRead ? 'Lu' : 'Délivré'}
                             />
                           ) : (
-                            /* Canal groupe : ✓✓ + compteur de lecteurs */
                             <>
-                              <CheckCheck size={13} className="text-amber-200" />
-                              <span className="text-[10px] text-white/70 font-bold leading-none">
+                              <CheckCheck size={13} className="text-amber-500" />
+                              <span className="text-[10px] text-stone-400 font-bold leading-none">
                                 {readers.length}
                               </span>
                             </>
                           )}
                         </div>
                       )}
+
                     </div>
                   );
                 })}
                 <div ref={messagesEndRef} />
-              </div >
-              
+              </div>
+
               {activeChannel?.status !== 'resolu' ? (
                 <div className="p-3 bg-amber-50 border-t border-amber-300 flex gap-2 items-end shrink-0">
                   <textarea
@@ -346,23 +319,23 @@ export default function Telegraphe({ session, userProfile }) {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
-                        if (newMessage.trim() && !loading) handleSendReply();
+                        if (newMessage.trim()) handleSendReply();
                       }
                     }}
                     disabled={loading}
                   />
                   <button 
                     onClick={handleSendReply} 
-                    disabled={loading || !newMessage.trim()} 
-                    className="bg-amber-600 hover:bg-amber-700 text-white p-3 rounded-lg transition-colors shadow-sm disabled:opacity-50 h-full flex items-center justify-center shrink-0"
+                    disabled={loading || !newMessage.trim()}
+                    className="bg-amber-800 text-white p-3 rounded-lg hover:bg-amber-700 transition-colors disabled:opacity-50 shadow-md"
                   >
                     <Send size={20} />
                   </button>
-                </div >
+                </div>
               ) : (
                 <div className="p-3 bg-gray-100 border-t border-gray-300 text-center text-gray-500 text-sm italic font-bold shrink-0">
                   Cette affaire a été classée par le Conseil.
-                </div >
+                </div>
               )}
             </div>
           )}
@@ -370,41 +343,28 @@ export default function Telegraphe({ session, userProfile }) {
           {/* VUE 4 : RÉGLAGES */}
           {view === 'settings' && (
             <div className="flex-1 p-4 flex flex-col gap-4 bg-[#fdfbf7] bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] overflow-y-auto custom-scrollbar">
-              <button onClick={() => setView('list')} className="text-sm font-bold text-amber-800 hover:text-amber-600 self-start flex items-center gap-1">← Retour</button>
-              
-              <h4 className="font-serif font-bold text-lg text-amber-900 border-b border-amber-200 pb-2">Réglages Pneumatiques</h4>
-              
-              <div className="space-y-6 mt-2">
-                <div>
-                  <label className="block text-sm font-bold text-amber-900 mb-3">Apparence du Hub</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => {
-                        setUiMode('tabs');
-                        try { localStorage.setItem('telegraphe_ui_mode', 'tabs'); } catch(e) {}
-                      }}
-                      className={`p-3 rounded-lg border-2 flex flex-col items-center gap-2 transition-all ${uiMode === 'tabs' ? 'border-amber-600 bg-amber-50 text-amber-900 shadow-sm' : 'border-stone-200 bg-white text-stone-500 hover:border-amber-300 hover:text-amber-700'}`}
-                    >
-                      <LayoutList size={24} />
-                      <span className="text-xs font-bold uppercase tracking-wider">Par Onglets</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setUiMode('unified');
-                        try { localStorage.setItem('telegraphe_ui_mode', 'unified'); } catch(e) {}
-                      }}
-                      className={`p-3 rounded-lg border-2 flex flex-col items-center gap-2 transition-all ${uiMode === 'unified' ? 'border-amber-600 bg-amber-50 text-amber-900 shadow-sm' : 'border-stone-200 bg-white text-stone-500 hover:border-amber-300 hover:text-amber-700'}`}
-                    >
-                      <ListFilter size={24} />
-                      <span className="text-xs font-bold uppercase tracking-wider">Flux Unifié</span>
-                    </button>
-                  </div >
-                  <p className="text-xs text-stone-500 mt-3 leading-tight">Le mode Onglets sépare vos correspondances par catégorie. Le Flux Unifié rassemble tout par ordre chronologique, façon télégramme moderne.</p>
-                </div>
-              </div >
+              <button onClick={() => setView('list')} className="text-sm text-amber-700 hover:underline mb-2 flex items-center gap-1">← Retour</button>
+              <h3 className="font-bold text-amber-900 mb-2 border-b border-amber-200 pb-2">Préférences d'affichage</h3>
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={() => { setUiMode('tabs'); localStorage.setItem('telegraphe_ui_mode', 'tabs'); }}
+                  className={`p-4 rounded-xl border-2 flex items-center gap-3 transition-colors ${uiMode === 'tabs' ? 'bg-amber-100 border-amber-400 text-amber-900 shadow-inner' : 'bg-white border-stone-200 text-stone-600 hover:border-amber-300'}`}
+                >
+                  <LayoutList size={24} />
+                  <span className="text-xs font-bold uppercase tracking-wider">Navigation par Onglets</span>
+                </button>
+                
+                <button 
+                  onClick={() => { setUiMode('unified'); localStorage.setItem('telegraphe_ui_mode', 'unified'); }}
+                  className={`p-4 rounded-xl border-2 flex items-center gap-3 transition-colors ${uiMode === 'unified' ? 'bg-amber-100 border-amber-400 text-amber-900 shadow-inner' : 'bg-white border-stone-200 text-stone-600 hover:border-amber-300'}`}
+                >
+                  <ListFilter size={24} />
+                  <span className="text-xs font-bold uppercase tracking-wider">Flux Unifié</span>
+                </button>
+              </div>
+              <p className="text-xs text-stone-500 mt-3 leading-tight">Le mode Onglets sépare vos correspondances par catégorie. Le Flux Unifié rassemble tout par ordre chronologique, façon télégramme moderne.</p>
             </div>
           )}
-
         </div>
       )}
     </div>

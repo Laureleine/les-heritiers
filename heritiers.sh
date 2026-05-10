@@ -70,21 +70,25 @@ else
     echo "[$COUNT/$TOTAL] 📤 $FILE → '$NAME'"
 
     echo "  🔍 Recherche existant..."
-    SEARCH_RESP=$(curl -s --max-time 10 -H "Authorization: Bearer $ACCESS_TOKEN" \
-      "https://www.googleapis.com/drive/v3/files?q=name='${NAME}'%20and%20'${GOOGLE_FOLDER_ID}'%20in%20parents%20and%20mimeType='application/vnd.google-apps.document'&fields=files(id)")
+    SEARCH_RESP=$(curl -s --max-time 10 -G \
+    "https://www.googleapis.com/drive/v3/files" \
+    --data-urlencode "q=name='${NAME}' and '${GOOGLE_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.document' and trashed=false" \
+    -d "fields=files(id,webViewLink)" \
+    -H "Authorization: Bearer ${ACCESS_TOKEN}")
 
-    FILE_ID=$(echo "$SEARCH_RESP" | jq -r '.files[0].id // empty')
+    EXISTING_ID=$(echo "$SEARCH_RESP" | tr -d '\n\r ' | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
 
     if [ -n "$FILE_ID" ] && [ "$FILE_ID" != "null" ]; then
       echo "  ♻️  Existant (ID: $FILE_ID) → écrasement"
     else
       echo "  🆕 Création..."
-      CREATE_RESP=$(curl -s --max-time 10 -X POST \
-        -H "Authorization: Bearer $ACCESS_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d "{\"name\":\"${NAME}\",\"mimeType\":\"application/vnd.google-apps.document\",\"parents\":[\"${GOOGLE_FOLDER_ID}\"]}" \
-        "https://www.googleapis.com/drive/v3/files?fields=id")
-      FILE_ID=$(echo "$CREATE_RESP" | jq -r '.id')
+      CREATE_RESP=$(curl -s -X POST \
+	  "https://www.googleapis.com/drive/v3/files?fields=id,webViewLink" \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\":\"${NAME}\",\"mimeType\":\"application/vnd.google-apps.document\",\"parents\":[\"${GOOGLE_FOLDER_ID}\"]}")
+
+       FILE_ID=$(echo "$CREATE_RESP" | tr -d '\n\r ' | sed 's/.*"id":"\([^"]*\)".*/\1/')
       echo "  🆕 ID: $FILE_ID"
     fi
 

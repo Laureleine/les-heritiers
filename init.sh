@@ -24,10 +24,12 @@ fi
 echo "Token OK."
 echo ""
 
-# ── Trouver tous les .js ──────────────────────────────────────────────────────
-JS_FILES=$(find . -name "*.js" | grep -vE "$EXCLUDES" | sort)
-TOTAL=$(echo "$JS_FILES" | wc -l)
-echo "📂 $TOTAL fichiers .js trouvés."
+# ── Trouver tous les fichiers .js, .jsx et .tsx ──────────────────────────────
+# On utilise -E pour les expressions régulières étendues
+JS_FILES=$(find . -regextype posix-extended -regex ".*\.(js|jsx|tsx)$" | grep -vE "$EXCLUDES" | sort)
+
+TOTAL=$(echo "$JS_FILES" | grep -c /) # Utilise grep -c pour éviter de compter une ligne vide comme 1
+echo "📂 $TOTAL fichiers trouvés (.js, .jsx, .tsx)."
 echo ""
 
 COUNT=0
