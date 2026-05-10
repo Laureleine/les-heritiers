@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # heritiers_init_drive.sh
-# Upload TOUS les fichiers .js, .jsx et .tsx vers Google Drive au format Markdown
+# Upload TOUS les fichiers .js du projet vers Google Drive (initialisation)
 set -euo pipefail
 
 command -v jq >/dev/null 2>&1 || { echo "❌ jq requis"; exit 1; }
@@ -21,11 +21,10 @@ ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
 [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ] && { echo "❌ Token invalide"; exit 1; }
 echo "🔓 Token OK"
 
-# ── Collecte des fichiers JS, JSX, TSX ────────────────────────────────────────
-# Ajout de .tsx comme demandé précédemment
-JS_FILES=$(find src \( -name "*.js" -o -name "*.jsx" -o -name "*.tsx" \) | sort)
-TOTAL=$(echo "$JS_FILES" | grep -c /)
-echo "📂 $TOTAL fichiers trouvés"
+# ── Collecte des fichiers JS ──────────────────────────────────────────────────
+JS_FILES=$(find src \( -name "*.js" -o -name "*.jsx" \) | sort)
+TOTAL=$(echo "$JS_FILES" | wc -l)
+echo "📂 $TOTAL fichiers .js trouvés"
 echo ""
 
 COUNT=0
@@ -33,15 +32,13 @@ while IFS= read -r FILE; do
   COUNT=$((COUNT + 1))
   [ ! -f "$FILE" ] && { echo "[$COUNT/$TOTAL] ⏭️  $FILE (introuvable)"; continue; }
 
-  # Transformation du nom : src/utils/auth.js -> utils_auth_js.md
   REL_PATH="${FILE#src/}"
-  NAME=$(echo "$REL_PATH" | sed 's|/|_|g' | sed 's|\.|_|g').md
+  NAME=$(echo "$REL_PATH" | sed 's|/|_|g' | sed 's|\.|_|g').gdoc
   echo "[$COUNT/$TOTAL] 📤 $FILE → '$NAME'"
 
   echo "  🔍 Recherche existant..."
-  # On cherche maintenant des fichiers avec le mimeType text/markdown
   SEARCH_RESP=$(curl -s --max-time 10 -H "Authorization: Bearer $ACCESS_TOKEN" \
-    "https://www.googleapis.com/drive/v3/files?q=name='${NAME}'%20and%20'${GOOGLE_FOLDER_ID}'%20in%20parents%20and%20mimeType='text/markdown'&fields=files(id)")
+    "https://www.googleapis.com/drive/v3/files?q=name='${NAME}'%20and%20'${GOOGLE_FOLDER_ID}'%20in%20parents%20and%20mimeType='application/vnd.google-apps.document'&fields=files(id)")
 
   FILE_ID=$(echo "$SEARCH_RESP" | jq -r '.files[0].id // empty')
 
@@ -52,22 +49,21 @@ while IFS= read -r FILE; do
     CREATE_RESP=$(curl -s --max-time 10 -X POST \
       -H "Authorization: Bearer $ACCESS_TOKEN" \
       -H "Content-Type: application/json" \
-      -d "{\"name\":\"${NAME}\",\"mimeType\":\"text/markdown\",\"parents\":[\"${GOOGLE_FOLDER_ID}\"]}" \
+      -d "{\"name\":\"${NAME}\",\"mimeType\":\"application/vnd.google-apps.document\",\"parents\":[\"${GOOGLE_FOLDER_ID}\"]}" \
       "https://www.googleapis.com/drive/v3/files?fields=id")
     FILE_ID=$(echo "$CREATE_RESP" | jq -r '.id')
     echo "  🆕 ID: $FILE_ID"
   fi
 
   echo "  📤 Upload contenu..."
-  # On envoie le contenu tel quel (le texte brut sera interprété comme du MD par Drive)
   curl -s --max-time 60 -X PATCH \
     "https://www.googleapis.com/upload/drive/v3/files/${FILE_ID}?uploadType=media" \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
-    -H "Content-Type: text/markdown" \
+    -H "Content-Type: text/plain" \
     --data-binary "@$FILE" >/dev/null
 
   echo "  ✅ OK"
   echo ""
 done <<< "$JS_FILES"
 
-echo "🎉 $COUNT/$TOTAL fichiers synchronisés en .md sur Google Drive !"
+echo "🎉 $COUNT/$TOTAL fichiers synchronisés sur Google Drive !"
