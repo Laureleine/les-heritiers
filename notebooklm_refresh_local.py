@@ -3,6 +3,7 @@ import sys
 import os
 import subprocess
 import json
+import time
 
 def load_env():
     env = {}
@@ -17,34 +18,28 @@ def load_env():
     return env
 
 def main():
-    if len(sys.argv) < 2:
-        return
-
+    if len(sys.argv) < 2: return
     args = sys.argv[1:]
     env = load_env()
     notebook_id = env.get("NOTEBOOKLM_NOTEBOOK_ID")
 
+    # Détection des fichiers
     if len(args) == 1 and os.path.isdir(args[0]):
         md_dir = args[0]
-        local_filepaths = sorted([
-            os.path.abspath(os.path.join(md_dir, f)) 
-            for f in os.listdir(md_dir) if f.endswith(".md")
-        ])
+        local_filepaths = sorted([os.path.abspath(os.path.join(md_dir, f)) for f in os.listdir(md_dir) if f.endswith(".md")])
     else:
         local_filepaths = [os.path.abspath(f) for f in args if f.endswith(".md")]
 
-    if not local_filepaths:
-        return
+    if not local_filepaths: return
 
-    print(f"🔍 Récupération des sources existantes...")
-    result = subprocess.run(
-        ["python", "-m", "notebooklm", "source", "list", "--notebook", notebook_id, "--json"],
-        capture_output=True, text=True, encoding="utf-8"
-    )
-    
+    # 1. Lister les sources (on met un timeout court ici aussi)
+    print(f"🔍 Récupération des sources...")
     try:
-        data = json.loads(result.stdout)
-        sources = data.get("sources", []) if isinstance(data, dict) else data
+        result = subprocess.run(
+            ["python", "-m", "notebooklm", "source", "list", "--notebook", notebook_id, "--json"],
+            capture_output=True, text=True, encoding="utf-8", timeout=20
+        )
+        sources = json.loads(result.stdout).get("sources", [])
     except:
         sources = []
 
@@ -57,26 +52,24 @@ def main():
         
         try:
             if existing:
-                # IMPORTANT : On supprime l'ancien pour forcer l'IA à lire le nouveau contenu
                 print(f"  [{i}/{total}] ♻️  Remplacement : {filename}")
+                # On utilise DEVNULL pour ne pas bloquer sur le flux de sortie
                 subprocess.run([
-                    "python", "-m", "notebooklm", "source", "delete", 
-                    existing["id"], 
-                    "--notebook", notebook_id
-                ], capture_output=True)
-            else:
-                print(f"  [{i}/{total}] ➕ Ajout : {filename}")
-
-            # On ajoute le fichier (qu'il soit nouveau ou qu'on vienne de supprimer l'ancien)
-            subprocess.run([
-                "python", "-m", "notebooklm", "source", "add", 
-                filepath, 
-                "--notebook", notebook_id,
-                "--type", "file"
-            ], capture_output=True)
+                    "python", "-m", "notebooklm", "source", "delete", existing["id"], "--notebook", notebook_id
+                ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
             
+            # Pause d'une seconde pour laisser l'API respirer
+            time.sleep(1)
+
+            print(f"  [{i}/{total}] ➕ Ajout : {filename}")
+            subprocess.run([
+                "python", "-m", "notebooklm", "source", "add", filepath, "--notebook", notebook_id, "--type", "file"
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=20)
+            
+        except subprocess.TimeoutExpired:
+            print(f"  ⚠️ Timeout sur {filename} (passé)")
         except Exception as e:
-            print(f"  ❌ Erreur sur {filename}: {e}")
+            print(f"  ❌ Erreur : {e}")
 
 if __name__ == "__main__":
     main()
