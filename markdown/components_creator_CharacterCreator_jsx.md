@@ -1,5 +1,4 @@
 // src/components/creator/CharacterCreator.jsx
-
 import React, { useState, useMemo, useCallback, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Printer, List, Save, Sparkles, BookOpen } from '../../config/icons';
