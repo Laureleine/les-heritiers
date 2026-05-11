@@ -48,7 +48,7 @@ echo ""
 echo "🔄 Refresh NotebookLM pour le delta..."
 if [ -f "notebooklm_refresh_local.py" ]; then
     export PYTHONUNBUFFERED=1
-    # On passe la liste des fichiers générés au script Python
+    # On appelle uniquement le script Python avec la liste des fichiers
     python notebooklm_refresh_local.py $MD_DELTA_LIST
 else
     echo "❌ notebooklm_refresh_local.py introuvable"
