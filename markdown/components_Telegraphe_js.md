@@ -1,5 +1,5 @@
 // src/components/Telegraphe.js
-// 11052026
+// 110520262
 import React, { useState, useEffect, useRef } from 'react';
 import { LayoutList, MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, ListFilter, Settings, Key, Check, CheckCheck } from '../config/icons';
 import { useTelegraphe } from '../hooks/useTelegraphe';
