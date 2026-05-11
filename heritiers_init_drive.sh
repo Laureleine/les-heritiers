@@ -1,73 +1,44 @@
 #!/usr/bin/env bash
-# heritiers_init_drive.sh
-# Upload TOUS les fichiers .js, .jsx et .tsx vers Google Drive au format Markdown
+# heritiers_init_markdown.sh
+# Génère les fichiers .md localement dans /markdown pour NotebookLM
 set -euo pipefail
 
-command -v jq >/dev/null 2>&1 || { echo "❌ jq requis"; exit 1; }
-[ -f .env ] || { echo "❌ .env manquant"; exit 1; }
+# ── 1. Préparation du répertoire ──────────────────────────────────────────────
+MD_DIR="markdown"
+echo "📂 Préparation du dossier /$MD_DIR..."
 
-source .env
+if [ -d "$MD_DIR" ]; then
+    echo "🧹 Nettoyage de l'ancien dossier..."
+    rm -rf "$MD_DIR"
+fi
+mkdir -p "$MD_DIR"
 
-# ── Token ─────────────────────────────────────────────────────────────────────
-echo "🔑 Token Drive..."
-RESPONSE=$(curl -s -X POST \
-  --data-urlencode "client_id=${GOOGLE_CLIENT_ID}" \
-  --data-urlencode "client_secret=${GOOGLE_CLIENT_SECRET}" \
-  --data-urlencode "refresh_token=${GOOGLE_REFRESH_TOKEN}" \
-  --data-urlencode "grant_type=refresh_token" \
-  https://oauth2.googleapis.com/token)
-
-ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
-[ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ] && { echo "❌ Token invalide"; exit 1; }
-echo "🔓 Token OK"
-
-# ── Collecte des fichiers JS, JSX, TSX ────────────────────────────────────────
-# Ajout de .tsx comme demandé précédemment
+# ── 2. Collecte et Conversion ─────────────────────────────────────────────────
 JS_FILES=$(find src \( -name "*.js" -o -name "*.jsx" -o -name "*.tsx" \) | sort)
-TOTAL=$(echo "$JS_FILES" | grep -c /)
-echo "📂 $TOTAL fichiers trouvés"
-echo ""
+TOTAL=$(echo "$JS_FILES" | wc -l)
+echo "📝 Conversion de $TOTAL fichiers vers /$MD_DIR..."
 
 COUNT=0
 while IFS= read -r FILE; do
   COUNT=$((COUNT + 1))
-  [ ! -f "$FILE" ] && { echo "[$COUNT/$TOTAL] ⏭️  $FILE (introuvable)"; continue; }
+  [ ! -f "$FILE" ] && continue
 
-  # Transformation du nom : src/utils/auth.js -> utils_auth_js.md
+  # Nommage identique pour la cohérence : utils_auth_js.md
   REL_PATH="${FILE#src/}"
   NAME=$(echo "$REL_PATH" | sed 's|/|_|g' | sed 's|\.|_|g').md
-  echo "[$COUNT/$TOTAL] 📤 $FILE → '$NAME'"
-
-  echo "  🔍 Recherche existant..."
-  # On cherche maintenant des fichiers avec le mimeType text/markdown
-  SEARCH_RESP=$(curl -s --max-time 10 -H "Authorization: Bearer $ACCESS_TOKEN" \
-    "https://www.googleapis.com/drive/v3/files?q=name='${NAME}'%20and%20'${GOOGLE_FOLDER_ID}'%20in%20parents%20and%20mimeType='text/markdown'&fields=files(id)")
-
-  FILE_ID=$(echo "$SEARCH_RESP" | jq -r '.files[0].id // empty')
-
-  if [ -n "$FILE_ID" ] && [ "$FILE_ID" != "null" ]; then
-    echo "  ♻️  Existant (ID: $FILE_ID) → écrasement"
-  else
-    echo "  🆕 Création..."
-    CREATE_RESP=$(curl -s --max-time 10 -X POST \
-      -H "Authorization: Bearer $ACCESS_TOKEN" \
-      -H "Content-Type: application/json" \
-      -d "{\"name\":\"${NAME}\",\"mimeType\":\"text/markdown\",\"parents\":[\"${GOOGLE_FOLDER_ID}\"]}" \
-      "https://www.googleapis.com/drive/v3/files?fields=id")
-    FILE_ID=$(echo "$CREATE_RESP" | jq -r '.id')
-    echo "  🆕 ID: $FILE_ID"
-  fi
-
-  echo "  📤 Upload contenu..."
-  # On envoie le contenu tel quel (le texte brut sera interprété comme du MD par Drive)
-  curl -s --max-time 60 -X PATCH \
-    "https://www.googleapis.com/upload/drive/v3/files/${FILE_ID}?uploadType=media" \
-    -H "Authorization: Bearer $ACCESS_TOKEN" \
-    -H "Content-Type: text/markdown" \
-    --data-binary "@$FILE" >/dev/null
-
-  echo "  ✅ OK"
-  echo ""
+  
+  # Copie le contenu vers le nouveau fichier .md
+  cp "$FILE" "$MD_DIR/$NAME"
+  
+  echo -ne "  Progression : $COUNT/$TOTAL\r"
 done <<< "$JS_FILES"
 
-echo "🎉 $COUNT/$TOTAL fichiers synchronisés en .md sur Google Drive !"
+echo -e "\n✅ Fichiers Markdown prêts dans le dossier /$MD_DIR."
+
+# ── 3. Rappel NotebookLM ──────────────────────────────────────────────────────
+echo ""
+echo "🚀 Pour mettre à jour NotebookLM :"
+echo "1. Allez dans votre Notebook."
+echo "2. Cliquez sur 'Ajouter une source' -> 'Importer des fichiers'."
+echo "3. Sélectionnez TOUS les fichiers dans le dossier : $(pwd)/$MD_DIR"
+echo ""
