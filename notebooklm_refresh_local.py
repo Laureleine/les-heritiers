@@ -7,6 +7,8 @@ import time
 
 def load_env():
     env = {}
+    if not os.path.exists(".env"):
+        return None
     with open(".env", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -22,9 +24,16 @@ def main():
 
     md_dir = sys.argv[1]
     env = load_env()
-    notebook_id = env["NOTEBOOKLM_NOTEBOOK_ID"]
+    if not env:
+        print("❌ Fichier .env introuvable.")
+        return
 
-    # 1. Lister les sources actuelles
+    notebook_id = env.get("NOTEBOOKLM_NOTEBOOK_ID")
+    if not notebook_id:
+        print("❌ NOTEBOOKLM_NOTEBOOK_ID non défini dans le .env")
+        return
+
+    # 1. Lister les sources actuelles pour éviter les doublons
     print(f"🔍 Scan du notebook {notebook_id}...")
     result = subprocess.run(
         ["python", "-m", "notebooklm", "source", "list", "--notebook", notebook_id, "--json"],
@@ -35,10 +44,10 @@ def main():
         data = json.loads(result.stdout)
         sources = data.get("sources", []) if isinstance(data, dict) else data
     except:
-        print("⚠️ Impossible de récupérer la liste des sources. Tentative d'ajout direct.")
+        print("⚠️ Impossible de lire les sources existantes. On continue en mode ajout.")
         sources = []
 
-    # 2. Lister les fichiers locaux
+    # 2. Lister les fichiers locaux à traiter
     local_files = sorted([f for f in os.listdir(md_dir) if f.endswith(".md")])
     total = len(local_files)
     
@@ -47,19 +56,18 @@ def main():
     for i, filename in enumerate(local_files, 1):
         filepath = os.path.join(md_dir, filename)
         
-        # Chercher si la source existe déjà par son titre
-        # Le CLI utilise souvent le nom du fichier comme titre par défaut
-        existing = next((s for s in sources if s.get("title") == filename or s.get("name") == filename), None)
+        # Identification par titre (le nom du fichier .md)
+        existing = next((s for s in sources if s.get("title") == filename), None)
         
         if existing:
-            # Pour le local, la suppression/re-création assure que le contenu est à jour
-            print(f"  [{i}/{total}] ♻️  Update : {filename}")
+            # Suppression pour garantir une mise à jour propre du contenu
+            print(f"  [{i}/{total}] ♻️  Maj : {filename}")
             subprocess.run(["python", "-m", "notebooklm", "source", "delete", existing["id"], "--notebook", notebook_id], capture_output=True)
         else:
             print(f"  [{i}/{total}] ➕ Add : {filename}")
 
-        # Ajout du fichier local
-        # On spécifie --type text car le CLI l'indique pour les fichiers .md
+        # Upload du fichier local en tant que texte
+        # On force --type text car NotebookLM le traite mieux pour le code
         subprocess.run(
             ["python", "-m", "notebooklm", "source", "add", filepath, "--notebook", notebook_id, "--type", "text"],
             capture_output=True

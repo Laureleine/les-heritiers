@@ -1,122 +1,41 @@
 #!/usr/bin/env bash
+# heritiers.sh
 set -euo pipefail
 
-command -v jq >/dev/null 2>&1 || { echo "❌ jq requis"; exit 1; }
 [ -f .env ] || { echo "❌ .env manquant"; exit 1; }
-[ -f src/version.js ] || { echo "❌ src/version.js manquant"; exit 1; }
-
 source .env
 
-# ── 1. Version ────────────────────────────────────────────────────────────────
-VERSION=$(grep -m1 "version:" src/version.js | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-echo "📦 Les Héritiers v$VERSION"
+# ── 1. Préparation du dossier Markdown ──────────────────────────────────────
+MD_DIR="markdown"
+mkdir -p "$MD_DIR"
+# Nettoyage pour éviter d'envoyer des fichiers supprimés côté src
+rm -f "$MD_DIR"/*.md
 
-# ── 2. Prebuild ───────────────────────────────────────────────────────────────
-echo "🔨 npm run prebuild..."
-npm run prebuild
-
-# ── 3. Token Google Drive ─────────────────────────────────────────────────────
-echo ""
-echo "🔑 Token Drive..."
-RESPONSE=$(curl -s -X POST \
---data-urlencode "client_id=${GOOGLE_CLIENT_ID}" \
---data-urlencode "client_secret=${GOOGLE_CLIENT_SECRET}" \
---data-urlencode "refresh_token=${GOOGLE_REFRESH_TOKEN}" \
---data-urlencode "grant_type=refresh_token" \
-https://oauth2.googleapis.com/token)
-
-ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
-[ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ] && { echo "❌ Token invalide"; exit 1; }
-echo "🔓 Token OK"
-
-# ── 4. Git ────────────────────────────────────────────────────────────────────
-echo ""
-echo "➕ git add ."
-git add .
-
-# On récupère la liste des fichiers modifiés AVANT le commit
-CHANGED_FILES=$(git diff --name-only --cached 2>/dev/null || echo "")
-[ -z "$CHANGED_FILES" ] && { echo "ℹ️ Rien à committer"; exit 0; }
-
-echo "📝 git commit"
-git commit -m "Les Héritiers v${VERSION}"
-
-echo "⬇️ git pull origin main"
-if ! git pull origin main; then
-  echo "❌ Conflit lors du merge !"
-  exit 1
-fi
-
-echo "🚀 git push origin main"
-git push origin main
-
-# ── 5. Sync fichiers vers Google Drive en Markdown ───────────────────────────
-# Ajout de js, jsx, tsx
-JS_FILES=$(echo "$CHANGED_FILES" | grep -E '\.(js|jsx|tsx)$' || true)
-
-if [[ -z "$JS_FILES" ]]; then
-  echo "⚠️ Aucun fichier de code modifié, sync Drive ignorée."
-else
-  COUNT=0
-  TOTAL=$(echo "$JS_FILES" | wc -l)
-  echo "📂 $TOTAL fichiers de code à synchroniser"
-
-  while IFS= read -r FILE; do
-    COUNT=$((COUNT + 1))
-    [ ! -f "$FILE" ] && { echo "[$COUNT/$TOTAL] ⏭️ $FILE"; continue; }
-
-    # Formatage du nom : src/auth/login.js -> auth_login_js.md
+echo "📝 Génération des fichiers Markdown locaux..."
+JS_FILES=$(find src \( -name "*.js" -o -name "*.jsx" -o -name "*.tsx" \) | sort)
+for FILE in $JS_FILES; do
+    [ ! -f "$FILE" ] && continue
     REL_PATH="${FILE#src/}"
+    # Convention de nommage : components_Modale_js.md
     NAME=$(echo "$REL_PATH" | sed 's|/|_|g' | sed 's|\.|_|g').md
-    echo "[$COUNT/$TOTAL] 📤 $FILE → '$NAME'"
+    cp "$FILE" "$MD_DIR/$NAME"
+done
+echo "✅ Dossier /markdown à jour."
 
-    echo " 🔍 Recherche existant..."
-    SEARCH_RESP=$(curl -s --max-time 10 -G \
-      "https://www.googleapis.com/drive/v3/files" \
-      --data-urlencode "q=name='${NAME}' and '${GOOGLE_FOLDER_ID}' in parents and mimeType='text/markdown' and trashed=false" \
-      -d "fields=files(id)" \
-      -H "Authorization: Bearer ${ACCESS_TOKEN}")
+# ── 2. Git & Build (Optionnel, selon votre flux) ───────────────────────────
+echo "💾 Git commit & push..."
+git add .
+git commit -m "Sync NotebookLM local files" || echo "Pas de changements git"
+git push
 
-    FILE_ID=$(echo "$SEARCH_RESP" | jq -r '.files[0].id // empty')
-
-    if [ -n "$FILE_ID" ] && [ "$FILE_ID" != "null" ]; then
-      echo " ♻️ Existant (ID: $FILE_ID) → écrasement"
-    else
-      echo " 🆕 Création..."
-      CREATE_RESP=$(curl -s -X POST \
-        "https://www.googleapis.com/drive/v3/files?fields=id" \
-        -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-        -H "Content-Type: application/json" \
-        -d "{\"name\":\"${NAME}\",\"mimeType\":\"text/markdown\",\"parents\":[\"${GOOGLE_FOLDER_ID}\"]}")
-      FILE_ID=$(echo "$CREATE_RESP" | jq -r '.id')
-      echo " 🆕 ID: $FILE_ID"
-    fi
-
-    echo " 📤 Upload contenu..."
-    curl -s --max-time 60 -X PATCH \
-      "https://www.googleapis.com/upload/drive/v3/files/${FILE_ID}?uploadType=media" \
-      -H "Authorization: Bearer $ACCESS_TOKEN" \
-      -H "Content-Type: text/markdown" \
-      --data-binary "@$FILE" >/dev/null
-
-    echo " ✅ OK"
-  done <<< "$JS_FILES"
-
-  echo "🎉 $TOTAL fichiers synchronisés en .md !"
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  # NOTEBOOKLM (Appel groupé)
-  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  echo ""
-  echo "🔄 NotebookLM..."
-  if [ -f "notebooklm_refresh.py" ]; then
-    # On passe TOUTE la liste des fichiers d'un coup au script Python
-    # au lieu de boucler en Bash
-    python notebooklm_refresh.py $CHANGED_FILES
-  else
-    echo "⚠️ notebooklm_refresh.py introuvable"
-  fi
+# ── 3. Synchronisation NotebookLM ──────────────────────────────────────────
+echo ""
+echo "🔄 Synchronisation NotebookLM (Direct Local -> Notebook)..."
+if [ -f "notebooklm_refresh_local.py" ]; then
+    export PYTHONUNBUFFERED=1
+    python notebooklm_refresh_local.py "$MD_DIR"
+else
+    echo "❌ notebooklm_refresh_local.py introuvable"
 fi
 
-echo ""
-echo "🏁 Fin du processus !"
+echo "🏁 Processus terminé !"
