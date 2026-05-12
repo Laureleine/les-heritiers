@@ -111,10 +111,13 @@ export default function StepVieSociale() {
     const [filterAffordable, setFilterAffordable] = useState(false);
 
     const renderCatalogue = (profilNom) => {
+    if (!budgetsInfo) return null;
+    if (!budgetsInfo.rests || !budgetsInfo.budgets) return null;
+    
     const itemsDuProfil = catalogueParProfil[profilNom] || [];
     if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;
 
-    const reste = budgetsInfo.restes[profilNom];
+    const reste = budgetsInfo.rests[profilNom];
 
     const filteredByName = filterText.trim()
         ? itemsDuProfil.filter(i => i.nom.toLowerCase().includes(filterText.toLowerCase()))
@@ -199,6 +202,8 @@ export default function StepVieSociale() {
     );
   };
 
+  if (!budgetsInfo) return null;
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
       <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -280,51 +285,46 @@ export default function StepVieSociale() {
             );
           })}
 
-          {/* ✨ LE NOUVEAU WIDGET DE RÉPARTITION DES CONTACTS ✨ */}
+{/* ✨ LE NOUVEAU WIDGET DE RÉPARTITION DES CONTACTS ✨ */}
           {budgetsInfo.freeContactsTotal > 0 && (
             <div className="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-xl shadow-sm animate-fade-in">
               <h4 className="text-sm font-bold text-indigo-900 mb-2 flex items-center gap-2">
                  <Users size={16} className="text-indigo-600" /> Contacts Gratuits
               </h4>
               <p className="text-[11px] text-indigo-700 mb-3 leading-relaxed">
-                 Votre Entregent/Prestance vous offre <strong>{budgetsInfo.freeContactsTotal} point(s) de réduction</strong>. Allouez-les manuellement à vos profils pour rembourser l'achat de vos Contacts !
+                  Votre Entregent/Prestance vous offre <strong>{budgetsInfo.freeContactsTotal} point(s) de contact</strong>. Allouez-les à vos profils (même sans budget) pour acheter des contacts !
               </p>
-              <div className="space-y-2">
-                 <div className="flex justify-between items-center text-xs font-bold text-indigo-800 bg-indigo-100/50 p-2 rounded">
-                    <span>Reste à allouer :</span>
-                    <span className="bg-indigo-600 text-white px-2 py-0.5 rounded-full">{budgetsInfo.freeContactsRemaining}</span>
-                 </div>
+<div className="space-y-2">
+                  <div className="flex justify-between items-center text-xs font-bold text-indigo-800 bg-indigo-100/50 p-2 rounded">
+                     <span>Reste à allouer :</span>
+                     <span className="bg-indigo-600 text-white px-2 py-0.5 rounded-full">{budgetsInfo.freeContactsRemaining}</span>
+                  </div>
 
-                 {tousLesProfils.map(pName => {
-                     if (budgetsInfo.depensesContacts[pName] > 0) {
-                         return (
-                             <div key={pName} className="flex items-center justify-between text-[11px] bg-white p-2 rounded border border-indigo-100 shadow-sm">
-                                 <span className="font-bold text-stone-700">{pName}</span>
-                                 <div className="flex items-center gap-2">
-                                     <button
-                                         onClick={() => updateContactAllocation(pName, -1)}
-                                         disabled={isReadOnly || budgetsInfo.safeAllocations[pName] <= 0}
-                                         className="w-5 h-5 flex items-center justify-center bg-stone-100 hover:bg-stone-200 rounded text-stone-600 disabled:opacity-50 transition-colors"
-                                     ><Minus size={12} /></button>
-                                     <span className="font-bold text-indigo-600 w-3 text-center">{budgetsInfo.safeAllocations[pName]}</span>
-                                     <button
-                                         onClick={() => updateContactAllocation(pName, 1)}
-                                         disabled={isReadOnly || budgetsInfo.freeContactsRemaining <= 0 || budgetsInfo.safeAllocations[pName] >= budgetsInfo.depensesContacts[pName]}
-                                         className="w-5 h-5 flex items-center justify-center bg-indigo-100 hover:bg-indigo-200 rounded text-indigo-700 disabled:opacity-50 transition-colors"
-                                     ><Plus size={12} /></button>
-                                 </div>
-                             </div>
-                         )
-                     }
-                     return null;
-                 })}
-
-                 {tousLesProfils.every(p => budgetsInfo.depensesContacts[p] === 0) && (
-                     <div className="text-[10px] italic text-indigo-400 text-center py-2">
-                         Achetez d'abord un contact pour pouvoir le rembourser.
-                     </div>
-                 )}
-              </div>
+                  {tousLesProfils.map(pName => {
+                      const allocations = budgetsInfo.safeAllocations[pName] || 0;
+                      const depenses = budgetsInfo.depenses[pName] || 0;
+                      // On affiche si: allocation > 0, ou depenses > 0, ou il reste des contacts gratuits à distribuer
+                      if (allocations === 0 && depenses === 0 && budgetsInfo.freeContactsRemaining === 0) return null;
+                      return (
+                          <div key={pName} className="flex items-center justify-between text-[11px] bg-white p-2 rounded border border-indigo-100 shadow-sm">
+                              <span className="font-bold text-stone-700">{getProfilDisplayName(pName)}</span>
+                              <div className="flex items-center gap-2">
+                                  <button
+                                      onClick={() => updateContactAllocation(pName, -1)}
+                                      disabled={isReadOnly || allocations <= 0}
+                                      className="w-5 h-5 flex items-center justify-center bg-stone-100 hover:bg-stone-200 rounded text-stone-600 disabled:opacity-50 transition-colors"
+                                  ><Minus size={12} /></button>
+                                  <span className="font-bold text-indigo-600 w-3 text-center">{allocations}</span>
+                                  <button
+                                      onClick={() => updateContactAllocation(pName, 1)}
+                                      disabled={isReadOnly || budgetsInfo.freeContactsRemaining <= 0}
+                                      className="w-5 h-5 flex items-center justify-center bg-indigo-100 hover:bg-indigo-200 rounded text-indigo-700 disabled:opacity-50 transition-colors"
+                                  ><Plus size={12} /></button>
+                              </div>
+                          </div>
+                      );
+                  })}
+               </div>
             </div>
           )}
         </div>
