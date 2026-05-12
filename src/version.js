@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.16.43 - "Le Comptoir des Contacts Libres 🎯"',
+    date: '13 Mai 2026',
+    description: 'Contacts gratuits : allocation manuelle aux profils, budget réservé aux contacts.',
+    changes: [
+      '🎯 **Contacts Gratuits (Widget) :** Les points de contacts gratuits (Entregent/Prestance) s\'allouent désormais manuellement via un widget dédié. On peut les distribuer sur n\'importe quel profil, même avec 0 PP de budget de base.',
+      '🔒 **Consacrés aux Contacts :** Ces points ne peuvent être dépensés que pour des contacts (pas pour métiers/objets/langues/titres). Ils s\'additionnent au budget du profil pour permettre d\'acheter des contacts plus chers que le PP disponible.',
+      '🧮 **Budget séparé (useVieSociale) :** Le moteur de budget distingue désormais le budget de base (`budgetsBase`) du budget gonflé par les contacts gratuits (`budgets`), pour contrôler strictement leur usage.',
+      '🐛 **Fix `rests` vs `restes` :** Correction d\'une faute de frappe de variable qui empêchait le rendu des catalogues de la Vie Sociale.',
+    ]
+  },  {
     version: '15.16.42 - "L\'Éclair Pneumatique ⚡"',
     date: '11 Mai 2026',
     description: 'Hotfix de la réactivité du Télégraphe (pastille rouge).',

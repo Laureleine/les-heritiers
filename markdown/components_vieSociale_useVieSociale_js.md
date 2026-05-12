@@ -72,29 +72,34 @@ export function useVieSociale() {
         });
     }, [isReadOnly, dispatchCharacter, gameData]);
 
-    // MOTEUR DE BUDGETS
+// MOTEUR DE BUDGETS
     const budgetsInfo = useMemo(() => {
-        let freeContactsTotal = character.computedStats?.contactsGratuits || 0;
-        if (freeContactsTotal === 0 && !character.computedStats) {
+        const items = socialItems || [];
+        const computed = character.computedStats || {};
+
+        let freeContactsTotal = computed.contactsGratuits || 0;
+        if (freeContactsTotal === 0 && !computed.budgetsPP) {
             freeContactsTotal = Math.max(0, (character.caracteristiques?.prestance || 0) - 3) + Math.max(0, (character.caracteristiques?.entregent || 0) - 3);
         }
 
-        const depenses = {}; const budgets = {}; const restes = {}; const depensesContacts = {};
+        const depenses = {}; const budgets = {}; const budgetsBase = {}; const rests = {}; const depensesContacts = {};
+        const budgetsPP = computed.budgetsPP || {};
         tousLesProfils.forEach(p => {
-            depenses[p] = 0; depensesContacts[p] = 0; budgets[p] = character.computedStats?.budgetsPP?.[p] || 0;
+            depenses[p] = 0; depensesContacts[p] = 0; 
+            budgetsBase[p] = budgetsPP[p] || 0;
+            budgets[p] = budgetsBase[p];
         });
 
-        // 1. Calcul des dépenses brutes (avec vérification des réductions)
+        // 1. Calcul des dépenses brutes
         tousLesProfils.forEach(pName => {
             const myItemsIds = achats[pName] || [];
             myItemsIds.forEach(id => {
-                const item = socialItems.find(i => i.id === id);
+                const item = items.find(i => i.id === id);
                 if (item) {
                     const baseCost = getItemCost(item.id, pName);
-                    // Lookup : nouveau format "Nom (X PP)" en priorité, fallback legacy "Nom"
                     const itemKey = `${item.nom} (${item.cout ?? 0} PP)`;
-                    const modifiedCost = character.computedStats?.priceModifiers?.[itemKey]
-                        ?? character.computedStats?.priceModifiers?.[item.nom];
+                    const modifiedCost = computed.priceModifiers?.[itemKey]
+                        ?? computed.priceModifiers?.[item.nom];
                     const finalCost = modifiedCost !== undefined ? modifiedCost : baseCost;
                     depenses[pName] += finalCost;
                     if (item.categorie === 'contact') depensesContacts[pName] += finalCost;
@@ -102,28 +107,33 @@ export function useVieSociale() {
             });
         });
 
+        // 2. Allocations de contacts gratuits (s'ajoutent au budget pour les contacts uniquement)
         let totalAllocated = 0;
         const safeAllocations = {};
         const userAllocations = achats.allocationsContacts || {};
 
+        const requestedPerProfile = {};
         tousLesProfils.forEach(pName => {
-            const requested = userAllocations[pName] || 0;
-            const alloc = Math.min(requested, depensesContacts[pName], freeContactsTotal - totalAllocated);
+            requestedPerProfile[pName] = userAllocations[pName] || 0;
+        });
+
+        tousLesProfils.forEach(pName => {
+            const requested = requestedPerProfile[pName];
+            const alloc = Math.min(requested, freeContactsTotal - totalAllocated);
             safeAllocations[pName] = alloc;
             totalAllocated += alloc;
+            budgets[pName] += alloc;
         });
 
         const freeRemaining = Math.max(0, freeContactsTotal - totalAllocated);
 
         tousLesProfils.forEach(pName => {
-            depenses[pName] -= safeAllocations[pName];
-            restes[pName] = budgets[pName] - depenses[pName];
+            rests[pName] = budgets[pName] - depenses[pName];
         });
 
-        return { depenses, budgets, restes, depensesContacts, safeAllocations, freeContactsRemaining: freeRemaining, freeContactsTotal };
+        return { depenses, budgets, budgetsBase, rests, depensesContacts, safeAllocations, freeContactsRemaining: freeRemaining, freeContactsTotal };
         
-    // ✨ FIX ESLINT : On englobe tout l'objet 'character.computedStats' au lieu d'écrire ses enfants un par un !
-    }, [achats, socialItems, tousLesProfils, character.computedStats, character.caracteristiques?.prestance, character.caracteristiques?.entregent, getItemCost]);
+    }, [achats, socialItems, tousLesProfils, character.computedStats, character.caracteristiques, getItemCost]);
 
     // MOTEUR DE FORTUNE
     const getFortuneFromHeritage = useCallback(() => {
@@ -205,14 +215,18 @@ export function useVieSociale() {
         
         const baseCost = getItemCost(item.id, profilNom);
         const isMultiple = item.is_choix_multiple;
+        const isContact = item.categorie === 'contact';
 
-        // ✨ LE FIX 1 : On recalcule le VRAI coût (Réductions Héritage + Contacts Gratuits)
-        // Lookup : nouveau format "Nom (X PP)" en priorité, fallback legacy "Nom"
         const itemKey = `${item.nom} (${item.cout ?? 0} PP)`;
         const modifiedCost = character.computedStats?.priceModifiers?.[itemKey]
             ?? character.computedStats?.priceModifiers?.[item.nom];
         const finalCost = modifiedCost !== undefined ? modifiedCost : baseCost;
-        const effectiveCost = item.categorie === 'contact' ? Math.max(0, finalCost - budgetsInfo.freeContactsRemaining) : finalCost;
+
+        // Pour les contacts: budget total (avec contacts gratuits)
+        // Pour les autres: budget de base uniquement (sans contacts gratuits)
+        const budgetDispo = isContact 
+            ? budgetsInfo.budgets[profilNom] - budgetsInfo.depenses[profilNom]
+            : budgetsInfo.budgetsBase[profilNom] - (budgetsInfo.depenses[profilNom] - budgetsInfo.depensesContacts[profilNom]);
 
         if (isMultiple && action) {
             // 🔄 MODE ACHAT MULTIPLE (+ / -)
@@ -220,8 +234,8 @@ export function useVieSociale() {
                 const index = currentProfilAchats.lastIndexOf(item.id);
                 if (index !== -1) currentProfilAchats.splice(index, 1);
             } else if (action === 'add') {
-                if (budgetsInfo.restes[profilNom] < effectiveCost) { // ✨ LE FIX 2 : .restes !
-                    showInAppNotification("Fonds insuffisants dans ce profil.", "error");
+                if (budgetDispo < finalCost) {
+                    showInAppNotification(isContact ? "Fonds insuffisants pour ce contact." : "Fonds insuffisants dans ce profil.", "error");
                     return;
                 }
                 currentProfilAchats.push(item.id);
@@ -233,8 +247,8 @@ export function useVieSociale() {
             if (isOwned) {
                 currentProfilAchats = currentProfilAchats.filter(id => id !== item.id);
             } else {
-                if (budgetsInfo.restes[profilNom] < effectiveCost) { // ✨ LE FIX 2 : .restes !
-                    showInAppNotification("Fonds insuffisants dans ce profil.", "error");
+                if (budgetDispo < finalCost) {
+                    showInAppNotification(isContact ? "Fonds insuffisants pour ce contact." : "Fonds insuffisants dans ce profil.", "error");
                     return;
                 }
                 
