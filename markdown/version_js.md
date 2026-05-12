@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.16.44 - "La Duplicité Révélée 🔴"',
+    date: '13 Mai 2026',
+    description: 'Stats de combat démasquées : bonus capacité inclus, refonte du bloc Combat & Santé.',
+    changes: [
+      '🔴 **Esquive Démasquée (fix) :** L\'esquive sous forme démasquée inclut désormais le bonus de capacité féérique (le +1 vert de la feuille), qui était ignoré — elle prenait la même valeur que l\'esquive masquée.',
+      '📊 **Moteur de combat (rulesEngine) :** `calculateFullCombatStats` distingue désormais les bonus permanents (atouts/pouvoirs) des bonus de capacité (uniquement actifs en forme démasquée). Tous les états de combat existent en deux versions : masquée et démasquée (parade, rés. phys., rés. psych., PV max).',
+      '📜 **Refonte du bloc Combat & Santé (FicheParchemin) :** Le tableau de combat affiche désormais deux rangées complètes : masquée (haut) et démasquée (bas, en rouge). Passage de 6 à 5 colonnes pour une meilleure lisibilité.',
+    ]
+  },  {
     version: '15.16.43 - "Le Comptoir des Contacts Libres 🎯"',
     date: '13 Mai 2026',
     description: 'Contacts gratuits : allocation manuelle aux profils, budget réservé aux contacts.',

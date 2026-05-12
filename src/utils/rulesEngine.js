@@ -45,24 +45,48 @@ export const calculateFullCombatStats = (character, gameData) => {
     if (!character || !gameData) return {};
     const feeData = gameData.fairyData?.[character.typeFee];
     
-    // ✨ INJECTION DU BONUS CALCULATOR 
     const finalStats = calculateCharacterStats(character, gameData);
+
+    const isCapacite = (sourceName) => {
+        if (!sourceName) return false;
+        const s = sourceName.toLowerCase().trim();
+        if (s.includes('accru')) return true;
+        const caps = [
+            character.capaciteChoisie,
+            feeData?.capacites?.fixe1?.nom,
+            feeData?.capacites?.fixe2?.nom
+        ].filter(Boolean).map(c => c.toLowerCase().trim());
+        return caps.some(cap => s.includes(cap));
+    };
 
     const getCarac = (k) => {
         const base = character.caracteristiques?.[k] ||
                      character.data?.stats_scellees?.caracteristiques?.[k] ||
                      feeData?.caracteristiques?.[k]?.min || 1;
-        const bonus = finalStats.caracteristiques.bonus[k]?.reduce((acc, b) => acc + b.value, 0) || 0;
-        return base + bonus;
+        const sources = finalStats.caracteristiques.bonus[k] || [];
+        const permanent = sources.filter(b => !isCapacite(b.source)).reduce((acc, b) => acc + Number(b.value), 0);
+        return base + permanent;
+    };
+
+    const getCaracDemasquee = (k) => {
+        const base = character.caracteristiques?.[k] ||
+                     character.data?.stats_scellees?.caracteristiques?.[k] ||
+                     feeData?.caracteristiques?.[k]?.min || 1;
+        const sources = finalStats.caracteristiques.bonus[k] || [];
+        const total = sources.reduce((acc, b) => acc + Number(b.value), 0);
+        return base + total;
     };
 
     const agi = getCarac('agilite');
+    const agiD = getCaracDemasquee('agilite');
     const con = getCarac('constitution');
+    const conD = getCaracDemasquee('constitution');
     const esp = getCarac('esprit');
+    const espD = getCaracDemasquee('esprit');
     const masque = getCarac('masque');
     const sf = getCarac('sangFroid');
+    const sfD = getCaracDemasquee('sangFroid');
 
-    // ✨ FIX : calculateSkillScore demande maintenant gameData !
     const sMouv = calculateSkillScore('Mouvement', character, gameData);
     const sMelee = calculateSkillScore('Mêlée', character, gameData);
     const sRes = calculateSkillScore('Ressort', character, gameData);
@@ -78,12 +102,17 @@ export const calculateFullCombatStats = (character, gameData) => {
 
     return {
         esquiveMasquee: sMouv + agi + 5,
-        esquiveDemasquee: sMouv + agi + 5 + modT,
+        esquiveDemasquee: sMouv + agiD + 5 + modT,
         parade: sMelee + agi + 5,
+        paradeDemasquee: sMelee + agiD + 5 + modT,
         resPhys: sRes + con + 5 + bonusMasque,
+        resPhysDemasquee: sRes + conD + 5,
         resPsych: sFort + esp + 5 + bonusMasque,
+        resPsychDemasquee: sFort + espD + 5,
         init: sArt + sf,
+        initDemasquee: sArt + sfD,
         pvMax: (3 * con) + 9,
+        pvMaxDemasquee: (3 * conD) + 9,
         tricherie: Math.floor((getCarac('feerie') + masque) / 2)
     };
 };

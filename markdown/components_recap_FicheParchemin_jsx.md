@@ -466,13 +466,17 @@ export default function FicheParchemin({ character, gameData, detailed = false }
 				{/* ✨ LE FIX 2 : Le bloc insécable (break-inside-avoid) */}
 				<div style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} className="mt-2">
 					<div className="carac-main-title m-0">Combat & Santé</div>
-					<div className="grid grid-cols-6 gap-2 recap-box mt-1" style={{background: '#e6e1d8', borderColor: '#4a3b2c'}}>
-						<div><div className="combat-circle">{liveCombatStats.esquiveMasquee}</div><div className="combat-label">Esq. Masq.</div></div>
-						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.esquiveDemasquee}</div><div className="combat-label" style={{color: '#b91c1c'}}>Esq. Dém.</div></div>
+					<div className="grid grid-cols-5 gap-2 recap-box mt-1" style={{background: '#e6e1d8', borderColor: '#4a3b2c'}}>
+						<div><div className="combat-circle">{liveCombatStats.esquiveMasquee}</div><div className="combat-label">Esq.</div></div>
 						<div><div className="combat-circle">{liveCombatStats.parade}</div><div className="combat-label">Parade</div></div>
 						<div><div className="combat-circle">{liveCombatStats.resPhys}</div><div className="combat-label">Rés. Phys.</div></div>
 						<div><div className="combat-circle">{liveCombatStats.resPsych}</div><div className="combat-label">Rés. Psych.</div></div>
 						<div><div className="combat-circle" style={{borderColor: '#92400e', color: '#92400e'}}>{liveCombatStats.pvMax}</div><div className="combat-label" style={{color: '#92400e'}}>PV Max</div></div>
+						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.esquiveDemasquee}</div><div className="combat-label" style={{color: '#b91c1c'}}>Esq. Dém.</div></div>
+						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.paradeDemasquee ?? liveCombatStats.parade}</div><div className="combat-label" style={{color: '#b91c1c'}}>Parade Dém.</div></div>
+						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.resPhysDemasquee ?? liveCombatStats.resPhys}</div><div className="combat-label" style={{color: '#b91c1c'}}>Rés. Phys. Dém.</div></div>
+						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.resPsychDemasquee ?? liveCombatStats.resPsych}</div><div className="combat-label" style={{color: '#b91c1c'}}>Rés. Psych. Dém.</div></div>
+						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.pvMaxDemasquee ?? liveCombatStats.pvMax}</div><div className="combat-label" style={{color: '#b91c1c'}}>PV Max Dém.</div></div>
 					</div>
 				</div>
             </div>
