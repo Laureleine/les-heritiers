@@ -1,18 +1,43 @@
+require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-const SUPABASE_URL = 'https://uvckugcixiugysnsbekb.supabase.co';
-const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV2Y2t1Z2NpeGl1Z3lzbnNiZWtiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTUwMjUxNywiZXhwIjoyMDg1MDc4NTE3fQ.3dgePM4G81VSusOgn7-vvEyNSatSvwb5EQpv3V0dJ5k';
+const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+if (!SUPABASE_URL || !SERVICE_KEY) {
+  console.error('❌ Variables SUPABASE_SERVICE_KEY et REACT_APP_SUPABASE_URL requises dans .env');
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const TABLES = [
-  'admin_settings', 'bug_reports', 'cercle_membres', 'cercles',
-  'character_snapshots', 'characters', 'chat_channels', 'chat_messages',
-  'encyclopedia_edits', 'encyclopedia_items', 'gifts', 'heritier_notes',
-  'pending_invites', 'profiles', 'registre_forge', 'xp_summary',
-  'xp_transactions'
+  // Personnages & profils
+  'characters', 'profiles', 'character_snapshots', 'xp_transactions',
+  // Télégraphe & messagerie
+  'chat_channels', 'chat_messages', 'chat_message_reads',
+  // Cercles
+  'cercles', 'cercle_membres',
+  // Encyclopédie féérique
+  'fairy_types', 'fairy_capacites', 'fairy_powers', 'fairy_assets',
+  'fairy_type_capacites', 'fairy_type_powers', 'fairy_type_assets',
+  'fairy_competences_predilection', 'fairy_competences_futiles_predilection',
+  // Référentiels
+  'competences', 'competences_futiles', 'specialites', 'profils', 'social_items',
+  // Vie sociale & équipement
+  'titres_honorifiques', 'heritier_notes', 'registre_forge',
+  // Support & signalements
+  'bug_reports', 'support_tickets', 'support_messages',
+  // Encyclopédie — éditions & propositions
+  'data_change_requests',
+  // Administration
+  'admin_settings',
+  // Notifications
+  'user_notification_preferences', 'notification_history',
+  // Vues matérialisées
+  'xp_summary'
 ];
 
 async function backup() {

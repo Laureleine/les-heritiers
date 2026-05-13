@@ -1,10 +1,27 @@
 // src/components/cercle/ActiveCercleView.js
-import React from 'react';
-import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle } from '../../config/icons';
+import React, { useState } from 'react';
+import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift } from '../../config/icons';
 
-const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter }) => {
+const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
+  const [xpDefault, setXpDefault] = useState(0);
+  const [xpAmounts, setXpAmounts] = useState({});
+  const [xpMotif, setXpMotif] = useState('');
+
   if (!cercle) return null;
   const isDocte = cercle.docte_id === session.user.id;
+
+  const handleXpPreset = (amount) => {
+    setXpDefault(amount);
+    const map = {};
+    activeMembers.forEach(m => { map[m.user_id] = amount; });
+    setXpAmounts(map);
+  };
+
+  const adjustXp = (userId, delta) => {
+    setXpAmounts(prev => ({ ...prev, [userId]: Math.max(0, (prev[userId] || xpDefault || 0) + delta) }));
+  };
+
+  const recipientCount = Object.values(xpAmounts).filter(v => v > 0).length;
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200 animate-fade-in">
@@ -54,6 +71,70 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           </button>
         )}
       </div>
+
+      {/* 🎁 PANNEAU D'ATTRIBUTION D'XP (Docte seulement) */}
+      {isDocte && activeMembers.length > 0 && (
+        <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 md:p-5 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <Gift size={18} className="text-amber-700" />
+            <h3 className="font-bold text-amber-900 text-base">Distribuer des Points d'Expérience</h3>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="text-xs text-amber-700 font-bold">Montant par défaut :</span>
+            {[3, 5, 10, 15, 20].map(n => (
+              <button
+                key={n}
+                onClick={() => handleXpPreset(n)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                  xpDefault === n
+                    ? 'bg-amber-700 text-white border-amber-700 shadow-sm'
+                    : 'bg-white text-amber-800 border-amber-300 hover:bg-amber-100'
+                }`}
+              >{n} XP</button>
+            ))}
+            <input
+              type="number" min="0" max="100"
+              value={xpDefault || ''}
+              onChange={e => handleXpPreset(parseInt(e.target.value) || 0)}
+              placeholder="Perso."
+              className="w-20 px-2 py-1.5 border border-amber-300 rounded-lg text-xs font-bold text-amber-900 bg-white outline-none focus:ring-1 focus:ring-amber-400"
+            />
+          </div>
+
+          <div className="space-y-1.5 mb-4">
+            {activeMembers.map(m => (
+              <div key={m.user_id} className="flex items-center justify-between bg-white/70 rounded-lg px-3 py-2 border border-amber-200/60">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-xs font-bold text-amber-900 truncate">{m.characters?.nom || m.profiles?.username}</span>
+                  <span className="text-[10px] text-stone-400 italic truncate hidden sm:inline">{m.characters?.typeFee}</span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button onClick={() => adjustXp(m.user_id, -1)} className="w-6 h-6 flex items-center justify-center rounded bg-stone-100 text-stone-500 hover:bg-stone-200 text-sm font-bold">−</button>
+                  <span className="w-8 text-center text-sm font-black text-amber-900">{(xpAmounts[m.user_id] ?? xpDefault) || 0}</span>
+                  <button onClick={() => adjustXp(m.user_id, 1)} className="w-6 h-6 flex items-center justify-center rounded bg-stone-100 text-stone-500 hover:bg-stone-200 text-sm font-bold">+</button>
+                  {(xpAmounts[m.user_id] != null && xpAmounts[m.user_id] !== xpDefault) && <span className="text-[10px] text-amber-500 font-bold ml-1">✎</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              type="text" value={xpMotif} onChange={e => setXpMotif(e.target.value)}
+              placeholder="Motif (ex: Scénario : Le Secret du Lac)"
+              className="flex-1 min-w-[200px] px-3 py-2 border border-amber-300 rounded-lg text-xs font-bold text-amber-900 bg-white outline-none focus:ring-1 focus:ring-amber-400"
+            />
+            <button
+              onClick={() => { onDistributeXp(xpAmounts, xpMotif); setXpDefault(0); setXpAmounts({}); setXpMotif(''); }}
+              disabled={recipientCount === 0 || !xpMotif.trim() || xpSubmitting}
+              className="px-4 py-2 bg-amber-700 text-white rounded-lg text-xs font-bold hover:bg-amber-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm"
+            >
+              <Gift size={14} /> {xpSubmitting ? 'Distribution...' : `Distribuer les XP (${recipientCount} pers.)`}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ✨ LA TABLE VIRTUELLE */}
       <div className="relative mt-6 mb-8 bg-stone-50/50 rounded-3xl border border-stone-200/60 p-4 md:p-8 pt-16 md:pt-20 shadow-inner overflow-hidden">

@@ -1,7 +1,15 @@
 #!/bin/bash
 # db-schema-dump.sh - Export structure TOUTES tables Supabase → schema_YYYYMMDD.txt
+# Nécessite SUPABASE_DB_URL dans .env
 
-SUPABASE_DB_URL="postgresql://postgres.uvckugcixiugysnsbekb:Fred01Supabase@aws-1-eu-west-3.pooler.supabase.com:5432/postgres"
+if [ -z "$SUPABASE_DB_URL" ]; then
+  SUPABASE_DB_URL=$(grep '^SUPABASE_DB_URL=' .env 2>/dev/null | head -1 | cut -d '=' -f2- | sed "s/^['\"]//;s/['\"]$//")
+fi
+
+if [ -z "$SUPABASE_DB_URL" ]; then
+  echo "❌ Variable SUPABASE_DB_URL manquante. Ajoutez-la dans .env"
+  exit 1
+fi
 
 echo "📋 Dump structure DB → schema_$(date +%Y%m%d_%H%M%S).txt"
 
