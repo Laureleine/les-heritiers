@@ -5,6 +5,7 @@
 # Principes
 
 - Créer des tests de non-régression à chaque modification significative, sans hésitation.
+- Quand l'utilisateur soumet une idée, toujours affiner en posant toutes les questions pertinentes avant de coder. Se référer aux règles (PDFs, code existant) et proposer différentes alternatives. Ne jamais coder tant que le périmètre n'est pas entièrement couvert et validé.
 
 # Commands
 

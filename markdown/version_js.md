@@ -2,6 +2,35 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.1 - "Les Archives du Monde 📊"',
+    date: '13 Mai 2026',
+    description: 'Métriques publiques enrichies : types de fées, profils, graphiques et compteurs globaux.',
+    changes: [
+      '📊 **Métriques Publiques Enrichies (Communauté) :** L\'onglet "Métriques" a été entièrement réécrit avec 4 compteurs globaux (Héritiers, Personnages, Scellés, Cercles), la répartition des types de fées (tableau + barres horizontales), la répartition des profils majeurs et mineurs, et l\'activité quotidienne.',
+      '🎚️ **Slider Tableau / Graphiques :** Chaque section peut être visualisée en tableau (chiffres précis) ou en graphique (barres CSS proportionnelles) via un sélecteur élégant.',
+      '🗑️ **Période simplifiée :** Le sélecteur 30 jours / Globale a été retiré. Les métriques de répartition sont toujours globales, l\'activité reste sur 30 jours.',
+    ]
+  },  {
+    version: '15.17.0 - "La Main du Docte 🎁"',
+    date: '13 Mai 2026',
+    description: 'Attribution d\'XP par le Docte dans les Cercles, avec traçabilité et sécurité.',
+    changes: [
+      '🎁 **Attribution d\'XP dans les Cercles (Nouvelle Fonctionnalité) :** Le Docte peut désormais distribuer des Points d\'Expérience depuis sa Table Virtuelle. Un panneau dédié lui permet de choisir un montant (presets 3/5/10/15/20 ou saisie libre), d\'ajuster individu chaque membre avec des boutons −/+, et de préciser un motif (ex: "Scénario : Le Secret du Lac").',
+      '🛡️ **Sort `award_xp` inscrit dans le Grand Livre :** La fonction magique vérifie que seul le Docte du Cercle peut attribuer des XP à un Héritier de sa table. Les XP sont ajoutés au total du personnage et tracés dans le Registre des Transactions avec le code `REWARD`.',
+      '📜 **Script SQL créé :** `scripts/create_rpc_award_xp.sql` documente la fonction pour toute réinstallation future.',
+      '🔑 **Mot de passe de la Source Originelle mis à jour :** Le nouveau sceau d\'accès à la Base de Données et le port du connecteur (6543) ont été enregistrés dans le Coffre aux Archives (`.env`).',
+    ]
+  },  {
+    version: '15.16.47 - "Les Sceaux Purifiés et la Vigie 🔐"',
+    date: '13 Mai 2026',
+    description: 'Secrets retirés du code, sauvegarde universelle, et fondations de test posées sous le moteur de jeu.',
+    changes: [
+      '🔐 **Secrets retirés du Grimoire :** La clé de service (service_role) et le mot de passe de la Base de Données ont été extraits des parchemins (`scripts/backup_supabase.js`, `db-schema-dump.sh`) et placés dans le Coffre aux Archives (`.env`). Les scripts lisent désormais les sceaux depuis l\'environnement.',
+      '📚 **Sauvegarde Universelle :** Le Grand Archiviste recouvre désormais l\'intégralité des 39 tables du monde visible — des fiches des espèces féériques (`fairy_types`, `fairy_capacites`, `fairy_powers`, `fairy_assets`) aux registres de compétences (`competences`, `competences_futiles`, `specialites`, `profils`, `social_items`), en passant par les messageries du Télégraphe (`support_tickets`, `support_messages`, `chat_message_reads`). Plus rien n\'est laissé à la merci du temps.',
+      '⚙️ **Fondations de la Vigie (Tests) :** 27 nouvelles Sentinelles Automates ont été postées pour surveiller le Moteur de Jeu : 12 gardent les formules de coûts XP (`xpCalculator`) et 15 veillent sur les calculs de combat et de compétences (`rulesEngine`). Chaque formule est vérifiée — coûts minimums, plafonds, bonus de profil, prédilections, bonus magiques, modificateurs de taille, bonus de Masque.',
+      '📜 **Parchemin d\'exemple créé :** `.env.example` liste désormais toutes les variables requises, servant de guide aux nouveaux Archivistes qui voudraient déployer leur propre Grimoire.',
+    ]
+  },  {
     version: '15.16.46 - "L\'Album des Souvenirs 📸"',
     date: '13 Mai 2026',
     description: 'Album Photo restauré, résurrection des archives temporelles, et ménage des alertes automatiques.',

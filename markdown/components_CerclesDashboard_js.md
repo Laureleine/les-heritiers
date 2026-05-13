@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../config/supabase';
-import { Shield, Users, Plus, Key, X, ArrowLeft } from '../config/icons';
+import { Shield, Users, Plus, Key, X, ArrowLeft, Gift } from '../config/icons';
 import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
 import { getFullCharacter } from '../utils/supabaseStorage';
@@ -39,6 +39,7 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   const [selectedCharId, setSelectedCharId] = useState('');
   const [activeMembers, setActiveMembers] = useState([]);
   const [isCreatingCercle, setIsCreatingCercle] = useState(false);
+  const [xpSubmitting, setXpSubmitting] = useState(false);
 
   // 🧠 FIX : Mémoïsation pure du chargement
   const loadCercles = useCallback(async () => {
@@ -229,6 +230,32 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     }
   };
 
+  // 🎁 Distribution d'XP par le Docte
+  const handleDistributeXp = async (amounts, motif) => {
+    const recipients = activeMembers.filter(m => (amounts[m.user_id] || 0) > 0 && m.characters?.id);
+    if (recipients.length === 0) return;
+
+    setXpSubmitting(true);
+    try {
+      for (const member of recipients) {
+        const amount = amounts[member.user_id];
+        const { error } = await supabase.rpc('award_xp', {
+          p_character_id: member.characters.id,
+          p_amount: amount,
+          p_motif: motif,
+        });
+        if (error) throw error;
+      }
+
+      showInAppNotification(`🎁 ${recipients.length} Héritier(s) ont reçu leurs XP !`, "success");
+      loadMembers(activeTab);
+    } catch (err) {
+      showInAppNotification("Erreur lors de la distribution : " + err.message, "error");
+    } finally {
+      setXpSubmitting(false);
+    }
+  };
+  
   // ✨ Permet à un joueur de changer l'Héritier qu'il présente dans ce Cercle
   const handleUpdateMyCharacter = async (charId) => {
     if (!charId || !activeTab) return;
@@ -304,6 +331,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
               onViewCharacter={handleInspectCharacter}
               myCharacters={myCharacters}
               onUpdateMyCharacter={handleUpdateMyCharacter}
+              onDistributeXp={handleDistributeXp}
+              xpSubmitting={xpSubmitting}
             />
           )}
         </>
