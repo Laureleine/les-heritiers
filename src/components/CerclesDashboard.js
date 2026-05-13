@@ -89,14 +89,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   const loadMembers = useCallback(async (cercleId) => {
     setActiveMembers([]);
     try {
-		const { data, error } = await supabase
-		  .from('cercle_membres')
-		  .select(`
-			id, user_id, joined_at,
-			profiles ( username, unlocked_fairies ),
-			characters ( id, nom, sexe, apparence, genreHumain:genre_humain, typeFee:type_fee )
-		  `)
-		  .eq('cercle_id', cercleId);
+      const { data, error } = await supabase
+        .rpc('get_cercle_members', { p_cercle_id: cercleId });
       if (error) throw error;
       if (data) setActiveMembers(data);
     } catch (err) {

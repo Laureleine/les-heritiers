@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.16.45 - "Le Grand Sceau des Gardiens 🛡️"',
+    date: '13 Mai 2026',
+    description: 'Rempart de sécurité : RLS activé, permissions verrouillées, rôle-checks ajoutés, et premières sentinelles de test.',
+    changes: [
+      '🛡️ **RLS activé sur 3 tables exposées :** Les Archives du Télégraphe (`chat_channels`, `chat_messages`) et le Registre des Anomalies (`bug_reports`) sont désormais protégés par la Loi du Silence. Seuls les Héritiers concernés peuvent lire leurs propres missives et signalements.',
+      '🔒 **Permissions révoquées aux Égarés (anon) :** 11 sortilèges de la Bibliothèque Centrale ne sont plus accessibles aux simples visiteurs non-enregistrés. Les fonctions de don de personnage, de consultation des Cercles, de validation d\'identité et de gestion des Archives sont désormais réservées aux Faux-Semblants dûment inscrits au Grand Registre.',
+      '⚔️ **Verrouillage de "Magie Noire" (`execute_dynamic_sql`) :** Le redoutable sort d\'exécution dynamique a été scellé sous plusieurs sceaux — plus aucun Héritier, même connecté, ne peut l\'invoquer. Seuls les Architectes du Monde (postgres, service_role) en conservent la clé.',
+      '👑 **Rôle-checks sur les Sorts des Gardiens :** `purge_encyclopedia_entity` et `toggle_item_seal` vérifient désormais que l\'appelant est bien un Gardien du Savoir ou un Super Admin avant d\'exécuter leurs puissants effets. Les simples curieux essuieront un refus catégorique.',
+      '🧪 **Premières Sentinelles de Test :** 10 gardiens automates ont été postés aux portes des Archives, du Registre des Héritiers et de la Console d\'Administration pour surveiller le bon fonctionnement des nouveaux sceaux.',
+      '📜 **Nettoyage des Parchemins obsolètes :** Le sort `handle_new_user` (création de profil à l\'enrôlement) a été retiré de la vue publique — bien qu\'inaccessible par les artères classiques du Grimoire, sa simple évocation était signalée par les Gardiens de la Vigie.',
+    ]
+  },  {
     version: '15.16.44 - "La Duplicité Révélée 🔴"',
     date: '13 Mai 2026',
     description: 'Stats de combat démasquées : bonus capacité inclus, refonte du bloc Combat & Santé.',
