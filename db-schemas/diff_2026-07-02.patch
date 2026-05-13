@@ -1,0 +1,38 @@
+5c5
+< \restrict xFZVVNIcwNW6vwmJb5cEbyiRHLB2ADnaRnY6r6a8eeQg96bFUS5gbfFJGZvlMJi
+---
+> \restrict fbFDrM24hpav8gVAcbPvEckhsxhvE4XjYBUdEIxCdqHhnlA0brzwTjBRZOB31PT
+9321a9322,9328
+> -- Name: objects bug_captures_insert_authenticated; Type: POLICY; Schema: storage; Owner: -
+> --
+> 
+> CREATE POLICY bug_captures_insert_authenticated ON storage.objects FOR INSERT TO authenticated WITH CHECK ((bucket_id = 'bug_captures'::text));
+> 
+> 
+> --
+9333a9341,9361
+> -- Name: objects portraits_insert_own_folder; Type: POLICY; Schema: storage; Owner: -
+> --
+> 
+> CREATE POLICY portraits_insert_own_folder ON storage.objects FOR INSERT TO authenticated WITH CHECK (((bucket_id = 'portraits'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text)));
+> 
+> 
+> --
+> -- Name: objects portraits_select_own_folder; Type: POLICY; Schema: storage; Owner: -
+> --
+> 
+> CREATE POLICY portraits_select_own_folder ON storage.objects FOR SELECT TO authenticated USING (((bucket_id = 'portraits'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text)));
+> 
+> 
+> --
+> -- Name: objects portraits_update_own_folder; Type: POLICY; Schema: storage; Owner: -
+> --
+> 
+> CREATE POLICY portraits_update_own_folder ON storage.objects FOR UPDATE TO authenticated USING (((bucket_id = 'portraits'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text))) WITH CHECK (((bucket_id = 'portraits'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text)));
+> 
+> 
+> --
+9428c9456
+< \unrestrict xFZVVNIcwNW6vwmJb5cEbyiRHLB2ADnaRnY6r6a8eeQg96bFUS5gbfFJGZvlMJi
+---
+> \unrestrict fbFDrM24hpav8gVAcbPvEckhsxhvE4XjYBUdEIxCdqHhnlA0brzwTjBRZOB31PT

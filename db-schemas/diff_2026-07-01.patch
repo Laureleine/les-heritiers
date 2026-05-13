@@ -1,0 +1,460 @@
+5c5
+< \restrict fKpVhPQayBkYkYblq2z31D7RbE8LQ6agPyDejTg7itDa5dxZPdInR8msxpbLKqm
+---
+> \restrict xFZVVNIcwNW6vwmJb5cEbyiRHLB2ADnaRnY6r6a8eeQg96bFUS5gbfFJGZvlMJi
+4666a4667,4727
+> -- Name: menu_plats; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.menu_plats (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     nom text NOT NULL,
+>     categorie text NOT NULL,
+>     niveaux text[] DEFAULT '{}'::text[] NOT NULL,
+>     saisons text[] DEFAULT '{}'::text[] NOT NULL,
+>     nb_convives_min integer,
+>     nb_convives_max integer,
+>     difficulte integer NOT NULL,
+>     accord_vin text,
+>     description_narrative text,
+>     description_reussite_critique text,
+>     description_echec_partiel text,
+>     description_echec_critique text,
+>     statut text DEFAULT 'en_attente'::text NOT NULL,
+>     auteur_id uuid,
+>     validateur_id uuid,
+>     motif_refus text,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     CONSTRAINT menu_plats_categorie_check CHECK ((categorie = ANY (ARRAY['boisson_chaude'::text, 'viennoiserie'::text, 'potage'::text, 'hors_d_oeuvre'::text, 'poisson'::text, 'viande'::text, 'volaille'::text, 'gibier'::text, 'abats'::text, 'legume'::text, 'entremets'::text, 'fromage'::text, 'dessert'::text, 'patisserie'::text]))),
+>     CONSTRAINT menu_plats_difficulte_check CHECK (((difficulte >= 1) AND (difficulte <= 5))),
+>     CONSTRAINT menu_plats_statut_check CHECK ((statut = ANY (ARRAY['en_attente'::text, 'approuve'::text, 'refuse'::text])))
+> );
+> 
+> 
+> --
+> -- Name: menu_sauvegardes; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.menu_sauvegardes (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     utilisateur_id uuid NOT NULL,
+>     titre text,
+>     parametres jsonb NOT NULL,
+>     menu_genere jsonb NOT NULL,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL
+> );
+> 
+> 
+> --
+> -- Name: menu_structures; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.menu_structures (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     type_repas text NOT NULL,
+>     niveau_financier text NOT NULL,
+>     tranche_convives text NOT NULL,
+>     services jsonb NOT NULL,
+>     textes_intro text[] DEFAULT '{}'::text[] NOT NULL,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     CONSTRAINT menu_structures_niveau_financier_check CHECK ((niveau_financier = ANY (ARRAY['populaire'::text, 'bourgeois'::text, 'grande_bourgeoisie'::text, 'aristocratie'::text]))),
+>     CONSTRAINT menu_structures_tranche_convives_check CHECK ((tranche_convives = ANY (ARRAY['intime'::text, 'tablee'::text, 'banquet'::text]))),
+>     CONSTRAINT menu_structures_type_repas_check CHECK ((type_repas = ANY (ARRAY['petit_dejeuner'::text, 'dejeuner'::text, 'diner'::text, 'souper'::text, 'gouter'::text, 'banquet'::text])))
+> );
+> 
+> 
+> --
+4704a4766
+>     weight integer DEFAULT 1 NOT NULL,
+4709c4771
+<     CONSTRAINT pnj_table_entries_table_name_check CHECK ((table_name = ANY (ARRAY['traits'::text, 'apparences'::text, 'motivations'::text, 'secrets'::text, 'phobies'::text, 'hobbies'::text, 'comportements'::text, 'metiers'::text]))),
+---
+>     CONSTRAINT pnj_table_entries_table_name_check CHECK ((table_name = ANY (ARRAY['traits'::text, 'apparences'::text, 'motivations'::text, 'secrets'::text, 'phobies'::text, 'hobbies'::text, 'comportements'::text, 'metiers'::text, 'tranches_age'::text, 'sexes'::text, 'genres'::text, 'nationalites'::text, 'situations_matrimoniales'::text, 'situations_familiales'::text]))),
+4993c5055
+< -- Name: messages_2026_06_26; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_06_28; Type: TABLE; Schema: realtime; Owner: -
+4996c5058
+< CREATE TABLE realtime.messages_2026_06_26 (
+---
+> CREATE TABLE realtime.messages_2026_06_28 (
+5011c5073
+< -- Name: messages_2026_06_27; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_06_29; Type: TABLE; Schema: realtime; Owner: -
+5014c5076
+< CREATE TABLE realtime.messages_2026_06_27 (
+---
+> CREATE TABLE realtime.messages_2026_06_29 (
+5029c5091
+< -- Name: messages_2026_06_28; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_06_30; Type: TABLE; Schema: realtime; Owner: -
+5032c5094
+< CREATE TABLE realtime.messages_2026_06_28 (
+---
+> CREATE TABLE realtime.messages_2026_06_30 (
+5047c5109
+< -- Name: messages_2026_06_29; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_01; Type: TABLE; Schema: realtime; Owner: -
+5050c5112
+< CREATE TABLE realtime.messages_2026_06_29 (
+---
+> CREATE TABLE realtime.messages_2026_07_01 (
+5065c5127
+< -- Name: messages_2026_06_30; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_02; Type: TABLE; Schema: realtime; Owner: -
+5068c5130
+< CREATE TABLE realtime.messages_2026_06_30 (
+---
+> CREATE TABLE realtime.messages_2026_07_02 (
+5083c5145
+< -- Name: messages_2026_07_01; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_03; Type: TABLE; Schema: realtime; Owner: -
+5086c5148
+< CREATE TABLE realtime.messages_2026_07_01 (
+---
+> CREATE TABLE realtime.messages_2026_07_03 (
+5101c5163
+< -- Name: messages_2026_07_02; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_04; Type: TABLE; Schema: realtime; Owner: -
+5104c5166
+< CREATE TABLE realtime.messages_2026_07_02 (
+---
+> CREATE TABLE realtime.messages_2026_07_04 (
+5306,5319d5367
+< -- Name: messages_2026_06_26; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_26 FOR VALUES FROM ('2026-06-26 00:00:00') TO ('2026-06-27 00:00:00');
+< 
+< 
+< --
+< -- Name: messages_2026_06_27; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_27 FOR VALUES FROM ('2026-06-27 00:00:00') TO ('2026-06-28 00:00:00');
+< 
+< 
+< --
+5354a5403,5416
+> -- Name: messages_2026_07_03; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_03 FOR VALUES FROM ('2026-07-03 00:00:00') TO ('2026-07-04 00:00:00');
+> 
+> 
+> --
+> -- Name: messages_2026_07_04; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_04 FOR VALUES FROM ('2026-07-04 00:00:00') TO ('2026-07-05 00:00:00');
+> 
+> 
+> --
+5935a5998,6021
+> -- Name: menu_plats menu_plats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.menu_plats
+>     ADD CONSTRAINT menu_plats_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+> -- Name: menu_sauvegardes menu_sauvegardes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.menu_sauvegardes
+>     ADD CONSTRAINT menu_sauvegardes_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+> -- Name: menu_structures menu_structures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.menu_structures
+>     ADD CONSTRAINT menu_structures_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6072,6087d6157
+< -- Name: messages_2026_06_26 messages_2026_06_26_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_06_26
+<     ADD CONSTRAINT messages_2026_06_26_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+< -- Name: messages_2026_06_27 messages_2026_06_27_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_06_27
+<     ADD CONSTRAINT messages_2026_06_27_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6127a6198,6213
+> -- Name: messages_2026_07_03 messages_2026_07_03_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_03
+>     ADD CONSTRAINT messages_2026_07_03_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+> -- Name: messages_2026_07_04 messages_2026_07_04_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_04
+>     ADD CONSTRAINT messages_2026_07_04_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+6839a6926,6960
+> -- Name: idx_menu_plats_auteur; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_menu_plats_auteur ON public.menu_plats USING btree (auteur_id);
+> 
+> 
+> --
+> -- Name: idx_menu_plats_categorie; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_menu_plats_categorie ON public.menu_plats USING btree (categorie);
+> 
+> 
+> --
+> -- Name: idx_menu_plats_statut; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_menu_plats_statut ON public.menu_plats USING btree (statut);
+> 
+> 
+> --
+> -- Name: idx_menu_sauvegardes_utilisateur; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_menu_sauvegardes_utilisateur ON public.menu_sauvegardes USING btree (utilisateur_id);
+> 
+> 
+> --
+> -- Name: idx_menu_structures_lookup; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_menu_structures_lookup ON public.menu_structures USING btree (type_repas, niveau_financier, tranche_convives);
+> 
+> 
+> --
+6966,6979d7086
+< -- Name: messages_2026_06_26_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_06_26_inserted_at_topic_idx ON realtime.messages_2026_06_26 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+< -- Name: messages_2026_06_27_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_06_27_inserted_at_topic_idx ON realtime.messages_2026_06_27 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7014a7122,7135
+> -- Name: messages_2026_07_03_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_03_inserted_at_topic_idx ON realtime.messages_2026_07_03 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+> -- Name: messages_2026_07_04_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_04_inserted_at_topic_idx ON realtime.messages_2026_07_04 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7078,7105d7198
+< -- Name: messages_2026_06_26_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_26_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_06_26_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_26_pkey;
+< 
+< 
+< --
+< -- Name: messages_2026_06_27_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_27_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_06_27_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_27_pkey;
+< 
+< 
+< --
+7175a7269,7296
+> -- Name: messages_2026_07_03_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_03_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_03_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_03_pkey;
+> 
+> 
+> --
+> -- Name: messages_2026_07_04_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_04_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_04_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_04_pkey;
+> 
+> 
+> --
+7714a7836,7859
+> -- Name: menu_plats menu_plats_auteur_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.menu_plats
+>     ADD CONSTRAINT menu_plats_auteur_id_fkey FOREIGN KEY (auteur_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: menu_plats menu_plats_validateur_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.menu_plats
+>     ADD CONSTRAINT menu_plats_validateur_id_fkey FOREIGN KEY (validateur_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: menu_sauvegardes menu_sauvegardes_utilisateur_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.menu_sauvegardes
+>     ADD CONSTRAINT menu_sauvegardes_utilisateur_id_fkey FOREIGN KEY (utilisateur_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+> 
+> 
+> --
+8882a9028,9116
+> -- Name: menu_plats; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.menu_plats ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: menu_plats menu_plats_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_plats_insert ON public.menu_plats FOR INSERT TO authenticated WITH CHECK (((auteur_id = auth.uid()) AND ((statut = 'en_attente'::text) OR (EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))))));
+> 
+> 
+> --
+> -- Name: menu_plats menu_plats_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_plats_select ON public.menu_plats FOR SELECT TO authenticated USING (((statut = 'approuve'::text) OR (auteur_id = auth.uid())));
+> 
+> 
+> --
+> -- Name: menu_plats menu_plats_update_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_plats_update_admin ON public.menu_plats FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: menu_sauvegardes; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.menu_sauvegardes ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: menu_sauvegardes menu_sauvegardes_delete; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_sauvegardes_delete ON public.menu_sauvegardes FOR DELETE TO authenticated USING ((utilisateur_id = auth.uid()));
+> 
+> 
+> --
+> -- Name: menu_sauvegardes menu_sauvegardes_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_sauvegardes_insert ON public.menu_sauvegardes FOR INSERT TO authenticated WITH CHECK ((utilisateur_id = auth.uid()));
+> 
+> 
+> --
+> -- Name: menu_sauvegardes menu_sauvegardes_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_sauvegardes_select ON public.menu_sauvegardes FOR SELECT TO authenticated USING ((utilisateur_id = auth.uid()));
+> 
+> 
+> --
+> -- Name: menu_structures; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.menu_structures ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: menu_structures menu_structures_insert_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_structures_insert_admin ON public.menu_structures FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: menu_structures menu_structures_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_structures_select ON public.menu_structures FOR SELECT TO authenticated USING (true);
+> 
+> 
+> --
+> -- Name: menu_structures menu_structures_update_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY menu_structures_update_admin ON public.menu_structures FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+9194c9428
+< \unrestrict fKpVhPQayBkYkYblq2z31D7RbE8LQ6agPyDejTg7itDa5dxZPdInR8msxpbLKqm
+---
+> \unrestrict xFZVVNIcwNW6vwmJb5cEbyiRHLB2ADnaRnY6r6a8eeQg96bFUS5gbfFJGZvlMJi
