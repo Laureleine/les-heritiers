@@ -1,0 +1,288 @@
+5c5
+< \restrict rgSfbWbh6z6LGBiB7f7jGmduy3VTi0CtJewLNEIkb0zEZf772gpBVCaPk7XIcyt
+---
+> \restrict tcNb43Fh7nLD0VgedLE0MuINIpfOUlPQ8ld2BDX6FYl9cqEJQeG3pn7cWmjnuzD
+1608a1609,1638
+> -- Name: upsert_error_log(text, text, text, text, text, uuid, uuid, uuid, text, text, jsonb); Type: FUNCTION; Schema: public; Owner: -
+> --
+> 
+> CREATE FUNCTION public.upsert_error_log(p_type text, p_message text, p_stack text, p_component_stack text, p_fingerprint text, p_user_id uuid, p_character_id uuid, p_cercle_id uuid, p_url text, p_user_agent text, p_extra jsonb) RETURNS void
+>     LANGUAGE plpgsql SECURITY DEFINER
+>     AS $$
+>         BEGIN
+>             INSERT INTO error_logs (
+>                 type, message, stack, component_stack, fingerprint,
+>                 user_id, character_id, cercle_id, url, user_agent, extra,
+>                 occurrence_count, last_seen_at, created_at
+>             ) VALUES (
+>                 p_type, p_message, p_stack, p_component_stack, p_fingerprint,
+>                 p_user_id, p_character_id, p_cercle_id, p_url, p_user_agent, p_extra,
+>                 1, now(), now()
+>             )
+>             ON CONFLICT (fingerprint) DO UPDATE SET
+>                 occurrence_count = error_logs.occurrence_count + 1,
+>                 last_seen_at     = now(),
+>                 -- Met à jour le contexte avec la dernière occurrence
+>                 user_id          = COALESCE(p_user_id, error_logs.user_id),
+>                 character_id     = COALESCE(p_character_id, error_logs.character_id),
+>                 cercle_id        = COALESCE(p_cercle_id, error_logs.cercle_id),
+>                 url              = p_url,
+>                 extra            = COALESCE(p_extra, error_logs.extra);
+>         END;
+>         $$;
+> 
+> 
+> --
+4776a4807,4832
+> -- Name: error_logs; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.error_logs (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     user_id uuid,
+>     type text NOT NULL,
+>     message text NOT NULL,
+>     stack text,
+>     component_stack text,
+>     url text,
+>     user_agent text,
+>     character_id uuid,
+>     cercle_id uuid,
+>     extra jsonb,
+>     fingerprint text NOT NULL,
+>     occurrence_count integer DEFAULT 1 NOT NULL,
+>     last_seen_at timestamp with time zone DEFAULT now() NOT NULL,
+>     transmitted_at timestamp with time zone,
+>     resolved_at timestamp with time zone,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     CONSTRAINT error_logs_type_check CHECK ((type = ANY (ARRAY['crash'::text, 'error'::text, 'warn'::text, 'unhandled_promise'::text])))
+> );
+> 
+> 
+> --
+5425a5482
+>     character_id uuid,
+5507c5564,5565
+<     is_initiated boolean DEFAULT false
+---
+>     is_initiated boolean DEFAULT false,
+>     badges_seen text[] DEFAULT '{}'::text[]
+5717c5775,5776
+<     description text
+---
+>     description text,
+>     pixie_message text
+5842c5901
+< -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+5845c5904
+< CREATE TABLE realtime.messages_2026_07_16 (
+---
+> CREATE TABLE realtime.messages_2026_07_17 (
+5860c5919
+< -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+5863c5922
+< CREATE TABLE realtime.messages_2026_07_17 (
+---
+> CREATE TABLE realtime.messages_2026_07_18 (
+5878c5937
+< -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_19; Type: TABLE; Schema: realtime; Owner: -
+5881c5940
+< CREATE TABLE realtime.messages_2026_07_18 (
+---
+> CREATE TABLE realtime.messages_2026_07_19 (
+5896c5955
+< -- Name: messages_2026_07_19; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_20; Type: TABLE; Schema: realtime; Owner: -
+5899c5958
+< CREATE TABLE realtime.messages_2026_07_19 (
+---
+> CREATE TABLE realtime.messages_2026_07_20 (
+5914c5973
+< -- Name: messages_2026_07_20; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_21; Type: TABLE; Schema: realtime; Owner: -
+5917c5976
+< CREATE TABLE realtime.messages_2026_07_20 (
+---
+> CREATE TABLE realtime.messages_2026_07_21 (
+5932c5991
+< -- Name: messages_2026_07_21; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_22; Type: TABLE; Schema: realtime; Owner: -
+5935c5994
+< CREATE TABLE realtime.messages_2026_07_21 (
+---
+> CREATE TABLE realtime.messages_2026_07_22 (
+5950c6009
+< -- Name: messages_2026_07_22; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_23; Type: TABLE; Schema: realtime; Owner: -
+5953c6012
+< CREATE TABLE realtime.messages_2026_07_22 (
+---
+> CREATE TABLE realtime.messages_2026_07_23 (
+6155,6161d6213
+< -- Name: messages_2026_07_16; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_16 FOR VALUES FROM ('2026-07-16 00:00:00') TO ('2026-07-17 00:00:00');
+< 
+< 
+< --
+6203a6256,6262
+> -- Name: messages_2026_07_23; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_23 FOR VALUES FROM ('2026-07-23 00:00:00') TO ('2026-07-24 00:00:00');
+> 
+> 
+> --
+6701a6761,6768
+> -- Name: error_logs error_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.error_logs
+>     ADD CONSTRAINT error_logs_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+7118,7125d7184
+< -- Name: messages_2026_07_16 messages_2026_07_16_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_16
+<     ADD CONSTRAINT messages_2026_07_16_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+7173a7233,7240
+> -- Name: messages_2026_07_23 messages_2026_07_23_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_23
+>     ADD CONSTRAINT messages_2026_07_23_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7689a7757,7770
+> -- Name: error_logs_created_at_idx; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX error_logs_created_at_idx ON public.error_logs USING btree (created_at DESC);
+> 
+> 
+> --
+> -- Name: error_logs_fingerprint_idx; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE UNIQUE INDEX error_logs_fingerprint_idx ON public.error_logs USING btree (fingerprint);
+> 
+> 
+> --
+8159,8165d8239
+< -- Name: messages_2026_07_16_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_16_inserted_at_topic_idx ON realtime.messages_2026_07_16 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+8207a8282,8288
+> -- Name: messages_2026_07_23_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_23_inserted_at_topic_idx ON realtime.messages_2026_07_23 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+8271,8284d8351
+< -- Name: messages_2026_07_16_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_16_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_16_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_16_pkey;
+< 
+< 
+< --
+8368a8436,8449
+> -- Name: messages_2026_07_23_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_23_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_23_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_23_pkey;
+> 
+> 
+> --
+8851a8933,8940
+> -- Name: error_logs error_logs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.error_logs
+>     ADD CONSTRAINT error_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+9131a9221,9228
+> -- Name: personal_card_grants personal_card_grants_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.personal_card_grants
+>     ADD CONSTRAINT personal_card_grants_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE SET NULL;
+> 
+> 
+> --
+10348a10446,10476
+> -- Name: error_logs; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.error_logs ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: error_logs error_logs_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY error_logs_insert ON public.error_logs FOR INSERT TO authenticated WITH CHECK (true);
+> 
+> 
+> --
+> -- Name: error_logs error_logs_select_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY error_logs_select_admin ON public.error_logs FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: error_logs error_logs_update_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY error_logs_update_admin ON public.error_logs FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+11198c11326
+< \unrestrict rgSfbWbh6z6LGBiB7f7jGmduy3VTi0CtJewLNEIkb0zEZf772gpBVCaPk7XIcyt
+---
+> \unrestrict tcNb43Fh7nLD0VgedLE0MuINIpfOUlPQ8ld2BDX6FYl9cqEJQeG3pn7cWmjnuzD

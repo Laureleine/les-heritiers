@@ -1,0 +1,269 @@
+5c5
+< \restrict 14VqeKYfXLn5pjieb7WP1HATRob8JfAyKOCODGFo6h6e5gyRzqKCZ1OZWWeEK6Q
+---
+> \restrict tOTCbgrOIP6XgNrqc5Bo597a8iQ6yf2smQmohFiFgYEoPI8Q70ftStMfMx6t45Q
+763,770c763,770
+<     DECLARE
+<       v_user_id uuid;
+<       v_character_nom text;
+<     BEGIN
+<       SELECT user_id, nom INTO v_user_id, v_character_nom FROM characters WHERE id = p_character_id;
+<       IF NOT FOUND THEN
+<         RAISE EXCEPTION 'Personnage introuvable.';
+<       END IF;
+---
+>       DECLARE
+>         v_user_id uuid;
+>         v_character_nom text;
+>       BEGIN
+>         SELECT user_id, nom INTO v_user_id, v_character_nom FROM characters WHERE id = p_character_id;
+>         IF NOT FOUND THEN
+>           RAISE EXCEPTION 'Personnage introuvable.';
+>         END IF;
+772,778c772,778
+<       IF NOT EXISTS (
+<         SELECT 1 FROM cercle_membres cm
+<         JOIN cercles c ON c.id = cm.cercle_id
+<         WHERE cm.character_id = p_character_id AND c.docte_id = auth.uid()
+<       ) THEN
+<         RAISE EXCEPTION 'Seul le Docte du Cercle peut attribuer des XP à cet Héritier.';
+<       END IF;
+---
+>         IF NOT EXISTS (
+>           SELECT 1 FROM cercle_membres cm
+>           JOIN cercles c ON c.id = cm.cercle_id
+>           WHERE cm.character_id = p_character_id AND c.docte_id = auth.uid()
+>         ) THEN
+>           RAISE EXCEPTION 'Seul le Docte du Cercle peut attribuer des XP à cet Héritier.';
+>         END IF;
+780c780
+<       UPDATE characters SET xp_total = xp_total + p_amount WHERE id = p_character_id;
+---
+>         IF p_amount = 0 THEN RETURN; END IF;
+782,785c782,794
+<       INSERT INTO xp_transactions (character_id, type, code, label, valeur, date_mouvement)
+<       VALUES (p_character_id, 'GAIN', 'REWARD', p_motif, p_amount, NOW());
+<     END;
+<     $$;
+---
+>         UPDATE characters SET xp_total = xp_total + p_amount WHERE id = p_character_id;
+> 
+>         INSERT INTO xp_transactions (character_id, type, code, label, valeur, date_mouvement)
+>         VALUES (
+>           p_character_id,
+>           'GAIN',
+>           CASE WHEN p_amount > 0 THEN 'XP_GAIN' ELSE 'XP_AJUSTEMENT' END,
+>           p_motif,
+>           ABS(p_amount),
+>           NOW()
+>         );
+>       END;
+>       $$;
+920a930,931
+>         IF p_amount = 0 THEN RETURN; END IF;
+> 
+924c935,942
+<           VALUES (v_char_id, 'GAIN', 'SESSION_XP', p_label, p_amount, NOW());
+---
+>           VALUES (
+>             v_char_id,
+>             'GAIN',
+>             CASE WHEN p_amount > 0 THEN 'SESSION_XP' ELSE 'SESSION_XP_CORRECTION' END,
+>             p_label,
+>             ABS(p_amount),
+>             NOW()
+>           );
+1207a1226,1242
+> -- Name: get_top_outil_users(integer); Type: FUNCTION; Schema: public; Owner: -
+> --
+> 
+> CREATE FUNCTION public.get_top_outil_users(limit_n integer DEFAULT 5) RETURNS TABLE(email text, total bigint)
+>     LANGUAGE sql SECURITY DEFINER
+>     SET search_path TO 'public'
+>     AS $$
+>     SELECT u.email::TEXT, COUNT(*)::BIGINT AS total
+>     FROM outil_usage o
+>     JOIN auth.users u ON u.id = o.user_id
+>     GROUP BY u.email
+>     ORDER BY total DESC
+>     LIMIT limit_n;
+>   $$;
+> 
+> 
+> --
+4038a4074,4088
+> -- Name: cercle_revelations; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.cercle_revelations (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     cercle_id uuid NOT NULL,
+>     item_id uuid NOT NULL,
+>     revealed_at timestamp with time zone DEFAULT now(),
+>     revealed_by uuid,
+>     xp_distributed boolean DEFAULT false,
+>     bonus_element_distribue boolean DEFAULT false
+> );
+> 
+> 
+> --
+4775a4826,4841
+> -- Name: indices_verites; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.indices_verites (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     element_nom text NOT NULL,
+>     element_type text NOT NULL,
+>     type text NOT NULL,
+>     texte text NOT NULL,
+>     ordre integer DEFAULT 0 NOT NULL,
+>     CONSTRAINT indices_verites_element_type_check CHECK ((element_type = ANY (ARRAY['concept'::text, 'lieu'::text, 'personnage'::text, 'événement'::text]))),
+>     CONSTRAINT indices_verites_type_check CHECK ((type = ANY (ARRAY['indice'::text, 'verite_mineure'::text, 'verite_majeure'::text, 'dit_du_marcheur'::text])))
+> );
+> 
+> 
+> --
+6173a6240,6255
+> -- Name: cercle_revelations cercle_revelations_cercle_id_item_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cercle_revelations
+>     ADD CONSTRAINT cercle_revelations_cercle_id_item_id_key UNIQUE (cercle_id, item_id);
+> 
+> 
+> --
+> -- Name: cercle_revelations cercle_revelations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cercle_revelations
+>     ADD CONSTRAINT cercle_revelations_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6381a6464,6471
+> -- Name: indices_verites indices_verites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.indices_verites
+>     ADD CONSTRAINT indices_verites_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+8198a8289,8312
+> -- Name: cercle_revelations cercle_revelations_cercle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cercle_revelations
+>     ADD CONSTRAINT cercle_revelations_cercle_id_fkey FOREIGN KEY (cercle_id) REFERENCES public.cercles(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: cercle_revelations cercle_revelations_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cercle_revelations
+>     ADD CONSTRAINT cercle_revelations_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.indices_verites(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: cercle_revelations cercle_revelations_revealed_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cercle_revelations
+>     ADD CONSTRAINT cercle_revelations_revealed_by_fkey FOREIGN KEY (revealed_by) REFERENCES public.profiles(id);
+> 
+> 
+> --
+9591a9706,9711
+> -- Name: cercle_revelations; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.cercle_revelations ENABLE ROW LEVEL SECURITY;
+> 
+> --
+9709a9830,9867
+> -- Name: cercle_revelations cr_delete_docte; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY cr_delete_docte ON public.cercle_revelations FOR DELETE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.cercles
+>   WHERE ((cercles.id = cercle_revelations.cercle_id) AND (cercles.docte_id = auth.uid())))));
+> 
+> 
+> --
+> -- Name: cercle_revelations cr_insert_docte; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY cr_insert_docte ON public.cercle_revelations FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
+>    FROM public.cercles
+>   WHERE ((cercles.id = cercle_revelations.cercle_id) AND (cercles.docte_id = auth.uid())))));
+> 
+> 
+> --
+> -- Name: cercle_revelations cr_select_cercle; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY cr_select_cercle ON public.cercle_revelations FOR SELECT TO authenticated USING (((EXISTS ( SELECT 1
+>    FROM public.cercles
+>   WHERE ((cercles.id = cercle_revelations.cercle_id) AND (cercles.docte_id = auth.uid())))) OR (EXISTS ( SELECT 1
+>    FROM public.cercle_membres
+>   WHERE ((cercle_membres.cercle_id = cercle_revelations.cercle_id) AND (cercle_membres.user_id = auth.uid()))))));
+> 
+> 
+> --
+> -- Name: cercle_revelations cr_update_docte; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY cr_update_docte ON public.cercle_revelations FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.cercles
+>   WHERE ((cercles.id = cercle_revelations.cercle_id) AND (cercles.docte_id = auth.uid())))));
+> 
+> 
+> --
+9787a9946,9951
+> -- Name: indices_verites; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.indices_verites ENABLE ROW LEVEL SECURITY;
+> 
+> --
+9793a9958,9991
+> -- Name: indices_verites iv_delete_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY iv_delete_admin ON public.indices_verites FOR DELETE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: indices_verites iv_insert_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY iv_insert_admin ON public.indices_verites FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: indices_verites iv_select_all; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY iv_select_all ON public.indices_verites FOR SELECT USING (true);
+> 
+> 
+> --
+> -- Name: indices_verites iv_update_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY iv_update_admin ON public.indices_verites FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+10525c10723
+< \unrestrict 14VqeKYfXLn5pjieb7WP1HATRob8JfAyKOCODGFo6h6e5gyRzqKCZ1OZWWeEK6Q
+---
+> \unrestrict tOTCbgrOIP6XgNrqc5Bo597a8iQ6yf2smQmohFiFgYEoPI8Q70ftStMfMx6t45Q

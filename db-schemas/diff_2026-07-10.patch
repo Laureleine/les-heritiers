@@ -1,0 +1,306 @@
+5c5
+< \restrict pVwSRQkboKTPXkHcn1AA8nVma24jr41GkzVukaVGk31D8W4eMxqbneEtHu6vpT2
+---
+> \restrict 6EwM3jLjQqV5BrdegT8bnbsw54LW8JDElXGKoJspyFGfhxKC3UDdf3zdHPIQMvk
+962d961
+<     SET search_path TO 'public'
+964,975c963,980
+<     DECLARE
+<         result json;
+<     BEGIN
+<         SELECT json_build_object(
+<             'total_profiles', (SELECT count(*) FROM profiles),
+<             'total_characters', (SELECT count(*) FROM characters),
+<             'total_sealed', (SELECT count(*) FROM characters WHERE statut = 'scelle'),
+<             'total_cercles', (SELECT count(*) FROM cercles)
+<         ) INTO result;
+<         RETURN result;
+<     END;
+<     $$;
+---
+> DECLARE
+>   caller_role TEXT;
+>   result json;
+> BEGIN
+>   SELECT role INTO caller_role FROM profiles WHERE id = auth.uid();
+>   IF caller_role NOT IN ('super_admin', 'gardien') THEN
+>     RAISE EXCEPTION 'Accès refusé';
+>   END IF;
+> 
+>   SELECT json_build_object(
+>     'total_profiles', (SELECT count(*) FROM profiles),
+>     'total_characters', (SELECT count(*) FROM characters),
+>     'total_sealed', (SELECT count(*) FROM characters WHERE statut = 'scelle'),
+>     'total_cercles', (SELECT count(*) FROM cercles)
+>   ) INTO result;
+>   RETURN result;
+> END;
+> $$;
+1086d1090
+<     SET search_path TO 'public'
+1088a1093
+>   caller_role TEXT;
+1091a1097,1101
+>   SELECT role INTO caller_role FROM profiles WHERE id = auth.uid();
+>   IF caller_role NOT IN ('super_admin', 'gardien') THEN
+>     RAISE EXCEPTION 'Accès refusé';
+>   END IF;
+> 
+1117,1127c1127,1129
+<     'new_profiles', (
+<       SELECT json_agg(json_build_object('created_at', created_at))
+<       FROM profiles WHERE created_at >= thirty_days_ago
+<     ),
+<     'character_activity', (
+<       SELECT json_agg(json_build_object('created_at', created_at, 'updated_at', updated_at))
+<       FROM characters WHERE created_at >= thirty_days_ago OR updated_at >= thirty_days_ago
+<     ),
+<     'encyclopedia_requests', (
+<       SELECT json_agg(json_build_object('created_at', created_at))
+<       FROM data_change_requests WHERE created_at >= thirty_days_ago
+---
+>     'active_users', (
+>       SELECT COUNT(DISTINCT user_id)::int FROM characters
+>       WHERE updated_at > thirty_days_ago
+3990c3992
+<     weight integer DEFAULT 1 NOT NULL,
+---
+>     weight text DEFAULT 'frequent'::text NOT NULL,
+3999a4002
+>     CONSTRAINT ambiance_table_entries_weight_check CHECK ((weight = ANY (ARRAY['extremement_rare'::text, 'rare'::text, 'peu_frequent'::text, 'frequent'::text, 'tres_frequent'::text]))),
+5070c5073
+<     weight integer DEFAULT 1 NOT NULL,
+---
+>     weight text DEFAULT 'frequent'::text NOT NULL,
+5076c5079,5080
+<     CONSTRAINT pnj_table_entries_tranche_age_check CHECK (((tranche_age = ANY (ARRAY['jeune'::text, 'adulte'::text, 'mur'::text, 'age'::text])) OR (tranche_age IS NULL)))
+---
+>     CONSTRAINT pnj_table_entries_tranche_age_check CHECK (((tranche_age = ANY (ARRAY['jeune'::text, 'adulte'::text, 'mur'::text, 'age'::text])) OR (tranche_age IS NULL))),
+>     CONSTRAINT pnj_table_entries_weight_check CHECK ((weight = ANY (ARRAY['extremement_rare'::text, 'rare'::text, 'peu_frequent'::text, 'frequent'::text, 'tres_frequent'::text])))
+5090c5094
+<     weight integer DEFAULT 1 NOT NULL,
+---
+>     weight text DEFAULT 'frequent'::text NOT NULL,
+5101a5106
+>     CONSTRAINT poche_table_entries_weight_check CHECK ((weight = ANY (ARRAY['extremement_rare'::text, 'rare'::text, 'peu_frequent'::text, 'frequent'::text, 'tres_frequent'::text]))),
+5333c5338
+<     weight integer DEFAULT 10 NOT NULL,
+---
+>     weight text DEFAULT 'frequent'::text NOT NULL,
+5343c5348,5349
+<     CONSTRAINT tracas_table_entries_table_name_check CHECK ((table_name = ANY (ARRAY['sante'::text, 'logistique'::text, 'social'::text, 'technologie'::text, 'ex_lettre_anonyme'::text, 'ex_parent_eloigne'::text, 'ex_facheur'::text, 'ex_rumeur_journal'::text, 'ex_erreur_livraison'::text, 'ex_pli_officiel'::text, 'ex_gamin_rue'::text])))
+---
+>     CONSTRAINT tracas_table_entries_table_name_check CHECK ((table_name = ANY (ARRAY['sante'::text, 'logistique'::text, 'social'::text, 'technologie'::text, 'ex_lettre_anonyme'::text, 'ex_parent_eloigne'::text, 'ex_facheur'::text, 'ex_rumeur_journal'::text, 'ex_erreur_livraison'::text, 'ex_pli_officiel'::text, 'ex_gamin_rue'::text]))),
+>     CONSTRAINT tracas_table_entries_weight_check CHECK ((weight = ANY (ARRAY['extremement_rare'::text, 'rare'::text, 'peu_frequent'::text, 'frequent'::text, 'tres_frequent'::text])))
+5443c5449
+< -- Name: messages_2026_07_05; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_07; Type: TABLE; Schema: realtime; Owner: -
+5446c5452
+< CREATE TABLE realtime.messages_2026_07_05 (
+---
+> CREATE TABLE realtime.messages_2026_07_07 (
+5461c5467
+< -- Name: messages_2026_07_06; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_08; Type: TABLE; Schema: realtime; Owner: -
+5464c5470
+< CREATE TABLE realtime.messages_2026_07_06 (
+---
+> CREATE TABLE realtime.messages_2026_07_08 (
+5479c5485
+< -- Name: messages_2026_07_07; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+5482c5488
+< CREATE TABLE realtime.messages_2026_07_07 (
+---
+> CREATE TABLE realtime.messages_2026_07_09 (
+5497c5503
+< -- Name: messages_2026_07_08; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+5500c5506
+< CREATE TABLE realtime.messages_2026_07_08 (
+---
+> CREATE TABLE realtime.messages_2026_07_10 (
+5515c5521
+< -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_11; Type: TABLE; Schema: realtime; Owner: -
+5518c5524
+< CREATE TABLE realtime.messages_2026_07_09 (
+---
+> CREATE TABLE realtime.messages_2026_07_11 (
+5533c5539
+< -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_12; Type: TABLE; Schema: realtime; Owner: -
+5536c5542
+< CREATE TABLE realtime.messages_2026_07_10 (
+---
+> CREATE TABLE realtime.messages_2026_07_12 (
+5551c5557
+< -- Name: messages_2026_07_11; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+5554c5560
+< CREATE TABLE realtime.messages_2026_07_11 (
+---
+> CREATE TABLE realtime.messages_2026_07_13 (
+5756,5769d5761
+< -- Name: messages_2026_07_05; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_05 FOR VALUES FROM ('2026-07-05 00:00:00') TO ('2026-07-06 00:00:00');
+< 
+< 
+< --
+< -- Name: messages_2026_07_06; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_06 FOR VALUES FROM ('2026-07-06 00:00:00') TO ('2026-07-07 00:00:00');
+< 
+< 
+< --
+5804a5797,5810
+> -- Name: messages_2026_07_12; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_12 FOR VALUES FROM ('2026-07-12 00:00:00') TO ('2026-07-13 00:00:00');
+> 
+> 
+> --
+> -- Name: messages_2026_07_13; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_13 FOR VALUES FROM ('2026-07-13 00:00:00') TO ('2026-07-14 00:00:00');
+> 
+> 
+> --
+6618,6633d6623
+< -- Name: messages_2026_07_05 messages_2026_07_05_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_05
+<     ADD CONSTRAINT messages_2026_07_05_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+< -- Name: messages_2026_07_06 messages_2026_07_06_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_06
+<     ADD CONSTRAINT messages_2026_07_06_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6673a6664,6679
+> -- Name: messages_2026_07_12 messages_2026_07_12_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_12
+>     ADD CONSTRAINT messages_2026_07_12_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+> -- Name: messages_2026_07_13 messages_2026_07_13_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_13
+>     ADD CONSTRAINT messages_2026_07_13_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7624,7637d7629
+< -- Name: messages_2026_07_05_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_05_inserted_at_topic_idx ON realtime.messages_2026_07_05 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+< -- Name: messages_2026_07_06_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_06_inserted_at_topic_idx ON realtime.messages_2026_07_06 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7672a7665,7678
+> -- Name: messages_2026_07_12_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_12_inserted_at_topic_idx ON realtime.messages_2026_07_12 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+> -- Name: messages_2026_07_13_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_13_inserted_at_topic_idx ON realtime.messages_2026_07_13 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7736,7763d7741
+< -- Name: messages_2026_07_05_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_05_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_05_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_05_pkey;
+< 
+< 
+< --
+< -- Name: messages_2026_07_06_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_06_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_06_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_06_pkey;
+< 
+< 
+< --
+7833a7812,7839
+> -- Name: messages_2026_07_12_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_12_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_12_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_12_pkey;
+> 
+> 
+> --
+> -- Name: messages_2026_07_13_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_13_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_13_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_13_pkey;
+> 
+> 
+> --
+10410c10416
+< \unrestrict pVwSRQkboKTPXkHcn1AA8nVma24jr41GkzVukaVGk31D8W4eMxqbneEtHu6vpT2
+---
+> \unrestrict 6EwM3jLjQqV5BrdegT8bnbsw54LW8JDElXGKoJspyFGfhxKC3UDdf3zdHPIQMvk

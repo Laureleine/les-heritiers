@@ -1,0 +1,370 @@
+5c5
+< \restrict DsFz5uXNBeF9ziHrJAAZ1CLAt9bu2vBaomhwx3X3dinJYGctu2axIFBQbnQrYca
+---
+> \restrict UyQBuFCpuHBsubRZ6P2pQUxP8tNtf3mCWTGkAANhHQndbneFi4wEsHpa8alortF
+4072a4073,4201
+> -- Name: cabinet_backgrounds; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.cabinet_backgrounds (
+>     id integer NOT NULL,
+>     classe_sociale text NOT NULL,
+>     profession text NOT NULL,
+>     genre text NOT NULL,
+>     age_min integer,
+>     age_max integer,
+>     rarete text NOT NULL,
+>     status text DEFAULT 'approved'::text NOT NULL,
+>     is_official boolean DEFAULT true NOT NULL,
+>     reject_reason text,
+>     created_by uuid,
+>     approved_by uuid,
+>     approved_at timestamp with time zone,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     CONSTRAINT cabinet_backgrounds_genre_check CHECK ((genre = ANY (ARRAY['M'::text, 'F'::text, 'Mixte'::text]))),
+>     CONSTRAINT cabinet_backgrounds_rarete_check CHECK ((rarete = ANY (ARRAY['tres_frequent'::text, 'frequent'::text, 'peu_frequent'::text, 'rare'::text, 'extremement_rare'::text])))
+> );
+> 
+> 
+> --
+> -- Name: cabinet_backgrounds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+> --
+> 
+> CREATE SEQUENCE public.cabinet_backgrounds_id_seq
+>     AS integer
+>     START WITH 1
+>     INCREMENT BY 1
+>     NO MINVALUE
+>     NO MAXVALUE
+>     CACHE 1;
+> 
+> 
+> --
+> -- Name: cabinet_backgrounds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+> --
+> 
+> ALTER SEQUENCE public.cabinet_backgrounds_id_seq OWNED BY public.cabinet_backgrounds.id;
+> 
+> 
+> --
+> -- Name: cabinet_noms; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.cabinet_noms (
+>     id integer NOT NULL,
+>     prenom text NOT NULL,
+>     nom text NOT NULL,
+>     genre text NOT NULL,
+>     status text DEFAULT 'approved'::text NOT NULL,
+>     is_official boolean DEFAULT true NOT NULL,
+>     reject_reason text,
+>     created_by uuid,
+>     approved_by uuid,
+>     approved_at timestamp with time zone,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     CONSTRAINT cabinet_noms_genre_check CHECK ((genre = ANY (ARRAY['M'::text, 'F'::text])))
+> );
+> 
+> 
+> --
+> -- Name: cabinet_noms_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+> --
+> 
+> CREATE SEQUENCE public.cabinet_noms_id_seq
+>     AS integer
+>     START WITH 1
+>     INCREMENT BY 1
+>     NO MINVALUE
+>     NO MAXVALUE
+>     CACHE 1;
+> 
+> 
+> --
+> -- Name: cabinet_noms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+> --
+> 
+> ALTER SEQUENCE public.cabinet_noms_id_seq OWNED BY public.cabinet_noms.id;
+> 
+> 
+> --
+> -- Name: cabinet_pathologies; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.cabinet_pathologies (
+>     id integer NOT NULL,
+>     diagnostic text NOT NULL,
+>     symptomes text NOT NULL,
+>     difficulte text NOT NULL,
+>     notes_historiques text,
+>     genre_autorise text NOT NULL,
+>     groupe_cible text NOT NULL,
+>     rarete text NOT NULL,
+>     status text DEFAULT 'approved'::text NOT NULL,
+>     is_official boolean DEFAULT true NOT NULL,
+>     reject_reason text,
+>     created_by uuid,
+>     approved_by uuid,
+>     approved_at timestamp with time zone,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     CONSTRAINT cabinet_pathologies_genre_autorise_check CHECK ((genre_autorise = ANY (ARRAY['M'::text, 'F'::text, 'Tous'::text]))),
+>     CONSTRAINT cabinet_pathologies_groupe_cible_check CHECK ((groupe_cible = ANY (ARRAY['Adulte'::text, 'Enfant'::text, 'Vieillard'::text, 'Tous'::text])))
+> );
+> 
+> 
+> --
+> -- Name: cabinet_pathologies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+> --
+> 
+> CREATE SEQUENCE public.cabinet_pathologies_id_seq
+>     AS integer
+>     START WITH 1
+>     INCREMENT BY 1
+>     NO MINVALUE
+>     NO MAXVALUE
+>     CACHE 1;
+> 
+> 
+> --
+> -- Name: cabinet_pathologies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+> --
+> 
+> ALTER SEQUENCE public.cabinet_pathologies_id_seq OWNED BY public.cabinet_pathologies.id;
+> 
+> 
+> --
+5557c5686
+< -- Name: messages_2026_07_12; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+5560c5689
+< CREATE TABLE realtime.messages_2026_07_12 (
+---
+> CREATE TABLE realtime.messages_2026_07_13 (
+5575c5704
+< -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_14; Type: TABLE; Schema: realtime; Owner: -
+5578c5707
+< CREATE TABLE realtime.messages_2026_07_13 (
+---
+> CREATE TABLE realtime.messages_2026_07_14 (
+5593c5722
+< -- Name: messages_2026_07_14; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_15; Type: TABLE; Schema: realtime; Owner: -
+5596c5725
+< CREATE TABLE realtime.messages_2026_07_14 (
+---
+> CREATE TABLE realtime.messages_2026_07_15 (
+5611c5740
+< -- Name: messages_2026_07_15; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+5614c5743
+< CREATE TABLE realtime.messages_2026_07_15 (
+---
+> CREATE TABLE realtime.messages_2026_07_16 (
+5629c5758
+< -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+5632c5761
+< CREATE TABLE realtime.messages_2026_07_16 (
+---
+> CREATE TABLE realtime.messages_2026_07_17 (
+5647c5776
+< -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+5650c5779
+< CREATE TABLE realtime.messages_2026_07_17 (
+---
+> CREATE TABLE realtime.messages_2026_07_18 (
+5665c5794
+< -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_19; Type: TABLE; Schema: realtime; Owner: -
+5668c5797
+< CREATE TABLE realtime.messages_2026_07_18 (
+---
+> CREATE TABLE realtime.messages_2026_07_19 (
+5870,5876d5998
+< -- Name: messages_2026_07_12; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_12 FOR VALUES FROM ('2026-07-12 00:00:00') TO ('2026-07-13 00:00:00');
+< 
+< 
+< --
+5918a6041,6047
+> -- Name: messages_2026_07_19; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_19 FOR VALUES FROM ('2026-07-19 00:00:00') TO ('2026-07-20 00:00:00');
+> 
+> 
+> --
+5925a6055,6075
+> -- Name: cabinet_backgrounds id; Type: DEFAULT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_backgrounds ALTER COLUMN id SET DEFAULT nextval('public.cabinet_backgrounds_id_seq'::regclass);
+> 
+> 
+> --
+> -- Name: cabinet_noms id; Type: DEFAULT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_noms ALTER COLUMN id SET DEFAULT nextval('public.cabinet_noms_id_seq'::regclass);
+> 
+> 
+> --
+> -- Name: cabinet_pathologies id; Type: DEFAULT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_pathologies ALTER COLUMN id SET DEFAULT nextval('public.cabinet_pathologies_id_seq'::regclass);
+> 
+> 
+> --
+6235a6386,6409
+> -- Name: cabinet_backgrounds cabinet_backgrounds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_backgrounds
+>     ADD CONSTRAINT cabinet_backgrounds_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+> -- Name: cabinet_noms cabinet_noms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_noms
+>     ADD CONSTRAINT cabinet_noms_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+> -- Name: cabinet_pathologies cabinet_pathologies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_pathologies
+>     ADD CONSTRAINT cabinet_pathologies_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6780,6787d6953
+< -- Name: messages_2026_07_12 messages_2026_07_12_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_12
+<     ADD CONSTRAINT messages_2026_07_12_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6835a7002,7009
+> -- Name: messages_2026_07_19 messages_2026_07_19_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_19
+>     ADD CONSTRAINT messages_2026_07_19_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7800,7806d7973
+< -- Name: messages_2026_07_12_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_12_inserted_at_topic_idx ON realtime.messages_2026_07_12 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7848a8016,8022
+> -- Name: messages_2026_07_19_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_19_inserted_at_topic_idx ON realtime.messages_2026_07_19 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7912,7925d8085
+< -- Name: messages_2026_07_12_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_12_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_12_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_12_pkey;
+< 
+< 
+< --
+8009a8170,8183
+> -- Name: messages_2026_07_19_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_19_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_19_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_19_pkey;
+> 
+> 
+> --
+8276a8451,8498
+> -- Name: cabinet_backgrounds cabinet_backgrounds_approved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_backgrounds
+>     ADD CONSTRAINT cabinet_backgrounds_approved_by_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: cabinet_backgrounds cabinet_backgrounds_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_backgrounds
+>     ADD CONSTRAINT cabinet_backgrounds_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: cabinet_noms cabinet_noms_approved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_noms
+>     ADD CONSTRAINT cabinet_noms_approved_by_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: cabinet_noms cabinet_noms_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_noms
+>     ADD CONSTRAINT cabinet_noms_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: cabinet_pathologies cabinet_pathologies_approved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_pathologies
+>     ADD CONSTRAINT cabinet_pathologies_approved_by_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: cabinet_pathologies cabinet_pathologies_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.cabinet_pathologies
+>     ADD CONSTRAINT cabinet_pathologies_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+10735c10957
+< \unrestrict DsFz5uXNBeF9ziHrJAAZ1CLAt9bu2vBaomhwx3X3dinJYGctu2axIFBQbnQrYca
+---
+> \unrestrict UyQBuFCpuHBsubRZ6P2pQUxP8tNtf3mCWTGkAANhHQndbneFi4wEsHpa8alortF
