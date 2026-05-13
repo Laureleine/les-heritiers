@@ -232,31 +232,35 @@ export default function StepVieSociale() {
         </div>
         
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleDowngradeFortune}
-            disabled={isReadOnly || (isScelle && currentFortune <= (character.data?.stats_scellees?.fortune || 0)) || (!isScelle && currentFortune <= 0)}
-            className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-emerald-200 text-emerald-600 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 transition-colors font-bold"
-            title={isScelle ? "Récupérer les XP investis" : "Réduire"}
-          >
-            <Minus size={18} />
-          </button>
+          {isScelle && (
+            <button
+              onClick={handleDowngradeFortune}
+              disabled={isReadOnly || currentFortune <= (character.data?.stats_scellees?.fortune || 0)}
+              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-emerald-200 text-emerald-600 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 transition-colors font-bold"
+              title="Récupérer les XP investis"
+            >
+              <Minus size={18} />
+            </button>
+          )}
           
           <div className="w-8 text-center text-2xl font-serif font-black text-emerald-900">
             {currentFortune}
           </div>
           
-          <button
-            onClick={handleUpgradeFortune}
-            disabled={isReadOnly || (!isScelle && currentFortune >= 15)}
-            className="h-10 px-3 flex flex-col items-center justify-center rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 disabled:opacity-30 transition-colors font-bold"
-          >
-            <Plus size={18} />
-            {isScelle && currentFortune < 15 && (
-              <span className="text-[9px] font-bold mt-0.5 leading-none">
-                ({getFortuneCost(currentFortune, character.computedStats)} XP)
-              </span>
-            )}
-          </button>
+          {isScelle && (
+            <button
+              onClick={handleUpgradeFortune}
+              disabled={isReadOnly || currentFortune >= 15}
+              className="h-10 px-3 flex flex-col items-center justify-center rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 disabled:opacity-30 transition-colors font-bold"
+            >
+              <Plus size={18} />
+              {currentFortune < 15 && (
+                <span className="text-[9px] font-bold mt-0.5 leading-none">
+                  ({getFortuneCost(currentFortune, character.computedStats)} XP)
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </div>
 

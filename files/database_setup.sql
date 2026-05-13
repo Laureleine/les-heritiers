@@ -314,6 +314,50 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 COMMENT ON FUNCTION get_popular_fairy_types IS 'Retourne les types de fées les plus utilisés';
 
+-- Fonction pour obtenir les membres d'un cercle avec leurs personnages
+-- SECURITY DEFINER permet de bypasser RLS pour lire les personnages des autres membres
+CREATE OR REPLACE FUNCTION get_cercle_members(p_cercle_id UUID)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  result JSONB;
+BEGIN
+  SELECT COALESCE(JSONB_AGG(
+    JSONB_BUILD_OBJECT(
+      'id', cm.id,
+      'user_id', cm.user_id,
+      'joined_at', cm.joined_at,
+      'profiles', JSONB_BUILD_OBJECT(
+        'username', p.username,
+        'unlocked_fairies', p.unlocked_fairies
+      ),
+      'characters', CASE WHEN c.id IS NOT NULL THEN
+        JSONB_BUILD_OBJECT(
+          'id', c.id,
+          'nom', c.nom,
+          'sexe', c.sexe,
+          'apparence', c.apparence,
+          'genreHumain', c.genre_humain,
+          'typeFee', c.type_fee
+        )
+      ELSE NULL END
+    )
+    ORDER BY cm.joined_at
+  ), '[]'::JSONB) INTO result
+  FROM cercle_membres cm
+  LEFT JOIN profiles p ON p.id = cm.user_id
+  LEFT JOIN characters c ON c.id = cm.character_id
+  WHERE cm.cercle_id = p_cercle_id;
+
+  RETURN result;
+END;
+$$;
+
+COMMENT ON FUNCTION get_cercle_members IS 'Retourne les membres d''un cercle avec leurs profils et personnages (contourne RLS)';
+
 -- ============================================================================
 -- GRANTS - Permissions (si nécessaire)
 -- ============================================================================
