@@ -1,0 +1,215 @@
+5c5
+< \restrict saIDr7JQoe8C5bMoDVxwnUeevvcZuJZO5YlAeCFaczEH1zes34ArQE55kstgPcB
+---
+> \restrict 14VqeKYfXLn5pjieb7WP1HATRob8JfAyKOCODGFo6h6e5gyRzqKCZ1OZWWeEK6Q
+5056a5057,5068
+> -- Name: outil_usage; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.outil_usage (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     user_id uuid NOT NULL,
+>     outil text NOT NULL,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL
+> );
+> 
+> 
+> --
+5284a5297
+>     cout_xp integer,
+5466c5479
+< -- Name: messages_2026_07_08; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+5469c5482
+< CREATE TABLE realtime.messages_2026_07_08 (
+---
+> CREATE TABLE realtime.messages_2026_07_09 (
+5484c5497
+< -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+5487c5500
+< CREATE TABLE realtime.messages_2026_07_09 (
+---
+> CREATE TABLE realtime.messages_2026_07_10 (
+5502c5515
+< -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_11; Type: TABLE; Schema: realtime; Owner: -
+5505c5518
+< CREATE TABLE realtime.messages_2026_07_10 (
+---
+> CREATE TABLE realtime.messages_2026_07_11 (
+5520c5533
+< -- Name: messages_2026_07_11; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_12; Type: TABLE; Schema: realtime; Owner: -
+5523c5536
+< CREATE TABLE realtime.messages_2026_07_11 (
+---
+> CREATE TABLE realtime.messages_2026_07_12 (
+5538c5551
+< -- Name: messages_2026_07_12; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+5541c5554
+< CREATE TABLE realtime.messages_2026_07_12 (
+---
+> CREATE TABLE realtime.messages_2026_07_13 (
+5556c5569
+< -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_14; Type: TABLE; Schema: realtime; Owner: -
+5559c5572
+< CREATE TABLE realtime.messages_2026_07_13 (
+---
+> CREATE TABLE realtime.messages_2026_07_14 (
+5574c5587
+< -- Name: messages_2026_07_14; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_15; Type: TABLE; Schema: realtime; Owner: -
+5577c5590
+< CREATE TABLE realtime.messages_2026_07_14 (
+---
+> CREATE TABLE realtime.messages_2026_07_15 (
+5779,5785d5791
+< -- Name: messages_2026_07_08; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_08 FOR VALUES FROM ('2026-07-08 00:00:00') TO ('2026-07-09 00:00:00');
+< 
+< 
+< --
+5827a5834,5840
+> -- Name: messages_2026_07_15; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_15 FOR VALUES FROM ('2026-07-15 00:00:00') TO ('2026-07-16 00:00:00');
+> 
+> 
+> --
+6472a6486,6493
+> -- Name: outil_usage outil_usage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.outil_usage
+>     ADD CONSTRAINT outil_usage_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6657,6664d6677
+< -- Name: messages_2026_07_08 messages_2026_07_08_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_08
+<     ADD CONSTRAINT messages_2026_07_08_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6712a6726,6733
+> -- Name: messages_2026_07_15 messages_2026_07_15_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_15
+>     ADD CONSTRAINT messages_2026_07_15_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7522a7544,7557
+> -- Name: idx_outil_usage_outil; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_outil_usage_outil ON public.outil_usage USING btree (outil, created_at);
+> 
+> 
+> --
+> -- Name: idx_outil_usage_user; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_outil_usage_user ON public.outil_usage USING btree (user_id, created_at);
+> 
+> 
+> --
+7663,7669d7697
+< -- Name: messages_2026_07_08_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_08_inserted_at_topic_idx ON realtime.messages_2026_07_08 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7711a7740,7746
+> -- Name: messages_2026_07_15_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_15_inserted_at_topic_idx ON realtime.messages_2026_07_15 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7775,7788d7809
+< -- Name: messages_2026_07_08_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_08_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_08_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_08_pkey;
+< 
+< 
+< --
+7872a7894,7907
+> -- Name: messages_2026_07_15_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_15_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_15_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_15_pkey;
+> 
+> 
+> --
+8523a8559,8566
+> -- Name: outil_usage outil_usage_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.outil_usage
+>     ADD CONSTRAINT outil_usage_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+> 
+> 
+> --
+8941a8985,8991
+> -- Name: outil_usage Insert own usage; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY "Insert own usage" ON public.outil_usage FOR INSERT TO authenticated WITH CHECK ((auth.uid() = user_id));
+> 
+> 
+> --
+9309a9360,9366
+> -- Name: outil_usage Read all usage; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY "Read all usage" ON public.outil_usage FOR SELECT TO authenticated USING (true);
+> 
+> 
+> --
+9987a10045,10050
+> -- Name: outil_usage; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.outil_usage ENABLE ROW LEVEL SECURITY;
+> 
+> --
+10462c10525
+< \unrestrict saIDr7JQoe8C5bMoDVxwnUeevvcZuJZO5YlAeCFaczEH1zes34ArQE55kstgPcB
+---
+> \unrestrict 14VqeKYfXLn5pjieb7WP1HATRob8JfAyKOCODGFo6h6e5gyRzqKCZ1OZWWeEK6Q

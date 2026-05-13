@@ -1,0 +1,749 @@
+5c5
+< \restrict FQtSbxntZ1PPm3O0exch8BRBDIJLQvnD1Y6XMDRx2zpgYlfqrRvyCCMGQy6LQLD
+---
+> \restrict pVwSRQkboKTPXkHcn1AA8nVma24jr41GkzVukaVGk31D8W4eMxqbneEtHu6vpT2
+899a900,932
+> -- Name: distribute_session_xp(uuid, uuid[], integer, text); Type: FUNCTION; Schema: public; Owner: -
+> --
+> 
+> CREATE FUNCTION public.distribute_session_xp(p_session_id uuid, p_character_ids uuid[], p_amount integer, p_label text DEFAULT ''::text) RETURNS void
+>     LANGUAGE plpgsql SECURITY DEFINER
+>     SET search_path TO 'public'
+>     AS $$
+>       DECLARE
+>         v_cercle_id UUID;
+>         v_char_id   UUID;
+>       BEGIN
+>         SELECT cercle_id INTO v_cercle_id FROM sessions_jeu WHERE id = p_session_id;
+>         IF NOT FOUND THEN RAISE EXCEPTION 'Session introuvable.'; END IF;
+> 
+>         IF NOT (
+>           EXISTS (SELECT 1 FROM cercle_membres WHERE cercle_id = v_cercle_id AND user_id = auth.uid())
+>           OR EXISTS (SELECT 1 FROM cercles WHERE id = v_cercle_id AND docte_id = auth.uid())
+>         ) THEN
+>           RAISE EXCEPTION 'Accès refusé : vous n''êtes pas membre de ce Cercle.';
+>         END IF;
+> 
+>         FOREACH v_char_id IN ARRAY p_character_ids LOOP
+>           UPDATE characters SET xp_total = xp_total + p_amount WHERE id = v_char_id;
+>           INSERT INTO xp_transactions (character_id, type, code, label, valeur, date_mouvement)
+>           VALUES (v_char_id, 'GAIN', 'SESSION_XP', p_label, p_amount, NOW());
+>         END LOOP;
+> 
+>         UPDATE sessions_jeu SET xp_attribue = true, updated_at = NOW() WHERE id = p_session_id;
+>       END;
+>       $$;
+> 
+> 
+> --
+1324a1358,1442
+> -- Name: reveal_ombre_consequence(uuid); Type: FUNCTION; Schema: public; Owner: -
+> --
+> 
+> CREATE FUNCTION public.reveal_ombre_consequence(p_consequence_id uuid) RETURNS jsonb
+>     LANGUAGE plpgsql SECURITY DEFINER
+>     SET search_path TO 'public'
+>     AS $$
+>       DECLARE
+>         v_ombre    RECORD;
+>         v_char     RECORD;
+>         v_joueur_id UUID;
+>         v_docte_id  UUID;
+>         v_channel_id UUID;
+>         v_titre_chronique TEXT;
+>       BEGIN
+>         v_docte_id := auth.uid();
+> 
+>         SELECT * INTO v_ombre FROM public.ombre_consequences WHERE id = p_consequence_id;
+>         IF NOT FOUND THEN RAISE EXCEPTION 'Conséquence introuvable'; END IF;
+>         IF v_ombre.created_by <> v_docte_id THEN RAISE EXCEPTION 'Non autorisé'; END IF;
+>         IF v_ombre.est_revelee THEN RAISE EXCEPTION 'Déjà révélée'; END IF;
+> 
+>         SELECT ch.*, u.id AS joueur_id INTO v_char
+>         FROM public.characters ch
+>         INNER JOIN auth.users u ON u.id = ch.user_id
+>         WHERE ch.id = v_ombre.character_id;
+> 
+>         IF NOT FOUND THEN RAISE EXCEPTION 'Personnage introuvable'; END IF;
+>         v_joueur_id := v_char.joueur_id;
+> 
+>         -- Titre de la session si dispo
+>         SELECT titre INTO v_titre_chronique
+>         FROM public.sessions_jeu
+>         WHERE id = v_ombre.session_id
+>         LIMIT 1;
+> 
+>         -- Révèle
+>         UPDATE public.ombre_consequences
+>           SET est_revelee = true, revelee_at = NOW()
+>         WHERE id = p_consequence_id;
+> 
+>         -- Trouve ou crée le canal privé Docte ↔ Joueur
+>         SELECT id INTO v_channel_id FROM public.chat_channels
+>         WHERE type = 'private'
+>           AND (
+>             (participant_1 = v_docte_id AND participant_2 = v_joueur_id)
+>             OR (participant_1 = v_joueur_id AND participant_2 = v_docte_id)
+>           )
+>         LIMIT 1;
+> 
+>         IF v_channel_id IS NULL THEN
+>           DECLARE v_username TEXT;
+>           BEGIN
+>             SELECT username INTO v_username FROM public.profiles WHERE id = v_joueur_id;
+>             INSERT INTO public.chat_channels (type, name, participant_1, participant_2, last_message_at)
+>             VALUES (
+>               'private',
+>               COALESCE('Correspondance avec ' || v_username, 'Canal privé'),
+>               v_docte_id,
+>               v_joueur_id,
+>               NOW()
+>             )
+>             RETURNING id INTO v_channel_id;
+>           END;
+>         END IF;
+> 
+>         -- Message Télégraphe
+>         INSERT INTO public.chat_messages (channel_id, user_id, message, is_admin)
+>         VALUES (
+>           v_channel_id,
+>           v_docte_id,
+>           '🌑 Une Conséquence de l''Ombre vient d''être révélée'
+>             || CASE WHEN v_titre_chronique IS NOT NULL THEN ' pour la session « ' || v_titre_chronique || ' »' ELSE '' END
+>             || '. Consultez vos Chroniques d''Héritage pour en lire le détail.',
+>           false
+>         );
+> 
+>         UPDATE public.chat_channels SET last_message_at = NOW() WHERE id = v_channel_id;
+> 
+>         RETURN jsonb_build_object('success', true, 'channel_id', v_channel_id);
+>       END;
+>       $$;
+> 
+> 
+> --
+4239a4358,4377
+> -- Name: chroniques_heritiers; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.chroniques_heritiers (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     character_id uuid NOT NULL,
+>     session_id uuid,
+>     titre text NOT NULL,
+>     date_session date DEFAULT CURRENT_DATE NOT NULL,
+>     memoire_des_faits text,
+>     cicatrices_et_honneurs text,
+>     indices_et_verites jsonb DEFAULT '[]'::jsonb NOT NULL,
+>     xp_acquis integer DEFAULT 0 NOT NULL,
+>     created_by uuid NOT NULL,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     updated_at timestamp with time zone DEFAULT now() NOT NULL
+> );
+> 
+> 
+> --
+4898a5037,5053
+> -- Name: ombre_consequences; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.ombre_consequences (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     character_id uuid NOT NULL,
+>     cercle_id uuid NOT NULL,
+>     session_id uuid,
+>     contenu text NOT NULL,
+>     est_revelee boolean DEFAULT false NOT NULL,
+>     revelee_at timestamp with time zone,
+>     created_by uuid NOT NULL,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL
+> );
+> 
+> 
+> --
+5052a5208,5241
+> -- Name: session_presents; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.session_presents (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     session_id uuid NOT NULL,
+>     character_id uuid NOT NULL,
+>     present boolean DEFAULT true NOT NULL
+> );
+> 
+> 
+> --
+> -- Name: sessions_jeu; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.sessions_jeu (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     cercle_id uuid NOT NULL,
+>     titre text NOT NULL,
+>     date_partie date DEFAULT CURRENT_DATE NOT NULL,
+>     resume text,
+>     xp_distribue integer DEFAULT 0 NOT NULL,
+>     is_public boolean DEFAULT false NOT NULL,
+>     xp_auto boolean DEFAULT true NOT NULL,
+>     xp_scope text DEFAULT 'membres'::text NOT NULL,
+>     xp_attribue boolean DEFAULT false NOT NULL,
+>     created_by uuid NOT NULL,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+>     CONSTRAINT sessions_jeu_xp_scope_check CHECK ((xp_scope = ANY (ARRAY['membres'::text, 'presents'::text])))
+> );
+> 
+> 
+> --
+5134a5324,5347
+> -- Name: tracas_table_entries; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.tracas_table_entries (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     table_name text NOT NULL,
+>     titre text NOT NULL,
+>     description text,
+>     exemple_key text,
+>     weight integer DEFAULT 10 NOT NULL,
+>     is_official boolean DEFAULT false NOT NULL,
+>     status text DEFAULT 'pending'::text NOT NULL,
+>     reject_reason text,
+>     created_by uuid,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     approved_by uuid,
+>     approved_at timestamp with time zone,
+>     CONSTRAINT tracas_table_entries_exemple_key_check CHECK (((exemple_key = ANY (ARRAY['lettre_anonyme'::text, 'parent_eloigne'::text, 'facheur'::text, 'rumeur_journal'::text, 'erreur_livraison'::text, 'pli_officiel'::text, 'gamin_rue'::text])) OR (exemple_key IS NULL))),
+>     CONSTRAINT tracas_table_entries_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text]))),
+>     CONSTRAINT tracas_table_entries_table_name_check CHECK ((table_name = ANY (ARRAY['sante'::text, 'logistique'::text, 'social'::text, 'technologie'::text, 'ex_lettre_anonyme'::text, 'ex_parent_eloigne'::text, 'ex_facheur'::text, 'ex_rumeur_journal'::text, 'ex_erreur_livraison'::text, 'ex_pli_officiel'::text, 'ex_gamin_rue'::text])))
+> );
+> 
+> 
+> --
+5230c5443
+< -- Name: messages_2026_07_04; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_05; Type: TABLE; Schema: realtime; Owner: -
+5233c5446
+< CREATE TABLE realtime.messages_2026_07_04 (
+---
+> CREATE TABLE realtime.messages_2026_07_05 (
+5248c5461
+< -- Name: messages_2026_07_05; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_06; Type: TABLE; Schema: realtime; Owner: -
+5251c5464
+< CREATE TABLE realtime.messages_2026_07_05 (
+---
+> CREATE TABLE realtime.messages_2026_07_06 (
+5266c5479
+< -- Name: messages_2026_07_06; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_07; Type: TABLE; Schema: realtime; Owner: -
+5269c5482
+< CREATE TABLE realtime.messages_2026_07_06 (
+---
+> CREATE TABLE realtime.messages_2026_07_07 (
+5284c5497
+< -- Name: messages_2026_07_07; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_08; Type: TABLE; Schema: realtime; Owner: -
+5287c5500
+< CREATE TABLE realtime.messages_2026_07_07 (
+---
+> CREATE TABLE realtime.messages_2026_07_08 (
+5302c5515
+< -- Name: messages_2026_07_08; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+5305c5518
+< CREATE TABLE realtime.messages_2026_07_08 (
+---
+> CREATE TABLE realtime.messages_2026_07_09 (
+5320c5533
+< -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+5323c5536
+< CREATE TABLE realtime.messages_2026_07_09 (
+---
+> CREATE TABLE realtime.messages_2026_07_10 (
+5338c5551
+< -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_11; Type: TABLE; Schema: realtime; Owner: -
+5341c5554
+< CREATE TABLE realtime.messages_2026_07_10 (
+---
+> CREATE TABLE realtime.messages_2026_07_11 (
+5543,5549d5755
+< -- Name: messages_2026_07_04; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_04 FOR VALUES FROM ('2026-07-04 00:00:00') TO ('2026-07-05 00:00:00');
+< 
+< 
+< --
+5591a5798,5804
+> -- Name: messages_2026_07_11; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_11 FOR VALUES FROM ('2026-07-11 00:00:00') TO ('2026-07-12 00:00:00');
+> 
+> 
+> --
+5980a6194,6201
+> -- Name: chroniques_heritiers chroniques_heritiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.chroniques_heritiers
+>     ADD CONSTRAINT chroniques_heritiers_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6220a6442,6449
+> -- Name: ombre_consequences ombre_consequences_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.ombre_consequences
+>     ADD CONSTRAINT ombre_consequences_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6268a6498,6521
+> -- Name: session_presents session_presents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.session_presents
+>     ADD CONSTRAINT session_presents_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+> -- Name: session_presents session_presents_session_id_character_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.session_presents
+>     ADD CONSTRAINT session_presents_session_id_character_id_key UNIQUE (session_id, character_id);
+> 
+> 
+> --
+> -- Name: sessions_jeu sessions_jeu_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.sessions_jeu
+>     ADD CONSTRAINT sessions_jeu_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6316a6570,6577
+> -- Name: tracas_table_entries tracas_table_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.tracas_table_entries
+>     ADD CONSTRAINT tracas_table_entries_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6357,6364d6617
+< -- Name: messages_2026_07_04 messages_2026_07_04_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_04
+<     ADD CONSTRAINT messages_2026_07_04_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6412a6666,6673
+> -- Name: messages_2026_07_11 messages_2026_07_11_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_11
+>     ADD CONSTRAINT messages_2026_07_11_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7306a7568,7588
+> -- Name: idx_tracas_entries_creator; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_tracas_entries_creator ON public.tracas_table_entries USING btree (created_by);
+> 
+> 
+> --
+> -- Name: idx_tracas_entries_status; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_tracas_entries_status ON public.tracas_table_entries USING btree (status);
+> 
+> 
+> --
+> -- Name: idx_tracas_entries_table_status; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_tracas_entries_table_status ON public.tracas_table_entries USING btree (table_name, status);
+> 
+> 
+> --
+7342,7348d7623
+< -- Name: messages_2026_07_04_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_04_inserted_at_topic_idx ON realtime.messages_2026_07_04 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7390a7666,7672
+> -- Name: messages_2026_07_11_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_11_inserted_at_topic_idx ON realtime.messages_2026_07_11 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7454,7467d7735
+< -- Name: messages_2026_07_04_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_04_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_04_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_04_pkey;
+< 
+< 
+< --
+7551a7820,7833
+> -- Name: messages_2026_07_11_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_11_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_11_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_11_pkey;
+> 
+> 
+> --
+7914a8197,8220
+> -- Name: chroniques_heritiers chroniques_heritiers_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.chroniques_heritiers
+>     ADD CONSTRAINT chroniques_heritiers_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: chroniques_heritiers chroniques_heritiers_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.chroniques_heritiers
+>     ADD CONSTRAINT chroniques_heritiers_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+> 
+> 
+> --
+> -- Name: chroniques_heritiers chroniques_heritiers_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.chroniques_heritiers
+>     ADD CONSTRAINT chroniques_heritiers_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.sessions_jeu(id) ON DELETE SET NULL;
+> 
+> 
+> --
+8146a8453,8484
+> -- Name: ombre_consequences ombre_consequences_cercle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.ombre_consequences
+>     ADD CONSTRAINT ombre_consequences_cercle_id_fkey FOREIGN KEY (cercle_id) REFERENCES public.cercles(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: ombre_consequences ombre_consequences_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.ombre_consequences
+>     ADD CONSTRAINT ombre_consequences_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: ombre_consequences ombre_consequences_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.ombre_consequences
+>     ADD CONSTRAINT ombre_consequences_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+> 
+> 
+> --
+> -- Name: ombre_consequences ombre_consequences_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.ombre_consequences
+>     ADD CONSTRAINT ombre_consequences_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.sessions_jeu(id) ON DELETE SET NULL;
+> 
+> 
+> --
+8194a8533,8564
+> -- Name: session_presents session_presents_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.session_presents
+>     ADD CONSTRAINT session_presents_character_id_fkey FOREIGN KEY (character_id) REFERENCES public.characters(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: session_presents session_presents_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.session_presents
+>     ADD CONSTRAINT session_presents_session_id_fkey FOREIGN KEY (session_id) REFERENCES public.sessions_jeu(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: sessions_jeu sessions_jeu_cercle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.sessions_jeu
+>     ADD CONSTRAINT sessions_jeu_cercle_id_fkey FOREIGN KEY (cercle_id) REFERENCES public.cercles(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: sessions_jeu sessions_jeu_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.sessions_jeu
+>     ADD CONSTRAINT sessions_jeu_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id);
+> 
+> 
+> --
+8234a8605,8620
+> -- Name: tracas_table_entries tracas_table_entries_approved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.tracas_table_entries
+>     ADD CONSTRAINT tracas_table_entries_approved_by_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: tracas_table_entries tracas_table_entries_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.tracas_table_entries
+>     ADD CONSTRAINT tracas_table_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+9138a9525,9562
+> -- Name: chroniques_heritiers chroniques_delete; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY chroniques_delete ON public.chroniques_heritiers FOR DELETE USING ((created_by = auth.uid()));
+> 
+> 
+> --
+> -- Name: chroniques_heritiers; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.chroniques_heritiers ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: chroniques_heritiers chroniques_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY chroniques_insert ON public.chroniques_heritiers FOR INSERT WITH CHECK ((created_by = auth.uid()));
+> 
+> 
+> --
+> -- Name: chroniques_heritiers chroniques_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY chroniques_select ON public.chroniques_heritiers FOR SELECT USING (((created_by = auth.uid()) OR (EXISTS ( SELECT 1
+>    FROM ((public.cercles c
+>      JOIN public.cercle_membres cm ON ((cm.cercle_id = c.id)))
+>      JOIN public.characters ch ON ((ch.id = chroniques_heritiers.character_id)))
+>   WHERE ((c.docte_id = auth.uid()) AND (cm.user_id = ch.user_id))))));
+> 
+> 
+> --
+> -- Name: chroniques_heritiers chroniques_update; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY chroniques_update ON public.chroniques_heritiers FOR UPDATE USING ((created_by = auth.uid()));
+> 
+> 
+> --
+9479a9904,9941
+> -- Name: ombre_consequences; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.ombre_consequences ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: ombre_consequences ombre_delete; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY ombre_delete ON public.ombre_consequences FOR DELETE USING ((created_by = auth.uid()));
+> 
+> 
+> --
+> -- Name: ombre_consequences ombre_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY ombre_insert ON public.ombre_consequences FOR INSERT WITH CHECK (((created_by = auth.uid()) AND (EXISTS ( SELECT 1
+>    FROM public.cercles c
+>   WHERE ((c.id = ombre_consequences.cercle_id) AND (c.docte_id = auth.uid()))))));
+> 
+> 
+> --
+> -- Name: ombre_consequences ombre_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY ombre_select ON public.ombre_consequences FOR SELECT USING (((created_by = auth.uid()) OR ((est_revelee = true) AND (EXISTS ( SELECT 1
+>    FROM public.characters ch
+>   WHERE ((ch.id = ombre_consequences.character_id) AND (ch.user_id = auth.uid())))))));
+> 
+> 
+> --
+> -- Name: ombre_consequences ombre_update; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY ombre_update ON public.ombre_consequences FOR UPDATE USING ((created_by = auth.uid()));
+> 
+> 
+> --
+9573a10036,10130
+> -- Name: session_presents; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.session_presents ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: session_presents session_presents_delete; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY session_presents_delete ON public.session_presents FOR DELETE USING ((EXISTS ( SELECT 1
+>    FROM (public.sessions_jeu sj
+>      JOIN public.cercles c ON ((c.id = sj.cercle_id)))
+>   WHERE ((sj.id = session_presents.session_id) AND ((sj.created_by = auth.uid()) OR (c.docte_id = auth.uid()))))));
+> 
+> 
+> --
+> -- Name: session_presents session_presents_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY session_presents_insert ON public.session_presents FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+>    FROM (public.sessions_jeu sj
+>      JOIN public.cercles c ON ((c.id = sj.cercle_id)))
+>   WHERE ((sj.id = session_presents.session_id) AND ((sj.created_by = auth.uid()) OR (c.docte_id = auth.uid()))))));
+> 
+> 
+> --
+> -- Name: session_presents session_presents_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY session_presents_select ON public.session_presents FOR SELECT USING ((EXISTS ( SELECT 1
+>    FROM public.sessions_jeu sj
+>   WHERE ((sj.id = session_presents.session_id) AND ((sj.is_public = true) OR (sj.created_by = auth.uid()) OR (EXISTS ( SELECT 1
+>            FROM public.cercles c
+>           WHERE ((c.id = sj.cercle_id) AND (c.docte_id = auth.uid())))) OR (EXISTS ( SELECT 1
+>            FROM public.cercle_membres cm
+>           WHERE ((cm.cercle_id = sj.cercle_id) AND (cm.user_id = auth.uid())))))))));
+> 
+> 
+> --
+> -- Name: session_presents session_presents_update; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY session_presents_update ON public.session_presents FOR UPDATE USING ((EXISTS ( SELECT 1
+>    FROM (public.sessions_jeu sj
+>      JOIN public.cercles c ON ((c.id = sj.cercle_id)))
+>   WHERE ((sj.id = session_presents.session_id) AND ((sj.created_by = auth.uid()) OR (c.docte_id = auth.uid()))))));
+> 
+> 
+> --
+> -- Name: sessions_jeu; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.sessions_jeu ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: sessions_jeu sessions_jeu_delete; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY sessions_jeu_delete ON public.sessions_jeu FOR DELETE USING (((created_by = auth.uid()) OR (EXISTS ( SELECT 1
+>    FROM public.cercles c
+>   WHERE ((c.id = sessions_jeu.cercle_id) AND (c.docte_id = auth.uid()))))));
+> 
+> 
+> --
+> -- Name: sessions_jeu sessions_jeu_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY sessions_jeu_insert ON public.sessions_jeu FOR INSERT WITH CHECK (((created_by = auth.uid()) AND ((EXISTS ( SELECT 1
+>    FROM public.cercles c
+>   WHERE ((c.id = sessions_jeu.cercle_id) AND (c.docte_id = auth.uid())))) OR (EXISTS ( SELECT 1
+>    FROM public.cercle_membres cm
+>   WHERE ((cm.cercle_id = sessions_jeu.cercle_id) AND (cm.user_id = auth.uid())))))));
+> 
+> 
+> --
+> -- Name: sessions_jeu sessions_jeu_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY sessions_jeu_select ON public.sessions_jeu FOR SELECT USING (((is_public = true) OR (EXISTS ( SELECT 1
+>    FROM public.cercles c
+>   WHERE ((c.id = sessions_jeu.cercle_id) AND (c.docte_id = auth.uid())))) OR (EXISTS ( SELECT 1
+>    FROM public.cercle_membres cm
+>   WHERE ((cm.cercle_id = sessions_jeu.cercle_id) AND (cm.user_id = auth.uid()))))));
+> 
+> 
+> --
+> -- Name: sessions_jeu sessions_jeu_update; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY sessions_jeu_update ON public.sessions_jeu FOR UPDATE USING (((created_by = auth.uid()) OR (EXISTS ( SELECT 1
+>    FROM public.cercles c
+>   WHERE ((c.id = sessions_jeu.cercle_id) AND (c.docte_id = auth.uid()))))));
+> 
+> 
+> --
+9612a10170,10198
+> -- Name: tracas_table_entries tracas_entries_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY tracas_entries_insert ON public.tracas_table_entries FOR INSERT TO authenticated WITH CHECK ((created_by = auth.uid()));
+> 
+> 
+> --
+> -- Name: tracas_table_entries tracas_entries_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY tracas_entries_select ON public.tracas_table_entries FOR SELECT TO authenticated USING (((status = 'approved'::text) OR (created_by = auth.uid())));
+> 
+> 
+> --
+> -- Name: tracas_table_entries tracas_entries_update_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY tracas_entries_update_admin ON public.tracas_table_entries FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: tracas_table_entries; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.tracas_table_entries ENABLE ROW LEVEL SECURITY;
+> 
+> --
+9824c10410
+< \unrestrict FQtSbxntZ1PPm3O0exch8BRBDIJLQvnD1Y6XMDRx2zpgYlfqrRvyCCMGQy6LQLD
+---
+> \unrestrict pVwSRQkboKTPXkHcn1AA8nVma24jr41GkzVukaVGk31D8W4eMxqbneEtHu6vpT2

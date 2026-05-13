@@ -1,0 +1,198 @@
+5c5
+< \restrict felbbgtcCCC7QOobNjRoUgRkKYa2OjA91hnU9dcpIBgA6SRlk2DPVpK1VXWYcJc
+---
+> \restrict bvNuLbfZB1LWc9wSP94f8sb3HxD8uHQB0VZAEMrfdfIVryywfJKriv8Acxu7m7x
+4833,4836c4833,4836
+<     statut text DEFAULT 'en_attente'::text NOT NULL,
+<     auteur_id uuid,
+<     validateur_id uuid,
+<     motif_refus text,
+---
+>     status text DEFAULT 'pending'::text NOT NULL,
+>     created_by uuid,
+>     approved_by uuid,
+>     reject_reason text,
+4840c4840
+<     CONSTRAINT menu_plats_statut_check CHECK ((statut = ANY (ARRAY['en_attente'::text, 'approuve'::text, 'refuse'::text])))
+---
+>     CONSTRAINT menu_plats_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])))
+5230c5230
+< -- Name: messages_2026_06_30; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_01; Type: TABLE; Schema: realtime; Owner: -
+5233c5233
+< CREATE TABLE realtime.messages_2026_06_30 (
+---
+> CREATE TABLE realtime.messages_2026_07_01 (
+5248c5248
+< -- Name: messages_2026_07_01; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_02; Type: TABLE; Schema: realtime; Owner: -
+5251c5251
+< CREATE TABLE realtime.messages_2026_07_01 (
+---
+> CREATE TABLE realtime.messages_2026_07_02 (
+5266c5266
+< -- Name: messages_2026_07_02; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_03; Type: TABLE; Schema: realtime; Owner: -
+5269c5269
+< CREATE TABLE realtime.messages_2026_07_02 (
+---
+> CREATE TABLE realtime.messages_2026_07_03 (
+5284c5284
+< -- Name: messages_2026_07_03; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_04; Type: TABLE; Schema: realtime; Owner: -
+5287c5287
+< CREATE TABLE realtime.messages_2026_07_03 (
+---
+> CREATE TABLE realtime.messages_2026_07_04 (
+5302c5302
+< -- Name: messages_2026_07_04; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_05; Type: TABLE; Schema: realtime; Owner: -
+5305c5305
+< CREATE TABLE realtime.messages_2026_07_04 (
+---
+> CREATE TABLE realtime.messages_2026_07_05 (
+5320c5320
+< -- Name: messages_2026_07_05; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_06; Type: TABLE; Schema: realtime; Owner: -
+5323c5323
+< CREATE TABLE realtime.messages_2026_07_05 (
+---
+> CREATE TABLE realtime.messages_2026_07_06 (
+5338c5338
+< -- Name: messages_2026_07_06; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_07; Type: TABLE; Schema: realtime; Owner: -
+5341c5341
+< CREATE TABLE realtime.messages_2026_07_06 (
+---
+> CREATE TABLE realtime.messages_2026_07_07 (
+5543,5549d5542
+< -- Name: messages_2026_06_30; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_30 FOR VALUES FROM ('2026-06-30 00:00:00') TO ('2026-07-01 00:00:00');
+< 
+< 
+< --
+5591a5585,5591
+> -- Name: messages_2026_07_07; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_07 FOR VALUES FROM ('2026-07-07 00:00:00') TO ('2026-07-08 00:00:00');
+> 
+> 
+> --
+6357,6364d6356
+< -- Name: messages_2026_06_30 messages_2026_06_30_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_06_30
+<     ADD CONSTRAINT messages_2026_06_30_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6412a6405,6412
+> -- Name: messages_2026_07_07 messages_2026_07_07_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_07
+>     ADD CONSTRAINT messages_2026_07_07_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7160c7160
+< -- Name: idx_menu_plats_auteur; Type: INDEX; Schema: public; Owner: -
+---
+> -- Name: idx_menu_plats_categorie; Type: INDEX; Schema: public; Owner: -
+7163c7163
+< CREATE INDEX idx_menu_plats_auteur ON public.menu_plats USING btree (auteur_id);
+---
+> CREATE INDEX idx_menu_plats_categorie ON public.menu_plats USING btree (categorie);
+7167c7167
+< -- Name: idx_menu_plats_categorie; Type: INDEX; Schema: public; Owner: -
+---
+> -- Name: idx_menu_plats_created_by; Type: INDEX; Schema: public; Owner: -
+7170c7170
+< CREATE INDEX idx_menu_plats_categorie ON public.menu_plats USING btree (categorie);
+---
+> CREATE INDEX idx_menu_plats_created_by ON public.menu_plats USING btree (created_by);
+7174c7174
+< -- Name: idx_menu_plats_statut; Type: INDEX; Schema: public; Owner: -
+---
+> -- Name: idx_menu_plats_status; Type: INDEX; Schema: public; Owner: -
+7177c7177
+< CREATE INDEX idx_menu_plats_statut ON public.menu_plats USING btree (statut);
+---
+> CREATE INDEX idx_menu_plats_status ON public.menu_plats USING btree (status);
+7342,7348d7341
+< -- Name: messages_2026_06_30_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_06_30_inserted_at_topic_idx ON realtime.messages_2026_06_30 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7390a7384,7390
+> -- Name: messages_2026_07_07_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_07_inserted_at_topic_idx ON realtime.messages_2026_07_07 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7454,7467d7453
+< -- Name: messages_2026_06_30_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_30_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_06_30_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_30_pkey;
+< 
+< 
+< --
+7551a7538,7551
+> -- Name: messages_2026_07_07_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_07_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_07_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_07_pkey;
+> 
+> 
+> --
+8119c8119
+<     ADD CONSTRAINT menu_plats_auteur_id_fkey FOREIGN KEY (auteur_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+---
+>     ADD CONSTRAINT menu_plats_auteur_id_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+8127c8127
+<     ADD CONSTRAINT menu_plats_validateur_id_fkey FOREIGN KEY (validateur_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+---
+>     ADD CONSTRAINT menu_plats_validateur_id_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+9376c9376
+< CREATE POLICY menu_plats_insert ON public.menu_plats FOR INSERT TO authenticated WITH CHECK (((auteur_id = auth.uid()) AND ((statut = 'en_attente'::text) OR (EXISTS ( SELECT 1
+---
+> CREATE POLICY menu_plats_insert ON public.menu_plats FOR INSERT TO authenticated WITH CHECK (((created_by = auth.uid()) AND ((status = 'pending'::text) OR (EXISTS ( SELECT 1
+9385c9385
+< CREATE POLICY menu_plats_select ON public.menu_plats FOR SELECT TO authenticated USING (((statut = 'approuve'::text) OR (auteur_id = auth.uid())));
+---
+> CREATE POLICY menu_plats_select ON public.menu_plats FOR SELECT TO authenticated USING (((status = 'approved'::text) OR (created_by = auth.uid())));
+9824c9824
+< \unrestrict felbbgtcCCC7QOobNjRoUgRkKYa2OjA91hnU9dcpIBgA6SRlk2DPVpK1VXWYcJc
+---
+> \unrestrict bvNuLbfZB1LWc9wSP94f8sb3HxD8uHQB0VZAEMrfdfIVryywfJKriv8Acxu7m7x

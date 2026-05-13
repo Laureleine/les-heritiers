@@ -1,0 +1,133 @@
+5c5
+< \restrict B6m3wZUqbUvxkiOzsuwyfdlSBJYRdBWid6GkWSU0mvm3NSyKqfKktKEqWyt1ZgP
+---
+> \restrict felbbgtcCCC7QOobNjRoUgRkKYa2OjA91hnU9dcpIBgA6SRlk2DPVpK1VXWYcJc
+4772a4773,4788
+> -- Name: llm_usage_log; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.llm_usage_log (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     call_type text NOT NULL,
+>     model text NOT NULL,
+>     prompt_tokens integer NOT NULL,
+>     completion_tokens integer NOT NULL,
+>     total_tokens integer NOT NULL,
+>     user_id uuid,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL
+> );
+> 
+> 
+> --
+5214,5231d5229
+< -- Name: messages_2026_06_29; Type: TABLE; Schema: realtime; Owner: -
+< --
+< 
+< CREATE TABLE realtime.messages_2026_06_29 (
+<     topic text NOT NULL,
+<     extension text NOT NULL,
+<     payload jsonb,
+<     event text,
+<     private boolean DEFAULT false,
+<     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+<     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+<     id uuid DEFAULT gen_random_uuid() NOT NULL,
+<     binary_payload bytea,
+<     CONSTRAINT messages_payload_exclusive CHECK (((payload IS NULL) OR (binary_payload IS NULL)))
+< );
+< 
+< 
+< --
+5545,5551d5542
+< -- Name: messages_2026_06_29; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_29 FOR VALUES FROM ('2026-06-29 00:00:00') TO ('2026-06-30 00:00:00');
+< 
+< 
+< --
+6181a6173,6180
+> -- Name: llm_usage_log llm_usage_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.llm_usage_log
+>     ADD CONSTRAINT llm_usage_log_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6358,6365d6356
+< -- Name: messages_2026_06_29 messages_2026_06_29_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_06_29
+<     ADD CONSTRAINT messages_2026_06_29_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+7154a7146,7159
+> -- Name: idx_llm_usage_log_call_type; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_llm_usage_log_call_type ON public.llm_usage_log USING btree (call_type);
+> 
+> 
+> --
+> -- Name: idx_llm_usage_log_created_at; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_llm_usage_log_created_at ON public.llm_usage_log USING btree (created_at);
+> 
+> 
+> --
+7337,7343d7341
+< -- Name: messages_2026_06_29_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_06_29_inserted_at_topic_idx ON realtime.messages_2026_06_29 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7456,7469d7453
+< -- Name: messages_2026_06_29_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_29_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_06_29_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_29_pkey;
+< 
+< 
+< --
+8114a8099,8106
+> -- Name: llm_usage_log llm_usage_log_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.llm_usage_log
+>     ADD CONSTRAINT llm_usage_log_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+9311a9304,9318
+> -- Name: llm_usage_log; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.llm_usage_log ENABLE ROW LEVEL SECURITY;
+> 
+> --
+> -- Name: llm_usage_log llm_usage_log_select_super_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY llm_usage_log_select_super_admin ON public.llm_usage_log FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'super_admin'::text)))));
+> 
+> 
+> --
+9817c9824
+< \unrestrict B6m3wZUqbUvxkiOzsuwyfdlSBJYRdBWid6GkWSU0mvm3NSyKqfKktKEqWyt1ZgP
+---
+> \unrestrict felbbgtcCCC7QOobNjRoUgRkKYa2OjA91hnU9dcpIBgA6SRlk2DPVpK1VXWYcJc

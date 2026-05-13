@@ -1,0 +1,272 @@
+5c5
+< \restrict wkXQF0th0H9sfe1Tf4OpeiBorTc13PY5JzLlcN7gmHBPSncR6LdrJEj2QRz9klN
+---
+> \restrict rgSfbWbh6z6LGBiB7f7jGmduy3VTi0CtJewLNEIkb0zEZf772gpBVCaPk7XIcyt
+1616,1633c1616,1633
+< DECLARE
+<   v_existing fairy_assets%ROWTYPE;
+<   v_result   fairy_assets%ROWTYPE;
+< BEGIN
+<   IF auth.uid() IS NULL THEN
+<     RAISE EXCEPTION 'Non authentifié';
+<   END IF;
+< 
+<   SELECT * INTO v_existing FROM fairy_assets WHERE id = p_id;
+< 
+<   IF FOUND THEN
+<     -- Modification : vérifier propriété et que la carte est encore personnelle
+<     IF v_existing.creator_id IS DISTINCT FROM auth.uid() THEN
+<       RAISE EXCEPTION 'Accès refusé : vous n''êtes pas le créateur de cette carte';
+<     END IF;
+<     IF v_existing.is_official = true THEN
+<       RAISE EXCEPTION 'Cette carte est officielle, la modification directe est bloquée';
+<     END IF;
+---
+>         DECLARE
+>           v_existing fairy_assets%ROWTYPE;
+>           v_result   fairy_assets%ROWTYPE;
+>         BEGIN
+>           IF auth.uid() IS NULL THEN
+>             RAISE EXCEPTION 'Non authentifié';
+>           END IF;
+> 
+>           SELECT * INTO v_existing FROM fairy_assets WHERE id = p_id;
+> 
+>           IF FOUND THEN
+>             -- Modification : vérifier propriété et que la carte est encore personnelle
+>             IF v_existing.creator_id IS DISTINCT FROM auth.uid() THEN
+>               RAISE EXCEPTION 'Accès refusé : vous n''êtes pas le créateur de cette carte';
+>             END IF;
+>             IF v_existing.is_official = true THEN
+>               RAISE EXCEPTION 'Cette carte est officielle, la modification directe est bloquée';
+>             END IF;
+1635,1660c1635,1680
+<     UPDATE fairy_assets SET
+<       nom              = COALESCE(p_data->>'nom',              nom),
+<       description      = CASE WHEN p_data ? 'description'
+<                               THEN p_data->>'description'
+<                               ELSE description END,
+<       effets           = COALESCE(p_data->>'effets',           effets),
+<       effets_techniques = CASE WHEN p_data ? 'effets_techniques'
+<                                THEN p_data->'effets_techniques'
+<                                ELSE effets_techniques END
+<     WHERE id = p_id
+<     RETURNING * INTO v_result;
+<   ELSE
+<     -- Création
+<     INSERT INTO fairy_assets (id, nom, description, effets, effets_techniques, creator_id, is_official, is_sealed)
+<     VALUES (
+<       p_id,
+<       p_data->>'nom',
+<       p_data->>'description',
+<       p_data->>'effets',
+<       p_data->'effets_techniques',
+<       auth.uid(),
+<       false,
+<       false
+<     )
+<     RETURNING * INTO v_result;
+<   END IF;
+---
+>             UPDATE fairy_assets SET
+>               nom              = COALESCE(p_data->>'nom',              nom),
+>               description      = CASE WHEN p_data ? 'description'
+>                                       THEN p_data->>'description'
+>                                       ELSE description END,
+>               effets           = COALESCE(p_data->>'effets',           effets),
+>               effets_techniques = CASE WHEN p_data ? 'effets_techniques'
+>                                        THEN p_data->'effets_techniques'
+>                                        ELSE effets_techniques END,
+>               cost_xp          = CASE WHEN p_data ? 'cost_xp'
+>                                       THEN (p_data->>'cost_xp')::integer
+>                                       ELSE cost_xp END,
+>               cost_fortune     = CASE WHEN p_data ? 'cost_fortune'
+>                                       THEN (p_data->>'cost_fortune')::integer
+>                                       ELSE cost_fortune END,
+>               cost_pp          = CASE WHEN p_data ? 'cost_pp'
+>                                       THEN p_data->'cost_pp'
+>                                       ELSE cost_pp END,
+>               hide_effects_until_accepted = CASE WHEN p_data ? 'hide_effects_until_accepted'
+>                                                  THEN (p_data->>'hide_effects_until_accepted')::boolean
+>                                                  ELSE hide_effects_until_accepted END
+>             WHERE id = p_id
+>             RETURNING * INTO v_result;
+>           ELSE
+>             -- Création
+>             INSERT INTO fairy_assets (
+>               id, nom, description, effets, effets_techniques,
+>               creator_id, is_official, is_sealed,
+>               cost_xp, cost_fortune, cost_pp, hide_effects_until_accepted
+>             )
+>             VALUES (
+>               p_id,
+>               p_data->>'nom',
+>               p_data->>'description',
+>               p_data->>'effets',
+>               p_data->'effets_techniques',
+>               auth.uid(),
+>               false,
+>               false,
+>               COALESCE((p_data->>'cost_xp')::integer,   0),
+>               COALESCE((p_data->>'cost_fortune')::integer, 0),
+>               COALESCE(p_data->'cost_pp', '{}'),
+>               COALESCE((p_data->>'hide_effects_until_accepted')::boolean, false)
+>             )
+>             RETURNING * INTO v_result;
+>           END IF;
+1662,1664c1682,1684
+<   RETURN row_to_json(v_result)::jsonb;
+< END;
+< $$;
+---
+>           RETURN row_to_json(v_result)::jsonb;
+>         END;
+>         $$;
+4769c4789,4793
+<     creator_id uuid
+---
+>     creator_id uuid,
+>     cost_xp integer DEFAULT 0 NOT NULL,
+>     cost_fortune integer DEFAULT 0 NOT NULL,
+>     cost_pp jsonb DEFAULT '{}'::jsonb NOT NULL,
+>     hide_effects_until_accepted boolean DEFAULT false NOT NULL
+5818c5842
+< -- Name: messages_2026_07_15; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+5821c5845
+< CREATE TABLE realtime.messages_2026_07_15 (
+---
+> CREATE TABLE realtime.messages_2026_07_16 (
+5836c5860
+< -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+5839c5863
+< CREATE TABLE realtime.messages_2026_07_16 (
+---
+> CREATE TABLE realtime.messages_2026_07_17 (
+5854c5878
+< -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+5857c5881
+< CREATE TABLE realtime.messages_2026_07_17 (
+---
+> CREATE TABLE realtime.messages_2026_07_18 (
+5872c5896
+< -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_19; Type: TABLE; Schema: realtime; Owner: -
+5875c5899
+< CREATE TABLE realtime.messages_2026_07_18 (
+---
+> CREATE TABLE realtime.messages_2026_07_19 (
+5890c5914
+< -- Name: messages_2026_07_19; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_20; Type: TABLE; Schema: realtime; Owner: -
+5893c5917
+< CREATE TABLE realtime.messages_2026_07_19 (
+---
+> CREATE TABLE realtime.messages_2026_07_20 (
+5908c5932
+< -- Name: messages_2026_07_20; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_21; Type: TABLE; Schema: realtime; Owner: -
+5911c5935
+< CREATE TABLE realtime.messages_2026_07_20 (
+---
+> CREATE TABLE realtime.messages_2026_07_21 (
+5926c5950
+< -- Name: messages_2026_07_21; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_22; Type: TABLE; Schema: realtime; Owner: -
+5929c5953
+< CREATE TABLE realtime.messages_2026_07_21 (
+---
+> CREATE TABLE realtime.messages_2026_07_22 (
+6131,6137d6154
+< -- Name: messages_2026_07_15; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_15 FOR VALUES FROM ('2026-07-15 00:00:00') TO ('2026-07-16 00:00:00');
+< 
+< 
+< --
+6179a6197,6203
+> -- Name: messages_2026_07_22; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_22 FOR VALUES FROM ('2026-07-22 00:00:00') TO ('2026-07-23 00:00:00');
+> 
+> 
+> --
+7094,7101d7117
+< -- Name: messages_2026_07_15 messages_2026_07_15_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_15
+<     ADD CONSTRAINT messages_2026_07_15_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+7149a7166,7173
+> -- Name: messages_2026_07_22 messages_2026_07_22_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_22
+>     ADD CONSTRAINT messages_2026_07_22_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+8135,8141d8158
+< -- Name: messages_2026_07_15_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_15_inserted_at_topic_idx ON realtime.messages_2026_07_15 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+8183a8201,8207
+> -- Name: messages_2026_07_22_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_22_inserted_at_topic_idx ON realtime.messages_2026_07_22 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+8247,8260d8270
+< -- Name: messages_2026_07_15_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_15_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_15_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_15_pkey;
+< 
+< 
+< --
+8344a8355,8368
+> -- Name: messages_2026_07_22_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_22_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_22_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_22_pkey;
+> 
+> 
+> --
+11174c11198
+< \unrestrict wkXQF0th0H9sfe1Tf4OpeiBorTc13PY5JzLlcN7gmHBPSncR6LdrJEj2QRz9klN
+---
+> \unrestrict rgSfbWbh6z6LGBiB7f7jGmduy3VTi0CtJewLNEIkb0zEZf772gpBVCaPk7XIcyt

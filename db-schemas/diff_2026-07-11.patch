@@ -1,0 +1,202 @@
+5c5
+< \restrict 6EwM3jLjQqV5BrdegT8bnbsw54LW8JDElXGKoJspyFGfhxKC3UDdf3zdHPIQMvk
+---
+> \restrict saIDr7JQoe8C5bMoDVxwnUeevvcZuJZO5YlAeCFaczEH1zes34ArQE55kstgPcB
+5272a5273,5289
+> -- Name: sorts; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.sorts (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     nom text NOT NULL,
+>     magie text NOT NULL,
+>     niveau text NOT NULL,
+>     branche text,
+>     details jsonb DEFAULT '{}'::jsonb NOT NULL,
+>     is_official boolean DEFAULT true NOT NULL,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     CONSTRAINT sorts_niveau_check CHECK ((niveau = ANY (ARRAY['Novice'::text, 'Adepte'::text, 'Maître'::text, 'Grand Maître'::text])))
+> );
+> 
+> 
+> --
+5449c5466
+< -- Name: messages_2026_07_07; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_08; Type: TABLE; Schema: realtime; Owner: -
+5452c5469
+< CREATE TABLE realtime.messages_2026_07_07 (
+---
+> CREATE TABLE realtime.messages_2026_07_08 (
+5467c5484
+< -- Name: messages_2026_07_08; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+5470c5487
+< CREATE TABLE realtime.messages_2026_07_08 (
+---
+> CREATE TABLE realtime.messages_2026_07_09 (
+5485c5502
+< -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+5488c5505
+< CREATE TABLE realtime.messages_2026_07_09 (
+---
+> CREATE TABLE realtime.messages_2026_07_10 (
+5503c5520
+< -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_11; Type: TABLE; Schema: realtime; Owner: -
+5506c5523
+< CREATE TABLE realtime.messages_2026_07_10 (
+---
+> CREATE TABLE realtime.messages_2026_07_11 (
+5521c5538
+< -- Name: messages_2026_07_11; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_12; Type: TABLE; Schema: realtime; Owner: -
+5524c5541
+< CREATE TABLE realtime.messages_2026_07_11 (
+---
+> CREATE TABLE realtime.messages_2026_07_12 (
+5539c5556
+< -- Name: messages_2026_07_12; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+5542c5559
+< CREATE TABLE realtime.messages_2026_07_12 (
+---
+> CREATE TABLE realtime.messages_2026_07_13 (
+5557c5574
+< -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_14; Type: TABLE; Schema: realtime; Owner: -
+5560c5577
+< CREATE TABLE realtime.messages_2026_07_13 (
+---
+> CREATE TABLE realtime.messages_2026_07_14 (
+5762,5768d5778
+< -- Name: messages_2026_07_07; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_07 FOR VALUES FROM ('2026-07-07 00:00:00') TO ('2026-07-08 00:00:00');
+< 
+< 
+< --
+5810a5821,5827
+> -- Name: messages_2026_07_14; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_14 FOR VALUES FROM ('2026-07-14 00:00:00') TO ('2026-07-15 00:00:00');
+> 
+> 
+> --
+6128c6145
+< -- Name: cercle_membres cercle_membres_cercle_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+---
+> -- Name: cercle_membres cercle_membres_cercle_id_user_id_character_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+6132c6149
+<     ADD CONSTRAINT cercle_membres_cercle_id_user_id_key UNIQUE (cercle_id, user_id);
+---
+>     ADD CONSTRAINT cercle_membres_cercle_id_user_id_character_id_key UNIQUE (cercle_id, user_id, character_id);
+6535a6553,6568
+> -- Name: sorts sorts_nom_magie_key; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.sorts
+>     ADD CONSTRAINT sorts_nom_magie_key UNIQUE (nom, magie);
+> 
+> 
+> --
+> -- Name: sorts sorts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.sorts
+>     ADD CONSTRAINT sorts_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6624,6631d6656
+< -- Name: messages_2026_07_07 messages_2026_07_07_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_07
+<     ADD CONSTRAINT messages_2026_07_07_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6679a6705,6712
+> -- Name: messages_2026_07_14 messages_2026_07_14_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_14
+>     ADD CONSTRAINT messages_2026_07_14_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7630,7636d7662
+< -- Name: messages_2026_07_07_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_07_inserted_at_topic_idx ON realtime.messages_2026_07_07 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7678a7705,7711
+> -- Name: messages_2026_07_14_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_14_inserted_at_topic_idx ON realtime.messages_2026_07_14 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7742,7755d7774
+< -- Name: messages_2026_07_07_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_07_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_07_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_07_pkey;
+< 
+< 
+< --
+7839a7859,7872
+> -- Name: messages_2026_07_14_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_14_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_14_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_14_pkey;
+> 
+> 
+> --
+9008a9042,9048
+> -- Name: sorts Lecture publique sorts; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY "Lecture publique sorts" ON public.sorts FOR SELECT TO authenticated USING (true);
+> 
+> 
+> --
+10142a10183,10188
+> -- Name: sorts; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.sorts ENABLE ROW LEVEL SECURITY;
+> 
+> --
+10416c10462
+< \unrestrict 6EwM3jLjQqV5BrdegT8bnbsw54LW8JDElXGKoJspyFGfhxKC3UDdf3zdHPIQMvk
+---
+> \unrestrict saIDr7JQoe8C5bMoDVxwnUeevvcZuJZO5YlAeCFaczEH1zes34ArQE55kstgPcB

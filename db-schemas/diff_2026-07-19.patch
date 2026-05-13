@@ -1,0 +1,403 @@
+5c5
+< \restrict wkTH2KhzfxdHxn29nvYECSvnU0TVegCyIHXWOhaeB52yGzoUAbRgbggaaZTHQIV
+---
+> \restrict wkXQF0th0H9sfe1Tf4OpeiBorTc13PY5JzLlcN7gmHBPSncR6LdrJEj2QRz9klN
+908a909,955
+> -- Name: delete_personal_fairy_asset(uuid); Type: FUNCTION; Schema: public; Owner: -
+> --
+> 
+> CREATE FUNCTION public.delete_personal_fairy_asset(p_id uuid) RETURNS void
+>     LANGUAGE plpgsql SECURITY DEFINER
+>     SET search_path TO 'public'
+>     AS $$
+> DECLARE
+>   v_existing fairy_assets%ROWTYPE;
+>   v_count    integer;
+> BEGIN
+>   IF auth.uid() IS NULL THEN
+>     RAISE EXCEPTION 'Non authentifié';
+>   END IF;
+> 
+>   SELECT * INTO v_existing FROM fairy_assets WHERE id = p_id;
+>   IF NOT FOUND THEN
+>     RAISE EXCEPTION 'Carte introuvable';
+>   END IF;
+>   IF v_existing.creator_id IS DISTINCT FROM auth.uid() THEN
+>     RAISE EXCEPTION 'Accès refusé';
+>   END IF;
+> 
+>   -- Bloquer si un personnage possède cette carte (cherche l'id dans le JSONB atouts)
+>   SELECT COUNT(*) INTO v_count
+>   FROM characters
+>   WHERE atouts @> jsonb_build_array(jsonb_build_object('id', p_id::text));
+> 
+>   IF v_count > 0 THEN
+>     RAISE EXCEPTION 'Cette carte est en possession d''un ou plusieurs personnages';
+>   END IF;
+> 
+>   -- Bloquer si une distribution active existe
+>   SELECT COUNT(*) INTO v_count
+>   FROM personal_card_grants
+>   WHERE card_id = p_id AND status NOT IN ('archived', 'rejected');
+> 
+>   IF v_count > 0 THEN
+>     RAISE EXCEPTION 'Cette carte a été distribuée à des joueurs';
+>   END IF;
+> 
+>   DELETE FROM fairy_assets WHERE id = p_id;
+> END;
+> $$;
+> 
+> 
+> --
+1229c1276
+< CREATE FUNCTION public.get_top_outil_users(limit_n integer DEFAULT 5) RETURNS TABLE(email text, total bigint)
+---
+> CREATE FUNCTION public.get_top_outil_users(limit_n integer DEFAULT 5) RETURNS TABLE(username text, total bigint)
+1231d1277
+<     SET search_path TO 'public'
+1233,1239c1279,1285
+<     SELECT u.email::TEXT, COUNT(*)::BIGINT AS total
+<     FROM outil_usage o
+<     JOIN auth.users u ON u.id = o.user_id
+<     GROUP BY u.email
+<     ORDER BY total DESC
+<     LIMIT limit_n;
+<   $$;
+---
+>       SELECT p.username::TEXT, COUNT(*)::BIGINT AS total
+>       FROM outil_usage o
+>       JOIN profiles p ON p.id = o.user_id
+>       GROUP BY p.username
+>       ORDER BY total DESC
+>       LIMIT limit_n;
+>     $$;
+1562a1609,1667
+> -- Name: upsert_personal_fairy_asset(uuid, jsonb); Type: FUNCTION; Schema: public; Owner: -
+> --
+> 
+> CREATE FUNCTION public.upsert_personal_fairy_asset(p_id uuid, p_data jsonb) RETURNS jsonb
+>     LANGUAGE plpgsql SECURITY DEFINER
+>     SET search_path TO 'public'
+>     AS $$
+> DECLARE
+>   v_existing fairy_assets%ROWTYPE;
+>   v_result   fairy_assets%ROWTYPE;
+> BEGIN
+>   IF auth.uid() IS NULL THEN
+>     RAISE EXCEPTION 'Non authentifié';
+>   END IF;
+> 
+>   SELECT * INTO v_existing FROM fairy_assets WHERE id = p_id;
+> 
+>   IF FOUND THEN
+>     -- Modification : vérifier propriété et que la carte est encore personnelle
+>     IF v_existing.creator_id IS DISTINCT FROM auth.uid() THEN
+>       RAISE EXCEPTION 'Accès refusé : vous n''êtes pas le créateur de cette carte';
+>     END IF;
+>     IF v_existing.is_official = true THEN
+>       RAISE EXCEPTION 'Cette carte est officielle, la modification directe est bloquée';
+>     END IF;
+> 
+>     UPDATE fairy_assets SET
+>       nom              = COALESCE(p_data->>'nom',              nom),
+>       description      = CASE WHEN p_data ? 'description'
+>                               THEN p_data->>'description'
+>                               ELSE description END,
+>       effets           = COALESCE(p_data->>'effets',           effets),
+>       effets_techniques = CASE WHEN p_data ? 'effets_techniques'
+>                                THEN p_data->'effets_techniques'
+>                                ELSE effets_techniques END
+>     WHERE id = p_id
+>     RETURNING * INTO v_result;
+>   ELSE
+>     -- Création
+>     INSERT INTO fairy_assets (id, nom, description, effets, effets_techniques, creator_id, is_official, is_sealed)
+>     VALUES (
+>       p_id,
+>       p_data->>'nom',
+>       p_data->>'description',
+>       p_data->>'effets',
+>       p_data->'effets_techniques',
+>       auth.uid(),
+>       false,
+>       false
+>     )
+>     RETURNING * INTO v_result;
+>   END IF;
+> 
+>   RETURN row_to_json(v_result)::jsonb;
+> END;
+> $$;
+> 
+> 
+> --
+4663c4768,4769
+<     is_official boolean DEFAULT true NOT NULL
+---
+>     is_official boolean DEFAULT true NOT NULL,
+>     creator_id uuid
+4678c4784,4786
+<     is_official boolean DEFAULT true NOT NULL
+---
+>     is_official boolean DEFAULT true NOT NULL,
+>     effets_techniques jsonb,
+>     creator_id uuid
+4798a4907
+>     creator_id uuid,
+5275a5385,5406
+> -- Name: personal_card_grants; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.personal_card_grants (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     card_id uuid NOT NULL,
+>     card_type text NOT NULL,
+>     granted_by uuid NOT NULL,
+>     granted_to uuid NOT NULL,
+>     cercle_id uuid,
+>     status text DEFAULT 'pending'::text NOT NULL,
+>     cost_xp integer DEFAULT 0 NOT NULL,
+>     cost_fortune integer DEFAULT 0 NOT NULL,
+>     cost_pp jsonb DEFAULT '{}'::jsonb NOT NULL,
+>     hide_effects_until_accepted boolean DEFAULT false NOT NULL,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     responded_at timestamp with time zone,
+>     CONSTRAINT personal_card_grants_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'accepted'::text, 'rejected'::text])))
+> );
+> 
+> 
+> --
+5486a5618
+>     creator_id uuid,
+5686c5818
+< -- Name: messages_2026_07_14; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_15; Type: TABLE; Schema: realtime; Owner: -
+5689c5821
+< CREATE TABLE realtime.messages_2026_07_14 (
+---
+> CREATE TABLE realtime.messages_2026_07_15 (
+5704c5836
+< -- Name: messages_2026_07_15; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+5707c5839
+< CREATE TABLE realtime.messages_2026_07_15 (
+---
+> CREATE TABLE realtime.messages_2026_07_16 (
+5722c5854
+< -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+5725c5857
+< CREATE TABLE realtime.messages_2026_07_16 (
+---
+> CREATE TABLE realtime.messages_2026_07_17 (
+5740c5872
+< -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+5743c5875
+< CREATE TABLE realtime.messages_2026_07_17 (
+---
+> CREATE TABLE realtime.messages_2026_07_18 (
+5758c5890
+< -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_19; Type: TABLE; Schema: realtime; Owner: -
+5761c5893
+< CREATE TABLE realtime.messages_2026_07_18 (
+---
+> CREATE TABLE realtime.messages_2026_07_19 (
+5776c5908
+< -- Name: messages_2026_07_19; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_20; Type: TABLE; Schema: realtime; Owner: -
+5779c5911
+< CREATE TABLE realtime.messages_2026_07_19 (
+---
+> CREATE TABLE realtime.messages_2026_07_20 (
+5794c5926
+< -- Name: messages_2026_07_20; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_21; Type: TABLE; Schema: realtime; Owner: -
+5797c5929
+< CREATE TABLE realtime.messages_2026_07_20 (
+---
+> CREATE TABLE realtime.messages_2026_07_21 (
+5999,6005d6130
+< -- Name: messages_2026_07_14; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_14 FOR VALUES FROM ('2026-07-14 00:00:00') TO ('2026-07-15 00:00:00');
+< 
+< 
+< --
+6047a6173,6179
+> -- Name: messages_2026_07_21; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_21 FOR VALUES FROM ('2026-07-21 00:00:00') TO ('2026-07-22 00:00:00');
+> 
+> 
+> --
+6769a6902,6909
+> -- Name: personal_card_grants personal_card_grants_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.personal_card_grants
+>     ADD CONSTRAINT personal_card_grants_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6954,6961d7093
+< -- Name: messages_2026_07_14 messages_2026_07_14_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_14
+<     ADD CONSTRAINT messages_2026_07_14_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+7009a7142,7149
+> -- Name: messages_2026_07_21 messages_2026_07_21_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_21
+>     ADD CONSTRAINT messages_2026_07_21_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7833a7974,7994
+> -- Name: idx_pcg_card; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_pcg_card ON public.personal_card_grants USING btree (card_id, card_type);
+> 
+> 
+> --
+> -- Name: idx_pcg_granted_by; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_pcg_granted_by ON public.personal_card_grants USING btree (granted_by);
+> 
+> 
+> --
+> -- Name: idx_pcg_granted_to; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_pcg_granted_to ON public.personal_card_grants USING btree (granted_to);
+> 
+> 
+> --
+7974,7980d8134
+< -- Name: messages_2026_07_14_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_14_inserted_at_topic_idx ON realtime.messages_2026_07_14 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+8022a8177,8183
+> -- Name: messages_2026_07_21_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_21_inserted_at_topic_idx ON realtime.messages_2026_07_21 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+8086,8099d8246
+< -- Name: messages_2026_07_14_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_14_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_14_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_14_pkey;
+< 
+< 
+< --
+8183a8331,8344
+> -- Name: messages_2026_07_21_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_21_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_21_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_21_pkey;
+> 
+> 
+> --
+8666a8828,8843
+> -- Name: fairy_assets fairy_assets_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.fairy_assets
+>     ADD CONSTRAINT fairy_assets_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: fairy_capacites fairy_capacites_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.fairy_capacites
+>     ADD CONSTRAINT fairy_capacites_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+8698a8876,8883
+> -- Name: fairy_powers fairy_powers_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.fairy_powers
+>     ADD CONSTRAINT fairy_powers_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+8914a9100,9123
+> -- Name: personal_card_grants personal_card_grants_cercle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.personal_card_grants
+>     ADD CONSTRAINT personal_card_grants_cercle_id_fkey FOREIGN KEY (cercle_id) REFERENCES public.cercles(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: personal_card_grants personal_card_grants_granted_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.personal_card_grants
+>     ADD CONSTRAINT personal_card_grants_granted_by_fkey FOREIGN KEY (granted_by) REFERENCES auth.users(id) ON DELETE CASCADE;
+> 
+> 
+> --
+> -- Name: personal_card_grants personal_card_grants_granted_to_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.personal_card_grants
+>     ADD CONSTRAINT personal_card_grants_granted_to_fkey FOREIGN KEY (granted_to) REFERENCES auth.users(id) ON DELETE CASCADE;
+> 
+> 
+> --
+8994a9204,9211
+> -- Name: social_items social_items_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.social_items
+>     ADD CONSTRAINT social_items_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+10957c11174
+< \unrestrict wkTH2KhzfxdHxn29nvYECSvnU0TVegCyIHXWOhaeB52yGzoUAbRgbggaaZTHQIV
+---
+> \unrestrict wkXQF0th0H9sfe1Tf4OpeiBorTc13PY5JzLlcN7gmHBPSncR6LdrJEj2QRz9klN

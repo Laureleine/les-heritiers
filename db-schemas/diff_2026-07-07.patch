@@ -1,0 +1,270 @@
+5c5
+< \restrict bvNuLbfZB1LWc9wSP94f8sb3HxD8uHQB0VZAEMrfdfIVryywfJKriv8Acxu7m7x
+---
+> \restrict yg0IedlUS03gIYOCPYBhJat7tLgJEm3FlUo7tkUHcrwUYzvOXgqJ6Llbuog3lWI
+5230c5230
+< -- Name: messages_2026_07_01; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_03; Type: TABLE; Schema: realtime; Owner: -
+5233c5233
+< CREATE TABLE realtime.messages_2026_07_01 (
+---
+> CREATE TABLE realtime.messages_2026_07_03 (
+5248c5248
+< -- Name: messages_2026_07_02; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_04; Type: TABLE; Schema: realtime; Owner: -
+5251c5251
+< CREATE TABLE realtime.messages_2026_07_02 (
+---
+> CREATE TABLE realtime.messages_2026_07_04 (
+5266c5266
+< -- Name: messages_2026_07_03; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_05; Type: TABLE; Schema: realtime; Owner: -
+5269c5269
+< CREATE TABLE realtime.messages_2026_07_03 (
+---
+> CREATE TABLE realtime.messages_2026_07_05 (
+5284c5284
+< -- Name: messages_2026_07_04; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_06; Type: TABLE; Schema: realtime; Owner: -
+5287c5287
+< CREATE TABLE realtime.messages_2026_07_04 (
+---
+> CREATE TABLE realtime.messages_2026_07_06 (
+5302c5302
+< -- Name: messages_2026_07_05; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_07; Type: TABLE; Schema: realtime; Owner: -
+5305c5305
+< CREATE TABLE realtime.messages_2026_07_05 (
+---
+> CREATE TABLE realtime.messages_2026_07_07 (
+5320c5320
+< -- Name: messages_2026_07_06; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_08; Type: TABLE; Schema: realtime; Owner: -
+5323c5323
+< CREATE TABLE realtime.messages_2026_07_06 (
+---
+> CREATE TABLE realtime.messages_2026_07_08 (
+5338c5338
+< -- Name: messages_2026_07_07; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_09; Type: TABLE; Schema: realtime; Owner: -
+5341c5341,5359
+< CREATE TABLE realtime.messages_2026_07_07 (
+---
+> CREATE TABLE realtime.messages_2026_07_09 (
+>     topic text NOT NULL,
+>     extension text NOT NULL,
+>     payload jsonb,
+>     event text,
+>     private boolean DEFAULT false,
+>     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+>     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     binary_payload bytea,
+>     CONSTRAINT messages_payload_exclusive CHECK (((payload IS NULL) OR (binary_payload IS NULL)))
+> );
+> 
+> 
+> --
+> -- Name: messages_2026_07_10; Type: TABLE; Schema: realtime; Owner: -
+> --
+> 
+> CREATE TABLE realtime.messages_2026_07_10 (
+5543,5556d5560
+< -- Name: messages_2026_07_01; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_01 FOR VALUES FROM ('2026-07-01 00:00:00') TO ('2026-07-02 00:00:00');
+< 
+< 
+< --
+< -- Name: messages_2026_07_02; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_02 FOR VALUES FROM ('2026-07-02 00:00:00') TO ('2026-07-03 00:00:00');
+< 
+< 
+< --
+5591a5596,5616
+> -- Name: messages_2026_07_08; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_08 FOR VALUES FROM ('2026-07-08 00:00:00') TO ('2026-07-09 00:00:00');
+> 
+> 
+> --
+> -- Name: messages_2026_07_09; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_09 FOR VALUES FROM ('2026-07-09 00:00:00') TO ('2026-07-10 00:00:00');
+> 
+> 
+> --
+> -- Name: messages_2026_07_10; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_10 FOR VALUES FROM ('2026-07-10 00:00:00') TO ('2026-07-11 00:00:00');
+> 
+> 
+> --
+6357,6372d6381
+< -- Name: messages_2026_07_01 messages_2026_07_01_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_01
+<     ADD CONSTRAINT messages_2026_07_01_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+< -- Name: messages_2026_07_02 messages_2026_07_02_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_02
+<     ADD CONSTRAINT messages_2026_07_02_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6412a6422,6445
+> -- Name: messages_2026_07_08 messages_2026_07_08_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_08
+>     ADD CONSTRAINT messages_2026_07_08_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+> -- Name: messages_2026_07_09 messages_2026_07_09_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_09
+>     ADD CONSTRAINT messages_2026_07_09_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+> -- Name: messages_2026_07_10 messages_2026_07_10_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_10
+>     ADD CONSTRAINT messages_2026_07_10_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7342,7355d7374
+< -- Name: messages_2026_07_01_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_01_inserted_at_topic_idx ON realtime.messages_2026_07_01 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+< -- Name: messages_2026_07_02_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_02_inserted_at_topic_idx ON realtime.messages_2026_07_02 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7390a7410,7430
+> -- Name: messages_2026_07_08_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_08_inserted_at_topic_idx ON realtime.messages_2026_07_08 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+> -- Name: messages_2026_07_09_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_09_inserted_at_topic_idx ON realtime.messages_2026_07_09 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+> -- Name: messages_2026_07_10_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_10_inserted_at_topic_idx ON realtime.messages_2026_07_10 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7454,7481d7493
+< -- Name: messages_2026_07_01_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_01_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_01_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_01_pkey;
+< 
+< 
+< --
+< -- Name: messages_2026_07_02_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_02_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_02_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_02_pkey;
+< 
+< 
+< --
+7551a7564,7605
+> -- Name: messages_2026_07_08_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_08_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_08_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_08_pkey;
+> 
+> 
+> --
+> -- Name: messages_2026_07_09_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_09_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_09_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_09_pkey;
+> 
+> 
+> --
+> -- Name: messages_2026_07_10_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_10_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_10_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_10_pkey;
+> 
+> 
+> --
+9824c9878
+< \unrestrict bvNuLbfZB1LWc9wSP94f8sb3HxD8uHQB0VZAEMrfdfIVryywfJKriv8Acxu7m7x
+---
+> \unrestrict yg0IedlUS03gIYOCPYBhJat7tLgJEm3FlUo7tkUHcrwUYzvOXgqJ6Llbuog3lWI

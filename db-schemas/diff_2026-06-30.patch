@@ -1,0 +1,187 @@
+5c5
+< \restrict MrutqXcg5WtYbffloWOWeKasfoMIrcfkSAYwdUKUJ58G9zJSaqD0nFM1vbSTOsi
+---
+> \restrict fKpVhPQayBkYkYblq2z31D7RbE8LQ6agPyDejTg7itDa5dxZPdInR8msxpbLKqm
+3140a3141
+>     custom_claims_allowlist text[] DEFAULT '{}'::text[] NOT NULL,
+4465c4466,4467
+<     updated_at timestamp with time zone DEFAULT now()
+---
+>     updated_at timestamp with time zone DEFAULT now(),
+>     data jsonb DEFAULT '{}'::jsonb
+4686a4689,4714
+> -- Name: pnj_table_entries; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.pnj_table_entries (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     table_name text NOT NULL,
+>     tranche_age text,
+>     value_m text NOT NULL,
+>     value_f text,
+>     status text DEFAULT 'pending'::text NOT NULL,
+>     reject_reason text,
+>     created_by uuid,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     approved_by uuid,
+>     approved_at timestamp with time zone,
+>     polarity text DEFAULT 'n'::text NOT NULL,
+>     CONSTRAINT metiers_need_tranche CHECK (((table_name <> 'metiers'::text) OR (tranche_age IS NOT NULL))),
+>     CONSTRAINT non_metiers_no_tranche CHECK (((table_name = 'metiers'::text) OR (tranche_age IS NULL))),
+>     CONSTRAINT pnj_table_entries_polarity_check CHECK ((polarity = ANY (ARRAY['l2'::text, 'l1'::text, 'n'::text, 'd1'::text, 'd2'::text]))),
+>     CONSTRAINT pnj_table_entries_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text]))),
+>     CONSTRAINT pnj_table_entries_table_name_check CHECK ((table_name = ANY (ARRAY['traits'::text, 'apparences'::text, 'motivations'::text, 'secrets'::text, 'phobies'::text, 'hobbies'::text, 'comportements'::text, 'metiers'::text]))),
+>     CONSTRAINT pnj_table_entries_tranche_age_check CHECK (((tranche_age = ANY (ARRAY['jeune'::text, 'adulte'::text, 'mur'::text, 'age'::text])) OR (tranche_age IS NULL)))
+> );
+> 
+> 
+> --
+4965,4982d4992
+< -- Name: messages_2026_06_25; Type: TABLE; Schema: realtime; Owner: -
+< --
+< 
+< CREATE TABLE realtime.messages_2026_06_25 (
+<     topic text NOT NULL,
+<     extension text NOT NULL,
+<     payload jsonb,
+<     event text,
+<     private boolean DEFAULT false,
+<     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+<     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+<     id uuid DEFAULT gen_random_uuid() NOT NULL,
+<     binary_payload bytea,
+<     CONSTRAINT messages_payload_exclusive CHECK (((payload IS NULL) OR (binary_payload IS NULL)))
+< );
+< 
+< 
+< --
+5296,5302d5305
+< -- Name: messages_2026_06_25; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_25 FOR VALUES FROM ('2026-06-25 00:00:00') TO ('2026-06-26 00:00:00');
+< 
+< 
+< --
+5940a5944,5951
+> -- Name: pnj_table_entries pnj_table_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.pnj_table_entries
+>     ADD CONSTRAINT pnj_table_entries_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6061,6068d6071
+< -- Name: messages_2026_06_25 messages_2026_06_25_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_06_25
+<     ADD CONSTRAINT messages_2026_06_25_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6864a6868,6888
+> -- Name: idx_pnj_entries_creator; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_pnj_entries_creator ON public.pnj_table_entries USING btree (created_by);
+> 
+> 
+> --
+> -- Name: idx_pnj_entries_status; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_pnj_entries_status ON public.pnj_table_entries USING btree (status);
+> 
+> 
+> --
+> -- Name: idx_pnj_entries_table_status; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_pnj_entries_table_status ON public.pnj_table_entries USING btree (table_name, tranche_age, status);
+> 
+> 
+> --
+6942,6948d6965
+< -- Name: messages_2026_06_25_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_06_25_inserted_at_topic_idx ON realtime.messages_2026_06_25 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7061,7074d7077
+< -- Name: messages_2026_06_25_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_25_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_06_25_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_25_pkey;
+< 
+< 
+< --
+7719a7723,7738
+> -- Name: pnj_table_entries pnj_table_entries_approved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.pnj_table_entries
+>     ADD CONSTRAINT pnj_table_entries_approved_by_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: pnj_table_entries pnj_table_entries_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.pnj_table_entries
+>     ADD CONSTRAINT pnj_table_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+7999a8019,8025
+> -- Name: figures Authenticated users can insert figures; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY "Authenticated users can insert figures" ON public.figures FOR INSERT TO authenticated WITH CHECK (true);
+> 
+> 
+> --
+8898a8925,8953
+> -- Name: pnj_table_entries pnj_entries_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY pnj_entries_insert ON public.pnj_table_entries FOR INSERT TO authenticated WITH CHECK ((created_by = auth.uid()));
+> 
+> 
+> --
+> -- Name: pnj_table_entries pnj_entries_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY pnj_entries_select ON public.pnj_table_entries FOR SELECT TO authenticated USING (((status = 'approved'::text) OR (created_by = auth.uid())));
+> 
+> 
+> --
+> -- Name: pnj_table_entries pnj_entries_update_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY pnj_entries_update_admin ON public.pnj_table_entries FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: pnj_table_entries; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.pnj_table_entries ENABLE ROW LEVEL SECURITY;
+> 
+> --
+9139c9194
+< \unrestrict MrutqXcg5WtYbffloWOWeKasfoMIrcfkSAYwdUKUJ58G9zJSaqD0nFM1vbSTOsi
+---
+> \unrestrict fKpVhPQayBkYkYblq2z31D7RbE8LQ6agPyDejTg7itDa5dxZPdInR8msxpbLKqm

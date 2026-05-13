@@ -1,0 +1,581 @@
+5c5
+< \restrict fbFDrM24hpav8gVAcbPvEckhsxhvE4XjYBUdEIxCdqHhnlA0brzwTjBRZOB31PT
+---
+> \restrict B6m3wZUqbUvxkiOzsuwyfdlSBJYRdBWid6GkWSU0mvm3NSyKqfKktKEqWyt1ZgP
+272c272,273
+< 	value text
+---
+> 	value text,
+> 	negate boolean
+1889a1891,1962
+> -- Name: check_equality_op(realtime.equality_op, regtype, text, text, boolean); Type: FUNCTION; Schema: realtime; Owner: -
+> --
+> 
+> CREATE FUNCTION realtime.check_equality_op(op realtime.equality_op, type_ regtype, val_1 text, val_2 text, negate boolean) RETURNS boolean
+>     LANGUAGE plpgsql STABLE
+>     AS $$
+> declare
+>     op_symbol text;
+>     res boolean;
+> begin
+>     -- IS DISTINCT FROM / IS NOT DISTINCT FROM: infix, both sides typed literals
+>     if op = 'isdistinct' then
+>         execute format(
+>             'select %L::%s %s %L::%s',
+>             val_1,
+>             type_::text,
+>             case when negate then 'IS NOT DISTINCT FROM' else 'IS DISTINCT FROM' end,
+>             val_2,
+>             type_::text
+>         ) into res;
+>         return res;
+>     end if;
+> 
+>     -- IS requires a keyword RHS (NULL, TRUE, FALSE, UNKNOWN), not a typed literal
+>     if op = 'is' then
+>         if val_2 not in ('null', 'true', 'false', 'unknown') then
+>             raise exception 'invalid value for is filter: must be null, true, false, or unknown';
+>         end if;
+>         execute format(
+>             'select %L::%s %s %s',
+>             val_1,
+>             type_::text,
+>             case when negate then 'IS NOT' else 'IS' end,
+>             upper(val_2)
+>         ) into res;
+>         return res;
+>     end if;
+> 
+>     op_symbol = case
+>         when op = 'eq'    then '='
+>         when op = 'neq'   then '!='
+>         when op = 'lt'    then '<'
+>         when op = 'lte'   then '<='
+>         when op = 'gt'    then '>'
+>         when op = 'gte'   then '>='
+>         when op = 'in'    then '= any'
+>         when op = 'like'   then 'LIKE'
+>         when op = 'ilike'  then 'ILIKE'
+>         when op = 'match'  then '~'
+>         when op = 'imatch' then '~*'
+>         else null
+>     end;
+> 
+>     if op_symbol is null then
+>         raise exception 'unsupported equality operator: %', op::text;
+>     end if;
+> 
+>     execute format(
+>         'select %L::%s %s (%L::%s)',
+>         val_1,
+>         type_::text,
+>         op_symbol,
+>         val_2,
+>         case when op = 'in' then type_::text || '[]' else type_::text end
+>     ) into res;
+> 
+>     return case when negate then not res else res end;
+> end;
+> $$;
+> 
+> 
+> --
+1894,1898c1967,1968
+<     LANGUAGE sql IMMUTABLE
+<     AS $_$
+< /*
+< Should the record be visible (true) or filtered out (false) after *filters* are applied
+< */
+---
+>     LANGUAGE sql STABLE
+>     AS $$
+1900,1904c1970,1974
+<         -- Default to allowed when no filters present
+<         $2 is null -- no filters. this should not happen because subscriptions has a default
+<         or array_length($2, 1) is null -- array length of an empty array is null
+<         or bool_and(
+<             coalesce(
+---
+>         filters is null
+>         or array_length(filters, 1) is null
+>         or coalesce(
+>             count(col.name) = count(1)
+>             and sum(
+1907,1911c1977
+<                     type_:=coalesce(
+<                         col.type_oid::regtype, -- null when wal2json version <= 2.4
+<                         col.type_name::regtype
+<                     ),
+<                     -- cast jsonb to text
+---
+>                     type_:=coalesce(col.type_oid::regtype, col.type_name::regtype),
+1913,1916c1979,1983
+<                     val_2:=f.value
+<                 ),
+<                 false -- if null, filter does not match
+<             )
+---
+>                     val_2:=f.value,
+>                     negate:=coalesce(f.negate, false)
+>                 )::int
+>             ) filter (where col.name is not null) = count(col.name),
+>             false
+1920c1987
+<         join unnest(columns) col
+---
+>         left join unnest(columns) col
+1922c1989
+< $_$;
+---
+> $$;
+2119a2187,2226
+>         elsif filter.op = 'is'::realtime.equality_op then
+>             -- `is` requires a keyword RHS rather than a typed literal
+>             if filter.value not in ('null', 'true', 'false', 'unknown') then
+>                 raise exception 'invalid value for is filter: must be null, true, false, or unknown';
+>             end if;
+>             -- IS NULL works for any type, but IS TRUE/FALSE/UNKNOWN require a boolean
+>             -- operand. Reject the non-null keywords on non-boolean columns here so they
+>             -- don't abort apply_rls at WAL time.
+>             if filter.value <> 'null' and col_type <> 'boolean'::regtype then
+>                 raise exception 'is % filter requires a boolean column, got %', filter.value, col_type::text;
+>             end if;
+>         elsif filter.op in ('like'::realtime.equality_op, 'ilike'::realtime.equality_op) then
+>             -- like/ilike apply the text pattern operator (~~); reject column types that
+>             -- have no such operator instead of failing at WAL time
+>             if not exists (
+>                 select 1 from pg_catalog.pg_operator
+>                 where oprname = '~~' and oprleft = col_type
+>             ) then
+>                 raise exception 'operator % requires a text-compatible column type, got %', filter.op::text, col_type::text;
+>             end if;
+>         elsif filter.op in ('match'::realtime.equality_op, 'imatch'::realtime.equality_op) then
+>             -- match/imatch apply the regex operators ~ / ~*; reject column types that have
+>             -- no such operator (e.g. integer) instead of failing at WAL time, mirroring the
+>             -- like/ilike guard above.
+>             if not exists (
+>                 select 1 from pg_catalog.pg_operator
+>                 where oprname = case when filter.op = 'imatch'::realtime.equality_op then '~*' else '~' end
+>                   and oprleft = col_type
+>                   and oprright = col_type
+>                   and oprresult = 'boolean'::regtype
+>             ) then
+>                 raise exception 'operator % requires a text-compatible column type, got %', filter.op::text, col_type::text;
+>             end if;
+>             -- validate the regex eagerly so a bad pattern is rejected here, not inside
+>             -- apply_rls where it would abort the WAL stream for the entity
+>             begin
+>                 perform '' ~ filter.value;
+>             exception when others then
+>                 raise exception 'invalid regular expression for % filter: %', filter.op::text, sqlerrm;
+>             end;
+2120a2228
+>             -- eq/neq/lt/lte/gt/gte: value must be coercable to the type
+2132a2241,2242
+>     -- Apply consistent order to filters so the unique constraint can't be tricked by a
+>     -- different filter order. negate is part of the sort key.
+2134c2244
+<         array_agg(f order by f.column_name, f.op, f.value),
+---
+>         array_agg(f order by f.column_name, f.op, f.value, f.negate),
+3753a3864,3886
+> -- Name: ambiance_table_entries; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.ambiance_table_entries (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     table_name text NOT NULL,
+>     variante text NOT NULL,
+>     value text NOT NULL,
+>     weight integer DEFAULT 1 NOT NULL,
+>     is_official boolean DEFAULT false NOT NULL,
+>     status text DEFAULT 'pending'::text NOT NULL,
+>     reject_reason text,
+>     created_by uuid,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     approved_by uuid,
+>     approved_at timestamp with time zone,
+>     CONSTRAINT ambiance_table_entries_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text]))),
+>     CONSTRAINT ambiance_table_entries_table_name_check CHECK ((table_name = ANY (ARRAY['decor'::text, 'evenement'::text, 'meteo'::text, 'intrigue'::text]))),
+>     CONSTRAINT variante_valide CHECK ((((table_name = 'decor'::text) AND (variante = ANY (ARRAY['paris_populaire'::text, 'paris_riche'::text, 'banlieue_industrielle'::text, 'campagne_rurale'::text]))) OR ((table_name = 'evenement'::text) AND (variante = ANY (ARRAY['paris_jour'::text, 'paris_nuit'::text, 'banlieue_industrielle_jour'::text, 'banlieue_industrielle_nuit'::text, 'campagne_rurale_jour'::text, 'campagne_rurale_nuit'::text]))) OR ((table_name = 'meteo'::text) AND (variante = ANY (ARRAY['hiver'::text, 'printemps'::text, 'ete'::text, 'automne'::text]))) OR ((table_name = 'intrigue'::text) AND (variante = ANY (ARRAY['horror'::text, 'espionage'::text, 'pulp'::text])))))
+> );
+> 
+> 
+> --
+4776a4910,4935
+> -- Name: poche_table_entries; Type: TABLE; Schema: public; Owner: -
+> --
+> 
+> CREATE TABLE public.poche_table_entries (
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     table_name text NOT NULL,
+>     saison text,
+>     value_m text NOT NULL,
+>     value_f text,
+>     weight integer DEFAULT 1 NOT NULL,
+>     is_official boolean DEFAULT false NOT NULL,
+>     status text DEFAULT 'pending'::text NOT NULL,
+>     reject_reason text,
+>     created_by uuid,
+>     created_at timestamp with time zone DEFAULT now() NOT NULL,
+>     approved_by uuid,
+>     approved_at timestamp with time zone,
+>     CONSTRAINT non_saisonniere_no_saison CHECK (((table_name = 'fouille_saisonniere'::text) OR (saison IS NULL))),
+>     CONSTRAINT poche_table_entries_saison_check CHECK (((saison = ANY (ARRAY['hiver'::text, 'printemps'::text, 'ete'::text, 'automne'::text])) OR (saison IS NULL))),
+>     CONSTRAINT poche_table_entries_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text]))),
+>     CONSTRAINT poche_table_entries_table_name_check CHECK ((table_name = ANY (ARRAY['fouille_ordinaire'::text, 'fouille_mondaine'::text, 'fouille_secrets'::text, 'fouille_horreur'::text, 'fouille_espionnage'::text, 'fouille_pulp'::text, 'fouille_saisonniere'::text]))),
+>     CONSTRAINT saisonniere_need_saison CHECK (((table_name <> 'fouille_saisonniere'::text) OR (saison IS NOT NULL)))
+> );
+> 
+> 
+> --
+5055c5214
+< -- Name: messages_2026_06_28; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_06_29; Type: TABLE; Schema: realtime; Owner: -
+5058c5217
+< CREATE TABLE realtime.messages_2026_06_28 (
+---
+> CREATE TABLE realtime.messages_2026_06_29 (
+5073c5232
+< -- Name: messages_2026_06_29; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_06_30; Type: TABLE; Schema: realtime; Owner: -
+5076c5235
+< CREATE TABLE realtime.messages_2026_06_29 (
+---
+> CREATE TABLE realtime.messages_2026_06_30 (
+5091c5250
+< -- Name: messages_2026_06_30; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_01; Type: TABLE; Schema: realtime; Owner: -
+5094c5253
+< CREATE TABLE realtime.messages_2026_06_30 (
+---
+> CREATE TABLE realtime.messages_2026_07_01 (
+5109c5268
+< -- Name: messages_2026_07_01; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_02; Type: TABLE; Schema: realtime; Owner: -
+5112c5271
+< CREATE TABLE realtime.messages_2026_07_01 (
+---
+> CREATE TABLE realtime.messages_2026_07_02 (
+5127c5286
+< -- Name: messages_2026_07_02; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_03; Type: TABLE; Schema: realtime; Owner: -
+5130c5289
+< CREATE TABLE realtime.messages_2026_07_02 (
+---
+> CREATE TABLE realtime.messages_2026_07_03 (
+5145c5304
+< -- Name: messages_2026_07_03; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_04; Type: TABLE; Schema: realtime; Owner: -
+5148c5307
+< CREATE TABLE realtime.messages_2026_07_03 (
+---
+> CREATE TABLE realtime.messages_2026_07_04 (
+5163c5322
+< -- Name: messages_2026_07_04; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_05; Type: TABLE; Schema: realtime; Owner: -
+5166c5325,5343
+< CREATE TABLE realtime.messages_2026_07_04 (
+---
+> CREATE TABLE realtime.messages_2026_07_05 (
+>     topic text NOT NULL,
+>     extension text NOT NULL,
+>     payload jsonb,
+>     event text,
+>     private boolean DEFAULT false,
+>     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+>     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     binary_payload bytea,
+>     CONSTRAINT messages_payload_exclusive CHECK (((payload IS NULL) OR (binary_payload IS NULL)))
+> );
+> 
+> 
+> --
+> -- Name: messages_2026_07_06; Type: TABLE; Schema: realtime; Owner: -
+> --
+> 
+> CREATE TABLE realtime.messages_2026_07_06 (
+5368,5374d5544
+< -- Name: messages_2026_06_28; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_28 FOR VALUES FROM ('2026-06-28 00:00:00') TO ('2026-06-29 00:00:00');
+< 
+< 
+< --
+5416a5587,5600
+> -- Name: messages_2026_07_05; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_05 FOR VALUES FROM ('2026-07-05 00:00:00') TO ('2026-07-06 00:00:00');
+> 
+> 
+> --
+> -- Name: messages_2026_07_06; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_06 FOR VALUES FROM ('2026-07-06 00:00:00') TO ('2026-07-07 00:00:00');
+> 
+> 
+> --
+5717a5902,5909
+> -- Name: ambiance_table_entries ambiance_table_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.ambiance_table_entries
+>     ADD CONSTRAINT ambiance_table_entries_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6037a6230,6237
+> -- Name: poche_table_entries poche_table_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.poche_table_entries
+>     ADD CONSTRAINT poche_table_entries_pkey PRIMARY KEY (id);
+> 
+> 
+> --
+6158,6165d6357
+< -- Name: messages_2026_06_28 messages_2026_06_28_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_06_28
+<     ADD CONSTRAINT messages_2026_06_28_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6213a6406,6421
+> -- Name: messages_2026_07_05 messages_2026_07_05_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_05
+>     ADD CONSTRAINT messages_2026_07_05_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+> -- Name: messages_2026_07_06 messages_2026_07_06_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_06
+>     ADD CONSTRAINT messages_2026_07_06_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+6736a6945,6965
+> -- Name: idx_ambiance_entries_creator; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_ambiance_entries_creator ON public.ambiance_table_entries USING btree (created_by);
+> 
+> 
+> --
+> -- Name: idx_ambiance_entries_status; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_ambiance_entries_status ON public.ambiance_table_entries USING btree (status);
+> 
+> 
+> --
+> -- Name: idx_ambiance_entries_table_status; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_ambiance_entries_table_status ON public.ambiance_table_entries USING btree (table_name, variante, status);
+> 
+> 
+> --
+7009a7239,7259
+> -- Name: idx_poche_entries_creator; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_poche_entries_creator ON public.poche_table_entries USING btree (created_by);
+> 
+> 
+> --
+> -- Name: idx_poche_entries_status; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_poche_entries_status ON public.poche_table_entries USING btree (status);
+> 
+> 
+> --
+> -- Name: idx_poche_entries_table_status; Type: INDEX; Schema: public; Owner: -
+> --
+> 
+> CREATE INDEX idx_poche_entries_table_status ON public.poche_table_entries USING btree (table_name, saison, status);
+> 
+> 
+> --
+7087,7093d7336
+< -- Name: messages_2026_06_28_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_06_28_inserted_at_topic_idx ON realtime.messages_2026_06_28 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7135a7379,7392
+> -- Name: messages_2026_07_05_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_05_inserted_at_topic_idx ON realtime.messages_2026_07_05 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+> -- Name: messages_2026_07_06_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_06_inserted_at_topic_idx ON realtime.messages_2026_07_06 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7199,7212d7455
+< -- Name: messages_2026_06_28_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_28_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_06_28_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_28_pkey;
+< 
+< 
+< --
+7296a7540,7567
+> -- Name: messages_2026_07_05_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_05_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_05_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_05_pkey;
+> 
+> 
+> --
+> -- Name: messages_2026_07_06_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_06_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_06_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_06_pkey;
+> 
+> 
+> --
+7539a7811,7826
+> -- Name: ambiance_table_entries ambiance_table_entries_approved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.ambiance_table_entries
+>     ADD CONSTRAINT ambiance_table_entries_approved_by_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: ambiance_table_entries ambiance_table_entries_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.ambiance_table_entries
+>     ADD CONSTRAINT ambiance_table_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+7883a8171,8186
+> -- Name: poche_table_entries poche_table_entries_approved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.poche_table_entries
+>     ADD CONSTRAINT poche_table_entries_approved_by_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+> -- Name: poche_table_entries poche_table_entries_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE ONLY public.poche_table_entries
+>     ADD CONSTRAINT poche_table_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+> 
+> 
+> --
+8724a9028,9056
+> -- Name: ambiance_table_entries ambiance_entries_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY ambiance_entries_insert ON public.ambiance_table_entries FOR INSERT TO authenticated WITH CHECK ((created_by = auth.uid()));
+> 
+> 
+> --
+> -- Name: ambiance_table_entries ambiance_entries_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY ambiance_entries_select ON public.ambiance_table_entries FOR SELECT TO authenticated USING (((status = 'approved'::text) OR (created_by = auth.uid())));
+> 
+> 
+> --
+> -- Name: ambiance_table_entries ambiance_entries_update_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY ambiance_entries_update_admin ON public.ambiance_table_entries FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: ambiance_table_entries; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.ambiance_table_entries ENABLE ROW LEVEL SECURITY;
+> 
+> --
+9187a9520,9548
+> -- Name: poche_table_entries poche_entries_insert; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY poche_entries_insert ON public.poche_table_entries FOR INSERT TO authenticated WITH CHECK ((created_by = auth.uid()));
+> 
+> 
+> --
+> -- Name: poche_table_entries poche_entries_select; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY poche_entries_select ON public.poche_table_entries FOR SELECT TO authenticated USING (((status = 'approved'::text) OR (created_by = auth.uid())));
+> 
+> 
+> --
+> -- Name: poche_table_entries poche_entries_update_admin; Type: POLICY; Schema: public; Owner: -
+> --
+> 
+> CREATE POLICY poche_entries_update_admin ON public.poche_table_entries FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
+>    FROM public.profiles
+>   WHERE ((profiles.id = auth.uid()) AND (profiles.role = ANY (ARRAY['super_admin'::text, 'gardien'::text]))))));
+> 
+> 
+> --
+> -- Name: poche_table_entries; Type: ROW SECURITY; Schema: public; Owner: -
+> --
+> 
+> ALTER TABLE public.poche_table_entries ENABLE ROW LEVEL SECURITY;
+> 
+> --
+9456c9817
+< \unrestrict fbFDrM24hpav8gVAcbPvEckhsxhvE4XjYBUdEIxCdqHhnlA0brzwTjBRZOB31PT
+---
+> \unrestrict B6m3wZUqbUvxkiOzsuwyfdlSBJYRdBWid6GkWSU0mvm3NSyKqfKktKEqWyt1ZgP

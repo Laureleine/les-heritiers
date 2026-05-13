@@ -1,0 +1,157 @@
+5c5
+< \restrict sviH8jdclDoK8bZH35J7zma6QLccd0hBNqriCDq5bgE5NrHckbYM7ABLYf34gBq
+---
+> \restrict szI3Dpu12btVNccqvmO6M4dgyt7qKHCFGnNer91aHh4vTAFBBCLxVC1SgbM11VQ
+1787a1788,1799
+>                     -- Reset the role on every FOR..LOOP batch execution.
+>                     -- The first batch of 10 rows is pre-fetched using the current connection role (PG internal behaviour)
+>                     -- then we have to reset it again otherwise it would use the role defined in the `set_config` above
+>                     -- to fetch the remaining rows when rows>10, which could be a user-defined role that lacks execution grants.
+>                     -- The flow is:
+>                     --   1. run batch with conn role
+>                     --   2. set_config working_role
+>                     --   3. execute walrus
+>                     --   4. reset role (revert)
+>                     --   5. repeat
+>                     perform set_config('role', null, true);
+> 
+5545c5557
+< -- Name: messages_2026_07_11; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_12; Type: TABLE; Schema: realtime; Owner: -
+5548c5560
+< CREATE TABLE realtime.messages_2026_07_11 (
+---
+> CREATE TABLE realtime.messages_2026_07_12 (
+5563c5575
+< -- Name: messages_2026_07_12; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+5566c5578
+< CREATE TABLE realtime.messages_2026_07_12 (
+---
+> CREATE TABLE realtime.messages_2026_07_13 (
+5581c5593
+< -- Name: messages_2026_07_13; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_14; Type: TABLE; Schema: realtime; Owner: -
+5584c5596
+< CREATE TABLE realtime.messages_2026_07_13 (
+---
+> CREATE TABLE realtime.messages_2026_07_14 (
+5599c5611
+< -- Name: messages_2026_07_14; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_15; Type: TABLE; Schema: realtime; Owner: -
+5602c5614
+< CREATE TABLE realtime.messages_2026_07_14 (
+---
+> CREATE TABLE realtime.messages_2026_07_15 (
+5617c5629
+< -- Name: messages_2026_07_15; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+5620c5632
+< CREATE TABLE realtime.messages_2026_07_15 (
+---
+> CREATE TABLE realtime.messages_2026_07_16 (
+5635c5647
+< -- Name: messages_2026_07_16; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+5638c5650
+< CREATE TABLE realtime.messages_2026_07_16 (
+---
+> CREATE TABLE realtime.messages_2026_07_17 (
+5653c5665
+< -- Name: messages_2026_07_17; Type: TABLE; Schema: realtime; Owner: -
+---
+> -- Name: messages_2026_07_18; Type: TABLE; Schema: realtime; Owner: -
+5656c5668
+< CREATE TABLE realtime.messages_2026_07_17 (
+---
+> CREATE TABLE realtime.messages_2026_07_18 (
+5858,5864d5869
+< -- Name: messages_2026_07_11; Type: TABLE ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_11 FOR VALUES FROM ('2026-07-11 00:00:00') TO ('2026-07-12 00:00:00');
+< 
+< 
+< --
+5906a5912,5918
+> -- Name: messages_2026_07_18; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_18 FOR VALUES FROM ('2026-07-18 00:00:00') TO ('2026-07-19 00:00:00');
+> 
+> 
+> --
+6768,6775d6779
+< -- Name: messages_2026_07_11 messages_2026_07_11_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+< --
+< 
+< ALTER TABLE ONLY realtime.messages_2026_07_11
+<     ADD CONSTRAINT messages_2026_07_11_pkey PRIMARY KEY (id, inserted_at);
+< 
+< 
+< --
+6823a6828,6835
+> -- Name: messages_2026_07_18 messages_2026_07_18_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_18
+>     ADD CONSTRAINT messages_2026_07_18_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+7788,7794d7799
+< -- Name: messages_2026_07_11_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+< --
+< 
+< CREATE INDEX messages_2026_07_11_inserted_at_topic_idx ON realtime.messages_2026_07_11 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+< 
+< 
+< --
+7836a7842,7848
+> -- Name: messages_2026_07_18_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_18_inserted_at_topic_idx ON realtime.messages_2026_07_18 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7900,7913d7911
+< -- Name: messages_2026_07_11_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_11_inserted_at_topic_idx;
+< 
+< 
+< --
+< -- Name: messages_2026_07_11_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+< --
+< 
+< ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_11_pkey;
+< 
+< 
+< --
+7997a7996,8009
+> -- Name: messages_2026_07_18_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_18_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_18_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_18_pkey;
+> 
+> 
+> --
+10723c10735
+< \unrestrict sviH8jdclDoK8bZH35J7zma6QLccd0hBNqriCDq5bgE5NrHckbYM7ABLYf34gBq
+---
+> \unrestrict szI3Dpu12btVNccqvmO6M4dgyt7qKHCFGnNer91aHh4vTAFBBCLxVC1SgbM11VQ

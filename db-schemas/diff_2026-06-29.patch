@@ -1,0 +1,67 @@
+5c5
+< \restrict Npj7PAIrYAuAJHEdCMtv6pblZnRfMqr0K0wgbTsAfyIVgkgmy5fpcwd6C2m07TH
+---
+> \restrict MrutqXcg5WtYbffloWOWeKasfoMIrcfkSAYwdUKUJ58G9zJSaqD0nFM1vbSTOsi
+5090a5091,5108
+> -- Name: messages_2026_07_02; Type: TABLE; Schema: realtime; Owner: -
+> --
+> 
+> CREATE TABLE realtime.messages_2026_07_02 (
+>     topic text NOT NULL,
+>     extension text NOT NULL,
+>     payload jsonb,
+>     event text,
+>     private boolean DEFAULT false,
+>     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+>     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+>     id uuid DEFAULT gen_random_uuid() NOT NULL,
+>     binary_payload bytea,
+>     CONSTRAINT messages_payload_exclusive CHECK (((payload IS NULL) OR (binary_payload IS NULL)))
+> );
+> 
+> 
+> --
+5326a5345,5351
+> -- Name: messages_2026_07_02; Type: TABLE ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_07_02 FOR VALUES FROM ('2026-07-02 00:00:00') TO ('2026-07-03 00:00:00');
+> 
+> 
+> --
+6091a6117,6124
+> -- Name: messages_2026_07_02 messages_2026_07_02_pkey; Type: CONSTRAINT; Schema: realtime; Owner: -
+> --
+> 
+> ALTER TABLE ONLY realtime.messages_2026_07_02
+>     ADD CONSTRAINT messages_2026_07_02_pkey PRIMARY KEY (id, inserted_at);
+> 
+> 
+> --
+6957a6991,6997
+> -- Name: messages_2026_07_02_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: -
+> --
+> 
+> CREATE INDEX messages_2026_07_02_inserted_at_topic_idx ON realtime.messages_2026_07_02 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+> 
+> 
+> --
+7118a7159,7172
+> -- Name: messages_2026_07_02_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_07_02_inserted_at_topic_idx;
+> 
+> 
+> --
+> -- Name: messages_2026_07_02_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: -
+> --
+> 
+> ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_07_02_pkey;
+> 
+> 
+> --
+9085c9139
+< \unrestrict Npj7PAIrYAuAJHEdCMtv6pblZnRfMqr0K0wgbTsAfyIVgkgmy5fpcwd6C2m07TH
+---
+> \unrestrict MrutqXcg5WtYbffloWOWeKasfoMIrcfkSAYwdUKUJ58G9zJSaqD0nFM1vbSTOsi
