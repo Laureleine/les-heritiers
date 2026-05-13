@@ -39,16 +39,7 @@ export function useSnapshots(characterId, userId) {
                 character_id: character.id,
                 user_id: character.userId || character.user_id,
                 titre: photoTitle,
-                data_snapshot: character.data || {},
-                stats_snapshot: {
-                    caracteristiques: character.caracteristiques,
-                    competencesLibres: character.competencesLibres,
-                    competencesFutiles: character.competencesFutiles,
-                    pouvoirs: character.pouvoirs,
-                    atouts: character.atouts,
-                    vieSociale: character.vieSociale,
-                    fortune: character.fortune
-                }
+                character_data: character
             };
             const { error } = await supabase.from('character_snapshots').insert([snapshotData]);
             if (error) throw error;

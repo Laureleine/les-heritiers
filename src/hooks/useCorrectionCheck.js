@@ -1,33 +1,9 @@
 // src/hooks/useCorrectionCheck.js
-// Détecte les personnages nécessitant une correction et gère les autorisations
+// Gère les autorisations de correction de personnages
 import { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { getFairyLore } from '../data/FairyLore';
 import { showInAppNotification } from '../utils/SystemeServices';
 
-/**
- * Détecte automatiquement si un personnage présente un problème connu
- * (fée sans fiche Docte, champs obligatoires manquants, etc.)
- */
-export function detectCharacterIssue(character) {
-    if (!character?.type_fee) return null;
-
-    // Vérification 1 : la fée n'a pas de fiche Docte dans FairyLore.js
-    const lore = getFairyLore(character.type_fee);
-    if (!lore) {
-        return `Le journal féérique de ${character.type_fee} est incomplet ou indisponible.`;
-    }
-
-    return null; // Aucun problème détecté
-}
-
-/**
- * Hook principal pour le système de correction.
- *
- * Côté joueur  : retourne les personnages du joueur qui nécessitent une réponse.
- *                Notifie si un personnage vient d'être corrigé par le Docte.
- * Côté admin   : retourne la liste des personnages autorisés à corriger.
- */
 export function useCorrectionCheck(userProfile) {
     const [pendingCorrections, setPendingCorrections] = useState([]);
     const [adminQueue, setAdminQueue] = useState([]);
@@ -75,34 +51,7 @@ export function useCorrectionCheck(userProfile) {
                     .eq('needs_correction', true)
                     .is('correction_authorized', null);
 
-                // ── 3. AUTO-DÉTECTION sur les personnages scellés ────────────────────
-                // On récupère aussi correction_done pour exclure les persos déjà traités
-                const { data: sealed } = await supabase
-                    .from('characters')
-                    .select('id, nom, type_fee, needs_correction, correction_authorized, correction_done')
-                    .eq('user_id', userId)
-                    .eq('statut', 'scelle');
-
-                const autoDetected = (sealed || []).filter(c => {
-                    if (c.needs_correction)  return false; // déjà signalé
-                    if (c.correction_done)   return false; // déjà corrigé → ne pas re-signaler
-                    return detectCharacterIssue(c) !== null;
-                });
-
-                // Signaler les auto-détectés en DB
-                for (const char of autoDetected) {
-                    const reason = detectCharacterIssue(char);
-                    await supabase.from('characters').update({
-                        needs_correction: true,
-                        correction_reason: reason,
-                    }).eq('id', char.id);
-                    char.correction_reason = reason;
-                }
-
-                setPendingCorrections([
-                    ...(myChars || []),
-                    ...autoDetected,
-                ]);
+                setPendingCorrections(myChars || []);
 
                 // ── 4. FILE D'ATTENTE ADMIN ───────────────────────────────────────────
                 if (isAdmin) {

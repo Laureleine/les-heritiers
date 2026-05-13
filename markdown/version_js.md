@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.16.46 - "L\'Album des Souvenirs 📸"',
+    date: '13 Mai 2026',
+    description: 'Album Photo restauré, résurrection des archives temporelles, et ménage des alertes automatiques.',
+    changes: [
+      '📸 **Album Photo de l\'Héritier restauré :** Le bouton "Prendre une photo" et la galerie des archives temporelles refont leur apparition sur la page Récapitulatif. On peut désormais immortaliser l\'état de son Héritier à tout moment et le ressusciter plus tard.',
+      '🔧 **Fonction de Résurrection créée :** Le sort `clone_snapshot_to_character` a été inscrit dans le Grand Livre des Sortilèges. Il permet de cloner un personnage à partir d\'une archive temporelle, préservant l\'intégralité de ses caractéristiques, pouvoirs, atouts et biens.',
+      '🐛 **Fix colonne d\'archivage :** Correction d\'un Sortilège défaillant — le hook écrivait dans `data_snapshot` (coline inexistante) au lieu de `character_data`. Les archives se gravent désormais dans le marbre sans erreur.',
+      '🗑️ **Silence des Gardiens :** Le système d\'auto-détection des anomalies (FairyLore) a été désactivé. Les personnages dont l\'espèce féérique n\'est pas encore référencée dans la Bibliothèque des Espèces ne déclenchent plus d\'alerte intempestive. Le Docte conserve la main pour signaler manuellement ce qui doit l\'être.',
+      '🩺 **Remède au "Sans plancher" :** Le socle scellé (`stats_scellees`) de Siobhan McTir, qui manquait à l\'appel, a été reconstruit depuis ses mémoires éparses. Son Héritier n\'est plus en errance.',
+      '✏️ **Fix nom dans les alertes :** Les messages de correction utilisaient le type de fée ("Kelpie") au lieu du nom du personnage ("Siobhan McTir"). Le grimoire invoque désormais le bon prénom.',
+    ]
+  },  {
     version: '15.16.45 - "Le Grand Sceau des Gardiens 🛡️"',
     date: '13 Mai 2026',
     description: 'Rempart de sécurité : RLS activé, permissions verrouillées, rôle-checks ajoutés, et premières sentinelles de test.',

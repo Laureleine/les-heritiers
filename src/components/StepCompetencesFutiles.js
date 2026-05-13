@@ -30,7 +30,7 @@ export default function StepCompetencesFutiles() {
 
   // ✨ NOUVEAU : Variables du Puits des Âmes et du Plancher de Verre
   const isScelle = isCharacterScelle(character);
-  const { xpDepense, xpDispo } = getXpState(character);
+  const { xpDispo } = getXpState(character);
   
   // 2. Gérer les compétences de prédilection
   const parsedPredilection = parseCompetencesFutilesPredilection(feeData?.competencesFutilesPredilection || []);

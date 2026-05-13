@@ -1,7 +1,7 @@
 // src/components/CorrectionRequestModal.jsx
 // Modale affichée au joueur quand l'un de ses personnages présente un problème
 import React, { useState } from 'react';
-import { Crown, Lock, CheckCircle, X } from '../config/icons';
+import { Crown, CheckCircle, X } from '../config/icons';
 
 export default function CorrectionRequestModal({ corrections, onRespond }) {
     const [current, setCurrent] = useState(0);

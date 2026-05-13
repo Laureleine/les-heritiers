@@ -96,7 +96,7 @@ export default function CharacterCreator({ session, userProfile }) {
 
     if (amount > 0) showInAppNotification(`Gling ! +${amount} XP ajoutés au Journal.`, "success");
     else showInAppNotification(`Ajustement : ${Math.abs(amount)} XP retirés du Journal.`, "info");
-  }, [character?.xp_total, character?.data?.historique_xp, dispatchCharacter, gameData]);
+  }, [character, dispatchCharacter, gameData]);
 
   const handleBackToArchives = () => {
     dispatchCharacter({ type: 'RESET_CHARACTER', payload: {} });

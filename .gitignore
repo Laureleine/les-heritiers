@@ -3,6 +3,9 @@
 /markdown
 /tests
 /pdfs
+/backups
+
+
 
 # dependencies
 /node_modules

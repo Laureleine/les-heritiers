@@ -27,7 +27,7 @@ export default function StepPouvoirs() {
     const currentFeerie = character.caracteristiques?.feerie || 3;
     const currentMasque = character.caracteristiques?.masque || 4;
 
-    const { xpDepense, xpDispo } = getXpState(character);
+    const { xpDispo } = getXpState(character);
 
     const maxPouvoirs = currentFeerie;
     const countSelected = character.pouvoirs?.length || 0;

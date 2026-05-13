@@ -26,7 +26,7 @@ export default function AnomalieFeeriqueWidget() {
   const countSelected = character.pouvoirs?.length || 0;
   const countAtouts = character.atouts?.length || 0;
 
-  const { xpDepense, xpDispo } = getXpState(character);
+  const { xpDispo } = getXpState(character);
 
   const anomalieAtout = data?.atouts?.find(a => a.nom === 'Anomalie féérique');
   const anomalieId = anomalieAtout ? anomalieAtout.id : 'Anomalie féérique';

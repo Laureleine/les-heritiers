@@ -196,7 +196,7 @@ export function useEncyclopedia() {
         } finally {
             setLoading(false);
         }
-    }, [activeTab, gameData]);
+    }, [activeTab]);
 
     useEffect(() => {
         fetchData();

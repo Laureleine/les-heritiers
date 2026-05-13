@@ -114,7 +114,7 @@ export default function TabRepairJournaux() {
     const [gameDataReady, setGameDataReady] = useState(false);
     const [characters, setCharacters]   = useState([]);
     const [gameData, setGameData]       = useState(null);
-    const [running, setRunning]         = useState(false);
+    const [running]         = useState(false);
     const [log, setLog]                 = useState([]);
     const [search, setSearch]           = useState('');
     const [filterMode, setFilterMode]   = useState('pending'); // 'all' | 'pending'

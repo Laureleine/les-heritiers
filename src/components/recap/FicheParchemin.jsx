@@ -19,7 +19,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
     const finalStats = useMemo(() => calculateCharacterStats(character, gameData), [character, gameData]);
 
     const isScelle = isCharacterScelle(character);
-    const scellees  = character.data?.stats_scellees || {};
+    const scellees = useMemo(() => character.data?.stats_scellees || {}, [character.data?.stats_scellees]);
 
     // =========================================================================
     // 🔍 HELPERS DE DÉCOMPOSITION (Mode Détaillé)
