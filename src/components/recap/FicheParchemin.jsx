@@ -547,8 +547,8 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     <div className="recap-box">
                         <span className="field-label" style={{color: '#1e3a8a'}}>Capacités & Atouts</span>
                         <ul className="text-xs list-inside mt-2" style={{listStyle: 'none', padding: 0}}>
-                            {character.capaciteChoisie && <li><b>{character.capaciteChoisie}</b></li>}
-                            {(character.atouts || []).map((a, i) => <li key={i}>- {a}</li>)}
+                            {character.capaciteChoisie && <li><b>{(feeData?.capacites && [...(feeData.capacites.fixe1 ? [feeData.capacites.fixe1] : []), ...(feeData.capacites.fixe2 ? [feeData.capacites.fixe2] : []), ...(feeData.capacites.choix || [])].find(c => c.id === character.capaciteChoisie || c.nom === character.capaciteChoisie)?.nom) || character.capaciteChoisie}</b></li>}
+                            {(character.atouts || []).map((a, i) => <li key={i}>- {(feeData?.atouts?.find(at => at.id === a || at.nom === a)?.nom) || a}</li>)}
                         </ul>
                     </div>
                     <div className="recap-box">

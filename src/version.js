@@ -2,6 +2,13 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.2 - "Le Nom Retrouvé 🏷️"',
+    date: '13 Mai 2026',
+    description: 'Correction de l\'affichage des UUIDs dans Capacités & Atouts, résolution des noms dans tout le moteur.',
+    changes: [
+      '🏷️ **Fix — UUIDs apparents dans Capacités & Atouts :** Les identifiants bruts (ex: `067035cc-...`) qui s\'affichaient par erreur dans la fiche bilan sont désormais résolus en noms lisibles via les données de l\'Encyclopédie. Le correctif couvre la fiche (`FicheParchemin`), le sélecteur d\'atouts (`StepAtouts` — qui ne stocke plus jamais d\'UUID), et le moteur de bonus (`bonusCalculator` — qui cherchait par nom uniquement).',
+    ]
+  },  {
     version: '15.17.1 - "Les Archives du Monde 📊"',
     date: '13 Mai 2026',
     description: 'Métriques publiques enrichies : types de fées, profils, graphiques et compteurs globaux.',

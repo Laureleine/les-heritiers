@@ -66,8 +66,8 @@ export const calculateCharacterStats = (character, gameData) => {
     if (character.atouts && Array.isArray(character.atouts)) {
         const feeData = gameData.fairyData?.[character.typeFee];
         if (feeData && feeData.atouts) {
-            character.atouts.forEach(atoutNom => {
-                const atoutData = feeData.atouts.find(a => a.nom === atoutNom);
+            character.atouts.forEach(atoutVal => {
+                const atoutData = feeData.atouts.find(a => a.id === atoutVal || a.nom === atoutVal);
                 if (atoutData && atoutData.effets_techniques) {
                     activeBonusSources.push({ source: atoutData.nom, bonus: atoutData.effets_techniques });
                 }

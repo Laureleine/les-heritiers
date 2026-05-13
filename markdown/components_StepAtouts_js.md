@@ -26,11 +26,8 @@ export default function StepAtouts() {
 
   const handleAtoutToggle = (atout) => {
     if (isReadOnly) return; // 🔒 FIX
-    const isSelectedByName = character.atouts?.includes(atout.nom);
-    const isSelectedById = character.atouts?.includes(atout.id);
-    const isCurrentlySelected = isSelectedByName || isSelectedById;
-    
-    const valueToToggle = isSelectedById ? atout.id : atout.nom;
+    const isSelected = character.atouts?.some(a => a === atout.nom || a === atout.id);
+    const valueToToggle = atout.nom;
 
     // 🌟 COMPORTEMENT EN MODE ÉVOLUTION (XP)
     if (isScelle) {
@@ -38,7 +35,7 @@ export default function StepAtouts() {
       const innateAtouts = character.data?.stats_scellees?.atouts || [];
       const isInnate = innateAtouts.includes(atout.nom) || innateAtouts.includes(atout.id);
 
-      if (isCurrentlySelected) {
+      if (isSelected) {
         if (isInnate) {
           showInAppNotification("Cet Atout fait partie du Sceau originel de votre Héritier. Impossible de l'oublier !", "warning");
           return;
