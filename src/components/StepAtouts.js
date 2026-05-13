@@ -22,7 +22,7 @@ export default function StepAtouts() {
   
   // Variables XP
   const isScelle = isCharacterScelle(character);
-  const { xpDepense, xpDispo } = getXpState(character);
+  const { xpDispo } = getXpState(character);
 
   const handleAtoutToggle = (atout) => {
     if (isReadOnly) return; // 🔒 FIX

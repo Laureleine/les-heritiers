@@ -408,7 +408,7 @@ export function useTelegraphe(session, userProfile) {
       .subscribe();
 
     return () => { supabase.removeChannel(chatSubscription); };
-  }, [session?.user?.id]);
+  }, [session?.user?.id, userProfile?.profile?.notify_telegraphe]);
 
 
   return {

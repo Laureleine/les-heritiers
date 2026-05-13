@@ -1,6 +1,6 @@
 // src/components/StepRecapitulatif.js
 import React, { useState } from 'react';
-import { Printer, ShieldAlert } from '../config/icons';
+import { Printer, ShieldAlert, Camera, Clock, RotateCcw } from '../config/icons';
 import { useCerbere } from '../hooks/useCerbere';
 import { useCharacter } from '../context/CharacterContext';
 import { exportToPDF } from '../utils/pdfGenerator';
@@ -16,11 +16,16 @@ export default function StepRecapitulatif() {
         sealErrors,
         sealWarnings,
         handleSealClick,
-        executeSeal
+        executeSeal,
+        snapshots,
+        handleTakeSnapshot,
+        handleCloneSnapshot
     } = useCerbere();
 
     const { gameData } = useCharacter();
     const [detailed, setDetailed] = useState(false);
+    const [snapshotTitle, setSnapshotTitle] = useState('');
+    const [showSnapshotModal, setShowSnapshotModal] = useState(false);
 
     return (
         <div className="max-w-[210mm] mx-auto pb-12 animate-fade-in font-serif">
@@ -43,8 +48,76 @@ export default function StepRecapitulatif() {
             {/* L'AFFICHEUR UNIVERSEL */}
             <FicheParchemin character={character} gameData={gameData} detailed={detailed} />
 
+            {/* ALBUM PHOTO — ARCHIVES TEMPORELLES */}
+            <div className="no-print mt-10">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-stone-700 text-lg flex items-center gap-2">
+                        <Camera size={20} /> Album Photo de l'Héritier
+                    </h3>
+                    <button
+                        onClick={() => setShowSnapshotModal(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-sm font-bold hover:bg-amber-200 transition-all shadow-sm"
+                    >
+                        <Camera size={16} /> Prendre une photo
+                    </button>
+                </div>
+
+                {snapshots.length === 0 ? (
+                    <p className="text-stone-400 italic text-sm text-center py-6 border border-dashed border-stone-300 rounded-xl">
+                        Aucune archive temporelle pour l'instant. Immortalisez l'état actuel de votre Héritier&nbsp;!
+                    </p>
+                ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {snapshots.map(snap => (
+                            <div key={snap.id} className="bg-white border border-stone-200 rounded-xl p-3 shadow-sm flex flex-col gap-2">
+                                <div className="flex items-start justify-between">
+                                    <span className="font-bold text-stone-800 text-sm leading-tight">{snap.titre}</span>
+                                    <Clock size={14} className="text-stone-400 shrink-0 mt-0.5" />
+                                </div>
+                                <span className="text-xs text-stone-400">{new Date(snap.created_at).toLocaleDateString('fr-FR')}</span>
+                                <button
+                                    onClick={() => handleCloneSnapshot(snap.id, snap.titre, character.nom)}
+                                    className="mt-auto flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 hover:bg-amber-100 transition-all"
+                                >
+                                    <RotateCcw size={12} /> Ressusciter
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* MODALE DE TITRE POUR LA PHOTO */}
+            {showSnapshotModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setShowSnapshotModal(false)}>
+                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm w-full p-6 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+                        <h3 className="font-serif font-bold text-lg text-stone-800 mb-2">Immortaliser cet instant</h3>
+                        <p className="text-sm text-stone-500 mb-4">Donnez un nom à cette archive temporelle pour retrouver cet état plus tard.</p>
+                        <input
+                            type="text"
+                            value={snapshotTitle}
+                            onChange={e => setSnapshotTitle(e.target.value)}
+                            placeholder="Ex: Avant le bal, Début de carrière..."
+                            className="w-full border border-stone-300 rounded-lg px-4 py-2.5 text-sm font-bold text-stone-700 outline-none focus:ring-2 focus:ring-amber-400 mb-4"
+                            autoFocus
+                            onKeyDown={e => { if (e.key === 'Enter') { handleTakeSnapshot(snapshotTitle, character); setShowSnapshotModal(false); setSnapshotTitle(''); } }}
+                        />
+                        <div className="flex gap-3 justify-end">
+                            <button onClick={() => { setShowSnapshotModal(false); setSnapshotTitle(''); }} className="px-4 py-2 text-sm font-bold text-stone-500 hover:text-stone-700 transition-all">Annuler</button>
+                            <button
+                                onClick={async () => { await handleTakeSnapshot(snapshotTitle, character); setShowSnapshotModal(false); setSnapshotTitle(''); }}
+                                disabled={!snapshotTitle.trim()}
+                                className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-bold hover:bg-amber-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <Camera size={16} className="inline mr-1.5" /> Prendre la photo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* LES BOUTONS D'ACTION */}
-            <div className="no-print flex gap-4 mt-8 justify-center">
+            <div className="no-print flex gap-4 mt-8 justify-center flex-wrap">
                 <button
                     onClick={() => exportToPDF(character, gameData, detailed)}
                     className="bg-stone-900 text-white font-black py-4 px-10 rounded-xl flex items-center gap-3 shadow-lg hover:bg-black transition-all"

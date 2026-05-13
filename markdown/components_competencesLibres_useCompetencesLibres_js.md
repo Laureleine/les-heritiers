@@ -20,7 +20,7 @@ export function useCompetencesLibres() {
     const { profils, competences, competencesParProfil, fairyData, socialItems } = gameData;
 
     const isScelle = isCharacterScelle(character);
-    const { xpDepense, xpDispo } = getXpState(character);
+    const { xpDispo } = getXpState(character);
 
     const [creatingSpecFor, setCreatingSpecFor] = useState(null);
 
@@ -197,7 +197,7 @@ export function useCompetencesLibres() {
         if (delta < 0 && current <= 0) return;
 
         onCompetencesLibresChange({ ...lib, rangs: { ...lib.rangs, [nomComp]: current + delta } });
-    }, [lib, getScoreBase, predFinales, budgetsInfo, onCompetencesLibresChange, isScelle, isReadOnly, xpDispo, xpDepense, character.data, dispatchCharacter, gameData]);
+    }, [lib, getScoreBase, predFinales, budgetsInfo, onCompetencesLibresChange, isScelle, isReadOnly, xpDispo, character.data, character.caracteristiques?.esprit, dispatchCharacter, gameData]);
 
     const handleAddSpecialiteUser = useCallback((nomComp, specName) => {
         if (!specName || isReadOnly) return;
@@ -224,7 +224,7 @@ export function useCompetencesLibres() {
             if (!(budgetsInfo.pointsRestantsVerts > 0 || (isEsprit && budgetsInfo.pointsRestantsViolets > 0))) { showInAppNotification("Fonds insuffisants.", "error"); return; }
         }
         onCompetencesLibresChange({ ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] } });
-    }, [lib, isReadOnly, isScelle, xpDispo, xpDepense, getScoreBase, budgetsInfo, onCompetencesLibresChange, dispatchCharacter, gameData]);
+    }, [lib, isReadOnly, isScelle, xpDispo, getScoreBase, budgetsInfo, onCompetencesLibresChange, dispatchCharacter, gameData]);
 
     const handleRemoveSpecialiteUser = useCallback((nomComp, specToRemove) => {
         if (isReadOnly) return;
@@ -243,7 +243,7 @@ export function useCompetencesLibres() {
             return;
         }
         onCompetencesLibresChange({ ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: currentSpecs.filter(s => s !== specToRemove) } });
-    }, [lib, isReadOnly, isScelle, xpDepense, character.data, onCompetencesLibresChange, dispatchCharacter, gameData]);
+    }, [lib, isReadOnly, isScelle, character.data, onCompetencesLibresChange, dispatchCharacter, gameData]);
 
     const handleCreateGlobalSpeciality = useCallback(async (nomComp, specName) => {
         const compData = competences[nomComp];
@@ -338,7 +338,7 @@ export function useCompetencesLibres() {
             isMinusDisabled: isScelle ? (current <= plancher) : (current <= 0),
             isPlusDisabled: isReadOnly || totalScore >= maxAllowed || (!isScelle && budgetsInfo.pointsRestantsVerts <= 0 && (!isEspritEligible || budgetsInfo.pointsRestantsViolets <= 0))
         };
-    }, [lib, getScoreBase, predFinales, isScelle, character.data, feeData, atoutsBonuses, character.competencesLibres, competences, isReadOnly, budgetsInfo]);
+    }, [lib, getScoreBase, predFinales, isScelle, character.data, character.caracteristiques?.esprit, feeData, atoutsBonuses, character.competencesLibres, competences, isReadOnly, budgetsInfo]);
 
     return {
         character, isScelle, isReadOnly, feeData, profils, competencesParProfil,
