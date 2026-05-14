@@ -85,12 +85,14 @@ export default function CharacterCreator({ session, userProfile }) {
       return;
     }
 
-    const typeMouvement = amount > 0 ? 'GAIN' : 'REMBOURSEMENT';
-    const labelMouvement = amount > 0 ? 'Ajustement Manuel' : 'Correction Manuelle';
-
     dispatchCharacter({
       type: 'LOG_XP_TRANSACTION',
-      transaction: { type: typeMouvement, code: amount > 0 ? 'XP_GAIN' : 'XP_AJUSTEMENT', label: labelMouvement, valeur: Math.abs(amount) },
+      transaction: {
+        type: 'GAIN',
+        code: amount > 0 ? 'XP_GAIN' : 'XP_AJUSTEMENT',
+        label: amount > 0 ? 'Ajustement Manuel' : 'Correction Manuelle',
+        valeur: amount,
+      },
       gameData
     });
 
