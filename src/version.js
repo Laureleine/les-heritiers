@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.5 - "Le Grand Livre des Comptes 📖"',
+    date: '14 Mai 2026',
+    description: 'Correction de deux bugs bloquants sur les boutons − XP : le retrait n\'atteignait jamais le négatif et le −1 dans l\'éditeur augmentait les XP disponibles.',
+    changes: [
+      '🐛 **Bug `||` vs `??` (Cercle) :** Le bouton `−` dans le panneau de distribution remontait à `xpDefault-1` au lieu de descendre sous zéro, rendant tout retrait d\'XP impossible. Corrigé par le remplacement de `||` par `??` (nullish coalescing).',
+      '🐛 **Bug `REMBOURSEMENT` → `GAIN` négatif (Éditeur) :** Cliquer `−1` dans l\'éditeur de personnage créait un `REMBOURSEMENT` qui diminuait `xp_depense` au lieu de `xp_total`, ce qui **augmentait** les XP disponibles au lieu de les réduire. Désormais un `GAIN` avec valeur négative est émis, et `xp_total` diminue correctement.',
+      '🧪 **Tests de non-régression :** 8 tests ajoutés pour verrouiller les deux corrections.',
+    ]
+  },  {
     version: '15.17.4 - "La Balance du Docte ⚖️"',
     date: '14 Mai 2026',
     description: 'Retrait d\'XP par le Docte, confirmation modale pour les montants négatifs, correction du compteur de Cercles dans les Métriques.',

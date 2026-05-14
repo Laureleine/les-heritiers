@@ -18,7 +18,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
   };
 
   const adjustXp = (userId, delta) => {
-    setXpAmounts(prev => ({ ...prev, [userId]: Math.max(-100, (prev[userId] || xpDefault || 0) + delta) }));
+    setXpAmounts(prev => ({ ...prev, [userId]: Math.max(-100, (prev[userId] ?? xpDefault ?? 0) + delta) }));
   };
 
   const recipientCount = Object.values(xpAmounts).filter(v => v !== 0).length;
