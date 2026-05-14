@@ -236,6 +236,7 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     if (recipients.length === 0) return;
 
     setXpSubmitting(true);
+    const notSealed = [];
     try {
       for (const member of recipients) {
         const amount = amounts[member.user_id];
@@ -245,9 +246,16 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
           p_motif: motif,
         });
         if (error) throw error;
+        if (member.characters?.statut && member.characters.statut !== 'scelle') {
+          notSealed.push(member.characters.nom || member.profiles?.username);
+        }
       }
 
-      showInAppNotification(`🎁 ${recipients.length} Héritier(s) ont reçu leurs XP !`, "success");
+      let msg = `🎁 ${recipients.length} Héritier(s) ont reçu leurs XP !`;
+      if (notSealed.length > 0) {
+        msg += ` ${notSealed.join(', ')} ne pourront pas les dépenser tant que leur personnage n'est pas scellé.`;
+      }
+      showInAppNotification(msg, "success");
       loadMembers(activeTab);
     } catch (err) {
       showInAppNotification("Erreur lors de la distribution : " + err.message, "error");

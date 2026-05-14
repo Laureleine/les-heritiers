@@ -13,18 +13,16 @@ function TabStats() {
     try {
       const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
 
-      // ── 1. Totaux ──────────────────────────────────────────
-      const [
-        { count: totalProfiles },
-        { count: totalChars },
-        { count: sealedChars },
-        { count: totalCercles },
-      ] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('characters').select('*', { count: 'exact', head: true }),
-        supabase.from('characters').select('*', { count: 'exact', head: true }).eq('statut', 'scelle'),
-        supabase.from('cercles').select('*', { count: 'exact', head: true }),
-      ]);
+      // ── 1. Totaux (via RPC SECURITY DEFINER pour contourner RLS) ───
+      const { data: totalsData, error: totalsError } = await supabase.rpc('get_admin_stats');
+      if (totalsError || !totalsData) {
+        console.error("Erreur get_admin_stats :", totalsError);
+        throw totalsError || new Error('get_admin_stats returned null');
+      }
+      const totalProfiles = totalsData.total_profiles;
+      const totalChars = totalsData.total_characters;
+      const sealedChars = totalsData.total_sealed;
+      const totalCercles = totalsData.total_cercles;
 
       // ── 2. Répartition types de fées ───────────────────────
       const { data: feeData } = await supabase
