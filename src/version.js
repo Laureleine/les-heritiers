@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.3 - "Le Sceau du Docte 🔍"',
+    date: '14 Mai 2026',
+    description: 'Visibilité du statut de scellement dans les Cercles, notification XP pour les non scellés.',
+    changes: [
+      '🔍 **Visibilité du statut dans les Cercles :** Le Docte voit désormais si un Héritier n\'est pas scellé (badge "Non scellé" dans le panneau XP et sur la carte), avec un avertissement clair : "XP reçus mais non dépensables".',
+      '📡 **RPC `get_cercle_members` enrichi :** Retourne maintenant `statut`, `xp_total` et `xp_depense` pour chaque personnage, permettant à l\'interface d\'afficher ces informations sans requête supplémentaire.',
+      '📢 **Notification de distribution :** Le toast de fin précise quels personnages ne pourront pas dépenser leurs XP tant qu\'ils ne sont pas scellés.',
+    ]
+  },  {
     version: '15.17.2 - "Le Nom Retrouvé 🏷️"',
     date: '13 Mai 2026',
     description: 'Correction de l\'affichage des UUIDs dans Capacités & Atouts, résolution des noms dans tout le moteur.',
