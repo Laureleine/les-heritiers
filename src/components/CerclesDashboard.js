@@ -232,9 +232,24 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
 
   // 🎁 Distribution d'XP par le Docte
   const handleDistributeXp = async (amounts, motif) => {
-    const recipients = activeMembers.filter(m => (amounts[m.user_id] || 0) > 0 && m.characters?.id);
+    const recipients = activeMembers.filter(m => (amounts[m.user_id] || 0) !== 0 && m.characters?.id);
     if (recipients.length === 0) return;
 
+    const hasNegative = recipients.some(m => (amounts[m.user_id] || 0) < 0);
+    if (hasNegative) {
+      setConfirmState({
+        isOpen: true,
+        title: 'Retrait d\'XP',
+        message: `Tu t'apprêtes à retirer des XP à ${recipients.filter(m => amounts[m.user_id] < 0).length} Héritier(s). Cette action est irréversible. Confirmer ?`,
+        confirmText: 'Oui, retirer les XP',
+        action: () => { setConfirmState(prev => ({ ...prev, isOpen: false })); executeDistributeXp(amounts, motif, recipients); }
+      });
+      return;
+    }
+    executeDistributeXp(amounts, motif, recipients);
+  };
+
+  const executeDistributeXp = async (amounts, motif, recipients) => {
     setXpSubmitting(true);
     const notSealed = [];
     try {

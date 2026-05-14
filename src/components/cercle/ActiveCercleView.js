@@ -18,10 +18,10 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
   };
 
   const adjustXp = (userId, delta) => {
-    setXpAmounts(prev => ({ ...prev, [userId]: Math.max(0, (prev[userId] || xpDefault || 0) + delta) }));
+    setXpAmounts(prev => ({ ...prev, [userId]: Math.max(-100, (prev[userId] || xpDefault || 0) + delta) }));
   };
 
-  const recipientCount = Object.values(xpAmounts).filter(v => v > 0).length;
+  const recipientCount = Object.values(xpAmounts).filter(v => v !== 0).length;
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200 animate-fade-in">
