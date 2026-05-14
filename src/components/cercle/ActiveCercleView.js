@@ -104,10 +104,13 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
 
           <div className="space-y-1.5 mb-4">
             {activeMembers.map(m => (
-              <div key={m.user_id} className="flex items-center justify-between bg-white/70 rounded-lg px-3 py-2 border border-amber-200/60">
+                  <div key={m.user_id} className="flex items-center justify-between bg-white/70 rounded-lg px-3 py-2 border border-amber-200/60">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-xs font-bold text-amber-900 truncate">{m.characters?.nom || m.profiles?.username}</span>
                   <span className="text-[10px] text-stone-400 italic truncate hidden sm:inline">{m.characters?.typeFee}</span>
+                  {m.characters?.statut && m.characters.statut !== 'scelle' && (
+                    <span className="text-[9px] text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded font-bold">Non scellé</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button onClick={() => adjustXp(m.user_id, -1)} className="w-6 h-6 flex items-center justify-center rounded bg-stone-100 text-stone-500 hover:bg-stone-200 text-sm font-bold">−</button>
@@ -224,6 +227,11 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                         }`}>
                           {member.characters?.typeFee || (hasChar ? 'Nature inconnue' : 'Fiche non liée')}
                         </div>
+                        {hasChar && member.characters?.statut && member.characters.statut !== 'scelle' && (
+                          <div className="text-[9px] text-amber-700 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded font-bold mt-1">
+                            ⚠ Non scellé — XP reçus mais non dépensables
+                          </div>
+                        )}
                         <button
                           onClick={() => hasChar && onViewCharacter(member.characters)}
                           disabled={!hasChar}
