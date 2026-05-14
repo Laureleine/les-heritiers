@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.4 - "La Balance du Docte ⚖️"',
+    date: '14 Mai 2026',
+    description: 'Retrait d\'XP par le Docte, confirmation modale pour les montants négatifs, correction du compteur de Cercles dans les Métriques.',
+    changes: [
+      '⚖️ **Retrait d\'XP (Nouveau) :** Le Docte peut désormais retirer des XP à un Héritier en cliquant sur le bouton `−` pour passer en négatif. Une modale de confirmation s\'affiche avant validation.',
+      '🔢 **Compteur de Cercles corrigé :** Les Métriques affichaient 3 Cercles au lieu de 14 à cause du RLS. Une nouvelle RPC `get_admin_stats` en `SECURITY DEFINER` contourne le filtrage et retourne le vrai total.',
+    ]
+  },  {
     version: '15.17.3 - "Le Sceau du Docte 🔍"',
     date: '14 Mai 2026',
     description: 'Visibilité du statut de scellement dans les Cercles, notification XP pour les non scellés.',
