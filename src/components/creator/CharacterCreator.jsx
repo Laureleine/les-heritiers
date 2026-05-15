@@ -76,6 +76,7 @@ export default function CharacterCreator({ session, userProfile }) {
   };
 
   const handleAdjustXP = useCallback((amount) => {
+    if (isReadOnly || character?.user_id !== session?.user?.id) return;
     const currentTotal = character?.xp_total || 0;
     const { xpDepense: depense } = getXpState(character);
     const newTotal = Math.max(depense, currentTotal + amount);
@@ -98,7 +99,7 @@ export default function CharacterCreator({ session, userProfile }) {
 
     if (amount > 0) showInAppNotification(`Gling ! +${amount} XP ajoutés au Journal.`, "success");
     else showInAppNotification(`Ajustement : ${Math.abs(amount)} XP retirés du Journal.`, "info");
-  }, [character, dispatchCharacter, gameData]);
+  }, [character, dispatchCharacter, gameData, isReadOnly, session]);
 
   const handleBackToArchives = () => {
     dispatchCharacter({ type: 'RESET_CHARACTER', payload: {} });
@@ -193,13 +194,13 @@ export default function CharacterCreator({ session, userProfile }) {
               <BookOpen size={14} /> <span className="hidden sm:inline">Registre</span>
             </button>
             <div className="w-px h-6 bg-stone-700 mx-1"></div>
-            <button onClick={() => handleAdjustXP(-1)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-stone-400 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm">-1</button>
+            <button onClick={() => handleAdjustXP(-1)} disabled={isReadOnly || character?.user_id !== session?.user?.id} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-stone-400 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed" title={isReadOnly || character?.user_id !== session?.user?.id ? 'Consultation seule — le Puits des Âmes appartient à l\'Héritier' : 'Retirer 1 XP'}>-1</button>
             <div className="flex items-baseline gap-2 px-2">
               <span className="text-2xl font-black font-serif text-emerald-400">{getXpState(character).xpDispo}</span>
               <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">XP</span>
             </div>
-            <button onClick={() => handleAdjustXP(1)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-emerald-400 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm">+1</button>
-            <button onClick={() => handleAdjustXP(5)} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-amber-400 rounded transition-colors text-xs font-bold border border-amber-900 shadow-sm">+5</button>
+            <button onClick={() => handleAdjustXP(1)} disabled={isReadOnly || character?.user_id !== session?.user?.id} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-emerald-400 rounded transition-colors text-xs font-bold border border-stone-700 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed" title={isReadOnly || character?.user_id !== session?.user?.id ? 'Consultation seule' : 'Ajouter 1 XP'}>+1</button>
+            <button onClick={() => handleAdjustXP(5)} disabled={isReadOnly || character?.user_id !== session?.user?.id} className="px-2 py-1 bg-stone-800 hover:bg-stone-700 text-amber-400 rounded transition-colors text-xs font-bold border border-amber-900 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed" title={isReadOnly || character?.user_id !== session?.user?.id ? 'Consultation seule' : 'Ajouter 5 XP'}>+5</button>
           </div>
         </div>
       )}
