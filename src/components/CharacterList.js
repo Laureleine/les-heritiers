@@ -443,7 +443,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
   // ─── Props communes pour CharacterCard ───────────────────────────────────
   const commonCardProps = {
-    profils, gameData,
+    profils, gameData, isAdmin,
     onSelect: handleSelectCharacter,
     onToggleVisibility: handleToggleVisibility,
     onDuplicate: handleDuplicate,
@@ -768,6 +768,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               characterId={activeGrimoireCharId}
               cercleId={null}
               playerId={session?.user?.id}
+              isAdmin={isAdmin}
             />
           </div>
         </div>

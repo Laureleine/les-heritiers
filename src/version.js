@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.8 - "L\'Œil Omniscient 👁️"',
+    date: '15 Mai 2026',
+    description: 'Le Super Admin accède à tous les Grimoires, les contacts s\'inscrivent automatiquement, et les entrées sont modifiables.',
+    changes: [
+      '👁️ **Vision du Super Admin :** Les administrateurs peuvent désormais consulter l\'intégralité des Grimoires Personnels de tous les Héritiers, sans restriction de propriété. L\'icône 📖 apparaît sur les cartes des autres joueurs (onglets Publics et Admin).',
+      '📓 **Synchronisation Contacts → Grimoire :** Les contacts achetés dans la Vie Sociale sont automatiquement inscrits dans le Grimoire Personnel à la sauvegarde du personnage. Un système de file d\'attente évite les doublons et s\'efface si le joueur quitte sans sauvegarder.',
+      '✏️ **Édition & Suppression des entrées :** Chaque note et contact du Grimoire peut désormais être modifié ou supprimé. Une confirmation est demandée, avec avertissement spécial pour les contacts liés à un achat de la Vie Sociale.',
+    ]
+  },
+  {
     version: '15.17.7 - "La Fortune des Métiers 💰"',
     date: '15 Mai 2026',
     description: 'Les fiches de métiers de l\'Encyclopédie révèlent désormais leur influence sur la Fortune des Héritiers.',
