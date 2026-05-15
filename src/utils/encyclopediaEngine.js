@@ -271,10 +271,16 @@ export const submitEncyclopediaProposal = async ({
             // ✨ LE FIX SAUVEGARDE : On capture les champs de la Vie Sociale !
             if (activeTab === 'social_items') {
                 if (proposal.cout !== editingItem.cout) surgicalData.cout = proposal.cout;
+                if (proposal.cout_moderne !== editingItem.cout_moderne) surgicalData.cout_moderne = proposal.cout_moderne;
                 if (proposal.categorie !== editingItem.categorie) surgicalData.categorie = proposal.categorie;
+                if (proposal.is_choix_multiple !== editingItem.is_choix_multiple) surgicalData.is_choix_multiple = proposal.is_choix_multiple;
                 if (JSON.stringify(proposal.profils_autorises) !== JSON.stringify(editingItem.profils_autorises)) {
                     surgicalData.profils_autorises = proposal.profils_autorises;
                 }
+                // Fortune (métiers)
+                if (proposal.is_secondaire !== editingItem.is_secondaire) surgicalData.is_secondaire = proposal.is_secondaire;
+                if (proposal.fortune_score !== editingItem.fortune_score) surgicalData.fortune_score = proposal.fortune_score;
+                if (proposal.fortune_bonus !== editingItem.fortune_bonus) surgicalData.fortune_bonus = proposal.fortune_bonus;
             }
 
             // On inclut social_items pour que les effets techniques soient aussi sauvegardés

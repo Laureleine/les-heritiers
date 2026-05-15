@@ -1,6 +1,6 @@
 // src/components/encyclopedia/SocialItemForm.js
 import React from 'react';
-import { Briefcase, Coins, Users, BookOpen } from '../../config/icons';
+import { Briefcase, Coins, Users, BookOpen, Crown, TrendingUp } from '../../config/icons';
 import BonusBuilder from '../BonusBuilder';
 
 const CATEGORIES = [
@@ -95,6 +95,78 @@ export default function SocialItemForm({
                     </label>
                 </div>
             </div>
+
+            {/* 2b. FORTUNE (Spécifique aux Métiers) */}
+            {proposal.categorie === 'metier' && (
+                <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm animate-fade-in">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        {/* Toggle Métier Principal / Secondaire */}
+                        <div className="flex-1">
+                            <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <Crown size={14} /> Type de Métier
+                            </label>
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setProposal({ ...proposal, is_secondaire: false })}
+                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-all border ${
+                                        !proposal.is_secondaire
+                                            ? 'bg-amber-600 text-white border-amber-700 shadow-md'
+                                            : 'bg-white text-amber-600 border-amber-300 hover:bg-amber-100'
+                                    }`}
+                                >
+                                    Principal
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setProposal({ ...proposal, is_secondaire: true })}
+                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-all border ${
+                                        proposal.is_secondaire
+                                            ? 'bg-amber-600 text-white border-amber-700 shadow-md'
+                                            : 'bg-white text-amber-600 border-amber-300 hover:bg-amber-100'
+                                    }`}
+                                >
+                                    Secondaire
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Fortune Score (Métier Principal) */}
+                        {!proposal.is_secondaire && (
+                            <div className="flex-1 animate-fade-in">
+                                <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <Coins size={14} /> Rang de Fortune (Base)
+                                </label>
+                                <input
+                                    type="number" min="0" max="15"
+                                    value={proposal.fortune_score !== undefined && proposal.fortune_score !== null ? proposal.fortune_score : ''}
+                                    onChange={(e) => setProposal({ ...proposal, fortune_score: e.target.value === '' ? null : Number(e.target.value) })}
+                                    className="w-full p-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none font-bold"
+                                    placeholder="Ex: 5"
+                                />
+                                <p className="text-[10px] text-amber-600 mt-1 italic">Le rang de fortune de base accordé par ce métier (1-15).</p>
+                            </div>
+                        )}
+
+                        {/* Fortune Bonus (Métier Secondaire) */}
+                        {proposal.is_secondaire && (
+                            <div className="flex-1 animate-fade-in">
+                                <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <TrendingUp size={14} /> Bonus Fortune
+                                </label>
+                                <input
+                                    type="number" min="0" max="5"
+                                    value={proposal.fortune_bonus !== undefined && proposal.fortune_bonus !== null ? proposal.fortune_bonus : ''}
+                                    onChange={(e) => setProposal({ ...proposal, fortune_bonus: e.target.value === '' ? null : Number(e.target.value) })}
+                                    className="w-full p-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none font-bold"
+                                    placeholder="Ex: +2"
+                                />
+                                <p className="text-[10px] text-amber-600 mt-1 italic">Le bonus ajouté à la fortune existante (+1, +2, etc.).</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* 3. L'ACCESSIBILITÉ (PROFILS) */}
             <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 shadow-sm">

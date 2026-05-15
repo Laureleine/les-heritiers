@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.7 - "La Fortune des Métiers 💰"',
+    date: '15 Mai 2026',
+    description: 'Les fiches de métiers de l\'Encyclopédie révèlent désormais leur influence sur la Fortune des Héritiers.',
+    changes: [
+      '💰 **Fortune visible dans l\'Encyclopédie :** Les fiches de métiers affichent désormais leur impact sur la Fortune — rang de base pour les métiers principaux, bonus pour les métiers secondaires. Ces informations apparaissent sous forme de badges élégants dans la vue détaillée.',
+      '👑 **Distinction Principal / Secondaire :** Le formulaire d\'édition des métiers propose un sélecteur clair entre "Métier Principal" (qui définit un rang de Fortune de base) et "Métier Secondaire" (qui accorde un bonus à la Fortune existante).',
+      '🔧 **Fix — Sauvegarde des champs Fortune :** Les modifications de `fortune_score`, `fortune_bonus` et `is_secondaire` sont désormais correctement capturées lors de la soumission d\'une proposition dans l\'Encyclopédie.',
+    ]
+  },
+  {
     version: '15.17.6 - "Le Puits Visible 🔮"',
     date: '14 Mai 2026',
     description: 'Le Puits des Âmes est désormais visible en consultation mais verrouillé : les boutons +/− sont désactivés, seul le Registre reste accessible.',
