@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity } from '../config/icons';
+import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity, Briefcase, Coins, Crown, TrendingUp } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
 
 export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
@@ -15,6 +15,7 @@ export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
   if (activeTab === 'fairy_powers') Icon = Zap;
   if (activeTab === 'fairy_assets') Icon = Star;
   if (activeTab === 'fairy_capacites') Icon = Sparkles;
+  if (activeTab === 'social_items') Icon = Briefcase;
 
   // Extraction des Fées compatibles (si l'on regarde un atout, un pouvoir ou une capacité)
   let linkedFairies = [];
@@ -79,6 +80,35 @@ export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
 					))}
 				</div>
 			)}
+            {/* Badges spécifiques aux éléments de Vie Sociale */}
+            {activeTab === 'social_items' && item.categorie && (
+              <span className="text-xs font-bold text-stone-600 bg-stone-100 px-3 py-1 rounded-full border border-stone-200 uppercase tracking-wider shadow-sm">
+                {item.categorie === 'metier' ? 'Métier' : item.categorie === 'statut' ? 'Statut' : item.categorie === 'objet' ? 'Équipement' : item.categorie === 'contact' ? 'Contact' : item.categorie === 'langue' ? 'Langue' : item.categorie}
+              </span>
+            )}
+            {activeTab === 'social_items' && item.categorie === 'metier' && (
+              <>
+                {!item.is_secondaire ? (
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-300 shadow-sm">
+                    <Crown size={12} /> Métier Principal
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-300 shadow-sm">
+                    <TrendingUp size={12} /> Métier Secondaire
+                  </span>
+                )}
+                {item.fortune_score !== null && item.fortune_score !== undefined && !item.is_secondaire && (
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 shadow-sm">
+                    <Coins size={12} /> Fortune {item.fortune_score}
+                  </span>
+                )}
+                {item.fortune_bonus !== null && item.fortune_bonus !== undefined && item.is_secondaire && (
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 shadow-sm">
+                    <Coins size={12} /> Fortune +{item.fortune_bonus}
+                  </span>
+                )}
+              </>
+            )}
 		  </div>
           {/* Description Narrative (Commune à tous) */}
           <div>
@@ -194,6 +224,82 @@ export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
                 </div>
               </div>
 
+            </div>
+          )}
+
+          {/* ✨ SPÉCIFIQUE AUX ÉLÉMENTS DE VIE SOCIALE */}
+          {activeTab === 'social_items' && (
+            <div className="space-y-4 animate-fade-in">
+              {/* Coûts et Économie */}
+              <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 shadow-sm">
+                <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <Coins size={14} /> Économie
+                </h4>
+                <div className="flex flex-wrap gap-4">
+                  {(item.cout !== null && item.cout !== undefined) && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-600 uppercase">Coût Classique :</span>
+                      <span className="text-sm font-bold text-emerald-900">{item.cout} PP</span>
+                    </div>
+                  )}
+                  {(item.cout_moderne !== null && item.cout_moderne !== undefined) && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-600 uppercase">Coût Moderne :</span>
+                      <span className="text-sm font-bold text-emerald-900">{item.cout_moderne} PP</span>
+                    </div>
+                  )}
+                  {item.is_choix_multiple && (
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-200 px-2 py-1 rounded-md">
+                      Achat Multiple
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Fortune (pour les métiers) */}
+              {item.categorie === 'metier' && (
+                <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm">
+                  <h4 className="text-xs font-bold text-amber-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Crown size={14} /> Fortune
+                  </h4>
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-amber-600 uppercase">Type :</span>
+                      <span className="text-sm font-bold text-amber-900">
+                        {item.is_secondaire ? 'Métier Secondaire' : 'Métier Principal'}
+                      </span>
+                    </div>
+                    {!item.is_secondaire && (item.fortune_score !== null && item.fortune_score !== undefined) && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-amber-600 uppercase">Rang de Fortune :</span>
+                        <span className="text-sm font-bold text-amber-900">{item.fortune_score}</span>
+                      </div>
+                    )}
+                    {item.is_secondaire && (item.fortune_bonus !== null && item.fortune_bonus !== undefined) && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-amber-600 uppercase">Bonus Fortune :</span>
+                        <span className="text-sm font-bold text-amber-900">+{item.fortune_bonus}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Profils Autorisés */}
+              {item.profils_autorises && (
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 shadow-sm">
+                  <h4 className="text-xs font-bold text-blue-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Star size={14} /> Profils Autorisés
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {(Array.isArray(item.profils_autorises) ? item.profils_autorises : JSON.parse(item.profils_autorises || '[]')).map((profil, idx) => (
+                      <span key={idx} className="text-xs font-bold text-blue-700 bg-blue-200 px-2.5 py-1 rounded-md">
+                        {profil}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
