@@ -1,52 +1,90 @@
 // src/components/cercle/GrimoirePersonnel.js
-// 14.6.0
+// 15.17.8
 
 import React, { useState } from 'react';
-import { BookOpen, Users, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X } from '../../config/icons';
+import { BookOpen, Users, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle } from '../../config/icons';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
 
 // ✨ FIX : On réceptionne le characterId
-export default function GrimoirePersonnel({ characterId, cercleId, playerId }) {
+// isAdmin : permet de voir toutes les entrées (lecture seule pour les entrées des autres)
+export default function GrimoirePersonnel({ characterId, cercleId, playerId, isAdmin = false }) {
   const [activeTab, setActiveTab] = useState('notes');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({});
+  const [editingEntry, setEditingEntry] = useState(null); // { id, type } si en mode édition
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // { id, type, name } si confirmation en cours
 
   // ✨ On passe la clé au Cerveau
-  const { notes, contacts, loading, toggleShare, createEntry } = useGrimoire(characterId, cercleId, playerId);
+  const { notes, contacts, loading, toggleShare, createEntry, updateEntry, deleteEntry } = useGrimoire(characterId, cercleId, playerId, isAdmin);
 
-  const handleOpenModal = () => {
-    // 🧠 Logique de la PO : On pré-remplit les clés du JSONB selon l'onglet actif
-    if (activeTab === 'notes') {
-      setFormData({ titre: '', categorie: 'Lieu', contenu: '' });
+  const handleOpenModal = (entry = null) => {
+    if (entry) {
+      // Mode édition : on pré-remplit avec les données existantes
+      setEditingEntry({ id: entry.id, type: entry.type });
+      setFormData({ ...entry.content });
     } else {
-      setFormData({ nom: '', localisation: '', statut_relation: 'Neutre', description: '' });
+      // Mode création
+      setEditingEntry(null);
+      if (activeTab === 'notes') {
+        setFormData({ titre: '', categorie: 'Lieu', contenu: '' });
+      } else {
+        setFormData({ nom: '', localisation: '', statut_relation: 'Neutre', description: '' });
+      }
     }
     setIsModalOpen(true);
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingEntry(null);
+    setFormData({});
+  };
+
   const handleSave = async () => {
     // 🛡️ Bouclier anti-vide
-    if (activeTab === 'notes' && (!formData.titre || !formData.contenu)) {
+    const isNoteMode = editingEntry ? editingEntry.type === 'note' : activeTab === 'notes';
+
+    if (isNoteMode && (!formData.titre || !formData.contenu)) {
       showInAppNotification("Une note nécessite au moins un titre et un contenu !", "warning");
       return;
     }
-    if (activeTab === 'contacts' && !formData.nom) {
+    if (!isNoteMode && !formData.nom) {
       showInAppNotification("Comment s'appelle ce contact ?", "warning");
       return;
     }
 
     setIsSubmitting(true);
-    
-    // ✨ FIX : Le Traducteur Singulier/Pluriel !
-    // On convertit le nom de notre onglet en valeur stricte pour la base de données.
-    const dbType = activeTab === 'notes' ? 'note' : 'contact';
-    
-    const success = await createEntry(dbType, formData);
+
+    const dbType = isNoteMode ? 'note' : 'contact';
+
+    let success;
+    if (editingEntry) {
+      // Mode édition
+      success = await updateEntry(editingEntry.id, editingEntry.type, formData);
+    } else {
+      // Mode création
+      success = await createEntry(dbType, formData);
+    }
+
     setIsSubmitting(false);
 
-    if (success) setIsModalOpen(false);
+    if (success) handleCloseModal();
+  };
+
+  const handleDeleteClick = (entry, name) => {
+    const isLinkedToSocialItem = entry.content?.source_social_item_id != null;
+    setDeleteConfirm({ id: entry.id, type: entry.type, name, isLinkedToSocialItem });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirm) return;
+
+    setIsSubmitting(true);
+    await deleteEntry(deleteConfirm.id, deleteConfirm.type);
+    setIsSubmitting(false);
+    setDeleteConfirm(null);
   };
 
   return (
@@ -137,18 +175,34 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId }) {
 												{data.contenu || "Le texte s'est effacé..."}
 											</p>
 
-											{/* 🧠 Bouton de partage conditionnel (Hybride Solo/Cercle) */}
-											{isMine && cercleId && (
-												<div className="mt-2 pt-3 border-t border-stone-100 flex justify-end">
-													<button
-														onClick={() => toggleShare(note.id, note.is_shared)}
-														className={`text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm border ${note.is_shared
-																? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
-																: 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
-															}`}
-													>
-														{note.is_shared ? <><Share2 size={14} /> Rendu public au Cercle</> : <><Lock size={14} /> Gardé secret</>}
-													</button>
+											{/* 🧠 Boutons d'action (Édition, Suppression, Partage) */}
+											{isMine && (
+												<div className="mt-2 pt-3 border-t border-stone-100 flex justify-between items-center">
+													<div className="flex gap-2">
+														<button
+															onClick={() => handleOpenModal(note)}
+															className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm border bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+														>
+															<Edit size={14} /> Modifier
+														</button>
+														<button
+															onClick={() => handleDeleteClick(note, data.titre)}
+															className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm border bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+														>
+															<Trash2 size={14} /> Supprimer
+														</button>
+													</div>
+													{cercleId && (
+														<button
+															onClick={() => toggleShare(note.id, note.is_shared)}
+															className={`text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm border ${note.is_shared
+																	? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+																	: 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
+																}`}
+														>
+															{note.is_shared ? <><Share2 size={14} /> Public</> : <><Lock size={14} /> Secret</>}
+														</button>
+													)}
 												</div>
 											)}
 										</div>
@@ -201,18 +255,34 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId }) {
 												{data.description || "Aucune description."}
 											</p>
 
-											{/* 🧠 Bouton de partage (Affiché UNIQUEMENT si le joueur est le propriétaire) */}
-											{isMine && cercleId && (
-												<div className="mt-2 pt-3 border-t border-stone-100 flex justify-end">
-													<button
-														onClick={() => toggleShare(contact.id, contact.is_shared)}
-														className={`text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm border ${contact.is_shared
-																? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
-																: 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
-															}`}
-													>
-														{contact.is_shared ? <><Share2 size={14} /> Rendu public au Cercle</> : <><Lock size={14} /> Gardé secret</>}
-													</button>
+											{/* 🧠 Boutons d'action (Édition, Suppression, Partage) */}
+											{isMine && (
+												<div className="mt-2 pt-3 border-t border-stone-100 flex justify-between items-center">
+													<div className="flex gap-2">
+														<button
+															onClick={() => handleOpenModal(contact)}
+															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+														>
+															<Edit size={12} />
+														</button>
+														<button
+															onClick={() => handleDeleteClick(contact, data.nom)}
+															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+														>
+															<Trash2 size={12} />
+														</button>
+													</div>
+													{cercleId && (
+														<button
+															onClick={() => toggleShare(contact.id, contact.is_shared)}
+															className={`text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border ${contact.is_shared
+																	? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+																	: 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
+																}`}
+														>
+															{contact.is_shared ? <Share2 size={12} /> : <Lock size={12} />}
+														</button>
+													)}
 												</div>
 											)}
 										</div>
@@ -225,21 +295,24 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId }) {
 			)}
 		</div>
 			
-      {/* 3. MODALE IMMERSIVE DE CRÉATION (DYNAMIQUE) */}
+      {/* 3. MODALE IMMERSIVE DE CRÉATION/ÉDITION (DYNAMIQUE) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-[#fdfbf7] max-w-lg w-full rounded-2xl shadow-2xl border-4 border-amber-900/20 overflow-hidden transform animate-fade-in-up">
-            
+
             <div className="bg-amber-900 text-amber-50 p-4 border-b-4 border-amber-700 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">
-                {activeTab === 'notes' ? <BookOpen size={20}/> : <Users size={20}/>}
-                {activeTab === 'notes' ? 'Consigner une pensée' : 'Archiver un contact'}
+                {(editingEntry?.type === 'note' || (!editingEntry && activeTab === 'notes')) ? <BookOpen size={20}/> : <Users size={20}/>}
+                {editingEntry
+                  ? (editingEntry.type === 'note' ? 'Modifier la note' : 'Modifier le contact')
+                  : (activeTab === 'notes' ? 'Consigner une pensée' : 'Archiver un contact')
+                }
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="hover:text-red-400 transition-colors"><X size={20}/></button>
+              <button onClick={handleCloseModal} className="hover:text-red-400 transition-colors"><X size={20}/></button>
             </div>
 
             <div className="p-6 space-y-4">
-              {activeTab === 'notes' ? (
+              {(editingEntry?.type === 'note' || (!editingEntry && activeTab === 'notes')) ? (
                 <>
                   <div className="flex gap-3">
                     <div className="flex-1">
@@ -290,13 +363,64 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId }) {
               )}
 
               <div className="mt-6 flex gap-3 pt-4 border-t border-stone-200">
-                <button onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-xl font-bold transition-colors">Annuler</button>
+                <button onClick={handleCloseModal} className="flex-1 py-3 text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-xl font-bold transition-colors">Annuler</button>
                 <button onClick={handleSave} disabled={isSubmitting} className="flex-1 py-3 bg-amber-700 hover:bg-amber-800 text-white rounded-xl font-bold transition-colors shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
-                  <Save size={18} /> {isSubmitting ? 'Gravure...' : 'Graver la page'}
+                  <Save size={18} /> {isSubmitting ? 'Gravure...' : (editingEntry ? 'Enregistrer' : 'Graver la page')}
                 </button>
               </div>
             </div>
-            
+
+          </div>
+        </div>
+      )}
+
+      {/* 4. MODALE DE CONFIRMATION DE SUPPRESSION */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-4 border-red-200 overflow-hidden transform animate-fade-in-up">
+
+            <div className="bg-red-700 text-red-50 p-4 border-b-4 border-red-800 flex justify-between items-center">
+              <h3 className="font-serif font-bold text-lg flex items-center gap-2">
+                <AlertTriangle size={20} /> Confirmer la suppression
+              </h3>
+              <button onClick={() => setDeleteConfirm(null)} className="hover:text-red-200 transition-colors"><X size={20}/></button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <p className="text-stone-700 font-serif text-center">
+                Êtes-vous certain de vouloir arracher cette page du Grimoire ?
+              </p>
+              <p className="text-center font-bold text-red-800 bg-red-50 p-3 rounded-lg border border-red-200">
+                "{deleteConfirm.name}"
+              </p>
+
+              {/* ⚠️ Avertissement si lié à un achat Vie Sociale */}
+              {deleteConfirm.isLinkedToSocialItem && (
+                <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-3 text-center">
+                  <p className="text-amber-800 font-bold text-sm flex items-center justify-center gap-2">
+                    <AlertTriangle size={16} /> Contact lié à un achat
+                  </p>
+                  <p className="text-amber-700 text-xs mt-1">
+                    Ce contact a été créé automatiquement depuis la Vie Sociale.
+                    Il sera recréé si vous sauvegardez à nouveau le personnage avec cet achat.
+                  </p>
+                </div>
+              )}
+
+              <p className="text-xs text-stone-500 text-center italic">
+                Cette action est irréversible.
+              </p>
+
+              <div className="mt-6 flex gap-3 pt-4 border-t border-stone-200">
+                <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3 text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-xl font-bold transition-colors">
+                  Annuler
+                </button>
+                <button onClick={handleConfirmDelete} disabled={isSubmitting} className="flex-1 py-3 bg-red-700 hover:bg-red-800 text-white rounded-xl font-bold transition-colors shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
+                  <Trash2 size={18} /> {isSubmitting ? 'Suppression...' : 'Supprimer'}
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       )}

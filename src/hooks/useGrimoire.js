@@ -6,7 +6,8 @@ import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
 
 // ✨ FIX : On demande en priorité la clé de l'Héritier !
-export function useGrimoire(characterId, cercleId, playerId) {
+// isAdmin : permet de voir toutes les entrées sans filtre player_id
+export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
   const [notes, setNotes] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,11 +15,15 @@ export function useGrimoire(characterId, cercleId, playerId) {
   const fetchGrimoire = useCallback(async () => {
     if (!characterId) return;
     setLoading(true);
-    
+
     // 🧠 Requête Hybride : Nos notes personnelles OU les notes partagées du Cercle
+    // 👑 Si admin : on voit TOUT le Grimoire du personnage
     let query = supabase.from('heritier_notes').select('*');
-    
-    if (cercleId) {
+
+    if (isAdmin) {
+      // Admin voit toutes les entrées du personnage
+      query = query.eq('character_id', characterId);
+    } else if (cercleId) {
       query = query.or(`character_id.eq.${characterId},cercle_id.eq.${cercleId}`);
     } else {
       query = query.eq('character_id', characterId);
@@ -33,7 +38,7 @@ export function useGrimoire(characterId, cercleId, playerId) {
       setContacts(data.filter(n => n.type === 'contact'));
     }
     setLoading(false);
-  }, [characterId, cercleId]);
+  }, [characterId, cercleId, isAdmin]);
 
   useEffect(() => {
     fetchGrimoire();
@@ -92,5 +97,50 @@ export function useGrimoire(characterId, cercleId, playerId) {
     }
   };
 
-  return { notes, contacts, loading, toggleShare, refetch: fetchGrimoire, createEntry };
+  const updateEntry = async (entryId, type, contentData) => {
+    // On préserve la date de création originale
+    const { data, error } = await supabase
+      .from('heritier_notes')
+      .update({ content: contentData })
+      .eq('id', entryId)
+      .eq('player_id', playerId) // 🛡️ Sécurité : on ne peut modifier que ses propres entrées
+      .select()
+      .single();
+
+    if (!error && data) {
+      if (type === 'note') {
+        setNotes(prev => prev.map(n => n.id === entryId ? data : n));
+      } else {
+        setContacts(prev => prev.map(c => c.id === entryId ? data : c));
+      }
+      showInAppNotification("La page a été corrigée avec succès !", "success");
+      return true;
+    } else {
+      showInAppNotification("Impossible de modifier cette entrée : " + error?.message, "error");
+      return false;
+    }
+  };
+
+  const deleteEntry = async (entryId, type) => {
+    const { error } = await supabase
+      .from('heritier_notes')
+      .delete()
+      .eq('id', entryId)
+      .eq('player_id', playerId); // 🛡️ Sécurité : on ne peut supprimer que ses propres entrées
+
+    if (!error) {
+      if (type === 'note') {
+        setNotes(prev => prev.filter(n => n.id !== entryId));
+      } else {
+        setContacts(prev => prev.filter(c => c.id !== entryId));
+      }
+      showInAppNotification("La page a été arrachée du Grimoire.", "info");
+      return true;
+    } else {
+      showInAppNotification("Impossible de supprimer cette entrée : " + error?.message, "error");
+      return false;
+    }
+  };
+
+  return { notes, contacts, loading, toggleShare, refetch: fetchGrimoire, createEntry, updateEntry, deleteEntry };
 }

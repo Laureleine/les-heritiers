@@ -21,6 +21,7 @@ const REPAIR_LABEL = {
 const CharacterCard = React.memo(({
   char,
   isMyCharacter,
+  isAdmin,
   userProfile,
   profils,
   gameData,
@@ -172,6 +173,12 @@ const CharacterCard = React.memo(({
             </>
           ) : (
             <>
+              {/* 👁️ Bouton Grimoire pour Admin sur les persos des autres */}
+              {isAdmin && (
+                <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-amber-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors" title="Voir le Grimoire Personnel (Admin)">
+                  <BookOpen size={15}/>
+                </button>
+              )}
               <button onClick={() => onAppropriate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Adopter cet Héritage (Cloner dans mon Grimoire)">
                 <Copy size={15}/>
               </button>

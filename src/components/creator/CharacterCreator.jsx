@@ -6,6 +6,7 @@ import { exportToPDF } from '../../utils/pdfGenerator';
 import { useCharacter } from '../../context/CharacterContext';
 import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
+import { flushContactsToGrimoire, clearContactSyncQueue } from '../../utils/contactSyncQueue';
 import { getXpState } from '../../utils/xpActions';
 import { STEP_CONFIG } from '../../data/DictionnaireJeu';
 import JournalAmeModal from '../JournalAmeModal';
@@ -70,6 +71,9 @@ export default function CharacterCreator({ session, userProfile }) {
       const saved = await saveCharacterToSupabase(character);
       dispatchCharacter({ type: 'UPDATE_FIELD', field: 'id', value: saved.id, gameData });
       showInAppNotification("✓ L'Héritier a été sauvegardé avec succès !", "success");
+
+      // 📓 Synchronisation des contacts vers le Grimoire Personnel
+      await flushContactsToGrimoire(saved.id, character.userId);
     } catch (e) {
       showInAppNotification("Les fluides éthérés refusent l'enregistrement : " + e.message, "error");
     }
@@ -102,9 +106,15 @@ export default function CharacterCreator({ session, userProfile }) {
   }, [character, dispatchCharacter, gameData, isReadOnly, session]);
 
   const handleBackToArchives = () => {
+    clearContactSyncQueue(); // 📓 Vider la queue si on quitte sans sauvegarder
     dispatchCharacter({ type: 'RESET_CHARACTER', payload: {} });
     navigate(location.state?.from || '/');
   };
+
+  // 📓 Nettoyage de la queue si le composant se démonte sans sauvegarde
+  useEffect(() => {
+    return () => clearContactSyncQueue();
+  }, []);
 
   const stepComponents = useMemo(() => ({
     1: <Step1 />, 2: <StepCapacites />, 3: <StepPouvoirs />, 4: <StepAtouts />,

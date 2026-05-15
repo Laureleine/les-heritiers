@@ -6,6 +6,7 @@ import { getFortuneCost } from '../../utils/xpCalculator';
 import { isCharacterScelle } from '../../utils/lockUtils';
 import { safeParse, safeParseArray } from '../../utils/json';
 import { getXpState, XP_CODES } from '../../utils/xpActions';
+import { queueContactSync } from '../../utils/contactSyncQueue';
 
 export function useVieSociale() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -232,26 +233,34 @@ export function useVieSociale() {
             // 🔄 MODE ACHAT MULTIPLE (+ / -)
             if (action === 'remove') {
                 const index = currentProfilAchats.lastIndexOf(item.id);
-                if (index !== -1) currentProfilAchats.splice(index, 1);
+                if (index !== -1) {
+                    currentProfilAchats.splice(index, 1);
+                    // 📓 Queue Grimoire : Suppression d'un contact multiple
+                    if (isContact) queueContactSync(item, 'remove', true);
+                }
             } else if (action === 'add') {
                 if (budgetDispo < finalCost) {
                     showInAppNotification(isContact ? "Fonds insuffisants pour ce contact." : "Fonds insuffisants dans ce profil.", "error");
                     return;
                 }
                 currentProfilAchats.push(item.id);
+                // 📓 Queue Grimoire : Ajout d'un contact multiple
+                if (isContact) queueContactSync(item, 'add', true);
             }
         } else {
             // 🎭 MODE UNIQUE (Toggle Classique)
             const isOwned = currentProfilAchats.includes(item.id);
-            
+
             if (isOwned) {
                 currentProfilAchats = currentProfilAchats.filter(id => id !== item.id);
+                // 📓 Queue Grimoire : Suppression d'un contact unique
+                if (isContact) queueContactSync(item, 'remove', false);
             } else {
                 if (budgetDispo < finalCost) {
                     showInAppNotification(isContact ? "Fonds insuffisants pour ce contact." : "Fonds insuffisants dans ce profil.", "error");
                     return;
                 }
-                
+
                 // Exclusivité des métiers principaux (On ne peut en avoir qu'un seul)
                 if (item.categorie === 'metier' && item.is_secondaire === false) {
                     Object.keys(newAchats).forEach(pKey => {
@@ -266,6 +275,8 @@ export function useVieSociale() {
                     currentProfilAchats = newAchats[profilNom] || [];
                 }
                 currentProfilAchats.push(item.id);
+                // 📓 Queue Grimoire : Ajout d'un contact unique
+                if (isContact) queueContactSync(item, 'add', false);
             }
         }
 
