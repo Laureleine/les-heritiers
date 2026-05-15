@@ -2,7 +2,7 @@
 // 15.17.8
 
 import React, { useState } from 'react';
-import { BookOpen, Users, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle } from '../../config/icons';
+import { BookOpen, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle } from '../../config/icons';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
 
@@ -17,7 +17,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
   const [deleteConfirm, setDeleteConfirm] = useState(null); // { id, type, name } si confirmation en cours
 
   // ✨ On passe la clé au Cerveau
-  const { notes, contacts, loading, toggleShare, createEntry, updateEntry, deleteEntry } = useGrimoire(characterId, cercleId, playerId, isAdmin);
+  const { notes, contacts, possessions, loading, toggleShare, createEntry, updateEntry, deleteEntry } = useGrimoire(characterId, cercleId, playerId, isAdmin);
 
   const handleOpenModal = (entry = null) => {
     if (entry) {
@@ -29,8 +29,10 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
       setEditingEntry(null);
       if (activeTab === 'notes') {
         setFormData({ titre: '', categorie: 'Lieu', contenu: '' });
-      } else {
+      } else if (activeTab === 'contacts') {
         setFormData({ nom: '', localisation: '', statut_relation: 'Neutre', description: '' });
+      } else {
+        setFormData({ nom: '', description: '' });
       }
     }
     setIsModalOpen(true);
@@ -44,20 +46,21 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
   const handleSave = async () => {
     // 🛡️ Bouclier anti-vide
-    const isNoteMode = editingEntry ? editingEntry.type === 'note' : activeTab === 'notes';
+    const activeType = editingEntry ? editingEntry.type : (activeTab === 'notes' ? 'note' : activeTab === 'contacts' ? 'contact' : 'possession');
+    const isNoteMode = activeType === 'note';
 
     if (isNoteMode && (!formData.titre || !formData.contenu)) {
       showInAppNotification("Une note nécessite au moins un titre et un contenu !", "warning");
       return;
     }
     if (!isNoteMode && !formData.nom) {
-      showInAppNotification("Comment s'appelle ce contact ?", "warning");
+      showInAppNotification(activeType === 'contact' ? "Comment s'appelle ce contact ?" : "Comment s'appelle cet objet ?", "warning");
       return;
     }
 
     setIsSubmitting(true);
 
-    const dbType = isNoteMode ? 'note' : 'contact';
+    const dbType = activeType;
 
     let success;
     if (editingEntry) {
@@ -111,11 +114,17 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
         >
           Notes Narratives
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('contacts')}
           className={`flex-1 py-3 font-serif font-bold flex items-center justify-center gap-2 transition-colors ${activeTab === 'contacts' ? 'bg-white text-amber-900 border-t-2 border-t-amber-600' : 'text-amber-700 hover:bg-amber-100'}`}
         >
           <Users size={18} /> Visages Rencontrés
+        </button>
+        <button
+          onClick={() => setActiveTab('possessions')}
+          className={`flex-1 py-3 font-serif font-bold flex items-center justify-center gap-2 transition-colors ${activeTab === 'possessions' ? 'bg-white text-amber-900 border-t-2 border-t-amber-600' : 'text-amber-700 hover:bg-amber-100'}`}
+        >
+          <Package size={18} /> Trésors & Possessions
         </button>
       </div>
 
@@ -279,10 +288,52 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 							</div>
 						)
 					)}
+						{/* ONGLET 3 : LES POSSESSIONS */}
+						{activeTab === 'possessions' && (
+							possessions.length === 0 ? (
+								<div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4">
+									<Package size={48} className="opacity-20" />
+									<p className="font-serif italic text-lg">Aucune possession consignée.</p>
+								</div>
+							) : (
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									{possessions.map((possession) => {
+										const isMine = possession.player_id === playerId;
+										const data = possession.content || {};
+										return (
+											<div key={possession.id} className="p-4 border border-stone-200 rounded-xl bg-white shadow-sm flex flex-col gap-3 relative overflow-hidden hover:shadow-md transition-shadow">
+												<h4 className="font-serif font-bold text-lg text-amber-900">{data.nom || 'Objet sans nom'}</h4>
+												{data.description && (
+													<p className="text-sm text-stone-600 italic flex-1 bg-stone-50 p-2 rounded border border-stone-100">
+														{data.description}
+													</p>
+												)}
+												{isMine && (
+													<div className="mt-2 pt-3 border-t border-stone-100 flex gap-2">
+														<button
+															onClick={() => handleOpenModal(possession)}
+															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+														>
+															<Edit size={12} />
+														</button>
+														<button
+															onClick={() => handleDeleteClick(possession, data.nom)}
+															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+														>
+															<Trash2 size={12} />
+														</button>
+													</div>
+												)}
+											</div>
+										);
+									})}
+								</div>
+							)
+						)}
 				</>
 			)}
 		</div>
-			
+
       {/* 3. MODALE IMMERSIVE DE CRÉATION/ÉDITION (DYNAMIQUE) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
@@ -290,17 +341,28 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
             <div className="bg-amber-900 text-amber-50 p-4 border-b-4 border-amber-700 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">
-                {(editingEntry?.type === 'note' || (!editingEntry && activeTab === 'notes')) ? <BookOpen size={20}/> : <Users size={20}/>}
+                {(editingEntry?.type === 'note' || (!editingEntry && activeTab === 'notes')) ? <BookOpen size={20}/> : (editingEntry?.type === 'possession' || (!editingEntry && activeTab === 'possessions')) ? <Package size={20}/> : <Users size={20}/>}
                 {editingEntry
-                  ? (editingEntry.type === 'note' ? 'Modifier la note' : 'Modifier le contact')
-                  : (activeTab === 'notes' ? 'Consigner une pensée' : 'Archiver un contact')
+                  ? (editingEntry.type === 'note' ? 'Modifier la note' : editingEntry.type === 'possession' ? 'Modifier la possession' : 'Modifier le contact')
+                  : (activeTab === 'notes' ? 'Consigner une pensée' : activeTab === 'possessions' ? 'Archiver une possession' : 'Archiver un contact')
                 }
               </h3>
               <button onClick={handleCloseModal} className="hover:text-red-400 transition-colors"><X size={20}/></button>
             </div>
 
             <div className="p-6 space-y-4">
-              {(editingEntry?.type === 'note' || (!editingEntry && activeTab === 'notes')) ? (
+              {(editingEntry?.type === 'possession' || (!editingEntry && activeTab === 'possessions')) ? (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">Nom de l'objet</label>
+                    <input type="text" autoFocus value={formData.nom || ''} onChange={e => setFormData({...formData, nom: e.target.value})} className="w-full p-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 outline-none font-bold text-stone-800 bg-white" placeholder="Ex: Revolver à barillet, Grimoire d'alchimie..."/>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">Description</label>
+                    <textarea value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full h-28 p-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 outline-none font-serif text-stone-700 resize-none custom-scrollbar bg-white" placeholder="Décrivez cet objet, son origine, ses particularités..."/>
+                  </div>
+                </>
+              ) : (editingEntry?.type === 'note' || (!editingEntry && activeTab === 'notes')) ? (
                 <>
                   <div className="flex gap-3">
                     <div className="flex-1">

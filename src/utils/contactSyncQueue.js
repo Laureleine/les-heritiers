@@ -14,8 +14,8 @@ let pendingQueue = [];
  * @param {string} action - 'add' ou 'remove'
  * @param {boolean} isMultiple - Si le contact est un achat multiple
  */
-export const queueContactSync = (item, action, isMultiple = false) => {
-    pendingQueue.push({ item, action, isMultiple });
+export const queueContactSync = (item, action, isMultiple = false, itemType = 'contact') => {
+    pendingQueue.push({ item, action, isMultiple, itemType });
 
     if (action === 'add') {
         showInAppNotification(`📓 ${item.nom} sera ajouté au Grimoire à la sauvegarde`, "info");
@@ -37,51 +37,52 @@ export const flushContactsToGrimoire = async (characterId, userId) => {
 
     if (queue.length === 0) return;
 
-    for (const { item, action, isMultiple } of queue) {
+    for (const { item, action, isMultiple, itemType = 'contact' } of queue) {
         try {
             if (action === 'add') {
-                // Pour les contacts uniques, vérifier s'il existe déjà
                 if (!isMultiple) {
                     const { data: existing } = await supabase
                         .from('heritier_notes')
                         .select('id')
                         .eq('character_id', characterId)
-                        .eq('type', 'contact')
+                        .eq('type', itemType)
                         .eq('content->>nom', item.nom)
                         .limit(1);
 
-                    if (existing && existing.length > 0) {
-                        // Contact déjà existant, on ne recrée pas
-                        continue;
-                    }
+                    if (existing && existing.length > 0) continue;
                 }
 
-                // Créer l'entrée dans le Grimoire
-                const payload = {
-                    character_id: characterId,
-                    player_id: userId,
-                    cercle_id: null,
-                    type: 'contact',
-                    content: {
+                const content = itemType === 'possession'
+                    ? {
+                        nom: item.nom,
+                        description: item.description || '',
+                        date_creation: new Date().toISOString(),
+                        source_social_item_id: item.id
+                    }
+                    : {
                         nom: item.nom,
                         description: item.description || '',
                         localisation: '',
                         statut_relation: 'Contact',
                         date_creation: new Date().toISOString(),
                         source_social_item_id: item.id
-                    },
-                    is_shared: false
-                };
+                    };
 
-                await supabase.from('heritier_notes').insert([payload]);
+                await supabase.from('heritier_notes').insert([{
+                    character_id: characterId,
+                    player_id: userId,
+                    cercle_id: null,
+                    type: itemType,
+                    content,
+                    is_shared: false
+                }]);
 
             } else if (action === 'remove') {
-                // Supprimer l'entrée correspondante du Grimoire
                 const { data: toDelete } = await supabase
                     .from('heritier_notes')
                     .select('id')
                     .eq('character_id', characterId)
-                    .eq('type', 'contact')
+                    .eq('type', itemType)
                     .eq('content->>nom', item.nom)
                     .limit(1);
 
@@ -90,7 +91,7 @@ export const flushContactsToGrimoire = async (characterId, userId) => {
                 }
             }
         } catch (error) {
-            console.error('Erreur sync contact:', error);
+            console.error('Erreur sync grimoire:', error);
         }
     }
 
