@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.9 - "Le Cabinet des Merveilles 📦"',
+    date: '16 Mai 2026',
+    description: 'Les Grimoires s\'enrichissent d\'un troisième registre : les Trésors & Possessions, alimentés directement depuis les achats de la Vie Sociale. Les doublons sont effacés, les badges intempestifs disparaissent.',
+    changes: [
+      '📦 **Trésors & Possessions (Nouveau) :** Un troisième onglet fait son entrée dans le Grimoire Personnel. Chaque objet acheté dans la Vie Sociale — arme ancestrale, fiacre personnel, bibliothèque occulte — y est désormais consigné automatiquement à la sauvegarde. Les 433 possessions des Héritiers existants ont été rétroactivement archivées.',
+      '🔄 **Synchronisation en temps réel :** Acheter ou retirer un objet dans la Vie Sociale met à jour le Grimoire à la prochaine sauvegarde, sans doublon ni perte. La mécanique est identique à celle des Contacts.',
+      '🧹 **Assainissement des Grimoires :** 210 contacts en double ont été supprimés. Un bug du contrôle anti-doublon (lecture du mauvais champ) était la cause — corrigé définitivement.',
+      '🏷️ **Suppression du badge "Partagé par le Cercle" :** Cette mention apparaissait par erreur sur toutes les entrées des Grimoires consultés en mode Admin. Le Grimoire d\'un Héritier vous appartient — inutile de vous le rappeler à chaque ligne.',
+    ]
+  },
+  {
     version: '15.17.8 - "L\'Œil Omniscient 👁️"',
     date: '15 Mai 2026',
     description: 'Le Super Admin accède à tous les Grimoires, les contacts s\'inscrivent automatiquement, et les entrées sont modifiables.',
