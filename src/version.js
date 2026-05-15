@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.17.6 - "Le Puits Visible 🔮"',
+    date: '14 Mai 2026',
+    description: 'Le Puits des Âmes est désormais visible en consultation mais verrouillé : les boutons +/− sont désactivés, seul le Registre reste accessible.',
+    changes: [
+      '🔮 **Puits des Âmes visible en lecture seule :** Le bandeau apparaît pour tous les observateurs d\'un personnage scellé, mais les boutons d\'ajustement (`−1`, `+1`, `+5`) sont désactivés avec un curseur "interdit" et une opacité réduite.',
+      '📖 **Registre toujours accessible :** Le bouton "Registre" (Journal des Flux de l\'Âme) reste cliquable en consultation — chacun peut consulter l\'historique des XP.',
+      '🛡️ **Double garde :** Les boutons sont protégés côté UI (`disabled`) et côté logique (`return` silencieux dans `handleAdjustXP`) pour empêcher toute modification en lecture seule.',
+    ]
+  },  {
     version: '15.17.5 - "Le Grand Livre des Comptes 📖"',
     date: '14 Mai 2026',
     description: 'Correction de deux bugs bloquants sur les boutons − XP : le retrait n\'atteignait jamais le négatif et le −1 dans l\'éditeur augmentait les XP disponibles.',
