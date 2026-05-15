@@ -145,12 +145,6 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
 									return (
 										<div key={note.id} className="p-5 border border-stone-200 rounded-xl bg-white shadow-sm flex flex-col gap-3 relative overflow-hidden hover:shadow-md transition-shadow">
-											{/* 🛡️ Badge de provenance (Si la note appartient à un camarade) */}
-											{!isMine && (
-												<div className="absolute top-0 right-0 bg-blue-100 text-blue-800 text-[10px] font-bold px-3 py-1 rounded-bl-xl flex items-center gap-1 shadow-sm">
-													<Share2 size={10} /> Partagé par le Cercle
-												</div>
-											)}
 
 											{/* EN-TÊTE DE LA NOTE */}
 											<div className="flex justify-between items-start">
@@ -228,12 +222,6 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
 									return (
 										<div key={contact.id} className="p-4 border border-stone-200 rounded-xl bg-white shadow-sm flex flex-col gap-3 relative overflow-hidden hover:shadow-md transition-shadow">
-											{/* 🛡️ Badge de provenance (Si ça vient d'un autre joueur) */}
-											{!isMine && (
-												<div className="absolute top-0 right-0 bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-1 rounded-bl-lg flex items-center gap-1 shadow-sm">
-													<Share2 size={10} /> Partagé par le Cercle
-												</div>
-											)}
 
 											<div className="flex justify-between items-start">
 												<div className="pr-6">
