@@ -217,6 +217,7 @@ export function useVieSociale() {
         const baseCost = getItemCost(item.id, profilNom);
         const isMultiple = item.is_choix_multiple;
         const isContact = item.categorie === 'contact';
+        const isObjet = item.categorie === 'objet';
 
         const itemKey = `${item.nom} (${item.cout ?? 0} PP)`;
         const modifiedCost = character.computedStats?.priceModifiers?.[itemKey]
@@ -235,8 +236,8 @@ export function useVieSociale() {
                 const index = currentProfilAchats.lastIndexOf(item.id);
                 if (index !== -1) {
                     currentProfilAchats.splice(index, 1);
-                    // 📓 Queue Grimoire : Suppression d'un contact multiple
                     if (isContact) queueContactSync(item, 'remove', true);
+                    if (isObjet) queueContactSync(item, 'remove', true, 'possession');
                 }
             } else if (action === 'add') {
                 if (budgetDispo < finalCost) {
@@ -244,8 +245,8 @@ export function useVieSociale() {
                     return;
                 }
                 currentProfilAchats.push(item.id);
-                // 📓 Queue Grimoire : Ajout d'un contact multiple
                 if (isContact) queueContactSync(item, 'add', true);
+                if (isObjet) queueContactSync(item, 'add', true, 'possession');
             }
         } else {
             // 🎭 MODE UNIQUE (Toggle Classique)
@@ -253,8 +254,8 @@ export function useVieSociale() {
 
             if (isOwned) {
                 currentProfilAchats = currentProfilAchats.filter(id => id !== item.id);
-                // 📓 Queue Grimoire : Suppression d'un contact unique
                 if (isContact) queueContactSync(item, 'remove', false);
+                if (isObjet) queueContactSync(item, 'remove', false, 'possession');
             } else {
                 if (budgetDispo < finalCost) {
                     showInAppNotification(isContact ? "Fonds insuffisants pour ce contact." : "Fonds insuffisants dans ce profil.", "error");
@@ -275,8 +276,8 @@ export function useVieSociale() {
                     currentProfilAchats = newAchats[profilNom] || [];
                 }
                 currentProfilAchats.push(item.id);
-                // 📓 Queue Grimoire : Ajout d'un contact unique
                 if (isContact) queueContactSync(item, 'add', false);
+                if (isObjet) queueContactSync(item, 'add', false, 'possession');
             }
         }
 

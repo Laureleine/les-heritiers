@@ -10,6 +10,7 @@ import { showInAppNotification } from '../utils/SystemeServices';
 export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
   const [notes, setNotes] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [possessions, setPossessions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchGrimoire = useCallback(async () => {
@@ -36,6 +37,7 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
     } else if (data) {
       setNotes(data.filter(n => n.type === 'note'));
       setContacts(data.filter(n => n.type === 'contact'));
+      setPossessions(data.filter(n => n.type === 'possession'));
     }
     setLoading(false);
   }, [characterId, cercleId, isAdmin]);
@@ -88,7 +90,8 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
 
     if (!error && data) {
       if (type === 'note') setNotes(prev => [data, ...prev]);
-      else setContacts(prev => [data, ...prev]);
+      else if (type === 'contact') setContacts(prev => [data, ...prev]);
+      else setPossessions(prev => [data, ...prev]);
       showInAppNotification("L'encre a séché. Votre page est sauvegardée !", "success");
       return true;
     } else {
@@ -110,8 +113,10 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
     if (!error && data) {
       if (type === 'note') {
         setNotes(prev => prev.map(n => n.id === entryId ? data : n));
-      } else {
+      } else if (type === 'contact') {
         setContacts(prev => prev.map(c => c.id === entryId ? data : c));
+      } else {
+        setPossessions(prev => prev.map(p => p.id === entryId ? data : p));
       }
       showInAppNotification("La page a été corrigée avec succès !", "success");
       return true;
@@ -131,8 +136,10 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
     if (!error) {
       if (type === 'note') {
         setNotes(prev => prev.filter(n => n.id !== entryId));
-      } else {
+      } else if (type === 'contact') {
         setContacts(prev => prev.filter(c => c.id !== entryId));
+      } else {
+        setPossessions(prev => prev.filter(p => p.id !== entryId));
       }
       showInAppNotification("La page a été arrachée du Grimoire.", "info");
       return true;
@@ -142,5 +149,5 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
     }
   };
 
-  return { notes, contacts, loading, toggleShare, refetch: fetchGrimoire, createEntry, updateEntry, deleteEntry };
+  return { notes, contacts, possessions, loading, toggleShare, refetch: fetchGrimoire, createEntry, updateEntry, deleteEntry };
 }
