@@ -138,9 +138,11 @@ export function useTelegraphe(session, userProfile) {
     const myId = session?.user?.id;
 
     // ✨ MARQUAGE IMMÉDIAT COMME LU POUR CE CANAL SPÉCIFIQUE
+    // On stocke last_message_at du canal (horloge serveur) + 1ms pour éviter la dérive client/serveur
     if (myId && channel.id) {
-      // +1000ms pour s'assurer que l'horloge passe après le last_message_at
-      const readDate = new Date(Date.now() + 1000).toISOString();
+      const readDate = channel.last_message_at
+        ? new Date(new Date(channel.last_message_at).getTime() + 1).toISOString()
+        : new Date().toISOString();
       localStorage.setItem(`telegraphe_read_${myId}_${channel.id}`, readDate);
       setChannels(prev => prev.map(c => c.id === channel.id ? { ...c, has_unread: false } : c));
     }
