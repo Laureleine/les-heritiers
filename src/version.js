@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.18.3 - "La Lettre Scellée 📨"',
+    date: '16 Mai 2026',
+    description: 'Le système de notifications de mises à jour est pleinement opérationnel : emails envoyés via Mailjet, template redesigné, et corrections de parcours.',
+    changes: [
+      '📨 **Notifications opérationnelles :** Les emails de mise à jour partent réellement. Le blocage venait de clés Mailjet incorrectes côté serveur — corrigé.',
+      '🎨 **Nouveau template email :** Mise en page responsive avec en-tête dégradé, bloc version en vert, changelog en liste propre. Les balises markdown (`**`, backticks) sont converties en HTML.',
+      '🔐 **Auth Edge Function simplifiée :** La vérification JWT (`verify_jwt`) est incompatible avec les nouvelles clés `sb_publishable_` (ES256). Remplacée par une vérification de la clé anon côté fonction.',
+    ]
+  },
+  {
     version: '15.18.2 - "Le Facteur des Ombres 📬"',
     date: '16 Mai 2026',
     description: 'L\'envoi d\'emails de notification passe par Gmail SMTP — aucun service tiers ni domaine personnalisé requis.',
