@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../config/supabase';
-import { Shield, Users, Plus, Key, X, ArrowLeft, Gift } from '../config/icons';
+import { Shield, Users, Plus, Key, X, ArrowLeft } from '../config/icons';
 import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
 import { getFullCharacter } from '../utils/supabaseStorage';
