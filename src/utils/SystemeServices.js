@@ -171,13 +171,14 @@ export const sendNotificationEmail = async (email, version, changelog) => {
   `;
 
   try {
-    const { error } = await supabase.functions.invoke('send-email', {
+    const { data, error } = await supabase.functions.invoke('send-email', {
       body: {
         to: email,
         subject: `Les Héritiers - Version ${version} disponible`,
         html: emailBody
       }
     });
+    console.log('[send-email] réponse:', JSON.stringify(data), '| erreur:', error?.message);
     if (error) throw error;
     return true;
   } catch (error) {
