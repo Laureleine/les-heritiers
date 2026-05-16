@@ -17,18 +17,12 @@ export default function TabNotifications() {
         const loadData = async () => {
             setLoadingStats(true);
 
-            const [{ data: prefsData }, { data: historyData }] = await Promise.all([
-                supabase.from('user_notification_preferences').select('subscribe_to_updates, notify_major_versions, notify_minor_versions').eq('subscribe_to_updates', true),
+            const [{ data: statsData }, { data: historyData }] = await Promise.all([
+                supabase.rpc('get_notification_stats'),
                 supabase.from('notification_history').select('*').order('created_at', { ascending: false }).limit(20)
             ]);
 
-            if (prefsData) {
-                setStats({
-                    total: prefsData.length,
-                    major: prefsData.filter(p => p.notify_major_versions).length,
-                    minor: prefsData.filter(p => p.notify_minor_versions).length,
-                });
-            }
+            if (statsData) setStats(statsData);
 
             if (historyData) setHistory(historyData);
             setLoadingStats(false);
