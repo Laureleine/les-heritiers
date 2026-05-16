@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
+import nodemailer from "npm:nodemailer@6"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +13,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Vérification : seul un super_admin peut envoyer des emails
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Non autorisé' }), {
@@ -53,38 +53,28 @@ Deno.serve(async (req) => {
       })
     }
 
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
-    if (!resendApiKey) {
-      return new Response(JSON.stringify({ error: 'RESEND_API_KEY non configuré dans les secrets Supabase' }), {
+    const gmailAppPassword = Deno.env.get('GMAIL_APP_PASSWORD')
+    if (!gmailAppPassword) {
+      return new Response(JSON.stringify({ error: 'GMAIL_APP_PASSWORD non configuré dans les secrets Supabase' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') ?? 'Les Héritiers <notifications@heritiers.app>'
+    const gmailUser = 'azghal.les.heritiers@gmail.com'
 
-    const resendResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: Array.isArray(to) ? to : [to],
-        subject,
-        html,
-      }),
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: gmailUser, pass: gmailAppPassword },
     })
 
-    const resendData = await resendResponse.json()
+    await transporter.sendMail({
+      from: `Les Héritiers <${gmailUser}>`,
+      to: Array.isArray(to) ? to.join(', ') : to,
+      subject,
+      html,
+    })
 
-    if (!resendResponse.ok) {
-      return new Response(JSON.stringify({ error: resendData }), {
-        status: resendResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    return new Response(JSON.stringify({ success: true, id: resendData.id }), {
+    return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 
