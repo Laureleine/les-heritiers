@@ -171,15 +171,17 @@ export const sendNotificationEmail = async (email, version, changelog) => {
   `;
 
   try {
-    // Force le refresh du token avant d'appeler la fonction
-    await supabase.auth.getUser();
+    // Forcer un refresh explicite pour avoir un token frais garanti
+    const { data: { session: freshSession } } = await supabase.auth.refreshSession();
+    if (!freshSession?.access_token) throw new Error('Impossible de rafraîchir la session.');
 
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: {
         to: email,
         subject: `Les Héritiers - Version ${version} disponible`,
         html: emailBody
-      }
+      },
+      headers: { Authorization: `Bearer ${freshSession.access_token}` }
     });
     console.log('[send-email] réponse:', JSON.stringify(data), '| erreur:', error?.message);
     if (error) throw error;
