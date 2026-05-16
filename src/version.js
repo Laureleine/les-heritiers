@@ -4,9 +4,12 @@ export const VERSION_HISTORY = [
   {
     version: '15.18.1 - "Le Recenseur Fidèle 📊"',
     date: '16 Mai 2026',
-    description: 'Les statistiques d\'abonnement aux notifications affichaient toujours "1" à cause du RLS. Elles sont désormais exactes.',
+    description: 'Le système de notifications de mises à jour est désormais pleinement opérationnel : envoi d\'emails réels via Resend, onglet admin dédié, et statistiques d\'abonnement corrigées.',
     changes: [
-      '📊 **Fix — Statistiques d\'abonnement corrigées :** Le panneau Notifications de l\'admin affichait systématiquement "1 abonné" au lieu des vrais chiffres. Le RLS de la table bloquait la lecture aux seules lignes de l\'utilisateur connecté. Corrigé via une fonction SQL SECURITY DEFINER, comme pour les autres stats admin.',
+      '📧 **Système d\'emails opérationnel :** L\'Edge Function `send-email` est déployée sur Supabase et utilise Resend pour l\'envoi réel. Seul le super_admin peut la déclencher. L\'URL de l\'application dans les emails et l\'endpoint appelé par le frontend étaient des placeholders — corrigés.',
+      '🔔 **Onglet Notifications dans l\'admin :** Un nouvel onglet (super_admin uniquement) centralise les statistiques d\'abonnement, un formulaire d\'envoi avec détection majeure/mineure, et l\'historique des notifications envoyées.',
+      '🐛 **Fix — `getVersionType()` :** La fonction retournait toujours "mineure" à cause d\'indices de tableau incorrects. Corrigé : une version en `.0` est désormais classée majeure, les autres mineures.',
+      '📊 **Fix — Statistiques d\'abonnement :** Le panneau affichait "1 abonné" au lieu des vrais chiffres (6 abonnés réels). Le RLS bloquait la lecture — corrigé via une fonction SQL SECURITY DEFINER.',
     ]
   },
   {
