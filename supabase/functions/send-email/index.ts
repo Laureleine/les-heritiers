@@ -1,6 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
-import nodemailer from "npm:nodemailer@6"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -53,26 +52,39 @@ Deno.serve(async (req) => {
       })
     }
 
-    const gmailAppPassword = Deno.env.get('GMAIL_APP_PASSWORD')
-    if (!gmailAppPassword) {
-      return new Response(JSON.stringify({ error: 'GMAIL_APP_PASSWORD non configuré dans les secrets Supabase' }), {
+    const apiKey = Deno.env.get('MAILJET_API_KEY')
+    const secretKey = Deno.env.get('MAILJET_SECRET_KEY')
+    if (!apiKey || !secretKey) {
+      return new Response(JSON.stringify({ error: 'MAILJET_API_KEY ou MAILJET_SECRET_KEY non configuré' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    const gmailUser = 'azghal.les.heritiers@gmail.com'
+    const recipients = (Array.isArray(to) ? to : [to]).map((email: string) => ({ Email: email }))
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: gmailUser, pass: gmailAppPassword },
+    const mailjetResponse = await fetch('https://api.mailjet.com/v3.1/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${btoa(`${apiKey}:${secretKey}`)}`,
+      },
+      body: JSON.stringify({
+        Messages: [{
+          From: { Email: 'azghal.les.heritiers@gmail.com', Name: 'Les Héritiers' },
+          To: recipients,
+          Subject: subject,
+          HTMLPart: html,
+        }]
+      }),
     })
 
-    await transporter.sendMail({
-      from: `Les Héritiers <${gmailUser}>`,
-      to: Array.isArray(to) ? to.join(', ') : to,
-      subject,
-      html,
-    })
+    const result = await mailjetResponse.json()
+
+    if (!mailjetResponse.ok) {
+      return new Response(JSON.stringify({ error: result }), {
+        status: mailjetResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
