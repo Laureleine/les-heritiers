@@ -12,6 +12,7 @@ import { logger, showInAppNotification, translateError } from '../utils/SystemeS
 import { useCharacter } from '../context/CharacterContext';
 import { submitEncyclopediaProposal } from '../utils/encyclopediaEngine';
 import { supabase } from '../config/supabase';
+import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
 
 export default function EncyclopediaModal({
     activeTab,
@@ -28,7 +29,7 @@ export default function EncyclopediaModal({
     onClose
 }) {
     const { gameData } = useCharacter();
-    const isSuperAdmin = userProfile?.profile?.role === 'super_admin';
+    const isSuperAdmin = checkSuperAdmin(userProfile);
 
     // 🧠 ÉTATS LOCAUX PURIFIÉS (L'autonomie est de retour !)
     const [proposal, setProposal] = useState(editingItem || {});

@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
+import { isAdmin as checkIsAdmin } from '../utils/authRoles';
 
 export function useTelegraphe(session, userProfile) {
   const [channels, setChannels] = useState([]);
@@ -10,7 +11,7 @@ export function useTelegraphe(session, userProfile) {
   const [loading, setLoading] = useState(false);
   const [messageReads, setMessageReads] = useState({});
 
-  const isAdmin = userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien';
+  const isAdmin = checkIsAdmin(userProfile);
   const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin;
 
   const activeChannelRef = useRef(activeChannel);

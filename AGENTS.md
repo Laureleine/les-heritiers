@@ -7,6 +7,12 @@
 - Créer des tests de non-régression à chaque modification significative, sans hésitation.
 - Quand l'utilisateur soumet une idée, toujours affiner en posant toutes les questions pertinentes avant de coder. Se référer aux règles (PDFs, code existant) et proposer différentes alternatives. Ne jamais coder tant que le périmètre n'est pas entièrement couvert et validé.
 
+# Plan DRY
+
+- Un plan DRY détaillé est maintenu dans `DRY_PLAN.md`. Le lire au début de chaque session pour connaître l'avancement des chantiers de refactoring.
+- Avant chaque refacto significatif, créer d'abord les tests de non-régression.
+- Ne pas toucher au code sans avoir les tests verts avant ET après.
+
 # Commands
 
 - `/version` (ou l'utilisateur dit "version") : Exécuter dans l'ordre :
@@ -16,3 +22,4 @@
   4. Rédiger le *Message aux Héritiers* : résumé vulgarisé dans le ton du jeu (Belle Époque, merveilleux, féérique), destiné à être posté sur Discord. Ne jamais mentionner Isabelle.
   5. Commit + push sur `main`.
   6. Vérifier le déploiement Vercel (build vert, site accessible).
+  7. Rédiger un REX (Retour d'EXpérience) de la session dans un fichier dédié (`REX.md` à la racine) : lister les règles, astuces et enseignements pour gagner du temps et être plus efficace lors de la prochaine session.

@@ -3,6 +3,7 @@ import React from 'react';
 import { Feather, Sparkles, Lock, ShieldCheck, Unlock, Trash2, Eye, Users, Coins, Tag } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
 import { safeParseArray } from '../utils/json';
+import { isAdmin, isSuperAdmin } from '../utils/authRoles';
 
 const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onToggleSeal, onDeleteClick, userProfile }) => {
     const title = item.name || item.nom;
@@ -139,7 +140,7 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
             </div>
 
             {/* LE PRIVILÈGE DES GARDIENS */}
-            {(userProfile?.profile?.role === 'super_admin' || userProfile?.profile?.role === 'gardien') && (
+            {isAdmin(userProfile) && (
                 <div className="flex gap-2 mt-3 w-full">
                     <button
                         onClick={() => onToggleSeal(item, activeTab)}
@@ -150,7 +151,7 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
                         <span className="hidden sm:inline">{item.is_sealed ? 'Briser le Sceau' : 'Apposer le Sceau'}</span>
                     </button>
 
-                    {userProfile?.profile?.role === 'super_admin' && (
+                    {isSuperAdmin(userProfile) && (
                         <button
                             onClick={() => onDeleteClick(item, activeTab)}
                             className="flex items-center justify-center px-3 py-2 bg-stone-100 text-red-500 border border-stone-200 hover:bg-red-50 hover:border-red-300 hover:text-red-600 rounded-lg transition-colors shrink-0 shadow-sm"

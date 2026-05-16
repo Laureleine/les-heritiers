@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Download, X, Smartphone, Share, AlertCircle, CheckCircle, Info, BookOpen, Check } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { isAdmin } from '../utils/authRoles';
 
 // ============================================================================
 // --- 1. ALERTE SYSTÈME (Écoute la base de données) ---
@@ -12,7 +13,7 @@ export function AlertSystem({ userProfile }) {
   useEffect(() => {
     if (!userProfile) return;
 
-    const isGardien = userProfile.profile?.role === 'gardien' || userProfile.profile?.role === 'super_admin';
+    const isGardien = isAdmin(userProfile);
     const userId = userProfile.id;
 
     const channel = supabase

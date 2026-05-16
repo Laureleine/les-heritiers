@@ -8,6 +8,7 @@ import { exportToPDF } from '../utils/pdfGenerator';
 import { exportCharacter } from '../utils/utils';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import { isCharacterScelle } from '../utils/lockUtils';
+import { isSuperAdmin } from '../utils/authRoles';
 import { characterReducer } from '../utils/characterEngine';
 import { mapDbCharForReconstruction, journalNeedsRepair, buildRepairedJournal, computeXpDepenseFromJournal } from '../utils/repairJournaux';
 import { loadFairyTypes, loadSocialItems } from '../utils/supabaseGameData';
@@ -169,7 +170,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       const myUserId = session?.user?.id;
       if (!myUserId || !isMounted) return;
 
-      const isAdminUser = userProfile?.profile?.role === 'super_admin';
+      const isAdminUser = isSuperAdmin(userProfile);
       if (isMounted) setIsAdmin(isAdminUser);
 
       const [mesPersos, persosPublics, persosAdmin] = await Promise.all([

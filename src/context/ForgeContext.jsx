@@ -4,6 +4,7 @@ import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getCurrentUser } from '../utils/authUtils';
 import { sanitizeFileName } from '../hooks/useFileUpload';
+import { isAdmin } from '../utils/authRoles';
 
 const ForgeContext = createContext();
 
@@ -104,7 +105,7 @@ export function ForgeProvider({ children }) {
 
   const verifierRoleAdmin = async (userId) => {
     const { data } = await supabase.from('profiles').select('role').eq('id', userId).single();
-    if (!['super_admin', 'gardien'].includes(data?.role)) {
+    if (!isAdmin(data)) {
       throw new Error("Accès refusé : droits insuffisants.");
     }
   };

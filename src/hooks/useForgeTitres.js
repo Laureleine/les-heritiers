@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
 
 export function useForgeTitres(userProfile) {
   const [badges, setBadges] = useState([]);
@@ -11,7 +12,7 @@ export function useForgeTitres(userProfile) {
   // Gestion de la Modale Immersive de suppression
   const [confirmState, setConfirmState] = useState({ isOpen: false, targetId: null });
 
-  const isSuperAdmin = userProfile?.profile?.role === 'super_admin';
+  const isSuperAdmin = checkSuperAdmin(userProfile);
 
   const fetchBadges = useCallback(async () => {
     setLoading(true);

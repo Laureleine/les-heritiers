@@ -286,12 +286,14 @@ export default function TabRepairJournaux() {
 
             // 5. Persister en base
             const newData = { ...(row.dbChar.data || {}), stats_scellees };
-            const { error: saveError } = await supabase
+            const { data: updateData, error: saveError } = await supabase
                 .from('characters')
                 .update({ data: newData, updated_at: new Date().toISOString() })
-                .eq('id', row.dbChar.id);
+                .eq('id', row.dbChar.id)
+                .select('id');
 
             if (saveError) throw saveError;
+            if (!updateData?.length) throw new Error("Aucune ligne modifiée — RLS a bloqué l'écriture");
 
             // 6. Mettre à jour l'état local — le personnage a maintenant un plancher
             const updatedDbChar = {
@@ -322,12 +324,14 @@ export default function TabRepairJournaux() {
             const newXpDepense = computeXpDepenseFromJournal(preview);
             const updatedData  = { ...row.dbChar.data, historique_xp: preview };
 
-            const { error } = await supabase
+            const { data: updateData, error } = await supabase
                 .from('characters')
                 .update({ data: updatedData, xp_depense: newXpDepense })
-                .eq('id', row.dbChar.id);
+                .eq('id', row.dbChar.id)
+                .select('id');
 
             if (error) throw error;
+            if (!updateData?.length) throw new Error("Aucune ligne modifiée — RLS a bloqué l'écriture");
 
             const gains = preview.filter(t => t.type === 'GAIN').length;
             const deps  = preview.filter(t => t.type === 'DEPENSE').length;

@@ -1,6 +1,7 @@
 // src/components/Step1.js
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Crown, CheckCircle, Lock } from '../config/icons';
+import { isAdmin, isSuperAdmin } from '../utils/authRoles';
 import { useCharacter } from '../context/CharacterContext';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -33,10 +34,10 @@ export default function Step1() {
                     .single();
 
                 if (profile) {
-                    const hasAccess = profile.is_docte === true || ['super_admin', 'gardien'].includes(profile.role);
+                    const hasAccess = profile.is_docte === true || isAdmin(profile.role);
                     setIsUserDocte(hasAccess);
                     setUnlockedFairies(profile.unlocked_fairies || []);
-                    setIsInitiated(profile.is_initiated === true || profile.role === 'super_admin');
+                    setIsInitiated(profile.is_initiated === true || isSuperAdmin(profile.role));
                 }
             } catch (error) {
                 console.error("❌ Erreur de vérification des Sceaux :", error);
