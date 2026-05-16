@@ -57,8 +57,15 @@ export const useAutoUpdate = (intervalMs = 60000) => { // Vérifie toutes les mi
             } catch (e) { console.error("Erreur suppression caches:", e); }
         }
 
+        // On préserve les clés Télégraphe pour ne pas re-marquer les messages comme non-lus
+        const keysToPreserve = Object.keys(localStorage).filter(k => k.startsWith('telegraphe_read_'));
+        const preserved = {};
+        keysToPreserve.forEach(k => { preserved[k] = localStorage.getItem(k); });
+
         localStorage.clear();
         sessionStorage.clear();
+
+        keysToPreserve.forEach(k => { localStorage.setItem(k, preserved[k]); });
 
         // 3. L'INJECTION DU VACCIN : On recharge la page en ajoutant un marqueur dans l'URL !
         const currentUrl = new URL(window.location.href);
