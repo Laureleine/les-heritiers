@@ -170,7 +170,7 @@ export const sendNotificationEmail = async (email, version, changelog) => {
       <!-- Corps -->
       <tr><td style="padding:36px 40px;">
         <p style="margin:0 0 16px;color:#78350f;font-size:15px;">Bonjour,</p>
-        <p style="margin:0 0 24px;color:#78350f;font-size:15px;">Une nouvelle version de <strong>Les Héritiers</strong> vient d'être déployée dans le Grimoire !</p>
+        <p style="margin:0 0 24px;color:#78350f;font-size:15px;">Une nouvelle version de <strong>Les Héritiers</strong> vient d'être déployée !</p>
 
         <!-- Version -->
         <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:8px;padding:16px 20px;margin:0 0 24px;text-align:center;">
