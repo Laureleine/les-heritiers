@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.19.3 - "La Clef du Scribe 🔧"',
+    date: '16 Mai 2026',
+    description: 'Le Scribe Admin peut désormais restaurer le Plancher de Verre des Héritiers oubliés, et ses leçons sont gravées dans le parchemin.',
+    changes: [
+      '🔧 **Nouveau — Restauration du Plancher dans l\'onglet Réparation :** Les personnages « Sans plancher » (scellés sans `stats_scellees`) disposent désormais d\'un bouton « Restaurer le Plancher ». La procédure valide le personnage contre toutes les règles d\'apposition du Sceau (`validateBeforeSeal`) : si la validation échoue, rien n\'est persisté et l\'erreur est affichée dans le journal. Si elle réussit, le socle est reconstruit depuis l\'état actuel et sauvegardé en base. Un nouveau statut « 🏗️ Plancher restauré » et un filtre dédié complètent l\'outillage.',
+      '🧠 **REX — Mémoire de l\'Assistant gravée dans le marbre :** Les leçons de la session sont consignées en fin de registre des versions : ne pas mocker `bonusCalculator` dans les tests hooks, déboguer un mock suspect avec un test `it(\'debug\')`, rédiger le Message aux Héritiers avant le commit, et lancer le backup dès l\'ouverture de session.',
+      '🧪 **172 Sentinelles toujours en faction :** Aucune sentinelle n\'a été blessée. Des tests de non-régression pour la restauration du Plancher sont à prévoir (validation échouée, OK, mise à jour de statut).',
+    ]
+  },
+  {
     version: '15.19.2 - "Le Plancher sous le Sceau 🏗️"',
     date: '16 Mai 2026',
     description: 'Le Plancher de Verre n\'est plus un songe : les Héritiers scellés conservent désormais leur socle dans la Base de Données. Adieu le « Sans plancher ».',
@@ -539,7 +549,37 @@ export const VERSION_HISTORY = [
             '☁️ **Base de Données (Purge) :** Le compacteur de sauvegarde vers Supabase a été allégé de ses redondances mathématiques. Il photographie dorénavant l\'état exact du Cerveau sans recalculer le combat, garantissant une intégrité absolue des données JSONB.',
             '📜 **Parchemin (Pureté Front-End) :** La page du Bilan Visuel a été délestée de son usine à gaz algorithmique. Elle redevient une interface React pure (JSX/Tailwind) qui se contente d\'afficher les statistiques pré-calculées, supprimant toute divergence entre l\'affichage à l\'écran et le PDF imprimé.'
         ]
-    }
+    },
+    // ============================================================================
+    // 🧠 REX — Mémoire de l\'Assistant (ne pas supprimer, ne pas afficher dans l\'UI)
+    // ============================================================================
+    // Session du 16 Mai 2026 — Bug « Sans plancher » + Procédure admin
+    //
+    // Ce qui a été appris :
+    //   1. Ne JAMAIS mocker `bonusCalculator` dans les tests hooks — `jest.mock`
+    //      avec `jest.fn()` dans la factory produit silencieusement un mock cassé
+    //      qui retourne `undefined`. Utiliser le module réel (pur, sans effets de bord).
+    //
+    //   2. Pour déboguer un mock suspect : ajouter un test `it('debug')` qui
+    //      `require()` le module et appelle la fonction directement — ça évite
+    //      de tourner en rond 30 minutes.
+    //
+    //   3. Message aux Héritiers : le rédiger AVANT le commit, il fait partie
+    //      intégrante de la procédure `/version`.
+    //
+    //   4. Ne pas hésiter à lancer `node scripts/backup_supabase.js` dès l\'ouverture
+    //      de session — déjà dans les règles, gratuit, 2 secondes.
+    //
+    //   5. Quand on ajoute une fonctionnalité admin (restauration de plancher),
+    //      prévoir des tests de non-régression sur TabRepairJournaux pour couvrir
+    //      les cas : validation échouée, restauration réussie, mise à jour du statut.
+    //
+    // Tests de non-régression à créer (TODO) :
+    //   - TabRepairJournaux.restoreFloor : validation OK → stats_scellees en base
+    //   - TabRepairJournaux.restoreFloor : validation échoue → rien n\'est persisté
+    //   - TabRepairJournaux.restoreFloor : plancher restauré + journal OK → statut OK
+    //   - TabRepairJournaux.restoreFloor : plancher restauré + journal incomplet → statut PENDING
+    // ============================================================================
 ];
 
 // ✨ EXTRACTION DYNAMIQUE (Le Parseur est sécurisé !)
