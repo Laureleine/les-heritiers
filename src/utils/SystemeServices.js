@@ -133,42 +133,77 @@ export const getUsersToNotify = async (versionType) => {
 };
 
 export const sendNotificationEmail = async (email, version, changelog) => {
-  const emailBody = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-  <style>
-  body { font-family: Georgia, serif; color: #78350f; background: #fef3c7; }
-  .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
-  h1 { color: #92400e; border-bottom: 3px solid #d97706; padding-bottom: 10px; }
-  .version { font-size: 24px; color: #059669; font-weight: bold; }
-  .changelog { background: #fef3c7; padding: 15px; border-left: 4px solid #d97706; margin: 20px 0; }
-  .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #d97706; font-size: 12px; color: #92400e; }
-  </style>
-  </head>
-  <body>
-  <div class="container">
-  <h1>🎭 Les Héritiers - Nouvelle mise à jour !</h1>
-  <p>Bonjour,</p>
-  <p>Une nouvelle version de <strong>Les Héritiers</strong> vient d'être déployée !</p>
-  <p class="version">Version ${version}</p>
-  <div class="changelog">
-  <h3>📋 Changements :</h3>
-  <pre>${changelog}</pre>
-  </div>
-  <p>
-  <a href="${process.env.REACT_APP_URL || 'https://heritiers.app'}" style="display: inline-block; padding: 12px 24px; background: #d97706; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-  Découvrir les nouveautés
-  </a>
-  </p>
-  <div class="footer">
-  <p>Vous recevez cet email car vous êtes abonné aux notifications de mise à jour.</p>
-  <p>Pour modifier vos préférences, rendez-vous dans les paramètres de l'application.</p>
-  </div>
-  </div>
-  </body>
-  </html>
-  `;
+  // Convertit le texte brut en lignes HTML propres (supprime le markdown basique)
+  const formatChangelog = (text) => {
+    return text
+      .split('\n')
+      .filter(line => line.trim())
+      .map(line => {
+        // Nettoie le markdown : **gras**, `code`
+        const clean = line
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/`(.*?)`/g, '<em>$1</em>');
+        return `<li style="margin-bottom:8px;line-height:1.5;">${clean}</li>`;
+      })
+      .join('');
+  };
+
+  const appUrl = process.env.REACT_APP_URL || 'https://heritiers.app';
+
+  const emailBody = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="margin:0;padding:0;background:#fef3c7;font-family:Georgia,serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;padding:30px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:600px;width:100%;">
+
+      <!-- En-tête -->
+      <tr><td style="background:linear-gradient(135deg,#92400e,#d97706);padding:32px 40px;text-align:center;">
+        <h1 style="margin:0;color:#ffffff;font-size:24px;font-family:Georgia,serif;">🎭 Les Héritiers</h1>
+        <p style="margin:8px 0 0;color:#fde68a;font-size:14px;">Nouvelle mise à jour disponible</p>
+      </td></tr>
+
+      <!-- Corps -->
+      <tr><td style="padding:36px 40px;">
+        <p style="margin:0 0 16px;color:#78350f;font-size:15px;">Bonjour,</p>
+        <p style="margin:0 0 24px;color:#78350f;font-size:15px;">Une nouvelle version de <strong>Les Héritiers</strong> vient d'être déployée dans le Grimoire !</p>
+
+        <!-- Version -->
+        <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:8px;padding:16px 20px;margin:0 0 24px;text-align:center;">
+          <span style="font-size:22px;font-weight:bold;color:#166534;font-family:Georgia,serif;">Version ${version}</span>
+        </div>
+
+        <!-- Changelog -->
+        <div style="background:#fef3c7;border-left:4px solid #d97706;border-radius:0 8px 8px 0;padding:20px 24px;margin:0 0 28px;">
+          <p style="margin:0 0 12px;font-weight:bold;color:#92400e;font-size:14px;text-transform:uppercase;letter-spacing:0.05em;">📋 Changements</p>
+          <ul style="margin:0;padding-left:20px;color:#78350f;font-size:14px;">
+            ${formatChangelog(changelog)}
+          </ul>
+        </div>
+
+        <!-- Bouton -->
+        <div style="text-align:center;">
+          <a href="${appUrl}" style="display:inline-block;padding:14px 32px;background:#d97706;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:bold;font-family:Georgia,serif;font-size:15px;">
+            Découvrir les nouveautés →
+          </a>
+        </div>
+      </td></tr>
+
+      <!-- Pied de page -->
+      <tr><td style="background:#fef9f0;border-top:1px solid #fde68a;padding:20px 40px;text-align:center;">
+        <p style="margin:0;color:#a16207;font-size:12px;">Vous recevez cet email car vous êtes abonné aux notifications de mise à jour des Héritiers.</p>
+        <p style="margin:8px 0 0;color:#a16207;font-size:12px;">Pour modifier vos préférences, rendez-vous dans <a href="${appUrl}" style="color:#d97706;">vos paramètres</a>.</p>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`;
 
   try {
     const { data, error } = await supabase.functions.invoke('send-email', {
