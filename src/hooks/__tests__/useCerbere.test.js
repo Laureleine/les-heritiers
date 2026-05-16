@@ -141,7 +141,16 @@ describe('useCerbere', () => {
         await result.current.executeSeal();
       });
 
-      expect(mockSave()).toHaveBeenCalledWith(expect.objectContaining({ statut: 'scelle' }));
+      expect(mockSave()).toHaveBeenCalledWith(expect.objectContaining({
+        statut: 'scelle',
+        data: expect.objectContaining({
+          stats_scellees: expect.objectContaining({
+            caracteristiques: { agilite: 3, feerie: 4, masque: 5 },
+            atouts: ['atout-1', 'atout-2'],
+            fortune: 1,
+          }),
+        }),
+      }));
       expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'SEAL_CHARACTER' }));
       expect(mockNotif()).toHaveBeenCalledWith('Sceau apposé !', 'success');
     });

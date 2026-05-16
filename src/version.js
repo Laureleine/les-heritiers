@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.19.2 - "Le Plancher sous le Sceau 🏗️"',
+    date: '16 Mai 2026',
+    description: 'Le Plancher de Verre n\'est plus un songe : les Héritiers scellés conservent désormais leur socle dans la Base de Données. Adieu le « Sans plancher ».',
+    changes: [
+      '🏗️ **Fix — Le Plancher enfin gravé dans le marbre :** Quand on apposait le Sceau, la sauvegarde partait bien vers Supabase… mais sans le socle scellé (`stats_scellees`). Le Plancher de Verre — caractéristiques, atouts, compétences, fortune, pouvoirs au moment du scellement — n\'était posé qu\'en mémoire locale. Résultat : au rechargement, Aristide Robelin et ses pairs apparaissaient « Sans plancher ». Cause racine : `executeSeal()` appelait `saveCharacterToSupabase` avant que `SEAL_CHARACTER` n\'ait figé le snapshot. Corrigé — le socle est désormais construit atomiquement avant la sauvegarde, et le Plancher est persistant dès l\'apposition du Sceau.',
+      '🧪 **172 Sentinelles toujours en faction :** La Vigie du Code veille. Aucune sentinelle n\'a été blessée durant cette opération.',
+    ]
+  },
+  {
     version: '15.19.1 - "Le Sceau Réparé 🔐"',
     date: '16 Mai 2026',
     description: 'Le Sceau d\'Aristide Robelin n\'est plus un vœu pieux : la sauvegarde vers Supabase précède désormais le verrouillage. 172 Sentinelles Automates montent la garde.',
