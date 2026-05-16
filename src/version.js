@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.18.2 - "Le Facteur des Ombres 📬"',
+    date: '16 Mai 2026',
+    description: 'L\'envoi d\'emails de notification passe par Gmail SMTP — aucun service tiers ni domaine personnalisé requis.',
+    changes: [
+      '📬 **Envoi d\'emails via Gmail :** La Edge Function abandonne Resend (qui exigeait un domaine vérifié) au profit de Gmail SMTP via nodemailer. Les notifications partent désormais depuis `azghal.les.heritiers@gmail.com`, sans aucun abonnement payant ni domaine à configurer.',
+    ]
+  },
+  {
     version: '15.18.1 - "Le Recenseur Fidèle 📊"',
     date: '16 Mai 2026',
     description: 'Le système de notifications de mises à jour est désormais pleinement opérationnel : envoi d\'emails réels via Resend, onglet admin dédié, et statistiques d\'abonnement corrigées.',
