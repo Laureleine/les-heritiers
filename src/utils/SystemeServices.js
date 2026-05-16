@@ -181,11 +181,15 @@ export const sendNotificationEmail = async (email, version, changelog) => {
   try {
     const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
     if (!supabaseUrl) throw new Error('REACT_APP_SUPABASE_URL non défini');
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) throw new Error('Session expirée — reconnectez-vous.');
+
     const response = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.REACT_APP_SUPABASE_ANON_KEY}`
+        'Authorization': `Bearer ${session.access_token}`
       },
       body: JSON.stringify({
         to: email,
