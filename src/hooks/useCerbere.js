@@ -2,6 +2,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { parseIfString } from '../utils/json';
 import { useSnapshots } from './useSnapshots';
@@ -35,8 +36,20 @@ export function useCerbere() {
 
     const executeSeal = async () => {
         setShowConfirmSeal(false);
-        dispatchCharacter({ type: 'SEAL_CHARACTER', gameData });
-        showInAppNotification("Sceau apposé !", "success");
+
+        const charToSave = { ...character, statut: 'scelle' };
+
+        try {
+            const saved = await saveCharacterToSupabase(charToSave);
+            dispatchCharacter({ type: 'SEAL_CHARACTER', gameData });
+            if (saved?.id && saved.id !== character.id) {
+                dispatchCharacter({ type: 'UPDATE_FIELD', field: 'id', value: saved.id, gameData });
+            }
+            showInAppNotification("Sceau apposé !", "success");
+        } catch (e) {
+            dispatchCharacter({ type: 'SEAL_CHARACTER', gameData });
+            showInAppNotification("Sceau local uniquement : " + e.message, "warning");
+        }
     };
 
     // ✨ LE CERVEAU SÉPARÉ ABSORBE TON MOTEUR !
