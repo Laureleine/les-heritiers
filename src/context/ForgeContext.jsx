@@ -19,7 +19,7 @@ export function ForgeProvider({ children }) {
       .order('ordre', { ascending: true })
       .order('created_at', { ascending: false });
 
-    if (error) console.error("Erreur de lecture de la Forge:", error);
+    if (error) console.error("Forge fetch:", error);
     if (!error && data) setEntrees(data);
     setLoading(false);
   };
@@ -64,7 +64,7 @@ export function ForgeProvider({ children }) {
       showInAppNotification("✨ Gravé dans les archives avec succès !", "success");
       return true;
     } catch (error) {
-      console.error("❌ Anomalie de la Forge :", error);
+      console.error("Forge soumettreEntree:", error);
       showInAppNotification("La gravure a échoué : " + error.message, "error");
       return false;
     }
@@ -97,17 +97,30 @@ export function ForgeProvider({ children }) {
         supabase.from('registre_forge').update({ statut: u.statut, ordre: u.ordre }).eq('id', u.id)
       ));
     } catch (err) {
-      console.error("Échec de la sauvegarde Kanban, rafraîchissement requis.", err);
+      console.error("Kanban sync:", err);
       fetchForge();
     }
   };
 
+  const verifierRoleAdmin = async (userId) => {
+    const { data } = await supabase.from('profiles').select('role').eq('id', userId).single();
+    if (!['super_admin', 'gardien'].includes(data?.role)) {
+      throw new Error("Accès refusé : droits insuffisants.");
+    }
+  };
+
   const toggleArchive = async (id, currentState) => {
+    const { id: userId } = await getCurrentUser() ?? {};
+    if (!userId) return;
+    await verifierRoleAdmin(userId);
     const { error } = await supabase.from('registre_forge').update({ is_masque: !currentState }).eq('id', id);
     if (!error) setEntrees(prev => prev.map(c => c.id === id ? { ...c, is_masque: !currentState } : c));
   };
 
   const toggleInitieOnly = async (id, currentState) => {
+    const { id: userId } = await getCurrentUser() ?? {};
+    if (!userId) return;
+    await verifierRoleAdmin(userId);
     const { error } = await supabase.from('registre_forge').update({ is_initie_only: !currentState }).eq('id', id);
     if (!error) setEntrees(prev => prev.map(c => c.id === id ? { ...c, is_initie_only: !currentState } : c));
   };
@@ -139,22 +152,25 @@ export function ForgeProvider({ children }) {
       const newVotes = { up: newUp, down: newDown };
 
       supabase.from('registre_forge').update({ votes: newVotes }).eq('id', idCarte).then(({error}) => {
-        if (error) console.error("Erreur de synchronisation du vote :", error);
+        if (error) console.error("Vote sync:", error);
       });
 
       return { ...carte, votes: newVotes };
     }));
   };
 
-  // ✨ LA NOUVELLE FONCTION DE REJET
   const rejeterEntree = async (id, commentaire) => {
     try {
+      const { id: userId } = await getCurrentUser() ?? {};
+      if (!userId) throw new Error("Vous devez être identifié pour rejeter un ticket.");
+      await verifierRoleAdmin(userId);
+
       const { error } = await supabase
         .from('registre_forge')
         .update({
           statut: 'Rejeté',
           reponse_officielle: commentaire,
-          is_masque: true 
+          is_masque: true
         })
         .eq('id', id);
 

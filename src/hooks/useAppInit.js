@@ -4,6 +4,7 @@ import { supabase } from '../config/supabase';
 import { loadCoreGameData, loadHeavyLoreData } from '../utils/supabaseGameData';
 import { useCharacter } from '../context/CharacterContext';
 import { useAutoUpdate } from './useAutoUpdate';
+import { showInAppNotification } from '../utils/SystemeServices';
 
 export function useAppInit() {
     const { setGameData } = useCharacter();
@@ -70,10 +71,10 @@ export function useAppInit() {
                 }
 
                 loadHeavyLoreData(coreData).then(heavyData => {
-                    if (heavyData && mounted) {
-                        setGameData(heavyData);
-                        console.log("✨ Moteur d'Érudition connecté : Lore injecté !");
-                    }
+                    if (heavyData && mounted) setGameData(heavyData);
+                }).catch(err => {
+                    console.error("Erreur chargement Lore secondaire:", err);
+                    if (mounted) showInAppNotification("Certaines données additionnelles n'ont pas pu être chargées.", "warning");
                 });
 
                 isInitializingRef.current = false;
@@ -105,13 +106,10 @@ export function useAppInit() {
                 // ✨ LE BOUCLIER ANTI-AMNÉSIE !
                 // Si on revient sur l'onglet, Supabase crie "SIGNED_IN", mais on vérifie si on n'est pas DÉJÀ connecté avec le même compte.
                 if (sessionRef.current?.user?.id === newSession?.user?.id) {
-                    console.log("🛡️ Rafraîchissement de session ignoré (Anti-Amnésie activé). Vos formulaires sont saufs !");
-                    return; // On ignore brutalement ce faux réveil !
+                    return;
                 }
-                
-                // Si c'est VRAIMENT une nouvelle connexion ou un changement de compte
+
                 sessionRef.current = newSession;
-                console.log("✨ Nouvel Héritier connecté ! Redémarrage du Noyau...");
                 setGlobalLoading(true);
                 setIsInitialized(false);
                 setInitTrigger(prev => prev + 1);

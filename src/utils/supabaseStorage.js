@@ -2,6 +2,7 @@
 
 import { supabase } from '../config/supabase';
 import { getCurrentUser, requireCurrentUser } from './authUtils';
+import { showInAppNotification } from './SystemeServices';
 
 // ============================================================================
 // 🏛️ CALCUL xp_depense DEPUIS LE JOURNAL (Source unique de vérité)
@@ -164,7 +165,8 @@ export const getPublicCharacters = async () => {
             .from('characters')
             .select(`${LIGHT_SELECT}, profiles(username)`)
             .eq('is_public', true)
-            .order('updated_at', { ascending: false });
+            .order('updated_at', { ascending: false })
+            .limit(100);
 
         if (error) throw error;
         return (data || []).map(mapDatabaseToCharacter);
@@ -270,6 +272,10 @@ export const saveCharacterToSupabase = async (character) => {
         return mapDatabaseToCharacter(savedData);
     } catch (error) {
         console.warn("Échec sauvegarde Cloud (Mode Hors-ligne activé):", error);
+        showInAppNotification(
+            "⚠️ Sauvegarde locale uniquement — réseau indisponible. Ne fermez pas l'onglet avant de retrouver la connexion.",
+            "warning"
+        );
         return charToCache;
     }
 };
