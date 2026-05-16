@@ -197,7 +197,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     } finally {
       if (isMounted) setLoading(false);
     }
-  }, [session?.user?.id, userProfile?.profile?.role]);
+  }, [session?.user?.id, userProfile]);
 
   useEffect(() => {
     let isMounted = true;

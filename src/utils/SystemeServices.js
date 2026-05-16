@@ -206,7 +206,7 @@ export const sendNotificationEmail = async (email, version, changelog) => {
 </html>`;
 
   try {
-    const { data, error } = await supabase.functions.invoke('send-email', {
+    const { error } = await supabase.functions.invoke('send-email', {
       body: {
         to: email,
         subject: `Les Héritiers - Version ${version} disponible`,
