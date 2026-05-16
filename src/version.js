@@ -2,13 +2,13 @@
 
 export const VERSION_HISTORY = [
   {
-    version: '15.19.0 - "Le Gardien de la Mémoire 🧠"',
+    version: '15.19.1 - "Le Sceau Réparé 🔐"',
     date: '16 Mai 2026',
-    description: 'Le Télégraphe cesse d\'amnésier ses lectures à chaque mise à jour. Les notifications de mises à jour sont désormais pleinement opérationnelles.',
+    description: 'Le Sceau d\'Aristide Robelin n\'est plus un vœu pieux : la sauvegarde vers Supabase précède désormais le verrouillage. 172 Sentinelles Automates montent la garde.',
     changes: [
-      '🧠 **Fix Télégraphe — Amnésie des lectures résolue :** Les messages lus réapparaissaient comme non-lus à chaque nouvelle version. Cause identifiée : `localStorage.clear()` dans le mécanisme de mise à jour effaçait les marqueurs de lecture. Corrigé — vos lectures sont désormais préservées lors des déploiements.',
-      '📨 **Notifications de mises à jour opérationnelles :** Le système d\'emails (Mailjet) est fonctionnel. Les abonnés reçoivent un email soigné à chaque nouvelle version.',
-      '🔐 **Sécurité renforcée :** RLS corrigé sur le Registre de la Forge et les Profils, secrets de débogage retirés du code, vérifications de rôle ajoutées côté application.',
+      '🔐 **Fix Sceau — Aristide Robelin enfin protégé :** Quand on apposait le Sceau, le personnage passait bien en "scellé" en mémoire… mais la sauvegarde vers Supabase n\'était jamais déclenchée. Résultat : au prochain rechargement, le sceau s\'évanouissait comme une illusion. Cause racine : `executeSeal()` dispatchait `SEAL_CHARACTER` sans appeler `saveCharacterToSupabase`. Corrigé — la sauvegarde est désormais atomique et le Sceau est persistant.',
+      '🧪 **172 Sentinelles Automates (Tests) :** La Vigie du Code compte désormais 172 gardiens (contre 167 précédemment). 5 nouvelles sentinelles veillent sur le mécanisme de scellement : validation pré-scellement, rejet des personnages temporaires (`temp_`), sauvegarde réussie, échec réseau avec fallback local, et mise à jour d\'identifiant.',
+      '📦 **Couverture des Hooks :** Première vague de tests pour les Crochets Magiques (`useCerbere`) — les interactions entre le Cerveau Central, les notifications et la Base de Données sont désormais sous surveillance.',
     ]
   },
   {
