@@ -171,6 +171,9 @@ export const sendNotificationEmail = async (email, version, changelog) => {
   `;
 
   try {
+    // Force le refresh du token avant d'appeler la fonction
+    await supabase.auth.getUser();
+
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: {
         to: email,
