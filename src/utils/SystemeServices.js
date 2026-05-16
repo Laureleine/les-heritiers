@@ -171,25 +171,15 @@ export const sendNotificationEmail = async (email, version, changelog) => {
   `;
 
   try {
-    const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-    if (!supabaseUrl) throw new Error('REACT_APP_SUPABASE_URL non défini');
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) throw new Error('Session expirée — reconnectez-vous.');
-
-    const response = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({
+    const { error } = await supabase.functions.invoke('send-email', {
+      body: {
         to: email,
         subject: `Les Héritiers - Version ${version} disponible`,
         html: emailBody
-      })
+      }
     });
-    return response.ok;
+    if (error) throw error;
+    return true;
   } catch (error) {
     console.error('Erreur envoi email:', error);
     return false;
