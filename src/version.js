@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.18.0 - "Le Veilleur des Portes 🔐"',
+    date: '16 Mai 2026',
+    description: 'Audit de sécurité complet : les portes du Registre de la Forge et des Profils sont désormais gardées. Les artefacts de débogage ont été retirés des archives publiques.',
+    changes: [
+      '🔐 **RLS renforcé sur le Registre de la Forge :** Les entrées masquées et les missives réservées aux Initiés ne sont plus lisibles par les Héritiers non qualifiés — ni par les visiteurs anonymes. Les Gardiens et Super Admins conservent une vision complète.',
+      '🔐 **RLS renforcé sur les Profils :** La lecture publique (sans authentification) a été révoquée. Seuls les Héritiers connectés peuvent consulter les profils.',
+      '🛡️ **Contrôle de rôle côté application :** Les actions de rejet, d\'archivage et de restriction aux Initiés vérifient désormais explicitement que l\'opérateur est Gardien ou Super Admin avant d\'agir.',
+      '🧹 **Nettoyage des traces de débogage :** Les empreintes de la clé API, l\'exposition globale du client Supabase (`window.__supabase__`), la purge automatique du localStorage en développement et une vingtaine de `console.log` intempestifs ont été supprimés.',
+      '⚠️ **Alerte sauvegarde hors-ligne :** L\'application signale désormais explicitement quand une sauvegarde a échoué côté serveur et n\'existe qu\'en cache local — au lieu d\'afficher un faux succès.',
+      '🔗 **URL de notification corrigée :** L\'endpoint d\'envoi d\'emails pointait vers un placeholder non résolu — il lit désormais la variable d\'environnement `REACT_APP_SUPABASE_URL`.',
+    ]
+  },
+  {
     version: '15.17.9 - "Le Cabinet des Merveilles 📦"',
     date: '16 Mai 2026',
     description: 'Les Grimoires s\'enrichissent d\'un troisième registre : les Trésors & Possessions, alimentés directement depuis les achats de la Vie Sociale. Les doublons sont effacés, les badges intempestifs disparaissent.',

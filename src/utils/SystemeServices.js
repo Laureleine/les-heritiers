@@ -179,7 +179,9 @@ export const sendNotificationEmail = async (email, version, changelog) => {
   `;
 
   try {
-    const response = await fetch('https://votre-projet.supabase.co/functions/v1/send-email', {
+    const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+    if (!supabaseUrl) throw new Error('REACT_APP_SUPABASE_URL non défini');
+    const response = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -255,11 +257,7 @@ export const getCurrentUserFast = async () => {
   try {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) throw error;
-    if (session?.user) {
-      console.log('✅ User connecté:', session.user.id, session.user.email);
-      return session.user;
-    }
-  } catch (error) { console.error('❌ getCurrentUserFast:', error); }
-  console.log('❌ Aucun user trouvé');
+    if (session?.user) return session.user;
+  } catch (error) { console.error('getCurrentUserFast:', error); }
   return null;
 };
