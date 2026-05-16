@@ -37,7 +37,29 @@ export function useCerbere() {
     const executeSeal = async () => {
         setShowConfirmSeal(false);
 
-        const charToSave = { ...character, statut: 'scelle' };
+        // Construire stats_scellees AVANT la sauvegarde pour que le plancher
+        // persiste en base immédiatement (évite le « Sans plancher » au rechargement)
+        const stats_scellees = {
+            caracteristiques: { ...(character.caracteristiques || {}) },
+            atouts: [...(character.atouts || [])],
+            competencesLibres: {
+                rangs:               { ...(character.competencesLibres?.rangs || {}) },
+                choixSpecialiteUser: JSON.parse(JSON.stringify(character.competencesLibres?.choixSpecialiteUser || {})),
+                choixPredilection:   { ...(character.competencesLibres?.choixPredilection || {}) },
+                specialiteMetier:    character.competencesLibres?.specialiteMetier || null,
+            },
+            competencesFutiles: {
+                rangs: { ...(character.competencesFutiles?.rangs || {}) },
+            },
+            fortune: character.fortune || 0,
+            pouvoirs: [...(character.pouvoirs || [])],
+        };
+
+        const charToSave = {
+            ...character,
+            statut: 'scelle',
+            data: { ...(character.data || {}), stats_scellees },
+        };
 
         try {
             const saved = await saveCharacterToSupabase(charToSave);

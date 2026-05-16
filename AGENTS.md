@@ -9,4 +9,10 @@
 
 # Commands
 
-- `/version` : Met à jour `src/version.js` avec les changements notables de la session, incrémente le numéro de version, et rédige un message utilisateur vulgarisé dans le ton du jeu (Belle Époque, merveilleux, féérique).
+- `/version` (ou l'utilisateur dit "version") : Exécuter dans l'ordre :
+  1. Vérifier que tous les tests sont verts.
+  2. Sauvegarder la base : `node scripts/backup_supabase.js`.
+  3. Incrémenter `src/version.js` (numéro de version, date, description vulgarisée, changelog en langage métier).
+  4. Rédiger le *Message aux Héritiers* : résumé vulgarisé dans le ton du jeu (Belle Époque, merveilleux, féérique), destiné à être posté sur Discord. Ne jamais mentionner Isabelle.
+  5. Commit + push sur `main`.
+  6. Vérifier le déploiement Vercel (build vert, site accessible).
