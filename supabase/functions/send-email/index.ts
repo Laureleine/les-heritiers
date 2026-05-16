@@ -12,21 +12,17 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Non autorisé' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    // Pattern correct Supabase : passer le JWT directement à getUser()
+    // verify_jwt=true : Supabase a déjà vérifié le JWT avant d'arriver ici
+    const authHeader = req.headers.get('Authorization') ?? ''
     const jwt = authHeader.replace('Bearer ', '')
-    const supabase = createClient(
+
+    // Service role pour bypasser RLS sur profiles
+    const adminSupabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser(jwt)
+    const { data: { user }, error: userError } = await adminSupabase.auth.getUser(jwt)
     if (userError || !user) {
       console.error('getUser error:', userError?.message)
       return new Response(JSON.stringify({ error: 'Utilisateur introuvable' }), {
@@ -34,11 +30,13 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { data: profile } = await supabase
+    const { data: profile } = await adminSupabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
+
+    console.log('user:', user.id, '| role:', profile?.role)
 
     if (profile?.role !== 'super_admin') {
       return new Response(JSON.stringify({ error: 'Droits insuffisants' }), {
@@ -80,7 +78,7 @@ Deno.serve(async (req) => {
     })
 
     const result = await mailjetResponse.json()
-    console.log('Mailjet response:', mailjetResponse.status, JSON.stringify(result).substring(0, 300))
+    console.log('Mailjet:', mailjetResponse.status, JSON.stringify(result).substring(0, 300))
 
     if (!mailjetResponse.ok) {
       return new Response(JSON.stringify({ error: result }), {
