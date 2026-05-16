@@ -123,15 +123,7 @@ export const getVersionType = (version) => {
 
 export const getUsersToNotify = async (versionType) => {
   try {
-    let query = supabase.from('user_notification_preferences')
-      .select('user_id, email')
-      .eq('subscribe_to_updates', true)
-      .not('email', 'is', null);
-
-    if (versionType === 'major') query = query.eq('notify_major_versions', true);
-    if (versionType === 'minor') query = query.eq('notify_minor_versions', true);
-
-    const { data, error } = await query;
+    const { data, error } = await supabase.rpc('get_users_to_notify', { version_type: versionType });
     if (error) throw error;
     return data || [];
   } catch (error) {
