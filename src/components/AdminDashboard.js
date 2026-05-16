@@ -1,11 +1,12 @@
 // src/components/AdminDashboard.js
 
 import React, { useState } from 'react';
-import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench } from '../config/icons';
+import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell } from '../config/icons';
 import TabUsers from './admin/TabUsers';
 import TabStats from './admin/TabStats';
 import TabForgeTitres from './admin/TabForgeTitres';
 import TabRepairJournaux from './admin/TabRepairJournaux';
+import TabNotifications from './admin/TabNotifications';
 
 // ✨ FIX : On récupère userProfile depuis le routeur
 export default function AdminDashboard({ session, userProfile, onBack }) {
@@ -42,6 +43,11 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
                         <Wrench size={18} /> Reconstruction XP
                     </button>
                 )}
+                {isSuperAdmin && (
+                    <button onClick={() => setActiveTab('notifications')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notifications' ? 'text-green-900 border-green-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                        <Bell size={18} /> Notifications
+                    </button>
+                )}
             </div>
 
             {/* Contenu de l'onglet actif */}
@@ -49,6 +55,7 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
             {activeTab === 'stats' && <TabStats />}
             {activeTab === 'titres' && <TabForgeTitres userProfile={userProfile} />}
             {activeTab === 'repair' && isSuperAdmin && <TabRepairJournaux />}
+            {activeTab === 'notifications' && isSuperAdmin && <TabNotifications />}
         </div>
     );
 }
