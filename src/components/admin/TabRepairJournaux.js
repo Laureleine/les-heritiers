@@ -1,5 +1,6 @@
 // src/components/admin/TabRepairJournaux.js
-// Onglet super_admin : Reconstruction sélective du journal des flux d'XP.
+// Onglet super_admin : Reconstruction sélective du journal des flux d'XP
+// + Restauration du Plancher de Verre (stats_scellees) pour les « Sans plancher ».
 //
 // Stratégie de merge :
 //   - On CONSERVE les entrées GAIN (attributions XP joueur — irreconstruisibles)
@@ -8,31 +9,34 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../config/supabase';
 import { loadFairyTypes, loadSocialItems } from '../../utils/supabaseGameData';
-import { Search, X, AlertTriangle, CheckCircle } from '../../config/icons';
+import { Search, X, AlertTriangle, CheckCircle, Wrench } from '../../config/icons';
 import {
     mapDbCharForReconstruction,
     journalNeedsRepair,
     buildRepairedJournal,
     computeXpDepenseFromJournal
 } from '../../utils/repairJournaux';
+import { validateBeforeSeal } from '../../utils/sealValidation';
 
 // ============================================================================
 // CONSTANTES
 // ============================================================================
 const STATUS = {
-    PENDING:  'pending',   // Nécessite réparation
-    OK:       'ok',        // Journal déjà complet
-    REPAIRED: 'repaired',  // Réparé pendant cette session
-    SKIPPED:  'skipped',   // Pas de stats_scellees → impossible
-    ERROR:    'error',
+    PENDING:        'pending',         // Nécessite réparation
+    OK:             'ok',              // Journal déjà complet
+    REPAIRED:       'repaired',        // Réparé pendant cette session
+    SKIPPED:        'skipped',         // Pas de stats_scellees → impossible
+    FLOOR_RESTORED: 'floor_restored',  // Plancher reconstruit, journal à réparer
+    ERROR:          'error',
 };
 
 const STATUS_META = {
-    [STATUS.PENDING]:  { label: '⏳ À réparer',        badge: 'bg-orange-100 text-orange-700 border-orange-200' },
-    [STATUS.OK]:       { label: '✅ Complet',           badge: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-    [STATUS.REPAIRED]: { label: '✨ Réparé',            badge: 'bg-blue-100 text-blue-700 border-blue-200' },
-    [STATUS.SKIPPED]:  { label: '⚠️ Sans plancher',    badge: 'bg-amber-100 text-amber-700 border-amber-200' },
-    [STATUS.ERROR]:    { label: '❌ Erreur',            badge: 'bg-red-100 text-red-700 border-red-200' },
+    [STATUS.PENDING]:        { label: '⏳ À réparer',               badge: 'bg-orange-100 text-orange-700 border-orange-200' },
+    [STATUS.OK]:             { label: '✅ Complet',                  badge: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+    [STATUS.REPAIRED]:       { label: '✨ Réparé',                   badge: 'bg-blue-100 text-blue-700 border-blue-200' },
+    [STATUS.SKIPPED]:        { label: '⚠️ Sans plancher',           badge: 'bg-amber-100 text-amber-700 border-amber-200' },
+    [STATUS.FLOOR_RESTORED]: { label: '🏗️ Plancher restauré',       badge: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
+    [STATUS.ERROR]:          { label: '❌ Erreur',                   badge: 'bg-red-100 text-red-700 border-red-200' },
 };
 
 // ============================================================================
@@ -107,6 +111,49 @@ function ConfirmModal({ target, onConfirm, onCancel }) {
 }
 
 // ============================================================================
+// MODALE DE CONFIRMATION — RESTAURATION DU PLANCHER
+// ============================================================================
+function RestoreFloorModal({ target, onConfirm, onCancel }) {
+    if (!target) return null;
+    const { row } = target;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onCancel}>
+            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+                <div className="flex items-start gap-3 mb-4">
+                    <Wrench className="text-indigo-500 shrink-0 mt-0.5" size={22} />
+                    <div>
+                        <h3 className="font-serif font-bold text-gray-900 text-lg leading-tight">
+                            Restaurer le Plancher de<br />
+                            <span className="text-amber-800">{row.dbChar.nom}</span> ?
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                            Ce personnage est scellé mais son socle (<code>stats_scellees</code>) est absent.
+                            La procédure va reconstruire le Plancher de Verre depuis l'état actuel,
+                            après validation des règles d'apposition du Sceau.
+                        </p>
+                    </div>
+                </div>
+
+                <p className="text-xs text-stone-500 mb-5">
+                    Une fois le Plancher restauré, vous pourrez reconstruire le journal des XP
+                    si nécessaire.
+                </p>
+
+                <div className="flex gap-3">
+                    <button onClick={onCancel} className="flex-1 px-4 py-2.5 bg-stone-100 text-stone-700 rounded-lg font-bold hover:bg-stone-200 transition-colors">
+                        Annuler
+                    </button>
+                    <button onClick={onConfirm} className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+                        <Wrench size={16} /> Restaurer le Plancher
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ============================================================================
 // COMPOSANT PRINCIPAL
 // ============================================================================
 export default function TabRepairJournaux() {
@@ -119,6 +166,7 @@ export default function TabRepairJournaux() {
     const [search, setSearch]           = useState('');
     const [filterMode, setFilterMode]   = useState('pending'); // 'all' | 'pending'
     const [confirmTarget, setConfirmTarget] = useState(null); // { row, idx, preview }
+    const [restoreFloorTarget, setRestoreFloorTarget] = useState(null); // { row, idx }
 
     const addLog = (msg) => setLog(prev => [`${new Date().toLocaleTimeString('fr-FR')} — ${msg}`, ...prev]);
 
@@ -166,6 +214,105 @@ export default function TabRepairJournaux() {
         init();
     }, []);
 
+    // --- Reconstruction du Plancher de Verre (stats_scellees) ---
+    const buildStatsScellees = useCallback((dbChar) => {
+        const cl = dbChar.competences_libres || dbChar.competencesLibres || {};
+        return {
+            caracteristiques: { ...(dbChar.caracteristiques || {}) },
+            atouts: [...(dbChar.atouts || [])],
+            competencesLibres: {
+                rangs:               { ...(cl.rangs || {}) },
+                choixSpecialiteUser: JSON.parse(JSON.stringify(cl.choix_specialite_user || cl.choixSpecialiteUser || {})),
+                choixPredilection:   { ...(cl.choix_predilection || cl.choixPredilection || {}) },
+                specialiteMetier:    cl.specialite_metier || cl.specialiteMetier || null,
+            },
+            competencesFutiles: {
+                rangs: { ...((dbChar.competences_futiles || dbChar.competencesFutiles || {}).rangs || {}) },
+            },
+            fortune: dbChar.fortune || 0,
+            pouvoirs: [...(dbChar.pouvoirs || [])],
+        };
+    }, []);
+
+    // --- Validation pré-restauration du plancher ---
+    // Reconstruit un objet character au format client pour validateBeforeSeal
+    const buildClientCharForValidation = useCallback((dbChar) => {
+        const cl = dbChar.competences_libres || dbChar.competencesLibres || {};
+        return {
+            id: dbChar.id,
+            nom: dbChar.nom,
+            statut: dbChar.statut,
+            typeFee: dbChar.type_fee,
+            caracteristiques: { ...(dbChar.caracteristiques || {}) },
+            atouts: [...(dbChar.atouts || [])],
+            pouvoirs: [...(dbChar.pouvoirs || [])],
+            capaciteChoisie: dbChar.capacite_choisie || dbChar.capaciteChoisie,
+            profils: dbChar.profils || {},
+            competencesLibres: cl,
+            competencesFutiles: dbChar.competences_futiles || dbChar.competencesFutiles || {},
+            fortune: dbChar.fortune || 0,
+            data: dbChar.data || {},
+            computedStats: dbChar.data?.computed_stats || dbChar.data?.computedStats || {},
+            vieSociale: dbChar.vie_sociale || dbChar.vieSociale || {},
+        };
+    }, []);
+
+    // --- Exécution de la restauration du plancher ---
+    const executeRestoreFloor = useCallback(async (idx) => {
+        const row = characters[idx];
+        setCharacters(prev => prev.map((r, i) => i === idx ? { ...r, status: STATUS.PENDING, detail: 'Validation en cours...' } : r));
+
+        try {
+            // 1. Reconstruire le personnage au format client pour validation
+            const clientChar = buildClientCharForValidation(row.dbChar);
+
+            // 2. Récupérer feeData depuis gameData déjà chargé
+            const feeData = gameData?.fairyData?.[clientChar.typeFee];
+
+            // 3. Valider selon les règles d'apposition du Sceau
+            const { errors, warnings } = validateBeforeSeal(clientChar, gameData, feeData);
+
+            if (errors.length > 0) {
+                const msg = `Validation échouée (${errors.length} erreur(s)) : ${errors.join(' ')}`;
+                setCharacters(prev => prev.map((r, i) => i === idx ? { ...r, status: STATUS.SKIPPED, detail: msg } : r));
+                addLog(`❌ ${row.dbChar.nom} — ${msg}`);
+                return;
+            }
+
+            addLog(`🔨 ${row.dbChar.nom} — ${warnings.length > 0 ? `${warnings.length} avertissement(s), ` : ''}reconstruction du Plancher...`);
+
+            // 4. Construire stats_scellees depuis l'état actuel
+            const stats_scellees = buildStatsScellees(row.dbChar);
+
+            // 5. Persister en base
+            const newData = { ...(row.dbChar.data || {}), stats_scellees };
+            const { error: saveError } = await supabase
+                .from('characters')
+                .update({ data: newData, updated_at: new Date().toISOString() })
+                .eq('id', row.dbChar.id);
+
+            if (saveError) throw saveError;
+
+            // 6. Mettre à jour l'état local — le personnage a maintenant un plancher
+            const updatedDbChar = {
+                ...row.dbChar,
+                data: newData,
+            };
+            const mapped = mapDbCharForReconstruction(updatedDbChar);
+            setCharacters(prev => prev.map((r, i) => i === idx ? {
+                ...r,
+                dbChar: updatedDbChar,
+                mapped,
+                status: journalNeedsRepair(mapped) ? STATUS.PENDING : STATUS.OK,
+                detail: '',
+            } : r));
+            addLog(`🏗️ ${row.dbChar.nom} — Plancher restauré, ${journalNeedsRepair(mapped) ? 'journal à réparer' : 'journal complet'}.`);
+        } catch (e) {
+            setCharacters(prev => prev.map((r, i) => i === idx ? { ...r, status: STATUS.SKIPPED, detail: e.message } : r));
+            addLog(`❌ ${row.dbChar.nom} — erreur : ${e.message}`);
+        }
+    }, [characters, gameData, buildStatsScellees, buildClientCharForValidation]);
+
     // --- Exécution effective de la réparation (après confirmation) ---
     const executeRepair = useCallback(async (idx, preview) => {
         const row = characters[idx];
@@ -202,7 +349,14 @@ export default function TabRepairJournaux() {
         setConfirmTarget({ row, idx, preview });
     }, [characters, gameData]);
 
-    // --- Confirmation validée ---
+    // --- Demande de restauration du plancher ---
+    const requestRestoreFloor = useCallback((idx) => {
+        const row = characters[idx];
+        if (!gameData || row.status !== STATUS.SKIPPED) return;
+        setRestoreFloorTarget({ row, idx });
+    }, [characters, gameData]);
+
+    // --- Confirmation validée (réparation journal) ---
     const handleConfirm = useCallback(async () => {
         if (!confirmTarget) return;
         const { idx, preview } = confirmTarget;
@@ -210,12 +364,21 @@ export default function TabRepairJournaux() {
         await executeRepair(idx, preview);
     }, [confirmTarget, executeRepair]);
 
+    // --- Confirmation validée (restauration plancher) ---
+    const handleConfirmRestoreFloor = useCallback(async () => {
+        if (!restoreFloorTarget) return;
+        const { idx } = restoreFloorTarget;
+        setRestoreFloorTarget(null);
+        await executeRestoreFloor(idx);
+    }, [restoreFloorTarget, executeRestoreFloor]);
+
     // --- Filtrage + recherche ---
     const filtered = useMemo(() => {
         return characters
             .map((row, idx) => ({ row, idx }))
             .filter(({ row }) => {
                 if (filterMode === 'pending' && row.status !== STATUS.PENDING) return false;
+                if (filterMode === 'skipped' && row.status !== STATUS.SKIPPED) return false;
                 if (search.trim()) {
                     return row.dbChar.nom.toLowerCase().includes(search.toLowerCase());
                 }
@@ -240,6 +403,11 @@ export default function TabRepairJournaux() {
                 target={confirmTarget}
                 onConfirm={handleConfirm}
                 onCancel={() => setConfirmTarget(null)}
+            />
+            <RestoreFloorModal
+                target={restoreFloorTarget}
+                onConfirm={handleConfirmRestoreFloor}
+                onCancel={() => setRestoreFloorTarget(null)}
             />
 
             <div className="space-y-5">
@@ -272,7 +440,11 @@ export default function TabRepairJournaux() {
                         )}
                     </div>
                     <div className="flex gap-1 shrink-0">
-                        {[['pending', `⏳ À réparer (${needsRepairCount})`], ['all', '📋 Tous']].map(([mode, label]) => (
+                        {[
+                            ['pending', `⏳ À réparer (${needsRepairCount})`],
+                            ['skipped', `⚠️ Sans plancher (${stats[STATUS.SKIPPED] || 0})`],
+                            ['all', '📋 Tous'],
+                        ].map(([mode, label]) => (
                             <button
                                 key={mode}
                                 onClick={() => setFilterMode(mode)}
@@ -327,6 +499,15 @@ export default function TabRepairJournaux() {
                                             className="shrink-0 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                         >
                                             Reconstruire…
+                                        </button>
+                                    )}
+                                    {row.status === STATUS.SKIPPED && (
+                                        <button
+                                            onClick={() => requestRestoreFloor(idx)}
+                                            disabled={running || !gameDataReady}
+                                            className="shrink-0 px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            Restaurer le Plancher
                                         </button>
                                     )}
                                 </div>
