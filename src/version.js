@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.19.0 - "Le Gardien de la Mémoire 🧠"',
+    date: '16 Mai 2026',
+    description: 'Le Télégraphe cesse d\'amnésier ses lectures à chaque mise à jour. Les notifications de mises à jour sont désormais pleinement opérationnelles.',
+    changes: [
+      '🧠 **Fix Télégraphe — Amnésie des lectures résolue :** Les messages lus réapparaissaient comme non-lus à chaque nouvelle version. Cause identifiée : `localStorage.clear()` dans le mécanisme de mise à jour effaçait les marqueurs de lecture. Corrigé — vos lectures sont désormais préservées lors des déploiements.',
+      '📨 **Notifications de mises à jour opérationnelles :** Le système d\'emails (Mailjet) est fonctionnel. Les abonnés reçoivent un email soigné à chaque nouvelle version.',
+      '🔐 **Sécurité renforcée :** RLS corrigé sur le Registre de la Forge et les Profils, secrets de débogage retirés du code, vérifications de rôle ajoutées côté application.',
+    ]
+  },
+  {
     version: '15.18.3 - "La Lettre Scellée 📨"',
     date: '16 Mai 2026',
     description: 'Le système de notifications de mises à jour est pleinement opérationnel : emails envoyés via Mailjet, template redesigné, et corrections de parcours.',
