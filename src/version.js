@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.18.1 - "Le Recenseur Fidèle 📊"',
+    date: '16 Mai 2026',
+    description: 'Les statistiques d\'abonnement aux notifications affichaient toujours "1" à cause du RLS. Elles sont désormais exactes.',
+    changes: [
+      '📊 **Fix — Statistiques d\'abonnement corrigées :** Le panneau Notifications de l\'admin affichait systématiquement "1 abonné" au lieu des vrais chiffres. Le RLS de la table bloquait la lecture aux seules lignes de l\'utilisateur connecté. Corrigé via une fonction SQL SECURITY DEFINER, comme pour les autres stats admin.',
+    ]
+  },
+  {
     version: '15.18.0 - "Le Veilleur des Portes 🔐"',
     date: '16 Mai 2026',
     description: 'Audit de sécurité complet : les portes du Registre de la Forge et des Profils sont désormais gardées. Les artefacts de débogage ont été retirés des archives publiques.',
