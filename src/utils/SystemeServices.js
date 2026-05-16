@@ -117,8 +117,8 @@ export const registerServiceWorker = async () => {
 // ============================================================================
 export const getVersionType = (version) => {
   const parts = version.split('.');
-  if (parts[6] === '0' && parts[9] === '0') return 'major';
-  return 'minor';
+  // Majeure = première version d'un nouveau cycle (ex: 15.18.0) ; mineure = patch (15.18.1+)
+  return parts[2] === '0' ? 'major' : 'minor';
 };
 
 export const getUsersToNotify = async (versionType) => {
@@ -165,7 +165,7 @@ export const sendNotificationEmail = async (email, version, changelog) => {
   <pre>${changelog}</pre>
   </div>
   <p>
-  <a href="https://votre-app.com" style="display: inline-block; padding: 12px 24px; background: #d97706; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+  <a href="${process.env.REACT_APP_URL || 'https://heritiers.app'}" style="display: inline-block; padding: 12px 24px; background: #d97706; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
   Découvrir les nouveautés
   </a>
   </p>
