@@ -19,14 +19,16 @@ Deno.serve(async (req) => {
       })
     }
 
+    // Pattern correct Supabase : passer le JWT directement à getUser()
+    const jwt = authHeader.replace('Bearer ', '')
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     )
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    const { data: { user }, error: userError } = await supabase.auth.getUser(jwt)
     if (userError || !user) {
+      console.error('getUser error:', userError?.message)
       return new Response(JSON.stringify({ error: 'Utilisateur introuvable' }), {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
@@ -45,9 +47,8 @@ Deno.serve(async (req) => {
     }
 
     const { to, subject, html } = await req.json()
-
     if (!to || !subject || !html) {
-      return new Response(JSON.stringify({ error: 'Paramètres manquants (to, subject, html)' }), {
+      return new Response(JSON.stringify({ error: 'Paramètres manquants' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
@@ -55,7 +56,7 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get('MAILJET_API_KEY')
     const secretKey = Deno.env.get('MAILJET_SECRET_KEY')
     if (!apiKey || !secretKey) {
-      return new Response(JSON.stringify({ error: 'MAILJET_API_KEY ou MAILJET_SECRET_KEY non configuré' }), {
+      return new Response(JSON.stringify({ error: 'Clés Mailjet manquantes' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
@@ -79,6 +80,7 @@ Deno.serve(async (req) => {
     })
 
     const result = await mailjetResponse.json()
+    console.log('Mailjet response:', mailjetResponse.status, JSON.stringify(result).substring(0, 300))
 
     if (!mailjetResponse.ok) {
       return new Response(JSON.stringify({ error: result }), {
@@ -91,6 +93,7 @@ Deno.serve(async (req) => {
     })
 
   } catch (error) {
+    console.error('Exception:', error.message)
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
