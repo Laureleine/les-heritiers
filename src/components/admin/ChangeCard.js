@@ -1,6 +1,7 @@
 // src/components/admin/ChangeCard.js
 import React from 'react';
 import { Check, X, Plus, Minus, TestTubeDiagonal, ShieldAlert, Shield, User } from '../../config/icons';
+import { isSuperAdmin } from '../../utils/authRoles';
 import * as LucideIcons from 'lucide-react';
 
 const ChangeCard = React.memo(({ change, context, actions }) => {
@@ -257,7 +258,7 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
             Remettre en attente
           </button>
         )}
-        {change.status === 'escalated' && myRole === 'super_admin' && (
+        {change.status === 'escalated' && isSuperAdmin(myRole) && (
           <>
             <button onClick={() => onReject(change)} className="px-4 py-2 bg-gray-100 text-red-600 hover:bg-red-50 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
               <X size={16} /> Rejeter définitivement

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { isSuperAdmin } from '../utils/authRoles';
 
 export function useCorrectionCheck(userProfile) {
     const [pendingCorrections, setPendingCorrections] = useState([]);
@@ -10,7 +11,7 @@ export function useCorrectionCheck(userProfile) {
     const [loading, setLoading] = useState(false);
 
     const userId = userProfile?.id;
-    const isAdmin = userProfile?.profile?.role === 'super_admin';
+    const isAdmin = isSuperAdmin(userProfile);
 
     useEffect(() => {
         if (!userId) return;

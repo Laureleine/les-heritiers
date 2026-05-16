@@ -2,13 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
-    version: '15.19.3 - "La Clef du Scribe 🔧"',
-    date: '16 Mai 2026',
-    description: 'Le Scribe Admin peut désormais restaurer le Plancher de Verre des Héritiers oubliés, et ses leçons sont gravées dans le parchemin.',
+    version: '15.19.4 - "Le Sceau de l\'Architecte 🛡️"',
+    date: '17 Mai 2026',
+    description: 'Le Super Admin peut enfin restaurer durablement le Plancher de Verre : le Sceau d\'Architecte perce le voile du RLS, et le Scribe vérifie que l\'écriture tienne.',
     changes: [
-      '🔧 **Nouveau — Restauration du Plancher dans l\'onglet Réparation :** Les personnages « Sans plancher » (scellés sans `stats_scellees`) disposent désormais d\'un bouton « Restaurer le Plancher ». La procédure valide le personnage contre toutes les règles d\'apposition du Sceau (`validateBeforeSeal`) : si la validation échoue, rien n\'est persisté et l\'erreur est affichée dans le journal. Si elle réussit, le socle est reconstruit depuis l\'état actuel et sauvegardé en base. Un nouveau statut « 🏗️ Plancher restauré » et un filtre dédié complètent l\'outillage.',
-      '🧠 **REX — Mémoire de l\'Assistant gravée dans le marbre :** Les leçons de la session sont consignées en fin de registre des versions : ne pas mocker `bonusCalculator` dans les tests hooks, déboguer un mock suspect avec un test `it(\'debug\')`, rédiger le Message aux Héritiers avant le commit, et lancer le backup dès l\'ouverture de session.',
-      '🧪 **172 Sentinelles toujours en faction :** Aucune sentinelle n\'a été blessée. Des tests de non-régression pour la restauration du Plancher sont à prévoir (validation échouée, OK, mise à jour de statut).',
+      '🛡️ **RLS — Le Sceau de l\'Architecte perce le voile :** Nouvelle politique de sécurité (`Super admin can update all characters`) permettant au Super Admin de modifier les personnages de tous les Héritiers. Une fonction `get_user_role()` lit le rôle depuis le Grand Livre des Profils. Trois politiques couvrent UPDATE, DELETE et SELECT.',
+      '🔧 **Onglet Réparation — Le Scribe vérifie son encre :** `executeRestoreFloor` et `executeRepair` utilisent désormais `.select(\'id\')` après chaque `.update()` pour s\'assurer que l\'écriture a bien touché le parchemin. Si le RLS bloque (0 lignes affectées), une erreur explicite « Aucune ligne modifiée » est levée au lieu d\'un silence trompeur.',
+      '🧪 **7 nouvelles Sentinelles montent la garde :** Tests unitaires (chaîne update + select("id"), détection RLS bloqué) et tests d\'intégration (rendu, badges « Sans plancher », compteurs). 224 sentinelles veillent désormais.',
+      '📜 **Procédure /version enrichie (étape 7) :** Un REX de session est désormais rédigé dans `REX.md` à chaque livraison, pour graver les leçons dans le marbre.',
     ]
   },
   {

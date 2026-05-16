@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, X, Sparkles } from './config/icons';
+import { isSuperAdmin } from './utils/authRoles';
 import { useAppInit } from './hooks/useAppInit';
 import AppRouter from './AppRouter';
 
@@ -93,7 +94,7 @@ export default function App() {
           </button>
         </div>
         <div className="flex flex-wrap justify-center items-center gap-2 mt-3 max-w-2xl mx-auto">
-          {userProfile?.profile?.role === 'super_admin' && (
+          {isSuperAdmin(userProfile) && (
             <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 shadow-sm">Super Admin</span>
           )}
         </div>

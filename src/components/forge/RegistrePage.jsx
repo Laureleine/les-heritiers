@@ -5,13 +5,14 @@ import { useForge } from '../../context/ForgeContext';
 import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X, Copy, MessageCircle } from '../../config/icons'; 
 import ConfirmModal from '../ConfirmModal';
 import { showInAppNotification } from '../../utils/SystemeServices';
+import { isAdmin } from '../../utils/authRoles';
 
 export default function RegistrePage({ onBack, userProfile }) {
   // ✨ On récupère rejeterEntree !
   const { entrees, loading, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree } = useForge();
  
   const myUserId = userProfile?.id;
-  const isInitiated = userProfile?.profile?.is_initiated === true || ['super_admin', 'gardien'].includes(userProfile?.profile?.role);
+  const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin(userProfile);
 
   const [filtreType, setFiltreType] = useState('Anomalie');
   const [tri, setTri] = useState('Manuel');

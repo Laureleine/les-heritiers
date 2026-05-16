@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell } from '../config/icons';
+import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
 import TabUsers from './admin/TabUsers';
 import TabStats from './admin/TabStats';
 import TabForgeTitres from './admin/TabForgeTitres';
@@ -13,7 +14,7 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
     const [activeTab, setActiveTab] = useState('users');
     
     // ✨ L'œil de l'Architecte
-    const isSuperAdmin = userProfile?.profile?.role === 'super_admin';
+    const isSuperAdmin = checkSuperAdmin(userProfile);
 
     return (
         <div className="max-w-5xl mx-auto p-4 md:p-6 pb-24 animate-fade-in">

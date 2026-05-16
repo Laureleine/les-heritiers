@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { X, ArrowLeft, Shield } from '../config/icons';
 import { supabase } from '../config/supabase';
+import { isAdmin, isSuperAdmin } from '../utils/authRoles';
 import { invalidateAllCaches, loadCoreGameData, loadHeavyLoreData } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -133,7 +134,7 @@ export default function ValidationsPendantes({ session, onBack }) {
         const role = data?.role;
         if (isMounted.current) setMyRole(role);
 
-        if (role === 'gardien' || role === 'super_admin') {
+        if (isAdmin(role)) {
           await Promise.all([loadChanges(), loadDictionaries()]);
         } else {
           if (isMounted.current) setLoading(false);
@@ -275,7 +276,7 @@ export default function ValidationsPendantes({ session, onBack }) {
 
   if (loading) return <div className="p-8 text-center text-gray-500 font-serif animate-pulse">Ouverture du Conseil...</div>;
 
-  if (myRole !== 'gardien' && myRole !== 'super_admin') {
+  if (!isAdmin(myRole)) {
     return (
       <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24 text-center">
         <Shield size={64} className="mx-auto text-red-400 mb-6 opacity-50" />
@@ -304,7 +305,7 @@ export default function ValidationsPendantes({ session, onBack }) {
         <button onClick={() => setActiveTab('approved')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'approved' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
           3. Historique ({historyChanges.length})
         </button>
-        {myRole === 'super_admin' && (
+        {isSuperAdmin(myRole) && (
           <button onClick={() => setActiveTab('escalated')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'escalated' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-400 hover:text-gray-600'}`}>
             🚨 Escalades ({escalatedChanges.length})
           </button>
@@ -327,7 +328,7 @@ export default function ValidationsPendantes({ session, onBack }) {
             <ChangeCard key={c.id} change={c} context={cardContext} actions={cardActions} />
           ) : <p className="text-gray-500 italic p-6 text-center border-2 border-dashed border-gray-200 rounded-xl bg-white/50">L'historique est vide.</p>
         )}
-        {activeTab === 'escalated' && myRole === 'super_admin' && (
+        {activeTab === 'escalated' && isSuperAdmin(myRole) && (
           escalatedChanges.length > 0 ? escalatedChanges.map(c => 
             <ChangeCard key={c.id} change={c} context={cardContext} actions={cardActions} />
           ) : <p className="text-red-500 italic p-6 text-center border-2 border-dashed border-red-200 rounded-xl bg-red-50/50">Aucune anomalie magique à traiter, Architecte !</p>
