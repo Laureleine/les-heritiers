@@ -93,6 +93,10 @@ describe('spendXp', () => {
   it('additionne le coût aux dépenses', () => {
     expect(spendXp(30, 12)).toBe(42);
   });
+
+  it('gère un coût négatif', () => {
+    expect(spendXp(30, -5)).toBe(25);
+  });
 });
 
 describe('refundXp', () => {
@@ -100,10 +104,17 @@ describe('refundXp', () => {
     expect(refundXp(30, 5)).toBe(25);
     expect(refundXp(3, 10)).toBe(0);
   });
+
+  it('gère un remboursement négatif', () => {
+    expect(refundXp(30, -5)).toBe(35);
+  });
 });
 
 describe('XP_CODES', () => {
-  it('définit toutes les constantes canoniques', () => {
+  it('définit toutes les constantes canoniques sans doublon de valeur', () => {
+    const codes = Object.values(XP_CODES);
+    const uniques = new Set(codes);
+    expect(uniques.size).toBe(codes.length);
     expect(XP_CODES.CARAC_AUGMENTATION).toBe('CARAC_AUGMENTATION');
     expect(XP_CODES.MASQUE_EPAISSISSEMENT).toBe('MASQUE_EPAISSISSEMENT');
     expect(XP_CODES.FEERIE_EVEIL).toBe('FEERIE_EVEIL');
@@ -118,6 +129,5 @@ describe('XP_CODES', () => {
     expect(XP_CODES.XP_AJUSTEMENT).toBe('XP_AJUSTEMENT');
     expect(XP_CODES.XP_HISTORIQUE).toBe('XP_HISTORIQUE');
     expect(XP_CODES.XP_SOLDE).toBe('XP_SOLDE');
-    expect(Object.keys(XP_CODES).length).toBe(14);
   });
 });

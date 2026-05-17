@@ -13,7 +13,7 @@ const POINTS_TOTAUX = 10;
 
 export default function StepCompetencesFutiles() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
-  const fairyData = gameData.fairyData;
+  const fairyData = gameData?.fairyData;
 
   // Le remplaçant local :
   const onCompetencesFutilesChange = (c) => {
@@ -26,7 +26,7 @@ export default function StepCompetencesFutiles() {
   const [newCompetenceDesc, setNewCompetenceDesc] = useState('');
   const [choixPredilection, setChoixPredilection] = useState({});
 
-  const feeData = fairyData[character.typeFee];
+  const feeData = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 
   // ✨ NOUVEAU : Variables du Puits des Âmes et du Plancher de Verre
   const isScelle = isCharacterScelle(character);

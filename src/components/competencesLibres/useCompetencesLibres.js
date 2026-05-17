@@ -17,14 +17,14 @@ export const SKILLS_ESPRIT = [
 
 export function useCompetencesLibres() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
-    const { profils, competences, competencesParProfil, fairyData, socialItems } = gameData;
+    const { profils, competences, competencesParProfil, fairyData, socialItems } = gameData || {};
 
     const isScelle = isCharacterScelle(character);
     const { xpDispo } = getXpState(character);
 
     const [creatingSpecFor, setCreatingSpecFor] = useState(null);
 
-    const feeData = fairyData[character.typeFee];
+    const feeData = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 
     // ✨ LE FIX ABSOLU EST ICI : On stabilise la référence mémoire de "lib" !
     const lib = useMemo(() => {

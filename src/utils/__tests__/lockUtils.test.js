@@ -24,6 +24,10 @@ describe('isCharacterScelle', () => {
   it('retourne false si character est undefined', () => {
     expect(isCharacterScelle(undefined)).toBe(false);
   });
+
+  it('retourne false pour statut chaîne vide', () => {
+    expect(isCharacterScelle({ statut: '' })).toBe(false);
+  });
 });
 
 describe('isCharacterLocked', () => {
@@ -41,5 +45,9 @@ describe('isCharacterLocked', () => {
 
   it('cumule scellé + read-only', () => {
     expect(isCharacterLocked({ statut: 'scelle' }, true)).toBe(true);
+  });
+
+  it('retourne false si character null et isReadOnly false', () => {
+    expect(isCharacterLocked(null, false)).toBe(false);
   });
 });

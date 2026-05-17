@@ -178,6 +178,16 @@ describe('calculateFullCombatStats', () => {
     expect(stats.tricherie).toBe(3);
   });
 
+  it('gère des caracteristiques partielles', () => {
+    const partialChar = {
+      ...char,
+      caracteristiques: { agilite: 3 },
+    };
+    const stats = calculateFullCombatStats(partialChar, baseGameData);
+    expect(stats.esquiveMasquee).toBeDefined();
+    expect(typeof stats.esquiveMasquee).toBe('number');
+  });
+
   it('retourne un objet vide si character est null', () => {
     expect(calculateFullCombatStats(null, baseGameData)).toEqual({});
   });

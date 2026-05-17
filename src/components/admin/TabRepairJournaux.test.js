@@ -165,13 +165,11 @@ describe('TabRepairJournaux - RLS Update avec .select("id")', () => {
 
       supabase.from.mockImplementation(() => mockChain({ data: [fakeChar], error: null }));
 
-      const { container } = render(<TabRepairJournaux />);
+      const { container, getByText } = render(<TabRepairJournaux />);
 
       await waitFor(() => {
-        // Le badge "✅ Complet" doit afficher 1
-        const badges = container.querySelectorAll('.text-lg.font-black');
-        const completBadge = badges[1]; // 2ème badge = Complet
-        expect(completBadge.textContent).toBe('1');
+        const completSection = getByText('✅ Complet').parentElement;
+        expect(completSection.querySelector('.text-lg.font-black').textContent).toBe('1');
       });
     });
 
@@ -197,13 +195,11 @@ describe('TabRepairJournaux - RLS Update avec .select("id")', () => {
 
       supabase.from.mockImplementation(() => mockChain({ data: [sansPlancher], error: null }));
 
-      const { container } = render(<TabRepairJournaux />);
+      const { container, getByText } = render(<TabRepairJournaux />);
 
       await waitFor(() => {
-        // Le badge "⚠️ Sans plancher" doit afficher 1
-        const badges = container.querySelectorAll('.text-lg.font-black');
-        const skippedBadge = badges[3]; // 4ème badge = Sans plancher
-        expect(skippedBadge.textContent).toBe('1');
+        const skippedSection = getByText('⚠️ Sans plancher').parentElement;
+        expect(skippedSection.querySelector('.text-lg.font-black').textContent).toBe('1');
       });
     });
   });

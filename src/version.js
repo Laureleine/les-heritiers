@@ -2,12 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
-    version: '15.19.6 - "La Pensée Retrouvée 📖"',
+    version: '15.19.7 - "La Vigie Renforcée 🧪"',
     date: '17 Mai 2026',
-    description: 'Le Grimoire Personnel ne confond plus les pensées avec les visages : « Écrire une pensée » ouvre enfin le bon formulaire, et les modifications s\'enregistrent.',
+    description: '243 Sentinelles montent désormais la garde : revue complète des 18 suites de tests, 19 nouveaux gardiens postés aux angles morts, et le Tribunal des Ombres juge désormais le vrai code plutôt que des pantins.',
     changes: [
-      '🐛 **Fix — « Écrire une pensée » ouvrait le formulaire des contacts :** Le bouton `onClick={handleOpenModal}` passait silencieusement l\'événement DOM comme argument, faisant croire à la modale qu\'elle devait éditer un « type: click » existant. Le sélecteur de formulaire, ne trouvant ni `note` ni `possession`, affichait par défaut le formulaire contact. La sauvegarde échouait car `type: \'click\'` est inconnu de la table `heritier_notes`. Corrigé en `onClick={() => handleOpenModal()}` — un changement d\'un seul caractère.',
-      '🧪 **224 Sentinelles toujours en faction :** Aucune régression.',
+      '🧪 **243 Sentinelles (contre 224) :** Revue systématique des 18 suites de tests — 19 nouveaux gardiens postés aux angles morts : chaîne vide `statut: ""`, personnage vide `{}` dans la validation, `caracteristiques` partielles, valeurs négatives dans les coûts XP, chaînes de version malformées, et réduction Fortune qui dépasse le coût brut.',
+      '⚖️ **Le Tribunal des Ombres juge le vrai code :** `handleAdjustXP.test.js` ne teste plus une réimplémentation locale du reducer, mais le vrai `characterReducer` du moteur de jeu. Les transactions REMBOURSEMENT et GAIN négatif sont vérifiées sur la mécanique réelle, pas sur un simulacre.',
+      '🧹 **Nettoyage des artéfacts :** Le test no-op `expect(true).toBe(true)` a été exhumé des catacombes et réduit en poussière. 7 tests `isSuperAdmin` redondants ont été fondus en un seul `it.each` élégant. Les badges de l\'onglet Réparation sont désormais sélectionnés par leur nom plutôt que par leur position fragile dans le DOM.',
+      '🏷️ **« Communauté & Métriques » sur une seule ligne :** Le titre du tableau de bord ne se brise plus en deux sur les écrans étroits — un sort `whitespace-nowrap` maintient l\'unité du nom.',
     ]
   },
   {
