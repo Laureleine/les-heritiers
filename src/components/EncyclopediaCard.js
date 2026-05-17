@@ -38,6 +38,17 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
                 <h3 className="font-serif font-bold text-lg text-amber-900">{title}</h3>
                 <div className="flex gap-2 flex-wrap justify-end">
                     
+                    {/* BADGE STATUT OFFICIEL / COMMUNAUTAIRE */}
+                    {item.is_official !== undefined && (
+                        <span className={`text-[10px] px-2 py-1 rounded-full uppercase font-bold tracking-wider border shadow-sm flex items-center gap-1 ${
+                            item.is_official
+                                ? 'bg-amber-100 text-amber-800 border-amber-300'
+                                : 'bg-stone-100 text-stone-500 border-stone-300'
+                        }`}>
+                            {item.is_official ? '📚 Officiel' : '👥 Communautaire'}
+                        </span>
+                    )}
+
                     {/* AFFICHAGE DES BADGES MAGIQUES */}
                     {powerBadges.map((badge, index) => (
                         <span key={index} className={`text-[10px] px-2 py-1 rounded-full uppercase font-bold tracking-wider border shadow-sm ${badge.color}`}>

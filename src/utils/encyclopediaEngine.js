@@ -64,6 +64,11 @@ export const submitEncyclopediaProposal = async ({
             else surgicalData.nom = baseName;
         }
 
+        // 📚 SCEAU D'OFFICIALITÉ (Commun à tous les types)
+        if (proposal.is_official !== undefined && proposal.is_official !== editingItem?.is_official) {
+            surgicalData.is_official = proposal.is_official;
+        }
+
         if (activeTab === 'fairy_types') {
             const newAvantages = normalizeTextListField(proposal.avantages);
             const oldAvantages = normalizeTextListField(editingItem.avantages);
@@ -321,6 +326,11 @@ export const submitEncyclopediaProposal = async ({
 
         // --- ENVOI DE LA REQUÊTE ---
         const recordId = isCreating ? generateId() : editingItem.id;
+        // 🔴 FIX : Injecter l'ID dans surgicalData pour que apply-encyclopedia-change
+        //     détecte correctement INSERT (mainData.id défini) vs UPDATE
+        if (isCreating) {
+            surgicalData.id = recordId;
+        }
         const requestPayload = {
             user_id: userProfile?.id,
             table_name: activeTab,

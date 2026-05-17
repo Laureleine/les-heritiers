@@ -433,6 +433,10 @@ export default function BonusBuilder({
                                                 setCreatingSpecFor(block.id);
                                                 setNewSpecName('');
                                             } else {
+                                                const picked = availableSpecs.find(s => s.nom === e.target.value);
+                                                if (picked && picked.is_official === false) {
+                                                    if (!window.confirm(`⚠️ "${picked.nom}" est une spécialité non-officielle, créée par la Communauté.\n\nSouhaitez-vous vraiment l'utiliser ?`)) return;
+                                                }
                                                 updateBlock(block.id, 'nom', e.target.value);
                                             }
                                         }}
@@ -615,6 +619,10 @@ export default function BonusBuilder({
                                                 setCreatingSpecFor(block.id);
                                                 setNewSpecName('');
                                             } else {
+                                                const picked = availableSpecs.find(s => s.nom === e.target.value);
+                                                if (picked && picked.is_official === false) {
+                                                    if (!window.confirm(`⚠️ "${picked.nom}" est une spécialité non-officielle, créée par la Communauté.\n\nSouhaitez-vous vraiment l'utiliser ?`)) return;
+                                                }
                                                 updateBlock(block.id, 'nom', e.target.value);
                                             }
                                         }}
