@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.19.5 - "Le Parchemin à l\'Épreuve du Vide 🛡️"',
+    date: '17 Mai 2026',
+    description: 'Les Gardiens du Nuage veillent désormais sur chaque fiche : plus aucun Héritier ne verra « null is not an object » en ouvrant son parchemin, même si les données féériques tardent à charger.',
+    changes: [
+      '🛡️ **4 Gardiens postés aux portes des Étapes :** `StepCapacites`, `StepCompetencesFutiles`, `useCompetencesLibres` et `pixieBrain.js` accédaient à `fairyData[typeFee]` sans vérifier que le Nuage féérique était bien arrivé. Si les données du Grimoire n\'étaient pas encore chargées, le parchemin explosait en « null is not an object ». Chaque accès est désormais protégé par une garde ternaire ou un optional chaining, comme `StepAtouts` et `StepPouvoirs` le faisaient déjà.',
+      '🧪 **224 Sentinelles toujours en faction :** Aucune régression. Tous les sorts du moteur, du Cerbère et de la validation continuent de fonctionner.',
+    ]
+  },
+  {
     version: '15.19.4 - "Le Sceau de l\'Architecte 🛡️"',
     date: '17 Mai 2026',
     description: 'Le Super Admin peut enfin restaurer durablement le Plancher de Verre : le Sceau d\'Architecte perce le voile du RLS, et le Scribe vérifie que l\'écriture tienne.',
