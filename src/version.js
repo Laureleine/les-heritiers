@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.19.6 - "La Pensée Retrouvée 📖"',
+    date: '17 Mai 2026',
+    description: 'Le Grimoire Personnel ne confond plus les pensées avec les visages : « Écrire une pensée » ouvre enfin le bon formulaire, et les modifications s\'enregistrent.',
+    changes: [
+      '🐛 **Fix — « Écrire une pensée » ouvrait le formulaire des contacts :** Le bouton `onClick={handleOpenModal}` passait silencieusement l\'événement DOM comme argument, faisant croire à la modale qu\'elle devait éditer un « type: click » existant. Le sélecteur de formulaire, ne trouvant ni `note` ni `possession`, affichait par défaut le formulaire contact. La sauvegarde échouait car `type: \'click\'` est inconnu de la table `heritier_notes`. Corrigé en `onClick={() => handleOpenModal()}` — un changement d\'un seul caractère.',
+      '🧪 **224 Sentinelles toujours en faction :** Aucune régression.',
+    ]
+  },
+  {
     version: '15.19.5 - "Le Parchemin à l\'Épreuve du Vide 🛡️"',
     date: '17 Mai 2026',
     description: 'Les Gardiens du Nuage veillent désormais sur chaque fiche : plus aucun Héritier ne verra « null is not an object » en ouvrant son parchemin, même si les données féériques tardent à charger.',
