@@ -9,7 +9,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../config/supabase';
 import { loadFairyTypes, loadSocialItems } from '../../utils/supabaseGameData';
-import { Search, X, AlertTriangle, CheckCircle, Wrench } from '../../config/icons';
+import { Search, X, AlertTriangle, CheckCircle, Wrench, MessageCircle } from '../../config/icons';
 import {
     mapDbCharForReconstruction,
     journalNeedsRepair,
@@ -164,7 +164,7 @@ export default function TabRepairJournaux() {
     const [running]         = useState(false);
     const [log, setLog]                 = useState([]);
     const [search, setSearch]           = useState('');
-    const [filterMode, setFilterMode]   = useState('pending'); // 'all' | 'pending'
+    const [filterMode, setFilterMode]   = useState('all'); // 'all' | 'pending' | 'skipped'
     const [confirmTarget, setConfirmTarget] = useState(null); // { row, idx, preview }
     const [restoreFloorTarget, setRestoreFloorTarget] = useState(null); // { row, idx }
 
@@ -190,7 +190,7 @@ export default function TabRepairJournaux() {
 
                 const { data: chars, error } = await supabase
                     .from('characters')
-                    .select('*')
+                    .select('*, profiles(username)')
                     .in('statut', ['scelle', 'scellé'])
                     .order('nom');
 
@@ -416,12 +416,12 @@ export default function TabRepairJournaux() {
 
             <div className="space-y-5">
 
-                {/* Bandeau de stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {/* Bandeau de stats — sur une ligne */}
+                <div className="grid grid-cols-6 gap-1.5">
                     {Object.entries(STATUS_META).map(([key, meta]) => (
-                        <div key={key} className={`text-center py-2 px-3 rounded-lg border text-xs font-bold ${meta.badge}`}>
-                            <div className="text-lg font-black">{stats[key] || 0}</div>
-                            <div className="leading-tight mt-0.5">{meta.label}</div>
+                        <div key={key} className={`text-center py-1.5 px-1 rounded-lg border font-bold ${meta.badge}`}>
+                            <div className="text-base font-black leading-none">{stats[key] || 0}</div>
+                            <div className="text-[9px] sm:text-[10px] leading-tight mt-0.5 truncate">{meta.label}</div>
                         </div>
                     ))}
                 </div>
@@ -474,6 +474,8 @@ export default function TabRepairJournaux() {
                             const meta        = STATUS_META[row.status];
                             const canRepair   = row.status !== STATUS.SKIPPED && row.status !== STATUS.OK;
 
+                            const ownerName = row.dbChar.profiles?.username || 'Utilisateur inconnu';
+
                             return (
                                 <div key={row.dbChar.id} className="bg-white border border-gray-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-3 shadow-sm hover:shadow transition-shadow">
                                     {/* Infos personnage */}
@@ -491,9 +493,26 @@ export default function TabRepairJournaux() {
                                                 XP : {row.dbChar.xp_total} total / {row.dbChar.xp_depense} dépensé
                                                 {' · '}Journal : {journal.length} entrée{journal.length > 1 ? 's' : ''}
                                                 {journal.length > 0 && ` (${gains} gain${gains > 1 ? 's' : ''}, ${deps} dépense${deps > 1 ? 's' : ''})`}
+                                                {' · '}Propriétaire : {ownerName}
                                             </p>
                                         )}
                                     </div>
+
+                                    {/* Message au propriétaire */}
+                                    {row.dbChar.user_id && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                window.dispatchEvent(new CustomEvent('open-telegraphe', {
+                                                    detail: { targetUser: { id: row.dbChar.user_id, username: ownerName } }
+                                                }));
+                                            }}
+                                            title={`Envoyer un message à ${ownerName}`}
+                                            className="shrink-0 p-2 text-stone-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                                        >
+                                            <MessageCircle size={18} />
+                                        </button>
+                                    )}
 
                                     {/* Action */}
                                     {canRepair && (
