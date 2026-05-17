@@ -1,5 +1,5 @@
 // src/context/ForgeContext.jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getCurrentUser } from '../utils/authUtils';
@@ -12,7 +12,7 @@ export function ForgeProvider({ children }) {
   const [entrees, setEntrees] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchForge = async () => {
+  const fetchForge = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('registre_forge')
@@ -23,11 +23,11 @@ export function ForgeProvider({ children }) {
     if (error) console.error("Forge fetch:", error);
     if (!error && data) setEntrees(data);
     setLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
     fetchForge();
-  }, []);
+  }, [fetchForge]);
 
   const soumettreEntree = async (data, file) => {
     try {
@@ -194,8 +194,8 @@ export function ForgeProvider({ children }) {
   };
 
   return (
-    <ForgeContext.Provider value={{ 
-      entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban, 
+    <ForgeContext.Provider value={{
+      entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban,
       toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree
     }}>
       {children}
