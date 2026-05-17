@@ -101,3 +101,17 @@
 - **Quand un test `getByText` rate avec "multiple elements"** : vérifier si le texte apparaît dans le badge ET dans la stat box. Utiliser `container.querySelector` avec un sélecteur plus précis ou `Array.from().find()`.
 - **Backup automatique** : bien vérifié en début de session. Backup déjà fait dans la session précédente (15.19.7) donc backup clean pour 15.19.8.
 - **Toujours lancer la suite complète après une modif de composant** : les changements de `TabRepairJournaux` impactent 7 tests, pas seulement les tests unitaires.
+
+### Règle ajoutée
+
+21. **`useEffect([], [])` dans un provider est un piège quand l'auth n'est pas prête** — `ForgeContext.jsx` chargeait les données au montage de l'application (`ForgeProvider` dans `index.js`), avant que Supabase ait restauré la session depuis le localStorage. RLS bloquait la requête → `entrees = []`. La page `RegistrePage` ne re-fetchait jamais. **Solution** : chaque page qui a besoin des données appelle `fetchForge()` dans son propre `useEffect` au montage. C'est le même pattern que les tabs de l'AdminDashboard.
+
+### Points de vigilance
+
+- **Ne pas se fier à l'ordre de montage des providers** : `ForgeProvider` est monté AVANT qu'App.js ait fini `useAppInit()`. Même si le provider avait un `useEffect` dépendant de `session`, il ne l'a pas dans son scope.
+- **Les composants de page (routes) sont remontés à chaque navigation** : c'est le bon endroit pour les `useEffect` de chargement de données. Les providers au-dessus doivent exposer les fonctions de fetch, pas (ou pas seulement) les appeler automatiquement.
+
+### Patterns CSS (session)
+
+- **`grid-cols-6` pour 6 éléments sur une ligne** — Plus fiable que `flex flex-wrap` quand on veut exactement 6 colonnes. Combiner avec `gap-1.5`, `py-1.5 px-1`, `text-[9px] sm:text-[10px]` et `truncate` sur les labels pour que ça tienne.
+- **Le changement de classe d'icône dans le mock `lucide-react`** — Quand on ajoute une icône (ex: `MessageCircle`), il faut l'ajouter AUX DEUX ENDROITS : l'import du composant ET le mock `lucide-react` dans le test. Sans ça, l'icône est `undefined` et le composant ne plante pas mais peut ne pas rendre le bouton attendu.
