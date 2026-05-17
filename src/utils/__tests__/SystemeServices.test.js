@@ -96,4 +96,10 @@ describe('getVersionType', () => {
     expect(getVersionType('15.18.1')).toBe('minor');
     expect(getVersionType('15.18.42')).toBe('minor');
   });
+
+  it('retourne "minor" pour une chaîne malformée', () => {
+    expect(getVersionType('abc')).toBe('minor');
+    expect(getVersionType('15.18')).toBe('minor');
+    expect(getVersionType('')).toBe('minor');
+  });
 });

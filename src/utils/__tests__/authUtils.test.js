@@ -32,6 +32,11 @@ describe('getCurrentUser', () => {
     const user = await getCurrentUser();
     expect(user).toBeNull();
   });
+
+  it('propage l\'exception si Supabase jette une erreur', async () => {
+    supabase.auth.getUser.mockRejectedValue(new Error('Network failure'));
+    await expect(getCurrentUser()).rejects.toThrow('Network failure');
+  });
 });
 
 describe('requireCurrentUser', () => {
@@ -45,7 +50,7 @@ describe('requireCurrentUser', () => {
     expect(user.id).toBe('user-1');
   });
 
-  it('lève une erreur quand pas connecté', async () => {
+  it('lève une erreur avec le message par défaut', async () => {
     supabase.auth.getUser.mockResolvedValue({ data: { user: null }, error: null });
     await expect(requireCurrentUser()).rejects.toThrow('Vous devez être connecté pour effectuer cette action.');
   });

@@ -193,6 +193,11 @@ describe('hasMinimumRole', () => {
     expect(hasMinimumRole(nullProfile, 'user')).toBe(false);
   });
 
+  it('retourne false si userProfile null pour minimum super_admin', () => {
+    expect(hasMinimumRole(null, 'super_admin')).toBe(false);
+    expect(hasMinimumRole(undefined, 'super_admin')).toBe(false);
+  });
+
   it('accepte des strings brutes', () => {
     expect(hasMinimumRole('super_admin', 'gardien')).toBe(true);
     expect(hasMinimumRole('gardien', 'super_admin')).toBe(false);
@@ -217,35 +222,15 @@ describe('Non-régression : correspondance avec les patterns existants', () => {
     });
   });
 
-  // Pattern useTelegraphe.js:14
-  it('useTelegraphe.js: isInitiated = is_initiated || isAdmin', () => {
-    // isAdmin est testé séparément — la combinaison avec is_initiated
-    // reste dans le fichier appelant
-    expect(true).toBe(true);
-  });
-
-  // Pattern useCorrectionCheck.js:13
-  it('useCorrectionCheck.js: isAdmin = role === "super_admin"', () => {
-    const original = (profile) => profile?.profile?.role === 'super_admin';
-
-    [superAdminProfile, gardienProfile, userProfile, nullProfile].forEach(p => {
-      expect(isSuperAdmin(p)).toBe(original(p));
-    });
-  });
-
-  // Pattern useForgeTitres.js:14
-  it('useForgeTitres.js: isSuperAdmin = role === "super_admin"', () => {
-    const original = (profile) => profile?.profile?.role === 'super_admin';
-
-    [superAdminProfile, gardienProfile, userProfile, nullProfile].forEach(p => {
-      expect(isSuperAdmin(p)).toBe(original(p));
-    });
-  });
-
-  // Pattern useFeatureFlag.js:9
-  it('useFeatureFlag.js: role === "super_admin"', () => {
-    const original = (profile) => profile?.profile?.role === 'super_admin';
-
+  it.each([
+    ['useCorrectionCheck.js:13',  (p) => p?.profile?.role === 'super_admin'],
+    ['useForgeTitres.js:14',      (p) => p?.profile?.role === 'super_admin'],
+    ['useFeatureFlag.js:9',       (p) => p?.profile?.role === 'super_admin'],
+    ['CharacterList.js:172',      (p) => p?.profile?.role === 'super_admin'],
+    ['AdminDashboard.js:16',      (p) => p?.profile?.role === 'super_admin'],
+    ['EncyclopediaCard.js:153',   (p) => p?.profile?.role === 'super_admin'],
+    ['EncyclopediaModal.js:31',   (p) => p?.profile?.role === 'super_admin'],
+  ])('isSuperAdmin correspond au pattern %s', (_, original) => {
     [superAdminProfile, gardienProfile, userProfile, nullProfile].forEach(p => {
       expect(isSuperAdmin(p)).toBe(original(p));
     });
@@ -268,24 +253,6 @@ describe('Non-régression : correspondance avec les patterns existants', () => {
 
     [superAdminProfile, gardienProfile, userProfile, nullProfile].forEach(p => {
       expect(isAdmin(p)).toBe(original(p));
-    });
-  });
-
-  // Pattern EncyclopediaCard.js:153
-  it('EncyclopediaCard.js: role === "super_admin"', () => {
-    const original = (profile) => profile?.profile?.role === 'super_admin';
-
-    [superAdminProfile, gardienProfile, userProfile, nullProfile].forEach(p => {
-      expect(isSuperAdmin(p)).toBe(original(p));
-    });
-  });
-
-  // Pattern EncyclopediaModal.js:31
-  it('EncyclopediaModal.js: isSuperAdmin = role === "super_admin"', () => {
-    const original = (profile) => profile?.profile?.role === 'super_admin';
-
-    [superAdminProfile, gardienProfile, userProfile, nullProfile].forEach(p => {
-      expect(isSuperAdmin(p)).toBe(original(p));
     });
   });
 
@@ -315,24 +282,6 @@ describe('Non-régression : correspondance avec les patterns existants', () => {
     expect(isNotAdmin('super_admin')).toBe(original('super_admin'));
     expect(isNotAdmin('gardien')).toBe(original('gardien'));
     expect(isNotAdmin('user')).toBe(original('user'));
-  });
-
-  // Pattern CharacterList.js:172
-  it('CharacterList.js: isAdminUser = role === "super_admin"', () => {
-    const original = (profile) => profile?.profile?.role === 'super_admin';
-
-    [superAdminProfile, gardienProfile, userProfile, nullProfile].forEach(p => {
-      expect(isSuperAdmin(p)).toBe(original(p));
-    });
-  });
-
-  // Pattern AdminDashboard.js:16
-  it('AdminDashboard.js: isSuperAdmin = role === "super_admin"', () => {
-    const original = (profile) => profile?.profile?.role === 'super_admin';
-
-    [superAdminProfile, gardienProfile, userProfile, nullProfile].forEach(p => {
-      expect(isSuperAdmin(p)).toBe(original(p));
-    });
   });
 
 });

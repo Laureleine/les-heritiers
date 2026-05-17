@@ -10,8 +10,8 @@ import { isCharacterScelle } from '../utils/lockUtils';
 
 export default function StepCapacites() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
-  const fairyData = gameData.fairyData;
-  const data = fairyData[character.typeFee];
+  const fairyData = gameData?.fairyData;
+  const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 
   // 🛡️ LE PLANCHER DE VERRE
   const isScelle = isCharacterScelle(character);

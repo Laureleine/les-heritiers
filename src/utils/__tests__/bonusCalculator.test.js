@@ -125,6 +125,22 @@ describe('calculateCharacterStats', () => {
     );
     expect(result.caracteristiques.bonus).toEqual({});
   });
+
+  it('gère un personnage sans typeFee', () => {
+    const result = calculateCharacterStats(
+      { caracteristiques: { agilite: 3 } },
+      baseGameData
+    );
+    expect(result.caracteristiques.base.agilite).toBe(3);
+  });
+
+  it('gère gameData sans fairyData', () => {
+    const result = calculateCharacterStats(
+      { typeFee: 'Lutin', caracteristiques: { agilite: 3 } },
+      {}
+    );
+    expect(result.caracteristiques.base.agilite).toBe(3);
+  });
 });
 
 describe('formatCaracteristique', () => {
@@ -193,6 +209,10 @@ describe('getCompetenceBonus', () => {
 describe('getSpecialitesGratuites', () => {
   it('retourne un tableau vide si pas de spécialités', () => {
     expect(getSpecialitesGratuites('Sciences', { specialites: { gratuites: {} } })).toEqual([]);
+  });
+
+  it('retourne un tableau vide si la compétence n\'a pas de spécialité gratuite', () => {
+    expect(getSpecialitesGratuites('Inexistant', { specialites: { gratuites: {} } })).toEqual([]);
   });
 
   it('retourne les spécialités gratuites', () => {

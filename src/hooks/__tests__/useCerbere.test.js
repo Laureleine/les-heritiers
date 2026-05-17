@@ -129,6 +129,19 @@ describe('useCerbere', () => {
       expect(mockNotif()).toHaveBeenCalledWith('Veuillez sauvegarder avant de sceller.', 'error');
       expect(result.current.showConfirmSeal).toBe(false);
     });
+
+    it('affiche les erreurs et ouvre la modale (le blocage est visuel)', () => {
+      mockValidate().mockReturnValue({ errors: ['Caractéristiques incomplètes'], warnings: [] });
+
+      const { result } = renderHook(() => useCerbere());
+
+      act(() => {
+        result.current.handleSealClick();
+      });
+
+      expect(result.current.sealErrors).toEqual(['Caractéristiques incomplètes']);
+      expect(result.current.showConfirmSeal).toBe(true);
+    });
   });
 
   describe('executeSeal', () => {

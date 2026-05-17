@@ -100,7 +100,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
           Mon Grimoire Personnel
         </h2>
         <button 
-          onClick={handleOpenModal}
+          onClick={() => handleOpenModal()}
           className="bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-transform active:scale-95 shadow-sm"
         >
           <Plus size={18} /> Écrire une pensée

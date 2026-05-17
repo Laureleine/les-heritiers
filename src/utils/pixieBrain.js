@@ -288,7 +288,7 @@ export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
   // ---------------------------------------------------------
   // C. LECTURE DES CARACTÉRISTIQUES (Valeurs exactes 1 à 5)
   // ---------------------------------------------------------
-  const typeData = fairyData[c.typeFee];
+  const typeData = fairyData?.[c.typeFee];
   if (typeData && typeData.caracteristiques && Object.keys(caracs).length > 0) {
     
     // On prend une stat au hasard parmi celles déjà remplies pour ne pas être répétitif

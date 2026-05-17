@@ -39,6 +39,12 @@ describe('validateBeforeSeal', () => {
     expect(result.errors).toEqual([]);
   });
 
+  it('gère un personnage vide sans planter', () => {
+    const result = validateBeforeSeal({}, {}, null);
+    expect(Array.isArray(result.errors)).toBe(true);
+    expect(result.errors.length).toBeGreaterThan(0);
+  });
+
   it('retourne warning pour points de compétences restants', () => {
     const result = validateBeforeSeal(
       { ...baseCharacter, competencesLibres: { ...baseCharacter.competencesLibres, rangs: {} } },

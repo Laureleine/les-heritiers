@@ -90,9 +90,17 @@ describe('characterReducer', () => {
     jest.clearAllMocks();
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   describe('LOAD_CHARACTER', () => {
+    function setScelle(value) {
+      isCharacterScelle.mockReturnValue(value);
+    }
+
     it('charge un personnage non scellé sans modification', () => {
-      isCharacterScelle.mockReturnValue(false);
+      setScelle(false);
       const result = characterReducer({}, {
         type: 'LOAD_CHARACTER',
         payload: { id: 'char-1', nom: 'Test' },
@@ -103,7 +111,7 @@ describe('characterReducer', () => {
     });
 
     it('reconstruit historique_xp pour un personnage scellé sans historique', () => {
-      isCharacterScelle.mockReturnValue(true);
+      setScelle(true);
       reconstructHistory.mockReturnValue([
         { type: 'DEPENSE', code: 'CARAC_AUGMENTATION', valeur: 12, label: 'Augmentation : Agilité' },
       ]);
@@ -121,7 +129,7 @@ describe('characterReducer', () => {
     });
 
     it('ne crée pas d\'historique si déjà présent', () => {
-      isCharacterScelle.mockReturnValue(true);
+      setScelle(true);
       const existingHistory = [{ type: 'GAIN', valeur: 100, code: 'XP_HISTORIQUE', label: 'Initial' }];
 
       const result = characterReducer({}, {
@@ -135,7 +143,7 @@ describe('characterReducer', () => {
     });
 
     it('ne crée pas d\'entrée GAIN si xp_total et xp_depense sont 0', () => {
-      isCharacterScelle.mockReturnValue(true);
+      setScelle(true);
 
       const result = characterReducer({}, {
         type: 'LOAD_CHARACTER',
@@ -147,7 +155,7 @@ describe('characterReducer', () => {
     });
 
     it('gère le solde mathématique si reconstruction != depense', () => {
-      isCharacterScelle.mockReturnValue(true);
+      setScelle(true);
       reconstructHistory.mockReturnValue([
         { type: 'DEPENSE', valeur: 10, code: 'CARAC_AUGMENTATION' },
       ]);
@@ -164,7 +172,7 @@ describe('characterReducer', () => {
     });
 
     it('ne fait rien pour un personnage non scellé', () => {
-      isCharacterScelle.mockReturnValue(false);
+      setScelle(false);
 
       const result = characterReducer({}, {
         type: 'LOAD_CHARACTER',
@@ -184,6 +192,16 @@ describe('characterReducer', () => {
         value: 'Nouveau',
       });
       expect(result.nom).toBe('Nouveau');
+    });
+
+    it('met à jour sans gameData (pas de recalcul computedStats)', () => {
+      const result = characterReducer({ ...baseCharacter, nom: 'Ancien' }, {
+        type: 'UPDATE_FIELD',
+        field: 'nom',
+        value: 'Nouveau',
+      });
+      expect(result.nom).toBe('Nouveau');
+      expect(result.computedStats).toBeUndefined();
     });
 
     it('crée computedStats pour les champs texte seulement si gameData existe', () => {

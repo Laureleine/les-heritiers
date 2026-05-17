@@ -77,6 +77,12 @@ describe('getFortuneCost', () => {
     expect(getFortuneCost(4, both)).toBe(6);
   });
 
+  it('ne descend pas sous 5 même si la réduction dépasse le coût brut', () => {
+    const highReduction = { competencesTotal: { Classe: 10, Sciences: 0 } };
+    // next=1, raw=2-10=-8, max(5,-8)=5
+    expect(getFortuneCost(0, highReduction)).toBe(5);
+  });
+
   it('retourne null si le rang suivant dépasse 15', () => {
     expect(getFortuneCost(15, baseStats)).toBeNull();
     expect(getFortuneCost(20, baseStats)).toBeNull();

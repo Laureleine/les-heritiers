@@ -108,4 +108,42 @@ describe('CharacterList RPC calls', () => {
       expect(getAllCharactersAdmin).not.toHaveBeenCalled();
     });
   });
+
+  it('appelle getAllCharactersAdmin pour un super_admin', async () => {
+    const { getAllCharactersAdmin } = require('../utils/supabaseStorage');
+
+    render(<CharacterList
+      session={mockSession}
+      userProfile={{ profile: { role: 'super_admin' } }}
+      onSignOut={() => {}}
+    />);
+
+    await waitFor(() => {
+      expect(getAllCharactersAdmin).toHaveBeenCalled();
+    });
+  });
+
+  it('rend sans planter avec le profil admin', async () => {
+    const { container } = render(<CharacterList
+      session={mockSession}
+      userProfile={{ profile: { role: 'super_admin' } }}
+      onSignOut={() => {}}
+    />);
+
+    await waitFor(() => {
+      expect(container).toBeTruthy();
+    });
+  });
+
+  it('rend sans planter avec un profil gardien', async () => {
+    const { container } = render(<CharacterList
+      session={mockSession}
+      userProfile={{ profile: { role: 'gardien' } }}
+      onSignOut={() => {}}
+    />);
+
+    await waitFor(() => {
+      expect(container).toBeTruthy();
+    });
+  });
 });

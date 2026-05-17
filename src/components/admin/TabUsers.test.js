@@ -73,4 +73,13 @@ describe('TabUsers role-based data fetching', () => {
       expect(supabase.rpc).not.toHaveBeenCalledWith('get_admin_users');
     });
   });
+
+  it("n'appelle PAS get_admin_users RPC pour un gardien (seulement super_admin)", async () => {
+    supabase.from.mockReturnValue(makeChain('gardien'));
+    render(<TabUsers session={mockSession} />);
+
+    await waitFor(() => {
+      expect(supabase.rpc).not.toHaveBeenCalledWith('get_admin_users');
+    });
+  });
 });
