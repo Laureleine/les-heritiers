@@ -210,6 +210,9 @@ export function useVieSociale() {
     // ✨ LE NOUVEAU GESTIONNAIRE D'ACHATS (Celui avec les +/- et le bon calcul de `restes`)
     const handleToggleItem = useCallback((item, profilNom, action = null) => {
         if (isReadOnly) return;
+        if (item.is_official === false) {
+            if (!window.confirm(`⚠️ "${item.nom}" est un item social non-officiel, créé par la Communauté.\n\nSouhaitez-vous vraiment l'utiliser sur votre personnage ?`)) return;
+        }
 
         let newAchats = { ...achats };
         let currentProfilAchats = newAchats[profilNom] || [];

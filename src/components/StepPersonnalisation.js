@@ -96,7 +96,17 @@ export default function StepPersonnalisation() {
 
                 <select
                   value={character.competencesLibres?.specialiteMetier?.nom || ''}
-                  onChange={(e) => updateSpecialiteMetier(character.competencesLibres?.specialiteMetier?.comp || '', e.target.value)}
+                  onChange={(e) => {
+                    const specName = e.target.value;
+                    if (!specName) { updateSpecialiteMetier(character.competencesLibres?.specialiteMetier?.comp || '', ''); return; }
+                    const comp = character.competencesLibres?.specialiteMetier?.comp || '';
+                    const specs = getSpecsDisponiblesPourMetier(comp);
+                    const picked = specs.find(s => s.nom === specName);
+                    if (picked && picked.is_official === false) {
+                      if (!window.confirm(`⚠️ "${picked.nom}" est une spécialité non-officielle, créée par la Communauté.\n\nSouhaitez-vous vraiment l'utiliser ?`)) return;
+                    }
+                    updateSpecialiteMetier(comp, specName);
+                  }}
                   disabled={isReadOnly || !character.competencesLibres?.specialiteMetier?.comp}
                   className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
                 >

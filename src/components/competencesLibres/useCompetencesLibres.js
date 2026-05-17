@@ -204,6 +204,11 @@ export function useCompetencesLibres() {
         const currentSpecs = lib.choixSpecialiteUser[nomComp] || [];
         if (currentSpecs.includes(specName)) return;
 
+        const foundSpec = (competences[nomComp]?.specialites || []).find(s => s.nom === specName);
+        if (foundSpec && foundSpec.is_official === false) {
+            if (!window.confirm(`⚠️ "${specName}" est une spécialité non-officielle, créée par la Communauté.\n\nSouhaitez-vous vraiment l'utiliser ?`)) return;
+        }
+
         const isFreeConduite = nomComp === 'Conduite' && (getScoreBase(nomComp) + (lib.rangs[nomComp] || 0)) > 0 && currentSpecs.length === 0;
         const costXP = isFreeConduite ? 0 : FIXED_XP_COSTS.specialite_utile;
 

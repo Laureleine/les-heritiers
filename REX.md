@@ -111,6 +111,24 @@
 - **Ne pas se fier à l'ordre de montage des providers** : `ForgeProvider` est monté AVANT qu'App.js ait fini `useAppInit()`. Même si le provider avait un `useEffect` dépendant de `session`, il ne l'a pas dans son scope.
 - **Les composants de page (routes) sont remontés à chaque navigation** : c'est le bon endroit pour les `useEffect` de chargement de données. Les providers au-dessus doivent exposer les fonctions de fetch, pas (ou pas seulement) les appeler automatiquement.
 
+## Session du 17 Mai 2026 (6e partie — Les Sceaux de la Communauté)
+
+### Règles ajoutées
+
+22. **`apply-encyclopedia-change` ne fait pas d'INSERT sans `id` dans `surgicalData`** — La vérification `!!mainData.id` (ligne 43) décide INSERT vs UPDATE. Pour une création, `surgicalData` ne contient jamais `id` car le moteur ne le met que dans `request.record_id`. Résultat : UPDATE silencieux sur 0 lignes → rien n'est créé. **Solution** : injecter `surgicalData.id = recordId` quand `isCreating`.
+
+23. **`window.confirm()` au point de sélection, pas dans le handler parent** — Pour les confirmations d'items non-officiels, chaque handler appelle directement `window.confirm()` au début de la fonction, avec un `return` si annulé. Le pattern `if (!window.confirm(msg)) return;` est cohérent avec le code existant et évite de devoir gérer un état `ConfirmModal` dans 7 composants différents.
+
+24. **Supprimer un filtre Supabase n'est pas une régression si c'est le seul point de filtrage** — Retirer `.eq('is_official', true)` de `loadSocialItems()` ne casse rien car les autres filtres (profils, catégories) sont en client-side. Aucun test ne vérifiait ce filtre serveur.
+
+25. **Toujours vérifier si l'item sélectionné est `is_official === false` AVANT l'ajout** — Ne pas vérifier après, car le dispatch a déjà muté l'état. Le `window.confirm()` doit précéder immédiatement l'appel au dispatch (ou à `updateBlock` / `onCompetencesLibresChange`).
+
+### Process ajouté
+
+- **Quand un item ne s'affiche pas dans l'UI** : vérifier d'abord si le filtre Supabase le bloque, puis si le filtre client-side est actif, puis si l'item a bien été créé (data_change_requests archivé sans INSERT).
+- **Pour récupérer un item perdu** : chercher dans `data_change_requests` avec le nom exact, puis faire un INSERT manuel avec le `record_id` comme ID.
+- **Ne pas demander la confirmation pour dé-sélectionner** : la confirmation `!isSelected` guarde : on ne confirme que pour l'ajout, pas pour le retrait.
+
 ### Patterns CSS (session)
 
 - **`grid-cols-6` pour 6 éléments sur une ligne** — Plus fiable que `flex flex-wrap` quand on veut exactement 6 colonnes. Combiner avec `gap-1.5`, `py-1.5 px-1`, `text-[9px] sm:text-[10px]` et `truncate` sur les labels pour que ça tienne.

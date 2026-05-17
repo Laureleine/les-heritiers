@@ -104,16 +104,20 @@ export default function StepPouvoirs() {
     // ========================================================================
     // 🧠 SÉLECTION DES POUVOIRS
     // ========================================================================
-    const handlePouvoirToggle = (pouvoir) => {
+    const handlePouvoirToggle = (pouvoirNom) => {
         if (isReadOnly) return;
-        const isSelected = character.pouvoirs?.includes(pouvoir);
+        const isSelected = character.pouvoirs?.includes(pouvoirNom);
+        const foundPower = data?.pouvoirs?.find(p => p.nom === pouvoirNom);
+        if (foundPower && foundPower.is_official === false && !isSelected) {
+            if (!window.confirm(`⚠️ "${pouvoirNom}" est un pouvoir non-officiel, créé par la Communauté.\n\nSouhaitez-vous vraiment l'utiliser ?`)) return;
+        }
 
-        if (isScelle && isSelected && innatePouvoirs.includes(pouvoir)) {
+        if (isScelle && isSelected && innatePouvoirs.includes(pouvoirNom)) {
             showInAppNotification("Ce Pouvoir fait partie du Sceau originel de votre Héritier. Impossible de l'oublier !", "warning");
             return;
         }
 
-        dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'pouvoirs', value: pouvoir, max: maxPouvoirs, gameData });
+        dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'pouvoirs', value: pouvoirNom, max: maxPouvoirs, gameData });
     };
 
     const getAvailablePowers = () => {

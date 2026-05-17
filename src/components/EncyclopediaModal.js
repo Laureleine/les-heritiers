@@ -32,7 +32,13 @@ export default function EncyclopediaModal({
     const isSuperAdmin = checkSuperAdmin(userProfile);
 
     // 🧠 ÉTATS LOCAUX PURIFIÉS (L'autonomie est de retour !)
-    const [proposal, setProposal] = useState(editingItem || {});
+    const [proposal, setProposal] = useState(() => {
+        const base = editingItem || {};
+        return {
+            ...base,
+            is_official: Object.keys(base).length === 0 ? false : (base.is_official ?? true),
+        };
+    });
     const [justification, setJustification] = useState('');
     const [hasPendingTech, setHasPendingTech] = useState(false);
     
@@ -187,6 +193,41 @@ export default function EncyclopediaModal({
                             allFairyTypes={allFairyTypes}
                         />
                     )}
+
+                    {/* SCEAU D'OFFICIALITÉ */}
+                    <div className="mt-6 border-t border-gray-100 pt-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700">
+                                    📚 Statut Officiel
+                                </label>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                    {proposal.is_official
+                                        ? 'Cette fiche fait partie des Archives Royales officielles.'
+                                        : 'Cette fiche est un Faux-Semblant créé par la Communauté.'}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked={proposal.is_official}
+                                onClick={() => {
+                                    if (proposal.is_official) {
+                                        const confirmMsg = `Êtes-vous sûr de vouloir rétrograder "${proposal.name || proposal.nom}" au rang de Faux-Semblant Communautaire ? Cette fiche ne sera plus considérée comme officielle par le Grimoire.`;
+                                        if (!window.confirm(confirmMsg)) return;
+                                    }
+                                    setProposal({ ...proposal, is_official: !proposal.is_official });
+                                }}
+                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 focus:outline-none ${
+                                    proposal.is_official ? 'bg-emerald-600 border-emerald-700' : 'bg-stone-200 border-stone-300'
+                                }`}
+                            >
+                                <span className={`inline-block h-4 w-4 mt-0.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                                    proposal.is_official ? 'translate-x-5' : 'translate-x-0.5'
+                                }`} />
+                            </button>
+                        </div>
+                    </div>
 
                     {/* CHAMP DE JUSTIFICATION (Commun) */}
                     {!isSuperAdmin && (

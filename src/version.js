@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '15.19.9 - "Les Sceaux de la Communauté 👥📚"',
+    date: '17 Mai 2026',
+    description: 'Les Gardiens distinguent désormais les archives officielles des créations communautaires. Le Sceau d\'Officialité s\'affiche sur chaque fiche, se règle d\'un clic, et prévient les Héritiers qui sélectionnent un savoir non-officiel. Le bug de création d\'items est terrassé, deux fiches perdues ont été ressuscitées.',
+    changes: [
+      '👥 **Statut Officiel / Communautaire :** Chaque fiche de l\'Encyclopédie arbore désormais un badge 📚 Officiel ou 👥 Communautaire visible sur la carte et dans la consultation détaillée. Un nouveau slider dans le formulaire d\'édition permet aux Gardiens de basculer le statut. Les nouvelles créations sont par défaut Communautaires.',
+      '🐛 **Fix — Les nouveaux items ne disparaissent plus :** Le moteur de proposition ne transmettait pas l\'ID dans les données chirurgicales pour les créations. La fonction Edge exécutait un UPDATE silencieux sur une ligne inexistante — rien n\'était jamais persistant. Corrigé : l\'ID est désormais injecté dans le diff, et l\'INSERT s\'exécute correctement.',
+      '🗺️ **Résurrection de deux items sociaux :** "Architecte restaurateur" et "Ecrivain célèbre" ont été retrouvés dans les archives des `data_change_requests` et réinsérés dans la table `social_items`.',
+      '🛒 **Tous les items visibles dans la boutique :** Le filtre `is_official = true` a été retiré du chargement des items sociaux. Les créations Communautaires apparaissent désormais aux côtés des archives Officielles.',
+      '⚠️ **Avertissement à la sélection d\'un item Communautaire :** Quand un Héritier sélectionne une spécialité, un pouvoir, une capacité, un atout ou un item social non-officiel, une fenêtre de confirmation s\'affiche avec le nom et le type exact de l\'item — il choisit en connaissance de cause. Implémenté dans les 7 composants de sélection.',
+      '🧪 **243 Sentinelles toujours en faction :** Aucune régression. Tous les Gardiens du Code veillent.',
+    ]
+  },
+  {
     version: '15.19.8 - "Le Bureau des Correspondances 🕊️"',
     date: '17 Mai 2026',
     description: 'Les Gardiens peuvent désormais écrire aux Héritiers d\'un clic depuis l\'atelier de réparation XP. Les compteurs de la Vigie tiennent en une ligne, et les Sentinelles montent à 250.',

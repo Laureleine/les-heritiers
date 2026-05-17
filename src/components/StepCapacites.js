@@ -32,6 +32,10 @@ export default function StepCapacites() {
       showInAppNotification("Votre Capacité a été scellée à la création. Impossible d'en changer !", "warning");
       return;
     }
+    const foundCap = data.capacites?.choix?.find(cap => cap.nom === c);
+    if (foundCap && foundCap.is_official === false) {
+      if (!window.confirm(`⚠️ "${c}" est une capacité non-officielle, créée par la Communauté.\n\nSouhaitez-vous vraiment l'utiliser ?`)) return;
+    }
     dispatchCharacter({ type: 'UPDATE_FIELD', field: 'capaciteChoisie', value: c, gameData });
   };
 

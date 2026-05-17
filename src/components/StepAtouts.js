@@ -27,6 +27,9 @@ export default function StepAtouts() {
   const handleAtoutToggle = (atout) => {
     if (isReadOnly) return; // 🔒 FIX
     const isSelected = character.atouts?.some(a => a === atout.nom || a === atout.id);
+    if (atout.is_official === false && !isSelected) {
+      if (!window.confirm(`⚠️ "${atout.nom}" est un atout non-officiel, créé par la Communauté.\n\nSouhaitez-vous vraiment l'utiliser ?`)) return;
+    }
     const valueToToggle = atout.nom;
 
     // 🌟 COMPORTEMENT EN MODE ÉVOLUTION (XP)

@@ -56,7 +56,12 @@ export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
                 <ShieldCheck size={14} /> Savoir Scellé
               </span>
             )}
-            {!item.is_official && (
+            {item.is_official === true && (
+              <span className="flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-300 shadow-sm">
+                📚 Archive Officielle
+              </span>
+            )}
+            {item.is_official === false && (
               <span className="flex items-center gap-1.5 text-xs font-bold text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-300 shadow-sm">
                 <Info size={14} /> Faux-Semblant Communautaire
               </span>

@@ -143,9 +143,9 @@ export const loadFairyTypes = async () => {
             .from('fairy_types')
             .select(`
                 *,
-                fairy_type_capacites ( capacite_type, capacite:fairy_capacites ( id, nom, description, bonus ) ),
-                fairy_type_powers ( power:fairy_powers ( id, nom, description, type_pouvoir ) ),
-                fairy_type_assets ( asset:fairy_assets ( id, nom, description, effets, effets_techniques ) )
+                fairy_type_capacites ( capacite_type, capacite:fairy_capacites ( id, nom, description, bonus, is_official ) ),
+                fairy_type_powers ( power:fairy_powers ( id, nom, description, type_pouvoir, is_official ) ),
+                fairy_type_assets ( asset:fairy_assets ( id, nom, description, effets, effets_techniques, is_official ) )
             `)
             .order('name');
         if (error) throw error;
@@ -340,7 +340,6 @@ export const loadSocialItems = async () => {
         const { data, error } = await supabase
             .from('social_items')
             .select(`*, profils ( name_masculine )`)
-            .eq('is_official', true)
             .order('cout', { ascending: true });
 
         if (error) throw error;
