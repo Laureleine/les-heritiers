@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '16.0.1 - "Le Soufflet du Forgeron 🔧"',
+    date: '17 Mai 2026',
+    description: 'La Forge ne s\'emballe plus : le Registre arrête de clignoter comme un feu follet par une nuit de tempête.',
+    changes: [
+      '🔧 **Fix — Boucle infinie du Registre de la Forge :** La page clignotait sans fin (loading → chargé → loading → ...). Cause : `fetchForge` n\'était pas stabilisée (`useCallback`), chaque render créait une nouvelle référence, ce qui redéclenchait le `useEffect` de `RegistrePage`. Le forgeron souffle désormais une seule fois sur le brasier, pas en continu.',
+      '🧪 **243 Sentinelles — Toujours en faction :** Aucune régression.',
+    ]
+  },
+  {
     version: '16.0.0 - "L\'Ère des Faux-Semblants 👥📚"',
     date: '17 Mai 2026',
     description: 'Le Grimoire entre dans une nouvelle ère : les archives officielles et les créations communautaires cohabitent désormais sous un même toit. Chaque fiche porte son sceau, chaque item s\'affiche, chaque Héritier choisit en connaissance de cause. 243 Gardiens veillent.',

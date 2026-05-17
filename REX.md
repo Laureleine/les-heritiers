@@ -140,6 +140,14 @@
 - **Vérifier le build CI avant de pousser** — ESLint a rattrapé une dépendance manquante (`competences` dans `useCompetencesLibres.js`). Un build local avec `CI=true` aurait évité le va-et-vient.
 - **15.19.9 existe déjà dans le changelog et dans git** — La version 16.0.0 s'ajoute par-dessus, pas de remplacement. L'historique est préservé.
 
+## Session du 17 Mai 2026 (8e partie — 16.0.1 Le Soufflet du Forgeron)
+
+### Règles ajoutées
+
+27. **Une fonction exposée dans un Context Provider DOIT être wrappée dans `useCallback`** — Sinon, tout consommateur qui met cette fonction dans un `useEffect` se retrouve en boucle infinie. C'est le piège numéro 1 des providers React.
+
+28. **Le `useEffect([], [])` dans un provider + `useEffect([fonction])` dans un composant = piège absolu** — Si la fonction n'est pas stable, les deux effets s'alimentent mutuellement. La règle 21 disait déjà que `useEffect([], [])` dans un provider tôt dans l'arborescence est dangereux. Mais même si on le retire, le composant page seul avec `useEffect([fetchForge])` + `fetchForge` instable suffit à créer la boucle.
+
 ### Patterns CSS (session)
 
 - **`grid-cols-6` pour 6 éléments sur une ligne** — Plus fiable que `flex flex-wrap` quand on veut exactement 6 colonnes. Combiner avec `gap-1.5`, `py-1.5 px-1`, `text-[9px] sm:text-[10px]` et `truncate` sur les labels pour que ça tienne.
