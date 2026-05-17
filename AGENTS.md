@@ -1,6 +1,7 @@
 # Rules
 
 - Au début de chaque session, lancer `node scripts/backup_supabase.js` dans le dossier `C:\Users\amara\-=- Apps -=-\heritiers` pour sauvegarder la base de données.
+- Lire `DRY_PLAN.md` entièrement (session memory + chantiers) pour le contexte de reprise.
 
 # Principes
 
