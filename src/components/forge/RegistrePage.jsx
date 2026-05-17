@@ -1,5 +1,5 @@
 // src/components/forge/RegistrePage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForge } from '../../context/ForgeContext';
 // ✨ FIX ESLINT : L'import fantôme de 'useCharacter' a été pulvérisé !
 import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, Lock, Unlock, Bug, Sparkles, ExternalLink, X, Copy, MessageCircle } from '../../config/icons'; 
@@ -8,8 +8,11 @@ import { showInAppNotification } from '../../utils/SystemeServices';
 import { isAdmin } from '../../utils/authRoles';
 
 export default function RegistrePage({ onBack, userProfile }) {
-  // ✨ On récupère rejeterEntree !
-  const { entrees, loading, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree } = useForge();
+  // ✨ On récupère rejeterEntree + fetchForge pour le rechargement !
+  const { entrees, loading, fetchForge, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree } = useForge();
+
+  // 🔄 Recharge les données à chaque ouverture de la page
+  useEffect(() => { fetchForge(); }, [fetchForge]);
  
   const myUserId = userProfile?.id;
   const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin(userProfile);
