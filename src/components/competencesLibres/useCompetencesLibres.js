@@ -229,7 +229,7 @@ export function useCompetencesLibres() {
             if (!(budgetsInfo.pointsRestantsVerts > 0 || (isEsprit && budgetsInfo.pointsRestantsViolets > 0))) { showInAppNotification("Fonds insuffisants.", "error"); return; }
         }
         onCompetencesLibresChange({ ...lib, choixSpecialiteUser: { ...lib.choixSpecialiteUser, [nomComp]: [...currentSpecs, specName] } });
-    }, [lib, isReadOnly, isScelle, xpDispo, getScoreBase, budgetsInfo, onCompetencesLibresChange, dispatchCharacter, gameData]);
+    }, [lib, isReadOnly, isScelle, xpDispo, getScoreBase, budgetsInfo, onCompetencesLibresChange, dispatchCharacter, gameData, competences]);
 
     const handleRemoveSpecialiteUser = useCallback((nomComp, specToRemove) => {
         if (isReadOnly) return;
