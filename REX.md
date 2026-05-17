@@ -129,6 +129,17 @@
 - **Pour récupérer un item perdu** : chercher dans `data_change_requests` avec le nom exact, puis faire un INSERT manuel avec le `record_id` comme ID.
 - **Ne pas demander la confirmation pour dé-sélectionner** : la confirmation `!isSelected` guarde : on ne confirme que pour l'ajout, pas pour le retrait.
 
+## Session du 17 Mai 2026 (7e partie — 16.0.0 L'Ère des Faux-Semblants)
+
+### Règles ajoutées
+
+26. **Un saut de version majeure (16.0.0) se justifie par une fonctionnalité transverse** — Le Sceau d'Officialité touche 15+ fichiers, 7 composants de sélection, le moteur de proposition, le chargement des données et l'affichage. C'est un changement d'architecture info plutôt qu'une simple feature. Le passage en 16.0.0 marque que le Grimoire distingue désormais deux catégories de savoir.
+
+### Points de vigilance
+
+- **Vérifier le build CI avant de pousser** — ESLint a rattrapé une dépendance manquante (`competences` dans `useCompetencesLibres.js`). Un build local avec `CI=true` aurait évité le va-et-vient.
+- **15.19.9 existe déjà dans le changelog et dans git** — La version 16.0.0 s'ajoute par-dessus, pas de remplacement. L'historique est préservé.
+
 ### Patterns CSS (session)
 
 - **`grid-cols-6` pour 6 éléments sur une ligne** — Plus fiable que `flex flex-wrap` quand on veut exactement 6 colonnes. Combiner avec `gap-1.5`, `py-1.5 px-1`, `text-[9px] sm:text-[10px]` et `truncate` sur les labels pour que ça tienne.
