@@ -80,3 +80,24 @@
 - **Avant de modifier un test qui semble faux** : d'abord comprendre si c'est le test ou la spec qui a tort. Dans `useCerbere`, le test disait que `showConfirmSeal` devait être `false` en cas d'erreurs — mais le hook laisse toujours la modale s'ouvrir, les erreurs sont un feedback visuel. Le test a été corrigé pour refléter le comportement réel.
 - **Après chaque session de tests** : lancer la suite complète, pas seulement les fichiers modifiés. Les mutations d'état entre tests (`characterReducer`) peuvent casser des tests ailleurs.
 - **Ne pas oublier l'ordre UI** : `AdminDashboard.js` avait un titre qui se brisait en deux — un simple `whitespace-nowrap` a suffi. Les petits détails CSS comptent.
+
+## Session du 17 Mai 2026 (5e partie — Le Bureau des Correspondances)
+
+### Règles ajoutées
+
+18. **`open-telegraphe` CustomEvent pour ouvrir le Télégraphe hors du composant** — Le pattern `window.dispatchEvent(new CustomEvent('open-telegraphe', { detail: { targetUser: { id, username } } }))` fonctionne depuis n'importe quel bouton de l'application. Le Télégraphe écoute cet événement dans un `useEffect` avec `addEventListener`. Ce pattern évite d'importer le hook `useTelegraphe` partout.
+
+19. **Toujours joindre `profiles(username)` quand on a besoin du nom du propriétaire** — `TabRepairJournaux` chargeait les personnages avec un simple `.select('*')`. Pour afficher le nom du propriétaire et ouvrir une conversation privée, il faut `.select('*, profiles(username)')` pour que le champ `profiles.username` soit disponible dans la réponse Supabase. Attention : RLS peut bloquer la jointure si l'utilisateur n'a pas les droits de lecture sur la table `profiles`.
+
+20. **`getByText` échoue si le même texte apparaît plusieurs fois** — Le message d'erreur « Found multiple elements » apparaît quand un texte existe à la fois dans la stat box (label) et dans le badge du personnage. Solution : utiliser `container.querySelectorAll` + `Array.from().find()` plutôt que `getByText` quand on s'attend à des doublons.
+
+### Patterns CSS
+
+- **`grid-cols-6` pour 6 éléments sur une ligne** — Plus fiable que `flex flex-wrap` quand on veut exactement 6 colonnes. Combiner avec `gap-1.5`, `py-1.5 px-1`, `text-[9px] sm:text-[10px]` et `truncate` sur les labels pour que ça tienne.
+- **Le changement de classe d'icône dans le mock `lucide-react`** — Quand on ajoute une icône (ex: `MessageCircle`), il faut l'ajouter AUX DEUX ENDROITS : l'import du composant ET le mock `lucide-react` dans le test. Sans ça, l'icône est `undefined` et le composant ne plante pas mais peut ne pas rendre le bouton attendu.
+
+### Process à améliorer
+
+- **Quand un test `getByText` rate avec "multiple elements"** : vérifier si le texte apparaît dans le badge ET dans la stat box. Utiliser `container.querySelector` avec un sélecteur plus précis ou `Array.from().find()`.
+- **Backup automatique** : bien vérifié en début de session. Backup déjà fait dans la session précédente (15.19.7) donc backup clean pour 15.19.8.
+- **Toujours lancer la suite complète après une modif de composant** : les changements de `TabRepairJournaux` impactent 7 tests, pas seulement les tests unitaires.
