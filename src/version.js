@@ -9,6 +9,7 @@ export const VERSION_HISTORY = [
       '🕊️ **Bulle de Message Pneumatique :** Chaque personnage listé dans l\'onglet Réparation XP affiche désormais une petite icône MessageCircle. Un clic ouvre le Télégraphe en conversation privée avec le propriétaire — fini les allers-retours entre onglets pour prévenir un Héritier que son journal a été réparé ou que son plancher a besoin d\'attention.',
       '📋 **Compteurs de la Vigile sur une ligne :** Les 6 statuts (À réparer, Complet, Réparé, Sans plancher, Plancher restauré, Erreur) tiennent désormais en une seule rangée — plus de débordement sur deux lignes qui cassait la lecture.',
       '🔍 **Filtre par défaut « Tous » :** L\'onglet Réparation affiche désormais tous les personnages dès l\'ouverture, pas seulement ceux en attente. Le Gardien voit immédiatement l\'état complet de la flotte sans avoir à cliquer « Tous » à chaque visite.',
+      '🕰️ **La Forge n\'oublie plus le passé :** Correction d\'un bug où le Registre de la Forge s\'affichait vide au premier clic sur le bouton Anomalies. La cause : le provider chargeait les données à l\'initialisation de l\'application, avant que le Sceau d\'authentification ne soit posé. Le registre appelle désormais la forge à chaque ouverture de page — les anomalies et les idées apparaissent sans nécessiter un F5.',
       '🧪 **250 Sentinelles (+7) :** 3 tests d\'intégration ajoutés pour la bulle de message et les compteurs sur une ligne. 250 gardiens veillent désormais sur le Grimoire.',
     ]
   },
