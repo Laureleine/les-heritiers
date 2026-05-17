@@ -54,3 +54,29 @@
 ### Process à améliorer
 
 - **Review des handlers onClick** : chercher les `onClick={fonction}` où la fonction a un paramètre optionnel — c'est un piège React classique et silencieux.
+
+## Session du 17 Mai 2026 (4e partie — La Vigie Renforcée)
+
+### Règles ajoutées
+
+13. **`makeBaseState()` factory pour éviter les mutations entre tests** — `characterReducer` fait `let newState = { ...state }` (shallow copy). `newState.data` partage la référence avec l'original. Si on passe une référence globale unique à chaque test, un test peut contaminer le suivant. La solution : une fonction factory `makeBaseState()` qui crée un état frais à chaque appel.
+
+14. **Ne JAMAIS réimplémenter la fonction testée dans le test** — `handleAdjustXP.test.js` avait une copie locale de la réduction XP qui ne reflétait pas le vrai comportement du reducer. Les tests passaient mais ne testaient rien d'utile. Toujours importer et tester la vraie fonction.
+
+15. **Préférer les sélecteurs textuels aux index de tableau pour querySelector** — `badges[1]` est cassé dès qu'un badge est ajouté/supprimé. `getByText('…').parentElement` (ou `.closest()`) est robuste. Attention : `.closest()` cherche dans les parents, pas les siblings — si l'élément est un sibling, utiliser `.parentElement.querySelector(...)` ou remonter d'abord au parent commun.
+
+16. **Tests de hook : `jest.mock` avec module factory retourne des `undefined` si on utilise `jest.fn()` directement** — Dans les tests `useCerbere`, ne pas mocker `bonusCalculator` via `jest.mock` avec `jest.fn()` dans la factory. Utiliser le module réel (pur, sans effets de bord). Voir REX session précédente.
+
+17. **Après chaque suite de tests timer : `afterEach(useRealTimers)`** — Si un test dans le fichier utilise `useFakeTimers`, les tests suivants peuvent hériter de faux timers. Ajouter systématiquement `afterEach` avec `jest.useRealTimers()` dans `characterEngine.test.js`.
+
+### Patterns validés
+
+- **`it.each` pour les tests paramétrés** — 7 tests `isSuperAdmin` redondants fondus en un seul bloc `it.each`. Plus lisible, plus facile à étendre.
+- **Pas de backup si aucune migration DB** — Session purement tests + UI mineure. Backup pas nécessaire (règle AGENTS.md respectée).
+- **243 tests / 18 suites / 0 failures** — La couverture continue de monter sans régression.
+
+### Process à améliorer
+
+- **Avant de modifier un test qui semble faux** : d'abord comprendre si c'est le test ou la spec qui a tort. Dans `useCerbere`, le test disait que `showConfirmSeal` devait être `false` en cas d'erreurs — mais le hook laisse toujours la modale s'ouvrir, les erreurs sont un feedback visuel. Le test a été corrigé pour refléter le comportement réel.
+- **Après chaque session de tests** : lancer la suite complète, pas seulement les fichiers modifiés. Les mutations d'état entre tests (`characterReducer`) peuvent casser des tests ailleurs.
+- **Ne pas oublier l'ordre UI** : `AdminDashboard.js` avait un titre qui se brisait en deux — un simple `whitespace-nowrap` a suffi. Les petits détails CSS comptent.

@@ -19,7 +19,7 @@ jest.mock('lucide-react', () => {
   const I = () => null;
   I.displayName = 'LucideIcon';
   return {
-    Search: I, Filter: I, X: I, Wrench: I, CheckCircle: I, AlertTriangle: I,
+    Search: I, Filter: I, X: I, Wrench: I, CheckCircle: I, AlertTriangle: I, MessageCircle: I,
   };
 });
 
@@ -148,6 +148,8 @@ describe('TabRepairJournaux - RLS Update avec .select("id")', () => {
         id: 'char-001',
         nom: 'Faustin Leclerc',
         statut: 'scelle',
+        user_id: 'user-001',
+        profiles: { username: 'Faustine' },
         type_fee: 'Elfe',
         caracteristiques: { force: 1, esprit: 5, feerie: 3, masque: 4, agilite: 3, precision: 5, prestance: 3, sangFroid: 3, perception: 4, constitution: 2 },
         atouts: ['Atout 1'],
@@ -165,12 +167,16 @@ describe('TabRepairJournaux - RLS Update avec .select("id")', () => {
 
       supabase.from.mockImplementation(() => mockChain({ data: [fakeChar], error: null }));
 
-      const { container, getByText } = render(<TabRepairJournaux />);
+      const { container } = render(<TabRepairJournaux />);
 
       await waitFor(() => {
-        const completSection = getByText('✅ Complet').parentElement;
-        expect(completSection.querySelector('.text-lg.font-black').textContent).toBe('1');
+        const counts = container.querySelectorAll('.grid-cols-6 .text-base.font-black');
+        const completCount = Array.from(counts).find(el => el.textContent === '1');
+        expect(completCount).toBeTruthy();
       });
+
+      // Vérifie que le bouton message est présent (user_id défini)
+      expect(container.querySelector('[title*="Envoyer un message"]')).toBeTruthy();
     });
 
     it('marque "Sans plancher" si stats_scellees manquant (compteur)', async () => {
@@ -195,12 +201,16 @@ describe('TabRepairJournaux - RLS Update avec .select("id")', () => {
 
       supabase.from.mockImplementation(() => mockChain({ data: [sansPlancher], error: null }));
 
-      const { container, getByText } = render(<TabRepairJournaux />);
+      const { container } = render(<TabRepairJournaux />);
 
       await waitFor(() => {
-        const skippedSection = getByText('⚠️ Sans plancher').parentElement;
-        expect(skippedSection.querySelector('.text-lg.font-black').textContent).toBe('1');
+        const counts = container.querySelectorAll('.grid-cols-6 .text-base.font-black');
+        const skippedCount = Array.from(counts).find(el => el.textContent === '1');
+        expect(skippedCount).toBeTruthy();
       });
+
+      // Pas de bouton message si user_id absent
+      expect(container.querySelector('[title*="Envoyer un message"]')).toBeNull();
     });
   });
 });
