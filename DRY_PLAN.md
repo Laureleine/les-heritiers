@@ -21,6 +21,7 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 - Lancer `node scripts/backup_supabase.js`.
 - Les chantiers de refactoring sont listés ci-dessous (#1-10).
 - Toujours `git pull` avant de commencer.
+- **🔔 Point agenda** : Discuter **Skills**, **Agents**, et **DRY** (chantiers de refactoring DRY_PLAN.md).
 
 ---
 
