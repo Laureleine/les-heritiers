@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '16.0.0 - "L\'Ère des Faux-Semblants 👥📚"',
+    date: '17 Mai 2026',
+    description: 'Le Grimoire entre dans une nouvelle ère : les archives officielles et les créations communautaires cohabitent désormais sous un même toit. Chaque fiche porte son sceau, chaque item s\'affiche, chaque Héritier choisit en connaissance de cause. 243 Gardiens veillent.',
+    changes: [
+      '👥 **Sceau d\'Officialité (Fonctionnalité Majeure) :** Badge 📚 Officiel / 👥 Communautaire sur chaque carte de l\'Encyclopédie, dans la vue détaillée, et dans le formulaire d\'édition. Les nouvelles fiches sont Communautaires par défaut. Un slider permet aux Gardiens de basculer le statut.',
+      '🐛 **Fix création d\'items :** Le bug du UPDATE silencieux (INSERT jamais exécuté) est définitivement enterré. L\'ID est désormais injecté dans le diff chirurgical.',
+      '🗺️ **Deux fiches ressuscitées :** "Architecte restaurateur" et "Ecrivain célèbre" repêchés dans les archives oubliées.',
+      '🛒 **Boutique inclusive :** Les items Communautaires apparaissent dans la Vie Sociale aux côtés des officiels.',
+      '⚠️ **Protection des Héritiers :** Confirmation obligatoire à la sélection de tout item non-officiel (spécialité, pouvoir, capacité, atout, item social) — 7 composants de sélection couverts.',
+      '🧪 **243 Sentinelles — Aucune régression :** La couverture de tests est maintenue à 100% sur les 18 suites. Le socle est solide.',
+    ]
+  },
+  {
     version: '15.19.9 - "Les Sceaux de la Communauté 👥📚"',
     date: '17 Mai 2026',
     description: 'Les Gardiens distinguent désormais les archives officielles des créations communautaires. Le Sceau d\'Officialité s\'affiche sur chaque fiche, se règle d\'un clic, et prévient les Héritiers qui sélectionnent un savoir non-officiel. Le bug de création d\'items est terrassé, deux fiches perdues ont été ressuscitées.',
