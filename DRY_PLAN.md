@@ -4,6 +4,26 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
+## 🧠 Session Memory — 16.0.1 "Le Soufflet du Forgeron" (17 Mai 2026)
+
+**Tests :** 243 passes / 18 suites / 0 échecs
+
+### Dernières modifications
+
+1. **Sceau d'Officialité (16.0.0)** — `is_official` badge/toggle/engine/confirmations sur toute l'Encyclopédie.
+2. **Fix INSERT (16.0.0)** — `surgicalData.id = recordId` dans le moteur de proposition.
+3. **Fix ForgeContext (16.0.1)** — `fetchForge` wrappée dans `useCallback([])` pour stopper la boucle infinie.
+4. **Items récupérés (16.0.0)** — "Architecte restaurateur" et "Ecrivain célèbre" réinsérés manuellement.
+
+### Prochaine session
+
+- Lire `DRY_PLAN.md` (ce fichier) en premier.
+- Lancer `node scripts/backup_supabase.js`.
+- Les chantiers de refactoring sont listés ci-dessous (#1-10).
+- Toujours `git pull` avant de commencer.
+
+---
+
 ## ✅ Terminé — Session du 16 Mai 2026
 
 ### Chantier : Centralisation des vérifications de rôles
