@@ -1,6 +1,7 @@
 // src/components/cercle/ActiveCercleView.js
 import React, { useState } from 'react';
-import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift } from '../../config/icons';
+import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles } from '../../config/icons';
+import { getXpState } from '../../utils/xpActions';
 
 const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
   const [xpDefault, setXpDefault] = useState(0);
@@ -22,6 +23,19 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
   };
 
   const recipientCount = Object.values(xpAmounts).filter(v => v !== 0).length;
+
+  const getMemberXpState = (member) => {
+    if (!member.characters?.id) return null;
+    return getXpState(member.characters);
+  };
+
+  const getActivePortraitUrl = (character) => {
+    if (!character) return '';
+    if (character.is_unmasked_revealed && character.portrait_unmasked_url) {
+      return character.portrait_unmasked_url;
+    }
+    return character.portrait_masked_url || character.portrait_unmasked_url || '';
+  };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200 animate-fade-in">
@@ -103,23 +117,65 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           </div>
 
           <div className="space-y-1.5 mb-4">
-            {activeMembers.map(m => (
-                  <div key={m.user_id} className="flex items-center justify-between bg-white/70 rounded-lg px-3 py-2 border border-amber-200/60">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-bold text-amber-900 truncate">{m.characters?.nom || m.profiles?.username}</span>
-                  <span className="text-[10px] text-stone-400 italic truncate hidden sm:inline">{m.characters?.typeFee}</span>
-                  {m.characters?.statut && m.characters.statut !== 'scelle' && (
-                    <span className="text-[9px] text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded font-bold">Non scellé</span>
-                  )}
+            {activeMembers.map(m => {
+              const xpState = getMemberXpState(m);
+              const currentAmount = (xpAmounts[m.user_id] ?? xpDefault) || 0;
+              const nextXpTotal = xpState ? xpState.xpTotal + currentAmount : null;
+              const nextXpDispo = xpState ? xpState.xpDispo + currentAmount : null;
+
+              return (
+                <div key={m.user_id} className="flex items-center justify-between gap-3 bg-white/70 rounded-lg px-3 py-2 border border-amber-200/60">
+                  <div className="flex flex-wrap items-center gap-2 min-w-0">
+                    <span className="text-xs font-bold text-amber-900 truncate">{m.characters?.nom || m.profiles?.username}</span>
+                    <span className="text-[10px] text-stone-400 italic truncate hidden sm:inline">{m.characters?.typeFee}</span>
+                    {m.characters?.statut && m.characters.statut !== 'scelle' && (
+                      <span className="text-[9px] text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded font-bold">Non scellé</span>
+                    )}
+
+                    {xpState ? (
+                      <>
+                      <div
+                        className="flex items-center gap-1 text-xs font-bold bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200 shadow-sm"
+                        title={`${xpState.xpDispo} XP disponibles sur ${xpState.xpTotal} acquis`}
+                      >
+                        <Sparkles size={12} className="text-amber-500" />
+                        <span className="text-amber-700">{xpState.xpDispo}</span>
+                        <span className="text-stone-300">/</span>
+                        <span className="text-green-600">{xpState.xpTotal}</span>
+                        <span className="text-stone-400">XP</span>
+                      </div>
+                      {currentAmount !== 0 && (
+                        <>
+                          <span className="text-[10px] text-stone-400 font-bold">→</span>
+                          <div
+                            className="flex items-center gap-1 text-xs font-bold bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200 shadow-sm"
+                            title={`${nextXpDispo} XP disponibles sur ${nextXpTotal} acquis après distribution`}
+                          >
+                            <Sparkles size={12} className="text-amber-500" />
+                            <span className={nextXpDispo < 0 ? 'text-red-600' : 'text-amber-700'}>{nextXpDispo}</span>
+                            <span className="text-stone-300">/</span>
+                            <span className="text-green-600">{nextXpTotal}</span>
+                            <span className="text-stone-400">XP</span>
+                          </div>
+                        </>
+                      )}
+                      </>
+                    ) : (
+                    <span className="text-[10px] text-stone-400 italic">
+                      Aucun Héritier lié : impossible d'afficher l'état des XP.
+                    </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button onClick={() => adjustXp(m.user_id, -1)} className="w-6 h-6 flex items-center justify-center rounded bg-stone-100 text-stone-500 hover:bg-stone-200 text-sm font-bold">−</button>
+                    <span className="w-8 text-center text-sm font-black text-amber-900">{currentAmount}</span>
+                    <button onClick={() => adjustXp(m.user_id, 1)} className="w-6 h-6 flex items-center justify-center rounded bg-stone-100 text-stone-500 hover:bg-stone-200 text-sm font-bold">+</button>
+                    {(xpAmounts[m.user_id] != null && xpAmounts[m.user_id] !== xpDefault) && <span className="text-[10px] text-amber-500 font-bold ml-1">✎</span>}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button onClick={() => adjustXp(m.user_id, -1)} className="w-6 h-6 flex items-center justify-center rounded bg-stone-100 text-stone-500 hover:bg-stone-200 text-sm font-bold">−</button>
-                  <span className="w-8 text-center text-sm font-black text-amber-900">{(xpAmounts[m.user_id] ?? xpDefault) || 0}</span>
-                  <button onClick={() => adjustXp(m.user_id, 1)} className="w-6 h-6 flex items-center justify-center rounded bg-stone-100 text-stone-500 hover:bg-stone-200 text-sm font-bold">+</button>
-                  {(xpAmounts[m.user_id] != null && xpAmounts[m.user_id] !== xpDefault) && <span className="text-[10px] text-amber-500 font-bold ml-1">✎</span>}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -183,6 +239,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
             const translateY = Math.abs(pos) * 40 * arcDirection;
             const hasChar = !!member.characters?.id;
             const isSelf = member.user_id === session.user.id;
+            const portraitUrl = getActivePortraitUrl(member.characters);
 
             return (
               <div
@@ -206,8 +263,16 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
 
                   <div className={`w-16 h-16 rounded-full flex items-center justify-center font-serif text-2xl border-4 border-white shadow-sm -mt-10 mb-2 group-hover:border-amber-100 transition-colors ${
                     hasChar ? 'bg-gradient-to-br from-stone-100 to-stone-200 text-stone-500' : 'bg-gradient-to-br from-orange-100 to-orange-200 text-orange-500'
-                  }`}>
-                    {member.characters?.nom?.charAt(0) || '?'}
+                  } overflow-hidden`}>
+                    {portraitUrl ? (
+                      <img
+                        src={portraitUrl}
+                        alt={`Portrait de ${member.characters?.nom || 'cet Héritier'}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      member.characters?.nom?.charAt(0) || '?'
+                    )}
                   </div>
 
                   <div className="flex-1 w-full text-center flex flex-col">
@@ -247,9 +312,12 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                       </div>
                     ) : isSelf ? (
                       <div className="mt-3 w-full space-y-2">
+                        {/*
                         <div className="text-[10px] text-stone-500 text-center italic">
                           {hasChar ? `Mon Héritier : ${member.characters.nom}` : 'Aucun Héritier lié à ce Cercle'}
                         </div>
+                        */}
+                        {/*
                         {myCharacters.length > 0 && (
                           <select
                             defaultValue={member.characters?.id || ''}
@@ -262,6 +330,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                             ))}
                           </select>
                         )}
+                        */}
                       </div>
                     ) : (
                       <div className="mt-5 text-xs text-stone-400 flex justify-center items-center gap-1 italic bg-stone-50 p-2 rounded-lg border border-stone-100">
