@@ -100,9 +100,26 @@ export const calculateFullCombatStats = (character, gameData) => {
     else if (taille === 'Grande') modT = -1;
     else if (taille === 'Très Grande') modT = -2;
 
+    const hasSpecialite = (comp, specName) => {
+        if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
+        const metier = character.competencesLibres?.specialiteMetier;
+        if (metier?.comp === comp && metier?.nom === specName) return true;
+        if (finalStats.specialites.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+        if (feeData?.competencesPredilection) {
+            for (let idx = 0; idx < feeData.competencesPredilection.length; idx++) {
+                const pred = feeData.competencesPredilection[idx];
+                if (pred.nom !== comp) continue;
+                const feeSpec = pred.specialite || (pred.isSpecialiteChoix ? character.competencesLibres?.choixSpecialite?.[idx] : null);
+                if (feeSpec === specName) return true;
+            }
+        }
+        return false;
+    };
+    const bonusEsquive = hasSpecialite('Mouvement', 'Esquive') ? 1 : 0;
+
     return {
-        esquiveMasquee: sMouv + agi + 5,
-        esquiveDemasquee: sMouv + agiD + 5 + modT,
+        esquiveMasquee: sMouv + agi + 5 + bonusEsquive,
+        esquiveDemasquee: sMouv + agiD + 5 + modT + bonusEsquive,
         parade: sMelee + agi + 5,
         paradeDemasquee: sMelee + agiD + 5 + modT,
         resPhys: sRes + con + 5 + bonusMasque,
