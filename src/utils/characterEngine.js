@@ -414,7 +414,7 @@ export function characterReducer(state, action) {
             }
         });
 
-        const inventaireLisible = { armes_equipements: [], contacts: [], langues: [], titres: [] };
+        const inventaireLisible = { metiers: [], armes_equipements: [], contacts: [], langues: [], titres: [] };
         const allBoughtIds = Object.values(newState.vieSociale || {}).flat();
 
         if (action.gameData?.socialItems) {
@@ -428,7 +428,8 @@ export function characterReducer(state, action) {
             
             // ✨ LE FIX : L'entonnoir capture désormais les Titres ET les Statuts particuliers !
             inventaireLisible.titres = boughtItems.filter(i => ['titre', 'statut'].includes(i.categorie)).map(i => i.nom);
-            inventaireLisible.armes_equipements = boughtItems.filter(i => !['langue', 'contact', 'titre', 'statut'].includes(i.categorie)).map(i => i.nom);
+            inventaireLisible.metiers = boughtItems.filter(i => i.categorie === 'metier').map(i => i.nom);
+            inventaireLisible.armes_equipements = boughtItems.filter(i => !['langue', 'contact', 'titre', 'statut', 'metier'].includes(i.categorie)).map(i => i.nom);
         }
 
         const bibleAutonome = {

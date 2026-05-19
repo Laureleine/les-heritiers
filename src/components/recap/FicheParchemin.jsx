@@ -259,6 +259,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
     }, [character.competencesLibres, feeData, finalStats, isScelle, scellees]);
 
     const bible = character.computedStats?.bible_autonome?.inventaire_lisible || {};
+    const metiers = bible.metiers || [];
     const equipements = bible.armes_equipements || [];
     const contacts = bible.contacts || [];
     const langueMaternelle = character.profils?.langueMaternelle || '';
@@ -608,7 +609,21 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     )}
                 </div>
 
-                {/* 2. L'Équipement */}
+                {/* 2. Les Métiers */}
+                {metiers.length > 0 && (
+                    <>
+                        <div className="carac-main-title mt-4" style={{background: '#166534'}}>Métiers & Occupations</div>
+                        <div className="recap-box">
+                            <div className="text-sm font-serif space-y-1">
+                                {metiers.map((m, idx) => (
+                                    <div key={idx}>- {m}</div>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* 3. L'Équipement */}
                 <div className="carac-main-title mt-4" style={{background: '#166534'}}>Équipement & Possessions</div>
                 <div className="recap-box">
                     <div className="text-sm font-serif space-y-1">
@@ -618,7 +633,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     </div>
                 </div>
 
-                {/* 3. Les Contacts */}
+                {/* 4. Les Contacts */}
                 <div className="carac-main-title mt-4" style={{background: '#166534'}}>Contacts & Alliés</div>
                 <div className="recap-box">
                     <div className="text-sm font-serif space-y-1">
@@ -628,7 +643,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     </div>
                 </div>
 
-                {/* 4. Les Langues */}
+                {/* 5. Les Langues */}
                 <div className="carac-main-title mt-4" style={{background: '#166534'}}>Érudition & Langues</div>
                 <div className="recap-box">
                     <div className="text-sm font-serif">
@@ -641,7 +656,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     </div>
                 </div>
 
-                {/* 5. Familles, Titres et Statuts (S'ils existent, sinon on masque la boîte) */}
+                {/* 6. Familles, Titres et Statuts (S'ils existent, sinon on masque la boîte) */}
                 {bible.titres && bible.titres.length > 0 && (
                     <>
                         {/* ✨ LE FIX : Un nom majestueux et fidèle au Livre de Base */}
