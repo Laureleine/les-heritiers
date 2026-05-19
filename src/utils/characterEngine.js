@@ -474,7 +474,24 @@ export function characterReducer(state, action) {
         else if (tailleFeerique === 'Grande') modTailleFeerique = -1;
         else if (tailleFeerique === 'Très Grande') modTailleFeerique = -2;
 
-        const esquiveMasquee = sMouv + agi + 5;
+        const hasSpecialite = (comp, specName) => {
+            if (newState.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
+            const metier = newState.competencesLibres?.specialiteMetier;
+            if (metier?.comp === comp && metier?.nom === specName) return true;
+            if (finalStats.specialites.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+            if (feeData?.competencesPredilection) {
+                for (let idx = 0; idx < feeData.competencesPredilection.length; idx++) {
+                    const pred = feeData.competencesPredilection[idx];
+                    if (pred.nom !== comp) continue;
+                    const feeSpec = pred.specialite || (pred.isSpecialiteChoix ? newState.competencesLibres?.choixSpecialite?.[idx] : null);
+                    if (feeSpec === specName) return true;
+                }
+            }
+            return false;
+        };
+        const bonusEsquive = hasSpecialite('Mouvement', 'Esquive') ? 1 : 0;
+
+        const esquiveMasquee = sMouv + agi + 5 + bonusEsquive;
 
         const combatStats = {
             esquiveMasquee: esquiveMasquee,
