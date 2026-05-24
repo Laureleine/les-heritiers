@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '16.0.3 - "Le Tarif du Solitaire 🗡️"',
+    date: '24 Mai 2026',
+    description: 'Les remises accordées par les items de vie sociale prenaient la poussière — le moteur ne les lisait jamais. Le Membre solo des Sicaires peut enfin négocier ses contacts au juste prix.',
+    changes: [
+      '🗡️ **Fix — Réductions de prix des items de vie sociale ignorées :** Les `price_modifiers` définis dans les `effets_techniques` d\'un item de vie sociale (statut, titre, métier…) n\'étaient jamais lus par le moteur. `characterEngine.js` n\'extrayait ces modificateurs que depuis les atouts. Corrigé : les items de vis sociale achetés sont désormais parcourus de la même manière. Les 3 personnages portant "Membre solo des Sicaires" (Sicaire Ogre, Gabriel Sabran de Pontavès, Olivia Tradan) voient leurs réductions appliquées correctement.',
+      '🧹 **Fix données — Tiburce Froidefond :** L\'espace parasite en tête du nom du contact `" Tiburce Froidefond"` a été retiré, ainsi que la clé correspondante dans les `price_modifiers` de "Membre solo des Sicaires".',
+    ]
+  },
+  {
     version: '16.0.2 - "Le Puits Libéré 💧"',
     date: '24 Mai 2026',
     description: 'Les Âmes retrouvent leur chemin : le Puits des Âmes était scellé pour tous les Héritiers, même propriétaires. Un champ mal nommé retenait les XP prisonniers.',
