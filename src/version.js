@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.0.1 - "Le Trait Révélé 🖋️"',
+    date: '24 Mai 2026',
+    description: 'Le Grand Archiviste libère les plumes de l\'Encyclopédie : les traits de caractère des espèces féériques sont désormais capturés avec justesse et pérennité lors de leur modification, sans se soucier des virgules ou des espaces parasites.',
+    changes: [
+      '🖋️ **Saisie des traits libérée (fix) :** Correction d\'une omission dans le moteur de proposition (`encyclopediaEngine.js`) où la modification des « Traits de caractère » d\'une fée n\'était jamais comparée ni capturée. C\'est désormais corrigé : le bouton « Appliquer » s\'illumine à nouveau et propage durablement les traits sous forme de tableau (`text[]`) dans Supabase.',
+      '🧪 **249 Sentinelles aux aguets (tests) :** 3 tests unitaires de non-régression ont été postés aux frontières du moteur (`encyclopediaEngine.test.js`) pour sceller la détection du changement et le formatage rigoureux.',
+      '⚙️ **Build de production certifié :** La compilation optimisée de l\'application a été éprouvée avec succès, garantissant une intégration fluide.',
+    ]
+  },
+  {
     version: '17.0.0 - "La Gazette Mécanique 📰"',
     date: '24 Mai 2026',
     description: 'Le Petit Parisien s\'émancipe de son carcan de papier : toutes les archives quotidiennes sont migrées en base de données Supabase, et un magnifique calendrier interactif permet de naviguer de 1899 à 1914. Les Héritiers peuvent désormais voter pour numériser leurs journées préférées, et les Gardiens piloter la Forge.',
