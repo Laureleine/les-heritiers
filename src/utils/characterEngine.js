@@ -271,6 +271,23 @@ export function characterReducer(state, action) {
             }
         });
 
+        // Items de vis sociale achetés peuvent aussi modifier les prix (ex: "Membre solo des Sicaires")
+        if (action.gameData?.socialItems) {
+            Object.values(newState.vieSociale || {}).flat().forEach(id => {
+                const item = action.gameData.socialItems.find(i => i.id === id);
+                if (item?.effets_techniques) {
+                    try {
+                        const tech = parseIfString(item.effets_techniques, {});
+                        if (tech.price_modifiers) {
+                            Object.entries(tech.price_modifiers).forEach(([key, newPrice]) => {
+                                priceModifiers[key] = newPrice;
+                            });
+                        }
+                    } catch(e) {}
+                }
+            });
+        }
+
         // ✨ MÉMOIRE ORIGINELLE : On calcule les Atouts originels (Plancher) pour la progression des PP
         const atoutsRangsBase = {};
         if (isScelle) {
