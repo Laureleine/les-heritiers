@@ -129,7 +129,13 @@ BEGIN
           'sexe', c.sexe,
           'apparence', c.apparence,
           'genreHumain', c.genre_humain,
-          'typeFee', c.type_fee
+          'typeFee', c.type_fee,
+          'statut', c.statut,
+          'xp_total', c.xp_total,
+          'xp_depense', c.xp_depense,
+          'portrait_masked_url', c.portrait_masked_url,
+          'portrait_unmasked_url', c.portrait_unmasked_url,
+          'is_unmasked_revealed', c.is_unmasked_revealed
         )
       ELSE NULL END
     )

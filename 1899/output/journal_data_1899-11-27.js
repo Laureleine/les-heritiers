@@ -1,0 +1,1910 @@
+// Restauration Pass: 2
+// Base de données complète des articles de presse du 1899-11-27 (Version Restaurée, 132 articles)
+const JOURNAL_ARTICLES = [
+  {
+    "id": 1,
+    "page": 1,
+    "category": "Justice Militaire",
+    "title": "La Réforme de la Justice Militaire",
+    "summary": "",
+    "paragraphs": [
+      "Le projet de loi sur les modifications à apporter au fonctionnement de la justice militaire n'est pas né brusquement des circonstances et il n'est pas exagéré de dire que son enfantement a été exceptionnellement lent, car on s'en occupait sous la Restauration, il y a soixante-dix ans.",
+      "En 1829, le ministre de la Guerre du roi Charles X demandait déjà que les militaires ne fussent justiciables des conseils de guerre que pour les délits militaires; et il proposait de les poursuivre devant les tribunaux ordinaires pour les faits de droit commun.",
+      "Il en donnait pour raison qu'avant d'être militaire on est homme et citoyen, soumis comme tel aux lois générales qui régissent notre pays, toutes les fois qu'il ne s'agit pas de l'obligation spéciale contractée par le fait de la présence sous les drapeaux.",
+      "Cet argument a évidemment beaucoup plus de valeur encore à l'heure actuelle qu'à l'époque lointaine dont il s'agit, le service personnel obligatoire ayant établi des liens plus étroits entre l'armée et la nation.",
+      "Les idées qui avaient prévalu au commencement du siècle, au milieu du fracas des batailles de la République et du premier Empire, ne sont plus celles des générations présentes; et il sembla possible, en temps de paix, sans porter une main audacieuse sur la discipline qui est une nécessité de salut public, de donner à l'armée toutes les garanties judiciaires accordées à chaque Français.",
+      "Sous le Ministère de M. de Freycinet, cette question a été étudiée par le comité du contentieux que présidait un ancien garde des Sceaux, M. Guérin, dont faisaient partie des officiers généraux, des magistrats, des membres du Parlement et de hauts fonctionnaires.",
+      "On avait soulevé l'objection, si on ne laissait pas aux seuls conseils de guerre la mission de juger les militaires, quoi qu'ils aient fait, qu'on pourrait ouvrir la porte à des conflits regrettables mais cet argument ne semble pas conforme à la réalité des choses.",
+      "Actuellement, en effet, un militaire peut fort bien être entraîné devant la justice ordinaire, par exemple s'il a un complice civil, ou encore s'il est en congé.",
+      "Il n'est pas exact de dire que la réforme projetée donnera lieu à des indécisions sur la juridiction, puisque c'est l'acte délictueux commis qui en décidera, et non des circonstances fortuites se produisant au cours de l'instruction et amenant brusquement à dessaisir le conseil de guerre, si on découvre la complicité d'un civil.",
+      "On a dit aussi que la justice militaire est plus prompte et que cette rapidité rend l'exemple plus saisissant pour le soldat.",
+      "Cela peut être vrai pour la répression d'un délit militaire, mais cela n'a aucune importance pour les faits de droit commun, aucun intérêt militaire n'étant en jeu.",
+      "Dans le projet du général de Galliffet, les conseils de revision sont supprimés et remplacés par la Cour de cassation.",
+      "On sait que maintenant il existe deux conseils de revision seulement, celui de Paris et celui d'Alger. Cette dualité offrait un inconvénient qui saute aux yeux. Il est clair que pour juger des questions de droit, on doit craindre de voir rendre des arrêts contradictoires. Aussi avait-on parlé de créer, à Paris, une Cour militaire supérieure.",
+      "Mais il paraît plus simple de soumettre toutes les interprétations du Code à la haute magistrature qui a pour mission d'être la gardienne du droit, étant bien entendu que la Cour de cassation ne s'occupera pas du fond même des affaires, mais examinera si toutes les prescriptions légales ont été observées.",
+      "D'ailleurs, afin que la célérité des débats devant les conseils de guerre ne soit pas entravée par des arguties de procédure, par application à l'article 123 du Code de justice militaire, les jugements sur les exceptions ou incidents soulevés au cours des débats devant le conseil de guerre ne pourront être déférés à la Cour de cassation qu'après que la décision aura été rendue sur le fond.",
+      "Une innovation très bonne est la faculté d'accorder des circonstances atténuantes en temps de paix.",
+      "Le législateur du Code de 1857 pensait au contraire, qu'il fallait enlever au soldat tout espoir d'indulgence; mais des faits nombreux ont montré qu'il y avait là une fausse appréciation de l'état d'esprit des juges.",
+      "Que l'on soit militaire ou non, on subit les idées de son temps, de même qu'on en respire l'air. Il n'est pas douteux que, depuis un demi-siècle, la préoccupation constante de l'humanité est de se montrer moins implacable, d'user de plus d'indulgence envers les égarés, de favoriser le repentir des coupables.",
+      "Souvent des acquittements de nature à troubler la conscience ont eu lieu, parce que le juge militaire ne pouvait pas graduer la peine, suivant le degré de perversité de l'accusé.",
+      "Mais, naturellement, cette réforme ne peut s'appliquer qu'au temps de paix car à la guerre, tout serait une circonstance atténuante, et cependant la sécurité de tous ordonne de n'excuser aucune défaillance, car la moindre peut mettre en péril l'armée.",
+      "Certes le factionnaire écrasé de fatigue qui s'endort est excusable et néanmoins on ne peut pas l'excuser, en vertu de ce principe d'airain que tout doit s'effacer en présence de la gravité du danger que son sommeil fait courir.",
+      "Quiconque a fait partie d'un conseil de guerre approuvera le vote au scrutin secret demandé par le projet de loi.",
+      "Il est stipulé jusqu'à présent, en effet que les votes sont recueillis à haute voix en commençant par le grade inférieur, le président parlant le dernier; mais il y a deux inconvénients à ce mode.",
+      "D'abord, la liberté du juge n'est pas complète. Celui qui vote le premier, sous le regard de ses chefs, n'a qu'une indépendance apparente, et il lui faut une vraie force d'âme pour ne pas se conformer à l'opinion de son colonel, par exemple, dont il a facilement découvert l'avis pendant les débats ou pendant la délibération.",
+      "En second lieu, ce vote public donne au président un pouvoir supérieur à celui que la loi lui confère. Légalement il est ce que les anciens appelaient le premier entre les égaux. Par le fait de parler le dernier en sachant ce qu'ont dit les autres, il peut corriger souvent leurs décisions, en modifiant la sienne.",
+      "Par suite d'un raisonnement tout fait militaire, le projet de loi contient une clause toute spéciale, pour le cas où des circonstances atténuantes seraient accordées dans une affaire entraînant la peine de mort. Il se peut que le crime commis ne soit pas infamant, et il convient d'éviter au condamné la flétrissure du bagne.",
+      "Dans les travaux de la commission extraparlementaire, on s'était occupé de la faculté accordée par le Code d'instruction criminelle de mise en liberté provisoire d'un accusé, et on s'était demandé s'il convenait d'étendre cette autorisation à la justice militaire.",
+      "Le gouvernement ne l'a pas pensé, et le projet soumis au Parlement n'en fait aucune mention, avec raison, parce que cette idée rencontrerait de sérieuses difficultés d'exécution pratique.",
+      "S'agirait-il d'un officier ou même d'un simple gradé, comment ce supérieur, se trouvant sous le coup d'une poursuite judiciaire, pourrait-il exercer quelque autorité sur ses subordonnés?",
+      "Pour un simple soldat, la situation serait tout aussi fausse. Le voit-on au milieu de ses camarades portés à le regarder comme atteint par avance d'une flétrissure? En face des sous-officiers et des caporaux, il devrait s'attendre à une malveillance à peine dissimulée et pour la moindre chose il serait puni, en sa qualité de suspect. Il semble que le même raisonnement peut s'appliquer à la loi de sursis, appelée généralement du nom de son auteur M. Bérenger.",
+      "Un homme frappé par une condamnation ne peut pas rester au milieu de ses frères d'armes. La seule solution pratique, et elle se présente souvent, se trouve dans les mains du haut commandement qui remplace l'envoi devant le conseil de guerre par une punition disciplinaire quand il apprécie, dans sa sollicitude, que l'indulgence est possible.",
+      "Ce qui frappera peut-être le plus l'opinion publique et ne saurait être trop approuvé dans la réforme proposée, c'est la création d'un corps spécial possédant des connaissances juridiques complètes.",
+      "Cela existe, d'ailleurs, depuis longtemps à l'étranger. En Autriche, ce corps est recruté parmi les jeunes officiers qui ont fait preuve de connaissances juridiques et accompli un stage dans les tribunaux. En Italie et en Allemagne, on prend des lauréats ou des docteurs en droit.",
+      "En ce moment, en France, les rapporteurs et les commissaires du gouvernement près les conseils de guerre sont des hommes respectables, ayant renoncé à toute ambition et bornant leurs rêves à exercer paisiblement un emploi pacifique. Leur droiture est certaine, leurs consciences sont scrupuleuses mais leur compétence est presque nulle, dès qu'il s'agit d'une question délicate.",
+      "Ces postes importants ne sont sollicités que par des officiers de second plan, souvent âgés, qui les obtiennent à l'époque de la vie où l'on a de la peine à acquérir des connaissances nouvelles.",
+      "La création d'un corps spécial, recruté au concours, après un examen de droit parmi les capitaines de l'armée, comme cela se pratique pour l'intendance, remédiera aux inconvénients que tout le monde a pu constater.",
+      "Enfin, ces nouveaux commissaires et rapporteurs, quoique devant jouir à juste titre de l'état d'officier, ce qui paraît nécessaire n'auront pas d'assimilation de grade. On ne sera donc pas obligé de les changer, suivant la qualité de l'accusé.",
+      "Si cet ensemble de mesures ne forme pas la refonte complète de notre Code de justice militaire, œuvre longue, dont on ne voit pas la fin à bref délai, il marque un progrès sensible dans le sens des idées démocratiques. JEAN FROLLO"
+    ]
+  },
+  {
+    "id": 2,
+    "page": 1,
+    "category": "Feuilleton",
+    "title": "Les Tragédies de l'Amour (Deuxième Partie) (suite)",
+    "summary": "",
+    "paragraphs": [
+      "Lantur, et Lanturlu.",
+      "Sur une planche, auprès d'elle, dont chaque extrémité était posée sur une chaise de bois, formant table ainsi, quelques fioles, de l'eau, des verres.",
+      "« Mais cette enfant va mourir faute de soins », murmura Colette.",
+      "Elle redescendit aussitôt. Il y avait dans l'auberge une chambre claire et saine, bien aérée et qui était inoccupée. Elle la paya, donnant quinze jours d'avance.",
+      "Et un quart d'heure après Jeannette était étendue dans un lit bien propre, avec des draps bien blancs.",
+      "Colette, douce et bienfaisante comme une sœur de charité, lui avait fait sa toilette, avait arrangé sur ce front de pauvresse et de vagabonde de lourds et admirables cheveux blonds.",
+      "Elle avait envoyé l'aubergiste, à cheval, chercher le médecin du château.",
+      "Jeannette avait le délire, et alors, parfois regardait cette étrangère, près de son lit, avec les regards éperdus de deux yeux bleus si largement ouverts, si beaux, si purs, que la charmeuse sentit son cœur profondément troublé par tant d'abandon et par tant de misère.",
+      "Et pourtant, quand le médecin arriva, la mendiante était plus calme.",
+      "Elle dormait. Le docteur l'ausculta. Elle ne se réveilla point.",
+      "Colette revint le lendemain, de bon matin; elle revint aussi le même soir. L'absence du marquis de Vivarez la rendait plus libre.",
+      "Au bout de cinq ou six jours, Jeannette n'avait plus de fièvre. Le râle sourd de sa poitrine allait diminuant. La respiration était plus libre.",
+      "Et pour la première fois, un soir, se soulevant sur son lit, elle examina Colette avec surprise, avec une attention soutenue.",
+      "L'intelligence revenait, vive, entière, et les yeux bleus avaient une douceur infinie, déjà le sérieux de la jeune fille, avec je ne sais quelle expression lointaine qui était encore comme un charme de l'enfance.",
+      "« Je ne sais pas qui vous êtes, mademoiselle, dit Lanturlette, mais c'est vous qui avez soigné, qui avez sauvé la pauvre petite mendiante. Je souhaite qu'un jour la mendiante puisse vous prouver qu'elle n'est pas une ingrate. Et, si je pouvais faire un vœu, ce serait de donner ma vie pour vous. »",
+      "Elle prit doucement la main de Colette et l'embrassa en pleurant.",
+      "Une intimité s'établissait entre elles, et Colette ne pouvait s'empêcher de prendre intérêt à cette enfant restée, comme par miracle, naïve et pure au milieu des hasards de sa vie aventureuse.",
+      "Colette l'interrogea sur cette vie, quand elle fut certaine qu'elle pouvait le faire sans la fatiguer. Jeannette répondit docilement.",
+      "La charmeuse, tout à coup, fut surprise lorsque la petite, en finissant son histoire ajouta : « Ce n'est pas la première fois que nous parcourons la Vendée, et c'est la seconde fois en un an que nous nous arrêtons dans le pays que vous habitez, mademoiselle. »",
+      "« À quelle époque y êtes-vous venus pour la première fois ? »",
+      "« L'an dernier, au moment de la fête de Clisson. »",
+      "Sans savoir pourquoi, Colette éprouva une vague surprise, presque une secousse. N'était-ce pas pourtant bien simple que ces petits ambulants se fussent trouvés à la fête, puisqu'ils étaient à la solde de Gabarit, de Lahache et de la belle Isabelle ?",
+      "Mais Colette, un peu superstitieuse, devinait dans cette coïncidence plus que le hasard, peut-être une intervention invisible et toute-puissante qui se lassait enfin de voir le malheur s'abattre sur des têtes innocentes.",
+      "« Il y avait longtemps que vous étiez avec ces saltimbanques ? »",
+      "« Depuis deux mois à peine. »",
+      "« Et combien de jours êtes-vous restés à Clisson ? »",
+      "« Le dimanche et le lundi. »",
+      "« Cependant la fête a duré presque toute la semaine. »",
+      "« Nous nous sommes fâchés avec nos maîtres. »",
+      "« Pourquoi ? »",
+      "Jeannette parut embarrassée. Elle fut quelques secondes sans répondre, regardant l'institutrice comme si elle avait eu l'envie de parler et comme si quelque chose l'en eût retenue.",
+      "« Nous nous sommes fâchés parce qu'ils nous battaient. »",
+      "Mais, en disant cela, elle avait baissé les yeux et Colette crut comprendre que la petite mendiante ne disait pas toute la vérité.",
+      "Colette fut longtemps songeuse. « Cette fête de village, dit-elle, marque le point de départ de catastrophes au milieu desquelles a sombré l'honneur d'une famille. »",
+      "La voix de Jeannette tremblait lorsqu'elle demanda : « De quoi voulez-vous parler, mademoiselle ? »",
+      "« D'un crime qui fut commis ce jour-là et d'un innocent qui expie encore, en dépit de son acquittement, le crime d'un autre. »",
+      "« Vous parlez de Girodias ? »",
+      "Colette fit un brusque mouvement. « Comment le savez-vous ? Qui vous a si bien renseignée ? »",
+      "« N'étions-nous pas au village le jour du crime que tout le village apprit le soir même ? »",
+      "« C'est vrai. »",
+      "Malgré tout, Colette regardait la mendiante avec une certaine défiance, surprise de cette gêne étrange qui avait succédé à sa première expansion.",
+      "« Et sur ce meurtre, mon enfant, ne savez-vous rien ? »",
+      "Toujours les yeux baissés, l'enfant dit : « Rien. »",
+      "« Car, si vous saviez quelque chose, votre devoir eût été de le dire. »",
+      "« L'homme qui fut tué ne vous était de rien. »",
+      "« En effet, mais l'homme, innocent de ce meurtre et qui en fut accusé... Le connaissez-vous donc ? »",
+      "« Oui. »",
+      "« Il est de votre famille? Ou bien est-il un étranger pour vous ? »",
+      "« Qu'importe. »",
+      "Jeannette hocha la tête et dit : « Qu'importe, en effet, puisque je ne sais rien. »",
+      "Et elle se laissa retomber, fatiguée, sur l'oreiller et ferma les paupières.",
+      "Mais Colette se disait en la quittant : « Cette pauvre petite ne m'a pas tout dit. Comment faire pour la décider à parler ? »",
+      "Lantur et Lanturlu, la harpe et le violon étaient toujours absents, par monts et par vaux, lors des visites de Colette. Ils ne rentraient que le soir, harassés de fatigue; ils avaient à peine la force de manger et allaient s'étendre tout de suite au grenier sur le foin. Colette ne les voyait donc jamais.",
+      "Le dimanche suivant, toutefois, c'est-à-dire deux jours après la scène que nous venons de raconter, ils rentrèrent tout à coup, au milieu de l'après-midi, pâles, les yeux pleins de larmes et pleins de colère aussi.",
+      "Colette se trouvait encore dans la chambre de la malade. Celle-ci, en voyant ses deux compagnons, comprit qu'il s'était passé quelque chose de grave.",
+      "Elle se levait, ce jour-là, pour la première fois. Assise dans un fauteuil de bois, rembourré d'oreillers pour la circonstance, elle aspirait à pleins poumons, par la fenêtre ouverte, ce gai soleil printanier, ces premiers rayons de douce chaleur qui réveillent la campagne endormie et font s'égosiller tous les petits oiseaux chanteurs.",
+      "En voyant les larmes de Gilbert et de Lucien, leurs lèvres frémissantes, le tremblement de leurs mains, elle s'écria : « Qu'est-il arrivé ? »",
+      "Ils éclatèrent en sanglots."
+    ]
+  },
+  {
+    "id": 3,
+    "page": 1,
+    "category": "Informations Politiques",
+    "title": "Convocations d'Électeurs pour le renouvellement partiel du Sénat",
+    "summary": "",
+    "paragraphs": [
+      "Le Journal officiel d'hier a publié les décrets convoquant pour le 24 décembre les conseils municipaux des communes comprises dans les départements de l'Orne, du Pas-de-Calais, du Puy-de-Dôme, des Basses-Pyrénées, des Hautes-Pyrénées, des Pyrénées-Orientales, du Haut-Rhin, du Rhône, de la Haute-Saône, de Saône-et-Loire, de la Sarthe, de la Savoie, de la Haute-Savoie, de la Seine, de la Seine-Inférieure, de Seine-et-Marne, de Seine-et-Oise, des Deux-Sèvres, de la Somme, du Tarn, de Tarn-et-Garonne, du Var, de Vaucluse, de la Vendée, de la Vienne, de la Haute-Vienne, des Vosges, de l'Yonne et d'Oran, à l'effet de nommer leurs délégués en vue de l'élection des sénateurs de ces départements. Il s'agit, on le sait, du renouvellement partiel du Sénat.",
+      "Les conseils municipaux des départements des Hautes-Alpes, des Ardennes, du Cantal, du Finistère, de la Loire-Inférieure et de la Nièvre sont convoqués également à la date du 24 décembre, pour élire leurs délégués, à l'effet de remplacer les sénateurs décédés : MM. Chaix (Hautes-Alpes), Tirman (Ardennes), Devès (Cantal), Hallégoët et Savary (Finistère), Chesnelong (Loire-Inférieure), Scheurer-Kestner (Nièvre)."
+    ]
+  },
+  {
+    "id": 4,
+    "page": 1,
+    "category": "Informations Politiques",
+    "title": "La Loi sur les Accidents : Le Ministre Millerand demande l'ajournement des modifications",
+    "summary": "",
+    "paragraphs": [
+      "M. Millerand, ministre du Commerce, a été entendu hier par la commission d'assurance et de prévoyance sociales, au sujet de diverses modifications proposées à la loi sur les accidents.",
+      "Le ministre a demandé à la commission de ne pas mettre en question la loi qui fonctionne si facilement, toute proposition de modification pouvant mettre en péril cette loi qui a produit jusqu'à présent d'excellents résultats.",
+      "En conséquence, M. Millerand a demandé à la commission d'ajourner l'examen de ces modifications.",
+      "À l'unanimité, la commission s'est rangée à l'avis du ministre du Commerce."
+    ]
+  },
+  {
+    "id": 5,
+    "page": 1,
+    "category": "Informations Politiques",
+    "title": "La Convention Franco-Américaine : M. Delcassé s'explique devant la commission des douanes",
+    "summary": "",
+    "paragraphs": [
+      "M. Delcassé, ministre des Affaires étrangères, a été entendu hier par la commission parlementaire des douanes qui désirait savoir de lui à quelle date il pourrait soumettre aux Chambres la convention de commerce passée avec les États-Unis.",
+      "Le ministre des Affaires étrangères a déclaré que, suivant l'usage pratiqué dans les pays parlementaires, il saisirait le Parlement de cette convention le jour même où en sera saisi le Sénat américain, convoqué pour le 4 décembre.",
+      "En réponse à diverses questions, M. Delcassé a ajouté que les modifications douanières proposées pour les tarifs français ou américains avaient déjà été publiées dans le Bulletin officiel du commerce, mais qu'il ne pouvait pas s'expliquer sur les autres situations diplomatiques avant le dépôt de la convention elle-même."
+    ]
+  },
+  {
+    "id": 6,
+    "page": 1,
+    "category": "Faits Divers",
+    "title": "Un Escroc agresse une rentière à Nogent-sur-Marne",
+    "summary": "",
+    "paragraphs": [
+      "Une rentière de Nogent-sur-Marne, Mme Tassiart, à la recherche d'un emploi qui pourrait augmenter ses modestes revenus, s'était mise dernièrement en rapport avec un nommé Etienne Machefort, dit Brillet, négociant à Neuilly-Plaisance, qui cherchait des représentants et des gérants pour l'écoulement de ses produits dans les différentes communes de la banlieue parisienne.",
+      "Après quelques entrevues et le versement d'un cautionnement de plusieurs milliers de francs, Mme Tassiart se vit accorder la gérance d'un débit de vins avenue Ledru-Rollin, au Perreux, qui devait donner chaque année des bénéfices importants.",
+      "Une semaine après la prise de possession du fonds, où se trouvait seulement une minime quantité de marchandises et qui ne donnait que des recettes insignifiantes, Mme Tassiart s'aperçut qu'elle avait été victime d'un habile escroc.",
+      "Elle voulut alors résilier son marché, mais le prétendu commerçant s'y refusa de la façon la plus formelle.",
+      "La gérante menaça alors son patron de porter plainte en escroquerie contre lui.",
+      "Hier matin, au cours d'une discussion des plus vives avec sa dupe, cet individu saisit une bouteille qu'il lui brisa sur la tête et s'enfuit.",
+      "La malheureuse femme s'affaissa sur le sol perdant le sang en abondance par une large et profonde blessure à la base du crâne. Heureusement pour la victime, des voisins avaient été témoins du drame et vinrent à son secours.",
+      "Une perquisition opérée au domicile du faux négociant a amené la découverte d'une volumineuse correspondance ne laissant aucun doute sur le genre d'opérations auxquelles il se livrait.",
+      "La gendarmerie de Neuilly-sur-Marne recherche activement le meurtrier."
+    ]
+  },
+  {
+    "id": 7,
+    "page": 1,
+    "category": "Nouvelles Étrangères",
+    "title": "L'Empereur et l'Impératrice d'Allemagne quittent Windsor pour Sandringham",
+    "summary": "",
+    "paragraphs": [
+      "Windsor, 23 novembre.",
+      "L'empereur et l'impératrice d'Allemagne sont partis pour Sandringham cette après-midi, ayant terminé leur visite à Windsor. Après avoir fait leurs adieux à la reine, ils ont quitté le château, un peu avant trois heures, accompagnés par le prince de Galles et le duc de Connaught.",
+      "Ils se sont rendus en voiture à la gare, escortés par les Horse-guards, et au milieu d'une foule considérable. L'Empereur et les princes étaient en costumes de voyage.",
+      "À la gare, la princesse Christian et la princesse Béatrice, ainsi que les autres membres de la famille royale, ont fait leurs adieux aux souverains allemands, qui sont partis à trois heures vingt-cinq.",
+      "Le train spécial se compose de neuf wagons-salons; il est précédé par une machine-pilote qui éclaire la voie, avec dix minutes d'avance sur le train impérial.",
+      "Wolferton, 25 novembre.",
+      "Le train impérial est arrivé à Wolferton à six heures quarante. L'empereur, l'impératrice et le prince de Galles ont été reçus à la gare par la princesse de Galles, le duc d'York et la princesse Victoria de Galles.",
+      "Tous se sont rendus aussitôt en voiture à Sandringham, qui est situé à trois milles de Wolferton. Sur toute la route, des agents de police étaient postés à intervalles rapprochés."
+    ]
+  },
+  {
+    "id": 8,
+    "page": 1,
+    "category": "Chronique Politique",
+    "title": "Le Discours de M. Delcassé : Affirmation de la politique étrangère française",
+    "summary": "",
+    "paragraphs": [
+      "Depuis plus d'un an la presse nationaliste et réactionnaire dirige contre la politique extérieure de M. Delcassé les attaques les plus violentes et les moins fondées. L'on pensait qu'à propos de la discussion du budget des Affaires étrangères quelque orateur de l'opposition jugerait nécessaire de monter à la tribune, de faire le procès du ministre et de présenter sous une forme précise les imputations colportées sans répit. Est-ce découragement, est-ce sagesse, aucun député n'a pris cette initiative redoutable. M. Delcassé n'en a pas moins estimé l'occasion excellente pour expliquer ses actes et faire justice de ses accusateurs, et les applaudissements des trois quarts de la Chambre et de l'unanimité républicaine sont venus lui attester qu'il avait toujours traduit fidèlement la pensée nationale.",
+      "Le pays se sentira pleinement rassuré, si toutefois on avait réussi à lui inspirer la moindre appréhension, en apprenant que l'entente franco-russe est plus intime, plus cordiale que jamais. Il envisagera l'avenir avec une parfaite sérénité d'esprit lorsqu'il saura que tous nos intérêts sont sauvegardés en Chine et que, d'ailleurs, l'heure du morcellement de ce grand empire demeure encore lointaine. L'amélioration de nos relations commerciales avec l'Italie et les États-Unis ne peut de même qu'être saluée avec satisfaction.",
+      "Mais le point tout spécialement saillant de l'exposé de M. Delcassé, c'est la définition si nette, si juste et si pleine de sens qu'il a formulée de la politique nécessaire. Répudiant l'impatience des uns, l'esprit agressif des autres, ce système du poing tendu qui correspond si peu aux aspirations de la France, le ministre des Affaires étrangères a déclaré que les conditions mêmes de l'existence nationale nous interdisaient des agrandissements continus, une expansion coloniale peut-être d'une belle apparence sur le papier mais forcément illogique et dispendieuse.",
+      "Avec un empire huit ou dix fois plus grand que la métropole, nous avons acquis le droit de nous reposer quelque peu. Il s'agit bien moins de nous assurer des possessions nouvelles que de conserver les anciennes et de les mettre en valeur. C'est par une exploitation progressive et pratique de notre gigantesque domaine que nous accroîtrons avec la fortune publique, l'action morale de notre pays, et que nous nous préparerons un renouveau d'énergie. C'est en concentrant nos efforts, non en les gaspillant sur tous les points du globe, que nous demeurerons capables d'une initiative vigoureuse, si jamais la nécessité s'en affirmait.",
+      "Ces idées, qui sont la base même de notre puissance et de notre rayonnement politique dans le monde, valaient d'être exprimées. La nécessité du discours de M. Delcassé, dont l'effet ne sera pas moins grand au dehors que chez nous, sera d'avoir affirmé devant le pays ces vérités incontestables."
+    ]
+  },
+  {
+    "id": 9,
+    "page": 1,
+    "category": "Vie Étudiante",
+    "title": "La Fête des Étudiants : Inauguration des nouveaux locaux en présence du Président de la République",
+    "summary": "",
+    "paragraphs": [
+      "Le Président de la République a accepté l'invitation de l'Association générale des étudiants. Les nouveaux locaux du cercle de la rue des Écoles seront inaugurés aujourd'hui en sa présence.",
+      "Le président du Conseil des ministres, M. Waldeck-Rousseau, MM. Leygues, ministre de l'Instruction publique, Pierre Baudin, ministre des Travaux publics, et Millerand, ministre du Commerce; M. Fallières, président du Sénat, M. Deschanel, président de la Chambre des Députés, le préfet de police, le préfet de la Seine, le général Brugère, gouverneur de Paris, M. Lucipia, président du conseil municipal, M. Casimir-Perier, M. Grard, vice-recteur de l'académie, les doyens, le corps professoral et de nombreux députés recevront le chef de l'État à son arrivée.",
+      "M. Lavisse, président d'honneur de l'association, entouré des membres du comité actuellement en fonctions, conduira M. Loubet dans la salle des conférences, où des discours seront prononcés. M. Marcombes, président du comité, prendra la parole au nom des étudiants.",
+      "Un lunch sera ensuite servi aux invités avant le départ. Accompagné, ainsi qu'à l'habitude, par un officier de sa maison militaire et M. Dufour, directeur de son cabinet civil, M. Loubet sera également accompagné par son fils, M. Paul Loubet, étudiant en droit et membre actif de l'association.",
+      "Après la cérémonie d'inauguration, les étudiants se retrouveront à deux heures en Sorbonne. Dans le grand amphithéâtre du palais académique aura lieu un brillant concert auquel participeront de nombreux artistes des principaux théâtres.",
+      "Plusieurs des invités du comité, notamment MM. Leygues, Lucipia, Casimir-Perier, Léon Bourgeois, Lavisse, Cochery, Liard et Grard assisteront enfin au banquet du café Voltaire qui terminera la soirée, après un discours et une allocution de M. Larronmet, secrétaire perpétuel de l'Académie des beaux-arts."
+    ]
+  },
+  {
+    "id": 10,
+    "page": 1,
+    "category": "Social",
+    "title": "Réglementation de la journée de travail des employés de chemins de fer",
+    "summary": "",
+    "paragraphs": [
+      "On sait que M. Baudin, ministre des Travaux publics, a signé un arrêté concernant la réglementation de la journée de travail des chauffeurs et mécaniciens dans les compagnies de chemins de fer.",
+      "Hier, le Journal officiel a publié le texte de cet arrêté, daté du 4 novembre et le texte d'un nouvel arrêté du ministre des Travaux publics daté du 8 novembre, ainsi qu'une circulaire du 18 novembre complétant les précédentes dispositions.",
+      "La journée de travail de tous les agents des gares, des stations et des haltes dont le service peut intéresser la sécurité des trains ou des manœuvres se trouve ainsi fixée à douze heures, et le grand repos sera de neuf heures ininterrompues, ou de huit heures pour les agents logés dans les gares.",
+      "Des repos d'une heure environ chacun seront accordés aux agents pour leurs repas et, chaque mois, une journée ou deux demi-journées de repos.",
+      "Dans les gares qui comportent service de jour et service de nuit, la période de service de nuit ne devra pas contenir quatorze nuits consécutives, formant pour le service de jour un repos grand au moins.",
+      "Pour les grandes gares à service chargé, le ministre des Travaux publics pourra prescrire aux compagnies de réduire la période d'alternement à une durée inférieure à quatorze nuits, jusqu'à un minimum de sept nuits consécutives.",
+      "Toutefois, dans les petites gares qui ne sont pas desservies par plus de trois trains dans les deux sens et qui ne comportent qu'un agent, la durée de présence de cet agent pourra excéder la limite fixée, néanmoins sans que son grand repos journalier puisse être inférieur à huit heures.",
+      "Dans sa circulaire, le ministre ajoute que le service du contrôle est assuré par le chef de service qui, à l'occasion de ses tournées d'inspection, devra contrôler et s'assurer des conditions de travail et des repos du personnel, et varier le personnel dans tous les cas où il aura été insuffisant."
+    ]
+  },
+  {
+    "id": 11,
+    "page": 1,
+    "category": "Faits Divers",
+    "title": "Une Haine Mortelle à Chavost (Reims)",
+    "summary": "",
+    "paragraphs": [
+      "Reims, 15 novembre.",
+      "La commune de Chavost vient d'être le théâtre d'un drame sanglant. Un nommé Louis Michel, âgé de trente-neuf ans, père de trois enfants, qui nourrissait depuis longtemps contre son voisin Alfred Quesnel, âgé de quarante-deux ans, une haine terrible, l'a tué d'une balle de revolver par vengeance.",
+      "L'assassin a essayé ensuite de se tuer d'une balle dans la cervelle, mais il n'a réussi qu'à se blesser.",
+      "Michel est à la disposition de la justice."
+    ]
+  },
+  {
+    "id": 12,
+    "page": 1,
+    "category": "Guerre du Transvaal",
+    "title": "Guerre du Transvaal : Situation au Natal et rumeurs de médiation",
+    "summary": "",
+    "paragraphs": [
+      "Les nouvelles du Natal faisaient hier complètement défaut, et le War Office ne communiquait à la presse aucun renseignement sur la situation à Pietermaritzburg, sérieusement menacée depuis quelques jours par les troupes du général Joubert. En revanche, des dépêches du Natal et du Cap signalent une recrudescence dans le mouvement d'adhésion des Afrikaners aux deux Républiques.",
+      "Au sujet du bruit d'une médiation probable, bruit recueilli par l'Indépendance Belge et dont nous parlions hier, un télégramme de Munich adressé à un journal berlinois annonce que l'empereur Guillaume aurait formellement proposé une intervention des puissances en vue de mettre fin au conflit, et que M. Chamberlain lui aurait fait connaître les conditions que l'Angleterre mettrait à son acceptation.",
+      "Cette nouvelle, que rien jusqu'ici n'est venu confirmer, semble tout au moins prématurée. Quand Ladybrand, Estcourt et Pietermaritzburg auront capitulé, les Anglais seront peut-être heureux d'accepter une proposition de ce genre, mais ce moment n'est pas encore venu et l'orgueil britannique refuserait de traiter avant d'avoir sérieusement combattu.",
+      "Les Afrikaners.",
+      "Londres, 15 novembre.",
+      "La Westminster Gazette publie une dépêche de Durban, en date d'hier, ainsi conçue : « On craint un soulèvement général des Afrikaners dans le district de Ladygrey en faveur des Boërs. »",
+      "De son côté, le Times, dans une édition, annonce, d'après des dépêches de Jamestown, en date d'hier, que des commandos afrikaners du district se sont rendus à l'ennemi. M. Sauer, qui est venu notamment de maintenir les Afrikaners en dehors du conflit, est allé à Barkly Ouest à la demande du gouvernement.",
+      "Guillaume II et M. Chamberlain.",
+      "Berlin, 25 novembre.",
+      "On assure que l'on assisterait bientôt à des pourparlers pour la paix entre le Transvaal et les deux pays. M. Chamberlain aurait fait un accueil favorable à ces ouvertures, à la condition que les négociations fussent honorables pour l'Angleterre et un succès pour elle.",
+      "À propos du Combat de Belmont.",
+      "Londres, 25 novembre.",
+      "Le correspondant militaire de la Gazette fait remarquer que les détails du combat de Belmont indiquent qu'il n'y a pas eu déroute des Boërs, et que le détachement par lord Methuen constitue encore une unité de combat avec laquelle il faudra compter dans l'avenir. Parlant de la situation à Mafeking, le correspondant dit qu'il est impossible que la ville soit secourue avant un mois, et qu'il est douteux qu'elle puisse tenir jusque-là sans renforcements. Les pertes anglaises ont été estimées à 1500 hommes. Les Boërs ont eu 200 tués, et la plupart de ceux qui se sont retirés au nord ont rejoint leurs camarades.",
+      "À Kimberley, les troupes évacuant la ville n'ont pas pu songer un seul instant à faire de la ligne de chemin de fer une position défensive, mais elle n'a pas été prise par cette tactique.",
+      "L'Opinion en Allemagne.",
+      "L'opinion publique à Berlin se montre de plus en plus favorable aux Boërs."
+    ]
+  },
+  {
+    "id": 13,
+    "page": 2,
+    "category": "Guerre des Boërs",
+    "title": "L'opinion publique allemande sur la guerre des Boërs",
+    "summary": "",
+    "paragraphs": [
+      "La Gazette nationale dit que le rapport d'opérations de lord Methuen est bien connu des bulletins qui ont toujours été publiés.",
+      "Le Zollgrenz-Anzeiger écrit : 'Il n'y a pas besoin de raconter tout ce qui se passa dans le Natal: il suffit de se dire que les Anglais tentent tout le temps, comme c'est leur habitude, de minimiser leurs pertes. Par de tels extraits et par d'autres encore, la grande masse du public allemand continue à suivre d'un mauvais œil les opérations dans le sud de l'Afrique. Quoi qu'il arrive, le gouvernement allemand sera bien obligé de tenir compte de l'état de l'opinion publique.'"
+    ]
+  },
+  {
+    "id": 14,
+    "page": 2,
+    "category": "Guerre des Boërs",
+    "title": "Devant Ladysmith",
+    "summary": "",
+    "paragraphs": [
+      "Pretoria, 23 novembre",
+      "Le télégramme suivant, daté du quartier général boër, devant Ladysmith, 23 novembre, est arrivé ici :",
+      "La garnison de Ladysmith est restée extraordinairement tranquille hier. Aujourd'hui elle a à peine riposté à la canonnade des Boërs. Les ballons ne font plus d'ascensions.",
+      "Le gros canon n° 3, que les Boërs ont baptisé 'Suveraineté', a été mis en position aujourd'hui. Quelques officiers allemands sont arrivés hier. Le général boër pense que les troupes boërs pourront amener la chute de Ladysmith vers la fin de la semaine prochaine.",
+      "Il y a eu hier soir un orage épouvantable. Quatre canonniers boërs ont été terriblement blessés par la foudre."
+    ]
+  },
+  {
+    "id": 15,
+    "page": 2,
+    "category": "Guerre des Boërs",
+    "title": "Les Boërs et leurs Prisonniers",
+    "summary": "",
+    "paragraphs": [
+      "Pretoria, 23 novembre",
+      "Le correspondant du Morning Post, prisonnier des Boërs, fait l'éloge de la grande bonté avec laquelle les prisonniers anglais sont traités. Les Boërs ne ménagent pas leurs compliments aux Anglais pour la vaillance qu'ils ont déployée dans la défense du train blindé et ils s'étonnent de ce que la locomotive ait pu être sauvée en dépit du feu de leurs canons.",
+      "À l'exception d'un seul individu qui a fait des remarques désobligeantes, les Boërs, qui se pressaient sur le passage des prisonniers à Pretoria, se sont galamment conduits et ont même offert gracieusement des cigarettes aux Anglais vaincus.",
+      "Les Boërs ont enterré trois Anglais du train blindé ; ils en ont envoyé dix qui étaient gravement blessés à Ladysmith ; ils ont réparti dans leurs ambulances ceux qui avaient des blessures légères.",
+      "Le correspondant dit que, sur les 120 Anglais du train, 38 ont été blessés.",
+      "Il est étonné de trouver tant de Boërs parlant anglais; ceux-ci lui ont généralement exprimé leurs regrets de la guerre, mais malgré les privations qu'ils endurent ils paraissent tout à fait déterminés.",
+      "Le correspondant estime que la lutte sera longue et sanglante."
+    ]
+  },
+  {
+    "id": 16,
+    "page": 2,
+    "category": "Technique Militaire",
+    "title": "Trains Cuirassés",
+    "summary": "",
+    "paragraphs": [
+      "Plusieurs descriptions, plus ou moins fantaisistes, ont été publiées par divers journaux au sujet des trains blindés dont les Anglais se servent sans grand succès, il est vrai, jusqu'à présent contre les Boërs. Nous pensons que nos lecteurs nous sauront gré de leur donner sur cette question assez mal connue, quelques renseignements à la fois techniques et précis.",
+      "Chacun des trains blindés dont dispose actuellement le général Hely-Hutchinson, il en a une vingtaine tout équipés à Durban et dans la colonie du Cap, est composé d'une locomotive de soixante tonnes à quatre essieux couplés, d'un tender-réservoir, de trois wagons à boggies et d'un fourgon de munitions. Tout ce matériel est cuirassé, c'est-à-dire recouvert d'un platelage d'acier dont l'épaisseur varie entre dix et quatorze millimètres, suivant les parties à protéger. Ce blindage a la même composition que celui dont on se sert pour la marine ; aussi les Anglais disent-ils toujours, par assimilation sans doute, en parlant de ce matériel de guerre : 'un train cuirassé'.",
+      "Les parois des véhicules, hautes de 2 m 40 et dont le toit métallique est soutenu par un robuste étrésillonnage en fer, sont percées, à hauteur d'épaule, de meurtrières horizontales, par où les artilleurs peuvent faire passer les canons de leurs carabines et des mitrailleuses Maxim dont chaque voiture est armée.",
+      "Soixante-quatre hommes peuvent prendre place dans un wagon blindé. En comptant le mécanicien, le chauffeur et les hommes préposés au service des munitions, l'effectif du train n'est pas inférieur à cent soldats, placés sous le commandement d'un capitaine et de quatre lieutenants du génie.",
+      "La locomotive d'un train cuirassé mérite une description particulière, son aspect extérieur surtout ne ressemblant en rien à celui d'une machine ordinaire. Longue et trapue, elle n'est pas destinée à faire de la vitesse, mais à remorquer sans fatigue, sur des voies le plus souvent provisoires, l'énorme poids des wagons blindés qu'elle traîne sans compter le sien propre, soit au total 200 000 kilos environ.",
+      "Aucun de ses organes n'apparaît. On distingue seulement l'extrémité de la cheminée et le bas des roues. Sous sa lourde cuirasse d'acier, peinte en bleu-gris clair, la locomotive ressemble, avec son avant en forme de proue, à quelque formidable projectile vomissant dans sa course le fer et le feu. Le mécanicien et le chauffeur, complètement à l'abri, communiquent avec le capitaine placé dans la vigie du premier compartiment au moyen d'une sonnerie électrique."
+    ]
+  },
+  {
+    "id": 17,
+    "page": 2,
+    "category": "Nouvelles de Madagascar",
+    "title": "Voyage du Gouverneur Général et Situation des Provinces",
+    "summary": "",
+    "paragraphs": [
+      "Marseille, 25 novembre",
+      "Les nouvelles de Madagascar arrivées aujourd'hui par l'Iraouaddy relatent le voyage du gouverneur général à Anjozorobé, où la population indigène a accueilli le général Pennequin avec enthousiasme.",
+      "Celui-ci a visité le casernement des troupes, les hôpitaux européens et indigènes, les écoles ; puis, très satisfait de cette visite, il est rentré le soir à Tananarive.",
+      "Le lendemain, le général Pennequin et le secrétaire général ont inauguré, en présence d'une foule de hauts fonctionnaires civils et militaires, la nouvelle piste du Sport-Club de Tananarive.",
+      "En ce qui concerne la situation des provinces, le mouvement des troupes, effectué sans cesse dans le cercle de Morondava, a donné de bons résultats. Les 'reinas' de Mahoba et de Mandabé-Manza sont complètement à notre disposition et s'attachent à nous soumettre les chefs rebelles de la région de Vjisasy.",
+      "La situation politique et économique de Tananarive est satisfaisante. L'interruption momentanée des communications causée par les pluies n'a pas duré assez pour influencer beaucoup les transactions du mois de septembre."
+    ]
+  },
+  {
+    "id": 18,
+    "page": 2,
+    "category": "Guerre du Soudan",
+    "title": "Combat décisif contre le Khalifa au Soudan",
+    "summary": "",
+    "paragraphs": [
+      "Londres, 25 novembre",
+      "Le War Office reçoit du Sirdar la dépêche suivante :",
+      "Khartoum, 25 novembre, 7 h. 35 matin.",
+      "La colonne du colonel Wingate a attaqué le khalifa et a mis en déroute complète ses troupes après un violent combat. Le khalifa et les principaux émirs ont été tués ou faits prisonniers, à l'exception d'Osman Digma qui a pu s'échapper. Le camp a été pris. Un millier de derviches se sont rendus.",
+      "Un grand nombre de femmes et d'enfants ainsi que du bétail, sont tombés entre nos mains. L'engagement a été décisif. Nos pertes sont légères : trois hommes tués, douze blessés."
+    ]
+  },
+  {
+    "id": 19,
+    "page": 2,
+    "category": "Reportage",
+    "title": "L'inauguration du Monument Ferdinand de Lesseps à Port-Saïd",
+    "summary": "",
+    "paragraphs": [
+      "De notre envoyé spécial",
+      "Port-Saïd, 18 novembre",
+      "Notre traversée de Marseille à Port-Saïd s'est effectuée sans encombre et n'a été marquée par aucun autre incident notable qu'un petit coup de vent qui a duré presque toute la journée du mardi 14. Jusque-là nous avions été favorisés par un temps vraiment exceptionnel : une mer d'huile et un ciel éclatant qui nous avaient permis de ne point perdre un détail du pittoresque panorama qu'offre le passage des Bouches de Bonifacio et surtout du détroit de Messine. C'est alors que, presque au sortir de ce canal étroit si redouté des anciens navigateurs, l'Indus se mit à tanguer sous la double influence de la mer et du vent, et rares ont été les navigateurs improvisés qui ont vaillamment résisté aux oscillations accentuées du paquebot.",
+      "L'élément féminin a été surtout éprouvé, et rapidement, le spardeck avait perdu son animation accoutumée. Le plus grand nombre, enveloppés de couvertures et de plaids de voyage, affalés dans les fauteuils, avaient perdu toute notion du temps et de l'espace ; d'autres avaient préféré au grand air vif l'hospitalité plus discrète des cabines. Seuls, quelques privilégiés tenant tête aux fureurs tardives de Charybde et de Scylla, arpentaient d'un pas d'ailleurs mal équilibré le pont de l'Indus, regardés d'un œil chargé d'envie par leurs compagnons terrassés.",
+      "LE MONUMENT",
+      "Enfin, le 16 au matin, à huit heures, le paquebot faisait son entrée à Port-Saïd et venait s'amarrer en face même de la statue de Ferdinand de Lesseps, érigée sur cette partie de la jetée qui porte les noms de quai François-Joseph et dont la longueur totale atteint 2500 mètres. Dès lors, on pouvait apprécier dans son ensemble, à travers la transparence du voile qui enveloppait la statue de celui qui sut mener à bien l'œuvre gigantesque du canal de Suez, le grandiose monument dû à l'inspiration du sculpteur Fremiet.",
+      "Haute exactement de 7 m. 40, la statue représente Ferdinand de Lesseps, debout, tourné vers l'Orient, revêtu d'un frac que recouvrait de ses plis largement sculptés un ample pardessus.",
+      "Le bras droit infléchi, la main entr'ouverte est tendue vers l'entrée du canal, désignant aux navires de toutes les nations la voie percée au prix de tant de sacrifices et d'énergie, dans un geste d'une réelle beauté que complète la devise inscrite sur le socle : 'Aperire terram gentibus' (ouvrir la terre aux peuples), au-dessous de ces mots : FERDINAND DE LESSEPS.",
+      "L'inauguration, primitivement fixée à vendredi 17 novembre, dans l'après-midi, a été faite dans la matinée du même jour, à neuf heures.",
+      "Entre l'Indus, présentant son tribord à la jetée, et le monument, on avait fait avancer, dès notre arrivée, un vaste radeau.",
+      "LA CÉRÉMONIE",
+      "Avec une politesse princière, le khédive arrivait à l'heure dite, accompagné de ses ministres et prenait place sur la petite estrade légèrement surélevée qui lui avait été réservée. À sa droite, Abbas-Pacha avait le prince Waldemar de Danemark, Mme Ferdinand de Lesseps, le représentant de la Porte Ottomane, Moukkar-Pacha ; à sa gauche, MM. le prince d'Arenberg, lord Cromer, ministre d'Angleterre, et le lieutenant-général sir John Stokes. Derrière, sur des chaises se massaient les divers invités de l'Indus et les notabilités civiles et militaires de tous rangs, françaises, égyptiennes, anglaises, ainsi que les agents diplomatiques et les consuls des nations européennes. Des deux côtés, sur des estrades les délégations de toutes sortes : des écoles, des pensionnats arabes et européens, des navires de guerre français, le Bastard ; danois, le Valkyrien ; anglais, américain, etc., et les flots du populaire. Enfin, sur la jetée, en face, des deux côtés du monument, des pompiers dont l'accoutrement est le même qu'en France, et deux compagnies environ de troupes égyptiennes, haut guêtrées de jaunes, coiffées du fez rouge national à gland de soie retombant, et revêtues d'un sobre uniforme. Ajoutons, face aux invités, le groupe pittoresque, reluisant de broderies, sabre recourbé au côté, des superbes kawas, des consuls et des agents européens.",
+      "La série de discours a commencé aussitôt qu'au bruit des applaudissements le voile qui recouvrait la statue fut tombé et que l'image de l'homme que tous, dans cette ville si étrangement cosmopolite, appellent 'le Grand Français', fut apparue, se détachant avec netteté sur l'horizon de la Méditerranée.",
+      "Le premier, en quelques mots brefs, mais heureux, le khédive Abbas-Pacha, a remercié le conseil d'administration de la Compagnie de l'avoir convié au grand honneur de présider cette inauguration.",
+      "Puis, successivement, MM. le prince d'Arenberg, président du conseil d'administration, et E. Melchior de Vogüé, au nom de l'Académie française, ont retracé la vie du créateur du canal de Suez, l'opiniâtre énergie avec laquelle il s'attacha à réaliser l'œuvre conçue, et ont fait l'historique des difficultés diplomatiques et matérielles dont il finit par triompher. M. Charles de Lesseps, enfin, prenant à son tour la parole a remercié le conseil d'administration d'avoir associé à l'hommage rendu en ce jour les descendants de Ferdinand de Lesseps.",
+      "La cérémonie terminée, l'Indus quittait son emplacement primitif pour aller s'amarrer plus avant, en face du beau bâtiment de style oriental, aux coupoles vernissées, surmontées du croissant, où se trouvent situés les bureaux de la direction de la Compagnie.",
+      "Au déjeuner servi à bord de son yacht, le Harouskati, mouillé à quelque distance, le khédive recevait à sa table une soixantaine d'invités environ parmi lesquels figuraient tous les membres de la famille de Lesseps, le conseil d'administration de la Compagnie, les chefs des services, etc.",
+      "LA FÊTE DE NUIT",
+      "Le soir, Port-Saïd, pavoisé le jour, s'illuminait tout entier. Des bougies, enfermées dans des lanternes de fer-blanc et de verre, remplaçaient les classiques lampions et les rampes à gaz modernes. Des traits de feu dessinaient ainsi, dans la nuit transparente, les jetées, les monuments, les navires, les dragues, et des projections électriques faites par le Bastard ajoutaient leur pénétrant faisceau à ce décor nouveau.",
+      "À sept heures et demie, dans un des ateliers de la Compagnie des Messageries maritimes attenant à la direction, un banquet de trois cent quarante couverts, présidé par M. le prince d'Arenberg et Mme Ferdinand de Lesseps, réunissait les invités à titres divers du conseil d'administration. Le vaste édifice, divisé, en dehors de la salle du banquet, en plusieurs salons, était presque complètement revêtu, lui aussi, de tapis arabes dont les tons éclatants adoucis par l'usage, se mariaient curieusement à l'éclat des lumières, aux uniformes, aux toilettes.",
+      "Dans la soirée, enfin, l'Indus lui-même s'embrasait de lueurs électriques. Sur le spardeck tendu des pavillons bariolés de toutes les nations, au milieu d'un de ces décors que, seule, sait improviser l'artistique ingéniosité de nos marins, se pressait une affluence considérable, où tous les rangs étaient confondus et, on peut presque le dire, toutes les races représentées.",
+      "Dans l'avant-port, des feux de Bengale et, sur les jetées, sur l'eau même des fusées tournantes précédaient un feu d'artifice tiré sur une des puissantes dragues qui gardent au canal la profondeur nécessaire.",
+      "Un bal, prolongé fort avant dans la nuit, a clôturé les fêtes du premier jour de cette inauguration d'un monument qui est, avant tout, la consécration du génie civilisateur de la France, la commémoration du plus puissant effort que l'humanité ait tenté pour triompher de la nature hostile, rapprocher les peuples, désarmer l'inimitié latente des races en leur apprenant à se connaître et à s'estimer l'une l'autre.",
+      "Par la puissance des armes et par celle des esprits, par l'épée et par la science, la France a fait sienne cette terre d'Égypte à peine effleurée par les anciennes civilisations et qu'aucune autre n'a pénétrée comme la sienne.",
+      "Les Pyramides, un jour, s'effaceront sous la lente usure des siècles. L'œuvre colossale qui a réuni deux mers s'élargira encore sous l'irrésistible poussée des échanges et des besoins d'une humanité meilleure, et demeurera l'indestructible témoignage de la reconnaissance que les siècles futurs devront à notre race et à notre patrie."
+    ]
+  },
+  {
+    "id": 20,
+    "page": 2,
+    "category": "Nouvelles Militaires",
+    "title": "Marches d'hiver du 22e bataillon alpin",
+    "summary": "",
+    "paragraphs": [
+      "Le 22e bataillon alpin, en garnison à Albertville, laissant les 'bleus' aux soins des instructeurs, vient de commencer ses marches d'hiver. Ce bataillon est celui qui a donné le plus de développement à ces expéditions où nos alpins acquièrent une si grande habitude de la montagne aux époques où celle-ci est le plus inhospitalière."
+    ]
+  },
+  {
+    "id": 21,
+    "page": 2,
+    "category": "Nouvelles Militaires",
+    "title": "Le Nouveau Sabre des Canonniers",
+    "summary": "",
+    "paragraphs": [
+      "Nos artilleurs perdent le lourd bancal dont ils ont été gratifiés jusqu'ici: les artilleurs montés s'entend. Ceux qui sont à pied continuent à se servir de la baïonnette et de la carabine. On leur donne le sabre de cavalerie légère du modèle de 1882, légèrement modifié en 1890. Il comporte trois tailles : 950, 900 et 850 millimètres. Le poids varie entre 900 et 950 grammes."
+    ]
+  },
+  {
+    "id": 22,
+    "page": 2,
+    "category": "Nouvelles Militaires",
+    "title": "Les Détenus sur le P.-L.-M.",
+    "summary": "",
+    "paragraphs": [
+      "La Compagnie du chemin de fer P.-L.-M. a supprimé tous ses anciens wagons sur la ligne de Paris à Marseille pour les trains express et les a remplacés par des wagons à couloir.",
+      "Or, dans ces wagons il n'y a qu'un compartiment fermé et il n'y a que neuf places; comment y mettre les trois gendarmes et les sept détenus qui composent les détachements envoyés en Algérie et en Tunisie, quand il s'agit d'hommes punis ? On a adopté un principe comme les aimait Salomon. On supprime un gendarme. Ils ne seront plus que deux pour garder leurs sept mauvaises têtes, destinées aux compagnies disciplinaires."
+    ]
+  },
+  {
+    "id": 23,
+    "page": 2,
+    "category": "Nouvelles Maritimes",
+    "title": "Témoignage de Satisfaction pour acte de courage",
+    "summary": "",
+    "paragraphs": [
+      "À la suite de la rupture d'un tuyau de vapeur dans la chaufferie du torpilleur 153, attaché au port de Cherbourg, le vice-amiral préfet maritime a adressé par la voie de l'ordre deux témoignages de satisfaction, l'un au nommé Halgrin, quartier-maître mécanicien, pour avoir montré beaucoup de présence d'esprit et de sang-froid en manœuvrant le ventilateur au moment où la chaufferie était remplie de vapeur, l'autre au chauffeur breveté Gaudet, pour avoir montré beaucoup de courage, malgré les brûlures dont il était atteint, en manœuvrant la porte de dégagement des gaz dans la chaufferie.",
+      "Cet ordre du jour a été affiché à bord de tous les bâtiments."
+    ]
+  },
+  {
+    "id": 24,
+    "page": 2,
+    "category": "Nouvelles Maritimes",
+    "title": "Construction de deux Croiseurs Cuirassés",
+    "summary": "",
+    "paragraphs": [
+      "Lorsque la commission du budget entendit M. de Lanessan au sujet des crédits demandés pour le département de la Marine, la question de la construction de deux cuirassés de 10 000 tonnes avait été réservée, d'accord entre la commission et le ministre ; les crédits afférents à la construction de ces deux bâtiments se trouvant ainsi disponibles, M. de Lanessan a fait connaître à la commission du budget que les deux cuirassés seraient remplacés dans l'annexe des constructions neuves par deux croiseurs cuirassés aux travaux desquels les crédits prévus pour les cuirassés seront consacrés.",
+      "Les deux croiseurs cuirassés seront donc mis l'année prochaine en chantier, l'un à Brest et l'autre à Toulon.",
+      "Ces croiseurs auront un déplacement de 9 500 tonneaux, avec 145 mètres de longueur et 21 mètres de largeur. La puissance de leurs machines, qui actionneront trois hélices et seront alimentées par des chaudières multi-tubulaires, sera de 19 000 chevaux. La vitesse maxima prévue est de 21 nœuds et le rayon d'action à 10 nœuds atteindra 7 000 milles.",
+      "Leur artillerie comprendra deux canons de 240 millimètres, seize de 164, vingt de 47 et quatre de 37. L'armement sera complété par cinq tubes lance-torpilles dont deux sous-marins.",
+      "L'effectif prévu est de 23 officiers et 687 hommes. Le devis total de chacun de ces croiseurs cuirassés, dont les plans sont dus à M. Bertin, directeur des constructions navales, s'élève à 25 millions 823 500 francs."
+    ]
+  },
+  {
+    "id": 25,
+    "page": 2,
+    "category": "Nouvelles Maritimes",
+    "title": "Exercice de la Défense mobile de Toulon",
+    "summary": "",
+    "paragraphs": [
+      "Les sept torpilleurs qui constituaient, à Toulon le groupe dit des torpilleurs de guerre, ont été mis en ordre et avec une célérité qui font honneur au commandant de la défense mobile, aux officiers et aux équipages de ces torpilleurs.",
+      "Le groupe s'est dirigé à grande allure vers le mouillage de Saint-Tropez, qu'il a quitté pour revenir à Toulon.",
+      "Tous les navires avaient leurs feux de route masqués et maintenaient la vitesse de vingt nœuds. Il n'y a pas eu d'avarie grave à signaler. Le torpilleur 154, nouvellement mis en service, a dû ralentir sa vitesse par suite de la rupture d'une pièce de sa machine, accident qui n'a pas eu pour résultat d'immobiliser le bâtiment."
+    ]
+  },
+  {
+    "id": 26,
+    "page": 2,
+    "category": "Social",
+    "title": "Les Grèves du Doubs",
+    "summary": "",
+    "paragraphs": [
+      "Montbéliard, 25 novembre",
+      "Une réunion a été tenue hier après-midi, par M. Quillet, au préau des écoles. Les réunions en plein air sont interdites. L'effet moral produit sur l'esprit de la population a été considérable ; jusqu'à présent celle-ci était plutôt favorable aux grévistes, mais depuis le retour de l'exode les habitants se montrent plus réservés.",
+      "La grève est terminée à l'usine Sous-Roches ; tous les ouvriers rentrent, sauf trente-sept ; le préfet du Doubs a promis de trouver de l'occupation à ces derniers.",
+      "Ce matin, à Chatenois, il y a eu des rentrées."
+    ]
+  },
+  {
+    "id": 27,
+    "page": 2,
+    "category": "Chronique Judiciaire",
+    "title": "La Haute Cour - Quatorzième audience",
+    "summary": "",
+    "paragraphs": [
+      "QUATORZIÈME AUDIENCE",
+      "M. le président donne lecture, au début de cette audience, du certificat délivré par le médecin de la prison de la Santé et constatant que M. Déroulède est dans l'incapacité absolue d'assister aux débats.",
+      "On modifie, par suite, l'ordre dans lequel devaient être entendus les témoins.",
+      "On commence par M. Nadaud, officier de paix. Celui-ci déclare qu'on a plusieurs fois tenté de provoquer l'action des gardes républicains. Il dit également que M. de Sabran se serait livré personnellement à l'embauchage. L'accusé proteste.",
+      "M. Masser, brigadier de gardiens de la paix au dix-neuvième arrondissement, a su, le matin du 18 février, que des gens avaient été embauchés par le comité de M. de Sabran et avaient touché chacun 5 francs pour aller manifester soit à Versailles, soit sur les grands boulevards, soit à la gare Saint-Lazare. D'autres n'ont reçu que 2 francs comme indemnité. Ils avaient comme mot d'ordre de crier seulement 'Vive l'armée'.",
+      "M. Brossard, représentant de commerce, ancien gardien de la paix, fournit quelques renseignements sur les embauchages. Il se plaint d'avoir été traité de 'mouchard' par M. Guérin et la Ligue des patriotes. Il a été chargé par un rédacteur d'un journal antisémite de recruter des témoins dans le procès Henry-Reinach. On leur donna à chacun une dizaine de francs. Le 18 février, il a reçu de M. Habert une somme de vingt francs pour aller porter des convocations. Le rendez-vous fixé était place de la Bastille.",
+      "Le témoin fournit maintenant, à la demande du procureur général, des renseignements sur la manifestation du 12 décembre. Cette manifestation était, dit-il, antidreyfusarde et non royaliste. Il avait 600 hommes et en a payé raison de 4 francs l'un. Cette manifestation n'avait pas un caractère politique, mais patriotique. Il affirme que de leur côté ceux qui manifestaient en faveur de Dreyfus étaient également payés pour le faire.",
+      "M. Brossard dit que l'argent qu'il a distribué ainsi lui avait été remis par M. Turquet. Il ajoute, ce qui est en contradiction formelle avec ce qu'il vient de prétendre, qu'il n'y a pas eu à proprement parler d'embauchage. 'Nous avions assez d'hommes de bonne volonté'.",
+      "Le témoin répond ensuite à diverses questions des accusés. Il affirme ne connaître que fort peu M. Guérin. En ce qui concerne M. Cailly, il ne l'a vu à aucune manifestation. Il ne croit pas que M. de Sabran ait servi d'intermédiaire entre M. Guérin et le duc d'Orléans.",
+      "M. Groupière, coiffeur, appelé à son tour à la barre, affirme qu'il est inexact qu'il ait dénoncé M. Barillier comme ayant été un des principaux auteurs de la manifestation d'Auteuil. Il a reçu le 4 juin la confidence du cocher de M. Barillier. Celui-ci, venant de se faire raser, lui a annoncé que 'ça allait chauffer à Auteuil'. Il lui a parlé également de coup d'État et de fonctionnaires qui devaient être déportés. M. Barillier proteste : 'M. Déroulède, dit-il, est un autoritaire, si des listes de déportations avaient été dressées, je n'en aurais rien su'. M. Groupière maintient qu'il n'a pas fait de délation. 'Ces propos tenus dans sa boutique ont été portés en dehors de lui à la connaissance du commissaire de police'.",
+      "M. Brothier, commis boucher, ne connaît que M. Barillier parmi les accusés. Ils ont souvent ensemble parlé politique. L'accusé était, dit-il, pour la République plébiscitaire. Il oppose un démenti au précédent témoin au sujet des propos dont il s'est fait l'écho et qui auraient été tenus dans sa boutique. Il prétend que M. Groupière aurait dénaturé le sens de ces paroles.",
+      "On confronte alors MM. Groupière et Brothier. Celui-ci, en s'approchant du coiffeur, sort son mouchoir et se bouche ostensiblement le nez, ce qui provoque un incident. Le procureur général trouvant ce geste inconvenant pour le témoin Groupière, dit qu'il va requérir. M. Brothier s'excusant, l'incident n'a pas de suite.",
+      "Un incident d'une autre nature s'était déjà produit peu auparavant. L'audience est suspendue.",
+      "À la reprise de l'audience on entend un certain nombre de témoins qui déposent sur des faits concernant M. Guérin et sur sa moralité.",
+      "M. Lecat, directeur d'une compagnie d'assurances, a été chargé d'enquêter, en 1893, sur un sinistre qui aurait éclaté dans les bureaux de M. Guérin. L'inspecteur qui fut chargé de se rendre compte de visu des dégâts conclut à un incendie non accidentel.",
+      "Une instruction fut même ouverte, et M. Guérin bénéficia d'une ordonnance de non-lieu. La Compagnie ne lui versa rien. M. Ménant dit que cela n'a rien à voir avec le complot, qu'il y a chose jugée. M. le procureur général dit qu'il ne retient cette déposition qu'à titre de moralité.",
+      "M. Maxime dépose sur l'affaire. Il alla, en compagnie de l'expert M. Revoil, sur les lieux. Celui-ci se fit accompagner par M. Mouquin, commissaire de police.",
+      "On arrive à M. Mallet, ingénieur, avec lequel M. Guérin eut de nombreuses difficultés.",
+      "Ce témoin dit qu'il connaît l'accusé depuis son enfance et rappelle quels furent les rapports de sa famille avec celle de M. Guérin. Il le prit avec lui et lui donna un emploi supérieur à son âge. Il apprit que M. Guérin se livrait à la fraude. Il en fut consterné.",
+      "M. Mallet raconte alors quelles furent vis-à-vis de la société les exigences de l'inculpé. Il la quitta pour fonder une nouvelle société concurrente et il s'appropria le livre portant les noms des clients. De ce fait, il fut condamné à 5 000 fr. de dommages-intérêts pour soustraction de pièces commerciales.",
+      "« Je fus par la suite, ajoute-t-il, l'objet de la part de toutes les persécutions possibles. » Le témoin raconte alors une série de faits qui ne se rattachent qu'indirectement à l'affaire.",
+      "Une longue discussion s'engage entre M. Mallet et M. Guérin, qui paraissent avoir l'un contre l'autre une grande animosité.",
+      "À ce moment un vif incident se produit. M. Cailly déclare qu'il a vu à l'aide de sa lorgnette (car il a une lorgnette) plusieurs membres de la Haute Cour quitter la salle d'audience et ne pas revenir. (Bruit). Plusieurs sénateurs : « Nous demandons au président de nous faire respecter. » M. Cailly : « Je vois parfaitement avec ma jumelle ce qui se passe. Si vous voulez que nous vous respections, respectez-nous vous-mêmes. » Murmures prolongés. M. le procureur général requiert contre l'accusé l'application de la loi et son expulsion définitive de la salle d'audience. Me Falaise prend alors la défense de M. Cailly, disant que c'est un enfant et qu'il faut tenir compte de cela. M. Cailly : « Je ne suis pas un enfant. » M. LE PRÉSIDENT : « La cour va délibérer sur les réquisitions de M. le procureur général. » Et l'audience publique est suspendue pour permettre à la Haute Cour de statuer en chambre du conseil.",
+      "EN CHAMBRE DU CONSEIL",
+      "L'audience secrète, commencée à six heures, n'a pris fin qu'à sept heures et demie.",
+      "M. Sarrans appelle toute la bienveillance de la Haute Cour sur l'incident provoqué par M. Cailly. L'absence de certains sénateurs, sans donner raison à l'accusé, doit imposer en quelque sorte une grande modération sur l'application de la peine.",
+      "M. Maxime Lecoute déclare que les sénateurs ne sauraient être tenus d'assister à l'audience entière. Il suffit de répondre à l'appel qui a lieu au début de chaque audience.",
+      "M. Kresncau propose l'exclusion de M. Cailly pour deux jours. On procède au vote sur la question ainsi posée : Exclusion pour les deux séances qui suivront celle de ce jour. Les deux jours d'exclusion sont adoptés à une forte majorité. 317 sénateurs avaient droit de prendre part au vote. Prennent part réellement au vote 211 sénateurs ; 104 votent oui et 2 votent contre. Il y a deux abstentions. Il y a donc 317 - 211 = 106 manquants (calculation error in source text, should be 211 present, 104 oui, 2 non, 2 abstentions, so 104 + 2 + 2 = 108 votes accounted for, remaining 211-108 = 103, no, this is 104 votes yes and 2 votes no, out of 211 present. So, 106 people voted. What about 2 abstentions? The sentence is ambiguous. I'll reproduce it as is.)",
+      "L'audience secrète est alors levée pendant quelques instants pour permettre à M. le président de rédiger l'arrêt.",
+      "À la reprise de l'audience secrète lecture est donnée de l'arrêt qui est adopté à mains levées. La Haute Cour décide alors qu'elle se réunira demain lundi à une heure et demie en audience. M. Cailly n'assistera donc pas aux débats ni lundi ni mardi. En cas de récidive, il sera définitivement exclu.",
+      "LES PERQUISITIONS",
+      "En relatant ces jours derniers la perquisition opérée par M. Péchard, commissaire de police dans les bureaux du journal la Croix, qui appartient aux Pères Assomptionnistes, nous avons mentionné qu'une somme de 80 000 fr. avait été découverte dans la cellule de M. Hippolyte Saugrain, en religion le père Hippolyte, trésorier.",
+      "Le Figaro a publié hier deux procès-verbaux relatifs à cette perquisition. Voici un extrait du premier procès-verbal :",
+      "« Nous remarquons, tant dans les meubles garnissant la cellule (bibliothèque, armoires, bureau, table) que dans un coffre-fort ouvert sur notre réquisition, une nombreuse correspondance relative à des dons faits au nom de saint Antoine de Padoue, en exécution de vœux accomplis, et constatons la présence de fonds importants en billets de banque, rouleaux d'or, titres ou actions diverses que l'on peut estimer à dix-huit cent mille francs ; nous trouvons également des testaments faits par des personnes en faveur de prêtres ou de religieux dont les noms ne figurent pas dans la liste des individus faisant l'objet de notre commission rogatoire. »",
+      "Le commissaire de police.",
+      "Signé Saugrain. Signé Péchard.",
+      "Dans le procès-verbal n° 2, il est mentionné que M. Péchard a découvert quatre imprimés : le premier donnant le compte rendu de l'assemblée générale des membres de l'Association française de l'ordre souverain de Saint-Jean-de-Jérusalem ; le second, la liste des membres français de l'ordre de Saint-Jean-de-Jérusalem-Malte ; le troisième, la liste des membres de la congrégation des Augustins de l'Assomption ; le quatrième, une convocation du chapitre général de l'ordre.",
+      "« Nous avons placé, tel est le texte même du document, en quatre pièces, après les avoir fait coter et parafer avec nous par M. Hippolyte Saugrain, sous un scellé portant le n° 1. Nous avons également saisi et placé sous scellé portant le n° 2 un bail et une contre-lettre relatifs à l'immeuble de la rue François-1er, n° 25. Sous le scellé n° 3 nous avons placé une lettre adressée par le P. Victorin au directeur de l'Assomption de Nîmes, dans laquelle ce religieux annonce que des poursuites vont être intentées prochainement contre la congrégation. Sous le scellé n° 4 nous plaçons un carnet contenant les noms et adresses des personnes à convoquer pour les diverses œuvres dont s'occupe la congrégation.",
+      "Nous avons coté et parafé chacune des pièces composant les scellés dont l'énumération précède et les avons représentées à M. Saugrain qui les a visées avec nous. »",
+      "Le commissaire de police.",
+      "Saugrain. Péchard.",
+      "Mot à ce sujet, un rédacteur du Temps ayant demandé à la Croix ce qu'elle avait à répondre à cette publication, on lui a communiqué la note suivante :",
+      "« Le père Hippolyte et les deux témoins laïques de la perquisition n'ont eu connaissance du prétendu procès-verbal portant dans le Figaro le n° 1. Quant à celui que le Figaro appelle le procès-verbal n° 2, les inculpés l'ignorent encore à l'heure qu'il est. »",
+      "D'autre part ajoute notre confrère, nous avons vu M. Cailly qui nous a dit que la signature du témoin ne figure pas au bas du procès-verbal ce qui est une sorte de bordereau des scellés faite par le magistrat.",
+      "Le procès-verbal n° 1, en effet, n'avait pas pour objet de rapporter le détail de l'opération judiciaire dirigée contre le père Hippolyte. Il était destiné aux chefs de la police et n'avait pas à être signé par le P. Hippolyte."
+    ]
+  },
+  {
+    "id": 28,
+    "page": 2,
+    "category": "Dépêches de l'Étranger",
+    "title": "Le complot de Constantinople",
+    "summary": "",
+    "paragraphs": [
+      "Francfort, 24 novembre",
+      "On mande de Constantinople à la Gazette de Francfort :",
+      "Les arrestations relatives à l'affaire du complot continuent. On affirme au Palais que les perquisitions qui ont eu lieu chez les accusés ont eu pour résultat la saisie de documents d'un caractère très grave. D'après ceux-ci, on projetait de tirer sur le prince Yzeddin, frère de l'héritier du trône."
+    ]
+  },
+  {
+    "id": 29,
+    "page": 2,
+    "category": "Dépêches de l'Étranger",
+    "title": "Les Obsèques de Lady Salisbury",
+    "summary": "",
+    "paragraphs": [
+      "Londres, 25 novembre",
+      "Les obsèques de Lady Salisbury ont été célébrées aujourd'hui. La reine et le prince de Galles étaient représentés.",
+      "À l'heure où avait lieu la cérémonie, un service choral solennel était célébré à la chapelle royale. Y assistaient le duc de Cambridge, le Lord Chancelier, le duc de Norfolk, M. Chamberlain, M. Goschen, les ambassadeurs de France et d'Autriche, les ministres de Belgique, d'Italie, etc., et des représentants de l'empereur de Russie et de l'empereur d'Allemagne.",
+      "Lord Salisbury n'a pu assister à aucune de ces cérémonies, car son état ne lui permettait pas encore de quitter sa chambre."
+    ]
+  },
+  {
+    "id": 30,
+    "page": 2,
+    "category": "Dépêches de l'Étranger",
+    "title": "Situation aux Philippines - Aguinaldo en fuite",
+    "summary": "",
+    "paragraphs": [
+      "Le général Otis télégraphie qu'une forte colonne a pris la totalité des membres du gouvernement des Philippines et que la femme d'Aguinaldo et d'autres membres du gouvernement sont prisonniers.",
+      "Les troupes philippines en campagne ne constituent plus qu'une poignée d'hommes.",
+      "Aguinaldo est en fuite. La citadelle d'Ilo-Ilo a été prise."
+    ]
+  },
+  {
+    "id": 31,
+    "page": 2,
+    "category": "Santé Publique",
+    "title": "La Peste",
+    "summary": "",
+    "paragraphs": [
+      "On a enregistré aujourd'hui six nouveaux cas de peste.",
+      "Il y a à l'hôpital 45 malades en traitement, dont treize sont dans un état grave."
+    ]
+  },
+  {
+    "id": 32,
+    "page": 2,
+    "category": "Social",
+    "title": "La Fête des Postiers-Télégraphistes",
+    "summary": "",
+    "paragraphs": [
+      "La fête de nuit organisée dans les salons de l'hôtel Moderne par le groupe des employés des postes, télégraphes et téléphones, pour l'amélioration de leurs pensions de retraite, a eu lieu hier soir, sous la présidence de M. Millerand, ministre du Commerce.",
+      "Le ministre était accompagné de M. Mougeot, sous-secrétaire d'État aux Postes et Télégraphes, de MM. Delombre et Mesureur, anciens ministres du Commerce, de M. de Selves, préfet de la Seine, de M. Strauss, sénateur, et M. Berteaux, député.",
+      "M. G. Serres, receveur des postes et télégraphes à Paris, a pris le premier la parole et a souhaité la bienvenue à tous ceux qui ont, à tant de reprises, donné des preuves de l'intérêt qu'ils portent aux postiers et télégraphistes.",
+      "Au nom de ses camarades, il a remis à titre de souvenir, un bronze 'Le Semeur d'Idées', de Picault, à MM. Millerand, Mesureur et Strauss.",
+      "Des médailles commémoratives ont été, en outre, offertes à MM. Mougeot, Boucher, Delombre, Maruéjouls, Peytral, Cochery, anciens ministres ; à MM. Donnions, Deandreis, Gauthier, Hatier, sénateurs ; Berteaux et Creussier, députés ; et de Selves, préfet de la Seine.",
+      "Après une humoristique allocution de M. Paul Delombre, MM. Strauss et Berteaux ont pris la parole. La série des discours a été clôturée par M. Millerand, ministre du Commerce, qui, en termes élogieux, a parlé du rôle important confié aux employés de tous grades des postes, télégraphes et téléphones.",
+      "Le punch d'honneur était suivi d'un brillant concert pendant lequel la musique du 72e de ligne s'est fait entendre et applaudir à plusieurs reprises. L'Opéra, la Comédie-Française, l'Opéra-Comique, l'Odéon, le Gymnase et le Conservatoire étaient représentés au concert par des artistes tels que MM. Melchisedec, Truffier, Matrat, Mme Amel, Mlles Du Minil, Chassaing, Crépin, etc.",
+      "Enfin un bal très animé a clôturé cette fête."
+    ]
+  },
+  {
+    "id": 33,
+    "page": 3,
+    "category": "Social",
+    "title": "Les ouvriers maréchaux",
+    "summary": "",
+    "paragraphs": [
+      "Aucun incident n a marüut la jouruée d'hier aucune détente ne s'est produite.",
+      "Patrons et ouvriers maréchaux semblent attendre l'intervention du juge de paix du dixième arrom'issoinent, qui, aux termes de la loi, doit faire une tentative de conciliation.",
+      "J.^s deux parties accepteraient sans nul doute avec plaisir cette intervention, et peut-être alor pourrait-on trouver un terrain d entente commun mais ai les uns ni les autres ne veulent faire les premier pas dans la voie des concessions.",
+      "Les grévistes ont tenu, dans l'après-midi; une",
+      "Toujours très nombreux et très calmes, ils ont, en fin de séance, adopté à l'unanimité un ordre du jour interdisant aux ouvriers maréchaux de répondre aux convocations individuel les faitespar les patrons en vue d'une reprise générale du travail pour lundi matin.",
+      "Les ouvriers maréchaux se sont séparés au cri de Vive la grève.",
+      "A neuf heures, ce matin, des réunions de section auront lieu à Paris et dans la banlieue.",
+      "Une nouvelle assemblée générale des grévistes se tiendra lundi, à deux heures, à la Bourse centrale du travail, rue du Cnâteau-d'Eau à"
+    ]
+  },
+  {
+    "id": 34,
+    "page": 3,
+    "category": "Social",
+    "title": "Grève à la Société cotonnière d'Hellemmes",
+    "summary": "",
+    "paragraphs": [
+      "Trois cents ouvriers de la Société cotonnière J iteiiemmes, près de Lille, se sont mis en grève ils se plaignent d'une surcharge de travail"
+    ]
+  },
+  {
+    "id": 35,
+    "page": 3,
+    "category": "Social",
+    "title": "Fin de la grève des tramways de Madrid",
+    "summary": "",
+    "paragraphs": [
+      "On mande de Madrid",
+      "La grève des tramways est terminée. Les compagnies ont accepté les demandes des ouvriers. La circulatiou des voilure a été rétablie ce matin"
+    ]
+  },
+  {
+    "id": 36,
+    "page": 3,
+    "category": "Nouvelles Judiciaires",
+    "title": "Condamnation pour attentat à la pudeur dans le Rhône",
+    "summary": "",
+    "paragraphs": [
+      "La cour d'assises du Rhône vient de condamner à dix ans rie réclusion, pour attentat à la pudeur sur trois jeune filles àK e de moins tie quinze ans, un individu nommé Antoine Germam, âgé de trente-cinq ans, jardinier à Lyon qui fut longtemps soupçonné d'être routeur de r&sMttBiD&t du la petite Loaaitardini que nous avons relaté en son temps"
+    ]
+  },
+  {
+    "id": 37,
+    "page": 3,
+    "category": "Nouvelles Judiciaires",
+    "title": "Pourvoi en cassation de M. Perrenx, gérant de l'Aurore",
+    "summary": "",
+    "paragraphs": [
+      "M- Perrenx, gérant de l'Aurore, a décidé de se pourvoir devant la Cour de cassation contre l'arri;t qui le renvoie en Gonr d'assises, ainsi que nale"
+    ]
+  },
+  {
+    "id": 38,
+    "page": 3,
+    "category": "Échos et Nouvelles",
+    "title": "Le Président de la République à Rambouillet",
+    "summary": "",
+    "paragraphs": [
+      "Le Président do la République, accompagné du généraL Bailloud, a quitté Paris hier niatin se rendant à Rambouillet, où une grande chafse avait été organisée en l'honneur des membres de la Cour de cassation.",
+      "M. Loub t était de retour il l'Elysée dans la"
+    ]
+  },
+  {
+    "id": 39,
+    "page": 3,
+    "category": "Échos et Nouvelles",
+    "title": "A l'Institut : candidatures au fauteuil de philosophie",
+    "summary": "",
+    "paragraphs": [
+      "Hier, au cours de la séance de l'Awdéraie des sciences morales et politiques, M. Himly, président, a donné communication à ses collègues de quatre lettres par lesquelles MM. Th. Ribot Oardaine, Brochard et Alaox posent leur candidats re au fauteuil do la section de philosojUii laissé vacant par la mort de M. Nourrisson"
+    ]
+  },
+  {
+    "id": 40,
+    "page": 3,
+    "category": "Échos et Nouvelles",
+    "title": "L'Académie des beaux-arts et le monument Alphand",
+    "summary": "",
+    "paragraphs": [
+      "L'Académie des beaux-arts a été invité par le comité Atphand à assister à l'inauguration du monument d'Alphand, inauguration qui doit avoir lieu le décembre prochain.",
+      "L'Académie a désigné MM. Daumet, Pascal Nénot, Philippe Gille et Lafenestre, ainsi que les membres de son bureau, pour la représenter à cette cérémonie.",
+      "Les membres présente ont ensuite procédé à l'élection d'un membre correspondant en remplacoment de M. Civiletti, statuaire, décédé à Palerme. M. Saint-Gaudens, statuaire à NuwYork, a été élu au troisième tour.",
+      "M. Saint-Uaudens est l'auteur de travaux nombreux et intéressants New-York.",
+      "Il & expaaé à Paris, aux Salons de la Société des artistes français et de la Société nationale des beaux-arts"
+    ]
+  },
+  {
+    "id": 41,
+    "page": 3,
+    "category": "Échos et Nouvelles",
+    "title": "Nouvelles plantations sur les quais de la Seine",
+    "summary": "",
+    "paragraphs": [
+      "On sait qu'il a fallu, pour procéder aux travaux de la nouvelle ligne du chemin de 'fer d'Orléans, abattre les arbres sur les quais Manquais et d'Orsay.",
+      "Aujourd'hui que la ligne est presque termi née, de nouvelles plantations d'arbres ont été entreprises et bientôt cette partie de la rive gauche de la Seine reprendra son ancien aspect"
+    ]
+  },
+  {
+    "id": 42,
+    "page": 3,
+    "category": "Échos et Nouvelles",
+    "title": "Banquet annuel de l'Association amicale des sténo-dactylographes",
+    "summary": "",
+    "paragraphs": [
+      "Le banquet annuel de l'Association amicale des sténo-dactylographes a eu lieu, hier soir dans les salons Bonvaiet, sous la présidence de M. de Lanessan, ministre de la Marine.",
+      "M. Loubet, Président de la République, s'était fait représenter par M. le commandant Legrand.",
+      "A la table d'honneur on remarquait MM Vian et Levayer, représentant les ministres des Travaux publics et du Commerce, le docteur Piellre, président du conseil général; Guitlemet député; Buisson, président de l'association Priou et Toupy, vice-présidents, etc",
+      "Au dessert, M. de Lanessan a, dans un discours très documenté, rappelé les origines des diverses méthodes sténographiques aotuellement employées dans le monde entier et ren dant d'inestimables services au commerce.",
+      "Puis aux applaudissements de l'assistance, le ministre de la Marine a remis les palmes d'of licier d'Académie à M. Fano, président de l'Union sténographique, et la croix de chevalier du Mérite agricole à NI. Reué Havettc, sténographie.",
+      "Un bal plein d'entrain a terminé cette fête pendant laquelle s'est fait applaudir la musique du 3i' de ligue"
+    ]
+  },
+  {
+    "id": 43,
+    "page": 3,
+    "category": "Échos et Nouvelles",
+    "title": "Banquet de l'Association sténographique unitaire",
+    "summary": "",
+    "paragraphs": [
+      "M. Panl Desehanel, président da la Chambre des députés, assistait, hier soir, au banquet annuel de l'Association sténogvaphique unitiure donné chez Honceray étaient également présents MM. Arsène Lopin conseiller municipal. Moron, ingénieur en chef lies mines, Boutillier, président, et Flory, commissaire, général de l'association.",
+      "A l'issue du banquet, les palmes académiques ont été décernées a MH. Caudet et Violette de Noirearme, chef et sous-chef du service s'éno- j graphique de la Chambre, et à M. Durand SaintAnge, professeur de sténographie.",
+      "Un Drillanl concert a terminé la soirée"
+    ]
+  },
+  {
+    "id": 44,
+    "page": 3,
+    "category": "Roman-Feuilleton",
+    "title": "LE PÈRE - QDATKtèME l'AllTni - IV (suite) : L'Idée de la baronne / M. Ledru combine son plan",
+    "summary": "",
+    "paragraphs": [
+      "N 98. feuilleton du l'erre Parisien",
+      "GRAND ROMAN INÉDIT",
+      "QDATKtèME l\"AllTni",
+      "LE PÈRE",
+      "IV (suite",
+      "L'ldée de la baronne",
+      "D'être le complice de vos infamies! répliqua violemment Montalais, de tremper mes mains dans le sang. d'être mêlé, même indirectement, à une seconde tentative de meurtre.",
+      "Si bas que je sois tombé, je me révolte à la fin, et de toute mon aine, contre ce nouveau crime si froidement prémédité.",
+      "Assez de lâcheté, d'ignominie, de bassesse.",
+      "Plutôt renoncer à tout espoir de fortune. végéter dans la misère. plutôt la mort.",
+      "Quelle mort? celle de l'échaiaud ou du bagne, interrompit la baronne.",
+      "Mon cher monsieur, cet accès de vertu tous bûnore, mais il est tardif.",
+      "Vous auriez dû éprouver cea scrupules un peu plus tôt, avant de venir réclamer ma protection.",
+      "Ah! ajouta-t-elte avec un accent d'indicible mépris, toujours le méme, ce descendant des ero'sds, faisant agir les autres mats reculant.",
+      "Mi-ntèrae devant la responsabilité.",
+      "Mais peu importe! Veuille ou aon veuille vous êtes des nôtres.",
+      "Si vous vous oses rejdmber, miss Minute Jefforsoa connaîtra par mot tous les secret de votre passé. bon entendeur, salut I",
+      "Gontran chancela et retomba sur sa chaise en poussant oae sorte de gémissement étouffé.",
+      "Alors, s'adressant à Ledru",
+      "Ne faites pas attention à ee pauvre slre dit la baronne, du. un quart d'heure il aura oublié la révolte de son ame , et sa noble indignation sera calmée.",
+      "Et maintenant, qu'allons-nous décider T",
+      "Ledru se leva et galamment offrit la main à madame de Valmondois.",
+      "Puis, la conduisant au bureau",
+      "Asseyez-vous ici, chère madame.",
+      "Yous allons tout d'abotd rédiger notre double lettre.",
+      "Veuillez écrire",
+      "Et ce plan, ce fameux plan que rous avez combiné",
+      "Accordes-moi une soirée poux le mûrir.",
+      "Demain je vous l'expliquerai bante, on eût pu voir sortir de la maison qu'occupait la célèbre banque Evariste fils un vieiltard de chétive apparence et marchant à petits pas lents.",
+      "Il portait sous son chapeau melon une perruque poivre et sel.",
+      "Une barbe grise, assez mal peignée, couvrait presque entièrement sa fiqure.",
+      "Des lunettes bleues complétaient l'aspect falot du personnage.",
+      "Il était vêtu d'un mac-fariane et portait un parapluie de cotonnade.",
+      "En le voyant sortir de la maison, deux commères du quartier qui bavardaient avec U eoBcierge de l'immeuble retournèrent la tête pour le regarder.",
+      "Quel est ce lypeï laterrcfea l'une des",
+      "Connais pas; c'est drôle, je ne l'ai pas vu passer. fit la concierge",
+      "Ah ! encore quelque imbécile qui est venu emprunter de largent à Evaristp",
+      "Probablement; en voilà un qui doit avoir le sac, M. Evariste i",
+      "J'les crois, ma'me Mauchin",
+      "Tiens, tiens, regardez le petit vieux qui tout à l'heure marchait en tirant la patte court maintenant comme un dératé.",
+      "C'est vrai tout de même, répondit la concierge en suivant du regard le petit vieux.",
+      "Ah ma'me Pichon ce que j'en vois de ces têtes à police défiler à la maison.",
+      "J'en ai souvent les sangs tournés.",
+      "Entrez donc dans la loge, je vais vous offrir un verre de cassis.",
+      "Or, les vieillard à lunettes bleues qui maintenant courait comme un dératé, n ait autre que M. Isidore Ledru, le directeur de la banque Evariste fils.",
+      "V",
+      "M. Ledru eowMtte son plan",
+      "Les berges de la Seine à la hauteur du Point-du-Jour sont, comme chacun le sait bordées de cabarets, de guinguettes et de bals publics.",
+      "C'est là que viennent s'ébaudir toute une population interlope, composce^lii mariniers de la Seine, de rôdeurs des fortiiications, de souteneurs et de ailes.",
+      "Or, à l'époque où se passe notre récit, le plus réputé pour la gouape parisienne de ces établissements était le bal public de l'Esturgeon.",
+      "Son renom s'étendait bien au delà de la barrière, à Bouloiru à Billancourt, et jusqu'à la rive gauche, à Javel et à Grenelle. j",
+      "Le Bal de l'Esturgeon était son nom officiel mais, familièrement, entre amis rt ca maros on ne le désignait que sous le sobriquet de la Pleine Eau.",
+      "Ce soir-là, il y avait brillante et frétillante réunion daus ce bastringue.",
+      "Il était neuf heures à peine, et déjà l'air poussiéreux y était empuanti de relents de sueur, de charcuterie, de fumée de brülegueule, et de saladiers de via chaud.",
+      "A l'extrémité de la salle un orchestre discordant, piston, tambour et clarinette, faisait grincer la cacophonie de sa musique.",
+      "Par instant, lorsqu'il entamait un morceau trop connu de musique populaire, danseurs danseuses, lippeurs d'alcool et de picala, joignaient leurs voix éraillées aux bruyances du trombone, et des pieds battaient la mesure.",
+      "Un air alors très à la mode et mis en quadrille, le Petit Bleu, faisait rage en ce mo ment.",
+      "Au milieu de la salle, et en plaee d'honneur, on faisait cercle pour admirer deux couples qni se trémoussaient avec frénésie.",
+      "Citait, faisant face à M. le baron Théodore de Valmondois, M. papaul, dit le a CasseCoeur des daines.",
+      "Très galamment, ces Messieurs dansaient arec leurs dames qui, elles, jouaient furieuaemeut des guibolles.",
+      "Lune était Mélie la Dèche, l'autre Mlle Lucie, aouv<el3< recrue de cette élégant société.",
+      "Il était superbe, ce soir-là, M. Popaul, avec oa ch --au rond Incliné de côté, les cheveux collés en accroche-cœurs aur les tempes, une eigrareUc posée derrière l'oreille il portait un vestonde velours marron, un p.uital tï srrts wtV- et une cravate d'une douteuse propreté.",
+      "Une fleur de papier rose ornait sa boutonnière, et sur son gilet serpentait ane superbe chaîne de chrysocale. le plus récent cadeau offert par la tendresse de la bien-aimee.",
+      "Mélie le contemplait ardemment, amoureusement, jalousement surtout, car le volage Casse-Coeur des dames s'occupait beaaceup trop ce oir-là de cette morveuse Lueie dite la Friquette du quartier Latin.",
+      "A chaque instant. Mélie Interpellait l'aimi et degoiw.it l'injure la rivale.",
+      "Toi, tu Mis, avant qu'il soit demain je t'aurai crêpé le chignon et poché les deux mirettes! Quand on a un petit homme comme le mien, on n'y laisse pas toucher.",
+      "Mais indifférent à cette menaçante bataille de dames, M. Popaul n'en déployait pas moins ses jrrftee.",
+      "Il exécutait en ce moment un cavalier seul dont le déhanchement désordonné, les gestes audacieux, faisaient passer de voluptueux frissons dans la personne de Mélie la Dèche.",
+      "Le cercle autour de lui était devenu compact, lea rires perlaient sur les lèvres de tes dames, et ce messieurs frappaient du talon en signe 4'admiration profonde.",
+      "Tout à coup nn long corps se faufila dans le rang privé de ces spectateurs et une main se posa sur l'épaule du Casse-Cœur des dames.",
+      "Celui-ci, surpris en pleine évolution chorégrashique, retourna rageusement la télé.",
+      "Il aperçut un vieillard à perruque grise et à barbe blanche qui le regardait en souriant.",
+      "En voilà, un type ! exclama, Popaul qu'est-ce que tu me veux, toi ? t",
+      "Finissez votre quadrüle, dit l'antre.",
+      "Nous avons à uuser â. le GMM-Caor du dame .",
+      "J'obéi . -:r, répondit Popaul; toi va-t-en, cran.",
+      "Et, fort peu m .îi. nt, II repoussa sâdanseuse. Puis. s'adr.'Siiant à Ledru. et avec une nuance de r sjx;ct",
+      "Qu'y a-l- il pour votre serrtce, monsieur Bvariste.",
+      "Allons tout 'd'abord nous asseoir 4 l'écart, répliqua l'antre.",
+      "Il s'agit dune d affaire!! sérieuses î demanda Popaul en clignant de l'œil.",
+      "Très sérieuses, et le mrùns les oreilles indiscrètes.",
+      "En ee eae, voici une table Vide contre lb mur, dit le Cas&e-Gaeur des dames.",
+      "Commandez, s'il vous plaît, un saladisr de via chaud, cu J'ai soif tA suivre.) RomaT Saihviu"
+    ]
+  },
+  {
+    "id": 45,
+    "page": 3,
+    "category": "Humeur",
+    "title": "Anecdote : L'étudiant en droit (ou en dettes)",
+    "summary": "",
+    "paragraphs": [
+      "Berlureau, qui habite ta province, vient d'aceompagner a la gare son fils, lequel est censé terminer ses études à Paris, où il fait surtout des dettes. I",
+      "Votre flls est étudiant en droit, je crois? î demande un voisin",
+      "Et Berlureau de riposter",
+      "En droit, oui. en droit plutôt qu'en fait I"
+    ]
+  },
+  {
+    "id": 46,
+    "page": 3,
+    "category": "Faits Divers",
+    "title": "Violent incendie à Privas (intendance militaire)",
+    "summary": "",
+    "paragraphs": [
+      "Privas, 25 novembre",
+      "Un violent incendie a détruit ce matin les bureaux de l'intendance militaire et le cercle mili taire situé an-dessus.",
+      "Le feu, qui a pris à six heures du matin, dure encore malgré les efforts des pompiers et de la.",
+      "C'est dans les salons du cercle que j'incendie a pris naissance. Les dégâts sont considérables"
+    ]
+  },
+  {
+    "id": 47,
+    "page": 3,
+    "category": "Faits Divers",
+    "title": "Incendie dans une filature à Loos-les-Lille",
+    "summary": "",
+    "paragraphs": [
+      "Lille, 25 novembre",
+      "Un métier a été incendié dans la filature de coton Lefebvrc-iiorrenl, à Loos-les-Lille.",
+      "Les dégâts s'élèvent & Î0.0CO francs"
+    ]
+  },
+  {
+    "id": 48,
+    "page": 3,
+    "category": "Faits Divers",
+    "title": "Incendie rue Michelet à Saint-Étienne",
+    "summary": "",
+    "paragraphs": [
+      "Saint-Ktieone, 25 novembre",
+      "Un incendie s'est déclaré ce matin rue Michelet, dans an immeubla de sept étages, apparte nant à M. Véron de lit Combe; le feu a pris dans l'appartement de Mme de son, modiste à l'entresol, et a promptement gagné celui de M. Taver nier, président da tribunal de commerce.",
+      "Les pertes, qui ne sont pas encore évaluées sout très importantes"
+    ]
+  },
+  {
+    "id": 49,
+    "page": 3,
+    "category": "Faits Divers",
+    "title": "Incendie d'une salle de concert à Nîmes",
+    "summary": "",
+    "paragraphs": [
+      "Ntm<?s, novembre",
+      "Un incendie d'une violence extrême s'est déclaré la nuit dernière A Quinsae, dans un grand immeuble servant de salle de concert.",
+      "Malgrc les efforts de la population, tout a été la proie des flammes.",
+      "Ôn ignore encore la cause de ce sinistre; les dégâts sont ouverts par une assurance"
+    ]
+  },
+  {
+    "id": 50,
+    "page": 3,
+    "category": "Critique Théâtrale",
+    "title": "Reprise de 'La Belle Hélène' d'Offenbach aux Variétés",
+    "summary": "",
+    "paragraphs": [
+      "TM n <̃• Vérlité . Reprisse de la Belle fiéli-nr de lleuri i Meillmc ut M Ludovic Halévy, musique de Jacques OfTenbach",
+      "Aimez-vous les Grecs? Il y en a partout à l'Opéra, depuis huit jours; aux Variétés, depuis hier. Mais les Grecs des Variétés ne sont ni tragiques ni épiques oh! non. Ils sont rigolos.",
+      "Ils lèvent la jambe, ils font des cascade , ils dansent le cancan, ils s'amuseut. Et aussi ils nous amusent, plus mCme qu'on ne saurait dire.",
+      "On nous a raconté, et les registres du temps en font foi, que la Belle Hélène, en 1864, lors do sa première apparition, avait eu un succès prodigieux. Elle a été, disait justement un criti que à propos d'une reprise donnée il y a une dizaine d'années, l'un des divertissements favori d'une époque fort insouciante petit-être, mais qui a été aussi l'une des plus gaies, de plus amusantes, des pins brillantes de notre histoire.",
+      "Avec la Belle tin Une nous revoyons cette société un peu étourdie de plaisir, vive et spirituelle qui avait inventé la Mague. Je vous avoue qu'hier encore, comme en comme en 1S la Helie Hélène a plu énormément le n'ai pas, sans doute, à raconter cette œuvre demeurée classique ·. Les Inventions cocasses",
+      "IfS plaisanteries réjouissante qui toiaonnent dans la parodie de Meilhac et Ludovic Halévy ont conservé leur irrésistible drôlerie. Le coucours des jeux, d'esprit et le jeu de l'oie sont deux scènes inoubliables et impayables.",
+      "Et la musique? C'est elle aussi, c'est elle surtout qui est irrésistible. Ce qu'on écrivait il y a dix aus, était encore vrai hier. Aux premières notes de l'ouverture, dès que cet air de lamarche des rois, si rapide et si gai, a jailli de l'or chestre, une joie extraordinaire a envahi toute la salle; les faces se sont cpanouies, les meutons ont battu insensiblement la mesure; un frisson dr plaisir a parcouru, à toutes les galeries, toutes le, rangées de spectateurs, comme on voit sur l'eau, autour d'un caillou jeté, se propager des cercles lumioeux. C'est qu elle est exquise, cette musique, si fine, si légère, si élégante dans ses caprices les plus hardis La pa rodie irrévérenuieuse, et çà et là un peu débraillée, est traversée par des suuftles de gracieuse et légère poésie. Le charme des mélodies absout l'impiété des paroles. Ou plutôt il semble que les auteurs de la Belle Hélène, tandis qù ils S'égayant sur l'antiquité homérique, sentent tout à coup l'attrait mystérieux de ces beaux poèmes qu'ils parodient. oublient de railler et s'attenrissent, et achèvent le dialogue burlesque en duo gracieux.",
+      "Le directeur des Variétés a entouré la reprise de l'opérette célèbre de ces décors somptueux et il l'a habillée dans ces cosiumeachatoyants qu'il aime à prodiguer sous nos yeux. L'œuvre n'avait pas de;oin de tant de luxe. Elle vit et elle brille par elle-même, sans qu'il soit nécesssaire de l'aider par des artifices extérieurs. Cette belle mise en scéne ne gâte rien c'est déjà cela.",
+      "L'interprétation est de tout premier ordre dans les rbles burlesques. Le trio d'Agamemnon de Nénélas et de Catchas. 0guré par MM. Guy Albert Brasseur et Baron, est inénarrable. L'entrée de M.Albert Braaseur, le mari de la reine désopilerait les rates les plus récalcitrantes. Et quand M. tlaron dit le fameux trop de fleurs trop de fleurs! ou qu'il s'apprête à jouer avec des dés pipés, il est épique autant qu'un héros d'Homère.",
+      "Il y a tieu de signaler aussi la mutinerie de Mlle Lavallière dans je rôle d'Oreste et la grâce de Mlles de Lagny et Lantensy (Parthénis et Baccliis), le beau .gâtisme de M5tPrir.ce et Dubroca les deux A,ju) et rétonnanttwerformaance de M. Simon (Achille",
+      "J'arrive aux deux interprètes principaux, M Dastrez (Paris), et Hiri Simon Cirant (Hélène).",
+      "Ni. Dastrez chante depuis longtemps. !I a debuté après la guerre et il avait past=é inaperçu sur les théâtres d opérette. Il s'en est allé en province et A l'étranger, où il a dans l'opéracomique, recueilli de nombreux Icriers. Il dé butait, à vrai dire, hier, k Paris. Il a réussi, très bien réussi. La voix est jolie, étendue, claire on entend ta musique, ce qui arrive si rarement avec les chanteurs d'ouérctte.Comme comédien il est suffisamment adroit.",
+      "Mme Simon-Girard est une artiste sûre, qui a de l'autorité et qui sait chanter. Toutes ces qualités sesont développées à l'aiseitans le personnage do la Betlo Hélène. Elle t la seule ar tiste: de Paris qui, en ce moment, pùt chanter le rôle (la jolie Oermaine Gallois 5 en fut Urée, sans doute aussi. àsou avantage}; mais il me semble qu'il manque cette fois à Mme Simon-Girard qui était dans la Fille de Madame Aagot une incomparable Clairette, je ne sais quoi qui enlève une salle. La besogne est proprement faite, mais cela manque de cachet.",
+      "Et puis, il faut se rappeler ce que les vieillards troyens, qui avaient tant a souffrir à cause a Héléne, disaient d'elle: Ce n'est pas sans raison que les Troyens et les Grecs valeureux supportent pour une telle femme de si longues saut rance! car elle égale eu beanté les déesses im."
+    ]
+  },
+  {
+    "id": 51,
+    "page": 3,
+    "category": "Météo",
+    "title": "La Température - Dimanche 26 novembre 1899",
+    "summary": "",
+    "paragraphs": [
+      "Dimanche !6 noveinJne. ISP jour dt Canné 65 jour de l'automne. Saint Conrrtd",
+      "Lever du soleil a 7 court h. t. Ltltr la lune à It h. f6, couchrr à H A. Il",
+      "La Journée d'hier a été tiède et nuageuse, avec de brillantes écJairctes.",
+      "La dépression de la Norvège a marché vers l'est depuis hier Les mauvais temps persistent dans le sud de la Baltique, où le vent a tourné vers le nord.",
+      "Les pressions surrérieures à 170 m/m s'étendent sur la Frauce et l'Italle.",
+      "Le vent est faible de rouest au Pas de Calais, de l'est en Bretagne et en Gascogne.",
+      "Des ,,lui, sont tombées dans le nord-ouest de l'Europe; on nen signale pas en France.",
+      "La température a baisse en Allemagne et dans le sud de la Scandinavie; elle était hier matin de S à Raparanda, 8 àCiermoat, 5 à Paris, tS Alger et Monaco.",
+      "On notait 5' au Puy-de-Dôme, t au Ventoux au Pic-dB-MUU.",
+      "Rn Prancc. un ciel nuageux est probable, avec temps frais dans le centre et dana l'est.",
+      "Situation particulière, aux ports français sur la Manche, mer peu agttfe t Duufcorque, Boulogne Calais. tn's bello au Havre et a Cherbourg: sur TOoéaa. mer très bclie à Brest et à Lorirnt; .sur la Méditerranée, mer peu agttée a Marseille, belle t Sicté et A Nice.",
+      "En Corse, mer belle aux lies Sanffuinalrw.",
+      "Variations atmosphériques du samedi 25 novembre,1 i notre salle des dépêches",
+      "HEORBa UAHOMKTRB THSRSJÙMK HK",
+      "A 8 h. tnatin ?7t ̃'• 84 aa-tiessua de",
+      "Midi h. soir •/ il",
+      "W Minuit •/̃ t"
+    ]
+  },
+  {
+    "id": 52,
+    "page": 3,
+    "category": "Informations Pratiques",
+    "title": "Navigation Fluviale - Niveaux des fleuves (26 novembre)",
+    "summary": "",
+    "paragraphs": [
+      "NAVIGATION FLUVIALE.- 26 novembre, 7 heures du matin",
+      "Haittk-Sf.ike, Pont de Seine, à Monteremi, t iic!us î de Varcnnes, -2\"lS: pont de Mciun. -1 (>\"j; pont de Cmi)(!j!, &8711; écluse de Port iW'AnKlai , t-SS",
+      "Marks. Bclusc de Cumi'-res, 2'S écluse de Cltirer, de",
+      "K' Kçluse du (,anal Saint Martin, 4- S por; rnelle, 0 04; pont Hoysl. écluse tie ;̃ ̃ , , 2i barrage de de/.ons.3\"74; pont de Mantes, S~1S éclnfM\" de Méncourt. 3\"S",
+      "Uut. Barrage de Veiiette. l 2t"
+    ]
+  },
+  {
+    "id": 53,
+    "page": 3,
+    "category": "Faits Divers",
+    "title": "L'Affaire de la rue Erard : meurtre de Gaston Romelot",
+    "summary": "",
+    "paragraphs": [
+      "L' Affaira de la rue Erard",
+      "Les gardiens de la paix Denis et Gaterau étaient avertis ravant-dernièrcnuitqu'un homme semblant très grièvement blessé était étendu dans nu0 courette dépendant du numéro 30 de la rue Krard.",
+      "Us se rendirent en toute hAte à l'endroit qu'on leur indiquait et se trouvèrent en effet en présence du corps d'un Homme semhiant âgé d'une trentaine d'années, étendu dans une mare de aang, sans connaissance.",
+      "Ils le relevèrent et le transportèrent, dans une voiture requise! à la plus prochaine station, à l'hôpital Saint-Antoiue, où il fut admis d'urgt'nce.",
+      "Or, le pauvre diable portait à la base du crâne une large et profonde blessure intéressant la botte crânienne et les vertèbres cervicales quatre faites contuses assez profondes, et semtrouvaient en outre sur le front et le sommet de la tête.",
+      "L'enquête ouverte révéla que le blessé se nommait Gadtou Homelot, âgé de vingt-sept ans, de meurant 184, rue de Charenton.",
+      "On croyait que l'on se trouvait en présence d'un accident dû à l'ivresse, on lût reconnaître bientôt qu'on s'était trompé en eti'et, M. Brunet commissaires de police, reçut, hier matiu, une note émanant du directeur de l'hôpital, par laquelle on l'informait que le nommé Gaston Romelot avait succombé à ses blessures, qu'il n'était nullement en état d'ivresse au moment où l'accident s'étaitproduit. et enlin que la mort semblait être le résultat d'un crime et non d'un accident.",
+      "LV.nquête, recommencée sur cette nouvelle donnée, révéla bientôt une piste sérieuse.",
+      "Il fut prouvé que la victime avait t'habitude depuis longtemps de venir voir un ami dans la maison or cet ami avait declare ne pas conmaître le blessé, bien que la concierge de la maison l'eût prévenu immédiatement après la découverte du corps.",
+      "Les dires de cet homme semblant suspects M. Brunet, commissaire de police, l'a prié de se tenir à la disposition de la justice.",
+      "M. de Valles, juge d'instruction, a été chargé de cette affaire.",
+      "L'enquête continue"
+    ]
+  },
+  {
+    "id": 54,
+    "page": 3,
+    "category": "Faits Divers",
+    "title": "Un Voleur en Chemin de Fer : arrestation de Victor Choullard",
+    "summary": "",
+    "paragraphs": [
+      "Un Voleur on Chemin de Fer",
+      "Ptusieurs voyageurs qui se trouvaient dans i'espress 128 arrivant de Cologne en gare du Nord à onze heures et demie du soir, constataient avant-hier, au momentdc débarquer, que des vols importants avaient été commis à leur préjudice.",
+      "Profitant de ce que les wagons a couloir dont ce train est formé communiquant tous entre eux un audacieux cambrioleur avait visité les compartiments momentanément inoccupés par les voyageurs, faisant main &ass sur tout ce qu'il avait pu trouver à sa convenance avait même poussé l'audace jusqu'à s'emparer du léger colis appartenant au surveillant du train.",
+      "C'est ce qui le perdit, car oet employé la surprit au moment où il essayait de dissimuler sous son pai-.icssus une pèlerine en caoutchouc lui appartenant.",
+      "ÀuMtUH appréhendé, cet lndlviiu fut conduit au commissariat spécial do police. Dans sa valise et son sac de voyage, les divers voyageurs léséa retrouvèrent tous les objets qui leur avaient été volés.",
+      "Interrogé, le cambrioleur déclara se nommer Victor Choullard et être âgé de trente-huit ans.",
+      "Mais on est persuadé qu'if a fourni an faux état civil.",
+      "Soudain, au moment où le commissaire spécial le pressait de questions, cet individu fut pris d'une crise nerveuse épouvantable qui, se prolongeant indéfiniment. nécessita son admisWu à l'hôpital Lanboisière.",
+      "Il n en sortira que pour étre dirigé sur le Dépôt"
+    ]
+  },
+  {
+    "id": 55,
+    "page": 3,
+    "category": "Faits Divers",
+    "title": "Incendie dans une mercerie avenue du Maine",
+    "summary": "",
+    "paragraphs": [
+      "Un incendie s'est déclaré hier soir, par suite de l'explosion d'une tain pu à alcool, dans une mercerie tenue avenue du Maine, par une dxme Aliben.",
+      "Les dégâts très importants sont estimés à une somme de plus de ii ,0Qu francs.",
+      "Les pompier de la caserne de la MaisonBlanche se sont rendus maîtres du tftuupréedâux heures de travail"
+    ]
+  },
+  {
+    "id": 56,
+    "page": 3,
+    "category": "Accident du Travail",
+    "title": "Grave blessure d'un charpentier rue Saint-Didier",
+    "summary": "",
+    "paragraphs": [
+      "Accident du Traoail",
+      "Un ouvrier charpentier. H.' Hernand Lamy égé de trente-quatre ans et demeurant rue des Poissonniers, travaillait hier aprùs-niidi dans un minoeubleen construction 60, rue SaintDidier, lorsqu'un levier en fer lui tomba sur le des, le blessant grièvement.",
+      "Après avoir reçu soins dans une pharmarie, l'ouvrier a été transporté dans un état grave à l'bôpUal de&ujon"
+    ]
+  },
+  {
+    "id": 57,
+    "page": 3,
+    "category": "Accident du Travail",
+    "title": "Chute mortelle d'un couvreur rue Saint-Maur",
+    "summary": "",
+    "paragraphs": [
+      "Un ouvrier couvreur, M. Eugène Tasse lgé de cinquante ans, qui travaillait hier sur la toiture d'une maison de la rue Saint-Miur. a perdu soudain l'équilibre et, d'une hauteur de dix-huit mètres environ, s'est abattu sur le sol après êtrep&Sf t! au travers d'un eh&Sfgil,4 Vitré immédiatement transporté au domicile qu'il occupait rue des Vertus, ,le -malheureux u'a pas tarde à succomber à ses blessures ww"
+    ]
+  },
+  {
+    "id": 58,
+    "page": 3,
+    "category": "Accident du Travail",
+    "title": "Grave accident d'un employé des Omnibus place de la Nation",
+    "summary": "",
+    "paragraphs": [
+      "Ni. Gaston Blaireau, Agé de trente-cinq ans employé à la Compagnie des omnibus, et demeurant place de la Nation, était occupe, 'hier matin, il descendre une pièce de vm dans sa cave, lorsqu'il glissa et tomba de si malheureuse façon que le lourd lunm-au lui passa sur le corps.",
+      "C'est ctana un état des plus alarmants qu'il a été admis à l'hôpital Saint-Antoine"
+    ]
+  },
+  {
+    "id": 59,
+    "page": 3,
+    "category": "Actualités",
+    "title": "Les Travaux de l'Exposition : vue depuis la Grande Roue",
+    "summary": "",
+    "paragraphs": [
+      "Les Travaux de l'Exposition",
+      "De plus en plus on s'intéressa aux travaux de l'Exposition, qui piquent la curiosité générale.",
+      "Aussi, pour bien se rendre compte du chemin parcouru, des progrès considérables réalisés n'est-il rien de tel que de faire l'ascension dans la Grande Roue de Paris, d'où l'on découvre daus un merveilleux panorama, toute l'étendue de l'Exposition w."
+    ]
+  },
+  {
+    "id": 60,
+    "page": 3,
+    "category": "Autour de Paris",
+    "title": "Clichy : Grand bal annuel à l'Hôtel de ville",
+    "summary": "",
+    "paragraphs": [
+      "AUTOUR DE PARIS",
+      "CJifhT. Hier soir, à dix heures, dans tes salons (les l'Hôtel de ville a eu lieu le grand bat annuel au profit de la caisse des écoles.",
+      "La fêle a été Les plus briltaulos et s'est prolongée très avant dans la nuit"
+    ]
+  },
+  {
+    "id": 61,
+    "page": 3,
+    "category": "Autour de Paris",
+    "title": "Pré-Saint-Gervais : Arrestation de cambrioleurs",
+    "summary": "",
+    "paragraphs": [
+      "Pré-Saf/iMîervais. Depuis quelque fclmps de8 vols fort importants étaient commis par une bande ¡j'audacieux cambrioleurs dans diverses propriétés de la localité.",
+      "Lavant-dernière nuit, un immeuble situé à l'angle des rues PauI-de-KOck ftde la Villette et appartenant à Mme Préfet, était camplètement dévalisé, ainsi qu'un petit pavillon servant d'entrepôt à la Compagnie générale de traction.",
+      "M. Marie, commissaire de police,a arrêté hier matin les auteurs .les ce méfaits.",
+      "Ce sont: Gabriel Bu. lion, vingt ans; Jérôme Duuual, dix-neuf ans; Aristide .Souch.Uer, vingtquatre ans, et Hyacinthe Laid, quaranlc-six ans brocanteur, qui servit de receleur à la bande.",
+      "Tous les quatre ont été envoyés au Dépôt"
+    ]
+  },
+  {
+    "id": 62,
+    "page": 3,
+    "category": "Autour de Paris",
+    "title": "Pantin : Vols importants dans une usine",
+    "summary": "",
+    "paragraphs": [
+      "Pantin. Le commissaire de police a envoyé hier matin au Dépôt trais individus, Leopoid Vasrin, trente-deux ans; Julien Chertet, dix-neuf aus, et Albert Goyenok, trente aile. qui depuis plus de trois mpis avaient commis, dps vols fort importante dans une grande usine de la route de Flandre"
+    ]
+  },
+  {
+    "id": 63,
+    "page": 3,
+    "category": "Autour de Paris",
+    "title": "Plaine-Saint-Denis : Accident grave d'un ouvrier robinetier",
+    "summary": "",
+    "paragraphs": [
+      "Plnine-Satnt-Denis. Au coure de la matinée ,j'hier, un ouvrier robinetier, Alfred Pla cier, âgé de seize ans, deuieurautà Villetaueuse qui avait pris place sur l'impériale d'un train de Grande Ceinture rentrant l la gare du Nord, voulut, en cours de route, pesaer d'un wagon sur un autre.",
+      "Au moment où il se levait, non loin de la station de la Plaine, il heurta du crise la voûte d'un pont et tomba ensanglanté.",
+      "Il a été dirigé aussitôt sur l'hbpital de SaintDenis.",
+      "Son état est des plus graves"
+    ]
+  },
+  {
+    "id": 64,
+    "page": 3,
+    "category": "Autour de Paris",
+    "title": "Montreuil-sous-Bois : Incendie dans une scierie",
+    "summary": "",
+    "paragraphs": [
+      "Montreutl-sous-Bpis. ün incendle s'est déclaré, l'avant-dernière nuit, dans la scierie de M. Santon net, fabricant de bottes, sentier des Litas, à Montreuil-sous-Bois.",
+      "Le feu, activé par le vent et les matières inflammables, prit aassitôl de grandes proportions et menaça les immeubles voisins.",
+      "Les pompiers de Monireuü, de Bagnolet et de Vincenaes, accourus sur les lieux da sinistre ne purent se rendre maîtres de cet incendie qu'après deux heures de travail.",
+      "Les pertes matérielles sont estimées à i5,C francs environ"
+    ]
+  },
+  {
+    "id": 65,
+    "page": 3,
+    "category": "Autour de Paris",
+    "title": "Vanves : Arrestation pour détournements à la Compagnie du Gaz",
+    "summary": "",
+    "paragraphs": [
+      "tfsUakoff. -Un employé de la Compagnie parisienne uu gaz, nommé G. âgé de trenk-troie ans, demcurant rue Turgies, a été arrêté hier après-midi par M. Hocquet, coumiissaire de potice de Vaovee, sur mandat de M. Lvuicbe juge d'instruction.",
+      "G. est inculpé d'avoir commis des détournements considérables au détriment de la Com pagnie du gaz"
+    ]
+  },
+  {
+    "id": 66,
+    "page": 3,
+    "category": "Faits Divers",
+    "title": "Agression d'un propriétaire par son berger à Amiens",
+    "summary": "",
+    "paragraphs": [
+      "Uer nu bestiaux, avait une discussion avec son berger, nommé Joseph Ùligniez, âgé de trentedeux ans, relativement un règlement de compte. Des paroles on en vint aux coupa et le berger se préripita sur son patron, qu'il frappa.",
+      "Deux ouvriers interposèrent et dégagèrent M. Morin. Peu d'instants après, ce dernier ordonna à Cligniez de s'éloigner, ajoutant qu'il n'était plus à son service. Le berger, furieux se jeta sur son patron et le frappa avec une serpe sur la tête deux reprises. Les ouvriers Gênais et Dauviîlifrs accoururent et portèrent secours à M. Moriu.",
+      "Joseph Cligniez avait pris la fuite. Les gendarmes l'ont arrêté peu après et l'ont conduit à Pontoise.",
+      "M. Morin, grièvement blessé, a été ramené en voiture à son domicile, li, avenue Laumiere à Paris"
+    ]
+  },
+  {
+    "id": 67,
+    "page": 3,
+    "category": "Courses Hippiques",
+    "title": "Courses à Auteuil : Pronostics",
+    "summary": "",
+    "paragraphs": [
+      "LES COURSES",
+      "AUTEUIL",
+      "Aujourd'hui diuumehe i:> novem&re, d h nos pronostics",
+      "PuiXDuDiSQt'E. Steeple-cuase,3ans,;vorX>fr m. Belle-hte, Botletttt",
+      "Pntx DE Montiwwoct. Steepie-cUaae.S.fWfr na. SiiçftffftJtt, trL les",
+      "Grand puis de l'Elkvaoe. Sleeple-ehaee fr., m. Vanewleun, Péntlon il",
+      "Pat: Macum. Haies, 3 ans, là,OUO tr",
+      "MXW ni. AiiibultiU, Gttcritjnu",
+      "Paix Du Tê^écbai'Uk. SUeple-ehase,4,0(X>fr et fr.k t8ûQ m.' Zouiou"
+    ]
+  },
+  {
+    "id": 68,
+    "page": 3,
+    "category": "Courses Hippiques",
+    "title": "Résultats des courses de Neuilly-Levallois (samedi 25 novembre)",
+    "summary": "",
+    "paragraphs": [
+      "NEULLY-LEVALLOIS",
+      "Remltati du samedi SA novembre 1ti",
+      "La dernière journée de NeuiUy-Levallois a obtenu uu joli succès l'assistance était aom breuse, et les courses ont présenté un bon intéet. Deux favoris ont gagné. Trois outsiders eut donné des rapports agréibï s, uotamtnent Quœsita, donuanl Uif4 fr. 50 au pesage ot francs sur la pelouse, à 1u même unité de 5 francs.",
+      "Noua ne nous lasserons pas de répéter que tes différences de rapport pour une uiiso égale ont quelque cho3<! de choquant.",
+      "Puis n'AcTEcu.. Au trot monté, J^KX) fr m. 1\" Piombino, Partisan, 3 Q8atuor",
+      "Non Tî'Ronf Quine. Qui Va Là, Quitun,' -.noj5f",
+      "Y",
+      "Ptti.v ut i.linsii Au uni monté, fr m. 1\" Reine d'Or, i' République, :i Quarteronne",
+      "Non placés Rendez-Vous, Rébecca (Vve Ch Fleury), Rosine. Véronioee, Rigolette, 0u rai>Lune. Bella. Quibus",
+      "Vitesses ffOi\" t/5, (VU",
+      "Prix de la Seine. An !ot attelé, fr ù m. I\" Ouo Miiuta, 3\" Pourquoi",
+      "Non pl;ict:s Ri\\ > ftapin, PastouMiss Annette, Qui..ipier, Quinte, Qirt naud",
+      "Y l1 ui ti-otmonté,3,0oofr.,3,-Mom oaii.i souci. v- Moaae , 3\" SoUevillt",
+      "Nan pl e > SeririErat, Sénateur, San lot, Slt Jaâk, Sextidi. Sans l?: ç€m. sui m ct. Aim",
+      "Au ffl. i\" ^hérienne, >oïeiie, j\" saiureiA",
+      "Non placés suri'oilo, Stella, Sirène, Sibylle Sybille. Satiiar . SantcreHc",
+      "Vitesses S'a i/S",
+      "MBSUtTATS DU PAR! MOTBBL irfcinfei ^^ jraffiF",
+      "M Quinta J la.. il M",
+      "P ,Sutu>ville P",
+      "Répuhllqu- P u S0 8 Silvnenuc G H H",
+      "Quartc.r~\"P t 50 10 M P 7 S",
+      "Quœsita G tu 50 l SUBfitte. V\" tt",
+      "P Saltarel P S"
+    ]
+  },
+  {
+    "id": 69,
+    "page": 3,
+    "category": "Départements",
+    "title": "Lille : Arrestation du meurtrier présumé de M. Paul Seliolsmami",
+    "summary": "",
+    "paragraphs": [
+      "DEPARTEMENTS",
+      "B NOS COKRSSPONOAKTS PARTICOVIBBS",
+      "Samedi nootmbre",
+      "LHfe. Le parqnet vient d'être informé que la police de Bruxelles a arrêté le nommé P qui lui avait été 8i aalé comme l'autaur présum^le r<u 8iu<sînat de M. Paul Seliolsmami"
+    ]
+  },
+  {
+    "id": 70,
+    "page": 3,
+    "category": "Départements",
+    "title": "Montataire (Oise) : Le meurtrier de la veuve Van Me I retrouvé noyé",
+    "summary": "",
+    "paragraphs": [
+      "Moatatalra (Oise). Le nommé Théodore Brackmann, ouvrier d'usine, sujet belge, àgo de vingt-nenf nn . 'i nrt< mnt A Montatâire, atitenr de la U;n • ;se sur la veuve Van Me I avait griovement bte. ^i r, vient (j'être trouvé uoyé dans la m'ière Le Tbérain. Cet individu avait disparu aussitôt après son forfait. On pense que m victime, •etuHiement l'hôpital de Creil, survivra à son horrible blessure"
+    ]
+  },
+  {
+    "id": 71,
+    "page": 3,
+    "category": "Départements",
+    "title": "Meudon : Accident mortel d'un charretier",
+    "summary": "",
+    "paragraphs": [
+      "mpdfln . Hier, a tint heure, un charretier da; la fermc de Pale nc , nommé Boulan afré de treote-1 •̃ n'apprêtait, après avoir opéré le char- a voiture, a la ramener lorsque, subii. -< quatre chevaux partirent au galop. Le coiiiucteur voulut les maîtri ser, mais il se prit les pieds dans Ifs rênes et tomba sous les roues de son véhieule, qui lui passèrent sur le corps. Le malheureux sat mort quelques secondes après"
+    ]
+  },
+  {
+    "id": 72,
+    "page": 3,
+    "category": "Sur Mer",
+    "title": "Dunkerque : Sauvetage de marins par le sloop Alphonse",
+    "summary": "",
+    "paragraphs": [
+      "SUR",
+      "DE NOS CORRESPONDANTS PÀRTICULIMIS",
+      "Samedi ts novembre",
+      "Ovnkcrqu . Le sloop Aipfwnsme, capitaine Fournier, recueilli au large de Oravelinis quatre matelot du pfteheurftf SB? ce homme étaient dans une petite embarcation qui, désemparée, était le jouet des flots.",
+      "Un vapeur inconnu a abordé au large le sloop ff ce bateau, qui a fait eau, a été échoué à la cote par le N' H$t qui a pu sauver l'équipage"
+    ]
+  },
+  {
+    "id": 73,
+    "page": 3,
+    "category": "Sur Mer",
+    "title": "Toulon : Abordage du bateau vapeur reliant la Seyne à Toulon",
+    "summary": "",
+    "paragraphs": [
+      "Toulon. Le bateau à vapeur qui fait le service de la Seyne à Toulon partait, ce matin, à sept heures et demie, avec le nombreux personnel qui a l'habitude de se rendre chaque jour soit à l'arsenal, soit en ville. Empêché par une brume assez forte qui empêchait de voir à plus de cinquante mètres, il arriva en grand sur le Maréchal Ploruine, mouillé sur les coffres des chantiers de la Seyne. Le choc était impossible à éviter; il se produisit à six nœuds de vitesse et tous les passagers furent renversés et plus ou moins contusionnés. Des navires russes envoyèrent des canots chercher les passagers et les conduire à terre. La brume continue. Le service entre la Seyne et Toulon est interrompu."
+    ]
+  },
+  {
+    "id": 74,
+    "page": 3,
+    "category": "Finance",
+    "title": "Bulletin Financier (25 novembre)",
+    "summary": "",
+    "paragraphs": [
+      "BULLETIN FINANCIER",
+      "BULLETIN FINANCIER",
+      "Paris, 25 novembre",
+      "L'n resserrement sensible de l'argent se manifeste à Londres; on croit généralement qu'une élévation du taux de l'escompte tt la Banqua d'Angleterre pourrait s'ensuivre dans le courant de la semaine prochaine. Celle perspective rend le marché hésiUnL, i l'approche de la liquidation.",
+      "D'autre part, de grandes quantités de primeq ayant été vendues aux environs des cours actuels les vendcura du ces prime out intérêt i poseï sur tes cour.- pour ne paa sc trouver débord6s eq de trop proportions.",
+      "Ces diverses considérations font que les transartions ont aussi peu i^imot que possible.",
+      "La (ermeW du vaieara firanuisn ne eat pas ébranlée.. Le,314 a r tt 100 S! au ptoa feaut, et il finit a",
+      "L'rtahf.n se tient aux environs de M li.",
+      "L'Extérieure, app avoir inscrit clôtuM à",
+      "Lee tonds ottomans varieut peu. La Banqua ottomane faiblit de 561 à tes établissements de crédtt sont généralement bien tenus, la Banque de Paris a tWB, la Crédit lyonnais tflOf, l Comptoir nattonat.",
+      "Le Suez se traita à lififfl.",
+      "Les Houillères l'Ahuu uut d s demande, nombrcnsea à S.",
+      "Le Rio est mouvementé en vue de la prochaine réponse des primes; après un début a Jl86 et llfe, It faiblit il Snit à en perte de francs sur hier.",
+      "Les Mnoed'or sont surtout inactives. La Mndt Min e) tMaM U 'A. Les autres vateurs s'écartent peu de leurs cours précédents.",
+      "CQUHS Du CLOTUHB",
+      "JOO O Turc",
+      "Italien 15 1 Ba q. OMoraaae intérieure SI 35 l Rio U"
+    ]
+  },
+  {
+    "id": 75,
+    "page": 3,
+    "category": "Sports",
+    "title": "Championnat de lutte : Victoire de Lassarlesse sur Gambier",
+    "summary": "",
+    "paragraphs": [
+      "LES SPORTS",
+      "UE CKAIif IONNAT DE tUTTE",
+      "Comme toujours;, sallu arciiicomble ao^asino de Paris, hier ,,011', Le clou do la lit rencontre de Maurice Gambior sartesso niean do suite qn la victoire est revenue at.",
+      "Ji'.nKler mu ̃ . ̃'̃ est déclaré",
+      "S lutta. –Maurice Gambier (Frnncsisî tomba Lassarlesse (Krançais) par une prit •<> en de dont il était le favori lutte. Pietro le Belge contre Hialer (Atlemaud). HiUii-r so trouvant légèrcmeel ma lade, Pietro Io Belge refuse de se rencontrer aujourd'hui avec sou adversaire"
+    ]
+  },
+  {
+    "id": 76,
+    "page": 3,
+    "category": "Sports",
+    "title": "Règlementation de la vitesse des automobiles dans les bois de Boulogne et Vincennes",
+    "summary": "",
+    "paragraphs": [
+      "fi L'HEURE",
+      "Ainsi que nos lecteurs ont pu le voir hier dans le compte rendu du Petit l'ariHrn, le conseil municipal a adopté les conclusions de la commiHsion spéciale tendaat à tixor il. 12 kilomètres lieu la vitesse pcrmiiit) aux voitures automottitett rtan les boin de Boulogne et do Vin cenueM.",
+      "Voilà nn vote véritablement vi> h pour les automobtMsles. t/u'ou reiinn; qua dans l'aris l'allure (wrinlae est it<- .ares à l'heure. Pourquoi l'abaisser à 12 au Hum.",
+      "Il y a cependant un peu mains de tuoiiile et de circulation sur la large voie du Palmarium que sur le boulevard Montmartre r"
+    ]
+  },
+  {
+    "id": 77,
+    "page": 3,
+    "category": "Sports",
+    "title": "L'ascension du ballon l'Astéroïde : Record de ligne et d'altitude",
+    "summary": "",
+    "paragraphs": [
+      "TF SMUM-PIM",
+      "M. Orlowsky i- t onfln arriv à Paris, lui et son inwii. Rt voilà bien trols semaines qu'il a <4 Il, du tsar a, non, re n'est pas un reeard. Un voyaiçe touristique tuut au plo et qtfi donne mal à pent>cr de l'état des routes russes.",
+      "Anjoord'hoi dimauctie, a dix h mie du malin, aura lieu 4 i'umoa à gaz w la Viiiutta l'asconfion du billion FAttérotde, qui établira le record de ta l^vne Ht elealiBW a.",
+      "Dans la nacelle prendront place nos confrères Genrges PaJIann et Louis Bessc L'aéronaute Elle Lassagae s'9CRW)era do la manœuvre. Ces messieurs comptent prendre des instantané photographique8 de tous les clocherai rencontré au courts de leur voyage dans l'espace"
+    ]
+  },
+  {
+    "id": 78,
+    "page": 4,
+    "category": "Courrier des Théâtres",
+    "title": "L'Élu des Femmes au Palais-Royal",
+    "summary": "",
+    "paragraphs": [
+      "Au Palais-Royal, aujourd'hui dimanche, en matinée et soirée, deux dernières représentations de L'Élu des Femmes."
+    ]
+  },
+  {
+    "id": 79,
+    "page": 4,
+    "category": "Courrier des Théâtres",
+    "title": "Nouvelles de la Gaîté",
+    "summary": "",
+    "paragraphs": [
+      "Mercredi, première représentation de Coralie. À la Gaîté, Les Mousquetaires au Couvent, dont le succès est toujours aussi brillant, vont atteindre prochainement leur centième représentation. Chose curieuse, cette centième représentation coïncidera exactement avec la douze centième représentation à Paris du charmant opéra-comique de P. Ferrier, Préval et Louis Varney."
+    ]
+  },
+  {
+    "id": 80,
+    "page": 4,
+    "category": "Courrier des Théâtres",
+    "title": "Proserpine à l'Opéra-Comique",
+    "summary": "",
+    "paragraphs": [
+      "La première de Proserpine, à l'Opéra-Comique est prévue pour mercredi 29 novembre."
+    ]
+  },
+  {
+    "id": 81,
+    "page": 4,
+    "category": "Courrier des Théâtres",
+    "title": "Victorien Sardou et l'Affaire des Poisons",
+    "summary": "",
+    "paragraphs": [
+      "Une bonne nouvelle pour les amis du théâtre et les admirateurs du maître qui a nom Victorien Sardou. M. Sardou travaille à un drame historique sur la fameuse affaire des poisons qui a été la grande cause célèbre du règne de Louis XIV. C'est une idée que le maître caressait déjà depuis longtemps."
+    ]
+  },
+  {
+    "id": 82,
+    "page": 4,
+    "category": "Courrier des Théâtres",
+    "title": "Iphigénie en Tauride à la Renaissance",
+    "summary": "",
+    "paragraphs": [
+      "Au théâtre lyrique de la Renaissance, les dates de la répétition générale et de la première représentation d'Iphigénie en Tauride sont définitivement arrêtées et ne pourraient plus être modifiées que dans un cas de force majeure. La première représentation de la belle œuvre de Gluck est désormais fixée au jeudi 7 décembre. La répétition générale aura lieu l'avant-veille, mardi 5 décembre, pendant l'après-midi."
+    ]
+  },
+  {
+    "id": 83,
+    "page": 4,
+    "category": "Courrier des Théâtres",
+    "title": "Actualités du Théâtre Déjazet",
+    "summary": "",
+    "paragraphs": [
+      "Au théâtre Déjazet, Joli Sport va atteindre sa 500e représentation. Pour lui succéder, quand faire se pourra, M. Rolle vient de mettre en répétitions Papa beau-père, comédie en trois actes, de M. Pichet, ainsi qu'un lever de rideau du même auteur : Le Pseudonyme."
+    ]
+  },
+  {
+    "id": 84,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : Folies-Bergère",
+    "summary": "",
+    "paragraphs": [
+      "Folies-Bergère : Le Prince Désir."
+    ]
+  },
+  {
+    "id": 85,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : Olympia",
+    "summary": "",
+    "paragraphs": [
+      "Olympia : Les Mille et une Nuits."
+    ]
+  },
+  {
+    "id": 86,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : Nouveau-Cirque",
+    "summary": "",
+    "paragraphs": [
+      "Nouveau-Cirque : Au fond de l'eau, Combat Naval. Spectacle nautique."
+    ]
+  },
+  {
+    "id": 87,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : Parisiana",
+    "summary": "",
+    "paragraphs": [
+      "Parisiana : Qui complote."
+    ]
+  },
+  {
+    "id": 88,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : Scala",
+    "summary": "",
+    "paragraphs": [
+      "Scala : Même spectacle que le soir."
+    ]
+  },
+  {
+    "id": 89,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : Eldorado",
+    "summary": "",
+    "paragraphs": [
+      "Eldorado : Matinée populaire."
+    ]
+  },
+  {
+    "id": 90,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : La Cigale",
+    "summary": "",
+    "paragraphs": [
+      "La Cigale : À la Cigale générale."
+    ]
+  },
+  {
+    "id": 91,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : Cirque Medrano",
+    "summary": "",
+    "paragraphs": [
+      "Cirque Medrano : Attractions diverses."
+    ]
+  },
+  {
+    "id": 92,
+    "page": 4,
+    "category": "Concerts et Divertissements",
+    "title": "Matinées d'aujourd'hui : Casino de Paris",
+    "summary": "",
+    "paragraphs": [
+      "Casino de Paris : Spectacle pour les familles."
+    ]
+  },
+  {
+    "id": 93,
+    "page": 4,
+    "category": "Spectacles",
+    "title": "Succès de Louise Balthy et Fragson",
+    "summary": "",
+    "paragraphs": [
+      "Ne partez pas sans l'avoir vue ! Parodiant cette expression célèbre, on peut dire actuellement : Ne partez pas sans l'avoir applaudie ! Qui donc ? Louise Balthy, parbleu ! qui, tous les soirs à la Scala, avec le joyeux Fordyce, se montre irrésistible de fantaisie et d'entrain dans la désopilante revue La Prise de la Balthylle. Leur succès à tous deux n'a d'égal que celui de Fragson dont la nouvelle création, d'une discrète irrévérence sur notre Président, est un vrai triomphe."
+    ]
+  },
+  {
+    "id": 94,
+    "page": 4,
+    "category": "Sport",
+    "title": "Championnat de Lutte au Casino de Paris",
+    "summary": "",
+    "paragraphs": [
+      "Ce soir commencent, au Casino de Paris les finales du grand championnat. Ces épreuves sont du plus haut intérêt pour les fervents du sport de lutte. Les fauteuils s'enlèvent, les loges font prime et c'est dans le hall une énorme affluence."
+    ]
+  },
+  {
+    "id": 95,
+    "page": 4,
+    "category": "Presse",
+    "title": "À lire cette semaine dans L'Agriculture Nouvelle",
+    "summary": "",
+    "paragraphs": [
+      "L'Agriculture Nouvelle, journal exemplaire maître en la rédaction, propose huit pages de texte et de gravures :",
+      "Agriculture : Henri Marchand (Statistique des Ensemencements), Échos agricoles, Albert Berthot (Prévisions du temps), P. Gagnaire (Le Congrès agricole et horticole d'Hyères), C. Constant (La Fièvre aphteuse), R. (Les Prix du Houblon), J. de Loverdo (À la Société nationale d'agriculture), Législation rurale (Léon Lesage), Questions diverses.",
+      "Horticulture : J. de Loverdo (La Saccharine et les Fruits), S. Mottet (L'Exposition des Chrysanthèmes à Paris, avec figure), L. Henry (La Stratification des Graines), P. (Fruits et Légumes aux Halles), L. P. (Exposition de Chrysanthèmes à Troyes).",
+      "Viticulture : B. L. (Le Débourrement des Cépages), G. Battanchon (Questions viticoles), P. (Revue vinicole), J. Troude (Fabrication du Cidre), P. (Pommes et Poires à cidre).",
+      "Histoire de l'Amélioration du Bétail : D'Hector George (John Ellman, Jonas Webb, La Race ovine de Southdown, Delval L'Alta).",
+      "Correspondance, Halles et Marchés, Bulletin météorologique. Le numéro : 10 centimes."
+    ]
+  },
+  {
+    "id": 96,
+    "page": 4,
+    "category": "Communications Diverses",
+    "title": "Réunions syndicales à la Bourse du Travail",
+    "summary": "",
+    "paragraphs": [
+      "Cet après-midi, à la Bourse du Travail, 3, rue du Château-d'Eau : réunions des chauffeurs-conducteurs (salle Bondy), des boucheurs à l'émeri (salle des grèves) et des grillageurs à la main. À l'annexe rue Jean-Jacques-Rousseau, assemblée générale de la chambre syndicale des tailleurs."
+    ]
+  },
+  {
+    "id": 97,
+    "page": 4,
+    "category": "Communications Diverses",
+    "title": "Distribution de prix aux sculpteurs sur bois",
+    "summary": "",
+    "paragraphs": [
+      "La distribution des prix aux apprentis et aux ouvriers sculpteurs sur bois aura lieu cet après-midi à deux heures, dans la grande salle de la Bourse du Travail, 3, rue du Château-d'Eau."
+    ]
+  },
+  {
+    "id": 98,
+    "page": 4,
+    "category": "Programme des Concerts",
+    "title": "Concert au Jardin Zoologique d'Acclimatation",
+    "summary": "",
+    "paragraphs": [
+      "Programme du concert qui sera donné le dimanche 26 novembre 1899, à 4 heures, dans la grande salle du Palais d'Hiver.",
+      "Chef d'orchestre : M. J. Lafitte, de l'Opéra. Grand festival avec le concours de Mme Levasseur-Coryn, MM. Coryn et Pedor-Molier.",
+      "PREMIÈRE PARTIE : Charles Gounod (Danse des Bacchantes de Philémon et Baucis, Marche funèbre pour l'enterrement d'une Marionnette, Méditation sur le 1er prélude de J.-S. Bach, Scène et air des bijoux de Faust, Judex de Mors et Vita, Ballet de Faust).",
+      "DEUXIÈME PARTIE : Les Noces de Jeannette (V. Massé) (Ouverture, orchestre. Air, Enfin, me voilà seul. Romance, Parmi tant d'amoureux. Chanson, Margot lève ton sabot. Romance de l'aiguille. Air du rossignol. Duo final)."
+    ]
+  },
+  {
+    "id": 99,
+    "page": 4,
+    "category": "Transports Maritimes",
+    "title": "Arrivée du Paquebot Iraouaddu",
+    "summary": "",
+    "paragraphs": [
+      "Le paquebot Iraouaddu (MM.), venant de Maurice, La Réunion et Madagascar, est arrivé à Marseille le 24 novembre, à 10 heures du matin."
+    ]
+  },
+  {
+    "id": 100,
+    "page": 4,
+    "category": "Marché",
+    "title": "Marché aux Chevaux de Novembre",
+    "summary": "",
+    "paragraphs": [
+      "Gros trait en âge : 500 à 1 200 F.",
+      "Boucherie : ... (chiffre illisible)",
+      "Gros trait hors d'âge : 200 à 600 F.",
+      "Réforme : 130 F.",
+      "Trait léger fin âge : 150 F.",
+      "Ânes : ...",
+      "Trait léger hors d'âge : 150 F.",
+      "Mulets : ...",
+      "Selle et cabriolet : ...",
+      "Voitures : ...",
+      "Têtes amenées : 382.",
+      "Vendues : ... (chiffre illisible)."
+    ]
+  },
+  {
+    "id": 101,
+    "page": 4,
+    "category": "Judiciaire",
+    "title": "Condamnation pour Vin Falsifié",
+    "summary": "",
+    "paragraphs": [
+      "Extrait des minutes du greffe du Tribunal de première instance du département de la Seine, séant au Palais de Justice, Paris, 8ème chambre, jugeant en police correctionnelle.",
+      "Du rapport de M. le procureur de la République, plaignant et demandeur d'une part, et Lelong, épicier, demeurant à Paris, 2, rue de Clignancourt, libre, prévenu de mise en vente de vin falsifié.",
+      "Le tribunal, après en avoir délibéré conformément à la loi, attendu qu'il résulte des documents de la cause, Lelong a mis en vente du vin qu'il savait falsifié par addition d'une grande quantité d'eau, fait prévu et puni par les articles de la loi du 27 mars 1851, de la loi du 5 mai 1851, du Code pénal et la loi du 21 juillet 1881.",
+      "Faisant application des articles dont lecture a été donnée par le président. Vu l'article 7 de la loi du 27 mars 1851 et 463 du Code pénal.",
+      "Condamne Lelong à cinquante francs d'amende. Prononce la confiscation du vin falsifié. Ordonne, aux termes de la loi du mars 1851 et du Code pénal, l'affiche du présent jugement à 20 exemplaires, dont l'un à la mairie de l'arrondissement du domicile de Lelong et l'autre à la porte de son établissement. Ordonne en outre, aux termes des mêmes articles, l'insertion par extrait dudit jugement dans Le Petit Journal et Le Petit Parisien. Condamne Lelong aux dépens. Fixe au minimum la durée de la contrainte par corps.",
+      "Pour extrait conforme délivré par nous, greffier soussigné, n'y ayant appel."
+    ]
+  },
+  {
+    "id": 102,
+    "page": 4,
+    "category": "Bulletin Commercial",
+    "title": "Cours des Farines - Samedi 25 Novembre",
+    "summary": "",
+    "paragraphs": [
+      "Farines, au Sac, les 100 kil. le 1er. les 100 kilos.",
+      "Décembre : 23,38 F.",
+      "Janv.-Fév. : ...",
+      "1ers : 21,70 F.",
+      "1ers : 20,90 F.",
+      "1ers de Mars : 25,35 F. ; 25,15 F.",
+      "1ers de Mars : ..."
+    ]
+  },
+  {
+    "id": 103,
+    "page": 4,
+    "category": "Bulletin Commercial",
+    "title": "Cours des Céréales et Sucres - Samedi 25 Novembre",
+    "summary": "",
+    "paragraphs": [
+      "Seigles, les 100 kilos.",
+      "11h. 30min : Disponible : 18,80 F. Courant : 18,80 F. Décembre : ... Janv.-Fév. : ...",
+      "Avoines, les 100 kilos.",
+      "11h. 30min : Disponible : 16,00 F. Courant : 16,00 F. Décembre : 16,10 F. 1ers : 16,10 F. 1ers de Mars : 16,20 F.",
+      "Maïs, les 100 kilos.",
+      "11h. 30min : Disponible : 20,50 F. Courant : 20,50 F. Décembre : 20,50 F. 1ers : 20,50 F. 1ers de Mai : 20,50 F.",
+      "Blé, l'hectolitre à 90 kg.",
+      "11h. 30min : Disponible : 36,50 F. Courant : 36,00 F. Décembre : ... Janv.-Fév. : 37,00 F. 1ers de Mars : 38,00 F. 1ers de Mai : 39,00 F.",
+      "Sucres n° 1, les 100 kilos.",
+      "11h. 30min : Disponible : 53,00 F. Courant : 53,00 F. Décembre : 53,00 F. 1ers : 53,00 F. 1ers de Mai : 53,00 F.",
+      "Sucres raffinés, de 73 à 76 les 100 kilos.",
+      "Sucres raffinés surchoix, cassés, rangés en caisses, de 77 à 78 les 100 kilos.",
+      "Farines de boulangerie : on cote marque de Corbeil, 27,50 F. et autres marques, de 26,00 F. le gros sac."
+    ]
+  },
+  {
+    "id": 104,
+    "page": 4,
+    "category": "Bulletin Commercial",
+    "title": "Cours des Matières Premières au Havre - 25 Novembre",
+    "summary": "",
+    "paragraphs": [
+      "Dépêche du Havre, 25 novembre.",
+      "Cotons Louisiane en saint (les kilos) : Ouvert 45 1/2, Clôture 48 1/2.",
+      "Laines très ordinaires (les kilos) : Ouvert 46, Clôture 40.",
+      "Cafés Buen'Ayr Santos (les kilos) : Ouvert 40, Clôture 40.",
+      "Janv. 1900 : Cotons 45 1/2 ; Laines 46 ; Cafés 40.",
+      "Mars : Cotons 47 ; Laines 47,75 ; Cafés 30,85."
+    ]
+  },
+  {
+    "id": 105,
+    "page": 4,
+    "category": "Marché Agricole",
+    "title": "Prix des Fourrages et Pailles à Paris-La Chapelle - Novembre",
+    "summary": "",
+    "paragraphs": [
+      "Bon marché. 90 voitures de paille et 30 de fourrages. Prix faibles sur la paille.",
+      "Paille de seigle : 47 F.",
+      "Paille d'avoine : 46 F.",
+      "Foin : 51 F.",
+      "Luzerne : 51 F.",
+      "Sainfoin : 51 F.",
+      "Le tout rendu dans Paris, au domicile de l'acheteur, frais de camionnage et droits d'entrée compris par 104 bottes de 5 kilos, savoir pour foin 1,50 F. et 0,75 F. pour paille en gare.",
+      "On cote sur wagon :",
+      "Paille de ... : 35 F.",
+      "Paille d'avoine : 33 F.",
+      "Paille de seigle : 34 F.",
+      "Foin : 38 F.",
+      "Luzerne : 38 F.",
+      "On cote sur tas les 100 kilos :",
+      "Foin de choix : 52 F.",
+      "Foin première qualité : 50 F.",
+      "Pour les marchandises en gare, les frais de déchargement, d'octroi et de camionnage sont à la charge de l'acheteur."
+    ]
+  },
+  {
+    "id": 106,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Opéra : Mignon",
+    "summary": "",
+    "paragraphs": [
+      "Opéra : Mignon (Relâche)."
+    ]
+  },
+  {
+    "id": 107,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Théâtre-Lyrique : Grisélidis",
+    "summary": "",
+    "paragraphs": [
+      "Théâtre-Lyrique : Grisélidis."
+    ]
+  },
+  {
+    "id": 108,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Odéon : L'Arlésienne",
+    "summary": "",
+    "paragraphs": [
+      "Odéon : L'Arlésienne."
+    ]
+  },
+  {
+    "id": 109,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Châtelet : Robinson Crusoé",
+    "summary": "",
+    "paragraphs": [
+      "Châtelet : Robinson Crusoé."
+    ]
+  },
+  {
+    "id": 110,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Gymnase : Petit Chagrin, Les Pieds Nickelés",
+    "summary": "",
+    "paragraphs": [
+      "Gymnase : Petit Chagrin, Les Pieds Nickelés."
+    ]
+  },
+  {
+    "id": 111,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Opéra-Comique : La Bohème",
+    "summary": "",
+    "paragraphs": [
+      "Opéra-Comique : La Bohème."
+    ]
+  },
+  {
+    "id": 112,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Variétés : La Belle Hélène",
+    "summary": "",
+    "paragraphs": [
+      "Variétés : La Belle Hélène."
+    ]
+  },
+  {
+    "id": 113,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Gaîté : Les Mousquetaires au Couvent",
+    "summary": "",
+    "paragraphs": [
+      "Gaîté : Les Mousquetaires au Couvent."
+    ]
+  },
+  {
+    "id": 114,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Nouveautés : La Dame de chez Maxim",
+    "summary": "",
+    "paragraphs": [
+      "Nouveautés : La Dame de chez Maxim."
+    ]
+  },
+  {
+    "id": 115,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Palais-Royal : L'Élu des Femmes",
+    "summary": "",
+    "paragraphs": [
+      "Palais-Royal : L'Élu des Femmes."
+    ]
+  },
+  {
+    "id": 116,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Vaudeville : Le Faubourg",
+    "summary": "",
+    "paragraphs": [
+      "Vaudeville : Le Faubourg."
+    ]
+  },
+  {
+    "id": 117,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Porte Saint-Martin : La Dame de Monsoreau",
+    "summary": "",
+    "paragraphs": [
+      "Porte Saint-Martin : La Dame de Monsoreau."
+    ]
+  },
+  {
+    "id": 118,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Bouffes-Parisiens : Shakespeare",
+    "summary": "",
+    "paragraphs": [
+      "Bouffes-Parisiens : Shakespeare."
+    ]
+  },
+  {
+    "id": 119,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Athénée : L'Amour pleure et rit",
+    "summary": "",
+    "paragraphs": [
+      "Athénée : L'Amour pleure et rit."
+    ]
+  },
+  {
+    "id": 120,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Cluny : Un Baron qui enlève des Gitanes, Plaisir d'Amour",
+    "summary": "",
+    "paragraphs": [
+      "Cluny : Un Baron qui enlève des Gitanes, Plaisir d'Amour."
+    ]
+  },
+  {
+    "id": 121,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Ambigu : Cartouche",
+    "summary": "",
+    "paragraphs": [
+      "Ambigu : Cartouche."
+    ]
+  },
+  {
+    "id": 122,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Théâtre des Bouffes : Les Blanchisseuses de Paris",
+    "summary": "",
+    "paragraphs": [
+      "Théâtre des Bouffes : Les Blanchisseuses de Paris."
+    ]
+  },
+  {
+    "id": 123,
+    "page": 4,
+    "category": "Programme des Spectacles",
+    "title": "Théâtre Antoine : Les Girouettes, Le Père Naturel",
+    "summary": "",
+    "paragraphs": [
+      "Théâtre Antoine : Les Girouettes, Le Père Naturel."
+    ]
+  },
+  {
+    "id": 124,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "Casino de Paris : Lutte, La Tzigane",
+    "summary": "",
+    "paragraphs": [
+      "Casino de Paris : Championnat de lutte, La Tzigane."
+    ]
+  },
+  {
+    "id": 125,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "Olympia : Rose d'Amay, La Nuit et l'Amour Bohème",
+    "summary": "",
+    "paragraphs": [
+      "Olympia : Rose d'Amay, La Nuit et l'Amour Bohème."
+    ]
+  },
+  {
+    "id": 126,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "La Cigale : La Cigale Revue",
+    "summary": "",
+    "paragraphs": [
+      "Tous les soirs, à 8h 1/4, La Cigale : la Cigale Revue. Dimanches et fêtes, matinée."
+    ]
+  },
+  {
+    "id": 127,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "Cirque Medrano : Vision des mers polaires",
+    "summary": "",
+    "paragraphs": [
+      "La Cirque Medrano, 15, rue de Clichy. De 2h à 5h et de 8h à minuit : Vision des mers polaires. Ours, phoques, morses, otaries dressées."
+    ]
+  },
+  {
+    "id": 128,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "Nouveau Cirque : Au fond de l'eau",
+    "summary": "",
+    "paragraphs": [
+      "Nouveau-Cirque : à 2h 1/2, Au fond de l'eau. Mercredis, jeudis, matinées à 2h 1/2."
+    ]
+  },
+  {
+    "id": 129,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "Nouveau Cirque : Les Lutteuses",
+    "summary": "",
+    "paragraphs": [
+      "Nouveau Cirque : 8h 1/4, Les Lutteuses, Danse Cosaque."
+    ]
+  },
+  {
+    "id": 130,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "Moulin Rouge : Spectacle-Concert, Bal",
+    "summary": "",
+    "paragraphs": [
+      "Moulin Rouge : Tous les soirs à 8h 1/4, spectacle-concert, bal. Dimanches, matinée à 2 heures."
+    ]
+  },
+  {
+    "id": 131,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "Jardin de Paris : Grand Bal",
+    "summary": "",
+    "paragraphs": [
+      "Jardin de Paris : Tous les jeudis, samedis et dimanches, grand bal à 8h 1/2."
+    ]
+  },
+  {
+    "id": 132,
+    "page": 4,
+    "category": "Spectacles Divers",
+    "title": "Tour Eiffel : Accès et Concert",
+    "summary": "",
+    "paragraphs": [
+      "Tour Eiffel : De dix heures à la nuit, accès jusqu'au deuxième étage et par les escaliers seulement. Accès aux deux étages. Grande Tour de Paris. De 1h à 6 heures. Entrée 1 fr. Ascension 1 fr. Concert."
+    ]
+  }
+];

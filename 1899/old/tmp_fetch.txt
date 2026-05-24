@@ -1,0 +1,55 @@
+    def fetch_newspaper(self, name, year, month, day):
+        serial_ark = self.SERIALS.get(name)
+        if not serial_ark:
+            return None
+        time.sleep(self.delay)
+        try:
+            issue_ark = self._resolve_issue_ark(serial_ark, year, month, day)
+            if not issue_ark:
+                return None
+
+            date_text = None
+            ocr_text = None
+
+            # Try Tesseract first (better quality)
+            try:
+                img_data = self._fetch_image(issue_ark, newspaper=name)
+                if img_data:
+                    ocr_text = self._ocr_tesseract(img_data)
+            except Exception:
+                pass
+
+            # Fallback to Gallica OCR
+            if not ocr_text:
+                data = self._fetch_ocr(issue_ark, newspaper=name)
+                date_text = self._extract_date(data)
+                ocr_text = self._extract_ocr_text(data)
+            else:
+                # Extract date from OCR text itself
+                m = re.search(r'(\d{1,2})\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(\d{4})', ocr_text, re.IGNORECASE)
+                if m:
+                    date_text = f"{m.group(1)} {m.group(2)} {m.group(3)}"
+
+            all_lines = self.extract_all_lines(ocr_text)
+
+            # Get date + prev/next from Gallica API (already cached from the call above if fallback ran)
+            prev_ark, next_ark = None, None
+            try:
+                data = self._fetch_ocr(issue_ark, newspaper=name)
+                date_text = date_text or self._extract_date(data)
+                prev_ark, next_ark = self._extract_previous_next(data)
+            except Exception:
+                pass
+
+            return {
+                "newspaper": name,
+                "issue_ark": issue_ark,
+                "date": date_text,
+                "lines": all_lines,
+                "ocr_length": len(ocr_text) if ocr_text else 0,
+                "ocr_source": "tesseract" if ocr_text and HAS_TESSERACT else "gallica",
+                "prev_ark": prev_ark,
+                "next_ark": next_ark,
+            }
+        except Exception as e:
+            return {"newspaper": name, "error": str(e)}

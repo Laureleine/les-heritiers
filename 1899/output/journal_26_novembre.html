@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Petit Parisien — 26 Novembre 1899</title>
+    
+    <!-- Google Fonts for Elegant Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;900&family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
+    
+    <!-- Dedicated Premium Stylesheet -->
+    <link rel="stylesheet" href="journal.css">
+    
+    <!-- Dynamic Newspaper Data File -->
+    <script src="journal_data.js"></script>
+</head>
+<body>
+
+    <!-- ==========================================================================
+       SIDEBAR NAVIGATION (Sommaire Cliquable)
+       ========================================================================== -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>SOMMAIRE</h2>
+            <p>26 Novembre 1899</p>
+        </div>
+        
+        <nav class="menu-list">
+            <div class="menu-item">
+                <a class="menu-link active" onclick="switchSection('meteo', this)">
+                    <span class="icon">🌤️</span>
+                    <span>Météo de Paris</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link" onclick="switchSection('lune', this)">
+                    <span class="icon">🌙</span>
+                    <span>Influence Lunaire</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link" onclick="switchSection('chronique', this)">
+                    <span class="icon">🏛️</span>
+                    <span>Chronique Historique</span>
+                </a>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid var(--color-border-light); margin: 0.5rem 0;">
+            
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #888; padding: 0.5rem 1rem; font-weight: bold;">
+                Le Petit Parisien
+            </div>
+            
+            <div class="menu-item">
+                <a class="menu-link" onclick="switchPageSection(1, this)">
+                    <span class="icon">📄</span>
+                    <span>Page 1 — Éditorial & Une</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link" onclick="switchPageSection(2, this)">
+                    <span class="icon">📄</span>
+                    <span>Page 2 — International</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link" onclick="switchPageSection(3, this)">
+                    <span class="icon">📄</span>
+                    <span>Page 3 — Faits Divers & Bourse</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link" onclick="switchPageSection(4, this)">
+                    <span class="icon">📄</span>
+                    <span>Page 4 — Réclames & Théâtres</span>
+                </a>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button class="theme-toggle-btn" onclick="toggleDarkMode()">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-text">Mode Sombre</span>
+            </button>
+            <p style="font-size: 0.75rem; color: #888; text-align: center;">Projet Éphéméride 1899</p>
+        </div>
+    </aside>
+
+    <!-- ==========================================================================
+       MAIN CONTENT AREA
+       ========================================================================== -->
+    <main class="main-content">
+        
+        <!-- Newspaper Masthead Header Banner -->
+        <header class="newspaper-masthead">
+            <h1 class="newspaper-title">Le Petit Parisien</h1>
+            <p style="font-family: var(--font-serif); font-size: 1.1rem; font-style: italic; color: #777;">
+                " Le plus fort tirage des journaux du monde entier "
+            </p>
+            <div class="newspaper-meta-line">
+                <span>Vingt-Quatrième Année — N° 8430</span>
+                <span class="meta-center-date">Dimanche 26 Novembre 1899</span>
+                <span>Cinq Centimes</span>
+            </div>
+        </header>
+
+        <!-- ==========================================================================
+           SECTION 1: MÉTÉO (WEATHER DETAILS)
+           ========================================================================== -->
+        <section id="sec-meteo" class="journal-section active-section">
+            <div class="weather-container">
+                <div class="weather-header">
+                    <span class="weather-icon">🌤️</span>
+                    <div>
+                        <h2>Météo de Paris</h2>
+                        <p style="font-style: italic; color: #777;">Reconstitution climatologique d'époque</p>
+                    </div>
+                </div>
+                
+                <div class="weather-details-grid">
+                    <div class="weather-card">
+                        <h4>Condition Générale</h4>
+                        <p>Ciel Nuageux</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Températures</h4>
+                        <p>7°C à 11°C</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Précipitations</h4>
+                        <p>1.3 mm (Pluie fine)</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Vent de Paris</h4>
+                        <p>32 km/h (Modéré)</p>
+                    </div>
+                </div>
+                
+                <div class="weather-desc-box">
+                    <strong>Chronique Météo du Jour :</strong><br><br>
+                    Le 26 novembre 1899, à Paris, les nuages dominaient le ciel parisien. Les températures ont oscillé entre 7°C au petit matin, piquant les joues des promeneurs matinaux, et 11°C dans l'après-midi.<br><br>
+                    Le matin, les nuages dominaient dès l'aube ; l'après-midi est restée sous une grisaille persistante ; le soir a toutefois vu poindre quelques éclaircies timides au-dessus des grands boulevards. Une pluie fine et intermittente a cumulé environ 1.3 mm, juste assez pour alourdir l'air et faire briller le pavé parisien sous la lumière des becs de gaz. Le vent modéré, soufflant à environ 32 km/h, faisait frémir les dernières feuilles mortes des marronniers et portait avec lui les odeurs de bitume mouillé et de terre humide de la banlieue maraîchère.
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           SECTION 2: LUNE (MOON PHASE DETAILS)
+           ========================================================================== -->
+        <section id="sec-lune" class="journal-section">
+            <div class="moon-container">
+                <div class="moon-header">
+                    <span class="moon-icon">🌙</span>
+                    <div>
+                        <h2>Influence Lunaire</h2>
+                        <p style="font-style: italic; color: #777;">Calcul astronomique réel pour fin 1899</p>
+                    </div>
+                </div>
+                
+                <div class="weather-details-grid" style="margin-bottom: 2rem;">
+                    <div class="weather-card" style="border-left-color: var(--color-primary);">
+                        <h4>Phase Lunaire</h4>
+                        <p>Dernier Quartier</p>
+                    </div>
+                    <div class="weather-card" style="border-left-color: var(--color-primary);">
+                        <h4>Surface Visible</h4>
+                        <p>38% d'illumination</p>
+                    </div>
+                    <div class="weather-card" style="border-left-color: var(--color-primary);">
+                        <h4>Aspect Céleste</h4>
+                        <p>Décroissante et pâle</p>
+                    </div>
+                </div>
+                
+                <div class="weather-desc-box" style="border-color: var(--color-primary);">
+                    <strong>Chronique Nocturne :</strong><br><br>
+                    La lune en dernier quartier montrait un visage à demi grisé par l'ombre, jetant une clarté mélancolique et blafarde au-dessus des toits ardoisés de Paris. <br><br>
+                    Elle n'était visible qu'à environ 38% de sa surface, dessinant une faux pâle et froide dans le ciel clair de la nuit d'automne. Cette lune décroissante laissait les ruelles sombres de la capitale plongées dans de grandes zones d'ombres, à peine troublées par l'éclat jaune des lanternes et des vitrines encore allumées.
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           SECTION 3: CHRONIQUE HISTORIQUE (TIMELINE)
+           ========================================================================== -->
+        <section id="sec-chronique" class="journal-section">
+            <div class="timeline">
+                
+                <!-- Paris -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-category">🏛️ Vie Parisienne</span>
+                        <h3>La suspension dominicale des débats</h3>
+                        <p>Ce dimanche 26 novembre 1899, Paris respire loin des querelles judiciaires. Les audiences de la Haute Cour, réunie pour juger Déroulède, Guérin et leurs complices nationalistes pour complot contre l'État, sont suspendues pour le repos dominical. Les accusés profitent de cette accalmie dans leurs cellules respectives, tandis que la presse commente avec passion le retentissant discours prononcé l'avant-veille par le ministre des Affaires étrangères, M. Delcassé, devant une Chambre suspendue à ses lèvres.</p>
+                    </div>
+                </div>
+                
+                <!-- France -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-category">🇫🇷 République Française</span>
+                        <h3>La politique coloniale en question</h3>
+                        <p>Dans toute la France, le grand débat national de ce dimanche tourne autour de la consolidation de l'empire colonial républicain. Suite aux déclarations gouvernementales, l'opinion se rallie à la doctrine de conservation pragmatique : avec un domaine gigantesque en Afrique et en Asie, l'heure n'est plus à la conquête militaire dispendieuse, mais à l'exploitation économique progressive, au métayage et au peuplement agricole, notamment par l'envoi de familles rurales françaises en Tunisie pour y contrebalancer l'influence démographique italienne.</p>
+                    </div>
+                </div>
+                
+                <!-- Monde -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-category">🌍 Actualité Mondiale</span>
+                        <h3>Le front sud-africain et le Soudan</h3>
+                        <p>À l'échelle mondiale, l'attention internationale reste braquée sur la seconde guerre des Boers en Afrique du Sud. Après les victoires britanniques sanglantes de Belmont et de Graspan remportées par lord Methuen, la marche vers le déblocage de Kimberley se poursuit dans une tension extrême, alors que les Boers réorganisent leurs forces. Parallèlement, la dépêche officielle de la déroute décisive des Derviches à Khartoum par la colonne Wingate et la mort du Khalifa Abdallah scellent la pacification définitive du Soudan anglo-égyptien.</p>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           SECTION 4: DYNAMIC JOURNAL PAGES (RENDERED VIA JAVASCRIPT)
+           ========================================================================== -->
+        <section id="sec-journal-pages" class="journal-section">
+            <h2 id="page-title-banner" style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 2rem; color: var(--color-primary); border-bottom: 2px solid var(--color-secondary); padding-bottom: 0.5rem;">
+                Le Petit Parisien — Page 1
+            </h2>
+            
+            <div id="articles-container">
+                <!-- Dynamic Article Cards will be injected here -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================================================
+       INTERACTIVE JAVASCRIPT LOGIC
+       ========================================================================== -->
+    <script>
+        // Track the current view state
+        let currentView = 'meteo'; // meteo, lune, chronique, or page
+        let currentPageNum = 1;
+
+        // Toggle Active Section (Sommaire Selection)
+        function switchSection(sectionId, element) {
+            currentView = sectionId;
+            
+            // Update active link class in sidebar
+            const links = document.querySelectorAll('.menu-link');
+            links.forEach(l => l.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Hide journal pages view, show target static view
+            const sections = document.querySelectorAll('.journal-section');
+            sections.forEach(s => s.classList.remove('active-section'));
+            
+            const activeSec = document.getElementById('sec-' + sectionId);
+            if (activeSec) {
+                activeSec.classList.add('active-section');
+            }
+            
+            // Smooth scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Switch and Render a Newspaper Page Section
+        function switchPageSection(pageNum, element) {
+            currentView = 'page';
+            currentPageNum = pageNum;
+            
+            // Update active link class in sidebar
+            const links = document.querySelectorAll('.menu-link');
+            links.forEach(l => l.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Hide other sections, show journal pages view
+            const sections = document.querySelectorAll('.journal-section');
+            sections.forEach(s => s.classList.remove('active-section'));
+            
+            const journalPageSec = document.getElementById('sec-journal-pages');
+            journalPageSec.classList.add('active-section');
+            
+            // Update the banner title
+            const titleBanner = document.getElementById('page-title-banner');
+            titleBanner.textContent = `Le Petit Parisien — Page ${pageNum}`;
+            
+            // Render articles
+            renderPageArticles(pageNum);
+            
+            // Smooth scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Dynamically Render Article Cards for the selected page from journal_data.js
+        function renderPageArticles(pageNum) {
+            const container = document.getElementById('articles-container');
+            container.innerHTML = ''; // Clear previous content
+            
+            // Filter articles belonging to the requested page
+            const articles = JOURNAL_ARTICLES.filter(a => a.page === pageNum);
+            
+            if (articles.length === 0) {
+                container.innerHTML = '<p style="font-style: italic; color: #777; text-align: center; margin: 3rem 0;">Aucun article substantiel disponible pour cette page.</p>';
+                return;
+            }
+            
+            articles.forEach(article => {
+                const card = document.createElement('article');
+                card.className = 'article-card';
+                
+                // Construct paragraphs HTML
+                const paragraphsHtml = article.paragraphs.map(p => `<p>${p}</p>`).join('');
+                
+                card.innerHTML = `
+                    <header class="article-header">
+                        <div class="article-headline-block">
+                            <span class="article-tag">${article.category}</span>
+                            <h2 class="article-title">${article.title}</h2>
+                        </div>
+                        <div class="article-meta">
+                            <span>Le Petit Parisien</span>
+                            <span class="meta-page-tag">Page ${article.page}</span>
+                        </div>
+                    </header>
+                    
+                    <!-- Résumé / Summary -->
+                    <div class="summary-container">
+                        <div class="summary-title-line">
+                            <span>📝 RÉSUMÉ :</span>
+                        </div>
+                        <p class="summary-text">${article.summary}</p>
+                    </div>
+                    
+                    <!-- Détail complet / Collapsible paragraphs -->
+                    <div class="full-text-collapse" id="collapse-art${article.id}">
+                        <div class="full-text-content">
+                            ${paragraphsHtml}
+                        </div>
+                    </div>
+                    
+                    <button class="toggle-article-btn" onclick="toggleArticle(${article.id}, this)">
+                        <span class="btn-text">📖 Lire l'article complet</span>
+                        <span class="btn-arrow">▼</span>
+                    </button>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Toggle Article Expansion (Résumé vs Détail Complet)
+        function toggleArticle(articleId, button) {
+            const collapseDiv = document.getElementById('collapse-art' + articleId);
+            const btnText = button.querySelector('.btn-text');
+            
+            if (collapseDiv.classList.contains('expanded')) {
+                // Collapse the article
+                collapseDiv.classList.remove('expanded');
+                button.classList.remove('active');
+                btnText.textContent = "📖 Lire l'article complet";
+            } else {
+                // Expand the article
+                collapseDiv.classList.add('expanded');
+                button.classList.add('active');
+                btnText.textContent = "📄 Voir le résumé";
+            }
+        }
+
+        // Dark Mode Toggle Switcher
+        function toggleDarkMode() {
+            const body = document.body;
+            const themeBtn = document.querySelector('.theme-toggle-btn');
+            const themeIcon = themeBtn.querySelector('.theme-icon');
+            const themeText = themeBtn.querySelector('.theme-text');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                themeIcon.textContent = "☀️";
+                themeText.textContent = "Mode Clair";
+                localStorage.setItem('journal-dark-mode', 'enabled');
+            } else {
+                themeIcon.textContent = "🌙";
+                themeText.textContent = "Mode Sombre";
+                localStorage.setItem('journal-dark-mode', 'disabled');
+            }
+        }
+
+        // Keep theme settings on page reload
+        window.addEventListener('DOMContentLoaded', () => {
+            const cachedTheme = localStorage.getItem('journal-dark-mode');
+            if (cachedTheme === 'enabled') {
+                toggleDarkMode();
+            }
+            
+            // Pre-load Page 1 if JOURNAL_ARTICLES is defined
+            if (typeof JOURNAL_ARTICLES !== 'undefined') {
+                console.log("Données de journal chargées avec succès :", JOURNAL_ARTICLES.length, "articles.");
+            } else {
+                console.error("Erreur : JOURNAL_ARTICLES n'est pas défini. Assurez-vous d'avoir exécuté parse_full_journal.py !");
+            }
+        });
+    </script>
+</body>
+</html>

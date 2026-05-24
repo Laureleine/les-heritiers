@@ -104,7 +104,7 @@ export const calculateFullCombatStats = (character, gameData) => {
         if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
         const metier = character.competencesLibres?.specialiteMetier;
         if (metier?.comp === comp && metier?.nom === specName) return true;
-        if (finalStats.specialites.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+        if (finalStats.specialites?.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
         if (feeData?.competencesPredilection) {
             for (let idx = 0; idx < feeData.competencesPredilection.length; idx++) {
                 const pred = feeData.competencesPredilection[idx];

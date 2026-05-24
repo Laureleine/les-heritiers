@@ -1,0 +1,9 @@
+1,5o0,0o0 francs                                   -> 1,500,000 francs
+Ia commission                                      -> la commission
+cos messieurs                                      -> ces messieurs
+avec le ministre                                   -> avec le ministre
+un doeument important                              -> un document important
+vitation des etudiants                             -> invitation des etudiants
+a ses ooles                                        -> a ses ooles
+4,860,0o0 francs                                   -> 4,860,000 francs
+1,8o0,0o0 francs                                   -> 1,800,000 francs

@@ -1,0 +1,1033 @@
+{
+  "fragment": {
+    "display": true,
+    "active": true,
+    "parameters": {
+      "pageArkUrl": "ark:/12148/bpt6k519080g/f1.item.texteImage",
+      "externalPageArkUrl": "https://gallica.bnf.fr/ark:/12148/bpt6k519080g/f1.item.texteImage"
+    },
+    "contenu": {
+      "XitiFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "x8": "Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir",
+          "x9": "domaine%20public",
+          "modeDev": true,
+          "x10": "WebExterne",
+          "x12": "1899-11-05",
+          "x1": "bpt6k519080g",
+          "x11": "BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1",
+          "x2": "Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir",
+          "x13": "2008%2F02%2F21",
+          "x4": "NUM%C3%89RO",
+          "x5": "Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850",
+          "x15": "texte",
+          "x6": "pageHTML",
+          "x18": "avec%20relation",
+          "x7": "Le%20Petit%20Parisien%20%28Paris%29",
+          "x17": "gallica",
+          "changed": true
+        },
+        "contenu": {},
+        "urlServiceScriptXiti": "https://logs",
+        "pageName": "Visualiseur::TEXT_IMAGE::ARKbpt6k519080g",
+        "codeNiveau2": "15",
+        "idSite": "18798",
+        "implicationDegree": "",
+        "paramXiti": "&amp;x1=[bpt6k519080g]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-05]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]",
+        "motcle": "",
+        "numPageResultat": 1,
+        "logoNoScriptUrl": "https://logs.xiti.com/hit.xiti?s=18798&s2=15&p=Visualiseur::TEXT_IMAGE::ARKbpt6k519080g&amp;x1=[bpt6k519080g]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-05]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]&mc=&amp;x1=[bpt6k519080g]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-05]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]",
+        "protocol": "https://",
+        "etat": ""
+      },
+      "PaginationViewerModel": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "ZoomBtn": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-zoom"
+            },
+            "contenu": "icon-zoom",
+            "description": "Zoom",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage.zoom",
+            "etat": ""
+          },
+          "ChangeFormatPageVertical": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "vertical",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/VERTICAL/ark:/12148/bpt6k519080g/f1.item.texteImage..VERTICAL",
+            "etat": ""
+          },
+          "DisplaySelected": "item",
+          "IconDisplay": "pictos icon-singlepage",
+          "role": "link",
+          "searchPageLink": "https://gallica.bnf.fr/services/ajax/pagination/searchPage/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage?searchPage=",
+          "urlShareEmbed": "https://gallica.bnf.fr/services/share/embed/ark:/12148/bpt6k519080g/f1.item.texteImage",
+          "nbTotalVues": 4,
+          "displayModeIcon": "icon-singlepage",
+          "IsPageAudioDisplay": true,
+          "ChangeFormatPageDouble": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "double",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/DOUBLE/ark:/12148/bpt6k519080g/f1.item.texteImage..DOUBLE",
+            "etat": ""
+          },
+          "IsPageMultiDisplay": true,
+          "urlDownload": "https://gallica.bnf.fr/services/ajax/action/download/ark:/12148/bpt6k519080g/f1.item.texteImage",
+          "ChangeFormatPageMulti": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "planchecontact",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MULTI/ark:/12148/bpt6k519080g/f1.item.texteImage..MULTI",
+            "etat": ""
+          },
+          "ChangeFormatPageVocal": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "vocal",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/AUDIO/ark:/12148/bpt6k519080g/f1.item.texteImage..AUDIO",
+            "etat": ""
+          },
+          "accessibleLabel": "chiffre de pagination",
+          "urlShareMail": "https://gallica.bnf.fr/services/share/mail/ark:/12148/bpt6k519080g/f1.item.texteImage",
+          "screenNumber": 1,
+          "nbPagination": "vue 1/4",
+          "paginationTitle": "Pagination",
+          "IsPageDoubleDisplay": true,
+          "urlHasChanged": true,
+          "buttonAccessibleLabel": "Pagination et liste des vues",
+          "defaut": "Numero",
+          "IsPage3DDisplay": false,
+          "ChangeFormatPageSimple": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "item",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage..SINGLE",
+            "etat": ""
+          },
+          "IsPageVerticalDisplay": true,
+          "changed": true
+        },
+        "contenu": "NP",
+        "description": "Page",
+        "selected": false,
+        "url": "https://gallica.bnf.fr/services/ajax/pagination/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage",
+        "etat": ""
+      },
+      "BarreVerticaleFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "contenu": {
+          "OutilsFragment": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-infosdetails"
+                },
+                "contenu": "icon-infosdetails",
+                "description": "Informations détaillées",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/infosdetails/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": false,
+                "parameters": {
+                  "role": "presentation"
+                },
+                "contenu": "icon-caption",
+                "description": "Table des matières",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": "optionDisabled"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-search"
+                },
+                "contenu": "icon-search",
+                "description": "Recherche dans le document",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/search/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-display icon-singlepage"
+                },
+                "contenu": "icon-display icon-singlepage",
+                "description": "Modes d'affichage et vocal",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-3d"
+                },
+                "contenu": "icon-3d",
+                "description": "Visualiser en 3D",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/D3/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-zoom"
+                },
+                "contenu": "icon-zoom",
+                "description": "Zoom",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage.zoom",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-download"
+                },
+                "contenu": "icon-download",
+                "description": "Téléchargement / impression",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/download/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-export"
+                },
+                "contenu": "icon-export",
+                "description": "Export d'une sélection",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/export/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-share"
+                },
+                "contenu": "icon-share",
+                "description": "Partage et envoi par courriel",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/share/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-ecommerce"
+                },
+                "contenu": "icon-ecommerce",
+                "description": "Acheter une reproduction",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/ecommerce/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "paramConn": "not_connected",
+                  "id": "icon-bookmark",
+                  "ariaLabel": "Marquer cette page dans votre espace personnel (nouvelle fenêtre)"
+                },
+                "contenu": "icon-bookmark",
+                "description": "Marque-page",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/bookmark/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-indisponible"
+                },
+                "contenu": "icon-indisponible",
+                "description": "Acheter le livre complet",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/indisponible/achat//ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-retronews"
+                },
+                "contenu": "icon-retronews",
+                "description": "Accéder au numéro complet",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/retronews/achat//ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "paramConn": "not_connected",
+                  "id": "icon-ajouter_document",
+                  "ariaLabel": "Ajouter ce document à votre espace personnel (nouvelle fenêtre)"
+                },
+                "contenu": "icon-ajouter_document",
+                "description": "Ajouter ce document",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/add_doc/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-corriger"
+                },
+                "contenu": "icon-corriger",
+                "description": "Signalement d'anomalie",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/flag/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-result-list"
+                },
+                "contenu": "icon-result-list",
+                "description": "Retour à la liste de résultat",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-aide"
+                },
+                "contenu": "icon-aide",
+                "description": "Aide",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/aide/ark:/12148/bpt6k519080g/f1.item.texteImage",
+                "etat": ""
+              }
+            ],
+            "etat": ""
+          }
+        },
+        "etat": ""
+      },
+      "IssuePaginationFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "currentPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "05 novembre 1899",
+          "description": "05 novembre 1899",
+          "selected": false,
+          "bindUrl": "",
+          "url": "https://gallica.bnf.fr/services/ajax/pagination/issue/cur/ark:/12148/cb34419111x/date18991105.item",
+          "etat": ""
+        },
+        "nbrTotalPages": 0,
+        "firstPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "Voir le premier numéro",
+          "description": "icon-page_gauche",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k518772s/f1.item",
+          "etat": ""
+        },
+        "previousPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "consulter fascicule précédent",
+          "description": "icon-page_gauche",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k519079j/f1.item",
+          "etat": ""
+        },
+        "nextPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "consulter fascicule suivant",
+          "description": "icon-page_droite",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k519081v/f1.item",
+          "etat": ""
+        },
+        "lastPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "Voir le dernier numéro",
+          "description": "icon-page_droite",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k519136b/f1.item",
+          "etat": ""
+        },
+        "resultsByPage": {
+          "display": true,
+          "active": true,
+          "parameters": {},
+          "contenu": [],
+          "selected": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "etat": ""
+          },
+          "etat": ""
+        },
+        "titleTitle": {
+          "display": false,
+          "active": false,
+          "parameters": {},
+          "etat": "optionHidden"
+        },
+        "titleDescription": {
+          "display": false,
+          "active": false,
+          "parameters": {},
+          "etat": "optionHidden"
+        },
+        "refinementButton": {
+          "display": true,
+          "active": false,
+          "parameters": {},
+          "etat": "optionDisabled"
+        },
+        "etat": ""
+      },
+      "Visualizer": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "affichage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "hasOcr": true,
+            "isDisplayableConvention": true
+          },
+          "contenu": {
+            "paginationFirst": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la page précédente",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "icon-backward",
+              "description": "Première(s) page(s)",
+              "selected": false,
+              "url": "/",
+              "etat": "optionHidden"
+            },
+            "paginationLast": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la première page",
+                  "etat": "optionDisabled"
+                },
+                "role": "link"
+              },
+              "contenu": "icon-forward",
+              "description": "Dernière(s) page(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519080g/f4.item.texteImage",
+              "etat": ""
+            },
+            "paginationNext": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la page suivante",
+                  "etat": "optionDisabled"
+                },
+                "role": "link"
+              },
+              "contenu": "icon-rightarrow",
+              "description": "Page(s) suivante(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519080g/f2.item.texteImage",
+              "etat": ""
+            },
+            "paginationPrevious": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la dernière page",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "icon-leftarrow",
+              "description": "Page(s) précédente(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage",
+              "etat": "optionHidden"
+            },
+            "paginationBrowse": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Décaler d'une page",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "",
+              "description": "Page +1",
+              "selected": false,
+              "url": "/",
+              "etat": "optionHidden"
+            },
+            "paginationCurrent": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "role": "link",
+                "updatePageUrl": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage"
+              },
+              "contenu": "",
+              "description": "Page courante",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/ark:/12148/bpt6k519080g/f1.item.texteImage.item",
+              "etat": ""
+            },
+            "renderModel": {
+              "display": true,
+              "active": true,
+              "parameters": {},
+              "contenu": {
+                "previousPage": {
+                  "display": false,
+                  "active": false,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "lastPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 4 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519080g/f4.highres",
+                      "screenNumber": 4,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519080g/f4.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/> ",
+                            "stringOCR": "VINOT-QUATRIÊME ANNÉE. tf« 8409. lié\" numéro 1 S OOM.tttll.ett DIMANCHE 5 NOVEMBRE ifijj.\" <br/><br/>ABONNEMENTS <br/><br/>PARIS et DÉPARTE M E N TS Trois mois, 5 fr. Six mois, 9 fr. Un an, 18 fr. <br/>On s'abonne sans frais aans tons las Boréaux de posta <br/><br/>Direotioa le» Rue d'Enghien. PARIS <br/><br/>TOUS LES JEUDIS <br/><br/>Supplément littéraire Illustré (Huit Pages) 5 Centimes. <br/><br/>S'adresser à L'OPFICE D'ANNONCES, tO, Place de la Bourse, 10, PARIS j <br/>et à la Selle des Dépêches du Petit Parisien, 20, boulev. Montmartre. <br/><br/>Dernière) Edition <br/><br/>y METiin DE MEDECIN <br/>Parmi les professions libérales, il n'en <br/>est pas de ptus noble et de plus bienfai- <br/>sante que celle de médecin. C'est devenu <br/>auprès du public éclairé de notre temps <br/>un lieu commun de vanter tant la science <br/>que le dévouement de notre admirable <br/>eorps médical, dont d'éclatantes décou- <br/>vertes ou des actes d'héroïsme viennent <br/>presque chaque année rehausser la gloire <br/>et le mérite. <br/><br/>Depuis les docteurs éminents de nos hô- <br/>pitaux, qui ne se font dignement rémunérer <br/>par leur clientèle riche que pour pouvoir <br/>donner gratuitement leurs soins aux hum- <br/>bles populations, jusqu'au médecin de cam- <br/>pagne dont la vie est plus rude souvent que <br/>celle du laboureur qu'il soulage, tous <br/>apportent à l'accomphssement de leur tâche <br/>de vie un zèle qui va parfois jusqu'au sa- <br/>crifice. Ils ne sont pas rares, depuis Laën- <br/>nec, les médecins qui ont contracté le mal <br/>qui les a emportés au chevet de ceux qu'ils <br/>ont arraché à la mort. Il n'y a pas très <br/>longtemps, une foule recueillie suivait à sa <br/>dernière demeure un jeune interne mort <br/>de la diphtérie en guérissant des diphté- <br/>riques. <br/><br/>Etvoila maînteUâni qn'un nouvel oDstnclB <br/>à l'exercice du métier de médecin nous est <br/>révélé, avec un ensemble alarmant, par les <br/>voix les plus autorisées la difficulté mena- <br/>çante que les jeunes gens qui s'y consa- <br/>crent rencontrent à gagner leur vie, à suffire <br/>à leurs besoins. Non seulement ce qu'on a <br/>appelé avec raison le sacerdoce médical <br/>exige beaucoup de capacités, beaucoup de <br/>travail et beaucoup de cœur, mais cet im- <br/>placable ennemi, la misère, y guette les dé- <br/>butants. <br/><br/>Déjà plusieurs indices permettaient d'en- <br/>Irevoir cette crise; déjà des esprits pré- <br/>voyants s'étaient efforcés de parer au mal <br/>en appelant l'attention de tous sur les pro- <br/>portions qu'il pouvait prendre, et mainte- <br/>nant ce mal apparaît dans son inquiétante <br/>étendue. <br/><br/>A l'heure actuelle, il y a environ 10,000 <br/>étudiants en médecine répartis dans les <br/>différentes Facultés de France. <br/><br/>« Voilà ce qui doit donner à réfléchir, a <br/>dit, en présence de ces chiffres, le profes- <br/>seur Brouardel au Conseil général des Fa- <br/>cultés. Or, ajoutait-il, le nombre des mé- <br/>decins a doublé d'ici dix ans, le nombre <br/>des médecins malheureux aura certaine- <br/>ment triplé. » <br/><br/>Encombrement croissant de la carrière, <br/>voila donc la causé du mal. Depuis dix ans, <br/>disait M. Brouardel, le nombre des étu- <br/>diants en médecine a doublé. Rien n'est <br/>plus exact. 11 était de 6,212 en 1894 en 1896, <br/>il est de 8,485, soit plus de deux mille en <br/>plus. En 1882, il y avait à la Faculté de <br/>Paris 4,698 étudiants ou médecins inscrits; <br/>en 1895, 5,612 étudiants se firent inscrire à <br/>cette même Faculté. Ajoutons que les offi- <br/>ciers de santé eurent le droit de transfor- <br/>mer leurs titres en celui de docteurs, ce <br/>qui vint encore augmenter dans une nota- <br/>ble proportion la concurrence profession- <br/>nelle. <br/><br/>En 1883, il y a eu, au concours de l'in- <br/>ternat des hôpitaux de Paris, 317 candidats <br/>inscrits et 57 internes nommés; en 1894, <br/>548 candidats se firent inscrire, 58 furent <br/>nommés au concours à peu près un sur <br/>dix, et notons que les candidats sont pres- <br/>que tous des sujets distingués. En 1898, les <br/>candidats se sont trouvés favorisés par un <br/>certain hasarddecirconstances, et ils avaient <br/>70 places à se partager, alors qu'ils étaient <br/>558. S'il y avait mieux, le mieux n'était pas, <br/>on le voit, très sensible. <br/><br/>En ce qui concerne ces places tant en- <br/>viées et environnées d'une si légitime con- <br/>sidération de médecin des hôpitaux, le pu- <br/>blic ne sait pas quelle extraordinaire et <br/>croissante sélection on est obligé de faire <br/>entre des candidats dont l'instruction pra- <br/>tique et théorique est poussée au plus haut <br/>point. En 1872, ily eut deux concours pour <br/>six places de médecins des hôpitaux 67 <br/>candidats seulement firent inscrire leurs <br/>noms. En il y eut trois concours pour <br/>9 places 283 candidats se présentèrent. En <br/>ce sont 75 candidats que nous trou- <br/>vous convoitant 3 places. En vingt-trois ans, <br/>la proportion est montée de 1 admission sur <br/>10 compétiteurs à 1 sur 25. <br/><br/>N* 28. Feuilleton du Petit Parisien. <br/>La Cfiarmeuse û'Enlants <br/>GRAND ROMAN INÉDtT <br/><br/>PREMIÈRE PARTES <br/><br/>UNE HAINE VIEILLE D'UN SIÈCLE <br/>XV (suite) <br/><br/>Les Angoisses d'an Père <br/><br/>Le fantôme de sa mère, et de sa mère <br/>coupable deux fois. coupable il y a seize ans, <br/>coupable aussi, sans doute, du meurtre de Gi- <br/>rodias, ce fantôme passa devant lea yeux <br/>du fils terrifié. <br/><br/>Et il ne put cacher son épouvante. <br/><br/>Soubise la remarqua. <br/><br/>Il se mit à rire. <br/><br/>Aù! ah monsieur le comte, commen- <br/>•eriei-vous à deviner? <br/><br/>La voix de Roland s'altéra: <br/><br/>Non, Soubise,. <br/><br/>Secret contre secret, reprit le garde avec <br/>de grands gestes, tâchant le btas de Roland <br/>et courant par la chambre avec J'allure d'un <br/>homme ivre ou d'un fou votre secret con- <br/>tre le mien ou j'écris au Parquet que je vous <br/>ai surpris à cheval, dans le bois. 1 après-midi <br/>même du meurtre, quelques moments avant <br/>que Girodias fût assassiné. causant avec <br/>Girodias. <br/><br/>Roland était pale et défaillant. <br/><br/>Qu'y a-t-11 là d'étonnant? bégaya-t-il. <br/>Votre secret contre mon secret,ou j'écris <br/>M pf«eureur de la République que je vous ai <br/><br/>Ces chiffres sont à eux seuls fort élo» <br/>quents. Ce qui l'est encore plus, dit un 1 <br/>jeune médeem de valeur, le docteur Mi- <br/>chaut, c'est l'institution du concours pour <br/>les docteurs qui désirent être médecins de <br/>bienfaisance. Il y a quelques années, il suf- <br/>fisait d'adresser une demande et d'être <br/>agréé par ses confrères faisant déjà partie <br/>du Bureau de bienfaisance; actuellement, <br/>pour quelques places un nombre toujours <br/>plus considérable de candidats se présente <br/>aux épreuves -cela pour obtenir une situa- <br/>tion qui rapporte 600 francs par an Cer- <br/>taines Sociétés privées de bienfaisance <br/>voient des centaines de demandes leur par- <br/>venir quand un médecin fait défaut. <br/>Partout s'élèvent des plaintes, partout se <br/>fait sentir la crise que traverse cette classe <br/>de travailleurs intellectuels de notre fin de <br/>siècle. La nouvelle loi militaire dispensant <br/>de deux ans de service les jeunes gens qui <br/>s'engagent à avoir à vingt-sept ans leur doc- <br/>torat a encore aggravé la situation, si bien <br/>qu'à notre époque la concurrence dans la <br/>profession médicale est devenue telle qu'on <br/>a pu dire qu'au point de vue purement ma- <br/>tériel les profits d'un grand nombre de mé- <br/>decins sont devenus inférieurs à ceux des <br/>petits fonctionnaires subalternes du gouver- <br/>nement qui sont les moins rétribués, ou aux <br/>appointements touchés par de modestes <br/>employés de grandes administrations. <br/>Est-il besoin d'ajouter que la profession <br/>de médecin exige des frais de « représenta- <br/>tion » appartement, vêtements, etc.. <br/>bien supérieurs à ceux qui équilibrent le <br/>même chapitre dans un budget d'employé. <br/>Bref, en province, sur 10,000 médecins, <br/>5,000 au plus gagnent convenablement leur <br/>vie. Les 5,000 autres se rabattent sur. le <br/>mariage, quand ils peuvent, et deviennent <br/>cultivateurs, industriels ou rentiers. D'au- <br/>tres se jettent dans la politique. <br/><br/>Quant aux médecins parisiens, pour 5 ou <br/>6 qui gagnent à peu près leurs 250,000 <br/>francs par an, pour une quinzaine qui dé- <br/>passent 100,000 francs d'appointements, <br/>pour une centaine qui se font de 40 à 60,000 <br/>francs, pour 300 qui sont sûrs de réunir <br/>dans leur année de 15 à 30,000 francs, <br/>pour 800 enfin qui gagnent une dizaine de <br/>mille francs, il y en a 1,200, c'est-à-dire la <br/>moitié, qui ont moins parfois même <br/>beaucoup moins de 8,000 francs. <br/>Et c'est pourquoi des faits navrants nous <br/>sont parfois révélés. Il arrive qu'après la <br/>mort de tel ou tel médecin, qui était forcé <br/>d'en imposer à sa clientèle par une appa- <br/>rence de luxe, on aperçoit les difficultés <br/>matérielles auxquelles il se trouvait en <br/>butte. Il n'y a pas longtemps, un chirurgien <br/>des hôpitaux mourait pauvre, n'ayant vécu <br/>que par les émoluments qu'il touchait <br/>comme sténographe au Sénat. La veuve <br/>d'un professeur de la Faculté était obligée <br/>de solliciter une modeste place d'inspec- <br/>trice des écoles. Un médecin âgé se tuait, il <br/>y a peu d'années, parce que, atteint par la <br/>limite d'âge, on lui retirait les 1,200 francs <br/>dont il vivait comme médecin d'un des bu- <br/>reaux de bienfaisance de Paris. <br/><br/>Une autre cause devait précipiter la crise <br/>où se trouve impliqué aujourd'hui le corps <br/>médical: la diminution de la fréquence et <br/>de la nocivité de certains maladies, et en <br/>certains cas leur presque complète dispa- <br/>rition. C'est ainsi que depuis que les pro- <br/>grès de l'hygiène ont permis de déterminer <br/>d'une façon préoise que les germes de la <br/>fièvre typhoïde ont pour véhicule de propa- <br/>gation les eaux de boisson, les épidémies <br/>de cette redoutable affection se sont atté- <br/>nuées dans une surprenante proport.ion. La <br/>thérapeutique elle-même de la maladie s'est <br/>améliorée de telle sorte par la méthode des <br/>bains que la guérison est beaucoup plus <br/>certaine qu'autrefois. <br/><br/>Il en est de même, on le sait, pour la <br/>diphtérie, par suite des découvertes de <br/>Berhing et de Roux. Cette maladie ne peut <br/>plus guère être considérée comme mortelle: <br/>le nombre de décès, de 4,716 en 1893, était <br/>trois ans après de 1,537, et si on enlevait <br/>de ce nombre les cas pris trop tard ou mal <br/>soignes, ou comportant complications, on <br/>arriverait à un chiffre à peu près nul. <br/>Tous ces progrès diminuent évidemment <br/>la besogne des médecins et compliquent en- <br/>core l'embarrassante situation où les met <br/>leur propre expansion. <br/><br/>Aussi, un médecin avait, en 1829, en <br/>moyenne 100 malades par an, soit un nou- <br/>veau malade tous les trois jours. Vers 1860, <br/>on a calculé qu'un médeoin devait n'avoir <br/><br/>surpris cravachant Girodias de toutes vos <br/>forces, en pleine figure. <br/><br/>Roland eut un cri sourd. <br/><br/>Il se rua sur Soubise. <br/><br/>Tu ne diras pas cela 1 <br/><br/>Je le dirai. <br/><br/>Roland avait pris le garde par la gorge. <br/>L'autre n'avait pas eu le temps de se mettre <br/>en défense. <br/><br/>Il étranglait, sous ces doigts de fer. <br/>Puis, tout à conp; Roland le lâcha, comme <br/>honteux de sa violence sur cet homme, le <br/>père de Michelle, ce serviteur dévoué qu'il ai- <br/>mait. <br/><br/>Soubise perdait tout sang-froid. <br/><br/>Vous avez la main solide, monsieur le <br/>comte. Ça, je le savais. Et je me suis tou- <br/>jours demanda, depuis k dimanche de la fête <br/>de Clisson, pourquoi, avec des doigts et un <br/>étau pareils, vous aviez poignardé Girodias <br/>dans le dos, au lieu de l'étrangler, tout sim- <br/>plement. Lorsque le Parquet apprendra quel <br/>est celui qui a coupé la figure de Girodias à <br/>coups de cravache, il se dira peut-être que <br/>les coups partent de la même main qui a en- <br/>foncé le poignard. <br/><br/>Ah Soubise, Soubfse, que dis-tu là. <br/>Je dis que du moins le Parquet, fort cu- <br/>rieux de sa nature et parce que c'est son de- <br/>voir, ne doit pas avoir abandonné l'espérance <br/>de connaître le véritable assassin do Girodias <br/>depuis l'acquittement de votre frère. Je dis <br/>que, dans ces conditions, le Parquet voudra <br/>vous demander pour quelles raisons si graves <br/>vous. presque un enfant et que l'on trr;,te en- <br/>core comme un enfant, vous avez frappé ce <br/>vieillard l'improviste, si cruellement, sans <br/>provocation. <br/><br/>Sans provocation. -:Q-,n ga^-vouat <br/>J'étais là< ̃ d|c- qu après avoir aceusé <br/>le frère aine, ou aicose» peut-«r« le irère <br/><br/>qu'un malade ootrvewj tous les cinq jours. <br/>Aujonrd'hui, à Paris, un médecin voit un <br/>client autre frapper à sa porte tous les douze <br/>jours environ. Ce n'est pas tout la statis- <br/>tique va plus loin et nous démontre que <br/>dans le cas où les Facultés ne recevraient <br/>aucun docteur pendant vingt ans, il y en <br/>aurait encore suffisamment pour le nombre <br/>des malades. <br/><br/>Qu'on suppose tous les médecins du <br/>royaume de France d'il y a cent cinquante <br/>ans figurés par un seul personnage ce per- <br/>sonnage serait environ trois fois moins grand <br/>que celui représen!ant figurativement l'en- <br/>semble des malades. Or, aujourd'hui, c'est <br/>exactement la proportion contraire qui est <br/>juste. <br/><br/>Il est bien certain que la répartition des <br/>médecins et la proportion de leur nombre <br/>avec celle des habitants est infiniment va- <br/>riée. En France, il existe deux centres où il <br/>n'y a pas un médecin pour 10,000 habitants: <br/>une partie des départements du Finistère, <br/>des Côtes-du-Nord et du Morbihan un <br/>assez grand nombre de départements ne <br/>possèdent que 1 à 2 médecins pour 10,000 <br/>habitants. La moyenne générale est de 3 <br/>à 4. A Paris, la proportion varie de 20 pour <br/>dans le quartier de l'Odéon, jusqu'à <br/>dans celui de la Chaussée-d'Antin. <br/>On voit que j'avais bien des raisons de <br/>dire que de nouveaux obstacles se dres- <br/>saient devant le jeune bomme qui, épris de <br/>science, de travail et d'un utile emploi de <br/>ses forces, s'attache à conquérir le diplôme <br/>du docteur en médecine. Cela doit-il le re- <br/>buter? Non, certes; sa vocation ne serait <br/>pas sérieusesi la crainte de la lutte la dé- <br/>concertait; mais la notion de l'importance <br/>de cette lutte doit mettre dans ses décisions <br/>plus de gravité et de réflexion. <br/><br/>JEAN FROLLO <br/><br/>IA GUERRE AU TULW.ML <br/>On n'a aucune nouvelle précise sur les der- <br/>nières opérations qui ont eu lieu ces cinq <br/>derniers jours dans le Natal. Tout fait suppo- <br/>ser que le gros des forces boërs continue à <br/>assiéger Ladysmith pendant qu'une colonne, <br/>continuant sa marche vers Pietermaritzburg, <br/>a réussi à s'emparer de Colenso. <br/><br/>Si on songe que les hostilités ont éclaté il <br/>y a à peine trois semaines, on voit que les <br/>Boërs ont admirablement combattu. C'est en <br/>effet le 10 octobre que l'ultimatum du Trans- <br/>vaal a été reçu à Londres. C'est le 31 que le <br/>général White, vaincu, s'est enfermé dans <br/>son camp, à Ladysmith. <br/><br/>Rappelons ce qu'a été la lutte pendant cette <br/>période. <br/><br/>Dès qu'il fut décidé de faire parvenir un <br/>ultimatum au Cabinet de Londres, les Boërs <br/>s'occupèrent de concentrer leurs forces et de <br/>terminer leurs préparatifs. <br/><br/>Le 11, ils occupaient Laing's Neck. Le 12, <br/>ils traversaient la frontière de l'ouest et cou- <br/>paient le chemin de fer au sud de Mafeking. <br/>Le 13, un train blindé envoyé contre eux était <br/>capturé. Le 14, l'investissement de la ville <br/>était complet. <br/><br/>Le 15, Kimberley à son tour se trouvait <br/>isolé de la même façon. <br/><br/>Le 17, Newcastle était abandonné par les <br/>Anglais et toutes les troupes du général Sy- <br/>mous se concentraient entre Glencoë et Dun- <br/>dee. <br/><br/>Le 18, les troupes venues de l'Orange pri- <br/>rent contact avec les éclaireurs du général <br/>White. <br/><br/>Le 21 avait lieu le combat d'Elandalaagte. <br/>Le le général Yule évacuait Dundee et <br/>arrivait le 26 à Ladysmith. <br/><br/>Les officiers anglais espéraient que les <br/>gros canons de Dundee ne les inquiéteraient <br/>plus. Il n'en était rien le 28, de gros canons <br/>étaient montés et le bombardement commen- <br/>çait. Le 29, la situation du général White de- <br/>venant intenable, celui-ci lançait toutes ses <br/>forces contre l'ennemi. <br/><br/>On sait le sort qui leur fut réservé, plus de <br/>deux milles homme furent mis hors de <br/>combat ou faits prisonniers. Le restant de la <br/>colonne se repliait en hâte sur Ladysmith où <br/>sa situation devient de jour en jour plus pé- <br/>rilleuse. <br/><br/>Autour de Ladysmith <br/><br/>Londres, 4 novembre. <br/><br/>Le Central !ïew$ publie ta dépêche suivante <br/>Ladysmith, i\" novembre, 5 h. 15 soir. <br/>La journée s'est passée avec calme. Il n'y a <br/>pas eu de coups de feu tirés de part ni d'autre. La <br/>voie ferrée est intacte et les trains fonction- <br/>nent. <br/><br/>Un petit groupe de Boërs a tenté aujourd'hui <br/>d'arriver jusqu à la voie ferrée près de Frère, <br/>mais un piquet anglais d'Emersdale les a re- <br/>poussés, 1 est cependant probable que les Boërs <br/>marchent vers le sud, dans le but d'investi! <br/>Ladïamith. <br/><br/>On a aperçu les Boërs, cette après-midi, sur la <br/>colline bombardée lundi dernier par l'artillerie <br/>anglaise ils semblent y avoir de nouveau monU <br/>leurs gros canons. <br/><br/>Les Boërs occupent également en force Loro- <br/><br/>plus jeune et que le scandale se renouvellera <br/>autour de votre nom, alors qu'autour de votre <br/>nom le silence eût été si précieux. Secret <br/>contre secret, monsieur la comte. vous me <br/>comprenez, maintenant? <br/><br/>Oui. à votre tour, laissez-moi parler, <br/>pauvre fou! <br/><br/>Soubise ricana en haussant les épaules. <br/>Vous allez mentir encore. <br/><br/>Vous menacez d'aller trouver le procu- <br/>reur de la République. <br/><br/>J'irai, oui, je le jure 1 <br/><br/>Eh bien, je vous dis, moi, que vom <br/>n'irez pas et que vous vous tairez. <br/><br/>Oui dà, et par quel ordre <br/><br/>Par le mien. Vous avez voulu connaître <br/>le nom du séducteur de Michelle. <br/><br/>Ce tAche est devant moi dest vons! <br/>Cet infâme est mort. Son nom était <br/>Girodias <br/><br/>Roland s'attendait à ce que ce nom, cette <br/>révélation produirait sur le garde un effet <br/>foudroyant. <br/><br/>Il n'en fut rien. <br/><br/>Soubise se contenta de rire, d'on rire ner- <br/>veux qui faisait mal. <br/><br/>Girodiaal dit-il. Ah! ah! la preuve, la <br/>preuve 1 <br/><br/>L'aveu même de Michelle. <br/><br/>Un aveu! Et à qui a-t-elle fait cet <br/>aveu <br/><br/>Soubise riait toujours,et« son' rfre faisait <br/>mal à entendre. Trop durement frappé, son <br/>pauvre cerveau se détraquait de plus en <br/>plus. <br/><br/>Afnsi, c'est vous, presque ttn enfaat, <br/>1 vous qui, après tout, ne lui l\\e& de rien, et <br/>qui n'aviez Di le droit de la défendre, ni <br/>celui de la venger, c\"e«' vous, au lieu de <br/>son père, quelle eût Cboiai pour confident <br/><br/>ard's Kop, qui se trouve dans le voisinage TÎB <br/>l'endroit où l'on se procure de l'eau de la ri- <br/>vière et où sont également situés les puits de <br/>la ville. <br/><br/>Londres, 4 novembre. <br/><br/>On a télégraphe, cette nuit, de Berlin au li- <br/>mes <br/><br/>Plusieurs journaux publient ce soir, sous les <br/>titres imprimés en capitales énormes de • Ecra- <br/>sante défaite des Anglais. Capitulation de <br/>Ladysmith les deux dépêches suivantes <br/>Amsterdam, 3 novembre, 8 h. 15 matin. <br/>D'après des nouvelles reçues ici des cercles <br/>afrikanders du Cap, Ladysmith aurait déjà capi- <br/>tulé. La blessure de White est des plus sé- <br/>rieuses. Neuf mille Anglais, la plupart blessés, <br/>auraient été faits prisonniers. L'authenticité de <br/>ce bruit n'a pu, il est vrai, être encore conHr- <br/>mée. <br/><br/>Durban, 3 novembre, 6 h. 20 matin. <br/><br/>White a tenté une sortie le novembre et a <br/>subi une écrasante défaite. La plupart des offi- <br/>ciers supérieurs ont été tués ou blessés. Plus de <br/>mille hommes sont morts ou blessés. Le bom- <br/>bardement continue. Joubert a invité White à <br/>capituler, mais White a refusé. <br/><br/>La marche en avant des Boérs vers le sud con- <br/>tinue. Colenso, à vingt milles au sud de la voie <br/>ferrée qui va à Pietermaritzburg, a été occupée <br/>de façon permanente par les Boërs de l'Etat <br/>libre et transformée en une véritable redoute. <br/>Londres, 4 novembre. <br/><br/>A deux heures de l'après-midi, le War Office <br/>n avait reçu aucune nouvelle communication de <br/>Ladysmith, ce qui donne à penser que les com- <br/>municationB télégraphiques par terre sont tou- <br/>)Durs interrompues; mais, malgré cette ab- <br/>sence complète de nouvelles, les autorités mi- <br/>litaires n'attachent aucun crédit aux diverses <br/>rumeurs sinistres qui ont couru relativement à <br/>la position de la garnison, et on ne ressent à <br/>présent aucune anxiété sérieuse sur la possibi- <br/>lité, pour le général White, de maintenir sa po- <br/>sition. <br/><br/>La Press Association a reçu la nouvelle offi- <br/>cielle suivante du War Office <br/><br/>Le Colonial Office a reçu une information an- <br/>nonçant que les troupes anglaises ont été reti- <br/>rées de Colenso, et qu'elles se sont concentrées <br/>plus au Sud, mais on n'a aueuno nouvelle d'un <br/>engagement dans le voisinage de Coltnso. <br/>Au Cap <br/><br/>Colesberg (colonie du Cap), <br/><br/>4 novembre. <br/><br/>Avant-hier, vers trois heures de l'après-midi, <br/>on a entendu une violente explosion dans la di- <br/>rection dé Colesberg-Hridge. On suppose que le <br/>pont a été détruit par les Boërs. <br/><br/>D'après un courrier qui vient d'arriver, 60 <br/>Boërs de l'Etat libre ont traversé le pont ce <br/>matin de bonne heure et fait prisonniers 6 sol- <br/>dats de la police avec leurs chevaux. <br/><br/>Une autre dépêche de Colesberg annonce que <br/>les eaux do la rivière Orange ont grossi et que <br/>tous les gués sont maintenant impraticables. <br/>Les Boërs sont mattres du pont de Philippolis, <br/>qui constitue le seul moyen de traverser la ri- <br/>vière. <br/><br/>Londres, 4 novembre. <br/><br/>On mande de Capetown au Daity Neeos, à la <br/>date du 31 octobre: <br/><br/>Le bruit court que l'état de siège sera bientôt <br/>proclamé à Capetown. <br/><br/>Le correspondant du Standard à Capetown <br/>dit qu'un homme, qu'on croit être un espion <br/>boër, a été arrêté mardi au moment où il rôdait <br/>autour d'un train qui devait transporter des <br/>troupes vers le Nord. <br/><br/>Sir Alfred Milner, en sa qualité de vice-aml- <br/>rat (qualité qu'il tient de ses fonctions de haut <br/>commissaire du. Cap), a proclamé le rétablisse-; <br/>ment des tribunaux de prises maritimes; qui <br/>fonctionneront pendant la durée des hostilités. <br/>Dans te- district de Paarl, les progressistes <br/>(parti anglais) sont combattus par les adhérents <br/>de l'Afrikander Bund. <br/><br/>Des amitiés qui remontaient plus de vingt <br/>ans ont été rompues. <br/><br/>Londres, 4 novembre. <br/><br/>Le correspondant du Daily Telegraph à Cape- <br/>town dit que le général Redvers Buller est tou- <br/>Jours dans cette ville. <br/><br/>Convocation de la Milice <br/><br/>Londres, 3 novembre. <br/><br/>Conformément à la proclamation de la Ueine <br/>du 20 octobre, 35 bataillons de la milice sont <br/>appelés sous les armes pour le 20 novembre. <br/>Guillaume II et les Infirmiers allemands <br/>Berlin, 4 novembre. <br/><br/>L'Empereur a reçu aujourd'hui, à midi, au <br/>Nouveau-Palais, une députation des médecins, <br/>des religieuses et des infirmiers volontaires qui <br/>vont se rendre au Transvaal. <br/><br/>INFORMATIONS POLITIOUES <br/>La Convocation des Chambres <br/><br/>Le Jonrnaf officiel a publié hier le décret con- <br/>voquant le Sénat et la Chambre des députés <br/>pour le 14 novembre. <br/><br/>La Questioe budgétaire <br/><br/>L'examen du budget de la Guerre a été ter- <br/>miné hier par la Commission du Budget. <br/>Il a été opéré un certain nombre de réduc- <br/>tions, notamment sur les chapitres relatifs aux <br/>stagiaires de t'état-major et au service de la re- <br/>monte. <br/><br/>Sur la proposition dn rapporteur, M. Camille <br/>Pelletan, la Commission a décidé la nomination <br/>d'une Commission d'enquête parlementaire pour <br/>examiner certains abus signalés dans le fonc- <br/>tionnement des services de la remonte. <br/><br/>C'est moi. Et le secret fût mort avec moi <br/>si vous ne m'aviez pas chargé d'une accusa- <br/>tion abominable. <br/><br/>Je ne vous crois pas. <br/><br/>8oubise, je vous jure que j'ai dit la vé- <br/>rité. <br/><br/>Je ne vous crois pas. Vous essayez de <br/>faire retomber sur un autre le poids de votre <br/>crime; cela serait encore courageux si l'autre <br/>était vivant et s'il pouvait se révolter et vous <br/>prouver votre mensonge. Mais vous accusez <br/>un mort Ce n'est pas celui-là qui sortira de <br/>ton tombeau pour vous dire que vous avez <br/>menti. <br/><br/>Soubise, j'ai frappé Girodiaa pour deux <br/>raisons. <br/><br/>Dites toujours I fit le garde avec un <br/>geste de mépris. <br/><br/>La première, c'est que je le haïssais ainsi <br/>que tous les Viliefort ont depuis un siècle <br/>haï les Girodias. Je le haïssais parce que je <br/>sais que ma famille est victime de cet homme <br/>dont la haine pour le nom que je porte n'est <br/>pas moindre que celle que nous avons pour <br/>lui La seconde, parce que, en déshonorant <br/>Michelle, il m'a brisé le cœur. Et si mes <br/>coups de cravache avaient pu le tuer, vrai- <br/>ment, je me demande encore aujourd'hui si <br/>ce n'eût point été justice et je ne m'en serais <br/>pas repenti. Voilà mes deux raisons, Sou- <br/>bise, et je n'ai plus rien à ajouter. <br/><br/>Je vous ai demandé une preuve. <br/>Et je tous ai répondu que je ne pour- <br/>rais pas vous en donner. <br/><br/>Impostnre La lâcheté se joint au men- <br/>songe. c'est naturel. <br/><br/>Et il ajouta tout à coup, d'un ten singulier <br/>et comme se parlant a lui-même, comme <br/>ayant oublié la présence de Roland <br/>J'ai cru aussi à cette haine, moi comme <br/>les autres, et pourtant, cette haine a subi du <br/><br/>ta ̃eorcniirssîon \"entendra tnmil le Ministre de <br/>la Marine et mardi le Ministre de la Guerre. <br/>Au Ministère du Commerce <br/><br/>M. Millerand, mnistre du Commerce, a reçu <br/>des délégués de l'Association de l'industrie et de <br/>l'agriculture, qui sont venus l'entretenir de l'ap- <br/>plication de la loi de 1892 concernant le travail <br/>des enfants et des filles mineures. <br/><br/>Il a reçu aussi des délégués de l'Association <br/>des cuirs et peaux qui lui ont soumis leurs obser- <br/>vations à propos du projet du nouveau tarif <br/>brésilien. M. Millerand a promis de saisir le <br/>Conseil des Ministres de la question. <br/><br/>UN OMNIBUS TAMPONNÉ <br/>La série des accidents d'omnibus continue. <br/>Hier soir, à neuf heures trente-cinq, un train- <br/>tramway de la ligne Versailles-Louvre, com- <br/>posé de trois voitures et de la machine, a tam- <br/>ponné, place de la Concorde, un omnibus faisant <br/>le service entre la gare des Batignolles et la <br/>gare Montparnasse. <br/><br/>Le cocher de cette voiture ayant pu d'un <br/>brusque coup de rênes, faire faire un détour à <br/>son attelage, la voiture a été atteinte par l'ar- <br/>rière et a eu sa plate-forme brisée. <br/><br/>Malheureusement, deux voyageurs qui s'y <br/>trouvaient ont été blessés. L'un, M. Marion, de- <br/>meurant boulevard Montparnasse, a eu le nez <br/>arraché; l'autre a eu la jambe fracturée. <br/>Une enquête est ouverte pour savoir à qui in- <br/>combe la responsabilité de cet accident. <br/>TERRIBLE NOYADE SUR L'ESCAUT <br/>[De notre corrttpondant particulier) <br/><br/>Anvers, 4 novembre. <br/><br/>Voici de nouveaux détails sur la terrible <br/>noyade do Waes <br/><br/>Hier soir, je me suis rendu sur le lieu de la <br/>catastrophe, éclairé par un phare électrique. On <br/>n'imagine rien de plus lugubre. <br/><br/>La passerelle rompue était en ce moment com- <br/>plètement submergée par l'eau, dont les flots <br/>venaient mourir en clapotant contre les pilotis <br/>de l'estacade. <br/><br/>A la porte de la salle d'attente, où les cadavres <br/>sont déposés, deux gendarmes font les cent pas <br/>et tiennent a distance les curieux. <br/><br/>L'Enquête <br/><br/>Une grande foule stationne dans la rue et <br/>couvre les digues. Depuis deux heures de l'a- <br/>près-midi les bateaux de passage entre Anvers <br/>et la Tête-de-Flandre ont déversé à Sainte- <br/>Anne des milliers de visiteurs désireux de voir <br/>le lieu de l'accident et de connaître les premiers <br/>résultats de l'enquête administrative. <br/><br/>L'inspecteur général des chemins de fer est <br/>arrivé de Bruxelles, délégué par le Ministre, <br/>M. de Paepe. Il a pris immédiatement la direc- <br/>tion de l'enquête et il a entendu plusieurs té- <br/>moins, notamment certains ingénieurs et plu- <br/>sieurs chefs de service. Il est urgent qu'une dé- <br/>cision intervienne, car le publie se montre très <br/>sévère pour l'administration supérieure. <br/>On dit, avec un semblant de raison, que de <br/>pareilles catastrophes ne devraient jamais se <br/>produire, qu'elles sont le résultat de l'impré- <br/>voyance et d'une mauvaise gestion. On dit aussi <br/>que l'attention de l'administration a été appelée, <br/>à diverses reprises, sur le mauvais état de la <br/>pesserelle, et on ajoute qu'il y a quelques se- <br/>maines le bourgmestre de Zwyndrecht s'en est <br/>plaint. <br/><br/>On s'occupe en ce moment de la confection <br/>des cercueils. La mise en bière se fera demain <br/>matin, après qu'on aura dressé l'acte de décès à <br/>la maison communale de Zwyndrecht. <br/>Le bourgmestre de cette commune doit déli- <br/>vrer en outre un certificat d'identité pour le <br/>transport des cercueils. Il y a actuellement <br/>quinze morts, mais le chiffre des victimes doit <br/>être beaucoup plus élevé. <br/><br/>Nombre de personnes se sont ea effet présen- <br/>tées, demandant des nouvelles d'un parent, d'un <br/>frére ou d'un fils qui se trouvaient dans le train <br/>et qui n'ont pas été retrouvés. <br/><br/>Dans tous les cas, s'il y a d'autres victimes les <br/>flots ne 1<>s ont pas encore rendues. <br/><br/>Récit d'un Survivant <br/><br/>Dans la matinée il n'y avait pas moyen de <br/>faire parler les voyageurs qui ont échappé à la <br/>catastrophe. Ils étaient comme pétrifiés. <br/>Maintenant, on constate une grande réaction <br/>et quelques-uns des sauvés deviennent, quand <br/>on les interroge, d'une remarquable loquacité. <br/>Chose curieuse un grand nombre d'entre eux <br/>reviennent voir le lieu où ils ont failli périr. <br/>J'eu ai rencontré un avec qui j'ai pu causer. <br/>C'est un jeune ouvrier, un solide gars de vingt <br/>à vingt-trois ans, qui m'a raconté ses impres- <br/>sions dans le langage pittoresque des Flandres. <br/>• Le jour commençait poindre, m'a-t-il dit. <br/>Comme nous descendions du train, on voyait <br/>dans le lointain les feux du bateau de passage <br/>qui accostait à la passerelle. <br/><br/>Un instant après je m'y engageais en courant, <br/>comme tous mes compagnons d'ailleurs, et je la <br/>franchis sans encombre, passant immédiatement <br/>sur le bateau et descendant dans la cabine. <br/>Plusieurs de mes amis me suivaient sur les ta- <br/>lons. <br/><br/>Je ne m'étais pas encore assis que des hurle- <br/>ments effroyables se firent entendre. Glacéd'ef- <br/>froi, je ne savais >;ue penser, quand le cri Le <br/>pont est brisé frappa mon oreille. On ajoutait <br/>que le bateau sombrait. D'un bond je fus hors <br/>de la cabine et, arrivé sur le pont du vapeur, je <br/>sautai dans l'eau, m'accrochant aux pilotis. <br/>Tous mes compagnons m'avaient suivi. Le <br/>capitaine du bateau avait beau crier et s'efforcer <br/>de calmer la panique, nous ne l'écoutions pas, <br/>poursuivis que nous étions par cette idée que le <br/>vapeur sombrait sous nos pieds. <br/><br/>En sautant sur les pilotis et an nous accro- <br/>chant à toutes les aspérités qui se présentaient <br/>sous nos mains, nous avons réussi à gagner la <br/>berge sains et saufs, et tous nous nous sommes <br/>sauvés comme des fous. <br/><br/>temps d'arrêt. Elle n'a pas duré un siècle, <br/>comme on le prétend, et la forêt, dans ses <br/>sentiers obscurs qui protègent si bien les <br/>amoureux, a conservé un secret qu'elle ne <br/>livrera jamais. <br/><br/>Roland tressaillit et devint livide. <br/><br/>Qu'avait-il voulu dire, cet homme, avec ces <br/>paroles mystérieuses ? <br/><br/>L'allusion était évidente. <br/><br/>Si Roland n'avait été instruit de la vérité <br/>tout entière, il n'y eût point pris garde, à ccs <br/>paroles. <br/><br/>La connaissant, la terrible vérité, ces pa- <br/>roles le frappaient. <br/><br/>Et il considérait maintenant Soubise avec <br/>terreur. <br/><br/>Soubise s'en aperçut. <br/><br/>Ah! ah! monsieur le comte, on dirait <br/>que vous avez tout à fait peur, à présent. <br/>Roiand n'avait pas la force de répliquer. <br/>Est-ce que le secret fatal, le secret du hon- <br/>teux amour d'autrefois, était entre les mains <br/>d'un étranger? <br/><br/>Alors, puisque Soubiae croyait Roland cou- <br/>pable envers Michelle, Il parlerait. Ce ne <br/>serait plus, non seulement, le mystère des <br/>coups de etavaehe qui serait révélé au PU-- <br/>quet, et qui entraînerait peut-être sur le <br/>meurtre une nouvelle enquête scandaleuse, <br/>ce serait les amours de sa mère dont rirait <br/>lepaya tout entier. <br/><br/>Cela, jamais, jamais, à aucun prix <br/>Soubise, munnura-t-il éperdu, ttm0 <br/>cher Soubise. <br/><br/>Ah ah fit le garde avec son^ éternel <br/>rire d'insensé, est- que *ou» sup- <br/>plier, maint«nar^( <br/><br/>Roland res* \"\"gHeaciéiB, «a preie i un< <br/>terreur fol1 <br/><br/>U^'Wûévreux, ardent, le prem 4e<rttw <br/><br/>Tel est te ftfMt de mon Interlocuteur. Il <br/>ajauté qu'après avoir couru un certain temps, <br/>les survivante eurent enfin le sentlment exact <br/>de la situation, et quelques-uns revinrent à la <br/>gare, où l'on commençait à apporter des cada- <br/>vres. <br/><br/>Dans le pays tout entier l'émotion causée pu <br/>cette catastrophe est intense. <br/><br/>La Haute-Cour <br/>L«s Avocats chez H. Falllèns <br/><br/>Ni. Fallières, président de la Haute-Gour, a <br/>reçu les avocats des accusés, qui lui ont été prti <br/>sentes par M* Oscar Falateuf. <br/><br/>Les avocats, au nombre de vingt et un, sont <br/>arrivés au Petit-Luxembourg à neuf heures <br/>précises. Ils ont été aussitôt introduits dans le <br/>grand salon du premier étage, où les attendait <br/>M. Fallières. <br/><br/>Me Falateuf a présenté ses collègues au prési- <br/>dent, disant que, ce faisant, il se conformait t <br/>l'usagr professionnel qui veut que les avocats <br/>aillanl présenter leurs hommages à un préai- <br/>dent devant lequel ils plaident pour la première <br/>fois. <br/><br/>M. Fallières a remercié les avocats de leur <br/>courtoise démarche; il a ajouté qu'il les couai- <br/>dérait, sans arrière-pensée aucune, comme les <br/>véritables auxiliaires de la Justice. Il a ensuite <br/>rappeté qu'il avait porté la robe d'avocat peu. <br/>dant de longues années et qu'il était lier de a'en <br/>souvenir. <br/><br/>Certaines questions d'ordre pnremoat maté-» <br/>riel ont ensuite été arrêtées, notamment en ce <br/>qui concerne les cartes d'entrée aux audiences <br/>pour !es parents des avocat.s et des aecusés. <br/>La visite a pris lin il neuf heures et demie» <br/>les notifications <br/><br/>L'arrêt de mise en accusation et l'acto d'açco- <br/>sation devant être, aux termes de la loi, notifiés <br/>aux accusés, avec citation a comparaître devant <br/>la Haute-Cour, trois Jours au moins avant la <br/>jour de l'audience », c'est hier, dans l'après- <br/>midi, que ces formalités ont été accomplies. La <br/>copie imprimée das pièces de la procédure a ét6 <br/>remise hier ù quatre heures aux défenseurs. <br/>L'Imprimerie nationale a travaillé quatre jours <br/>et quatre nuits il l'impression de co volume, qui <br/>a environ neuf cents pages. <br/><br/>C'est M, Dupuis, nuissier-audiencier de la <br/>Cour d'appel, affecté au service do la Haute» <br/>Cour, qui a été chargé de procéder aux formalités <br/>prescrites par la loi en ce qui touche les troia <br/>conlumax, si ceux-ci ne se présentent pas de- <br/>vant la Haute-Cour dans les dix jours de la si- <br/>gnification qui leur aura été faite dn l'arrêt de <br/>mise en accusation, de l'acte d'accusation et de <br/>la citation à comparaître. <br/><br/>Le onzième jour. NI, Dupuis se rendra succes- <br/>sïvernent, accompagné d'un tambour, à la porte <br/>de la Haute-Cour, à la porte du domicito de <br/>chaque contumax et à la porte de la mairie de <br/>sa résidence pour faire la notilleation publique <br/>prescrite, comme il le Ht déjà lors du procès dU <br/>général Boulanger. <br/><br/>L'Acte d'Accusation <br/><br/>L'acte d'accusation, nolillé hier aux défen- <br/>seurs et aux accusés, ne comprend pas moins' <br/>de quarante pages. Le procureur général dit qua <br/>depuis longtemps déjà les partis hostiles la <br/>Constitution républicaine se sont organisés pour <br/>la combattre en ayant recours à la violence, em <br/>provoquant des émeutes dans le but de s'em- <br/>parer du pouvoir. <br/><br/>11 ajoute que dans tous ces actes l'instruction <br/>a relevé la participation directe ou indirecte de <br/>chacun des accusés et que lesdits actes ne <br/>constituent pas une série de faits isolés et sans <br/>lien commun. <br/><br/>Le procureur établit ensuite ce qu'il faut en, <br/>tendre juridiquement par complot par «acte <br/>préparatoire » et par « attentat ». Il s'efforce de <br/>démontrer que royalistes, antisémites et natio- <br/>nalistes ont arrête ensemble et de concert leurs <br/>résoiutions d'agir pour renverser le gouverne- <br/>ment de la République. <br/><br/>En résumé, dit le procureur général, tous les <br/>faite qui viennent d'être relatés révèlent jusqu'. <br/>l'évidence l'existence d'un complot concert* et ar- <br/>rêté entre tous les accusés dans le but de changer <br/>et de détruire le gouvernement de la République; <br/>complot qui a été accompagné de nombreux acte* <br/>commit pour en préparer l'exécution. <br/><br/>LBS Témoins <br/><br/>il se confirme que la défense n'a nullement <br/>l'intention de se livrer une obstruction systé- <br/>matique au point de vue des témoignages et que <br/>les défenseurs appelleront seulement les témoins <br/>absolument nécessaires pour la cause de leurs <br/>clients. <br/><br/>Ils estiment qu'il leur suffira d'appeler cha- <br/>cun de dix & douze témoins. Comme il y a qua- <br/>torze accusés, on arriverait à cent cinquante té- <br/>moins cités par la défense, auxquels il faudra <br/>ajouter les témoins cités par l'accusation, dont <br/>on ne connaît pas encore le nombre. Soit un to- <br/>tal de deux cents témoins. <br/><br/>En comptant trente témoins par audience, on <br/>voit qu'il faudra, pour l'audition des témoin», <br/>environ six audiences. <br/><br/>La Déposition de M. Léplne <br/><br/>L'écho de Paris a publié hier matin un nouveau <br/>document relatif à la Commission d'instructioa <br/>de la Haute-Cour. Il s'agit de la déposition de <br/>M. Lkpine, préfet de pohce. <br/><br/>Voici, entre autres taits, le récit fait par If. <br/>Lépine d'une journée de manifestation, celle du <br/>20 août <br/><br/>La police fut assaillie d'une grEte de pierres, de <br/>boulons de fer, de projectiles variés et même da <br/>coups de feu. Pendant des heures, on vit ces btDf <br/>des tenter de forcer l'entrée de la rue de Chabrol, <br/>137 gardiens de ta paix furent, au cours de ces be- <br/>garres, plus ou moins grièvement blessés. <br/><br/>Un moment j'eus le sentiment que les hommes <br/>froppéa dans la nuit sans pouvoir savoir d'où leur <br/>venaient ces coups, et sans pouvoir s'en défendre, <br/>allaient perdre leur sang-froid, et je fus forcé de <br/>faire appel è toute leur énergie pour dégager la <br/><br/>La vérité sur ma fille <br/><br/>Je vous l'ai dite. <br/><br/>Si Michelle avait eu à se plaindre de OU <br/>rodias, pourquoi ne me l'eût-elle pas avoué <br/>A quel sentiment eût-elle obéi en se taisant? <br/>Je serais allé trouver Girodias et je l'aurais <br/>forcé à réparer son crime infâme. <br/><br/>Je l'ignore. Michelle ne m'a rien dit. <br/>Tandis qu'en me révélant votre noë, <br/>elle redoutait de vous exposer ma colère, <br/>vous le fila de cette famille que ma famille <br/>sert depuis plus d'un siècle avec tant de d6· <br/>vouement! <br/><br/>Roland dit simplement, mais avec une tris- <br/>tesse profonde <br/><br/>Je n'ai pas commis et je ne pouvais prA <br/>commettre Flnfamie dont vous m'accu*^ <br/>puisque j'aime Michelle eomma une sœo j. <br/>Alors, je ne vous renouvellerai ^s j^ <br/>menace que je voua ai faite. <br/><br/>Holand fut repris de tremhlemeD a> quaaé <br/>le garde ajouta <br/><br/>Vous vous chargerez d exr ^qaer au par* <br/>quet pourquoi, ayant frappé Girodias, vous <br/>avez laissé peser sur votre afère tout le poid» <br/>de cette accusation. Qu'^mt a moi, si la Jm- <br/>tice m'interroge, je sa1 j^ bien lui dire tout <br/>ce que j'ai sur le cœ> ^j.. <br/><br/>Et brusquement, il partit, laissant Rolaaé <br/>Le jeune 'iiomme voulut te suivre, te »̃ <br/>joindre, nv«is il n'en eut pas la force. <br/><br/>U se laissa tomber sur une chaise et et <br/>mit à pleurer. <br/><br/>l Cette faiblesse durapen. <br/><br/>C'était vrai, ce qu'en dernier lieu Saabl»» <br/>venait de lui reprocher. <br/><br/>Pourquoi avait-il laissé peter sur son, <br/>frère l'énigme de ces coups de cravache qui <br/>avaient broyé ia ûgu» 4* Girodfaa 1 <br/><br/>IA suiort.) J\"»M HàXt. <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                },
+                "firstPage": {
+                  "display": false,
+                  "active": false,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "nextPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 2 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519080g/f2.highres",
+                      "screenNumber": 2,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519080g/f2.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/> ",
+                            "stringOCR": "VINOT-QUATRIÊME ANNÉE. tf« 8409. lié\" numéro 1 S OOM.tttll.ett DIMANCHE 5 NOVEMBRE ifijj.\" <br/><br/>ABONNEMENTS <br/><br/>PARIS et DÉPARTE M E N TS Trois mois, 5 fr. Six mois, 9 fr. Un an, 18 fr. <br/>On s'abonne sans frais aans tons las Boréaux de posta <br/><br/>Direotioa le» Rue d'Enghien. PARIS <br/><br/>TOUS LES JEUDIS <br/><br/>Supplément littéraire Illustré (Huit Pages) 5 Centimes. <br/><br/>S'adresser à L'OPFICE D'ANNONCES, tO, Place de la Bourse, 10, PARIS j <br/>et à la Selle des Dépêches du Petit Parisien, 20, boulev. Montmartre. <br/><br/>Dernière) Edition <br/><br/>y METiin DE MEDECIN <br/>Parmi les professions libérales, il n'en <br/>est pas de ptus noble et de plus bienfai- <br/>sante que celle de médecin. C'est devenu <br/>auprès du public éclairé de notre temps <br/>un lieu commun de vanter tant la science <br/>que le dévouement de notre admirable <br/>eorps médical, dont d'éclatantes décou- <br/>vertes ou des actes d'héroïsme viennent <br/>presque chaque année rehausser la gloire <br/>et le mérite. <br/><br/>Depuis les docteurs éminents de nos hô- <br/>pitaux, qui ne se font dignement rémunérer <br/>par leur clientèle riche que pour pouvoir <br/>donner gratuitement leurs soins aux hum- <br/>bles populations, jusqu'au médecin de cam- <br/>pagne dont la vie est plus rude souvent que <br/>celle du laboureur qu'il soulage, tous <br/>apportent à l'accomphssement de leur tâche <br/>de vie un zèle qui va parfois jusqu'au sa- <br/>crifice. Ils ne sont pas rares, depuis Laën- <br/>nec, les médecins qui ont contracté le mal <br/>qui les a emportés au chevet de ceux qu'ils <br/>ont arraché à la mort. Il n'y a pas très <br/>longtemps, une foule recueillie suivait à sa <br/>dernière demeure un jeune interne mort <br/>de la diphtérie en guérissant des diphté- <br/>riques. <br/><br/>Etvoila maînteUâni qn'un nouvel oDstnclB <br/>à l'exercice du métier de médecin nous est <br/>révélé, avec un ensemble alarmant, par les <br/>voix les plus autorisées la difficulté mena- <br/>çante que les jeunes gens qui s'y consa- <br/>crent rencontrent à gagner leur vie, à suffire <br/>à leurs besoins. Non seulement ce qu'on a <br/>appelé avec raison le sacerdoce médical <br/>exige beaucoup de capacités, beaucoup de <br/>travail et beaucoup de cœur, mais cet im- <br/>placable ennemi, la misère, y guette les dé- <br/>butants. <br/><br/>Déjà plusieurs indices permettaient d'en- <br/>Irevoir cette crise; déjà des esprits pré- <br/>voyants s'étaient efforcés de parer au mal <br/>en appelant l'attention de tous sur les pro- <br/>portions qu'il pouvait prendre, et mainte- <br/>nant ce mal apparaît dans son inquiétante <br/>étendue. <br/><br/>A l'heure actuelle, il y a environ 10,000 <br/>étudiants en médecine répartis dans les <br/>différentes Facultés de France. <br/><br/>« Voilà ce qui doit donner à réfléchir, a <br/>dit, en présence de ces chiffres, le profes- <br/>seur Brouardel au Conseil général des Fa- <br/>cultés. Or, ajoutait-il, le nombre des mé- <br/>decins a doublé d'ici dix ans, le nombre <br/>des médecins malheureux aura certaine- <br/>ment triplé. » <br/><br/>Encombrement croissant de la carrière, <br/>voila donc la causé du mal. Depuis dix ans, <br/>disait M. Brouardel, le nombre des étu- <br/>diants en médecine a doublé. Rien n'est <br/>plus exact. 11 était de 6,212 en 1894 en 1896, <br/>il est de 8,485, soit plus de deux mille en <br/>plus. En 1882, il y avait à la Faculté de <br/>Paris 4,698 étudiants ou médecins inscrits; <br/>en 1895, 5,612 étudiants se firent inscrire à <br/>cette même Faculté. Ajoutons que les offi- <br/>ciers de santé eurent le droit de transfor- <br/>mer leurs titres en celui de docteurs, ce <br/>qui vint encore augmenter dans une nota- <br/>ble proportion la concurrence profession- <br/>nelle. <br/><br/>En 1883, il y a eu, au concours de l'in- <br/>ternat des hôpitaux de Paris, 317 candidats <br/>inscrits et 57 internes nommés; en 1894, <br/>548 candidats se firent inscrire, 58 furent <br/>nommés au concours à peu près un sur <br/>dix, et notons que les candidats sont pres- <br/>que tous des sujets distingués. En 1898, les <br/>candidats se sont trouvés favorisés par un <br/>certain hasarddecirconstances, et ils avaient <br/>70 places à se partager, alors qu'ils étaient <br/>558. S'il y avait mieux, le mieux n'était pas, <br/>on le voit, très sensible. <br/><br/>En ce qui concerne ces places tant en- <br/>viées et environnées d'une si légitime con- <br/>sidération de médecin des hôpitaux, le pu- <br/>blic ne sait pas quelle extraordinaire et <br/>croissante sélection on est obligé de faire <br/>entre des candidats dont l'instruction pra- <br/>tique et théorique est poussée au plus haut <br/>point. En 1872, ily eut deux concours pour <br/>six places de médecins des hôpitaux 67 <br/>candidats seulement firent inscrire leurs <br/>noms. En il y eut trois concours pour <br/>9 places 283 candidats se présentèrent. En <br/>ce sont 75 candidats que nous trou- <br/>vous convoitant 3 places. En vingt-trois ans, <br/>la proportion est montée de 1 admission sur <br/>10 compétiteurs à 1 sur 25. <br/><br/>N* 28. Feuilleton du Petit Parisien. <br/>La Cfiarmeuse û'Enlants <br/>GRAND ROMAN INÉDtT <br/><br/>PREMIÈRE PARTES <br/><br/>UNE HAINE VIEILLE D'UN SIÈCLE <br/>XV (suite) <br/><br/>Les Angoisses d'an Père <br/><br/>Le fantôme de sa mère, et de sa mère <br/>coupable deux fois. coupable il y a seize ans, <br/>coupable aussi, sans doute, du meurtre de Gi- <br/>rodias, ce fantôme passa devant lea yeux <br/>du fils terrifié. <br/><br/>Et il ne put cacher son épouvante. <br/><br/>Soubise la remarqua. <br/><br/>Il se mit à rire. <br/><br/>Aù! ah monsieur le comte, commen- <br/>•eriei-vous à deviner? <br/><br/>La voix de Roland s'altéra: <br/><br/>Non, Soubise,. <br/><br/>Secret contre secret, reprit le garde avec <br/>de grands gestes, tâchant le btas de Roland <br/>et courant par la chambre avec J'allure d'un <br/>homme ivre ou d'un fou votre secret con- <br/>tre le mien ou j'écris au Parquet que je vous <br/>ai surpris à cheval, dans le bois. 1 après-midi <br/>même du meurtre, quelques moments avant <br/>que Girodias fût assassiné. causant avec <br/>Girodias. <br/><br/>Roland était pale et défaillant. <br/><br/>Qu'y a-t-11 là d'étonnant? bégaya-t-il. <br/>Votre secret contre mon secret,ou j'écris <br/>M pf«eureur de la République que je vous ai <br/><br/>Ces chiffres sont à eux seuls fort élo» <br/>quents. Ce qui l'est encore plus, dit un 1 <br/>jeune médeem de valeur, le docteur Mi- <br/>chaut, c'est l'institution du concours pour <br/>les docteurs qui désirent être médecins de <br/>bienfaisance. Il y a quelques années, il suf- <br/>fisait d'adresser une demande et d'être <br/>agréé par ses confrères faisant déjà partie <br/>du Bureau de bienfaisance; actuellement, <br/>pour quelques places un nombre toujours <br/>plus considérable de candidats se présente <br/>aux épreuves -cela pour obtenir une situa- <br/>tion qui rapporte 600 francs par an Cer- <br/>taines Sociétés privées de bienfaisance <br/>voient des centaines de demandes leur par- <br/>venir quand un médecin fait défaut. <br/>Partout s'élèvent des plaintes, partout se <br/>fait sentir la crise que traverse cette classe <br/>de travailleurs intellectuels de notre fin de <br/>siècle. La nouvelle loi militaire dispensant <br/>de deux ans de service les jeunes gens qui <br/>s'engagent à avoir à vingt-sept ans leur doc- <br/>torat a encore aggravé la situation, si bien <br/>qu'à notre époque la concurrence dans la <br/>profession médicale est devenue telle qu'on <br/>a pu dire qu'au point de vue purement ma- <br/>tériel les profits d'un grand nombre de mé- <br/>decins sont devenus inférieurs à ceux des <br/>petits fonctionnaires subalternes du gouver- <br/>nement qui sont les moins rétribués, ou aux <br/>appointements touchés par de modestes <br/>employés de grandes administrations. <br/>Est-il besoin d'ajouter que la profession <br/>de médecin exige des frais de « représenta- <br/>tion » appartement, vêtements, etc.. <br/>bien supérieurs à ceux qui équilibrent le <br/>même chapitre dans un budget d'employé. <br/>Bref, en province, sur 10,000 médecins, <br/>5,000 au plus gagnent convenablement leur <br/>vie. Les 5,000 autres se rabattent sur. le <br/>mariage, quand ils peuvent, et deviennent <br/>cultivateurs, industriels ou rentiers. D'au- <br/>tres se jettent dans la politique. <br/><br/>Quant aux médecins parisiens, pour 5 ou <br/>6 qui gagnent à peu près leurs 250,000 <br/>francs par an, pour une quinzaine qui dé- <br/>passent 100,000 francs d'appointements, <br/>pour une centaine qui se font de 40 à 60,000 <br/>francs, pour 300 qui sont sûrs de réunir <br/>dans leur année de 15 à 30,000 francs, <br/>pour 800 enfin qui gagnent une dizaine de <br/>mille francs, il y en a 1,200, c'est-à-dire la <br/>moitié, qui ont moins parfois même <br/>beaucoup moins de 8,000 francs. <br/>Et c'est pourquoi des faits navrants nous <br/>sont parfois révélés. Il arrive qu'après la <br/>mort de tel ou tel médecin, qui était forcé <br/>d'en imposer à sa clientèle par une appa- <br/>rence de luxe, on aperçoit les difficultés <br/>matérielles auxquelles il se trouvait en <br/>butte. Il n'y a pas longtemps, un chirurgien <br/>des hôpitaux mourait pauvre, n'ayant vécu <br/>que par les émoluments qu'il touchait <br/>comme sténographe au Sénat. La veuve <br/>d'un professeur de la Faculté était obligée <br/>de solliciter une modeste place d'inspec- <br/>trice des écoles. Un médecin âgé se tuait, il <br/>y a peu d'années, parce que, atteint par la <br/>limite d'âge, on lui retirait les 1,200 francs <br/>dont il vivait comme médecin d'un des bu- <br/>reaux de bienfaisance de Paris. <br/><br/>Une autre cause devait précipiter la crise <br/>où se trouve impliqué aujourd'hui le corps <br/>médical: la diminution de la fréquence et <br/>de la nocivité de certains maladies, et en <br/>certains cas leur presque complète dispa- <br/>rition. C'est ainsi que depuis que les pro- <br/>grès de l'hygiène ont permis de déterminer <br/>d'une façon préoise que les germes de la <br/>fièvre typhoïde ont pour véhicule de propa- <br/>gation les eaux de boisson, les épidémies <br/>de cette redoutable affection se sont atté- <br/>nuées dans une surprenante proport.ion. La <br/>thérapeutique elle-même de la maladie s'est <br/>améliorée de telle sorte par la méthode des <br/>bains que la guérison est beaucoup plus <br/>certaine qu'autrefois. <br/><br/>Il en est de même, on le sait, pour la <br/>diphtérie, par suite des découvertes de <br/>Berhing et de Roux. Cette maladie ne peut <br/>plus guère être considérée comme mortelle: <br/>le nombre de décès, de 4,716 en 1893, était <br/>trois ans après de 1,537, et si on enlevait <br/>de ce nombre les cas pris trop tard ou mal <br/>soignes, ou comportant complications, on <br/>arriverait à un chiffre à peu près nul. <br/>Tous ces progrès diminuent évidemment <br/>la besogne des médecins et compliquent en- <br/>core l'embarrassante situation où les met <br/>leur propre expansion. <br/><br/>Aussi, un médecin avait, en 1829, en <br/>moyenne 100 malades par an, soit un nou- <br/>veau malade tous les trois jours. Vers 1860, <br/>on a calculé qu'un médeoin devait n'avoir <br/><br/>surpris cravachant Girodias de toutes vos <br/>forces, en pleine figure. <br/><br/>Roland eut un cri sourd. <br/><br/>Il se rua sur Soubise. <br/><br/>Tu ne diras pas cela 1 <br/><br/>Je le dirai. <br/><br/>Roland avait pris le garde par la gorge. <br/>L'autre n'avait pas eu le temps de se mettre <br/>en défense. <br/><br/>Il étranglait, sous ces doigts de fer. <br/>Puis, tout à conp; Roland le lâcha, comme <br/>honteux de sa violence sur cet homme, le <br/>père de Michelle, ce serviteur dévoué qu'il ai- <br/>mait. <br/><br/>Soubise perdait tout sang-froid. <br/><br/>Vous avez la main solide, monsieur le <br/>comte. Ça, je le savais. Et je me suis tou- <br/>jours demanda, depuis k dimanche de la fête <br/>de Clisson, pourquoi, avec des doigts et un <br/>étau pareils, vous aviez poignardé Girodias <br/>dans le dos, au lieu de l'étrangler, tout sim- <br/>plement. Lorsque le Parquet apprendra quel <br/>est celui qui a coupé la figure de Girodias à <br/>coups de cravache, il se dira peut-être que <br/>les coups partent de la même main qui a en- <br/>foncé le poignard. <br/><br/>Ah Soubise, Soubfse, que dis-tu là. <br/>Je dis que du moins le Parquet, fort cu- <br/>rieux de sa nature et parce que c'est son de- <br/>voir, ne doit pas avoir abandonné l'espérance <br/>de connaître le véritable assassin do Girodias <br/>depuis l'acquittement de votre frère. Je dis <br/>que, dans ces conditions, le Parquet voudra <br/>vous demander pour quelles raisons si graves <br/>vous. presque un enfant et que l'on trr;,te en- <br/>core comme un enfant, vous avez frappé ce <br/>vieillard l'improviste, si cruellement, sans <br/>provocation. <br/><br/>Sans provocation. -:Q-,n ga^-vouat <br/>J'étais là< ̃ d|c- qu après avoir aceusé <br/>le frère aine, ou aicose» peut-«r« le irère <br/><br/>qu'un malade ootrvewj tous les cinq jours. <br/>Aujonrd'hui, à Paris, un médecin voit un <br/>client autre frapper à sa porte tous les douze <br/>jours environ. Ce n'est pas tout la statis- <br/>tique va plus loin et nous démontre que <br/>dans le cas où les Facultés ne recevraient <br/>aucun docteur pendant vingt ans, il y en <br/>aurait encore suffisamment pour le nombre <br/>des malades. <br/><br/>Qu'on suppose tous les médecins du <br/>royaume de France d'il y a cent cinquante <br/>ans figurés par un seul personnage ce per- <br/>sonnage serait environ trois fois moins grand <br/>que celui représen!ant figurativement l'en- <br/>semble des malades. Or, aujourd'hui, c'est <br/>exactement la proportion contraire qui est <br/>juste. <br/><br/>Il est bien certain que la répartition des <br/>médecins et la proportion de leur nombre <br/>avec celle des habitants est infiniment va- <br/>riée. En France, il existe deux centres où il <br/>n'y a pas un médecin pour 10,000 habitants: <br/>une partie des départements du Finistère, <br/>des Côtes-du-Nord et du Morbihan un <br/>assez grand nombre de départements ne <br/>possèdent que 1 à 2 médecins pour 10,000 <br/>habitants. La moyenne générale est de 3 <br/>à 4. A Paris, la proportion varie de 20 pour <br/>dans le quartier de l'Odéon, jusqu'à <br/>dans celui de la Chaussée-d'Antin. <br/>On voit que j'avais bien des raisons de <br/>dire que de nouveaux obstacles se dres- <br/>saient devant le jeune bomme qui, épris de <br/>science, de travail et d'un utile emploi de <br/>ses forces, s'attache à conquérir le diplôme <br/>du docteur en médecine. Cela doit-il le re- <br/>buter? Non, certes; sa vocation ne serait <br/>pas sérieusesi la crainte de la lutte la dé- <br/>concertait; mais la notion de l'importance <br/>de cette lutte doit mettre dans ses décisions <br/>plus de gravité et de réflexion. <br/><br/>JEAN FROLLO <br/><br/>IA GUERRE AU TULW.ML <br/>On n'a aucune nouvelle précise sur les der- <br/>nières opérations qui ont eu lieu ces cinq <br/>derniers jours dans le Natal. Tout fait suppo- <br/>ser que le gros des forces boërs continue à <br/>assiéger Ladysmith pendant qu'une colonne, <br/>continuant sa marche vers Pietermaritzburg, <br/>a réussi à s'emparer de Colenso. <br/><br/>Si on songe que les hostilités ont éclaté il <br/>y a à peine trois semaines, on voit que les <br/>Boërs ont admirablement combattu. C'est en <br/>effet le 10 octobre que l'ultimatum du Trans- <br/>vaal a été reçu à Londres. C'est le 31 que le <br/>général White, vaincu, s'est enfermé dans <br/>son camp, à Ladysmith. <br/><br/>Rappelons ce qu'a été la lutte pendant cette <br/>période. <br/><br/>Dès qu'il fut décidé de faire parvenir un <br/>ultimatum au Cabinet de Londres, les Boërs <br/>s'occupèrent de concentrer leurs forces et de <br/>terminer leurs préparatifs. <br/><br/>Le 11, ils occupaient Laing's Neck. Le 12, <br/>ils traversaient la frontière de l'ouest et cou- <br/>paient le chemin de fer au sud de Mafeking. <br/>Le 13, un train blindé envoyé contre eux était <br/>capturé. Le 14, l'investissement de la ville <br/>était complet. <br/><br/>Le 15, Kimberley à son tour se trouvait <br/>isolé de la même façon. <br/><br/>Le 17, Newcastle était abandonné par les <br/>Anglais et toutes les troupes du général Sy- <br/>mous se concentraient entre Glencoë et Dun- <br/>dee. <br/><br/>Le 18, les troupes venues de l'Orange pri- <br/>rent contact avec les éclaireurs du général <br/>White. <br/><br/>Le 21 avait lieu le combat d'Elandalaagte. <br/>Le le général Yule évacuait Dundee et <br/>arrivait le 26 à Ladysmith. <br/><br/>Les officiers anglais espéraient que les <br/>gros canons de Dundee ne les inquiéteraient <br/>plus. Il n'en était rien le 28, de gros canons <br/>étaient montés et le bombardement commen- <br/>çait. Le 29, la situation du général White de- <br/>venant intenable, celui-ci lançait toutes ses <br/>forces contre l'ennemi. <br/><br/>On sait le sort qui leur fut réservé, plus de <br/>deux milles homme furent mis hors de <br/>combat ou faits prisonniers. Le restant de la <br/>colonne se repliait en hâte sur Ladysmith où <br/>sa situation devient de jour en jour plus pé- <br/>rilleuse. <br/><br/>Autour de Ladysmith <br/><br/>Londres, 4 novembre. <br/><br/>Le Central !ïew$ publie ta dépêche suivante <br/>Ladysmith, i\" novembre, 5 h. 15 soir. <br/>La journée s'est passée avec calme. Il n'y a <br/>pas eu de coups de feu tirés de part ni d'autre. La <br/>voie ferrée est intacte et les trains fonction- <br/>nent. <br/><br/>Un petit groupe de Boërs a tenté aujourd'hui <br/>d'arriver jusqu à la voie ferrée près de Frère, <br/>mais un piquet anglais d'Emersdale les a re- <br/>poussés, 1 est cependant probable que les Boërs <br/>marchent vers le sud, dans le but d'investi! <br/>Ladïamith. <br/><br/>On a aperçu les Boërs, cette après-midi, sur la <br/>colline bombardée lundi dernier par l'artillerie <br/>anglaise ils semblent y avoir de nouveau monU <br/>leurs gros canons. <br/><br/>Les Boërs occupent également en force Loro- <br/><br/>plus jeune et que le scandale se renouvellera <br/>autour de votre nom, alors qu'autour de votre <br/>nom le silence eût été si précieux. Secret <br/>contre secret, monsieur la comte. vous me <br/>comprenez, maintenant? <br/><br/>Oui. à votre tour, laissez-moi parler, <br/>pauvre fou! <br/><br/>Soubise ricana en haussant les épaules. <br/>Vous allez mentir encore. <br/><br/>Vous menacez d'aller trouver le procu- <br/>reur de la République. <br/><br/>J'irai, oui, je le jure 1 <br/><br/>Eh bien, je vous dis, moi, que vom <br/>n'irez pas et que vous vous tairez. <br/><br/>Oui dà, et par quel ordre <br/><br/>Par le mien. Vous avez voulu connaître <br/>le nom du séducteur de Michelle. <br/><br/>Ce tAche est devant moi dest vons! <br/>Cet infâme est mort. Son nom était <br/>Girodias <br/><br/>Roland s'attendait à ce que ce nom, cette <br/>révélation produirait sur le garde un effet <br/>foudroyant. <br/><br/>Il n'en fut rien. <br/><br/>Soubise se contenta de rire, d'on rire ner- <br/>veux qui faisait mal. <br/><br/>Girodiaal dit-il. Ah! ah! la preuve, la <br/>preuve 1 <br/><br/>L'aveu même de Michelle. <br/><br/>Un aveu! Et à qui a-t-elle fait cet <br/>aveu <br/><br/>Soubise riait toujours,et« son' rfre faisait <br/>mal à entendre. Trop durement frappé, son <br/>pauvre cerveau se détraquait de plus en <br/>plus. <br/><br/>Afnsi, c'est vous, presque ttn enfaat, <br/>1 vous qui, après tout, ne lui l\\e& de rien, et <br/>qui n'aviez Di le droit de la défendre, ni <br/>celui de la venger, c\"e«' vous, au lieu de <br/>son père, quelle eût Cboiai pour confident <br/><br/>ard's Kop, qui se trouve dans le voisinage TÎB <br/>l'endroit où l'on se procure de l'eau de la ri- <br/>vière et où sont également situés les puits de <br/>la ville. <br/><br/>Londres, 4 novembre. <br/><br/>On a télégraphe, cette nuit, de Berlin au li- <br/>mes <br/><br/>Plusieurs journaux publient ce soir, sous les <br/>titres imprimés en capitales énormes de • Ecra- <br/>sante défaite des Anglais. Capitulation de <br/>Ladysmith les deux dépêches suivantes <br/>Amsterdam, 3 novembre, 8 h. 15 matin. <br/>D'après des nouvelles reçues ici des cercles <br/>afrikanders du Cap, Ladysmith aurait déjà capi- <br/>tulé. La blessure de White est des plus sé- <br/>rieuses. Neuf mille Anglais, la plupart blessés, <br/>auraient été faits prisonniers. L'authenticité de <br/>ce bruit n'a pu, il est vrai, être encore conHr- <br/>mée. <br/><br/>Durban, 3 novembre, 6 h. 20 matin. <br/><br/>White a tenté une sortie le novembre et a <br/>subi une écrasante défaite. La plupart des offi- <br/>ciers supérieurs ont été tués ou blessés. Plus de <br/>mille hommes sont morts ou blessés. Le bom- <br/>bardement continue. Joubert a invité White à <br/>capituler, mais White a refusé. <br/><br/>La marche en avant des Boérs vers le sud con- <br/>tinue. Colenso, à vingt milles au sud de la voie <br/>ferrée qui va à Pietermaritzburg, a été occupée <br/>de façon permanente par les Boërs de l'Etat <br/>libre et transformée en une véritable redoute. <br/>Londres, 4 novembre. <br/><br/>A deux heures de l'après-midi, le War Office <br/>n avait reçu aucune nouvelle communication de <br/>Ladysmith, ce qui donne à penser que les com- <br/>municationB télégraphiques par terre sont tou- <br/>)Durs interrompues; mais, malgré cette ab- <br/>sence complète de nouvelles, les autorités mi- <br/>litaires n'attachent aucun crédit aux diverses <br/>rumeurs sinistres qui ont couru relativement à <br/>la position de la garnison, et on ne ressent à <br/>présent aucune anxiété sérieuse sur la possibi- <br/>lité, pour le général White, de maintenir sa po- <br/>sition. <br/><br/>La Press Association a reçu la nouvelle offi- <br/>cielle suivante du War Office <br/><br/>Le Colonial Office a reçu une information an- <br/>nonçant que les troupes anglaises ont été reti- <br/>rées de Colenso, et qu'elles se sont concentrées <br/>plus au Sud, mais on n'a aueuno nouvelle d'un <br/>engagement dans le voisinage de Coltnso. <br/>Au Cap <br/><br/>Colesberg (colonie du Cap), <br/><br/>4 novembre. <br/><br/>Avant-hier, vers trois heures de l'après-midi, <br/>on a entendu une violente explosion dans la di- <br/>rection dé Colesberg-Hridge. On suppose que le <br/>pont a été détruit par les Boërs. <br/><br/>D'après un courrier qui vient d'arriver, 60 <br/>Boërs de l'Etat libre ont traversé le pont ce <br/>matin de bonne heure et fait prisonniers 6 sol- <br/>dats de la police avec leurs chevaux. <br/><br/>Une autre dépêche de Colesberg annonce que <br/>les eaux do la rivière Orange ont grossi et que <br/>tous les gués sont maintenant impraticables. <br/>Les Boërs sont mattres du pont de Philippolis, <br/>qui constitue le seul moyen de traverser la ri- <br/>vière. <br/><br/>Londres, 4 novembre. <br/><br/>On mande de Capetown au Daity Neeos, à la <br/>date du 31 octobre: <br/><br/>Le bruit court que l'état de siège sera bientôt <br/>proclamé à Capetown. <br/><br/>Le correspondant du Standard à Capetown <br/>dit qu'un homme, qu'on croit être un espion <br/>boër, a été arrêté mardi au moment où il rôdait <br/>autour d'un train qui devait transporter des <br/>troupes vers le Nord. <br/><br/>Sir Alfred Milner, en sa qualité de vice-aml- <br/>rat (qualité qu'il tient de ses fonctions de haut <br/>commissaire du. Cap), a proclamé le rétablisse-; <br/>ment des tribunaux de prises maritimes; qui <br/>fonctionneront pendant la durée des hostilités. <br/>Dans te- district de Paarl, les progressistes <br/>(parti anglais) sont combattus par les adhérents <br/>de l'Afrikander Bund. <br/><br/>Des amitiés qui remontaient plus de vingt <br/>ans ont été rompues. <br/><br/>Londres, 4 novembre. <br/><br/>Le correspondant du Daily Telegraph à Cape- <br/>town dit que le général Redvers Buller est tou- <br/>Jours dans cette ville. <br/><br/>Convocation de la Milice <br/><br/>Londres, 3 novembre. <br/><br/>Conformément à la proclamation de la Ueine <br/>du 20 octobre, 35 bataillons de la milice sont <br/>appelés sous les armes pour le 20 novembre. <br/>Guillaume II et les Infirmiers allemands <br/>Berlin, 4 novembre. <br/><br/>L'Empereur a reçu aujourd'hui, à midi, au <br/>Nouveau-Palais, une députation des médecins, <br/>des religieuses et des infirmiers volontaires qui <br/>vont se rendre au Transvaal. <br/><br/>INFORMATIONS POLITIOUES <br/>La Convocation des Chambres <br/><br/>Le Jonrnaf officiel a publié hier le décret con- <br/>voquant le Sénat et la Chambre des députés <br/>pour le 14 novembre. <br/><br/>La Questioe budgétaire <br/><br/>L'examen du budget de la Guerre a été ter- <br/>miné hier par la Commission du Budget. <br/>Il a été opéré un certain nombre de réduc- <br/>tions, notamment sur les chapitres relatifs aux <br/>stagiaires de t'état-major et au service de la re- <br/>monte. <br/><br/>Sur la proposition dn rapporteur, M. Camille <br/>Pelletan, la Commission a décidé la nomination <br/>d'une Commission d'enquête parlementaire pour <br/>examiner certains abus signalés dans le fonc- <br/>tionnement des services de la remonte. <br/><br/>C'est moi. Et le secret fût mort avec moi <br/>si vous ne m'aviez pas chargé d'une accusa- <br/>tion abominable. <br/><br/>Je ne vous crois pas. <br/><br/>8oubise, je vous jure que j'ai dit la vé- <br/>rité. <br/><br/>Je ne vous crois pas. Vous essayez de <br/>faire retomber sur un autre le poids de votre <br/>crime; cela serait encore courageux si l'autre <br/>était vivant et s'il pouvait se révolter et vous <br/>prouver votre mensonge. Mais vous accusez <br/>un mort Ce n'est pas celui-là qui sortira de <br/>ton tombeau pour vous dire que vous avez <br/>menti. <br/><br/>Soubise, j'ai frappé Girodiaa pour deux <br/>raisons. <br/><br/>Dites toujours I fit le garde avec un <br/>geste de mépris. <br/><br/>La première, c'est que je le haïssais ainsi <br/>que tous les Viliefort ont depuis un siècle <br/>haï les Girodias. Je le haïssais parce que je <br/>sais que ma famille est victime de cet homme <br/>dont la haine pour le nom que je porte n'est <br/>pas moindre que celle que nous avons pour <br/>lui La seconde, parce que, en déshonorant <br/>Michelle, il m'a brisé le cœur. Et si mes <br/>coups de cravache avaient pu le tuer, vrai- <br/>ment, je me demande encore aujourd'hui si <br/>ce n'eût point été justice et je ne m'en serais <br/>pas repenti. Voilà mes deux raisons, Sou- <br/>bise, et je n'ai plus rien à ajouter. <br/><br/>Je vous ai demandé une preuve. <br/>Et je tous ai répondu que je ne pour- <br/>rais pas vous en donner. <br/><br/>Impostnre La lâcheté se joint au men- <br/>songe. c'est naturel. <br/><br/>Et il ajouta tout à coup, d'un ten singulier <br/>et comme se parlant a lui-même, comme <br/>ayant oublié la présence de Roland <br/>J'ai cru aussi à cette haine, moi comme <br/>les autres, et pourtant, cette haine a subi du <br/><br/>ta ̃eorcniirssîon \"entendra tnmil le Ministre de <br/>la Marine et mardi le Ministre de la Guerre. <br/>Au Ministère du Commerce <br/><br/>M. Millerand, mnistre du Commerce, a reçu <br/>des délégués de l'Association de l'industrie et de <br/>l'agriculture, qui sont venus l'entretenir de l'ap- <br/>plication de la loi de 1892 concernant le travail <br/>des enfants et des filles mineures. <br/><br/>Il a reçu aussi des délégués de l'Association <br/>des cuirs et peaux qui lui ont soumis leurs obser- <br/>vations à propos du projet du nouveau tarif <br/>brésilien. M. Millerand a promis de saisir le <br/>Conseil des Ministres de la question. <br/><br/>UN OMNIBUS TAMPONNÉ <br/>La série des accidents d'omnibus continue. <br/>Hier soir, à neuf heures trente-cinq, un train- <br/>tramway de la ligne Versailles-Louvre, com- <br/>posé de trois voitures et de la machine, a tam- <br/>ponné, place de la Concorde, un omnibus faisant <br/>le service entre la gare des Batignolles et la <br/>gare Montparnasse. <br/><br/>Le cocher de cette voiture ayant pu d'un <br/>brusque coup de rênes, faire faire un détour à <br/>son attelage, la voiture a été atteinte par l'ar- <br/>rière et a eu sa plate-forme brisée. <br/><br/>Malheureusement, deux voyageurs qui s'y <br/>trouvaient ont été blessés. L'un, M. Marion, de- <br/>meurant boulevard Montparnasse, a eu le nez <br/>arraché; l'autre a eu la jambe fracturée. <br/>Une enquête est ouverte pour savoir à qui in- <br/>combe la responsabilité de cet accident. <br/>TERRIBLE NOYADE SUR L'ESCAUT <br/>[De notre corrttpondant particulier) <br/><br/>Anvers, 4 novembre. <br/><br/>Voici de nouveaux détails sur la terrible <br/>noyade do Waes <br/><br/>Hier soir, je me suis rendu sur le lieu de la <br/>catastrophe, éclairé par un phare électrique. On <br/>n'imagine rien de plus lugubre. <br/><br/>La passerelle rompue était en ce moment com- <br/>plètement submergée par l'eau, dont les flots <br/>venaient mourir en clapotant contre les pilotis <br/>de l'estacade. <br/><br/>A la porte de la salle d'attente, où les cadavres <br/>sont déposés, deux gendarmes font les cent pas <br/>et tiennent a distance les curieux. <br/><br/>L'Enquête <br/><br/>Une grande foule stationne dans la rue et <br/>couvre les digues. Depuis deux heures de l'a- <br/>près-midi les bateaux de passage entre Anvers <br/>et la Tête-de-Flandre ont déversé à Sainte- <br/>Anne des milliers de visiteurs désireux de voir <br/>le lieu de l'accident et de connaître les premiers <br/>résultats de l'enquête administrative. <br/><br/>L'inspecteur général des chemins de fer est <br/>arrivé de Bruxelles, délégué par le Ministre, <br/>M. de Paepe. Il a pris immédiatement la direc- <br/>tion de l'enquête et il a entendu plusieurs té- <br/>moins, notamment certains ingénieurs et plu- <br/>sieurs chefs de service. Il est urgent qu'une dé- <br/>cision intervienne, car le publie se montre très <br/>sévère pour l'administration supérieure. <br/>On dit, avec un semblant de raison, que de <br/>pareilles catastrophes ne devraient jamais se <br/>produire, qu'elles sont le résultat de l'impré- <br/>voyance et d'une mauvaise gestion. On dit aussi <br/>que l'attention de l'administration a été appelée, <br/>à diverses reprises, sur le mauvais état de la <br/>pesserelle, et on ajoute qu'il y a quelques se- <br/>maines le bourgmestre de Zwyndrecht s'en est <br/>plaint. <br/><br/>On s'occupe en ce moment de la confection <br/>des cercueils. La mise en bière se fera demain <br/>matin, après qu'on aura dressé l'acte de décès à <br/>la maison communale de Zwyndrecht. <br/>Le bourgmestre de cette commune doit déli- <br/>vrer en outre un certificat d'identité pour le <br/>transport des cercueils. Il y a actuellement <br/>quinze morts, mais le chiffre des victimes doit <br/>être beaucoup plus élevé. <br/><br/>Nombre de personnes se sont ea effet présen- <br/>tées, demandant des nouvelles d'un parent, d'un <br/>frére ou d'un fils qui se trouvaient dans le train <br/>et qui n'ont pas été retrouvés. <br/><br/>Dans tous les cas, s'il y a d'autres victimes les <br/>flots ne 1<>s ont pas encore rendues. <br/><br/>Récit d'un Survivant <br/><br/>Dans la matinée il n'y avait pas moyen de <br/>faire parler les voyageurs qui ont échappé à la <br/>catastrophe. Ils étaient comme pétrifiés. <br/>Maintenant, on constate une grande réaction <br/>et quelques-uns des sauvés deviennent, quand <br/>on les interroge, d'une remarquable loquacité. <br/>Chose curieuse un grand nombre d'entre eux <br/>reviennent voir le lieu où ils ont failli périr. <br/>J'eu ai rencontré un avec qui j'ai pu causer. <br/>C'est un jeune ouvrier, un solide gars de vingt <br/>à vingt-trois ans, qui m'a raconté ses impres- <br/>sions dans le langage pittoresque des Flandres. <br/>• Le jour commençait poindre, m'a-t-il dit. <br/>Comme nous descendions du train, on voyait <br/>dans le lointain les feux du bateau de passage <br/>qui accostait à la passerelle. <br/><br/>Un instant après je m'y engageais en courant, <br/>comme tous mes compagnons d'ailleurs, et je la <br/>franchis sans encombre, passant immédiatement <br/>sur le bateau et descendant dans la cabine. <br/>Plusieurs de mes amis me suivaient sur les ta- <br/>lons. <br/><br/>Je ne m'étais pas encore assis que des hurle- <br/>ments effroyables se firent entendre. Glacéd'ef- <br/>froi, je ne savais >;ue penser, quand le cri Le <br/>pont est brisé frappa mon oreille. On ajoutait <br/>que le bateau sombrait. D'un bond je fus hors <br/>de la cabine et, arrivé sur le pont du vapeur, je <br/>sautai dans l'eau, m'accrochant aux pilotis. <br/>Tous mes compagnons m'avaient suivi. Le <br/>capitaine du bateau avait beau crier et s'efforcer <br/>de calmer la panique, nous ne l'écoutions pas, <br/>poursuivis que nous étions par cette idée que le <br/>vapeur sombrait sous nos pieds. <br/><br/>En sautant sur les pilotis et an nous accro- <br/>chant à toutes les aspérités qui se présentaient <br/>sous nos mains, nous avons réussi à gagner la <br/>berge sains et saufs, et tous nous nous sommes <br/>sauvés comme des fous. <br/><br/>temps d'arrêt. Elle n'a pas duré un siècle, <br/>comme on le prétend, et la forêt, dans ses <br/>sentiers obscurs qui protègent si bien les <br/>amoureux, a conservé un secret qu'elle ne <br/>livrera jamais. <br/><br/>Roland tressaillit et devint livide. <br/><br/>Qu'avait-il voulu dire, cet homme, avec ces <br/>paroles mystérieuses ? <br/><br/>L'allusion était évidente. <br/><br/>Si Roland n'avait été instruit de la vérité <br/>tout entière, il n'y eût point pris garde, à ccs <br/>paroles. <br/><br/>La connaissant, la terrible vérité, ces pa- <br/>roles le frappaient. <br/><br/>Et il considérait maintenant Soubise avec <br/>terreur. <br/><br/>Soubise s'en aperçut. <br/><br/>Ah! ah! monsieur le comte, on dirait <br/>que vous avez tout à fait peur, à présent. <br/>Roiand n'avait pas la force de répliquer. <br/>Est-ce que le secret fatal, le secret du hon- <br/>teux amour d'autrefois, était entre les mains <br/>d'un étranger? <br/><br/>Alors, puisque Soubiae croyait Roland cou- <br/>pable envers Michelle, Il parlerait. Ce ne <br/>serait plus, non seulement, le mystère des <br/>coups de etavaehe qui serait révélé au PU-- <br/>quet, et qui entraînerait peut-être sur le <br/>meurtre une nouvelle enquête scandaleuse, <br/>ce serait les amours de sa mère dont rirait <br/>lepaya tout entier. <br/><br/>Cela, jamais, jamais, à aucun prix <br/>Soubise, munnura-t-il éperdu, ttm0 <br/>cher Soubise. <br/><br/>Ah ah fit le garde avec son^ éternel <br/>rire d'insensé, est- que *ou» sup- <br/>plier, maint«nar^( <br/><br/>Roland res* \"\"gHeaciéiB, «a preie i un< <br/>terreur fol1 <br/><br/>U^'Wûévreux, ardent, le prem 4e<rttw <br/><br/>Tel est te ftfMt de mon Interlocuteur. Il <br/>ajauté qu'après avoir couru un certain temps, <br/>les survivante eurent enfin le sentlment exact <br/>de la situation, et quelques-uns revinrent à la <br/>gare, où l'on commençait à apporter des cada- <br/>vres. <br/><br/>Dans le pays tout entier l'émotion causée pu <br/>cette catastrophe est intense. <br/><br/>La Haute-Cour <br/>L«s Avocats chez H. Falllèns <br/><br/>Ni. Fallières, président de la Haute-Gour, a <br/>reçu les avocats des accusés, qui lui ont été prti <br/>sentes par M* Oscar Falateuf. <br/><br/>Les avocats, au nombre de vingt et un, sont <br/>arrivés au Petit-Luxembourg à neuf heures <br/>précises. Ils ont été aussitôt introduits dans le <br/>grand salon du premier étage, où les attendait <br/>M. Fallières. <br/><br/>Me Falateuf a présenté ses collègues au prési- <br/>dent, disant que, ce faisant, il se conformait t <br/>l'usagr professionnel qui veut que les avocats <br/>aillanl présenter leurs hommages à un préai- <br/>dent devant lequel ils plaident pour la première <br/>fois. <br/><br/>M. Fallières a remercié les avocats de leur <br/>courtoise démarche; il a ajouté qu'il les couai- <br/>dérait, sans arrière-pensée aucune, comme les <br/>véritables auxiliaires de la Justice. Il a ensuite <br/>rappeté qu'il avait porté la robe d'avocat peu. <br/>dant de longues années et qu'il était lier de a'en <br/>souvenir. <br/><br/>Certaines questions d'ordre pnremoat maté-» <br/>riel ont ensuite été arrêtées, notamment en ce <br/>qui concerne les cartes d'entrée aux audiences <br/>pour !es parents des avocat.s et des aecusés. <br/>La visite a pris lin il neuf heures et demie» <br/>les notifications <br/><br/>L'arrêt de mise en accusation et l'acto d'açco- <br/>sation devant être, aux termes de la loi, notifiés <br/>aux accusés, avec citation a comparaître devant <br/>la Haute-Cour, trois Jours au moins avant la <br/>jour de l'audience », c'est hier, dans l'après- <br/>midi, que ces formalités ont été accomplies. La <br/>copie imprimée das pièces de la procédure a ét6 <br/>remise hier ù quatre heures aux défenseurs. <br/>L'Imprimerie nationale a travaillé quatre jours <br/>et quatre nuits il l'impression de co volume, qui <br/>a environ neuf cents pages. <br/><br/>C'est M, Dupuis, nuissier-audiencier de la <br/>Cour d'appel, affecté au service do la Haute» <br/>Cour, qui a été chargé de procéder aux formalités <br/>prescrites par la loi en ce qui touche les troia <br/>conlumax, si ceux-ci ne se présentent pas de- <br/>vant la Haute-Cour dans les dix jours de la si- <br/>gnification qui leur aura été faite dn l'arrêt de <br/>mise en accusation, de l'acte d'accusation et de <br/>la citation à comparaître. <br/><br/>Le onzième jour. NI, Dupuis se rendra succes- <br/>sïvernent, accompagné d'un tambour, à la porte <br/>de la Haute-Cour, à la porte du domicito de <br/>chaque contumax et à la porte de la mairie de <br/>sa résidence pour faire la notilleation publique <br/>prescrite, comme il le Ht déjà lors du procès dU <br/>général Boulanger. <br/><br/>L'Acte d'Accusation <br/><br/>L'acte d'accusation, nolillé hier aux défen- <br/>seurs et aux accusés, ne comprend pas moins' <br/>de quarante pages. Le procureur général dit qua <br/>depuis longtemps déjà les partis hostiles la <br/>Constitution républicaine se sont organisés pour <br/>la combattre en ayant recours à la violence, em <br/>provoquant des émeutes dans le but de s'em- <br/>parer du pouvoir. <br/><br/>11 ajoute que dans tous ces actes l'instruction <br/>a relevé la participation directe ou indirecte de <br/>chacun des accusés et que lesdits actes ne <br/>constituent pas une série de faits isolés et sans <br/>lien commun. <br/><br/>Le procureur établit ensuite ce qu'il faut en, <br/>tendre juridiquement par complot par «acte <br/>préparatoire » et par « attentat ». Il s'efforce de <br/>démontrer que royalistes, antisémites et natio- <br/>nalistes ont arrête ensemble et de concert leurs <br/>résoiutions d'agir pour renverser le gouverne- <br/>ment de la République. <br/><br/>En résumé, dit le procureur général, tous les <br/>faite qui viennent d'être relatés révèlent jusqu'. <br/>l'évidence l'existence d'un complot concert* et ar- <br/>rêté entre tous les accusés dans le but de changer <br/>et de détruire le gouvernement de la République; <br/>complot qui a été accompagné de nombreux acte* <br/>commit pour en préparer l'exécution. <br/><br/>LBS Témoins <br/><br/>il se confirme que la défense n'a nullement <br/>l'intention de se livrer une obstruction systé- <br/>matique au point de vue des témoignages et que <br/>les défenseurs appelleront seulement les témoins <br/>absolument nécessaires pour la cause de leurs <br/>clients. <br/><br/>Ils estiment qu'il leur suffira d'appeler cha- <br/>cun de dix & douze témoins. Comme il y a qua- <br/>torze accusés, on arriverait à cent cinquante té- <br/>moins cités par la défense, auxquels il faudra <br/>ajouter les témoins cités par l'accusation, dont <br/>on ne connaît pas encore le nombre. Soit un to- <br/>tal de deux cents témoins. <br/><br/>En comptant trente témoins par audience, on <br/>voit qu'il faudra, pour l'audition des témoin», <br/>environ six audiences. <br/><br/>La Déposition de M. Léplne <br/><br/>L'écho de Paris a publié hier matin un nouveau <br/>document relatif à la Commission d'instructioa <br/>de la Haute-Cour. Il s'agit de la déposition de <br/>M. Lkpine, préfet de pohce. <br/><br/>Voici, entre autres taits, le récit fait par If. <br/>Lépine d'une journée de manifestation, celle du <br/>20 août <br/><br/>La police fut assaillie d'une grEte de pierres, de <br/>boulons de fer, de projectiles variés et même da <br/>coups de feu. Pendant des heures, on vit ces btDf <br/>des tenter de forcer l'entrée de la rue de Chabrol, <br/>137 gardiens de ta paix furent, au cours de ces be- <br/>garres, plus ou moins grièvement blessés. <br/><br/>Un moment j'eus le sentiment que les hommes <br/>froppéa dans la nuit sans pouvoir savoir d'où leur <br/>venaient ces coups, et sans pouvoir s'en défendre, <br/>allaient perdre leur sang-froid, et je fus forcé de <br/>faire appel è toute leur énergie pour dégager la <br/><br/>La vérité sur ma fille <br/><br/>Je vous l'ai dite. <br/><br/>Si Michelle avait eu à se plaindre de OU <br/>rodias, pourquoi ne me l'eût-elle pas avoué <br/>A quel sentiment eût-elle obéi en se taisant? <br/>Je serais allé trouver Girodias et je l'aurais <br/>forcé à réparer son crime infâme. <br/><br/>Je l'ignore. Michelle ne m'a rien dit. <br/>Tandis qu'en me révélant votre noë, <br/>elle redoutait de vous exposer ma colère, <br/>vous le fila de cette famille que ma famille <br/>sert depuis plus d'un siècle avec tant de d6· <br/>vouement! <br/><br/>Roland dit simplement, mais avec une tris- <br/>tesse profonde <br/><br/>Je n'ai pas commis et je ne pouvais prA <br/>commettre Flnfamie dont vous m'accu*^ <br/>puisque j'aime Michelle eomma une sœo j. <br/>Alors, je ne vous renouvellerai ^s j^ <br/>menace que je voua ai faite. <br/><br/>Holand fut repris de tremhlemeD a> quaaé <br/>le garde ajouta <br/><br/>Vous vous chargerez d exr ^qaer au par* <br/>quet pourquoi, ayant frappé Girodias, vous <br/>avez laissé peser sur votre afère tout le poid» <br/>de cette accusation. Qu'^mt a moi, si la Jm- <br/>tice m'interroge, je sa1 j^ bien lui dire tout <br/>ce que j'ai sur le cœ> ^j.. <br/><br/>Et brusquement, il partit, laissant Rolaaé <br/>Le jeune 'iiomme voulut te suivre, te »̃ <br/>joindre, nv«is il n'en eut pas la force. <br/><br/>U se laissa tomber sur une chaise et et <br/>mit à pleurer. <br/><br/>l Cette faiblesse durapen. <br/><br/>C'était vrai, ce qu'en dernier lieu Saabl»» <br/>venait de lui reprocher. <br/><br/>Pourquoi avait-il laissé peter sur son, <br/>frère l'énigme de ces coups de cravache qui <br/>avaient broyé ia ûgu» 4* Girodfaa 1 <br/><br/>IA suiort.) J\"»M HàXt. <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                },
+                "browsePage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "currentPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {
+                    "eligibleZoomIndisponible": false,
+                    "OpenSeadragonTitles": [
+                      "Plein écran",
+                      "Taille initiale",
+                      "Agrandir",
+                      "Réduire",
+                      "Page suivante",
+                      "Page précédente",
+                      "Rotation horaire 90°",
+                      "Rotation antihoraire 90°",
+                      "Sélection",
+                      "Quitter le mode zoom"
+                    ],
+                    "rtl": false,
+                    "isTabletOrMobile": false
+                  },
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 1 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519080g/f1.highres",
+                      "screenNumber": 1,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519080g/f1.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/> ",
+                            "stringOCR": "VINOT-QUATRIÊME ANNÉE. tf« 8409. lié\" numéro 1 S OOM.tttll.ett DIMANCHE 5 NOVEMBRE ifijj.\" <br/><br/>ABONNEMENTS <br/><br/>PARIS et DÉPARTE M E N TS Trois mois, 5 fr. Six mois, 9 fr. Un an, 18 fr. <br/>On s'abonne sans frais aans tons las Boréaux de posta <br/><br/>Direotioa le» Rue d'Enghien. PARIS <br/><br/>TOUS LES JEUDIS <br/><br/>Supplément littéraire Illustré (Huit Pages) 5 Centimes. <br/><br/>S'adresser à L'OPFICE D'ANNONCES, tO, Place de la Bourse, 10, PARIS j <br/>et à la Selle des Dépêches du Petit Parisien, 20, boulev. Montmartre. <br/><br/>Dernière) Edition <br/><br/>y METiin DE MEDECIN <br/>Parmi les professions libérales, il n'en <br/>est pas de ptus noble et de plus bienfai- <br/>sante que celle de médecin. C'est devenu <br/>auprès du public éclairé de notre temps <br/>un lieu commun de vanter tant la science <br/>que le dévouement de notre admirable <br/>eorps médical, dont d'éclatantes décou- <br/>vertes ou des actes d'héroïsme viennent <br/>presque chaque année rehausser la gloire <br/>et le mérite. <br/><br/>Depuis les docteurs éminents de nos hô- <br/>pitaux, qui ne se font dignement rémunérer <br/>par leur clientèle riche que pour pouvoir <br/>donner gratuitement leurs soins aux hum- <br/>bles populations, jusqu'au médecin de cam- <br/>pagne dont la vie est plus rude souvent que <br/>celle du laboureur qu'il soulage, tous <br/>apportent à l'accomphssement de leur tâche <br/>de vie un zèle qui va parfois jusqu'au sa- <br/>crifice. Ils ne sont pas rares, depuis Laën- <br/>nec, les médecins qui ont contracté le mal <br/>qui les a emportés au chevet de ceux qu'ils <br/>ont arraché à la mort. Il n'y a pas très <br/>longtemps, une foule recueillie suivait à sa <br/>dernière demeure un jeune interne mort <br/>de la diphtérie en guérissant des diphté- <br/>riques. <br/><br/>Etvoila maînteUâni qn'un nouvel oDstnclB <br/>à l'exercice du métier de médecin nous est <br/>révélé, avec un ensemble alarmant, par les <br/>voix les plus autorisées la difficulté mena- <br/>çante que les jeunes gens qui s'y consa- <br/>crent rencontrent à gagner leur vie, à suffire <br/>à leurs besoins. Non seulement ce qu'on a <br/>appelé avec raison le sacerdoce médical <br/>exige beaucoup de capacités, beaucoup de <br/>travail et beaucoup de cœur, mais cet im- <br/>placable ennemi, la misère, y guette les dé- <br/>butants. <br/><br/>Déjà plusieurs indices permettaient d'en- <br/>Irevoir cette crise; déjà des esprits pré- <br/>voyants s'étaient efforcés de parer au mal <br/>en appelant l'attention de tous sur les pro- <br/>portions qu'il pouvait prendre, et mainte- <br/>nant ce mal apparaît dans son inquiétante <br/>étendue. <br/><br/>A l'heure actuelle, il y a environ 10,000 <br/>étudiants en médecine répartis dans les <br/>différentes Facultés de France. <br/><br/>« Voilà ce qui doit donner à réfléchir, a <br/>dit, en présence de ces chiffres, le profes- <br/>seur Brouardel au Conseil général des Fa- <br/>cultés. Or, ajoutait-il, le nombre des mé- <br/>decins a doublé d'ici dix ans, le nombre <br/>des médecins malheureux aura certaine- <br/>ment triplé. » <br/><br/>Encombrement croissant de la carrière, <br/>voila donc la causé du mal. Depuis dix ans, <br/>disait M. Brouardel, le nombre des étu- <br/>diants en médecine a doublé. Rien n'est <br/>plus exact. 11 était de 6,212 en 1894 en 1896, <br/>il est de 8,485, soit plus de deux mille en <br/>plus. En 1882, il y avait à la Faculté de <br/>Paris 4,698 étudiants ou médecins inscrits; <br/>en 1895, 5,612 étudiants se firent inscrire à <br/>cette même Faculté. Ajoutons que les offi- <br/>ciers de santé eurent le droit de transfor- <br/>mer leurs titres en celui de docteurs, ce <br/>qui vint encore augmenter dans une nota- <br/>ble proportion la concurrence profession- <br/>nelle. <br/><br/>En 1883, il y a eu, au concours de l'in- <br/>ternat des hôpitaux de Paris, 317 candidats <br/>inscrits et 57 internes nommés; en 1894, <br/>548 candidats se firent inscrire, 58 furent <br/>nommés au concours à peu près un sur <br/>dix, et notons que les candidats sont pres- <br/>que tous des sujets distingués. En 1898, les <br/>candidats se sont trouvés favorisés par un <br/>certain hasarddecirconstances, et ils avaient <br/>70 places à se partager, alors qu'ils étaient <br/>558. S'il y avait mieux, le mieux n'était pas, <br/>on le voit, très sensible. <br/><br/>En ce qui concerne ces places tant en- <br/>viées et environnées d'une si légitime con- <br/>sidération de médecin des hôpitaux, le pu- <br/>blic ne sait pas quelle extraordinaire et <br/>croissante sélection on est obligé de faire <br/>entre des candidats dont l'instruction pra- <br/>tique et théorique est poussée au plus haut <br/>point. En 1872, ily eut deux concours pour <br/>six places de médecins des hôpitaux 67 <br/>candidats seulement firent inscrire leurs <br/>noms. En il y eut trois concours pour <br/>9 places 283 candidats se présentèrent. En <br/>ce sont 75 candidats que nous trou- <br/>vous convoitant 3 places. En vingt-trois ans, <br/>la proportion est montée de 1 admission sur <br/>10 compétiteurs à 1 sur 25. <br/><br/>N* 28. Feuilleton du Petit Parisien. <br/>La Cfiarmeuse û'Enlants <br/>GRAND ROMAN INÉDtT <br/><br/>PREMIÈRE PARTES <br/><br/>UNE HAINE VIEILLE D'UN SIÈCLE <br/>XV (suite) <br/><br/>Les Angoisses d'an Père <br/><br/>Le fantôme de sa mère, et de sa mère <br/>coupable deux fois. coupable il y a seize ans, <br/>coupable aussi, sans doute, du meurtre de Gi- <br/>rodias, ce fantôme passa devant lea yeux <br/>du fils terrifié. <br/><br/>Et il ne put cacher son épouvante. <br/><br/>Soubise la remarqua. <br/><br/>Il se mit à rire. <br/><br/>Aù! ah monsieur le comte, commen- <br/>•eriei-vous à deviner? <br/><br/>La voix de Roland s'altéra: <br/><br/>Non, Soubise,. <br/><br/>Secret contre secret, reprit le garde avec <br/>de grands gestes, tâchant le btas de Roland <br/>et courant par la chambre avec J'allure d'un <br/>homme ivre ou d'un fou votre secret con- <br/>tre le mien ou j'écris au Parquet que je vous <br/>ai surpris à cheval, dans le bois. 1 après-midi <br/>même du meurtre, quelques moments avant <br/>que Girodias fût assassiné. causant avec <br/>Girodias. <br/><br/>Roland était pale et défaillant. <br/><br/>Qu'y a-t-11 là d'étonnant? bégaya-t-il. <br/>Votre secret contre mon secret,ou j'écris <br/>M pf«eureur de la République que je vous ai <br/><br/>Ces chiffres sont à eux seuls fort élo» <br/>quents. Ce qui l'est encore plus, dit un 1 <br/>jeune médeem de valeur, le docteur Mi- <br/>chaut, c'est l'institution du concours pour <br/>les docteurs qui désirent être médecins de <br/>bienfaisance. Il y a quelques années, il suf- <br/>fisait d'adresser une demande et d'être <br/>agréé par ses confrères faisant déjà partie <br/>du Bureau de bienfaisance; actuellement, <br/>pour quelques places un nombre toujours <br/>plus considérable de candidats se présente <br/>aux épreuves -cela pour obtenir une situa- <br/>tion qui rapporte 600 francs par an Cer- <br/>taines Sociétés privées de bienfaisance <br/>voient des centaines de demandes leur par- <br/>venir quand un médecin fait défaut. <br/>Partout s'élèvent des plaintes, partout se <br/>fait sentir la crise que traverse cette classe <br/>de travailleurs intellectuels de notre fin de <br/>siècle. La nouvelle loi militaire dispensant <br/>de deux ans de service les jeunes gens qui <br/>s'engagent à avoir à vingt-sept ans leur doc- <br/>torat a encore aggravé la situation, si bien <br/>qu'à notre époque la concurrence dans la <br/>profession médicale est devenue telle qu'on <br/>a pu dire qu'au point de vue purement ma- <br/>tériel les profits d'un grand nombre de mé- <br/>decins sont devenus inférieurs à ceux des <br/>petits fonctionnaires subalternes du gouver- <br/>nement qui sont les moins rétribués, ou aux <br/>appointements touchés par de modestes <br/>employés de grandes administrations. <br/>Est-il besoin d'ajouter que la profession <br/>de médecin exige des frais de « représenta- <br/>tion » appartement, vêtements, etc.. <br/>bien supérieurs à ceux qui équilibrent le <br/>même chapitre dans un budget d'employé. <br/>Bref, en province, sur 10,000 médecins, <br/>5,000 au plus gagnent convenablement leur <br/>vie. Les 5,000 autres se rabattent sur. le <br/>mariage, quand ils peuvent, et deviennent <br/>cultivateurs, industriels ou rentiers. D'au- <br/>tres se jettent dans la politique. <br/><br/>Quant aux médecins parisiens, pour 5 ou <br/>6 qui gagnent à peu près leurs 250,000 <br/>francs par an, pour une quinzaine qui dé- <br/>passent 100,000 francs d'appointements, <br/>pour une centaine qui se font de 40 à 60,000 <br/>francs, pour 300 qui sont sûrs de réunir <br/>dans leur année de 15 à 30,000 francs, <br/>pour 800 enfin qui gagnent une dizaine de <br/>mille francs, il y en a 1,200, c'est-à-dire la <br/>moitié, qui ont moins parfois même <br/>beaucoup moins de 8,000 francs. <br/>Et c'est pourquoi des faits navrants nous <br/>sont parfois révélés. Il arrive qu'après la <br/>mort de tel ou tel médecin, qui était forcé <br/>d'en imposer à sa clientèle par une appa- <br/>rence de luxe, on aperçoit les difficultés <br/>matérielles auxquelles il se trouvait en <br/>butte. Il n'y a pas longtemps, un chirurgien <br/>des hôpitaux mourait pauvre, n'ayant vécu <br/>que par les émoluments qu'il touchait <br/>comme sténographe au Sénat. La veuve <br/>d'un professeur de la Faculté était obligée <br/>de solliciter une modeste place d'inspec- <br/>trice des écoles. Un médecin âgé se tuait, il <br/>y a peu d'années, parce que, atteint par la <br/>limite d'âge, on lui retirait les 1,200 francs <br/>dont il vivait comme médecin d'un des bu- <br/>reaux de bienfaisance de Paris. <br/><br/>Une autre cause devait précipiter la crise <br/>où se trouve impliqué aujourd'hui le corps <br/>médical: la diminution de la fréquence et <br/>de la nocivité de certains maladies, et en <br/>certains cas leur presque complète dispa- <br/>rition. C'est ainsi que depuis que les pro- <br/>grès de l'hygiène ont permis de déterminer <br/>d'une façon préoise que les germes de la <br/>fièvre typhoïde ont pour véhicule de propa- <br/>gation les eaux de boisson, les épidémies <br/>de cette redoutable affection se sont atté- <br/>nuées dans une surprenante proport.ion. La <br/>thérapeutique elle-même de la maladie s'est <br/>améliorée de telle sorte par la méthode des <br/>bains que la guérison est beaucoup plus <br/>certaine qu'autrefois. <br/><br/>Il en est de même, on le sait, pour la <br/>diphtérie, par suite des découvertes de <br/>Berhing et de Roux. Cette maladie ne peut <br/>plus guère être considérée comme mortelle: <br/>le nombre de décès, de 4,716 en 1893, était <br/>trois ans après de 1,537, et si on enlevait <br/>de ce nombre les cas pris trop tard ou mal <br/>soignes, ou comportant complications, on <br/>arriverait à un chiffre à peu près nul. <br/>Tous ces progrès diminuent évidemment <br/>la besogne des médecins et compliquent en- <br/>core l'embarrassante situation où les met <br/>leur propre expansion. <br/><br/>Aussi, un médecin avait, en 1829, en <br/>moyenne 100 malades par an, soit un nou- <br/>veau malade tous les trois jours. Vers 1860, <br/>on a calculé qu'un médeoin devait n'avoir <br/><br/>surpris cravachant Girodias de toutes vos <br/>forces, en pleine figure. <br/><br/>Roland eut un cri sourd. <br/><br/>Il se rua sur Soubise. <br/><br/>Tu ne diras pas cela 1 <br/><br/>Je le dirai. <br/><br/>Roland avait pris le garde par la gorge. <br/>L'autre n'avait pas eu le temps de se mettre <br/>en défense. <br/><br/>Il étranglait, sous ces doigts de fer. <br/>Puis, tout à conp; Roland le lâcha, comme <br/>honteux de sa violence sur cet homme, le <br/>père de Michelle, ce serviteur dévoué qu'il ai- <br/>mait. <br/><br/>Soubise perdait tout sang-froid. <br/><br/>Vous avez la main solide, monsieur le <br/>comte. Ça, je le savais. Et je me suis tou- <br/>jours demanda, depuis k dimanche de la fête <br/>de Clisson, pourquoi, avec des doigts et un <br/>étau pareils, vous aviez poignardé Girodias <br/>dans le dos, au lieu de l'étrangler, tout sim- <br/>plement. Lorsque le Parquet apprendra quel <br/>est celui qui a coupé la figure de Girodias à <br/>coups de cravache, il se dira peut-être que <br/>les coups partent de la même main qui a en- <br/>foncé le poignard. <br/><br/>Ah Soubise, Soubfse, que dis-tu là. <br/>Je dis que du moins le Parquet, fort cu- <br/>rieux de sa nature et parce que c'est son de- <br/>voir, ne doit pas avoir abandonné l'espérance <br/>de connaître le véritable assassin do Girodias <br/>depuis l'acquittement de votre frère. Je dis <br/>que, dans ces conditions, le Parquet voudra <br/>vous demander pour quelles raisons si graves <br/>vous. presque un enfant et que l'on trr;,te en- <br/>core comme un enfant, vous avez frappé ce <br/>vieillard l'improviste, si cruellement, sans <br/>provocation. <br/><br/>Sans provocation. -:Q-,n ga^-vouat <br/>J'étais là< ̃ d|c- qu après avoir aceusé <br/>le frère aine, ou aicose» peut-«r« le irère <br/><br/>qu'un malade ootrvewj tous les cinq jours. <br/>Aujonrd'hui, à Paris, un médecin voit un <br/>client autre frapper à sa porte tous les douze <br/>jours environ. Ce n'est pas tout la statis- <br/>tique va plus loin et nous démontre que <br/>dans le cas où les Facultés ne recevraient <br/>aucun docteur pendant vingt ans, il y en <br/>aurait encore suffisamment pour le nombre <br/>des malades. <br/><br/>Qu'on suppose tous les médecins du <br/>royaume de France d'il y a cent cinquante <br/>ans figurés par un seul personnage ce per- <br/>sonnage serait environ trois fois moins grand <br/>que celui représen!ant figurativement l'en- <br/>semble des malades. Or, aujourd'hui, c'est <br/>exactement la proportion contraire qui est <br/>juste. <br/><br/>Il est bien certain que la répartition des <br/>médecins et la proportion de leur nombre <br/>avec celle des habitants est infiniment va- <br/>riée. En France, il existe deux centres où il <br/>n'y a pas un médecin pour 10,000 habitants: <br/>une partie des départements du Finistère, <br/>des Côtes-du-Nord et du Morbihan un <br/>assez grand nombre de départements ne <br/>possèdent que 1 à 2 médecins pour 10,000 <br/>habitants. La moyenne générale est de 3 <br/>à 4. A Paris, la proportion varie de 20 pour <br/>dans le quartier de l'Odéon, jusqu'à <br/>dans celui de la Chaussée-d'Antin. <br/>On voit que j'avais bien des raisons de <br/>dire que de nouveaux obstacles se dres- <br/>saient devant le jeune bomme qui, épris de <br/>science, de travail et d'un utile emploi de <br/>ses forces, s'attache à conquérir le diplôme <br/>du docteur en médecine. Cela doit-il le re- <br/>buter? Non, certes; sa vocation ne serait <br/>pas sérieusesi la crainte de la lutte la dé- <br/>concertait; mais la notion de l'importance <br/>de cette lutte doit mettre dans ses décisions <br/>plus de gravité et de réflexion. <br/><br/>JEAN FROLLO <br/><br/>IA GUERRE AU TULW.ML <br/>On n'a aucune nouvelle précise sur les der- <br/>nières opérations qui ont eu lieu ces cinq <br/>derniers jours dans le Natal. Tout fait suppo- <br/>ser que le gros des forces boërs continue à <br/>assiéger Ladysmith pendant qu'une colonne, <br/>continuant sa marche vers Pietermaritzburg, <br/>a réussi à s'emparer de Colenso. <br/><br/>Si on songe que les hostilités ont éclaté il <br/>y a à peine trois semaines, on voit que les <br/>Boërs ont admirablement combattu. C'est en <br/>effet le 10 octobre que l'ultimatum du Trans- <br/>vaal a été reçu à Londres. C'est le 31 que le <br/>général White, vaincu, s'est enfermé dans <br/>son camp, à Ladysmith. <br/><br/>Rappelons ce qu'a été la lutte pendant cette <br/>période. <br/><br/>Dès qu'il fut décidé de faire parvenir un <br/>ultimatum au Cabinet de Londres, les Boërs <br/>s'occupèrent de concentrer leurs forces et de <br/>terminer leurs préparatifs. <br/><br/>Le 11, ils occupaient Laing's Neck. Le 12, <br/>ils traversaient la frontière de l'ouest et cou- <br/>paient le chemin de fer au sud de Mafeking. <br/>Le 13, un train blindé envoyé contre eux était <br/>capturé. Le 14, l'investissement de la ville <br/>était complet. <br/><br/>Le 15, Kimberley à son tour se trouvait <br/>isolé de la même façon. <br/><br/>Le 17, Newcastle était abandonné par les <br/>Anglais et toutes les troupes du général Sy- <br/>mous se concentraient entre Glencoë et Dun- <br/>dee. <br/><br/>Le 18, les troupes venues de l'Orange pri- <br/>rent contact avec les éclaireurs du général <br/>White. <br/><br/>Le 21 avait lieu le combat d'Elandalaagte. <br/>Le le général Yule évacuait Dundee et <br/>arrivait le 26 à Ladysmith. <br/><br/>Les officiers anglais espéraient que les <br/>gros canons de Dundee ne les inquiéteraient <br/>plus. Il n'en était rien le 28, de gros canons <br/>étaient montés et le bombardement commen- <br/>çait. Le 29, la situation du général White de- <br/>venant intenable, celui-ci lançait toutes ses <br/>forces contre l'ennemi. <br/><br/>On sait le sort qui leur fut réservé, plus de <br/>deux milles homme furent mis hors de <br/>combat ou faits prisonniers. Le restant de la <br/>colonne se repliait en hâte sur Ladysmith où <br/>sa situation devient de jour en jour plus pé- <br/>rilleuse. <br/><br/>Autour de Ladysmith <br/><br/>Londres, 4 novembre. <br/><br/>Le Central !ïew$ publie ta dépêche suivante <br/>Ladysmith, i\" novembre, 5 h. 15 soir. <br/>La journée s'est passée avec calme. Il n'y a <br/>pas eu de coups de feu tirés de part ni d'autre. La <br/>voie ferrée est intacte et les trains fonction- <br/>nent. <br/><br/>Un petit groupe de Boërs a tenté aujourd'hui <br/>d'arriver jusqu à la voie ferrée près de Frère, <br/>mais un piquet anglais d'Emersdale les a re- <br/>poussés, 1 est cependant probable que les Boërs <br/>marchent vers le sud, dans le but d'investi! <br/>Ladïamith. <br/><br/>On a aperçu les Boërs, cette après-midi, sur la <br/>colline bombardée lundi dernier par l'artillerie <br/>anglaise ils semblent y avoir de nouveau monU <br/>leurs gros canons. <br/><br/>Les Boërs occupent également en force Loro- <br/><br/>plus jeune et que le scandale se renouvellera <br/>autour de votre nom, alors qu'autour de votre <br/>nom le silence eût été si précieux. Secret <br/>contre secret, monsieur la comte. vous me <br/>comprenez, maintenant? <br/><br/>Oui. à votre tour, laissez-moi parler, <br/>pauvre fou! <br/><br/>Soubise ricana en haussant les épaules. <br/>Vous allez mentir encore. <br/><br/>Vous menacez d'aller trouver le procu- <br/>reur de la République. <br/><br/>J'irai, oui, je le jure 1 <br/><br/>Eh bien, je vous dis, moi, que vom <br/>n'irez pas et que vous vous tairez. <br/><br/>Oui dà, et par quel ordre <br/><br/>Par le mien. Vous avez voulu connaître <br/>le nom du séducteur de Michelle. <br/><br/>Ce tAche est devant moi dest vons! <br/>Cet infâme est mort. Son nom était <br/>Girodias <br/><br/>Roland s'attendait à ce que ce nom, cette <br/>révélation produirait sur le garde un effet <br/>foudroyant. <br/><br/>Il n'en fut rien. <br/><br/>Soubise se contenta de rire, d'on rire ner- <br/>veux qui faisait mal. <br/><br/>Girodiaal dit-il. Ah! ah! la preuve, la <br/>preuve 1 <br/><br/>L'aveu même de Michelle. <br/><br/>Un aveu! Et à qui a-t-elle fait cet <br/>aveu <br/><br/>Soubise riait toujours,et« son' rfre faisait <br/>mal à entendre. Trop durement frappé, son <br/>pauvre cerveau se détraquait de plus en <br/>plus. <br/><br/>Afnsi, c'est vous, presque ttn enfaat, <br/>1 vous qui, après tout, ne lui l\\e& de rien, et <br/>qui n'aviez Di le droit de la défendre, ni <br/>celui de la venger, c\"e«' vous, au lieu de <br/>son père, quelle eût Cboiai pour confident <br/><br/>ard's Kop, qui se trouve dans le voisinage TÎB <br/>l'endroit où l'on se procure de l'eau de la ri- <br/>vière et où sont également situés les puits de <br/>la ville. <br/><br/>Londres, 4 novembre. <br/><br/>On a télégraphe, cette nuit, de Berlin au li- <br/>mes <br/><br/>Plusieurs journaux publient ce soir, sous les <br/>titres imprimés en capitales énormes de • Ecra- <br/>sante défaite des Anglais. Capitulation de <br/>Ladysmith les deux dépêches suivantes <br/>Amsterdam, 3 novembre, 8 h. 15 matin. <br/>D'après des nouvelles reçues ici des cercles <br/>afrikanders du Cap, Ladysmith aurait déjà capi- <br/>tulé. La blessure de White est des plus sé- <br/>rieuses. Neuf mille Anglais, la plupart blessés, <br/>auraient été faits prisonniers. L'authenticité de <br/>ce bruit n'a pu, il est vrai, être encore conHr- <br/>mée. <br/><br/>Durban, 3 novembre, 6 h. 20 matin. <br/><br/>White a tenté une sortie le novembre et a <br/>subi une écrasante défaite. La plupart des offi- <br/>ciers supérieurs ont été tués ou blessés. Plus de <br/>mille hommes sont morts ou blessés. Le bom- <br/>bardement continue. Joubert a invité White à <br/>capituler, mais White a refusé. <br/><br/>La marche en avant des Boérs vers le sud con- <br/>tinue. Colenso, à vingt milles au sud de la voie <br/>ferrée qui va à Pietermaritzburg, a été occupée <br/>de façon permanente par les Boërs de l'Etat <br/>libre et transformée en une véritable redoute. <br/>Londres, 4 novembre. <br/><br/>A deux heures de l'après-midi, le War Office <br/>n avait reçu aucune nouvelle communication de <br/>Ladysmith, ce qui donne à penser que les com- <br/>municationB télégraphiques par terre sont tou- <br/>)Durs interrompues; mais, malgré cette ab- <br/>sence complète de nouvelles, les autorités mi- <br/>litaires n'attachent aucun crédit aux diverses <br/>rumeurs sinistres qui ont couru relativement à <br/>la position de la garnison, et on ne ressent à <br/>présent aucune anxiété sérieuse sur la possibi- <br/>lité, pour le général White, de maintenir sa po- <br/>sition. <br/><br/>La Press Association a reçu la nouvelle offi- <br/>cielle suivante du War Office <br/><br/>Le Colonial Office a reçu une information an- <br/>nonçant que les troupes anglaises ont été reti- <br/>rées de Colenso, et qu'elles se sont concentrées <br/>plus au Sud, mais on n'a aueuno nouvelle d'un <br/>engagement dans le voisinage de Coltnso. <br/>Au Cap <br/><br/>Colesberg (colonie du Cap), <br/><br/>4 novembre. <br/><br/>Avant-hier, vers trois heures de l'après-midi, <br/>on a entendu une violente explosion dans la di- <br/>rection dé Colesberg-Hridge. On suppose que le <br/>pont a été détruit par les Boërs. <br/><br/>D'après un courrier qui vient d'arriver, 60 <br/>Boërs de l'Etat libre ont traversé le pont ce <br/>matin de bonne heure et fait prisonniers 6 sol- <br/>dats de la police avec leurs chevaux. <br/><br/>Une autre dépêche de Colesberg annonce que <br/>les eaux do la rivière Orange ont grossi et que <br/>tous les gués sont maintenant impraticables. <br/>Les Boërs sont mattres du pont de Philippolis, <br/>qui constitue le seul moyen de traverser la ri- <br/>vière. <br/><br/>Londres, 4 novembre. <br/><br/>On mande de Capetown au Daity Neeos, à la <br/>date du 31 octobre: <br/><br/>Le bruit court que l'état de siège sera bientôt <br/>proclamé à Capetown. <br/><br/>Le correspondant du Standard à Capetown <br/>dit qu'un homme, qu'on croit être un espion <br/>boër, a été arrêté mardi au moment où il rôdait <br/>autour d'un train qui devait transporter des <br/>troupes vers le Nord. <br/><br/>Sir Alfred Milner, en sa qualité de vice-aml- <br/>rat (qualité qu'il tient de ses fonctions de haut <br/>commissaire du. Cap), a proclamé le rétablisse-; <br/>ment des tribunaux de prises maritimes; qui <br/>fonctionneront pendant la durée des hostilités. <br/>Dans te- district de Paarl, les progressistes <br/>(parti anglais) sont combattus par les adhérents <br/>de l'Afrikander Bund. <br/><br/>Des amitiés qui remontaient plus de vingt <br/>ans ont été rompues. <br/><br/>Londres, 4 novembre. <br/><br/>Le correspondant du Daily Telegraph à Cape- <br/>town dit que le général Redvers Buller est tou- <br/>Jours dans cette ville. <br/><br/>Convocation de la Milice <br/><br/>Londres, 3 novembre. <br/><br/>Conformément à la proclamation de la Ueine <br/>du 20 octobre, 35 bataillons de la milice sont <br/>appelés sous les armes pour le 20 novembre. <br/>Guillaume II et les Infirmiers allemands <br/>Berlin, 4 novembre. <br/><br/>L'Empereur a reçu aujourd'hui, à midi, au <br/>Nouveau-Palais, une députation des médecins, <br/>des religieuses et des infirmiers volontaires qui <br/>vont se rendre au Transvaal. <br/><br/>INFORMATIONS POLITIOUES <br/>La Convocation des Chambres <br/><br/>Le Jonrnaf officiel a publié hier le décret con- <br/>voquant le Sénat et la Chambre des députés <br/>pour le 14 novembre. <br/><br/>La Questioe budgétaire <br/><br/>L'examen du budget de la Guerre a été ter- <br/>miné hier par la Commission du Budget. <br/>Il a été opéré un certain nombre de réduc- <br/>tions, notamment sur les chapitres relatifs aux <br/>stagiaires de t'état-major et au service de la re- <br/>monte. <br/><br/>Sur la proposition dn rapporteur, M. Camille <br/>Pelletan, la Commission a décidé la nomination <br/>d'une Commission d'enquête parlementaire pour <br/>examiner certains abus signalés dans le fonc- <br/>tionnement des services de la remonte. <br/><br/>C'est moi. Et le secret fût mort avec moi <br/>si vous ne m'aviez pas chargé d'une accusa- <br/>tion abominable. <br/><br/>Je ne vous crois pas. <br/><br/>8oubise, je vous jure que j'ai dit la vé- <br/>rité. <br/><br/>Je ne vous crois pas. Vous essayez de <br/>faire retomber sur un autre le poids de votre <br/>crime; cela serait encore courageux si l'autre <br/>était vivant et s'il pouvait se révolter et vous <br/>prouver votre mensonge. Mais vous accusez <br/>un mort Ce n'est pas celui-là qui sortira de <br/>ton tombeau pour vous dire que vous avez <br/>menti. <br/><br/>Soubise, j'ai frappé Girodiaa pour deux <br/>raisons. <br/><br/>Dites toujours I fit le garde avec un <br/>geste de mépris. <br/><br/>La première, c'est que je le haïssais ainsi <br/>que tous les Viliefort ont depuis un siècle <br/>haï les Girodias. Je le haïssais parce que je <br/>sais que ma famille est victime de cet homme <br/>dont la haine pour le nom que je porte n'est <br/>pas moindre que celle que nous avons pour <br/>lui La seconde, parce que, en déshonorant <br/>Michelle, il m'a brisé le cœur. Et si mes <br/>coups de cravache avaient pu le tuer, vrai- <br/>ment, je me demande encore aujourd'hui si <br/>ce n'eût point été justice et je ne m'en serais <br/>pas repenti. Voilà mes deux raisons, Sou- <br/>bise, et je n'ai plus rien à ajouter. <br/><br/>Je vous ai demandé une preuve. <br/>Et je tous ai répondu que je ne pour- <br/>rais pas vous en donner. <br/><br/>Impostnre La lâcheté se joint au men- <br/>songe. c'est naturel. <br/><br/>Et il ajouta tout à coup, d'un ten singulier <br/>et comme se parlant a lui-même, comme <br/>ayant oublié la présence de Roland <br/>J'ai cru aussi à cette haine, moi comme <br/>les autres, et pourtant, cette haine a subi du <br/><br/>ta ̃eorcniirssîon \"entendra tnmil le Ministre de <br/>la Marine et mardi le Ministre de la Guerre. <br/>Au Ministère du Commerce <br/><br/>M. Millerand, mnistre du Commerce, a reçu <br/>des délégués de l'Association de l'industrie et de <br/>l'agriculture, qui sont venus l'entretenir de l'ap- <br/>plication de la loi de 1892 concernant le travail <br/>des enfants et des filles mineures. <br/><br/>Il a reçu aussi des délégués de l'Association <br/>des cuirs et peaux qui lui ont soumis leurs obser- <br/>vations à propos du projet du nouveau tarif <br/>brésilien. M. Millerand a promis de saisir le <br/>Conseil des Ministres de la question. <br/><br/>UN OMNIBUS TAMPONNÉ <br/>La série des accidents d'omnibus continue. <br/>Hier soir, à neuf heures trente-cinq, un train- <br/>tramway de la ligne Versailles-Louvre, com- <br/>posé de trois voitures et de la machine, a tam- <br/>ponné, place de la Concorde, un omnibus faisant <br/>le service entre la gare des Batignolles et la <br/>gare Montparnasse. <br/><br/>Le cocher de cette voiture ayant pu d'un <br/>brusque coup de rênes, faire faire un détour à <br/>son attelage, la voiture a été atteinte par l'ar- <br/>rière et a eu sa plate-forme brisée. <br/><br/>Malheureusement, deux voyageurs qui s'y <br/>trouvaient ont été blessés. L'un, M. Marion, de- <br/>meurant boulevard Montparnasse, a eu le nez <br/>arraché; l'autre a eu la jambe fracturée. <br/>Une enquête est ouverte pour savoir à qui in- <br/>combe la responsabilité de cet accident. <br/>TERRIBLE NOYADE SUR L'ESCAUT <br/>[De notre corrttpondant particulier) <br/><br/>Anvers, 4 novembre. <br/><br/>Voici de nouveaux détails sur la terrible <br/>noyade do Waes <br/><br/>Hier soir, je me suis rendu sur le lieu de la <br/>catastrophe, éclairé par un phare électrique. On <br/>n'imagine rien de plus lugubre. <br/><br/>La passerelle rompue était en ce moment com- <br/>plètement submergée par l'eau, dont les flots <br/>venaient mourir en clapotant contre les pilotis <br/>de l'estacade. <br/><br/>A la porte de la salle d'attente, où les cadavres <br/>sont déposés, deux gendarmes font les cent pas <br/>et tiennent a distance les curieux. <br/><br/>L'Enquête <br/><br/>Une grande foule stationne dans la rue et <br/>couvre les digues. Depuis deux heures de l'a- <br/>près-midi les bateaux de passage entre Anvers <br/>et la Tête-de-Flandre ont déversé à Sainte- <br/>Anne des milliers de visiteurs désireux de voir <br/>le lieu de l'accident et de connaître les premiers <br/>résultats de l'enquête administrative. <br/><br/>L'inspecteur général des chemins de fer est <br/>arrivé de Bruxelles, délégué par le Ministre, <br/>M. de Paepe. Il a pris immédiatement la direc- <br/>tion de l'enquête et il a entendu plusieurs té- <br/>moins, notamment certains ingénieurs et plu- <br/>sieurs chefs de service. Il est urgent qu'une dé- <br/>cision intervienne, car le publie se montre très <br/>sévère pour l'administration supérieure. <br/>On dit, avec un semblant de raison, que de <br/>pareilles catastrophes ne devraient jamais se <br/>produire, qu'elles sont le résultat de l'impré- <br/>voyance et d'une mauvaise gestion. On dit aussi <br/>que l'attention de l'administration a été appelée, <br/>à diverses reprises, sur le mauvais état de la <br/>pesserelle, et on ajoute qu'il y a quelques se- <br/>maines le bourgmestre de Zwyndrecht s'en est <br/>plaint. <br/><br/>On s'occupe en ce moment de la confection <br/>des cercueils. La mise en bière se fera demain <br/>matin, après qu'on aura dressé l'acte de décès à <br/>la maison communale de Zwyndrecht. <br/>Le bourgmestre de cette commune doit déli- <br/>vrer en outre un certificat d'identité pour le <br/>transport des cercueils. Il y a actuellement <br/>quinze morts, mais le chiffre des victimes doit <br/>être beaucoup plus élevé. <br/><br/>Nombre de personnes se sont ea effet présen- <br/>tées, demandant des nouvelles d'un parent, d'un <br/>frére ou d'un fils qui se trouvaient dans le train <br/>et qui n'ont pas été retrouvés. <br/><br/>Dans tous les cas, s'il y a d'autres victimes les <br/>flots ne 1<>s ont pas encore rendues. <br/><br/>Récit d'un Survivant <br/><br/>Dans la matinée il n'y avait pas moyen de <br/>faire parler les voyageurs qui ont échappé à la <br/>catastrophe. Ils étaient comme pétrifiés. <br/>Maintenant, on constate une grande réaction <br/>et quelques-uns des sauvés deviennent, quand <br/>on les interroge, d'une remarquable loquacité. <br/>Chose curieuse un grand nombre d'entre eux <br/>reviennent voir le lieu où ils ont failli périr. <br/>J'eu ai rencontré un avec qui j'ai pu causer. <br/>C'est un jeune ouvrier, un solide gars de vingt <br/>à vingt-trois ans, qui m'a raconté ses impres- <br/>sions dans le langage pittoresque des Flandres. <br/>• Le jour commençait poindre, m'a-t-il dit. <br/>Comme nous descendions du train, on voyait <br/>dans le lointain les feux du bateau de passage <br/>qui accostait à la passerelle. <br/><br/>Un instant après je m'y engageais en courant, <br/>comme tous mes compagnons d'ailleurs, et je la <br/>franchis sans encombre, passant immédiatement <br/>sur le bateau et descendant dans la cabine. <br/>Plusieurs de mes amis me suivaient sur les ta- <br/>lons. <br/><br/>Je ne m'étais pas encore assis que des hurle- <br/>ments effroyables se firent entendre. Glacéd'ef- <br/>froi, je ne savais >;ue penser, quand le cri Le <br/>pont est brisé frappa mon oreille. On ajoutait <br/>que le bateau sombrait. D'un bond je fus hors <br/>de la cabine et, arrivé sur le pont du vapeur, je <br/>sautai dans l'eau, m'accrochant aux pilotis. <br/>Tous mes compagnons m'avaient suivi. Le <br/>capitaine du bateau avait beau crier et s'efforcer <br/>de calmer la panique, nous ne l'écoutions pas, <br/>poursuivis que nous étions par cette idée que le <br/>vapeur sombrait sous nos pieds. <br/><br/>En sautant sur les pilotis et an nous accro- <br/>chant à toutes les aspérités qui se présentaient <br/>sous nos mains, nous avons réussi à gagner la <br/>berge sains et saufs, et tous nous nous sommes <br/>sauvés comme des fous. <br/><br/>temps d'arrêt. Elle n'a pas duré un siècle, <br/>comme on le prétend, et la forêt, dans ses <br/>sentiers obscurs qui protègent si bien les <br/>amoureux, a conservé un secret qu'elle ne <br/>livrera jamais. <br/><br/>Roland tressaillit et devint livide. <br/><br/>Qu'avait-il voulu dire, cet homme, avec ces <br/>paroles mystérieuses ? <br/><br/>L'allusion était évidente. <br/><br/>Si Roland n'avait été instruit de la vérité <br/>tout entière, il n'y eût point pris garde, à ccs <br/>paroles. <br/><br/>La connaissant, la terrible vérité, ces pa- <br/>roles le frappaient. <br/><br/>Et il considérait maintenant Soubise avec <br/>terreur. <br/><br/>Soubise s'en aperçut. <br/><br/>Ah! ah! monsieur le comte, on dirait <br/>que vous avez tout à fait peur, à présent. <br/>Roiand n'avait pas la force de répliquer. <br/>Est-ce que le secret fatal, le secret du hon- <br/>teux amour d'autrefois, était entre les mains <br/>d'un étranger? <br/><br/>Alors, puisque Soubiae croyait Roland cou- <br/>pable envers Michelle, Il parlerait. Ce ne <br/>serait plus, non seulement, le mystère des <br/>coups de etavaehe qui serait révélé au PU-- <br/>quet, et qui entraînerait peut-être sur le <br/>meurtre une nouvelle enquête scandaleuse, <br/>ce serait les amours de sa mère dont rirait <br/>lepaya tout entier. <br/><br/>Cela, jamais, jamais, à aucun prix <br/>Soubise, munnura-t-il éperdu, ttm0 <br/>cher Soubise. <br/><br/>Ah ah fit le garde avec son^ éternel <br/>rire d'insensé, est- que *ou» sup- <br/>plier, maint«nar^( <br/><br/>Roland res* \"\"gHeaciéiB, «a preie i un< <br/>terreur fol1 <br/><br/>U^'Wûévreux, ardent, le prem 4e<rttw <br/><br/>Tel est te ftfMt de mon Interlocuteur. Il <br/>ajauté qu'après avoir couru un certain temps, <br/>les survivante eurent enfin le sentlment exact <br/>de la situation, et quelques-uns revinrent à la <br/>gare, où l'on commençait à apporter des cada- <br/>vres. <br/><br/>Dans le pays tout entier l'émotion causée pu <br/>cette catastrophe est intense. <br/><br/>La Haute-Cour <br/>L«s Avocats chez H. Falllèns <br/><br/>Ni. Fallières, président de la Haute-Gour, a <br/>reçu les avocats des accusés, qui lui ont été prti <br/>sentes par M* Oscar Falateuf. <br/><br/>Les avocats, au nombre de vingt et un, sont <br/>arrivés au Petit-Luxembourg à neuf heures <br/>précises. Ils ont été aussitôt introduits dans le <br/>grand salon du premier étage, où les attendait <br/>M. Fallières. <br/><br/>Me Falateuf a présenté ses collègues au prési- <br/>dent, disant que, ce faisant, il se conformait t <br/>l'usagr professionnel qui veut que les avocats <br/>aillanl présenter leurs hommages à un préai- <br/>dent devant lequel ils plaident pour la première <br/>fois. <br/><br/>M. Fallières a remercié les avocats de leur <br/>courtoise démarche; il a ajouté qu'il les couai- <br/>dérait, sans arrière-pensée aucune, comme les <br/>véritables auxiliaires de la Justice. Il a ensuite <br/>rappeté qu'il avait porté la robe d'avocat peu. <br/>dant de longues années et qu'il était lier de a'en <br/>souvenir. <br/><br/>Certaines questions d'ordre pnremoat maté-» <br/>riel ont ensuite été arrêtées, notamment en ce <br/>qui concerne les cartes d'entrée aux audiences <br/>pour !es parents des avocat.s et des aecusés. <br/>La visite a pris lin il neuf heures et demie» <br/>les notifications <br/><br/>L'arrêt de mise en accusation et l'acto d'açco- <br/>sation devant être, aux termes de la loi, notifiés <br/>aux accusés, avec citation a comparaître devant <br/>la Haute-Cour, trois Jours au moins avant la <br/>jour de l'audience », c'est hier, dans l'après- <br/>midi, que ces formalités ont été accomplies. La <br/>copie imprimée das pièces de la procédure a ét6 <br/>remise hier ù quatre heures aux défenseurs. <br/>L'Imprimerie nationale a travaillé quatre jours <br/>et quatre nuits il l'impression de co volume, qui <br/>a environ neuf cents pages. <br/><br/>C'est M, Dupuis, nuissier-audiencier de la <br/>Cour d'appel, affecté au service do la Haute» <br/>Cour, qui a été chargé de procéder aux formalités <br/>prescrites par la loi en ce qui touche les troia <br/>conlumax, si ceux-ci ne se présentent pas de- <br/>vant la Haute-Cour dans les dix jours de la si- <br/>gnification qui leur aura été faite dn l'arrêt de <br/>mise en accusation, de l'acte d'accusation et de <br/>la citation à comparaître. <br/><br/>Le onzième jour. NI, Dupuis se rendra succes- <br/>sïvernent, accompagné d'un tambour, à la porte <br/>de la Haute-Cour, à la porte du domicito de <br/>chaque contumax et à la porte de la mairie de <br/>sa résidence pour faire la notilleation publique <br/>prescrite, comme il le Ht déjà lors du procès dU <br/>général Boulanger. <br/><br/>L'Acte d'Accusation <br/><br/>L'acte d'accusation, nolillé hier aux défen- <br/>seurs et aux accusés, ne comprend pas moins' <br/>de quarante pages. Le procureur général dit qua <br/>depuis longtemps déjà les partis hostiles la <br/>Constitution républicaine se sont organisés pour <br/>la combattre en ayant recours à la violence, em <br/>provoquant des émeutes dans le but de s'em- <br/>parer du pouvoir. <br/><br/>11 ajoute que dans tous ces actes l'instruction <br/>a relevé la participation directe ou indirecte de <br/>chacun des accusés et que lesdits actes ne <br/>constituent pas une série de faits isolés et sans <br/>lien commun. <br/><br/>Le procureur établit ensuite ce qu'il faut en, <br/>tendre juridiquement par complot par «acte <br/>préparatoire » et par « attentat ». Il s'efforce de <br/>démontrer que royalistes, antisémites et natio- <br/>nalistes ont arrête ensemble et de concert leurs <br/>résoiutions d'agir pour renverser le gouverne- <br/>ment de la République. <br/><br/>En résumé, dit le procureur général, tous les <br/>faite qui viennent d'être relatés révèlent jusqu'. <br/>l'évidence l'existence d'un complot concert* et ar- <br/>rêté entre tous les accusés dans le but de changer <br/>et de détruire le gouvernement de la République; <br/>complot qui a été accompagné de nombreux acte* <br/>commit pour en préparer l'exécution. <br/><br/>LBS Témoins <br/><br/>il se confirme que la défense n'a nullement <br/>l'intention de se livrer une obstruction systé- <br/>matique au point de vue des témoignages et que <br/>les défenseurs appelleront seulement les témoins <br/>absolument nécessaires pour la cause de leurs <br/>clients. <br/><br/>Ils estiment qu'il leur suffira d'appeler cha- <br/>cun de dix & douze témoins. Comme il y a qua- <br/>torze accusés, on arriverait à cent cinquante té- <br/>moins cités par la défense, auxquels il faudra <br/>ajouter les témoins cités par l'accusation, dont <br/>on ne connaît pas encore le nombre. Soit un to- <br/>tal de deux cents témoins. <br/><br/>En comptant trente témoins par audience, on <br/>voit qu'il faudra, pour l'audition des témoin», <br/>environ six audiences. <br/><br/>La Déposition de M. Léplne <br/><br/>L'écho de Paris a publié hier matin un nouveau <br/>document relatif à la Commission d'instructioa <br/>de la Haute-Cour. Il s'agit de la déposition de <br/>M. Lkpine, préfet de pohce. <br/><br/>Voici, entre autres taits, le récit fait par If. <br/>Lépine d'une journée de manifestation, celle du <br/>20 août <br/><br/>La police fut assaillie d'une grEte de pierres, de <br/>boulons de fer, de projectiles variés et même da <br/>coups de feu. Pendant des heures, on vit ces btDf <br/>des tenter de forcer l'entrée de la rue de Chabrol, <br/>137 gardiens de ta paix furent, au cours de ces be- <br/>garres, plus ou moins grièvement blessés. <br/><br/>Un moment j'eus le sentiment que les hommes <br/>froppéa dans la nuit sans pouvoir savoir d'où leur <br/>venaient ces coups, et sans pouvoir s'en défendre, <br/>allaient perdre leur sang-froid, et je fus forcé de <br/>faire appel è toute leur énergie pour dégager la <br/><br/>La vérité sur ma fille <br/><br/>Je vous l'ai dite. <br/><br/>Si Michelle avait eu à se plaindre de OU <br/>rodias, pourquoi ne me l'eût-elle pas avoué <br/>A quel sentiment eût-elle obéi en se taisant? <br/>Je serais allé trouver Girodias et je l'aurais <br/>forcé à réparer son crime infâme. <br/><br/>Je l'ignore. Michelle ne m'a rien dit. <br/>Tandis qu'en me révélant votre noë, <br/>elle redoutait de vous exposer ma colère, <br/>vous le fila de cette famille que ma famille <br/>sert depuis plus d'un siècle avec tant de d6· <br/>vouement! <br/><br/>Roland dit simplement, mais avec une tris- <br/>tesse profonde <br/><br/>Je n'ai pas commis et je ne pouvais prA <br/>commettre Flnfamie dont vous m'accu*^ <br/>puisque j'aime Michelle eomma une sœo j. <br/>Alors, je ne vous renouvellerai ^s j^ <br/>menace que je voua ai faite. <br/><br/>Holand fut repris de tremhlemeD a> quaaé <br/>le garde ajouta <br/><br/>Vous vous chargerez d exr ^qaer au par* <br/>quet pourquoi, ayant frappé Girodias, vous <br/>avez laissé peser sur votre afère tout le poid» <br/>de cette accusation. Qu'^mt a moi, si la Jm- <br/>tice m'interroge, je sa1 j^ bien lui dire tout <br/>ce que j'ai sur le cœ> ^j.. <br/><br/>Et brusquement, il partit, laissant Rolaaé <br/>Le jeune 'iiomme voulut te suivre, te »̃ <br/>joindre, nv«is il n'en eut pas la force. <br/><br/>U se laissa tomber sur une chaise et et <br/>mit à pleurer. <br/><br/>l Cette faiblesse durapen. <br/><br/>C'était vrai, ce qu'en dernier lieu Saabl»» <br/>venait de lui reprocher. <br/><br/>Pourquoi avait-il laissé peter sur son, <br/>frère l'énigme de ces coups de cravache qui <br/>avaient broyé ia ûgu» 4* Girodfaa 1 <br/><br/>IA suiort.) J\"»M HàXt. <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.26</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                }
+              },
+              "etat": ""
+            }
+          },
+          "increment": 1,
+          "etat": "EmptyCaption StyleTextAndImage StyleSimplePage"
+        },
+        "etat": ""
+      },
+      "ModeAffichageFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "title": "Affichage",
+          "changed": true
+        },
+        "contenu": [
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-singlepage",
+            "description": "Simple page",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519080g/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-doublepage",
+            "description": "Double page",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/DOUBLE/ark:/12148/bpt6k519080g/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-verticalread",
+            "description": "Défilement  vertical",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/VERTICAL/ark:/12148/bpt6k519080g/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-mosaique",
+            "description": "Mosaïque",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MULTI/ark:/12148/bpt6k519080g/f1",
+            "etat": ""
+          },
+          {
+            "display": false,
+            "active": false,
+            "parameters": {
+              "role": "presentation"
+            },
+            "contenu": "icon-sound",
+            "description": "Enregistrement sonore",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MEDIA/ark:/12148/bpt6k519080g/f1",
+            "etat": "optionHidden"
+          },
+          {
+            "display": false,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-video",
+            "description": "Vidéo",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MEDIA/ark:/12148/bpt6k519080g/f1",
+            "etat": "optionHidden"
+          }
+        ],
+        "etat": ""
+      },
+      "OtherShareOptions": {
+        "display": true,
+        "active": true,
+        "parameters": {},
+        "contenu": [
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Intégrer",
+              "linkClass": "pictoPartageIntegrer",
+              "iconClass": "icon-partage-integrer"
+            },
+            "selected": false,
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Email",
+              "linkClass": "pictoPartageEmail",
+              "iconClass": "icon-partage-mail"
+            },
+            "selected": false,
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Lien",
+              "linkClass": "pictoPartageLien",
+              "iconClass": "icon-partage-link"
+            },
+            "selected": false,
+            "etat": ""
+          }
+        ],
+        "etat": ""
+      },
+      "SideBarFragment": {
+        "display": false,
+        "active": true,
+        "parameters": {
+          "changed": false
+        },
+        "contenu": {},
+        "etat": "optionHidden"
+      },
+      "DocumentInformationFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {},
+        "contenu": {
+          "IconsTitleDocument": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "icon-rawtextarrow",
+                "description": "Ce document est disponible en mode texte",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": ""
+              }
+            ],
+            "etat": ""
+          },
+          "DocumentSousDroits": {
+            "display": false,
+            "active": false,
+            "parameters": {},
+            "contenu": "",
+            "etat": "optionHidden"
+          },
+          "ConsulterRebondir": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "CONSULTER",
+                "selected": false,
+                "etat": "optionHidden"
+              },
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "REBONDIR",
+                "selected": false,
+                "etat": "optionHidden"
+              }
+            ],
+            "etat": ""
+          }
+        },
+        "etat": ""
+      },
+      "AmisBnFViewerModel": {
+        "display": false,
+        "active": false,
+        "parameters": {
+          "role": "presentation",
+          "changed": true
+        },
+        "selected": false,
+        "etat": "optionHidden"
+      }
+    },
+    "etat": ""
+  }
+}

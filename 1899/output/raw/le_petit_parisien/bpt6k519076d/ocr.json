@@ -1,0 +1,1033 @@
+{
+  "fragment": {
+    "display": true,
+    "active": true,
+    "parameters": {
+      "pageArkUrl": "ark:/12148/bpt6k519076d/f1.item.texteImage",
+      "externalPageArkUrl": "https://gallica.bnf.fr/ark:/12148/bpt6k519076d/f1.item.texteImage"
+    },
+    "contenu": {
+      "XitiFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "x8": "Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir",
+          "x9": "domaine%20public",
+          "modeDev": true,
+          "x10": "WebExterne",
+          "x12": "1899-11-01",
+          "x1": "bpt6k519076d",
+          "x11": "BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1",
+          "x2": "Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir",
+          "x13": "2008%2F02%2F21",
+          "x4": "NUM%C3%89RO",
+          "x5": "Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850",
+          "x15": "texte",
+          "x6": "pageHTML",
+          "x18": "avec%20relation",
+          "x7": "Le%20Petit%20Parisien%20%28Paris%29",
+          "x17": "gallica",
+          "changed": true
+        },
+        "contenu": {},
+        "urlServiceScriptXiti": "https://logs",
+        "pageName": "Visualiseur::TEXT_IMAGE::ARKbpt6k519076d",
+        "codeNiveau2": "15",
+        "idSite": "18798",
+        "implicationDegree": "",
+        "paramXiti": "&amp;x1=[bpt6k519076d]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-01]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]",
+        "motcle": "",
+        "numPageResultat": 1,
+        "logoNoScriptUrl": "https://logs.xiti.com/hit.xiti?s=18798&s2=15&p=Visualiseur::TEXT_IMAGE::ARKbpt6k519076d&amp;x1=[bpt6k519076d]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-01]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]&mc=&amp;x1=[bpt6k519076d]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-01]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]",
+        "protocol": "https://",
+        "etat": ""
+      },
+      "PaginationViewerModel": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "ZoomBtn": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-zoom"
+            },
+            "contenu": "icon-zoom",
+            "description": "Zoom",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage.zoom",
+            "etat": ""
+          },
+          "ChangeFormatPageVertical": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "vertical",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/VERTICAL/ark:/12148/bpt6k519076d/f1.item.texteImage..VERTICAL",
+            "etat": ""
+          },
+          "DisplaySelected": "item",
+          "IconDisplay": "pictos icon-singlepage",
+          "role": "link",
+          "searchPageLink": "https://gallica.bnf.fr/services/ajax/pagination/searchPage/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage?searchPage=",
+          "urlShareEmbed": "https://gallica.bnf.fr/services/share/embed/ark:/12148/bpt6k519076d/f1.item.texteImage",
+          "nbTotalVues": 4,
+          "displayModeIcon": "icon-singlepage",
+          "IsPageAudioDisplay": true,
+          "ChangeFormatPageDouble": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "double",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/DOUBLE/ark:/12148/bpt6k519076d/f1.item.texteImage..DOUBLE",
+            "etat": ""
+          },
+          "IsPageMultiDisplay": true,
+          "urlDownload": "https://gallica.bnf.fr/services/ajax/action/download/ark:/12148/bpt6k519076d/f1.item.texteImage",
+          "ChangeFormatPageMulti": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "planchecontact",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MULTI/ark:/12148/bpt6k519076d/f1.item.texteImage..MULTI",
+            "etat": ""
+          },
+          "ChangeFormatPageVocal": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "vocal",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/AUDIO/ark:/12148/bpt6k519076d/f1.item.texteImage..AUDIO",
+            "etat": ""
+          },
+          "accessibleLabel": "chiffre de pagination",
+          "urlShareMail": "https://gallica.bnf.fr/services/share/mail/ark:/12148/bpt6k519076d/f1.item.texteImage",
+          "screenNumber": 1,
+          "nbPagination": "vue 1/4",
+          "paginationTitle": "Pagination",
+          "IsPageDoubleDisplay": true,
+          "urlHasChanged": true,
+          "buttonAccessibleLabel": "Pagination et liste des vues",
+          "defaut": "Numero",
+          "IsPage3DDisplay": false,
+          "ChangeFormatPageSimple": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "item",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage..SINGLE",
+            "etat": ""
+          },
+          "IsPageVerticalDisplay": true,
+          "changed": true
+        },
+        "contenu": "NP",
+        "description": "Page",
+        "selected": false,
+        "url": "https://gallica.bnf.fr/services/ajax/pagination/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage",
+        "etat": ""
+      },
+      "BarreVerticaleFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "contenu": {
+          "OutilsFragment": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-infosdetails"
+                },
+                "contenu": "icon-infosdetails",
+                "description": "Informations détaillées",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/infosdetails/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": false,
+                "parameters": {
+                  "role": "presentation"
+                },
+                "contenu": "icon-caption",
+                "description": "Table des matières",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": "optionDisabled"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-search"
+                },
+                "contenu": "icon-search",
+                "description": "Recherche dans le document",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/search/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-display icon-singlepage"
+                },
+                "contenu": "icon-display icon-singlepage",
+                "description": "Modes d'affichage et vocal",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-3d"
+                },
+                "contenu": "icon-3d",
+                "description": "Visualiser en 3D",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/D3/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-zoom"
+                },
+                "contenu": "icon-zoom",
+                "description": "Zoom",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage.zoom",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-download"
+                },
+                "contenu": "icon-download",
+                "description": "Téléchargement / impression",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/download/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-export"
+                },
+                "contenu": "icon-export",
+                "description": "Export d'une sélection",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/export/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-share"
+                },
+                "contenu": "icon-share",
+                "description": "Partage et envoi par courriel",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/share/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-ecommerce"
+                },
+                "contenu": "icon-ecommerce",
+                "description": "Acheter une reproduction",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/ecommerce/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "paramConn": "not_connected",
+                  "id": "icon-bookmark",
+                  "ariaLabel": "Marquer cette page dans votre espace personnel (nouvelle fenêtre)"
+                },
+                "contenu": "icon-bookmark",
+                "description": "Marque-page",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/bookmark/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-indisponible"
+                },
+                "contenu": "icon-indisponible",
+                "description": "Acheter le livre complet",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/indisponible/achat//ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-retronews"
+                },
+                "contenu": "icon-retronews",
+                "description": "Accéder au numéro complet",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/retronews/achat//ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "paramConn": "not_connected",
+                  "id": "icon-ajouter_document",
+                  "ariaLabel": "Ajouter ce document à votre espace personnel (nouvelle fenêtre)"
+                },
+                "contenu": "icon-ajouter_document",
+                "description": "Ajouter ce document",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/add_doc/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-corriger"
+                },
+                "contenu": "icon-corriger",
+                "description": "Signalement d'anomalie",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/flag/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-result-list"
+                },
+                "contenu": "icon-result-list",
+                "description": "Retour à la liste de résultat",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-aide"
+                },
+                "contenu": "icon-aide",
+                "description": "Aide",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/aide/ark:/12148/bpt6k519076d/f1.item.texteImage",
+                "etat": ""
+              }
+            ],
+            "etat": ""
+          }
+        },
+        "etat": ""
+      },
+      "IssuePaginationFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "currentPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "01 novembre 1899",
+          "description": "01 novembre 1899",
+          "selected": false,
+          "bindUrl": "",
+          "url": "https://gallica.bnf.fr/services/ajax/pagination/issue/cur/ark:/12148/cb34419111x/date18991101.item",
+          "etat": ""
+        },
+        "nbrTotalPages": 0,
+        "firstPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "Voir le premier numéro",
+          "description": "icon-page_gauche",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k518772s/f1.item",
+          "etat": ""
+        },
+        "previousPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "consulter fascicule précédent",
+          "description": "icon-page_gauche",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k5190751/f1.item",
+          "etat": ""
+        },
+        "nextPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "consulter fascicule suivant",
+          "description": "icon-page_droite",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k519077s/f1.item",
+          "etat": ""
+        },
+        "lastPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "Voir le dernier numéro",
+          "description": "icon-page_droite",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k519136b/f1.item",
+          "etat": ""
+        },
+        "resultsByPage": {
+          "display": true,
+          "active": true,
+          "parameters": {},
+          "contenu": [],
+          "selected": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "etat": ""
+          },
+          "etat": ""
+        },
+        "titleTitle": {
+          "display": false,
+          "active": false,
+          "parameters": {},
+          "etat": "optionHidden"
+        },
+        "titleDescription": {
+          "display": false,
+          "active": false,
+          "parameters": {},
+          "etat": "optionHidden"
+        },
+        "refinementButton": {
+          "display": true,
+          "active": false,
+          "parameters": {},
+          "etat": "optionDisabled"
+        },
+        "etat": ""
+      },
+      "Visualizer": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "affichage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "hasOcr": true,
+            "isDisplayableConvention": true
+          },
+          "contenu": {
+            "paginationFirst": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la page précédente",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "icon-backward",
+              "description": "Première(s) page(s)",
+              "selected": false,
+              "url": "/",
+              "etat": "optionHidden"
+            },
+            "paginationLast": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la première page",
+                  "etat": "optionDisabled"
+                },
+                "role": "link"
+              },
+              "contenu": "icon-forward",
+              "description": "Dernière(s) page(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519076d/f4.item.texteImage",
+              "etat": ""
+            },
+            "paginationNext": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la page suivante",
+                  "etat": "optionDisabled"
+                },
+                "role": "link"
+              },
+              "contenu": "icon-rightarrow",
+              "description": "Page(s) suivante(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519076d/f2.item.texteImage",
+              "etat": ""
+            },
+            "paginationPrevious": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la dernière page",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "icon-leftarrow",
+              "description": "Page(s) précédente(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage",
+              "etat": "optionHidden"
+            },
+            "paginationBrowse": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Décaler d'une page",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "",
+              "description": "Page +1",
+              "selected": false,
+              "url": "/",
+              "etat": "optionHidden"
+            },
+            "paginationCurrent": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "role": "link",
+                "updatePageUrl": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage"
+              },
+              "contenu": "",
+              "description": "Page courante",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/ark:/12148/bpt6k519076d/f1.item.texteImage.item",
+              "etat": ""
+            },
+            "renderModel": {
+              "display": true,
+              "active": true,
+              "parameters": {},
+              "contenu": {
+                "previousPage": {
+                  "display": false,
+                  "active": false,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "lastPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 4 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519076d/f4.highres",
+                      "screenNumber": 4,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519076d/f4.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/> ",
+                            "stringOCR": "VINGT-QUATOTRME ANNÉE. N- Le numéro t & MERCREDI i- NOVEMBRE Ï8& <br/><br/>ABONNEMENTS Direction 18. Rue^Enghlen. PARIS ANNONCES <br/>PARIS et DÉPARTEMENTS:TroiSmois,5fr.SixmoU,9fr.Unan,f8fr. TOUS LES JEUDIS S'adresser à L'OFFICE D'ANNONCES, 10, Place de la Bourse, 10, PARIS <br/>on trais dans lo,. BlffMa de poste Supplément Littéraire Illustré (Huit Pages) 5 Centimes. et à la SaUe des Dépèches » du Pelii Parisien. ao. boule^Montroartrc. <br/><br/>Dernière Edition <br/><br/>Nous citions en exemple, il y a quelques <br/>jours, les nombreux musées industriels qui <br/>fonctionnent en Allemagne et auxquels sont <br/>annexés des services de renseignements <br/>techniques et commerciaux. Ces musses, <br/>disions-nous, se font des prêts mutuels <br/>par des conférences et des excursions bien <br/>conduites, on tâche d'intéresser les artisanes <br/>et le public aux questions qu'ils soulèvent. <br/>Tant au point de vue historique qu'au <br/>point de vue pratique, ils jouent un rôle <br/>de plus en plus important dans l'économie <br/>nationale. <br/><br/>N'avons-nous donc rien en France qu'on <br/>puisse rapprocher de ces musées allemands? <br/>Peut-être. Mais les établissements que nous <br/>possédons ne sont encore qu'à l'état em- <br/>bryonnaire et il leur manque l'idée direc- <br/>triee qui donne tant de cohésion et d'unité <br/>aux efforts de nos voisins de l'Est. <br/><br/>On sait, par exemple, ce qu'est à Paris le <br/>Musée social. L'admirable création du comte <br/>de Chambrun constitue à cette heure un <br/>desorganismes les plus souples et les mieux <br/>compris de la vie économique du pays. Son <br/>action, qui ne s'est fait sentir jusqu'ici qu'au <br/>contre, pourra rayonner de plus en plus <br/>vers- BXireniUes.fce- <br/>destiné il devenir l'intermédiaire graoieux <br/>d'un grand nombre d'industries réparties <br/>sur toute la surface du territoire, y compris <br/>les industries maritimes, et qui trouveront <br/>en lui un agent aussi désintéressé qu'utile. <br/>Et, sans doute, des institutions comme le <br/>Musée social exigent, tant pour leur entre- <br/>tien que pour leurs frais de premier éta- <br/>blissement, une mise de fonds considéra- <br/>ble. C'est seulement dans les grandes villes <br/>comme Paris, Lyon, Marseille ou Burdeaux <br/>qu'elles peuvent se développer et rendre les <br/>services qu'on attend d'elles. <br/><br/>Ces musées sont, en effet, des musées <br/>encyclopédiques; ils embrassent toutes les <br/>manifestations de l'activité sociale. Leur <br/>nom le dit, et leur nom n'est point menteur <br/>en l'espèce. <br/><br/>Mais, par le fait même qu'ils embrassent <br/>tant de questions, ils ne peuvent les serrer <br/>toutes d'assez près; ils négligent les détails <br/>et c'est aux grandes lignes seulement qu'ils <br/>s'appliquent pour tâcher de dégager les <br/>lois communes à la production générale du <br/>pays. <br/><br/>Il y a d'autres sortes de musées indus- <br/>triels. Et, à la vérité, ces musées peuvent <br/>être aussi variés que les industries mêmes <br/>dont ils prétendent classer les spécimens et <br/>offrir une vue détaillée. <br/><br/>Le malheur est que nous n'avons encore <br/>chez nous que très peu de ces établisse- <br/>ments. Plusieurs même sont de date si ré- <br/>sente qu'ils sont à peine constitués. Ainsi <br/>le Musée maritime et commercial que vient <br/>de fonder la ville de Fécamp. <br/><br/>La Chambre de commerce de cette ville <br/>possédait depuis plusieurs années une inté- <br/>ressante collection d'engins de pêche qu'elle <br/>avait envoyée à l'Exposition du « Vieux- <br/>Honaeur ». Ellc y fut fort remarquée. Cela <br/>donna idée aux Fecampois de sortir défini- <br/>tivemeot des armoires et des caisses où on <br/>les enfermait jusqu'alors les différents en- <br/>gins de pôoho, tant anciens que modernes, <br/>qui formaient la collection de la Chambre <br/>de commerce. <br/><br/>Ces engins, méthodiquement classés, <br/>pouvaient constituer une excellente leçon de <br/>choses pour le public on y ajouterait toutes <br/>le& spécialités de l'industrie locale on y <br/>ferait figurer également les articles d'im- <br/>portation, et l'on aurait ainsi tous les élé- <br/>ments d'un Musée industriel, instructif et <br/>pratique, parfaitement approprié aux be- <br/>soins de la localité. <br/><br/>Ce Musée est fondé aujourd'hui. L'orga- <br/>nisation en a été confinée à M. Louis Gau- <br/>thier, directeur de l'Ecole d'hydrographie <br/>at de l'Ecole des pêches maritimes de Fé- <br/>camp. Aucun choix ne pouvait être plus <br/>heureux, et la nouvelle fondation est entre <br/>bonnes mains. <br/><br/>C'est également une excellente idée que <br/>celle qui a guidé M. Millet dans la création <br/>à Dieppe d'une salle consacrée aux produits <br/>de l'ivorysculpture locale. <br/><br/>L'ivoire de luxe, l'ivoire travaillé, fut <br/>longtemps l'industrie dieppoise par excel- <br/>lence. A vrai dire, industrie et marina se <br/><br/>N* 24. Feuilleton du PETIT Parisien. <br/>La Cliarmeuse d'Enfants <br/>GRAND R£MAN INÉDIT <br/><br/>PREMIERS PARTIS <br/><br/>UNE HAINE VIEILLE D'UN SIÈCLE <br/>XIll (suite) <br/><br/>Lettre d'amour <br/><br/>Mais il fallait une explication. <br/><br/>Mère, dit-il, je rentrais au château quand <br/>je vous ai aperçue. inanimée».. Ma mère, <br/>tous sentez-vous mieux?. <br/><br/>Oui. oui, mon fils <br/><br/>Voulez-vous vous appuyer sur mon bras <br/>jusque Vlllefortï <br/><br/>Merci. je rentrerai bien seule. Je <br/>vous assure, mon enfant, ce n'était rien, rien <br/>en vérité. <br/><br/>Elle a à peine assez de force pour s expri- <br/>mer. <br/><br/>Elle se raidit contre une nouvelle faiblesse, <br/>car- elle souffre une inexprimable torture, une <br/>angoisse sans nom. <br/><br/>Cette figure pâlie, ces lèvres blêmes, ces <br/>yeux creusés, cet air de désespoir, est-ce que <br/>tout cela n'indique pas, chez Roland, la con- <br/>naissance de la vérité?. Un sanglot erre sur <br/>ses lèvres. Quel surhumain courage il lui <br/>faut pour le comprimer. Mais la crise, grave <br/>tt nerveuse, si elle n'éclate pas maintenant, <br/>Eclatera tout l'heure et va faire de ce jeune <br/>Traduction et i rep^nJactioa iat«j;sUi«A. <br/><br/>tenaient si étroU.eraeijtt « que les Dieppois, f <br/>dit Vitet, étaient passés maîtres et célèbres <br/>rETufûpe presque autant comme <br/>ivoiriers que comme marins ». Il y a peu <br/>d'années encore, l'industrie de l'ivoire oc- <br/>cupait à Dieppe 300 ouvriers et 16 maîtres <br/>ou fabricants. Il n'y a plus, à cette heure, <br/>que deux ou trois maîtres et une trentaine <br/>d'ouvriers. <br/><br/>Cette décadence de l'ivorysculpture diep- <br/>poise tient-elle cependant, comme on l'a <br/>dit, à la décadence générale du goût, à la <br/>désaffection croissante de la clientèle? On <br/>en peut douter. La vérité est que si l'ivoi- <br/>rerie dieppoise traverse la plus dangereuse <br/>et la plus mortelle des crises, cela tient <br/>surtout il l'esprit de routine et au manque <br/>d'instruction première qui se révèlent dans <br/>la fabrication actuelle, Les dispositions na- <br/>turelles des Dieppois pour la sculpture ont <br/>cependant frappe de tous temps les obser- <br/>vateurs. <br/><br/>« Vous voyez, disait Vitet en 1844, les <br/>enfants en apprentissage creuser, évider, <br/>déchiqueter 1 ivoire avec une facilité toute <br/>instinctive et dont vous demeurez tout con- <br/>fondu. » <br/><br/>Et il ajoutait Il est du devoir du gou- <br/>vernemeut de ne pas laisser s'égarer et se <br/>perdre ces précieuses semences. » <br/>C'est à quoi l'on veilla pendant quelque <br/>temps. Mais, sauf peut-être sous la Restau- <br/>ration et le 'second Empire, quand Planet, <br/>Buis.- Amêdiie Fér*tla dirigeaient, la coup» <br/>gratuit de dessin créé à Dieppe par Napo- <br/>léon ne rendit aucun service appréciable. Il <br/>faut plus et mieux qu'un simple cours, et <br/>c'est c que l'effort doit être proportionué à <br/>la lâche. <br/><br/>On commence le comprendre. Tandis <br/>que la municipalité s'occupe de faire aboutir <br/>le projet de création d'une sérieuse école de <br/>dessin et de modelage appliqués à l'indus- <br/>trio de l'ivoire, M. Millet, conservateur du <br/>musée local, vient d'organiser dans ce mu- <br/>sée la salle d'ivorysoulpture dont nous par- <br/>lions tout à l'heure. <br/><br/>Croirait-on, en effet, que Dieppe, cette <br/>patrie de l'ivorysoulpture, n'avait jusqu'a- <br/>lors rien qui de près ou de loin ressemblât <br/>à une collection d'ivoires? Quand NI. Maze- <br/>Sencier la visita en 1875, le musée local <br/>comprenait en tout deux râpes à tabac, une <br/>bonbonnière, un morceau d'éventail et un <br/>morceau de navette, deux ou trois étuis <br/>sculptés, un groupe de Nicolle aîné et deux <br/>vases Médicis pris au Musée du Louvre et <br/>offerts par Louis-Philippe. Les choses ont <br/>changé depuis. Le musée s'est agrandi et <br/>son distingué conservateur s'y occupe pieu- <br/>sement à recueillir les pièces les plus inté- <br/>ressantes de l'ancienne sculpture indigène. <br/>Plusieurs vitrines de ce musée sont aujour- <br/>d'hui consacrées à l'ivoire dans une des <br/>salles récemment ouvertes du second étage. <br/>On y remarque bon nombre de bas-reliefs, <br/>de statuettes, de vases, de crucifix, de râpes <br/>à tabac, de navettes à frivolités, de pulvé- <br/>rins, d'étuis, de bonbonnières, etc., ainsi <br/>qu'une demi-douzaine de navires en ivoire <br/>qui étaient autrefois, avec les crucifix, la <br/>grande spécialité dieppoise. <br/><br/>Nul doute qu'appuyée d'une sérieuse <br/>école de dessin et de modelage, cette expo- <br/>sition permanente des plus beaux spéci- <br/>mens de l'ivorysculpture dieppoise ne dé- <br/>termine un renouveau de l'activité locale <br/>dans une ville qui offre tant de ressources <br/>naturelles à l'industrie et à l'art. <br/><br/>Combien utiles pourtant seraient de sem- <br/>blables musées dans des villes oomme Li- <br/>moges, Nevers et Rouen, qui ont tant à <br/>fairo pour maintenir leur personnel de po- <br/>tiers et d'émailleurs au niveau de la concur- <br/>rence étrangère Quels services ne ren- <br/>draient-ils pas également pour la ferronne- <br/>rie, l'ébémsterie, la dentellerie, la tapisse- <br/>rie, etc., etc., dans les villes qui ont gardé <br/>quelque souvenir de ces industries char- <br/>mantes, longtemps le monopole de notre <br/>pays et que les paysétrangerslui out enlevé <br/>peu à peu I <br/><br/>11 n'est pas jusqu'aux musées simplement <br/>pittoresques, comme ceux fondés il Arles <br/>par Mistral et par M. Le Men à Quimper, <br/>qui ne puissent aider à notre relèvement <br/>industriel. Les mobiliers, les ustensiles de <br/>toute espèce qu'on y rencontre peuvent don- <br/>ner des idées, sinon servir de modèles Dans <br/>le détail même des costumes, dans les bro- <br/>deries qui les chamarrent, dans les den- <br/>telles qui les ornent, il y a plus d'uue leçon <br/>à, recueillir. <br/><br/>Des musées de cette sorte contribuent <br/><br/>garçon, si robuste jusqu'à ce iour, l'enfant <br/>nerveux et malade et presque infirme, pau- <br/>vre créature à plaindre dont nous avons vu les <br/>Incompréhensibles faiblesses dès le début de <br/>ce récit. <br/><br/>La mère, sans plus rien dire, lentement <br/>s'éloigna. <br/><br/>Hol.înd la laissa partir. <br/><br/>Longtemps, longtemps, il reste là, debout, <br/>la tête penchée, sans bouger. <br/><br/>Puis il retire la lettre qu'il a cachée préci- <br/>pitamment à la vue de sa mère et il la relit. <br/>Il doutait peut-être encore. il y a quelques <br/>instants. <br/><br/>A présent, après avoir vu sa mère, plus de <br/>doute 1 <br/><br/>il va retrouver son cheval dans la futaie, et <br/>un quart d'heure après il est à Villefort, où <br/>sa mère vient de rentrer. <br/><br/>Par bonheur, il ne voit pas son frère. <br/>S'il avait rencontré Hoface, si Horace l'a- <br/>vait interrogée remarquant sa pâleur, peut- <br/>être qu'à lui, à ce frère aîné, Il n'aurait pas <br/>eu, en cette heure terrible, le courage de <br/>mentir 1 <br/><br/>Mais depuis quelques minutes, le duc est <br/>parti il ne veut pas rester plus longtemps <br/>avec le doute affreux de cette forfaiture à <br/>l'honneur que l'on reproche à un des Ville- <br/>fort. <br/><br/>il a dit <br/><br/>Je verrai Glrodias, et coûte que coûte je <br/>saurai la vérité. <br/><br/>Voilà pourquoi. sans en parler à personnel, <br/>il s'est dirigé vers les Grandes-Riches, où il <br/>arrive bientôt il n'a pai re-ncontrë la du- <br/>chesse cellc-çi rentrait au château et Ro- <br/>land y rentrait de son côté presque aussitôt <br/>au moment où Horace en sortait. <br/><br/>Mais ces allées et venue* ont pria 4u <br/>.teoing. <br/><br/>aussi à leur mamère à réveiller ou à forti- <br/>fier la vie industrielle. On a loué surtout <br/>Mistral pour le bel exemple de générosité <br/>qu'il avait donné en fondant le musée d'Ar- <br/>les on aurait dû le féliciter surtout d'avoir <br/>doté la Provence d'un organisme qui lui <br/>manquait, d'avoir assis surie passé l'avenir <br/>de l'art provençal. <br/><br/>Puissent les créations de cet ordre se <br/>multiplier Chacune de nos villes françaises <br/>devrait tenir à honneur d'avoir son musée <br/>local, non point composé avec quelques ta- <br/>bleaux d'une valeur douteuse et une demi- <br/>douzaine de plâtres jococq, mais avec les pro- <br/>duits de ses industries et de son commerce. <br/>Fécamp et Dieppe ont donné sur ce point <br/>un exemple qui mériterait de n'être pas <br/>perdu. <br/><br/>JEAN FROLLO <br/><br/>LHÏERRE£TR.TOAL <br/>Un désastre terrible vient de frapper les <br/>armes anglaises. <br/><br/>Le général White, par une faute de straté- <br/>gie qu'il avoue lui-même, s'est fait battre en <br/>bataille rangée devant Ladysmith parles for- <br/>ces combinées de la République d'Orange et <br/>du Transvaal. <br/><br/>Mille hommes tués et blessés, deux miUe <br/>prisonniers, dix-huit canons perdus, tel est <br/>pour l'Angleterre le bilan de cette funèbre, <br/>journée. L'écrasement est aussi complet <br/>qu'au fameux combat de Majouba-Hill, où les <br/>Anglais éprouvèrent pour la première fois la <br/>vaillance des Boërs. <br/><br/>Au moment où le général Redvers Buller <br/>débarque au Cap, les débris de l'armée du <br/>.Natal sont en fuite vers Piétermaritzburg la <br/>colonie du Cap est menacée,le Béchounaland <br/>et la Hhodésia sont à la merci des Boërs, <br/>dont les forces semblent augmenter chaque <br/>jour. <br/><br/>L'Angleterre, grisée par ses rêves d'omni- <br/>potence, affectait de mépriser ses adversai- <br/>res. Elle ne tardera pas à apprendre ce qu'il <br/>en coûte d'attaquer, contre tout droit et toute <br/>justieé, un peuple fermement décidé à lutter <br/>jusqu'à la mort pour sa liberté. <br/><br/>UN DÉSASTRE ANGLAIS <br/>Londres, 31 octobre. <br/><br/>Le War Office reçoit la dépêche suivante du <br/>général \"White <br/><br/>Ladysmith, lundi, 11 h. 35 matin. <br/><br/>J'ai à annoncer un désastre survenu à une <br/>colonne envoyée par moi pour prendre po- <br/>sition sur une colline, dans le but de proté- <br/>ger notre flanc gauche. (ici trois mois indé- <br/>chiffrables), et après avoir subi des pertes <br/>considérables a dû se rendre. <br/><br/>Le détail des pertes n'est pas encore <br/>connu. Un soldat employé à l'ambulance du <br/>régiment des fusiliers irlandais est venu <br/>sous la protection d'un pavillon parlemen- <br/>taire, avec une lettre des survivants de la <br/>colonne, demandant de l'aide pour enterrer <br/>les morts. Je orains que le bien fondé de la <br/>nouvelle ne fasse aucun doute. <br/><br/>C'est moi qui ai préparé le plan qui a en- <br/>traîné le désastre, et suis seul responsable <br/>de son exécution. <br/><br/>Aucun blâme ne s'attache aux troupes, <br/>car la position était intenable. <br/><br/>La colonne était composée d'un bataillon <br/>des fusiliers irlandais, d'un bataillon de <br/>Gloucesler et d'une batLerie de montagne. <br/>L'Evacuation de Ladysmith <br/><br/>Londres, 31 octobre. <br/><br/>La capitulation de la colonne envoyée par <br/>le général White pour protégersonaile gau- <br/>che ne fut qu'un épisode de la grande ba- <br/>taille engagée à Ladysmith. <br/><br/>Les Anglais ont subi une épouvantable <br/>défaite. <br/><br/>Leur armée a été refoulée à six milles en <br/>arrière de ses positions. <br/><br/>La nuit seule a empêché sa destruction <br/>complète. <br/><br/>Plus de mille hommes sont restés sur le <br/>terrain, sans compter les prisonniers tom- <br/>bés au mains des Boërs. <br/><br/>Le général White, en retraite sur Piéter- <br/>mariuLurg, a évacué Ladysmitb. <br/><br/>Le Récit de la Bataille <br/><br/>D'autre part le correspondant du Standard à <br/>Ladvsmitl fait en ces termes le récit de la ba- <br/>taille d'hier <br/><br/>Nos forces étaient ainsi disposées à droite. <br/>trois régiments de cavalerie, quatre' batteries <br/>d'artillerie, cinq bataillons d'infanterie au cen- <br/>tre, trois batteries d'artillerie, deux régiment <br/>de cavalerie et quatre bataillons d'infanterie; il. <br/>l'aile gauche, deux bataillons Je fusiliers irian- <br/>dais, le régiment de Qlouceatershirc et tme bat- <br/>terie de montagne. » <br/><br/>La nuit est descendue sur les bois, et <br/>comme la lune ne brille pas encore, la cam- <br/>pagne est plongée dans l'obscurité. <br/><br/>Au loin, le vacarme de la fête, incessant, <br/>interminable. <br/><br/>Pour lui comme pour la duchesse, comme <br/>pour Roland aussi, ce sera un cauchemar <br/>lorsque tous trois, plus tard, se souvien- <br/>dront <br/><br/>Lorsque le duc arrive aux Grandes-Roches, <br/>il est surpris de la solitude de la maison. <br/>Aucun bruit, aucune lumière. <br/><br/>Des fenêtres sont ouvertes, entre autres la <br/>fenêtre du cabinet de travail de Girodias, où <br/>le matin même eut lieu leur entrevue. <br/>Ouverte, également, la grande porte d7en- <br/>trée. <br/><br/>Le duc monte les quelques marches. <br/>ILsonne. <br/><br/>On ne répond pas. <br/><br/>Il sonne plus longuement et plus fort. <br/>On ne répond pas davantage. <br/><br/>Comme le bureau de Girodias est situé au <br/>rer.-de-chaussée, le duc s'y dirige, monte sur <br/>un banc du jardin et jette un coup d'oeil dans <br/>l'intérieur du cabinet. <br/><br/>Bien qu'il fasse nuit, les ténèbres ne sont <br/>pas cependant si épaisses qu'il ne puisse dis- <br/>tinguer à peu près ce qui s'y trouve. <br/>Et il voit Girodias, assis à son bureau, le <br/>front sur la table, près d*ua tas de papiers. <br/>II appelle <br/><br/>Monsieur Girodias I <br/><br/>Girodias ne fait aucun mouvement. <br/>Il s'est endormi Je vais le réveiller. <br/>Il saute de son banc, entre dans la maison, <br/>et à tâtons, en cherchant à se rappeler, il <br/>trouve la porte du bureau. <br/><br/>La porte du bureau est grande ouverte. <br/>Le duc entre, sans aucun soupçon. <br/>Pardon. monsieur Girodin», dit-IL <br/><br/>Le plan du général White était de jeter tout <br/>son centre sur l'ennemi; mais ce plan ne put <br/>être exécuté, car la position de l'ennemi qui <br/>formait l'objectif des Anglais avait été évacuée. <br/>L'aile droite des Anglais fut virement atta- <br/>quée et la colonne dut changer de front. Le feu <br/>de l'ennemi ayant diminué d'intensité, l'infan- <br/>terie s'avança, couverte par la cavalerie. <br/>L'ennemi se livra aiors à une contre-attaque <br/>et, comme il avait la supériorité numérique, le <br/>général White ordonna à l'infanterie de se re- <br/>plier graduellement. <br/><br/>Le mouvement fut bien exécuté sous le cou- <br/>vert de notre artillerie dont le tir était excellent. <br/>Quelques obus ont été lancés par les Boërs sur <br/>la ville, d'gUne distance de six mille yards, mais <br/>ils n'ont causé aucun dégùt. <br/><br/>Li'engagemout a duré plusieurs heures, quatre <br/>heures environ. <br/><br/>Nous avons perdu de 90 à 100 hommes. <br/>L'attaque a été admirablement conduite par <br/>notre aile droite, et les Boërs ont été bientôt dé- <br/>logés des positions qu'ils occupaient près de <br/>Lombards-Kop, mais il nous a été impossible de <br/>les poursuivre. <br/><br/>Le pays étant trop accidenté, notre artillerie <br/>ne pouvant déloger les Buërs des abris où ils se <br/>trouvaient, l'infanterie se porta en avaut en ti- <br/>railleurs ello fut reçue par un feu terrible dont <br/>les ell'eU furent bientôt apparents. <br/><br/>Le général White, qui était au centre, voyant <br/>que l'aile droite était sur la point de Iléchir. en- <br/>voya à son secours toute la colonne du centre, à <br/>l'exception d'un régiment d'infanterie. <br/>Un détachement naval, débarqué à Durltan du <br/>croiseur Powerful, arrivant sur le terrain vers la <br/>fln de la bataille, ouvrit le feu avec ses gros <br/>canons. Au quatrième coup, le canon tourd de <br/>10 des Boërs lut démonté la ville n'a donc rien <br/>ai craindre d'un bombardement. <br/><br/>Les Pertes <br/><br/>Londres, 31 octobre. <br/><br/>Le général White télégraphie de Ladysmith <br/>au War Office la liste des officiers anglais tom- <br/>bés aux mains des Boërs. Cette liste comprend <br/>1 lieutenant-o-olonel, 7 commandants, capi- <br/>taines, 27 lieutenants et 1 aumônier militaires, <br/>soit au total 41 officiers, plus 1 correspondant <br/>de journaux. <br/><br/>Cinq de ces officiers sont Messes. <br/><br/>La colonne capturée par les Boërs comptait <br/>environ 2,000 hommes. <br/><br/>Le Times, dans une deuxième édition, publie <br/>la dépêche suivante du Cap, 31 octobre <br/>Boërs ont pris part à l'eugagcment <br/>d'hier devant Ladysmith. <br/><br/>Londres, 31 octobre. <br/><br/>On télégraphie de Piétennaritzburg au Daily <br/>Mail-, à la date du 30, une heure de l'après-midi <br/>On assure que la panique qui d'est emparée <br/>des mulets a entraîne la perte de six canons, II <br/>est très probable que Ladyomitli sera bientôt <br/>complètement isolée. <br/><br/>D'après une information adressée au même <br/>journal, les fermiers hollandais du Natal four- <br/>niraient des informations aux Boërs. Le plus <br/>grand secret est observé concernant l'arrivée <br/>des troupes et leur départ pour le théâtre des <br/>opérations et, malgré tout, les Boërs en sont <br/>très rapidement informés. <br/><br/>L'Emotion à Londres <br/><br/>Londres, octobre. <br/><br/>La perte des deux bataillons et d'une batterie <br/>d'artillerie de montagne cause une grande <br/>éinoUouvdiius le publie anglais, qui commence <br/>à comprendre la valeur de l'ennemi. <br/><br/>Jusqu'à ce moment, on parlait de la guerre <br/>contre les Boërs comme d une promenade mili- <br/>taire. <br/><br/>Les deux bataillons perdus formaient un ef- <br/>fectif d'environ deux mille hommes. Combien <br/>de ceux-là sont prisonniers et combien out été <br/>laissés sur le terrain? On l'ignore encore; mais <br/>il est probable que bon nombre d'entre eux au- <br/>ront été tués ou blessés. <br/><br/>Les dépêches officielles que reçoit le gouver- <br/>nement sont affichées dans les couloirs du %Var <br/>Office, où un grand nombre de personnes vien- <br/>nent en prendre connaissance. On n'a jamais vu <br/>une aussi grande émotion dans les bureaux de <br/>la Guerre. Les autorités militaires viennent, à <br/>l'instant, de décider que trois nouveaux batail- <br/>lons et une batterie de montagne seraient en- <br/>voyés en supplément dans le sud de l'Afrique. <br/>Les nouvelles troupes seront embarquées dans <br/>une dizaine de jours. <br/><br/>Il semble hors de doute que le général White, <br/>au lieu de rester sur la défensive après s'être <br/>établi à Ladysmith solidement et de manière à <br/>repousser toute attaque, a vculu prendre les de- <br/>vants et remporter une victoire définitive, avant <br/>l'arrivée de i armée actuellement sur mer. C'est <br/>dans ce but qu'il a mis en avant toutes les trou- <br/>pes qu'il avait en mains. S'il s'était agi d'une <br/>simple reconnaissance, il se serait contenté d'en- <br/>voyer quelques bataillons, appuyés par un petit <br/>nombre de canons et de la cavalerie. <br/><br/>Les renseignements de tous les points de l'An- <br/>gleterre indiquent qu'on y partage l'émotion <br/>qui rignc à Londres. Cette émotion est princi- <br/>palementintense dans les grands centres comme <br/>et Manchester. <br/><br/>Dans le Bechouanaland <br/><br/>Pretoria, 31 octobre. <br/><br/>Le général Cronje rapporte que la garnison <br/>anglase de Ma/, king a fait une sortie elle a <br/>attaqué il la baïonnette le.Jaager du comman- <br/>dant Louw, près du champ de courses; mais <br/>elle a été repoussée, laissant six morts sur le <br/>terrain et ayant aussi, croit-on, de nombreux <br/>blessés. <br/><br/>Le colonel Baden-Powei a demandé un armis- <br/>tice pour lui permettre d'enterrer ses morts. Le <br/>général Cronje y a consenti et les Boërs ont mis <br/>les cadavres sur un wagon envové à cet effet, <br/>qui est ensuite retourné à Mafekûig. <br/><br/>Vryburg, S5 octobre. <br/><br/>Plusieurs Hollandais du Becuuanaland se sont <br/>joints ouvertement aux Boërs. <br/><br/>,Après que le drapeau du Transvaal eot été <br/>hissé sur la ville, le détachement boér. fort de <br/>1.3GQ hommes, prit officiellement possession de <br/>laville, et le commandant boër prononça uu <br/><br/>Girodias reste dans une immobilité ab- <br/>solue. <br/><br/>Horace s'approche et lui touche l'épaule. <br/>Le vieillard ne bouge pas. <br/><br/>Et tout à coup, Villefort se penche, puis se <br/>relève, s'éloigne avec un cri d'horreur. les <br/>bras étendus comme pour écarter un fan- <br/>tôme. dans la première épouvante de ce <br/>spectacle. <br/><br/>Girodias ne dort pas. <br/><br/>Girodias est mort. <br/><br/>Son front repose sur son bureau et il est <br/>assis dans son fauteuil. <br/><br/>Les deux mains pendent. <br/><br/>Dans le dos, un poignard, jusqu'à la garde. <br/>Ce poignard qui servait à Girodias de coupe- <br/>papier et se trouvait toujours sur «on bu- <br/>reau. <br/><br/>La mort a certainement été foudroyante. <br/>Le poignard a traversé le ceur. <br/><br/>Du sang, avec un peu d'écume, est sorti <br/>par la bouche et a taché les papiers épars sur <br/>la table. <br/><br/>C'est tout. <br/><br/>Rien de dé'-angé, du moins en apparence, <br/>rien d'anormal. <br/><br/>Et le due, debout em$K la porte, le cœur <br/>battant. passe la main eúr son front, comme <br/>pour en écarter un rêve. <br/><br/>Tout à coup il se précipite dans la mafeoa, <br/>Au secours M. Girodias se meurt <br/>Son cri (Mentit lugubrement et ne trouve <br/>pas d'écho.. <br/><br/>alore, un effroi le saisit. <br/><br/>Si quelqn'un le trouvait seul en eette <br/>maison, auprès de ce cadavre?. Est-ce que <br/>le soupçon ne viendrait pas que c'est lui qui <br/>a tué i. Est-ce que l'accusation ne serait pas <br/>toute naturelle, presque certaine, presque <br/>forcée, même 1 <br/><br/>discours dans lequel il annonça que le pavillon <br/>de la République flottait maintenant sur le dis- <br/>trict uord de I Orange River, et que le drapeau <br/>anglais n'y flotterait plus désormus, à moins <br/>qu'on ne le hisse sur les cadavres desburghera. <br/>L'ordre le plus absolu règne dans la t'ille. <br/>Londres, 31 octobre. <br/><br/>Le correspondant du Daily Mail rt Cipelown <br/>apprend que le colonel Baden-Powel a fait cons- <br/>truire aux alentours de !dafeking un chemin de <br/>fer sur lequel roulent des trains blindés. <br/>Le Cap, 31 octobre. <br/><br/>On annonce de Barkly-Wesi que les Boers <br/>construisent des ouvrages autour de Kimberley <br/>dans le but de bombarder la ville. <br/><br/>Le Général Redwers Buller <br/><br/>Londres, 31 octobre. <br/><br/>On télégraphic d, ̃ au Datiu Mail, à la <br/>date du à dix Il t du soir <br/>Le Dvnottar-CasiU, bord sir Redwers <br/>Buller, est arrive dans la baie de la Table à dix <br/>heures du soir, <br/><br/>On croit que te général débarquera demain <br/>matin à neuf heure». <br/><br/>Le bruit avait couru hier soir à Londres que <br/>sir liedwers Buller avait été assassiné. <br/>Chez les Boira <br/><br/>Aliwal North, 31 octobre <br/><br/>Un Anglais, récemment venu de Victoria, dit <br/>que les journaux boërs racontent les succès de <br/>1 armée de leur pays. <br/><br/>Ils annoncent que Kimbr.rtey et Mafekingsont <br/>entouréa et se rendront bientôt. <br/><br/>Le Bechuanaland est conquis et annexé. <br/>L'armée boër, dans le Natal, poursuit samar- <br/>che victorieuse. Les Hoérs ont remporte la vic- <br/>toire rfe Glenaoë le camp de'HunJeo est <br/>tombé entre leurs mains avec un grand nombre <br/>de blassés et de prisonniers anglais, ot des quan- <br/>tités il'approviSionnenit». <br/><br/>Les Boers admettent qu'ils ont éprouvé un re- <br/>vers à Etandslaagte, où ils ont eu 30 tués et un <br/>grand nombre de blessés, tandis que legé né- <br/>ml Kock tt le colonel avec 85 de leurs <br/>hommes, oat été faits prisonniers. <br/><br/>Ladysmilh est entièrement entourée, et, d'a- <br/>près ce u'on dit à Pretoria, sera bientôt prise. <br/>Les Boers paraissent convaincus de leur succès <br/>final et considèrent que tout le Natal est prati- <br/>quement entre leurs mains. <br/><br/>Massacre la Mission <br/>Les appréhensions que nous manifestions hier <br/>au sujet des projets belliqueux de ltabah se <br/>trouvent justifiées par la triste nouvelle du <br/>massacre de ta mission Bretonnet deux ofil- <br/>ciers, un sous-otficier européen et vingtscpt <br/>Sénégalais ont trouvé une mort glorieuse dans <br/>un combat contre les troupes de Uabab, fortes <br/>de sept à huit mille hommes. <br/><br/>Voici le texte du télégramme que M. Gentil, <br/>commissaire du gouvernement dans te Chari, <br/>vient d'expédier de Gribingui au Ministre des <br/>Colonies <br/><br/>J'ai la douleur de vous apprendre la mort <br/>de M. l'administrateur Bretonnet, de M. le <br/>lieutenant Braun et du' maréchal des logis <br/>Martin, tués daus un engage-meut avec Habah. <br/>Rabah en personne dirigeait l'attaque. Bre- <br/>toanet, parti pour le Baghirmi sans attendre <br/>la compagnie commandée par M. le capitaine <br/>Julien, a soutenu le combat avec 30 tirailleurs <br/>sénégalais contre 7 à 8,000 hommes. <br/><br/>27 Séuégalais ont été tués; 3 blessés ont été <br/>faits prisonniers, mais l'un de ces derniers, le <br/>sergent Sambâ-Sal, s'est enfui et a été re- <br/>cueilli par les noirs. <br/><br/>Habah a éprouvé de grandes pertes. <br/><br/>Son fils Niabé a été blessé dangereusement, <br/>l'élite de ses guerriers a succomlré. <br/><br/>M. Gentil ajoute qu'il avait, il Qribingui, reçu <br/>le 9 août, de M. l'administrateur Bretonnet, <br/>commandant l'avant-garde de sa mission, une <br/>lettre datée du 16 juillet. de Togban, par 9H8\" de <br/>latitude nord, une lettre lui faisant prévoir une <br/>attaque imminente de Rabah. Dès le surlende- <br/>main 11 août,{. Gentil s'étaitmis en marche pour <br/>rejoindre Bretonnet. il avait avec lui la compa- <br/>gnie commandée par M. le capitaine Julien et <br/>forte de 127 hommes. C'est au cours dv cette <br/>marche, en arrivant à (¡:loura te 16 août, <br/>que la nouvelle du ̃»\"̃> leur a été apportée <br/>par le sergent s< happé au massacre. <br/>,NI. Gentil a iim ;i>iu établi â Gaoura <br/>un poste solidement retranché commandé pai- <br/>le capitaine Robillot, et disposant, avec l'appui <br/>de deux canons, de la compagnie Julien. <br/>Puis il est revenu à Gribingui en Fept jours, <br/>marchant le jour et la nuit pour envoyer à <br/>Gaourn une secande compagne de tirailleurs <br/>forte de 137 hommes et commandée par le capi- <br/>taine Cointel. <br/><br/>Cette seconde compagnie allait quitter Gri- <br/>bingui le 29 août. Des forces suffisantes pour <br/>assurer la sécurité de notre poste de Uribiogui <br/>ont d'ailleurs été maintenues en arrière. <br/>Le But de l'Expédition <br/><br/>La mission ou plutôt l'avant-garde de la mis- <br/>sion Gentil, que commandait l'administrateur <br/>Bretonnet, avait pour objet de continuer l'oeuvre <br/>de Gentil dans ses précédentes explorations et <br/>d'assurer la jonction du Tchad avec le Batir-el- <br/>Ghazal, <br/><br/>'il. Brctonnet avait été chargé de recruter les <br/>Sénégalais et Haoussas qui devaient entrer dans <br/>l'effectif delà mission il s'était acquitté avec <br/>succès de cette tache et avait les <br/>hommes à Brazzaville à la ttn de il quitta <br/>cette ville, précédant Gentil, et se dirigea vers <br/>le nord par le Haut-Congo pour attendre le <br/>Tchad. il s'arrêta aux stations de Krcbedjé et <br/>de Gribingui, où sont établis des poales fran- <br/>çais. Il suivit le Gribingui, affluant du Chari, <br/>pour arriver à ce fleuve et entra dans le Ba- <br/>ghirtni, réjrion limitée au sud-ouest par le Chari <br/>et comportant le Tchad c'est dans cette mar- <br/><br/>Il se retire, il sort. il veut s'en aller sans <br/>être vu. <br/><br/>Et sur le seuil même, revenant aux Gran- <br/>des-Rochez et montant le perron, il se trouve <br/>face à facr avec les deux flls de Girodias 9 <br/>Le duc s'éerie <br/><br/>Ah! messieurs, messienrs, un grand <br/>malheur! <br/><br/>Ils reculent, interdits, à cette apparition. <br/>Un malheur î <br/><br/>Votre père. <br/><br/>Le due n'ose achever. Les deux frèrea, <br/>pâles, se regardent, se rapprochent l'un de <br/>l'autre pour opposer leurs deux forces réu- <br/>nies àla catastrophe qu'on va leur apprendre. <br/>Ah! c'est horrible, ce que je viens de <br/>voir, dit le duc. Quel que soit l'éloignement <br/>de nos deux familles, je vous plains, ah I je <br/>vous plains de tout mon cœur. <br/><br/>Mais que se passe-t-il, monsieur de Vil- <br/>lefort ? De quel si grand malheur sommes- <br/>nous menacés? <br/><br/>Votre père. vient d'être assassiné. <br/>Assassiné <br/><br/>Us eurent tous deux le même cri d'horreur <br/>et se précipitèrent dans la maison. <br/><br/>Et ils vinrent tomber, en sanglotant, aux <br/>pieds de leur père inanimé. <br/><br/>Villefort respecta leur douleur.Il voulut les <br/>laisser, se retirer discrètement. <br/><br/>Ils s'aperçurent, en relevant la tête et mal- <br/>gré leurs larmes, qu'il s'éloignait et que <br/>déjà il atteignait la porte. <br/><br/>Alors ils se relovérent <br/><br/>Monsieur de Villefort <br/><br/>Gaston alluma des bougies dont la flamme, <br/>que faisait vaciller un peu d'air passant par <br/>la fenêtre ouverte, éclaira d'une lumière <br/>tremblante le lugubre spectacle. <br/><br/>Pierre avait saisi le duc par le bru. <br/><br/>jle partez pae e&core, monsieur. aous <br/><br/>che en avant qu'il a été attaqué et qu'il a trouva <br/>la mort. <br/><br/>Paît à notor dans une lettre ,rite à son père, <br/>M. Bretonnet estimait que tes forces réunie» <br/>sous la domination de Habah n'étaient que de <br/>fusils. Cette opinion, crta^i.'mpnt erro- <br/>née, le fait l'a prouvé, lui a > :r* <br/>une confiance que Habah n eut <br/>l'on serait tenté d'attribuer à iction le <br/>fait d'avoir poussé en avais vadre la <br/>compagnie commandé» par e Julien. <br/>Celte imprudence a été causi il est <br/>vrai yu'il ne connaissait pu. ï la pré- <br/>sence des bandes du Rabah daiii I.= territoire^ <br/>qu'il allait traverser. <br/><br/>.Les Officiers tués <br/><br/>L'administrateur Bretonnet ét.iit nce le ? mwt <br/>et > Uit entré dans la marine, à i'Eeole na- <br/>vale, à l'Age de dix-huit ans; aspirant de J** <br/>classe le 5 octobre enseigne du 5 octobre1 <br/>il avait él6 nommé lieutenant de vaissetD <br/>le 87 janvier Il avait fait partie de la misr <br/>sion Mizon dans la Benoué et VAdamaoua et, <br/>nommé administrateur des colonies, il avait de- <br/>mandé à passer dans la réserve le septembre <br/>1&.e. Il était chevalier de la Légion-d'llonneur. <br/>Le lieutenant Salomon Braun appartenait àt <br/>l'artillerie de marine; né le 9 Juillet il <br/>avait été nommé sous-lieutenant te 1\" octobre; <br/>lieutenant en second le octobre et <br/>lieutûuanl en premier le 1\" septembre 1898. <br/><br/>CONSEIL DES MINISTRES <br/>Le v:fs se sont réuni- *stin, à TE-. <br/>lysi- ^résidence de <br/><br/>.NI absent de Paj Âit pas i. <br/>la ciulibtraUun. <br/><br/>LE CONTRAT 0 ASSOCIATION <br/><br/>La séance a étà entiùreiiwut consacrée à l'exa? <br/>mon du projet de loi relatif au contrat d'assez <br/>ciation qssri sera déposé sur le bureau de fi <br/>Chambre Iles la reprise des travaux parlemen-' <br/>tîiirp?. <br/><br/>Le Ministre du Commerce si le Con» <br/>seil du projet ric toi sur la urehandé <br/>qu'il compte déposer à la rentré,, il 'accord avec <br/>ses collègues de la Marine rt ries Finances. <br/><br/>Sur la proposition du Ministre des Co!oni«S, <br/>le gouvernement saisira la Chambre d'une de.- <br/>mande dr pension à accorder ;i la veuve du co- <br/>lonel Klobb. <br/><br/>MESURES AGRICOLES <br/><br/>Le. Ministre de r Agriculture a fait signer t <br/><br/>1° Un décret portant à vingt-trois ans au liepr <br/>de vingt-deux la limite d'Age pour s de <br/>l'Ecole forestière ot autorisant l'a nul» <br/>épreuve de langues étrmngèrcs; <br/><br/>2' Un décret nommant directeur du sécréta» <br/>riat. du personnel et de la comptabilité au MW <br/>ni stère dc l'Agriculture M. Paul Cabaret, chef <br/>de division. <br/><br/>Le Ministre de l'Agriculture a fait approuver <br/>par le Conseil un projet de loi tendant à réprimer <br/>les tentatives de fraudo pour obtenir les enwu- <br/>ragements k la culture du lin et du chanvremu* <br/>torisés par la toi du «avril 1898. <br/><br/>M. Jean Dupuy a fait '\"îteotti <br/>intervenue entre la Soeiété ;t deg <br/>races de thevaux dans le i Uoft <br/>départements. <br/><br/>LA RENTRCE DES CHAMBRES <br/><br/>La Jate du U novembre a <H<- délluitivemeDl <br/>adopté pour la rentrée des Gtiumbres, <br/><br/>AUJOURD'HUI <br/><br/>EST MIS EN VENTE <br/><br/>Supplément Littéraire illustré U Petit Parisis} <br/>5 centimes le Numéro <br/><br/>Vatci le sommaire des gravures que contien( <br/>le numéro de cette semaine <br/><br/>AU COMBAT DE GLENCOR Le général Symau <br/>mortellement blessé. <br/><br/>DEUX ENFANTS ENLEVÉS L'Arrestetlon d«« <br/>ravis ••urs. <br/><br/>TUÉ PAR SON FRÈRE!, <br/>Un drame de famille, qùi s'est malheureuse. <br/>ment termina par la mort d'un des acteurs, N'est <br/>déroulé hier soir à Putouux. <br/><br/>Une IMseussion d'Intérêts <br/><br/>Ancien chemin de Colombes, liaitito dcpviË <br/>longtemps un nourriasear, Jean ljucli«r. 4gé da <br/>trente-huit ans, marié, père de deux jeunes en* <br/>faute. <br/><br/>Jean Duchar exploite cet cudroit une lailfit <br/>ria des plu» llorii#<.ii>ii: <br/><br/>Dana l'après-midi d hier il rwtviiit la visite dA <br/>son frère atné, Gabriel, également nournsseur; <br/>âgé de quarante-six ans, demeurant 14H, rue de <br/>la hépuuliqup, marié en second\" ':̃•<̃̃• père <br/>d'un jeune bomme de dix-sept i >, jutlsa <br/>premi£re femme aca mourant ai«ui iouooù uae <br/>somme de i,2U0 francs, qui, la majorité' <br/>du jeune homme, de**U rester «-nlrclea main* <br/>de son otieie, Jean Oucher, subrogé tuteur le* <br/>intérêts «suis devaient être eervis Gabriel Du- <br/>cher, le p<>re. <br/><br/>lie fr«c|ufcntes discutions s'i:Ui>;nt déjà cl» <br/>véea entre les deux frùres an pâlot de cet ar- <br/>gent que Gabriel réclamait uformaoJ^ <br/>strictement aux volontés d< f«, conflp- <br/>mées par la décision récent', u u:i i.^useil de fai <br/>niilie, Jean rucher restait inébranlable. <br/><br/>(.est pous-é toujours par lardent désir d'à-. <br/>voir la somme entière en sa possession que Ga- <br/>briel Oncher soulevait hier avec son frère, <lan* <br/>la granue salle de la laiterie, donnant sur la <br/><br/>avons besoin de vous entendre. Il faut que <br/>vous nous donniez des renseignements. que <br/>vous nous disiez comment vous vous trou- <br/>viez là. que vous guidiez autant que possi- <br/>ble nos recherches, puisque vous êtes là <br/>premier qui ayez connu ce crime. <br/><br/>Le duc s'inclina <br/><br/>Je reste, monsieur, bien que je ne pré- <br/>voie point que j'aurai quelque chose à yoqs <br/>Alors, Pierre dit à Gaston <br/><br/>Toi, Gaston, vu vite, va prévenir la getf <br/>darmerte. <br/><br/>Ensuite, par questions rapides, nerveuse. <br/>entrecoupées de silences et de sanglots, <br/>Pierre interrogea le duc de Villefort. Députa <br/>combien de temps Horace était-il aux Crac- <br/>des-Roches? Comment avait-il pu pénétrer <br/>jusqu'auprès de Girodias Dans quel état <br/>ravait-il trouvé? Le vieillard rospirait-il en- <br/>coret Pourquoi était-il venu ? Et qu'avait-il i. <br/>faire avec Girodia»? <br/><br/>Le duc répondit à toutes ces questions. <br/><br/>Pierre l'écoutait avec mie attention extrê-» <br/>me, l'œil en dessous, déjà soupçonneux-. <br/><br/>Horace ne pouvait révéler au jenne hommftt <br/>tout ce qui s était passé entre sa mère et Gi- <br/>rodias, les menaces de celui-ci, ce secret <br/>d'lionneur qu'il prétendait {u*»&jder et q&'if <br/>avait voulu vendre. <br/><br/>Il dit seulement, répondant à la dernière <br/>question <br/><br/>J'avnis, Il se peut que vous la sachiez, <br/>des affaires très importantes a régler avec <br/>votre père. Votre père possédait sur mot <br/>des créances importantes et nombreuses, ra- <br/>chetées à Paris dans un i3ut qu'il vous est. <br/>tacile de deviner si Girodias ne vous a pu. <br/>mis au courant de ses secrètes intentions. <br/>tA suivre.) iiisa Ia&X» <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                },
+                "firstPage": {
+                  "display": false,
+                  "active": false,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "nextPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 2 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519076d/f2.highres",
+                      "screenNumber": 2,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519076d/f2.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/> ",
+                            "stringOCR": "VINGT-QUATOTRME ANNÉE. N- Le numéro t & MERCREDI i- NOVEMBRE Ï8& <br/><br/>ABONNEMENTS Direction 18. Rue^Enghlen. PARIS ANNONCES <br/>PARIS et DÉPARTEMENTS:TroiSmois,5fr.SixmoU,9fr.Unan,f8fr. TOUS LES JEUDIS S'adresser à L'OFFICE D'ANNONCES, 10, Place de la Bourse, 10, PARIS <br/>on trais dans lo,. BlffMa de poste Supplément Littéraire Illustré (Huit Pages) 5 Centimes. et à la SaUe des Dépèches » du Pelii Parisien. ao. boule^Montroartrc. <br/><br/>Dernière Edition <br/><br/>Nous citions en exemple, il y a quelques <br/>jours, les nombreux musées industriels qui <br/>fonctionnent en Allemagne et auxquels sont <br/>annexés des services de renseignements <br/>techniques et commerciaux. Ces musses, <br/>disions-nous, se font des prêts mutuels <br/>par des conférences et des excursions bien <br/>conduites, on tâche d'intéresser les artisanes <br/>et le public aux questions qu'ils soulèvent. <br/>Tant au point de vue historique qu'au <br/>point de vue pratique, ils jouent un rôle <br/>de plus en plus important dans l'économie <br/>nationale. <br/><br/>N'avons-nous donc rien en France qu'on <br/>puisse rapprocher de ces musées allemands? <br/>Peut-être. Mais les établissements que nous <br/>possédons ne sont encore qu'à l'état em- <br/>bryonnaire et il leur manque l'idée direc- <br/>triee qui donne tant de cohésion et d'unité <br/>aux efforts de nos voisins de l'Est. <br/><br/>On sait, par exemple, ce qu'est à Paris le <br/>Musée social. L'admirable création du comte <br/>de Chambrun constitue à cette heure un <br/>desorganismes les plus souples et les mieux <br/>compris de la vie économique du pays. Son <br/>action, qui ne s'est fait sentir jusqu'ici qu'au <br/>contre, pourra rayonner de plus en plus <br/>vers- BXireniUes.fce- <br/>destiné il devenir l'intermédiaire graoieux <br/>d'un grand nombre d'industries réparties <br/>sur toute la surface du territoire, y compris <br/>les industries maritimes, et qui trouveront <br/>en lui un agent aussi désintéressé qu'utile. <br/>Et, sans doute, des institutions comme le <br/>Musée social exigent, tant pour leur entre- <br/>tien que pour leurs frais de premier éta- <br/>blissement, une mise de fonds considéra- <br/>ble. C'est seulement dans les grandes villes <br/>comme Paris, Lyon, Marseille ou Burdeaux <br/>qu'elles peuvent se développer et rendre les <br/>services qu'on attend d'elles. <br/><br/>Ces musées sont, en effet, des musées <br/>encyclopédiques; ils embrassent toutes les <br/>manifestations de l'activité sociale. Leur <br/>nom le dit, et leur nom n'est point menteur <br/>en l'espèce. <br/><br/>Mais, par le fait même qu'ils embrassent <br/>tant de questions, ils ne peuvent les serrer <br/>toutes d'assez près; ils négligent les détails <br/>et c'est aux grandes lignes seulement qu'ils <br/>s'appliquent pour tâcher de dégager les <br/>lois communes à la production générale du <br/>pays. <br/><br/>Il y a d'autres sortes de musées indus- <br/>triels. Et, à la vérité, ces musées peuvent <br/>être aussi variés que les industries mêmes <br/>dont ils prétendent classer les spécimens et <br/>offrir une vue détaillée. <br/><br/>Le malheur est que nous n'avons encore <br/>chez nous que très peu de ces établisse- <br/>ments. Plusieurs même sont de date si ré- <br/>sente qu'ils sont à peine constitués. Ainsi <br/>le Musée maritime et commercial que vient <br/>de fonder la ville de Fécamp. <br/><br/>La Chambre de commerce de cette ville <br/>possédait depuis plusieurs années une inté- <br/>ressante collection d'engins de pêche qu'elle <br/>avait envoyée à l'Exposition du « Vieux- <br/>Honaeur ». Ellc y fut fort remarquée. Cela <br/>donna idée aux Fecampois de sortir défini- <br/>tivemeot des armoires et des caisses où on <br/>les enfermait jusqu'alors les différents en- <br/>gins de pôoho, tant anciens que modernes, <br/>qui formaient la collection de la Chambre <br/>de commerce. <br/><br/>Ces engins, méthodiquement classés, <br/>pouvaient constituer une excellente leçon de <br/>choses pour le public on y ajouterait toutes <br/>le& spécialités de l'industrie locale on y <br/>ferait figurer également les articles d'im- <br/>portation, et l'on aurait ainsi tous les élé- <br/>ments d'un Musée industriel, instructif et <br/>pratique, parfaitement approprié aux be- <br/>soins de la localité. <br/><br/>Ce Musée est fondé aujourd'hui. L'orga- <br/>nisation en a été confinée à M. Louis Gau- <br/>thier, directeur de l'Ecole d'hydrographie <br/>at de l'Ecole des pêches maritimes de Fé- <br/>camp. Aucun choix ne pouvait être plus <br/>heureux, et la nouvelle fondation est entre <br/>bonnes mains. <br/><br/>C'est également une excellente idée que <br/>celle qui a guidé M. Millet dans la création <br/>à Dieppe d'une salle consacrée aux produits <br/>de l'ivorysculpture locale. <br/><br/>L'ivoire de luxe, l'ivoire travaillé, fut <br/>longtemps l'industrie dieppoise par excel- <br/>lence. A vrai dire, industrie et marina se <br/><br/>N* 24. Feuilleton du PETIT Parisien. <br/>La Cliarmeuse d'Enfants <br/>GRAND R£MAN INÉDIT <br/><br/>PREMIERS PARTIS <br/><br/>UNE HAINE VIEILLE D'UN SIÈCLE <br/>XIll (suite) <br/><br/>Lettre d'amour <br/><br/>Mais il fallait une explication. <br/><br/>Mère, dit-il, je rentrais au château quand <br/>je vous ai aperçue. inanimée».. Ma mère, <br/>tous sentez-vous mieux?. <br/><br/>Oui. oui, mon fils <br/><br/>Voulez-vous vous appuyer sur mon bras <br/>jusque Vlllefortï <br/><br/>Merci. je rentrerai bien seule. Je <br/>vous assure, mon enfant, ce n'était rien, rien <br/>en vérité. <br/><br/>Elle a à peine assez de force pour s expri- <br/>mer. <br/><br/>Elle se raidit contre une nouvelle faiblesse, <br/>car- elle souffre une inexprimable torture, une <br/>angoisse sans nom. <br/><br/>Cette figure pâlie, ces lèvres blêmes, ces <br/>yeux creusés, cet air de désespoir, est-ce que <br/>tout cela n'indique pas, chez Roland, la con- <br/>naissance de la vérité?. Un sanglot erre sur <br/>ses lèvres. Quel surhumain courage il lui <br/>faut pour le comprimer. Mais la crise, grave <br/>tt nerveuse, si elle n'éclate pas maintenant, <br/>Eclatera tout l'heure et va faire de ce jeune <br/>Traduction et i rep^nJactioa iat«j;sUi«A. <br/><br/>tenaient si étroU.eraeijtt « que les Dieppois, f <br/>dit Vitet, étaient passés maîtres et célèbres <br/>rETufûpe presque autant comme <br/>ivoiriers que comme marins ». Il y a peu <br/>d'années encore, l'industrie de l'ivoire oc- <br/>cupait à Dieppe 300 ouvriers et 16 maîtres <br/>ou fabricants. Il n'y a plus, à cette heure, <br/>que deux ou trois maîtres et une trentaine <br/>d'ouvriers. <br/><br/>Cette décadence de l'ivorysculpture diep- <br/>poise tient-elle cependant, comme on l'a <br/>dit, à la décadence générale du goût, à la <br/>désaffection croissante de la clientèle? On <br/>en peut douter. La vérité est que si l'ivoi- <br/>rerie dieppoise traverse la plus dangereuse <br/>et la plus mortelle des crises, cela tient <br/>surtout il l'esprit de routine et au manque <br/>d'instruction première qui se révèlent dans <br/>la fabrication actuelle, Les dispositions na- <br/>turelles des Dieppois pour la sculpture ont <br/>cependant frappe de tous temps les obser- <br/>vateurs. <br/><br/>« Vous voyez, disait Vitet en 1844, les <br/>enfants en apprentissage creuser, évider, <br/>déchiqueter 1 ivoire avec une facilité toute <br/>instinctive et dont vous demeurez tout con- <br/>fondu. » <br/><br/>Et il ajoutait Il est du devoir du gou- <br/>vernemeut de ne pas laisser s'égarer et se <br/>perdre ces précieuses semences. » <br/>C'est à quoi l'on veilla pendant quelque <br/>temps. Mais, sauf peut-être sous la Restau- <br/>ration et le 'second Empire, quand Planet, <br/>Buis.- Amêdiie Fér*tla dirigeaient, la coup» <br/>gratuit de dessin créé à Dieppe par Napo- <br/>léon ne rendit aucun service appréciable. Il <br/>faut plus et mieux qu'un simple cours, et <br/>c'est c que l'effort doit être proportionué à <br/>la lâche. <br/><br/>On commence le comprendre. Tandis <br/>que la municipalité s'occupe de faire aboutir <br/>le projet de création d'une sérieuse école de <br/>dessin et de modelage appliqués à l'indus- <br/>trio de l'ivoire, M. Millet, conservateur du <br/>musée local, vient d'organiser dans ce mu- <br/>sée la salle d'ivorysoulpture dont nous par- <br/>lions tout à l'heure. <br/><br/>Croirait-on, en effet, que Dieppe, cette <br/>patrie de l'ivorysoulpture, n'avait jusqu'a- <br/>lors rien qui de près ou de loin ressemblât <br/>à une collection d'ivoires? Quand NI. Maze- <br/>Sencier la visita en 1875, le musée local <br/>comprenait en tout deux râpes à tabac, une <br/>bonbonnière, un morceau d'éventail et un <br/>morceau de navette, deux ou trois étuis <br/>sculptés, un groupe de Nicolle aîné et deux <br/>vases Médicis pris au Musée du Louvre et <br/>offerts par Louis-Philippe. Les choses ont <br/>changé depuis. Le musée s'est agrandi et <br/>son distingué conservateur s'y occupe pieu- <br/>sement à recueillir les pièces les plus inté- <br/>ressantes de l'ancienne sculpture indigène. <br/>Plusieurs vitrines de ce musée sont aujour- <br/>d'hui consacrées à l'ivoire dans une des <br/>salles récemment ouvertes du second étage. <br/>On y remarque bon nombre de bas-reliefs, <br/>de statuettes, de vases, de crucifix, de râpes <br/>à tabac, de navettes à frivolités, de pulvé- <br/>rins, d'étuis, de bonbonnières, etc., ainsi <br/>qu'une demi-douzaine de navires en ivoire <br/>qui étaient autrefois, avec les crucifix, la <br/>grande spécialité dieppoise. <br/><br/>Nul doute qu'appuyée d'une sérieuse <br/>école de dessin et de modelage, cette expo- <br/>sition permanente des plus beaux spéci- <br/>mens de l'ivorysculpture dieppoise ne dé- <br/>termine un renouveau de l'activité locale <br/>dans une ville qui offre tant de ressources <br/>naturelles à l'industrie et à l'art. <br/><br/>Combien utiles pourtant seraient de sem- <br/>blables musées dans des villes oomme Li- <br/>moges, Nevers et Rouen, qui ont tant à <br/>fairo pour maintenir leur personnel de po- <br/>tiers et d'émailleurs au niveau de la concur- <br/>rence étrangère Quels services ne ren- <br/>draient-ils pas également pour la ferronne- <br/>rie, l'ébémsterie, la dentellerie, la tapisse- <br/>rie, etc., etc., dans les villes qui ont gardé <br/>quelque souvenir de ces industries char- <br/>mantes, longtemps le monopole de notre <br/>pays et que les paysétrangerslui out enlevé <br/>peu à peu I <br/><br/>11 n'est pas jusqu'aux musées simplement <br/>pittoresques, comme ceux fondés il Arles <br/>par Mistral et par M. Le Men à Quimper, <br/>qui ne puissent aider à notre relèvement <br/>industriel. Les mobiliers, les ustensiles de <br/>toute espèce qu'on y rencontre peuvent don- <br/>ner des idées, sinon servir de modèles Dans <br/>le détail même des costumes, dans les bro- <br/>deries qui les chamarrent, dans les den- <br/>telles qui les ornent, il y a plus d'uue leçon <br/>à, recueillir. <br/><br/>Des musées de cette sorte contribuent <br/><br/>garçon, si robuste jusqu'à ce iour, l'enfant <br/>nerveux et malade et presque infirme, pau- <br/>vre créature à plaindre dont nous avons vu les <br/>Incompréhensibles faiblesses dès le début de <br/>ce récit. <br/><br/>La mère, sans plus rien dire, lentement <br/>s'éloigna. <br/><br/>Hol.înd la laissa partir. <br/><br/>Longtemps, longtemps, il reste là, debout, <br/>la tête penchée, sans bouger. <br/><br/>Puis il retire la lettre qu'il a cachée préci- <br/>pitamment à la vue de sa mère et il la relit. <br/>Il doutait peut-être encore. il y a quelques <br/>instants. <br/><br/>A présent, après avoir vu sa mère, plus de <br/>doute 1 <br/><br/>il va retrouver son cheval dans la futaie, et <br/>un quart d'heure après il est à Villefort, où <br/>sa mère vient de rentrer. <br/><br/>Par bonheur, il ne voit pas son frère. <br/>S'il avait rencontré Hoface, si Horace l'a- <br/>vait interrogée remarquant sa pâleur, peut- <br/>être qu'à lui, à ce frère aîné, Il n'aurait pas <br/>eu, en cette heure terrible, le courage de <br/>mentir 1 <br/><br/>Mais depuis quelques minutes, le duc est <br/>parti il ne veut pas rester plus longtemps <br/>avec le doute affreux de cette forfaiture à <br/>l'honneur que l'on reproche à un des Ville- <br/>fort. <br/><br/>il a dit <br/><br/>Je verrai Glrodias, et coûte que coûte je <br/>saurai la vérité. <br/><br/>Voilà pourquoi. sans en parler à personnel, <br/>il s'est dirigé vers les Grandes-Riches, où il <br/>arrive bientôt il n'a pai re-ncontrë la du- <br/>chesse cellc-çi rentrait au château et Ro- <br/>land y rentrait de son côté presque aussitôt <br/>au moment où Horace en sortait. <br/><br/>Mais ces allées et venue* ont pria 4u <br/>.teoing. <br/><br/>aussi à leur mamère à réveiller ou à forti- <br/>fier la vie industrielle. On a loué surtout <br/>Mistral pour le bel exemple de générosité <br/>qu'il avait donné en fondant le musée d'Ar- <br/>les on aurait dû le féliciter surtout d'avoir <br/>doté la Provence d'un organisme qui lui <br/>manquait, d'avoir assis surie passé l'avenir <br/>de l'art provençal. <br/><br/>Puissent les créations de cet ordre se <br/>multiplier Chacune de nos villes françaises <br/>devrait tenir à honneur d'avoir son musée <br/>local, non point composé avec quelques ta- <br/>bleaux d'une valeur douteuse et une demi- <br/>douzaine de plâtres jococq, mais avec les pro- <br/>duits de ses industries et de son commerce. <br/>Fécamp et Dieppe ont donné sur ce point <br/>un exemple qui mériterait de n'être pas <br/>perdu. <br/><br/>JEAN FROLLO <br/><br/>LHÏERRE£TR.TOAL <br/>Un désastre terrible vient de frapper les <br/>armes anglaises. <br/><br/>Le général White, par une faute de straté- <br/>gie qu'il avoue lui-même, s'est fait battre en <br/>bataille rangée devant Ladysmith parles for- <br/>ces combinées de la République d'Orange et <br/>du Transvaal. <br/><br/>Mille hommes tués et blessés, deux miUe <br/>prisonniers, dix-huit canons perdus, tel est <br/>pour l'Angleterre le bilan de cette funèbre, <br/>journée. L'écrasement est aussi complet <br/>qu'au fameux combat de Majouba-Hill, où les <br/>Anglais éprouvèrent pour la première fois la <br/>vaillance des Boërs. <br/><br/>Au moment où le général Redvers Buller <br/>débarque au Cap, les débris de l'armée du <br/>.Natal sont en fuite vers Piétermaritzburg la <br/>colonie du Cap est menacée,le Béchounaland <br/>et la Hhodésia sont à la merci des Boërs, <br/>dont les forces semblent augmenter chaque <br/>jour. <br/><br/>L'Angleterre, grisée par ses rêves d'omni- <br/>potence, affectait de mépriser ses adversai- <br/>res. Elle ne tardera pas à apprendre ce qu'il <br/>en coûte d'attaquer, contre tout droit et toute <br/>justieé, un peuple fermement décidé à lutter <br/>jusqu'à la mort pour sa liberté. <br/><br/>UN DÉSASTRE ANGLAIS <br/>Londres, 31 octobre. <br/><br/>Le War Office reçoit la dépêche suivante du <br/>général \"White <br/><br/>Ladysmith, lundi, 11 h. 35 matin. <br/><br/>J'ai à annoncer un désastre survenu à une <br/>colonne envoyée par moi pour prendre po- <br/>sition sur une colline, dans le but de proté- <br/>ger notre flanc gauche. (ici trois mois indé- <br/>chiffrables), et après avoir subi des pertes <br/>considérables a dû se rendre. <br/><br/>Le détail des pertes n'est pas encore <br/>connu. Un soldat employé à l'ambulance du <br/>régiment des fusiliers irlandais est venu <br/>sous la protection d'un pavillon parlemen- <br/>taire, avec une lettre des survivants de la <br/>colonne, demandant de l'aide pour enterrer <br/>les morts. Je orains que le bien fondé de la <br/>nouvelle ne fasse aucun doute. <br/><br/>C'est moi qui ai préparé le plan qui a en- <br/>traîné le désastre, et suis seul responsable <br/>de son exécution. <br/><br/>Aucun blâme ne s'attache aux troupes, <br/>car la position était intenable. <br/><br/>La colonne était composée d'un bataillon <br/>des fusiliers irlandais, d'un bataillon de <br/>Gloucesler et d'une batLerie de montagne. <br/>L'Evacuation de Ladysmith <br/><br/>Londres, 31 octobre. <br/><br/>La capitulation de la colonne envoyée par <br/>le général White pour protégersonaile gau- <br/>che ne fut qu'un épisode de la grande ba- <br/>taille engagée à Ladysmith. <br/><br/>Les Anglais ont subi une épouvantable <br/>défaite. <br/><br/>Leur armée a été refoulée à six milles en <br/>arrière de ses positions. <br/><br/>La nuit seule a empêché sa destruction <br/>complète. <br/><br/>Plus de mille hommes sont restés sur le <br/>terrain, sans compter les prisonniers tom- <br/>bés au mains des Boërs. <br/><br/>Le général White, en retraite sur Piéter- <br/>mariuLurg, a évacué Ladysmitb. <br/><br/>Le Récit de la Bataille <br/><br/>D'autre part le correspondant du Standard à <br/>Ladvsmitl fait en ces termes le récit de la ba- <br/>taille d'hier <br/><br/>Nos forces étaient ainsi disposées à droite. <br/>trois régiments de cavalerie, quatre' batteries <br/>d'artillerie, cinq bataillons d'infanterie au cen- <br/>tre, trois batteries d'artillerie, deux régiment <br/>de cavalerie et quatre bataillons d'infanterie; il. <br/>l'aile gauche, deux bataillons Je fusiliers irian- <br/>dais, le régiment de Qlouceatershirc et tme bat- <br/>terie de montagne. » <br/><br/>La nuit est descendue sur les bois, et <br/>comme la lune ne brille pas encore, la cam- <br/>pagne est plongée dans l'obscurité. <br/><br/>Au loin, le vacarme de la fête, incessant, <br/>interminable. <br/><br/>Pour lui comme pour la duchesse, comme <br/>pour Roland aussi, ce sera un cauchemar <br/>lorsque tous trois, plus tard, se souvien- <br/>dront <br/><br/>Lorsque le duc arrive aux Grandes-Roches, <br/>il est surpris de la solitude de la maison. <br/>Aucun bruit, aucune lumière. <br/><br/>Des fenêtres sont ouvertes, entre autres la <br/>fenêtre du cabinet de travail de Girodias, où <br/>le matin même eut lieu leur entrevue. <br/>Ouverte, également, la grande porte d7en- <br/>trée. <br/><br/>Le duc monte les quelques marches. <br/>ILsonne. <br/><br/>On ne répond pas. <br/><br/>Il sonne plus longuement et plus fort. <br/>On ne répond pas davantage. <br/><br/>Comme le bureau de Girodias est situé au <br/>rer.-de-chaussée, le duc s'y dirige, monte sur <br/>un banc du jardin et jette un coup d'oeil dans <br/>l'intérieur du cabinet. <br/><br/>Bien qu'il fasse nuit, les ténèbres ne sont <br/>pas cependant si épaisses qu'il ne puisse dis- <br/>tinguer à peu près ce qui s'y trouve. <br/>Et il voit Girodias, assis à son bureau, le <br/>front sur la table, près d*ua tas de papiers. <br/>II appelle <br/><br/>Monsieur Girodias I <br/><br/>Girodias ne fait aucun mouvement. <br/>Il s'est endormi Je vais le réveiller. <br/>Il saute de son banc, entre dans la maison, <br/>et à tâtons, en cherchant à se rappeler, il <br/>trouve la porte du bureau. <br/><br/>La porte du bureau est grande ouverte. <br/>Le duc entre, sans aucun soupçon. <br/>Pardon. monsieur Girodin», dit-IL <br/><br/>Le plan du général White était de jeter tout <br/>son centre sur l'ennemi; mais ce plan ne put <br/>être exécuté, car la position de l'ennemi qui <br/>formait l'objectif des Anglais avait été évacuée. <br/>L'aile droite des Anglais fut virement atta- <br/>quée et la colonne dut changer de front. Le feu <br/>de l'ennemi ayant diminué d'intensité, l'infan- <br/>terie s'avança, couverte par la cavalerie. <br/>L'ennemi se livra aiors à une contre-attaque <br/>et, comme il avait la supériorité numérique, le <br/>général White ordonna à l'infanterie de se re- <br/>plier graduellement. <br/><br/>Le mouvement fut bien exécuté sous le cou- <br/>vert de notre artillerie dont le tir était excellent. <br/>Quelques obus ont été lancés par les Boërs sur <br/>la ville, d'gUne distance de six mille yards, mais <br/>ils n'ont causé aucun dégùt. <br/><br/>Li'engagemout a duré plusieurs heures, quatre <br/>heures environ. <br/><br/>Nous avons perdu de 90 à 100 hommes. <br/>L'attaque a été admirablement conduite par <br/>notre aile droite, et les Boërs ont été bientôt dé- <br/>logés des positions qu'ils occupaient près de <br/>Lombards-Kop, mais il nous a été impossible de <br/>les poursuivre. <br/><br/>Le pays étant trop accidenté, notre artillerie <br/>ne pouvant déloger les Buërs des abris où ils se <br/>trouvaient, l'infanterie se porta en avaut en ti- <br/>railleurs ello fut reçue par un feu terrible dont <br/>les ell'eU furent bientôt apparents. <br/><br/>Le général White, qui était au centre, voyant <br/>que l'aile droite était sur la point de Iléchir. en- <br/>voya à son secours toute la colonne du centre, à <br/>l'exception d'un régiment d'infanterie. <br/>Un détachement naval, débarqué à Durltan du <br/>croiseur Powerful, arrivant sur le terrain vers la <br/>fln de la bataille, ouvrit le feu avec ses gros <br/>canons. Au quatrième coup, le canon tourd de <br/>10 des Boërs lut démonté la ville n'a donc rien <br/>ai craindre d'un bombardement. <br/><br/>Les Pertes <br/><br/>Londres, 31 octobre. <br/><br/>Le général White télégraphie de Ladysmith <br/>au War Office la liste des officiers anglais tom- <br/>bés aux mains des Boërs. Cette liste comprend <br/>1 lieutenant-o-olonel, 7 commandants, capi- <br/>taines, 27 lieutenants et 1 aumônier militaires, <br/>soit au total 41 officiers, plus 1 correspondant <br/>de journaux. <br/><br/>Cinq de ces officiers sont Messes. <br/><br/>La colonne capturée par les Boërs comptait <br/>environ 2,000 hommes. <br/><br/>Le Times, dans une deuxième édition, publie <br/>la dépêche suivante du Cap, 31 octobre <br/>Boërs ont pris part à l'eugagcment <br/>d'hier devant Ladysmith. <br/><br/>Londres, 31 octobre. <br/><br/>On télégraphie de Piétennaritzburg au Daily <br/>Mail-, à la date du 30, une heure de l'après-midi <br/>On assure que la panique qui d'est emparée <br/>des mulets a entraîne la perte de six canons, II <br/>est très probable que Ladyomitli sera bientôt <br/>complètement isolée. <br/><br/>D'après une information adressée au même <br/>journal, les fermiers hollandais du Natal four- <br/>niraient des informations aux Boërs. Le plus <br/>grand secret est observé concernant l'arrivée <br/>des troupes et leur départ pour le théâtre des <br/>opérations et, malgré tout, les Boërs en sont <br/>très rapidement informés. <br/><br/>L'Emotion à Londres <br/><br/>Londres, octobre. <br/><br/>La perte des deux bataillons et d'une batterie <br/>d'artillerie de montagne cause une grande <br/>éinoUouvdiius le publie anglais, qui commence <br/>à comprendre la valeur de l'ennemi. <br/><br/>Jusqu'à ce moment, on parlait de la guerre <br/>contre les Boërs comme d une promenade mili- <br/>taire. <br/><br/>Les deux bataillons perdus formaient un ef- <br/>fectif d'environ deux mille hommes. Combien <br/>de ceux-là sont prisonniers et combien out été <br/>laissés sur le terrain? On l'ignore encore; mais <br/>il est probable que bon nombre d'entre eux au- <br/>ront été tués ou blessés. <br/><br/>Les dépêches officielles que reçoit le gouver- <br/>nement sont affichées dans les couloirs du %Var <br/>Office, où un grand nombre de personnes vien- <br/>nent en prendre connaissance. On n'a jamais vu <br/>une aussi grande émotion dans les bureaux de <br/>la Guerre. Les autorités militaires viennent, à <br/>l'instant, de décider que trois nouveaux batail- <br/>lons et une batterie de montagne seraient en- <br/>voyés en supplément dans le sud de l'Afrique. <br/>Les nouvelles troupes seront embarquées dans <br/>une dizaine de jours. <br/><br/>Il semble hors de doute que le général White, <br/>au lieu de rester sur la défensive après s'être <br/>établi à Ladysmith solidement et de manière à <br/>repousser toute attaque, a vculu prendre les de- <br/>vants et remporter une victoire définitive, avant <br/>l'arrivée de i armée actuellement sur mer. C'est <br/>dans ce but qu'il a mis en avant toutes les trou- <br/>pes qu'il avait en mains. S'il s'était agi d'une <br/>simple reconnaissance, il se serait contenté d'en- <br/>voyer quelques bataillons, appuyés par un petit <br/>nombre de canons et de la cavalerie. <br/><br/>Les renseignements de tous les points de l'An- <br/>gleterre indiquent qu'on y partage l'émotion <br/>qui rignc à Londres. Cette émotion est princi- <br/>palementintense dans les grands centres comme <br/>et Manchester. <br/><br/>Dans le Bechouanaland <br/><br/>Pretoria, 31 octobre. <br/><br/>Le général Cronje rapporte que la garnison <br/>anglase de Ma/, king a fait une sortie elle a <br/>attaqué il la baïonnette le.Jaager du comman- <br/>dant Louw, près du champ de courses; mais <br/>elle a été repoussée, laissant six morts sur le <br/>terrain et ayant aussi, croit-on, de nombreux <br/>blessés. <br/><br/>Le colonel Baden-Powei a demandé un armis- <br/>tice pour lui permettre d'enterrer ses morts. Le <br/>général Cronje y a consenti et les Boërs ont mis <br/>les cadavres sur un wagon envové à cet effet, <br/>qui est ensuite retourné à Mafekûig. <br/><br/>Vryburg, S5 octobre. <br/><br/>Plusieurs Hollandais du Becuuanaland se sont <br/>joints ouvertement aux Boërs. <br/><br/>,Après que le drapeau du Transvaal eot été <br/>hissé sur la ville, le détachement boér. fort de <br/>1.3GQ hommes, prit officiellement possession de <br/>laville, et le commandant boër prononça uu <br/><br/>Girodias reste dans une immobilité ab- <br/>solue. <br/><br/>Horace s'approche et lui touche l'épaule. <br/>Le vieillard ne bouge pas. <br/><br/>Et tout à coup, Villefort se penche, puis se <br/>relève, s'éloigne avec un cri d'horreur. les <br/>bras étendus comme pour écarter un fan- <br/>tôme. dans la première épouvante de ce <br/>spectacle. <br/><br/>Girodias ne dort pas. <br/><br/>Girodias est mort. <br/><br/>Son front repose sur son bureau et il est <br/>assis dans son fauteuil. <br/><br/>Les deux mains pendent. <br/><br/>Dans le dos, un poignard, jusqu'à la garde. <br/>Ce poignard qui servait à Girodias de coupe- <br/>papier et se trouvait toujours sur «on bu- <br/>reau. <br/><br/>La mort a certainement été foudroyante. <br/>Le poignard a traversé le ceur. <br/><br/>Du sang, avec un peu d'écume, est sorti <br/>par la bouche et a taché les papiers épars sur <br/>la table. <br/><br/>C'est tout. <br/><br/>Rien de dé'-angé, du moins en apparence, <br/>rien d'anormal. <br/><br/>Et le due, debout em$K la porte, le cœur <br/>battant. passe la main eúr son front, comme <br/>pour en écarter un rêve. <br/><br/>Tout à coup il se précipite dans la mafeoa, <br/>Au secours M. Girodias se meurt <br/>Son cri (Mentit lugubrement et ne trouve <br/>pas d'écho.. <br/><br/>alore, un effroi le saisit. <br/><br/>Si quelqn'un le trouvait seul en eette <br/>maison, auprès de ce cadavre?. Est-ce que <br/>le soupçon ne viendrait pas que c'est lui qui <br/>a tué i. Est-ce que l'accusation ne serait pas <br/>toute naturelle, presque certaine, presque <br/>forcée, même 1 <br/><br/>discours dans lequel il annonça que le pavillon <br/>de la République flottait maintenant sur le dis- <br/>trict uord de I Orange River, et que le drapeau <br/>anglais n'y flotterait plus désormus, à moins <br/>qu'on ne le hisse sur les cadavres desburghera. <br/>L'ordre le plus absolu règne dans la t'ille. <br/>Londres, 31 octobre. <br/><br/>Le correspondant du Daily Mail rt Cipelown <br/>apprend que le colonel Baden-Powel a fait cons- <br/>truire aux alentours de !dafeking un chemin de <br/>fer sur lequel roulent des trains blindés. <br/>Le Cap, 31 octobre. <br/><br/>On annonce de Barkly-Wesi que les Boers <br/>construisent des ouvrages autour de Kimberley <br/>dans le but de bombarder la ville. <br/><br/>Le Général Redwers Buller <br/><br/>Londres, 31 octobre. <br/><br/>On télégraphic d, ̃ au Datiu Mail, à la <br/>date du à dix Il t du soir <br/>Le Dvnottar-CasiU, bord sir Redwers <br/>Buller, est arrive dans la baie de la Table à dix <br/>heures du soir, <br/><br/>On croit que te général débarquera demain <br/>matin à neuf heure». <br/><br/>Le bruit avait couru hier soir à Londres que <br/>sir liedwers Buller avait été assassiné. <br/>Chez les Boira <br/><br/>Aliwal North, 31 octobre <br/><br/>Un Anglais, récemment venu de Victoria, dit <br/>que les journaux boërs racontent les succès de <br/>1 armée de leur pays. <br/><br/>Ils annoncent que Kimbr.rtey et Mafekingsont <br/>entouréa et se rendront bientôt. <br/><br/>Le Bechuanaland est conquis et annexé. <br/>L'armée boër, dans le Natal, poursuit samar- <br/>che victorieuse. Les Hoérs ont remporte la vic- <br/>toire rfe Glenaoë le camp de'HunJeo est <br/>tombé entre leurs mains avec un grand nombre <br/>de blassés et de prisonniers anglais, ot des quan- <br/>tités il'approviSionnenit». <br/><br/>Les Boers admettent qu'ils ont éprouvé un re- <br/>vers à Etandslaagte, où ils ont eu 30 tués et un <br/>grand nombre de blessés, tandis que legé né- <br/>ml Kock tt le colonel avec 85 de leurs <br/>hommes, oat été faits prisonniers. <br/><br/>Ladysmilh est entièrement entourée, et, d'a- <br/>près ce u'on dit à Pretoria, sera bientôt prise. <br/>Les Boers paraissent convaincus de leur succès <br/>final et considèrent que tout le Natal est prati- <br/>quement entre leurs mains. <br/><br/>Massacre la Mission <br/>Les appréhensions que nous manifestions hier <br/>au sujet des projets belliqueux de ltabah se <br/>trouvent justifiées par la triste nouvelle du <br/>massacre de ta mission Bretonnet deux ofil- <br/>ciers, un sous-otficier européen et vingtscpt <br/>Sénégalais ont trouvé une mort glorieuse dans <br/>un combat contre les troupes de Uabab, fortes <br/>de sept à huit mille hommes. <br/><br/>Voici le texte du télégramme que M. Gentil, <br/>commissaire du gouvernement dans te Chari, <br/>vient d'expédier de Gribingui au Ministre des <br/>Colonies <br/><br/>J'ai la douleur de vous apprendre la mort <br/>de M. l'administrateur Bretonnet, de M. le <br/>lieutenant Braun et du' maréchal des logis <br/>Martin, tués daus un engage-meut avec Habah. <br/>Rabah en personne dirigeait l'attaque. Bre- <br/>toanet, parti pour le Baghirmi sans attendre <br/>la compagnie commandée par M. le capitaine <br/>Julien, a soutenu le combat avec 30 tirailleurs <br/>sénégalais contre 7 à 8,000 hommes. <br/><br/>27 Séuégalais ont été tués; 3 blessés ont été <br/>faits prisonniers, mais l'un de ces derniers, le <br/>sergent Sambâ-Sal, s'est enfui et a été re- <br/>cueilli par les noirs. <br/><br/>Habah a éprouvé de grandes pertes. <br/><br/>Son fils Niabé a été blessé dangereusement, <br/>l'élite de ses guerriers a succomlré. <br/><br/>M. Gentil ajoute qu'il avait, il Qribingui, reçu <br/>le 9 août, de M. l'administrateur Bretonnet, <br/>commandant l'avant-garde de sa mission, une <br/>lettre datée du 16 juillet. de Togban, par 9H8\" de <br/>latitude nord, une lettre lui faisant prévoir une <br/>attaque imminente de Rabah. Dès le surlende- <br/>main 11 août,{. Gentil s'étaitmis en marche pour <br/>rejoindre Bretonnet. il avait avec lui la compa- <br/>gnie commandée par M. le capitaine Julien et <br/>forte de 127 hommes. C'est au cours dv cette <br/>marche, en arrivant à (¡:loura te 16 août, <br/>que la nouvelle du ̃»\"̃> leur a été apportée <br/>par le sergent s< happé au massacre. <br/>,NI. Gentil a iim ;i>iu établi â Gaoura <br/>un poste solidement retranché commandé pai- <br/>le capitaine Robillot, et disposant, avec l'appui <br/>de deux canons, de la compagnie Julien. <br/>Puis il est revenu à Gribingui en Fept jours, <br/>marchant le jour et la nuit pour envoyer à <br/>Gaourn une secande compagne de tirailleurs <br/>forte de 137 hommes et commandée par le capi- <br/>taine Cointel. <br/><br/>Cette seconde compagnie allait quitter Gri- <br/>bingui le 29 août. Des forces suffisantes pour <br/>assurer la sécurité de notre poste de Uribiogui <br/>ont d'ailleurs été maintenues en arrière. <br/>Le But de l'Expédition <br/><br/>La mission ou plutôt l'avant-garde de la mis- <br/>sion Gentil, que commandait l'administrateur <br/>Bretonnet, avait pour objet de continuer l'oeuvre <br/>de Gentil dans ses précédentes explorations et <br/>d'assurer la jonction du Tchad avec le Batir-el- <br/>Ghazal, <br/><br/>'il. Brctonnet avait été chargé de recruter les <br/>Sénégalais et Haoussas qui devaient entrer dans <br/>l'effectif delà mission il s'était acquitté avec <br/>succès de cette tache et avait les <br/>hommes à Brazzaville à la ttn de il quitta <br/>cette ville, précédant Gentil, et se dirigea vers <br/>le nord par le Haut-Congo pour attendre le <br/>Tchad. il s'arrêta aux stations de Krcbedjé et <br/>de Gribingui, où sont établis des poales fran- <br/>çais. Il suivit le Gribingui, affluant du Chari, <br/>pour arriver à ce fleuve et entra dans le Ba- <br/>ghirtni, réjrion limitée au sud-ouest par le Chari <br/>et comportant le Tchad c'est dans cette mar- <br/><br/>Il se retire, il sort. il veut s'en aller sans <br/>être vu. <br/><br/>Et sur le seuil même, revenant aux Gran- <br/>des-Rochez et montant le perron, il se trouve <br/>face à facr avec les deux flls de Girodias 9 <br/>Le duc s'éerie <br/><br/>Ah! messieurs, messienrs, un grand <br/>malheur! <br/><br/>Ils reculent, interdits, à cette apparition. <br/>Un malheur î <br/><br/>Votre père. <br/><br/>Le due n'ose achever. Les deux frèrea, <br/>pâles, se regardent, se rapprochent l'un de <br/>l'autre pour opposer leurs deux forces réu- <br/>nies àla catastrophe qu'on va leur apprendre. <br/>Ah! c'est horrible, ce que je viens de <br/>voir, dit le duc. Quel que soit l'éloignement <br/>de nos deux familles, je vous plains, ah I je <br/>vous plains de tout mon cœur. <br/><br/>Mais que se passe-t-il, monsieur de Vil- <br/>lefort ? De quel si grand malheur sommes- <br/>nous menacés? <br/><br/>Votre père. vient d'être assassiné. <br/>Assassiné <br/><br/>Us eurent tous deux le même cri d'horreur <br/>et se précipitèrent dans la maison. <br/><br/>Et ils vinrent tomber, en sanglotant, aux <br/>pieds de leur père inanimé. <br/><br/>Villefort respecta leur douleur.Il voulut les <br/>laisser, se retirer discrètement. <br/><br/>Ils s'aperçurent, en relevant la tête et mal- <br/>gré leurs larmes, qu'il s'éloignait et que <br/>déjà il atteignait la porte. <br/><br/>Alors ils se relovérent <br/><br/>Monsieur de Villefort <br/><br/>Gaston alluma des bougies dont la flamme, <br/>que faisait vaciller un peu d'air passant par <br/>la fenêtre ouverte, éclaira d'une lumière <br/>tremblante le lugubre spectacle. <br/><br/>Pierre avait saisi le duc par le bru. <br/><br/>jle partez pae e&core, monsieur. aous <br/><br/>che en avant qu'il a été attaqué et qu'il a trouva <br/>la mort. <br/><br/>Paît à notor dans une lettre ,rite à son père, <br/>M. Bretonnet estimait que tes forces réunie» <br/>sous la domination de Habah n'étaient que de <br/>fusils. Cette opinion, crta^i.'mpnt erro- <br/>née, le fait l'a prouvé, lui a > :r* <br/>une confiance que Habah n eut <br/>l'on serait tenté d'attribuer à iction le <br/>fait d'avoir poussé en avais vadre la <br/>compagnie commandé» par e Julien. <br/>Celte imprudence a été causi il est <br/>vrai yu'il ne connaissait pu. ï la pré- <br/>sence des bandes du Rabah daiii I.= territoire^ <br/>qu'il allait traverser. <br/><br/>.Les Officiers tués <br/><br/>L'administrateur Bretonnet ét.iit nce le ? mwt <br/>et > Uit entré dans la marine, à i'Eeole na- <br/>vale, à l'Age de dix-huit ans; aspirant de J** <br/>classe le 5 octobre enseigne du 5 octobre1 <br/>il avait él6 nommé lieutenant de vaissetD <br/>le 87 janvier Il avait fait partie de la misr <br/>sion Mizon dans la Benoué et VAdamaoua et, <br/>nommé administrateur des colonies, il avait de- <br/>mandé à passer dans la réserve le septembre <br/>1&.e. Il était chevalier de la Légion-d'llonneur. <br/>Le lieutenant Salomon Braun appartenait àt <br/>l'artillerie de marine; né le 9 Juillet il <br/>avait été nommé sous-lieutenant te 1\" octobre; <br/>lieutenant en second le octobre et <br/>lieutûuanl en premier le 1\" septembre 1898. <br/><br/>CONSEIL DES MINISTRES <br/>Le v:fs se sont réuni- *stin, à TE-. <br/>lysi- ^résidence de <br/><br/>.NI absent de Paj Âit pas i. <br/>la ciulibtraUun. <br/><br/>LE CONTRAT 0 ASSOCIATION <br/><br/>La séance a étà entiùreiiwut consacrée à l'exa? <br/>mon du projet de loi relatif au contrat d'assez <br/>ciation qssri sera déposé sur le bureau de fi <br/>Chambre Iles la reprise des travaux parlemen-' <br/>tîiirp?. <br/><br/>Le Ministre du Commerce si le Con» <br/>seil du projet ric toi sur la urehandé <br/>qu'il compte déposer à la rentré,, il 'accord avec <br/>ses collègues de la Marine rt ries Finances. <br/><br/>Sur la proposition du Ministre des Co!oni«S, <br/>le gouvernement saisira la Chambre d'une de.- <br/>mande dr pension à accorder ;i la veuve du co- <br/>lonel Klobb. <br/><br/>MESURES AGRICOLES <br/><br/>Le. Ministre de r Agriculture a fait signer t <br/><br/>1° Un décret portant à vingt-trois ans au liepr <br/>de vingt-deux la limite d'Age pour s de <br/>l'Ecole forestière ot autorisant l'a nul» <br/>épreuve de langues étrmngèrcs; <br/><br/>2' Un décret nommant directeur du sécréta» <br/>riat. du personnel et de la comptabilité au MW <br/>ni stère dc l'Agriculture M. Paul Cabaret, chef <br/>de division. <br/><br/>Le Ministre de l'Agriculture a fait approuver <br/>par le Conseil un projet de loi tendant à réprimer <br/>les tentatives de fraudo pour obtenir les enwu- <br/>ragements k la culture du lin et du chanvremu* <br/>torisés par la toi du «avril 1898. <br/><br/>M. Jean Dupuy a fait '\"îteotti <br/>intervenue entre la Soeiété ;t deg <br/>races de thevaux dans le i Uoft <br/>départements. <br/><br/>LA RENTRCE DES CHAMBRES <br/><br/>La Jate du U novembre a <H<- délluitivemeDl <br/>adopté pour la rentrée des Gtiumbres, <br/><br/>AUJOURD'HUI <br/><br/>EST MIS EN VENTE <br/><br/>Supplément Littéraire illustré U Petit Parisis} <br/>5 centimes le Numéro <br/><br/>Vatci le sommaire des gravures que contien( <br/>le numéro de cette semaine <br/><br/>AU COMBAT DE GLENCOR Le général Symau <br/>mortellement blessé. <br/><br/>DEUX ENFANTS ENLEVÉS L'Arrestetlon d«« <br/>ravis ••urs. <br/><br/>TUÉ PAR SON FRÈRE!, <br/>Un drame de famille, qùi s'est malheureuse. <br/>ment termina par la mort d'un des acteurs, N'est <br/>déroulé hier soir à Putouux. <br/><br/>Une IMseussion d'Intérêts <br/><br/>Ancien chemin de Colombes, liaitito dcpviË <br/>longtemps un nourriasear, Jean ljucli«r. 4gé da <br/>trente-huit ans, marié, père de deux jeunes en* <br/>faute. <br/><br/>Jean Duchar exploite cet cudroit une lailfit <br/>ria des plu» llorii#<.ii>ii: <br/><br/>Dana l'après-midi d hier il rwtviiit la visite dA <br/>son frère atné, Gabriel, également nournsseur; <br/>âgé de quarante-six ans, demeurant 14H, rue de <br/>la hépuuliqup, marié en second\" ':̃•<̃̃• père <br/>d'un jeune bomme de dix-sept i >, jutlsa <br/>premi£re femme aca mourant ai«ui iouooù uae <br/>somme de i,2U0 francs, qui, la majorité' <br/>du jeune homme, de**U rester «-nlrclea main* <br/>de son otieie, Jean Oucher, subrogé tuteur le* <br/>intérêts «suis devaient être eervis Gabriel Du- <br/>cher, le p<>re. <br/><br/>lie fr«c|ufcntes discutions s'i:Ui>;nt déjà cl» <br/>véea entre les deux frùres an pâlot de cet ar- <br/>gent que Gabriel réclamait uformaoJ^ <br/>strictement aux volontés d< f«, conflp- <br/>mées par la décision récent', u u:i i.^useil de fai <br/>niilie, Jean rucher restait inébranlable. <br/><br/>(.est pous-é toujours par lardent désir d'à-. <br/>voir la somme entière en sa possession que Ga- <br/>briel Oncher soulevait hier avec son frère, <lan* <br/>la granue salle de la laiterie, donnant sur la <br/><br/>avons besoin de vous entendre. Il faut que <br/>vous nous donniez des renseignements. que <br/>vous nous disiez comment vous vous trou- <br/>viez là. que vous guidiez autant que possi- <br/>ble nos recherches, puisque vous êtes là <br/>premier qui ayez connu ce crime. <br/><br/>Le duc s'inclina <br/><br/>Je reste, monsieur, bien que je ne pré- <br/>voie point que j'aurai quelque chose à yoqs <br/>Alors, Pierre dit à Gaston <br/><br/>Toi, Gaston, vu vite, va prévenir la getf <br/>darmerte. <br/><br/>Ensuite, par questions rapides, nerveuse. <br/>entrecoupées de silences et de sanglots, <br/>Pierre interrogea le duc de Villefort. Députa <br/>combien de temps Horace était-il aux Crac- <br/>des-Roches? Comment avait-il pu pénétrer <br/>jusqu'auprès de Girodias Dans quel état <br/>ravait-il trouvé? Le vieillard rospirait-il en- <br/>coret Pourquoi était-il venu ? Et qu'avait-il i. <br/>faire avec Girodia»? <br/><br/>Le duc répondit à toutes ces questions. <br/><br/>Pierre l'écoutait avec mie attention extrê-» <br/>me, l'œil en dessous, déjà soupçonneux-. <br/><br/>Horace ne pouvait révéler au jenne hommftt <br/>tout ce qui s était passé entre sa mère et Gi- <br/>rodias, les menaces de celui-ci, ce secret <br/>d'lionneur qu'il prétendait {u*»&jder et q&'if <br/>avait voulu vendre. <br/><br/>Il dit seulement, répondant à la dernière <br/>question <br/><br/>J'avnis, Il se peut que vous la sachiez, <br/>des affaires très importantes a régler avec <br/>votre père. Votre père possédait sur mot <br/>des créances importantes et nombreuses, ra- <br/>chetées à Paris dans un i3ut qu'il vous est. <br/>tacile de deviner si Girodias ne vous a pu. <br/>mis au courant de ses secrètes intentions. <br/>tA suivre.) iiisa Ia&X» <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                },
+                "browsePage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "currentPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {
+                    "eligibleZoomIndisponible": false,
+                    "OpenSeadragonTitles": [
+                      "Plein écran",
+                      "Taille initiale",
+                      "Agrandir",
+                      "Réduire",
+                      "Page suivante",
+                      "Page précédente",
+                      "Rotation horaire 90°",
+                      "Rotation antihoraire 90°",
+                      "Sélection",
+                      "Quitter le mode zoom"
+                    ],
+                    "rtl": false,
+                    "isTabletOrMobile": false
+                  },
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 1 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519076d/f1.highres",
+                      "screenNumber": 1,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519076d/f1.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/> ",
+                            "stringOCR": "VINGT-QUATOTRME ANNÉE. N- Le numéro t & MERCREDI i- NOVEMBRE Ï8& <br/><br/>ABONNEMENTS Direction 18. Rue^Enghlen. PARIS ANNONCES <br/>PARIS et DÉPARTEMENTS:TroiSmois,5fr.SixmoU,9fr.Unan,f8fr. TOUS LES JEUDIS S'adresser à L'OFFICE D'ANNONCES, 10, Place de la Bourse, 10, PARIS <br/>on trais dans lo,. BlffMa de poste Supplément Littéraire Illustré (Huit Pages) 5 Centimes. et à la SaUe des Dépèches » du Pelii Parisien. ao. boule^Montroartrc. <br/><br/>Dernière Edition <br/><br/>Nous citions en exemple, il y a quelques <br/>jours, les nombreux musées industriels qui <br/>fonctionnent en Allemagne et auxquels sont <br/>annexés des services de renseignements <br/>techniques et commerciaux. Ces musses, <br/>disions-nous, se font des prêts mutuels <br/>par des conférences et des excursions bien <br/>conduites, on tâche d'intéresser les artisanes <br/>et le public aux questions qu'ils soulèvent. <br/>Tant au point de vue historique qu'au <br/>point de vue pratique, ils jouent un rôle <br/>de plus en plus important dans l'économie <br/>nationale. <br/><br/>N'avons-nous donc rien en France qu'on <br/>puisse rapprocher de ces musées allemands? <br/>Peut-être. Mais les établissements que nous <br/>possédons ne sont encore qu'à l'état em- <br/>bryonnaire et il leur manque l'idée direc- <br/>triee qui donne tant de cohésion et d'unité <br/>aux efforts de nos voisins de l'Est. <br/><br/>On sait, par exemple, ce qu'est à Paris le <br/>Musée social. L'admirable création du comte <br/>de Chambrun constitue à cette heure un <br/>desorganismes les plus souples et les mieux <br/>compris de la vie économique du pays. Son <br/>action, qui ne s'est fait sentir jusqu'ici qu'au <br/>contre, pourra rayonner de plus en plus <br/>vers- BXireniUes.fce- <br/>destiné il devenir l'intermédiaire graoieux <br/>d'un grand nombre d'industries réparties <br/>sur toute la surface du territoire, y compris <br/>les industries maritimes, et qui trouveront <br/>en lui un agent aussi désintéressé qu'utile. <br/>Et, sans doute, des institutions comme le <br/>Musée social exigent, tant pour leur entre- <br/>tien que pour leurs frais de premier éta- <br/>blissement, une mise de fonds considéra- <br/>ble. C'est seulement dans les grandes villes <br/>comme Paris, Lyon, Marseille ou Burdeaux <br/>qu'elles peuvent se développer et rendre les <br/>services qu'on attend d'elles. <br/><br/>Ces musées sont, en effet, des musées <br/>encyclopédiques; ils embrassent toutes les <br/>manifestations de l'activité sociale. Leur <br/>nom le dit, et leur nom n'est point menteur <br/>en l'espèce. <br/><br/>Mais, par le fait même qu'ils embrassent <br/>tant de questions, ils ne peuvent les serrer <br/>toutes d'assez près; ils négligent les détails <br/>et c'est aux grandes lignes seulement qu'ils <br/>s'appliquent pour tâcher de dégager les <br/>lois communes à la production générale du <br/>pays. <br/><br/>Il y a d'autres sortes de musées indus- <br/>triels. Et, à la vérité, ces musées peuvent <br/>être aussi variés que les industries mêmes <br/>dont ils prétendent classer les spécimens et <br/>offrir une vue détaillée. <br/><br/>Le malheur est que nous n'avons encore <br/>chez nous que très peu de ces établisse- <br/>ments. Plusieurs même sont de date si ré- <br/>sente qu'ils sont à peine constitués. Ainsi <br/>le Musée maritime et commercial que vient <br/>de fonder la ville de Fécamp. <br/><br/>La Chambre de commerce de cette ville <br/>possédait depuis plusieurs années une inté- <br/>ressante collection d'engins de pêche qu'elle <br/>avait envoyée à l'Exposition du « Vieux- <br/>Honaeur ». Ellc y fut fort remarquée. Cela <br/>donna idée aux Fecampois de sortir défini- <br/>tivemeot des armoires et des caisses où on <br/>les enfermait jusqu'alors les différents en- <br/>gins de pôoho, tant anciens que modernes, <br/>qui formaient la collection de la Chambre <br/>de commerce. <br/><br/>Ces engins, méthodiquement classés, <br/>pouvaient constituer une excellente leçon de <br/>choses pour le public on y ajouterait toutes <br/>le& spécialités de l'industrie locale on y <br/>ferait figurer également les articles d'im- <br/>portation, et l'on aurait ainsi tous les élé- <br/>ments d'un Musée industriel, instructif et <br/>pratique, parfaitement approprié aux be- <br/>soins de la localité. <br/><br/>Ce Musée est fondé aujourd'hui. L'orga- <br/>nisation en a été confinée à M. Louis Gau- <br/>thier, directeur de l'Ecole d'hydrographie <br/>at de l'Ecole des pêches maritimes de Fé- <br/>camp. Aucun choix ne pouvait être plus <br/>heureux, et la nouvelle fondation est entre <br/>bonnes mains. <br/><br/>C'est également une excellente idée que <br/>celle qui a guidé M. Millet dans la création <br/>à Dieppe d'une salle consacrée aux produits <br/>de l'ivorysculpture locale. <br/><br/>L'ivoire de luxe, l'ivoire travaillé, fut <br/>longtemps l'industrie dieppoise par excel- <br/>lence. A vrai dire, industrie et marina se <br/><br/>N* 24. Feuilleton du PETIT Parisien. <br/>La Cliarmeuse d'Enfants <br/>GRAND R£MAN INÉDIT <br/><br/>PREMIERS PARTIS <br/><br/>UNE HAINE VIEILLE D'UN SIÈCLE <br/>XIll (suite) <br/><br/>Lettre d'amour <br/><br/>Mais il fallait une explication. <br/><br/>Mère, dit-il, je rentrais au château quand <br/>je vous ai aperçue. inanimée».. Ma mère, <br/>tous sentez-vous mieux?. <br/><br/>Oui. oui, mon fils <br/><br/>Voulez-vous vous appuyer sur mon bras <br/>jusque Vlllefortï <br/><br/>Merci. je rentrerai bien seule. Je <br/>vous assure, mon enfant, ce n'était rien, rien <br/>en vérité. <br/><br/>Elle a à peine assez de force pour s expri- <br/>mer. <br/><br/>Elle se raidit contre une nouvelle faiblesse, <br/>car- elle souffre une inexprimable torture, une <br/>angoisse sans nom. <br/><br/>Cette figure pâlie, ces lèvres blêmes, ces <br/>yeux creusés, cet air de désespoir, est-ce que <br/>tout cela n'indique pas, chez Roland, la con- <br/>naissance de la vérité?. Un sanglot erre sur <br/>ses lèvres. Quel surhumain courage il lui <br/>faut pour le comprimer. Mais la crise, grave <br/>tt nerveuse, si elle n'éclate pas maintenant, <br/>Eclatera tout l'heure et va faire de ce jeune <br/>Traduction et i rep^nJactioa iat«j;sUi«A. <br/><br/>tenaient si étroU.eraeijtt « que les Dieppois, f <br/>dit Vitet, étaient passés maîtres et célèbres <br/>rETufûpe presque autant comme <br/>ivoiriers que comme marins ». Il y a peu <br/>d'années encore, l'industrie de l'ivoire oc- <br/>cupait à Dieppe 300 ouvriers et 16 maîtres <br/>ou fabricants. Il n'y a plus, à cette heure, <br/>que deux ou trois maîtres et une trentaine <br/>d'ouvriers. <br/><br/>Cette décadence de l'ivorysculpture diep- <br/>poise tient-elle cependant, comme on l'a <br/>dit, à la décadence générale du goût, à la <br/>désaffection croissante de la clientèle? On <br/>en peut douter. La vérité est que si l'ivoi- <br/>rerie dieppoise traverse la plus dangereuse <br/>et la plus mortelle des crises, cela tient <br/>surtout il l'esprit de routine et au manque <br/>d'instruction première qui se révèlent dans <br/>la fabrication actuelle, Les dispositions na- <br/>turelles des Dieppois pour la sculpture ont <br/>cependant frappe de tous temps les obser- <br/>vateurs. <br/><br/>« Vous voyez, disait Vitet en 1844, les <br/>enfants en apprentissage creuser, évider, <br/>déchiqueter 1 ivoire avec une facilité toute <br/>instinctive et dont vous demeurez tout con- <br/>fondu. » <br/><br/>Et il ajoutait Il est du devoir du gou- <br/>vernemeut de ne pas laisser s'égarer et se <br/>perdre ces précieuses semences. » <br/>C'est à quoi l'on veilla pendant quelque <br/>temps. Mais, sauf peut-être sous la Restau- <br/>ration et le 'second Empire, quand Planet, <br/>Buis.- Amêdiie Fér*tla dirigeaient, la coup» <br/>gratuit de dessin créé à Dieppe par Napo- <br/>léon ne rendit aucun service appréciable. Il <br/>faut plus et mieux qu'un simple cours, et <br/>c'est c que l'effort doit être proportionué à <br/>la lâche. <br/><br/>On commence le comprendre. Tandis <br/>que la municipalité s'occupe de faire aboutir <br/>le projet de création d'une sérieuse école de <br/>dessin et de modelage appliqués à l'indus- <br/>trio de l'ivoire, M. Millet, conservateur du <br/>musée local, vient d'organiser dans ce mu- <br/>sée la salle d'ivorysoulpture dont nous par- <br/>lions tout à l'heure. <br/><br/>Croirait-on, en effet, que Dieppe, cette <br/>patrie de l'ivorysoulpture, n'avait jusqu'a- <br/>lors rien qui de près ou de loin ressemblât <br/>à une collection d'ivoires? Quand NI. Maze- <br/>Sencier la visita en 1875, le musée local <br/>comprenait en tout deux râpes à tabac, une <br/>bonbonnière, un morceau d'éventail et un <br/>morceau de navette, deux ou trois étuis <br/>sculptés, un groupe de Nicolle aîné et deux <br/>vases Médicis pris au Musée du Louvre et <br/>offerts par Louis-Philippe. Les choses ont <br/>changé depuis. Le musée s'est agrandi et <br/>son distingué conservateur s'y occupe pieu- <br/>sement à recueillir les pièces les plus inté- <br/>ressantes de l'ancienne sculpture indigène. <br/>Plusieurs vitrines de ce musée sont aujour- <br/>d'hui consacrées à l'ivoire dans une des <br/>salles récemment ouvertes du second étage. <br/>On y remarque bon nombre de bas-reliefs, <br/>de statuettes, de vases, de crucifix, de râpes <br/>à tabac, de navettes à frivolités, de pulvé- <br/>rins, d'étuis, de bonbonnières, etc., ainsi <br/>qu'une demi-douzaine de navires en ivoire <br/>qui étaient autrefois, avec les crucifix, la <br/>grande spécialité dieppoise. <br/><br/>Nul doute qu'appuyée d'une sérieuse <br/>école de dessin et de modelage, cette expo- <br/>sition permanente des plus beaux spéci- <br/>mens de l'ivorysculpture dieppoise ne dé- <br/>termine un renouveau de l'activité locale <br/>dans une ville qui offre tant de ressources <br/>naturelles à l'industrie et à l'art. <br/><br/>Combien utiles pourtant seraient de sem- <br/>blables musées dans des villes oomme Li- <br/>moges, Nevers et Rouen, qui ont tant à <br/>fairo pour maintenir leur personnel de po- <br/>tiers et d'émailleurs au niveau de la concur- <br/>rence étrangère Quels services ne ren- <br/>draient-ils pas également pour la ferronne- <br/>rie, l'ébémsterie, la dentellerie, la tapisse- <br/>rie, etc., etc., dans les villes qui ont gardé <br/>quelque souvenir de ces industries char- <br/>mantes, longtemps le monopole de notre <br/>pays et que les paysétrangerslui out enlevé <br/>peu à peu I <br/><br/>11 n'est pas jusqu'aux musées simplement <br/>pittoresques, comme ceux fondés il Arles <br/>par Mistral et par M. Le Men à Quimper, <br/>qui ne puissent aider à notre relèvement <br/>industriel. Les mobiliers, les ustensiles de <br/>toute espèce qu'on y rencontre peuvent don- <br/>ner des idées, sinon servir de modèles Dans <br/>le détail même des costumes, dans les bro- <br/>deries qui les chamarrent, dans les den- <br/>telles qui les ornent, il y a plus d'uue leçon <br/>à, recueillir. <br/><br/>Des musées de cette sorte contribuent <br/><br/>garçon, si robuste jusqu'à ce iour, l'enfant <br/>nerveux et malade et presque infirme, pau- <br/>vre créature à plaindre dont nous avons vu les <br/>Incompréhensibles faiblesses dès le début de <br/>ce récit. <br/><br/>La mère, sans plus rien dire, lentement <br/>s'éloigna. <br/><br/>Hol.înd la laissa partir. <br/><br/>Longtemps, longtemps, il reste là, debout, <br/>la tête penchée, sans bouger. <br/><br/>Puis il retire la lettre qu'il a cachée préci- <br/>pitamment à la vue de sa mère et il la relit. <br/>Il doutait peut-être encore. il y a quelques <br/>instants. <br/><br/>A présent, après avoir vu sa mère, plus de <br/>doute 1 <br/><br/>il va retrouver son cheval dans la futaie, et <br/>un quart d'heure après il est à Villefort, où <br/>sa mère vient de rentrer. <br/><br/>Par bonheur, il ne voit pas son frère. <br/>S'il avait rencontré Hoface, si Horace l'a- <br/>vait interrogée remarquant sa pâleur, peut- <br/>être qu'à lui, à ce frère aîné, Il n'aurait pas <br/>eu, en cette heure terrible, le courage de <br/>mentir 1 <br/><br/>Mais depuis quelques minutes, le duc est <br/>parti il ne veut pas rester plus longtemps <br/>avec le doute affreux de cette forfaiture à <br/>l'honneur que l'on reproche à un des Ville- <br/>fort. <br/><br/>il a dit <br/><br/>Je verrai Glrodias, et coûte que coûte je <br/>saurai la vérité. <br/><br/>Voilà pourquoi. sans en parler à personnel, <br/>il s'est dirigé vers les Grandes-Riches, où il <br/>arrive bientôt il n'a pai re-ncontrë la du- <br/>chesse cellc-çi rentrait au château et Ro- <br/>land y rentrait de son côté presque aussitôt <br/>au moment où Horace en sortait. <br/><br/>Mais ces allées et venue* ont pria 4u <br/>.teoing. <br/><br/>aussi à leur mamère à réveiller ou à forti- <br/>fier la vie industrielle. On a loué surtout <br/>Mistral pour le bel exemple de générosité <br/>qu'il avait donné en fondant le musée d'Ar- <br/>les on aurait dû le féliciter surtout d'avoir <br/>doté la Provence d'un organisme qui lui <br/>manquait, d'avoir assis surie passé l'avenir <br/>de l'art provençal. <br/><br/>Puissent les créations de cet ordre se <br/>multiplier Chacune de nos villes françaises <br/>devrait tenir à honneur d'avoir son musée <br/>local, non point composé avec quelques ta- <br/>bleaux d'une valeur douteuse et une demi- <br/>douzaine de plâtres jococq, mais avec les pro- <br/>duits de ses industries et de son commerce. <br/>Fécamp et Dieppe ont donné sur ce point <br/>un exemple qui mériterait de n'être pas <br/>perdu. <br/><br/>JEAN FROLLO <br/><br/>LHÏERRE£TR.TOAL <br/>Un désastre terrible vient de frapper les <br/>armes anglaises. <br/><br/>Le général White, par une faute de straté- <br/>gie qu'il avoue lui-même, s'est fait battre en <br/>bataille rangée devant Ladysmith parles for- <br/>ces combinées de la République d'Orange et <br/>du Transvaal. <br/><br/>Mille hommes tués et blessés, deux miUe <br/>prisonniers, dix-huit canons perdus, tel est <br/>pour l'Angleterre le bilan de cette funèbre, <br/>journée. L'écrasement est aussi complet <br/>qu'au fameux combat de Majouba-Hill, où les <br/>Anglais éprouvèrent pour la première fois la <br/>vaillance des Boërs. <br/><br/>Au moment où le général Redvers Buller <br/>débarque au Cap, les débris de l'armée du <br/>.Natal sont en fuite vers Piétermaritzburg la <br/>colonie du Cap est menacée,le Béchounaland <br/>et la Hhodésia sont à la merci des Boërs, <br/>dont les forces semblent augmenter chaque <br/>jour. <br/><br/>L'Angleterre, grisée par ses rêves d'omni- <br/>potence, affectait de mépriser ses adversai- <br/>res. Elle ne tardera pas à apprendre ce qu'il <br/>en coûte d'attaquer, contre tout droit et toute <br/>justieé, un peuple fermement décidé à lutter <br/>jusqu'à la mort pour sa liberté. <br/><br/>UN DÉSASTRE ANGLAIS <br/>Londres, 31 octobre. <br/><br/>Le War Office reçoit la dépêche suivante du <br/>général \"White <br/><br/>Ladysmith, lundi, 11 h. 35 matin. <br/><br/>J'ai à annoncer un désastre survenu à une <br/>colonne envoyée par moi pour prendre po- <br/>sition sur une colline, dans le but de proté- <br/>ger notre flanc gauche. (ici trois mois indé- <br/>chiffrables), et après avoir subi des pertes <br/>considérables a dû se rendre. <br/><br/>Le détail des pertes n'est pas encore <br/>connu. Un soldat employé à l'ambulance du <br/>régiment des fusiliers irlandais est venu <br/>sous la protection d'un pavillon parlemen- <br/>taire, avec une lettre des survivants de la <br/>colonne, demandant de l'aide pour enterrer <br/>les morts. Je orains que le bien fondé de la <br/>nouvelle ne fasse aucun doute. <br/><br/>C'est moi qui ai préparé le plan qui a en- <br/>traîné le désastre, et suis seul responsable <br/>de son exécution. <br/><br/>Aucun blâme ne s'attache aux troupes, <br/>car la position était intenable. <br/><br/>La colonne était composée d'un bataillon <br/>des fusiliers irlandais, d'un bataillon de <br/>Gloucesler et d'une batLerie de montagne. <br/>L'Evacuation de Ladysmith <br/><br/>Londres, 31 octobre. <br/><br/>La capitulation de la colonne envoyée par <br/>le général White pour protégersonaile gau- <br/>che ne fut qu'un épisode de la grande ba- <br/>taille engagée à Ladysmith. <br/><br/>Les Anglais ont subi une épouvantable <br/>défaite. <br/><br/>Leur armée a été refoulée à six milles en <br/>arrière de ses positions. <br/><br/>La nuit seule a empêché sa destruction <br/>complète. <br/><br/>Plus de mille hommes sont restés sur le <br/>terrain, sans compter les prisonniers tom- <br/>bés au mains des Boërs. <br/><br/>Le général White, en retraite sur Piéter- <br/>mariuLurg, a évacué Ladysmitb. <br/><br/>Le Récit de la Bataille <br/><br/>D'autre part le correspondant du Standard à <br/>Ladvsmitl fait en ces termes le récit de la ba- <br/>taille d'hier <br/><br/>Nos forces étaient ainsi disposées à droite. <br/>trois régiments de cavalerie, quatre' batteries <br/>d'artillerie, cinq bataillons d'infanterie au cen- <br/>tre, trois batteries d'artillerie, deux régiment <br/>de cavalerie et quatre bataillons d'infanterie; il. <br/>l'aile gauche, deux bataillons Je fusiliers irian- <br/>dais, le régiment de Qlouceatershirc et tme bat- <br/>terie de montagne. » <br/><br/>La nuit est descendue sur les bois, et <br/>comme la lune ne brille pas encore, la cam- <br/>pagne est plongée dans l'obscurité. <br/><br/>Au loin, le vacarme de la fête, incessant, <br/>interminable. <br/><br/>Pour lui comme pour la duchesse, comme <br/>pour Roland aussi, ce sera un cauchemar <br/>lorsque tous trois, plus tard, se souvien- <br/>dront <br/><br/>Lorsque le duc arrive aux Grandes-Roches, <br/>il est surpris de la solitude de la maison. <br/>Aucun bruit, aucune lumière. <br/><br/>Des fenêtres sont ouvertes, entre autres la <br/>fenêtre du cabinet de travail de Girodias, où <br/>le matin même eut lieu leur entrevue. <br/>Ouverte, également, la grande porte d7en- <br/>trée. <br/><br/>Le duc monte les quelques marches. <br/>ILsonne. <br/><br/>On ne répond pas. <br/><br/>Il sonne plus longuement et plus fort. <br/>On ne répond pas davantage. <br/><br/>Comme le bureau de Girodias est situé au <br/>rer.-de-chaussée, le duc s'y dirige, monte sur <br/>un banc du jardin et jette un coup d'oeil dans <br/>l'intérieur du cabinet. <br/><br/>Bien qu'il fasse nuit, les ténèbres ne sont <br/>pas cependant si épaisses qu'il ne puisse dis- <br/>tinguer à peu près ce qui s'y trouve. <br/>Et il voit Girodias, assis à son bureau, le <br/>front sur la table, près d*ua tas de papiers. <br/>II appelle <br/><br/>Monsieur Girodias I <br/><br/>Girodias ne fait aucun mouvement. <br/>Il s'est endormi Je vais le réveiller. <br/>Il saute de son banc, entre dans la maison, <br/>et à tâtons, en cherchant à se rappeler, il <br/>trouve la porte du bureau. <br/><br/>La porte du bureau est grande ouverte. <br/>Le duc entre, sans aucun soupçon. <br/>Pardon. monsieur Girodin», dit-IL <br/><br/>Le plan du général White était de jeter tout <br/>son centre sur l'ennemi; mais ce plan ne put <br/>être exécuté, car la position de l'ennemi qui <br/>formait l'objectif des Anglais avait été évacuée. <br/>L'aile droite des Anglais fut virement atta- <br/>quée et la colonne dut changer de front. Le feu <br/>de l'ennemi ayant diminué d'intensité, l'infan- <br/>terie s'avança, couverte par la cavalerie. <br/>L'ennemi se livra aiors à une contre-attaque <br/>et, comme il avait la supériorité numérique, le <br/>général White ordonna à l'infanterie de se re- <br/>plier graduellement. <br/><br/>Le mouvement fut bien exécuté sous le cou- <br/>vert de notre artillerie dont le tir était excellent. <br/>Quelques obus ont été lancés par les Boërs sur <br/>la ville, d'gUne distance de six mille yards, mais <br/>ils n'ont causé aucun dégùt. <br/><br/>Li'engagemout a duré plusieurs heures, quatre <br/>heures environ. <br/><br/>Nous avons perdu de 90 à 100 hommes. <br/>L'attaque a été admirablement conduite par <br/>notre aile droite, et les Boërs ont été bientôt dé- <br/>logés des positions qu'ils occupaient près de <br/>Lombards-Kop, mais il nous a été impossible de <br/>les poursuivre. <br/><br/>Le pays étant trop accidenté, notre artillerie <br/>ne pouvant déloger les Buërs des abris où ils se <br/>trouvaient, l'infanterie se porta en avaut en ti- <br/>railleurs ello fut reçue par un feu terrible dont <br/>les ell'eU furent bientôt apparents. <br/><br/>Le général White, qui était au centre, voyant <br/>que l'aile droite était sur la point de Iléchir. en- <br/>voya à son secours toute la colonne du centre, à <br/>l'exception d'un régiment d'infanterie. <br/>Un détachement naval, débarqué à Durltan du <br/>croiseur Powerful, arrivant sur le terrain vers la <br/>fln de la bataille, ouvrit le feu avec ses gros <br/>canons. Au quatrième coup, le canon tourd de <br/>10 des Boërs lut démonté la ville n'a donc rien <br/>ai craindre d'un bombardement. <br/><br/>Les Pertes <br/><br/>Londres, 31 octobre. <br/><br/>Le général White télégraphie de Ladysmith <br/>au War Office la liste des officiers anglais tom- <br/>bés aux mains des Boërs. Cette liste comprend <br/>1 lieutenant-o-olonel, 7 commandants, capi- <br/>taines, 27 lieutenants et 1 aumônier militaires, <br/>soit au total 41 officiers, plus 1 correspondant <br/>de journaux. <br/><br/>Cinq de ces officiers sont Messes. <br/><br/>La colonne capturée par les Boërs comptait <br/>environ 2,000 hommes. <br/><br/>Le Times, dans une deuxième édition, publie <br/>la dépêche suivante du Cap, 31 octobre <br/>Boërs ont pris part à l'eugagcment <br/>d'hier devant Ladysmith. <br/><br/>Londres, 31 octobre. <br/><br/>On télégraphie de Piétennaritzburg au Daily <br/>Mail-, à la date du 30, une heure de l'après-midi <br/>On assure que la panique qui d'est emparée <br/>des mulets a entraîne la perte de six canons, II <br/>est très probable que Ladyomitli sera bientôt <br/>complètement isolée. <br/><br/>D'après une information adressée au même <br/>journal, les fermiers hollandais du Natal four- <br/>niraient des informations aux Boërs. Le plus <br/>grand secret est observé concernant l'arrivée <br/>des troupes et leur départ pour le théâtre des <br/>opérations et, malgré tout, les Boërs en sont <br/>très rapidement informés. <br/><br/>L'Emotion à Londres <br/><br/>Londres, octobre. <br/><br/>La perte des deux bataillons et d'une batterie <br/>d'artillerie de montagne cause une grande <br/>éinoUouvdiius le publie anglais, qui commence <br/>à comprendre la valeur de l'ennemi. <br/><br/>Jusqu'à ce moment, on parlait de la guerre <br/>contre les Boërs comme d une promenade mili- <br/>taire. <br/><br/>Les deux bataillons perdus formaient un ef- <br/>fectif d'environ deux mille hommes. Combien <br/>de ceux-là sont prisonniers et combien out été <br/>laissés sur le terrain? On l'ignore encore; mais <br/>il est probable que bon nombre d'entre eux au- <br/>ront été tués ou blessés. <br/><br/>Les dépêches officielles que reçoit le gouver- <br/>nement sont affichées dans les couloirs du %Var <br/>Office, où un grand nombre de personnes vien- <br/>nent en prendre connaissance. On n'a jamais vu <br/>une aussi grande émotion dans les bureaux de <br/>la Guerre. Les autorités militaires viennent, à <br/>l'instant, de décider que trois nouveaux batail- <br/>lons et une batterie de montagne seraient en- <br/>voyés en supplément dans le sud de l'Afrique. <br/>Les nouvelles troupes seront embarquées dans <br/>une dizaine de jours. <br/><br/>Il semble hors de doute que le général White, <br/>au lieu de rester sur la défensive après s'être <br/>établi à Ladysmith solidement et de manière à <br/>repousser toute attaque, a vculu prendre les de- <br/>vants et remporter une victoire définitive, avant <br/>l'arrivée de i armée actuellement sur mer. C'est <br/>dans ce but qu'il a mis en avant toutes les trou- <br/>pes qu'il avait en mains. S'il s'était agi d'une <br/>simple reconnaissance, il se serait contenté d'en- <br/>voyer quelques bataillons, appuyés par un petit <br/>nombre de canons et de la cavalerie. <br/><br/>Les renseignements de tous les points de l'An- <br/>gleterre indiquent qu'on y partage l'émotion <br/>qui rignc à Londres. Cette émotion est princi- <br/>palementintense dans les grands centres comme <br/>et Manchester. <br/><br/>Dans le Bechouanaland <br/><br/>Pretoria, 31 octobre. <br/><br/>Le général Cronje rapporte que la garnison <br/>anglase de Ma/, king a fait une sortie elle a <br/>attaqué il la baïonnette le.Jaager du comman- <br/>dant Louw, près du champ de courses; mais <br/>elle a été repoussée, laissant six morts sur le <br/>terrain et ayant aussi, croit-on, de nombreux <br/>blessés. <br/><br/>Le colonel Baden-Powei a demandé un armis- <br/>tice pour lui permettre d'enterrer ses morts. Le <br/>général Cronje y a consenti et les Boërs ont mis <br/>les cadavres sur un wagon envové à cet effet, <br/>qui est ensuite retourné à Mafekûig. <br/><br/>Vryburg, S5 octobre. <br/><br/>Plusieurs Hollandais du Becuuanaland se sont <br/>joints ouvertement aux Boërs. <br/><br/>,Après que le drapeau du Transvaal eot été <br/>hissé sur la ville, le détachement boér. fort de <br/>1.3GQ hommes, prit officiellement possession de <br/>laville, et le commandant boër prononça uu <br/><br/>Girodias reste dans une immobilité ab- <br/>solue. <br/><br/>Horace s'approche et lui touche l'épaule. <br/>Le vieillard ne bouge pas. <br/><br/>Et tout à coup, Villefort se penche, puis se <br/>relève, s'éloigne avec un cri d'horreur. les <br/>bras étendus comme pour écarter un fan- <br/>tôme. dans la première épouvante de ce <br/>spectacle. <br/><br/>Girodias ne dort pas. <br/><br/>Girodias est mort. <br/><br/>Son front repose sur son bureau et il est <br/>assis dans son fauteuil. <br/><br/>Les deux mains pendent. <br/><br/>Dans le dos, un poignard, jusqu'à la garde. <br/>Ce poignard qui servait à Girodias de coupe- <br/>papier et se trouvait toujours sur «on bu- <br/>reau. <br/><br/>La mort a certainement été foudroyante. <br/>Le poignard a traversé le ceur. <br/><br/>Du sang, avec un peu d'écume, est sorti <br/>par la bouche et a taché les papiers épars sur <br/>la table. <br/><br/>C'est tout. <br/><br/>Rien de dé'-angé, du moins en apparence, <br/>rien d'anormal. <br/><br/>Et le due, debout em$K la porte, le cœur <br/>battant. passe la main eúr son front, comme <br/>pour en écarter un rêve. <br/><br/>Tout à coup il se précipite dans la mafeoa, <br/>Au secours M. Girodias se meurt <br/>Son cri (Mentit lugubrement et ne trouve <br/>pas d'écho.. <br/><br/>alore, un effroi le saisit. <br/><br/>Si quelqn'un le trouvait seul en eette <br/>maison, auprès de ce cadavre?. Est-ce que <br/>le soupçon ne viendrait pas que c'est lui qui <br/>a tué i. Est-ce que l'accusation ne serait pas <br/>toute naturelle, presque certaine, presque <br/>forcée, même 1 <br/><br/>discours dans lequel il annonça que le pavillon <br/>de la République flottait maintenant sur le dis- <br/>trict uord de I Orange River, et que le drapeau <br/>anglais n'y flotterait plus désormus, à moins <br/>qu'on ne le hisse sur les cadavres desburghera. <br/>L'ordre le plus absolu règne dans la t'ille. <br/>Londres, 31 octobre. <br/><br/>Le correspondant du Daily Mail rt Cipelown <br/>apprend que le colonel Baden-Powel a fait cons- <br/>truire aux alentours de !dafeking un chemin de <br/>fer sur lequel roulent des trains blindés. <br/>Le Cap, 31 octobre. <br/><br/>On annonce de Barkly-Wesi que les Boers <br/>construisent des ouvrages autour de Kimberley <br/>dans le but de bombarder la ville. <br/><br/>Le Général Redwers Buller <br/><br/>Londres, 31 octobre. <br/><br/>On télégraphic d, ̃ au Datiu Mail, à la <br/>date du à dix Il t du soir <br/>Le Dvnottar-CasiU, bord sir Redwers <br/>Buller, est arrive dans la baie de la Table à dix <br/>heures du soir, <br/><br/>On croit que te général débarquera demain <br/>matin à neuf heure». <br/><br/>Le bruit avait couru hier soir à Londres que <br/>sir liedwers Buller avait été assassiné. <br/>Chez les Boira <br/><br/>Aliwal North, 31 octobre <br/><br/>Un Anglais, récemment venu de Victoria, dit <br/>que les journaux boërs racontent les succès de <br/>1 armée de leur pays. <br/><br/>Ils annoncent que Kimbr.rtey et Mafekingsont <br/>entouréa et se rendront bientôt. <br/><br/>Le Bechuanaland est conquis et annexé. <br/>L'armée boër, dans le Natal, poursuit samar- <br/>che victorieuse. Les Hoérs ont remporte la vic- <br/>toire rfe Glenaoë le camp de'HunJeo est <br/>tombé entre leurs mains avec un grand nombre <br/>de blassés et de prisonniers anglais, ot des quan- <br/>tités il'approviSionnenit». <br/><br/>Les Boers admettent qu'ils ont éprouvé un re- <br/>vers à Etandslaagte, où ils ont eu 30 tués et un <br/>grand nombre de blessés, tandis que legé né- <br/>ml Kock tt le colonel avec 85 de leurs <br/>hommes, oat été faits prisonniers. <br/><br/>Ladysmilh est entièrement entourée, et, d'a- <br/>près ce u'on dit à Pretoria, sera bientôt prise. <br/>Les Boers paraissent convaincus de leur succès <br/>final et considèrent que tout le Natal est prati- <br/>quement entre leurs mains. <br/><br/>Massacre la Mission <br/>Les appréhensions que nous manifestions hier <br/>au sujet des projets belliqueux de ltabah se <br/>trouvent justifiées par la triste nouvelle du <br/>massacre de ta mission Bretonnet deux ofil- <br/>ciers, un sous-otficier européen et vingtscpt <br/>Sénégalais ont trouvé une mort glorieuse dans <br/>un combat contre les troupes de Uabab, fortes <br/>de sept à huit mille hommes. <br/><br/>Voici le texte du télégramme que M. Gentil, <br/>commissaire du gouvernement dans te Chari, <br/>vient d'expédier de Gribingui au Ministre des <br/>Colonies <br/><br/>J'ai la douleur de vous apprendre la mort <br/>de M. l'administrateur Bretonnet, de M. le <br/>lieutenant Braun et du' maréchal des logis <br/>Martin, tués daus un engage-meut avec Habah. <br/>Rabah en personne dirigeait l'attaque. Bre- <br/>toanet, parti pour le Baghirmi sans attendre <br/>la compagnie commandée par M. le capitaine <br/>Julien, a soutenu le combat avec 30 tirailleurs <br/>sénégalais contre 7 à 8,000 hommes. <br/><br/>27 Séuégalais ont été tués; 3 blessés ont été <br/>faits prisonniers, mais l'un de ces derniers, le <br/>sergent Sambâ-Sal, s'est enfui et a été re- <br/>cueilli par les noirs. <br/><br/>Habah a éprouvé de grandes pertes. <br/><br/>Son fils Niabé a été blessé dangereusement, <br/>l'élite de ses guerriers a succomlré. <br/><br/>M. Gentil ajoute qu'il avait, il Qribingui, reçu <br/>le 9 août, de M. l'administrateur Bretonnet, <br/>commandant l'avant-garde de sa mission, une <br/>lettre datée du 16 juillet. de Togban, par 9H8\" de <br/>latitude nord, une lettre lui faisant prévoir une <br/>attaque imminente de Rabah. Dès le surlende- <br/>main 11 août,{. Gentil s'étaitmis en marche pour <br/>rejoindre Bretonnet. il avait avec lui la compa- <br/>gnie commandée par M. le capitaine Julien et <br/>forte de 127 hommes. C'est au cours dv cette <br/>marche, en arrivant à (¡:loura te 16 août, <br/>que la nouvelle du ̃»\"̃> leur a été apportée <br/>par le sergent s< happé au massacre. <br/>,NI. Gentil a iim ;i>iu établi â Gaoura <br/>un poste solidement retranché commandé pai- <br/>le capitaine Robillot, et disposant, avec l'appui <br/>de deux canons, de la compagnie Julien. <br/>Puis il est revenu à Gribingui en Fept jours, <br/>marchant le jour et la nuit pour envoyer à <br/>Gaourn une secande compagne de tirailleurs <br/>forte de 137 hommes et commandée par le capi- <br/>taine Cointel. <br/><br/>Cette seconde compagnie allait quitter Gri- <br/>bingui le 29 août. Des forces suffisantes pour <br/>assurer la sécurité de notre poste de Uribiogui <br/>ont d'ailleurs été maintenues en arrière. <br/>Le But de l'Expédition <br/><br/>La mission ou plutôt l'avant-garde de la mis- <br/>sion Gentil, que commandait l'administrateur <br/>Bretonnet, avait pour objet de continuer l'oeuvre <br/>de Gentil dans ses précédentes explorations et <br/>d'assurer la jonction du Tchad avec le Batir-el- <br/>Ghazal, <br/><br/>'il. Brctonnet avait été chargé de recruter les <br/>Sénégalais et Haoussas qui devaient entrer dans <br/>l'effectif delà mission il s'était acquitté avec <br/>succès de cette tache et avait les <br/>hommes à Brazzaville à la ttn de il quitta <br/>cette ville, précédant Gentil, et se dirigea vers <br/>le nord par le Haut-Congo pour attendre le <br/>Tchad. il s'arrêta aux stations de Krcbedjé et <br/>de Gribingui, où sont établis des poales fran- <br/>çais. Il suivit le Gribingui, affluant du Chari, <br/>pour arriver à ce fleuve et entra dans le Ba- <br/>ghirtni, réjrion limitée au sud-ouest par le Chari <br/>et comportant le Tchad c'est dans cette mar- <br/><br/>Il se retire, il sort. il veut s'en aller sans <br/>être vu. <br/><br/>Et sur le seuil même, revenant aux Gran- <br/>des-Rochez et montant le perron, il se trouve <br/>face à facr avec les deux flls de Girodias 9 <br/>Le duc s'éerie <br/><br/>Ah! messieurs, messienrs, un grand <br/>malheur! <br/><br/>Ils reculent, interdits, à cette apparition. <br/>Un malheur î <br/><br/>Votre père. <br/><br/>Le due n'ose achever. Les deux frèrea, <br/>pâles, se regardent, se rapprochent l'un de <br/>l'autre pour opposer leurs deux forces réu- <br/>nies àla catastrophe qu'on va leur apprendre. <br/>Ah! c'est horrible, ce que je viens de <br/>voir, dit le duc. Quel que soit l'éloignement <br/>de nos deux familles, je vous plains, ah I je <br/>vous plains de tout mon cœur. <br/><br/>Mais que se passe-t-il, monsieur de Vil- <br/>lefort ? De quel si grand malheur sommes- <br/>nous menacés? <br/><br/>Votre père. vient d'être assassiné. <br/>Assassiné <br/><br/>Us eurent tous deux le même cri d'horreur <br/>et se précipitèrent dans la maison. <br/><br/>Et ils vinrent tomber, en sanglotant, aux <br/>pieds de leur père inanimé. <br/><br/>Villefort respecta leur douleur.Il voulut les <br/>laisser, se retirer discrètement. <br/><br/>Ils s'aperçurent, en relevant la tête et mal- <br/>gré leurs larmes, qu'il s'éloignait et que <br/>déjà il atteignait la porte. <br/><br/>Alors ils se relovérent <br/><br/>Monsieur de Villefort <br/><br/>Gaston alluma des bougies dont la flamme, <br/>que faisait vaciller un peu d'air passant par <br/>la fenêtre ouverte, éclaira d'une lumière <br/>tremblante le lugubre spectacle. <br/><br/>Pierre avait saisi le duc par le bru. <br/><br/>jle partez pae e&core, monsieur. aous <br/><br/>che en avant qu'il a été attaqué et qu'il a trouva <br/>la mort. <br/><br/>Paît à notor dans une lettre ,rite à son père, <br/>M. Bretonnet estimait que tes forces réunie» <br/>sous la domination de Habah n'étaient que de <br/>fusils. Cette opinion, crta^i.'mpnt erro- <br/>née, le fait l'a prouvé, lui a > :r* <br/>une confiance que Habah n eut <br/>l'on serait tenté d'attribuer à iction le <br/>fait d'avoir poussé en avais vadre la <br/>compagnie commandé» par e Julien. <br/>Celte imprudence a été causi il est <br/>vrai yu'il ne connaissait pu. ï la pré- <br/>sence des bandes du Rabah daiii I.= territoire^ <br/>qu'il allait traverser. <br/><br/>.Les Officiers tués <br/><br/>L'administrateur Bretonnet ét.iit nce le ? mwt <br/>et > Uit entré dans la marine, à i'Eeole na- <br/>vale, à l'Age de dix-huit ans; aspirant de J** <br/>classe le 5 octobre enseigne du 5 octobre1 <br/>il avait él6 nommé lieutenant de vaissetD <br/>le 87 janvier Il avait fait partie de la misr <br/>sion Mizon dans la Benoué et VAdamaoua et, <br/>nommé administrateur des colonies, il avait de- <br/>mandé à passer dans la réserve le septembre <br/>1&.e. Il était chevalier de la Légion-d'llonneur. <br/>Le lieutenant Salomon Braun appartenait àt <br/>l'artillerie de marine; né le 9 Juillet il <br/>avait été nommé sous-lieutenant te 1\" octobre; <br/>lieutenant en second le octobre et <br/>lieutûuanl en premier le 1\" septembre 1898. <br/><br/>CONSEIL DES MINISTRES <br/>Le v:fs se sont réuni- *stin, à TE-. <br/>lysi- ^résidence de <br/><br/>.NI absent de Paj Âit pas i. <br/>la ciulibtraUun. <br/><br/>LE CONTRAT 0 ASSOCIATION <br/><br/>La séance a étà entiùreiiwut consacrée à l'exa? <br/>mon du projet de loi relatif au contrat d'assez <br/>ciation qssri sera déposé sur le bureau de fi <br/>Chambre Iles la reprise des travaux parlemen-' <br/>tîiirp?. <br/><br/>Le Ministre du Commerce si le Con» <br/>seil du projet ric toi sur la urehandé <br/>qu'il compte déposer à la rentré,, il 'accord avec <br/>ses collègues de la Marine rt ries Finances. <br/><br/>Sur la proposition du Ministre des Co!oni«S, <br/>le gouvernement saisira la Chambre d'une de.- <br/>mande dr pension à accorder ;i la veuve du co- <br/>lonel Klobb. <br/><br/>MESURES AGRICOLES <br/><br/>Le. Ministre de r Agriculture a fait signer t <br/><br/>1° Un décret portant à vingt-trois ans au liepr <br/>de vingt-deux la limite d'Age pour s de <br/>l'Ecole forestière ot autorisant l'a nul» <br/>épreuve de langues étrmngèrcs; <br/><br/>2' Un décret nommant directeur du sécréta» <br/>riat. du personnel et de la comptabilité au MW <br/>ni stère dc l'Agriculture M. Paul Cabaret, chef <br/>de division. <br/><br/>Le Ministre de l'Agriculture a fait approuver <br/>par le Conseil un projet de loi tendant à réprimer <br/>les tentatives de fraudo pour obtenir les enwu- <br/>ragements k la culture du lin et du chanvremu* <br/>torisés par la toi du «avril 1898. <br/><br/>M. Jean Dupuy a fait '\"îteotti <br/>intervenue entre la Soeiété ;t deg <br/>races de thevaux dans le i Uoft <br/>départements. <br/><br/>LA RENTRCE DES CHAMBRES <br/><br/>La Jate du U novembre a <H<- délluitivemeDl <br/>adopté pour la rentrée des Gtiumbres, <br/><br/>AUJOURD'HUI <br/><br/>EST MIS EN VENTE <br/><br/>Supplément Littéraire illustré U Petit Parisis} <br/>5 centimes le Numéro <br/><br/>Vatci le sommaire des gravures que contien( <br/>le numéro de cette semaine <br/><br/>AU COMBAT DE GLENCOR Le général Symau <br/>mortellement blessé. <br/><br/>DEUX ENFANTS ENLEVÉS L'Arrestetlon d«« <br/>ravis ••urs. <br/><br/>TUÉ PAR SON FRÈRE!, <br/>Un drame de famille, qùi s'est malheureuse. <br/>ment termina par la mort d'un des acteurs, N'est <br/>déroulé hier soir à Putouux. <br/><br/>Une IMseussion d'Intérêts <br/><br/>Ancien chemin de Colombes, liaitito dcpviË <br/>longtemps un nourriasear, Jean ljucli«r. 4gé da <br/>trente-huit ans, marié, père de deux jeunes en* <br/>faute. <br/><br/>Jean Duchar exploite cet cudroit une lailfit <br/>ria des plu» llorii#<.ii>ii: <br/><br/>Dana l'après-midi d hier il rwtviiit la visite dA <br/>son frère atné, Gabriel, également nournsseur; <br/>âgé de quarante-six ans, demeurant 14H, rue de <br/>la hépuuliqup, marié en second\" ':̃•<̃̃• père <br/>d'un jeune bomme de dix-sept i >, jutlsa <br/>premi£re femme aca mourant ai«ui iouooù uae <br/>somme de i,2U0 francs, qui, la majorité' <br/>du jeune homme, de**U rester «-nlrclea main* <br/>de son otieie, Jean Oucher, subrogé tuteur le* <br/>intérêts «suis devaient être eervis Gabriel Du- <br/>cher, le p<>re. <br/><br/>lie fr«c|ufcntes discutions s'i:Ui>;nt déjà cl» <br/>véea entre les deux frùres an pâlot de cet ar- <br/>gent que Gabriel réclamait uformaoJ^ <br/>strictement aux volontés d< f«, conflp- <br/>mées par la décision récent', u u:i i.^useil de fai <br/>niilie, Jean rucher restait inébranlable. <br/><br/>(.est pous-é toujours par lardent désir d'à-. <br/>voir la somme entière en sa possession que Ga- <br/>briel Oncher soulevait hier avec son frère, <lan* <br/>la granue salle de la laiterie, donnant sur la <br/><br/>avons besoin de vous entendre. Il faut que <br/>vous nous donniez des renseignements. que <br/>vous nous disiez comment vous vous trou- <br/>viez là. que vous guidiez autant que possi- <br/>ble nos recherches, puisque vous êtes là <br/>premier qui ayez connu ce crime. <br/><br/>Le duc s'inclina <br/><br/>Je reste, monsieur, bien que je ne pré- <br/>voie point que j'aurai quelque chose à yoqs <br/>Alors, Pierre dit à Gaston <br/><br/>Toi, Gaston, vu vite, va prévenir la getf <br/>darmerte. <br/><br/>Ensuite, par questions rapides, nerveuse. <br/>entrecoupées de silences et de sanglots, <br/>Pierre interrogea le duc de Villefort. Députa <br/>combien de temps Horace était-il aux Crac- <br/>des-Roches? Comment avait-il pu pénétrer <br/>jusqu'auprès de Girodias Dans quel état <br/>ravait-il trouvé? Le vieillard rospirait-il en- <br/>coret Pourquoi était-il venu ? Et qu'avait-il i. <br/>faire avec Girodia»? <br/><br/>Le duc répondit à toutes ces questions. <br/><br/>Pierre l'écoutait avec mie attention extrê-» <br/>me, l'œil en dessous, déjà soupçonneux-. <br/><br/>Horace ne pouvait révéler au jenne hommftt <br/>tout ce qui s était passé entre sa mère et Gi- <br/>rodias, les menaces de celui-ci, ce secret <br/>d'lionneur qu'il prétendait {u*»&jder et q&'if <br/>avait voulu vendre. <br/><br/>Il dit seulement, répondant à la dernière <br/>question <br/><br/>J'avnis, Il se peut que vous la sachiez, <br/>des affaires très importantes a régler avec <br/>votre père. Votre père possédait sur mot <br/>des créances importantes et nombreuses, ra- <br/>chetées à Paris dans un i3ut qu'il vous est. <br/>tacile de deviner si Girodias ne vous a pu. <br/>mis au courant de ses secrètes intentions. <br/>tA suivre.) iiisa Ia&X» <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.36</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                }
+              },
+              "etat": ""
+            }
+          },
+          "increment": 1,
+          "etat": "EmptyCaption StyleTextAndImage StyleSimplePage"
+        },
+        "etat": ""
+      },
+      "ModeAffichageFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "title": "Affichage",
+          "changed": true
+        },
+        "contenu": [
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-singlepage",
+            "description": "Simple page",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519076d/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-doublepage",
+            "description": "Double page",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/DOUBLE/ark:/12148/bpt6k519076d/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-verticalread",
+            "description": "Défilement  vertical",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/VERTICAL/ark:/12148/bpt6k519076d/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-mosaique",
+            "description": "Mosaïque",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MULTI/ark:/12148/bpt6k519076d/f1",
+            "etat": ""
+          },
+          {
+            "display": false,
+            "active": false,
+            "parameters": {
+              "role": "presentation"
+            },
+            "contenu": "icon-sound",
+            "description": "Enregistrement sonore",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MEDIA/ark:/12148/bpt6k519076d/f1",
+            "etat": "optionHidden"
+          },
+          {
+            "display": false,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-video",
+            "description": "Vidéo",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MEDIA/ark:/12148/bpt6k519076d/f1",
+            "etat": "optionHidden"
+          }
+        ],
+        "etat": ""
+      },
+      "OtherShareOptions": {
+        "display": true,
+        "active": true,
+        "parameters": {},
+        "contenu": [
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Intégrer",
+              "linkClass": "pictoPartageIntegrer",
+              "iconClass": "icon-partage-integrer"
+            },
+            "selected": false,
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Email",
+              "linkClass": "pictoPartageEmail",
+              "iconClass": "icon-partage-mail"
+            },
+            "selected": false,
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Lien",
+              "linkClass": "pictoPartageLien",
+              "iconClass": "icon-partage-link"
+            },
+            "selected": false,
+            "etat": ""
+          }
+        ],
+        "etat": ""
+      },
+      "SideBarFragment": {
+        "display": false,
+        "active": true,
+        "parameters": {
+          "changed": false
+        },
+        "contenu": {},
+        "etat": "optionHidden"
+      },
+      "DocumentInformationFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {},
+        "contenu": {
+          "IconsTitleDocument": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "icon-rawtextarrow",
+                "description": "Ce document est disponible en mode texte",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": ""
+              }
+            ],
+            "etat": ""
+          },
+          "DocumentSousDroits": {
+            "display": false,
+            "active": false,
+            "parameters": {},
+            "contenu": "",
+            "etat": "optionHidden"
+          },
+          "ConsulterRebondir": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "CONSULTER",
+                "selected": false,
+                "etat": "optionHidden"
+              },
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "REBONDIR",
+                "selected": false,
+                "etat": "optionHidden"
+              }
+            ],
+            "etat": ""
+          }
+        },
+        "etat": ""
+      },
+      "AmisBnFViewerModel": {
+        "display": false,
+        "active": false,
+        "parameters": {
+          "role": "presentation",
+          "changed": true
+        },
+        "selected": false,
+        "etat": "optionHidden"
+      }
+    },
+    "etat": ""
+  }
+}

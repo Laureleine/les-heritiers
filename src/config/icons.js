@@ -43,6 +43,7 @@ export {
     Clock,
     Loader,
     Moon,
+    Sun,
 
     // Utilisateurs & social
     User,

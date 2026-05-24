@@ -1,0 +1,1033 @@
+{
+  "fragment": {
+    "display": true,
+    "active": true,
+    "parameters": {
+      "pageArkUrl": "ark:/12148/bpt6k519101d/f1.item.texteImage",
+      "externalPageArkUrl": "https://gallica.bnf.fr/ark:/12148/bpt6k519101d/f1.item.texteImage"
+    },
+    "contenu": {
+      "XitiFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "x8": "Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir",
+          "x9": "domaine%20public",
+          "modeDev": true,
+          "x10": "WebExterne",
+          "x12": "1899-11-26",
+          "x1": "bpt6k519101d",
+          "x11": "BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1",
+          "x2": "Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir",
+          "x13": "2008%2F02%2F21",
+          "x4": "NUM%C3%89RO",
+          "x5": "Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850",
+          "x15": "texte",
+          "x6": "pageHTML",
+          "x18": "avec%20relation",
+          "x7": "Le%20Petit%20Parisien%20%28Paris%29",
+          "x17": "gallica",
+          "changed": true
+        },
+        "contenu": {},
+        "urlServiceScriptXiti": "https://logs",
+        "pageName": "Visualiseur::TEXT_IMAGE::ARKbpt6k519101d",
+        "codeNiveau2": "15",
+        "idSite": "18798",
+        "implicationDegree": "",
+        "paramXiti": "&amp;x1=[bpt6k519101d]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-26]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]",
+        "motcle": "",
+        "numPageResultat": 1,
+        "logoNoScriptUrl": "https://logs.xiti.com/hit.xiti?s=18798&s2=15&p=Visualiseur::TEXT_IMAGE::ARKbpt6k519101d&amp;x1=[bpt6k519101d]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-26]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]&mc=&amp;x1=[bpt6k519101d]&amp;x2=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France%2C%20Gr%20Fol-Lc2-3850]&amp;x6=[pageHTML]&amp;x7=[Le%20Petit%20Parisien%20%28Paris%29]&amp;x8=[Le%20Petit%20Parisien%20%3A%20journal%20quotidien%20du%20soir]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[BIPFPIG00_BIPNOUV_BIPFPIG15_BIPFPIG33_BIPFPIG35_BIPFPIG37_BIPFPIG63_GCFeTra_GCGen1]&amp;x12=[1899-11-26]&amp;x13=[2008%2F02%2F21]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]",
+        "protocol": "https://",
+        "etat": ""
+      },
+      "PaginationViewerModel": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "ZoomBtn": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-zoom"
+            },
+            "contenu": "icon-zoom",
+            "description": "Zoom",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage.zoom",
+            "etat": ""
+          },
+          "ChangeFormatPageVertical": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "vertical",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/VERTICAL/ark:/12148/bpt6k519101d/f1.item.texteImage..VERTICAL",
+            "etat": ""
+          },
+          "DisplaySelected": "item",
+          "IconDisplay": "pictos icon-singlepage",
+          "role": "link",
+          "searchPageLink": "https://gallica.bnf.fr/services/ajax/pagination/searchPage/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage?searchPage=",
+          "urlShareEmbed": "https://gallica.bnf.fr/services/share/embed/ark:/12148/bpt6k519101d/f1.item.texteImage",
+          "nbTotalVues": 4,
+          "displayModeIcon": "icon-singlepage",
+          "IsPageAudioDisplay": true,
+          "ChangeFormatPageDouble": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "double",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/DOUBLE/ark:/12148/bpt6k519101d/f1.item.texteImage..DOUBLE",
+            "etat": ""
+          },
+          "IsPageMultiDisplay": true,
+          "urlDownload": "https://gallica.bnf.fr/services/ajax/action/download/ark:/12148/bpt6k519101d/f1.item.texteImage",
+          "ChangeFormatPageMulti": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "planchecontact",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MULTI/ark:/12148/bpt6k519101d/f1.item.texteImage..MULTI",
+            "etat": ""
+          },
+          "ChangeFormatPageVocal": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "vocal",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/AUDIO/ark:/12148/bpt6k519101d/f1.item.texteImage..AUDIO",
+            "etat": ""
+          },
+          "accessibleLabel": "chiffre de pagination",
+          "urlShareMail": "https://gallica.bnf.fr/services/share/mail/ark:/12148/bpt6k519101d/f1.item.texteImage",
+          "screenNumber": 1,
+          "nbPagination": "vue 1/4",
+          "paginationTitle": "Pagination",
+          "IsPageDoubleDisplay": true,
+          "urlHasChanged": true,
+          "buttonAccessibleLabel": "Pagination et liste des vues",
+          "defaut": "Numero",
+          "IsPage3DDisplay": false,
+          "ChangeFormatPageSimple": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "item",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage..SINGLE",
+            "etat": ""
+          },
+          "IsPageVerticalDisplay": true,
+          "changed": true
+        },
+        "contenu": "NP",
+        "description": "Page",
+        "selected": false,
+        "url": "https://gallica.bnf.fr/services/ajax/pagination/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage",
+        "etat": ""
+      },
+      "BarreVerticaleFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "contenu": {
+          "OutilsFragment": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-infosdetails"
+                },
+                "contenu": "icon-infosdetails",
+                "description": "Informations détaillées",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/infosdetails/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": false,
+                "parameters": {
+                  "role": "presentation"
+                },
+                "contenu": "icon-caption",
+                "description": "Table des matières",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": "optionDisabled"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-search"
+                },
+                "contenu": "icon-search",
+                "description": "Recherche dans le document",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/search/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-display icon-singlepage"
+                },
+                "contenu": "icon-display icon-singlepage",
+                "description": "Modes d'affichage et vocal",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-3d"
+                },
+                "contenu": "icon-3d",
+                "description": "Visualiser en 3D",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/D3/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-zoom"
+                },
+                "contenu": "icon-zoom",
+                "description": "Zoom",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage.zoom",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-download"
+                },
+                "contenu": "icon-download",
+                "description": "Téléchargement / impression",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/download/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-export"
+                },
+                "contenu": "icon-export",
+                "description": "Export d'une sélection",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/export/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-share"
+                },
+                "contenu": "icon-share",
+                "description": "Partage et envoi par courriel",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/share/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-ecommerce"
+                },
+                "contenu": "icon-ecommerce",
+                "description": "Acheter une reproduction",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/ecommerce/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "paramConn": "not_connected",
+                  "id": "icon-bookmark",
+                  "ariaLabel": "Marquer cette page dans votre espace personnel (nouvelle fenêtre)"
+                },
+                "contenu": "icon-bookmark",
+                "description": "Marque-page",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/bookmark/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-indisponible"
+                },
+                "contenu": "icon-indisponible",
+                "description": "Acheter le livre complet",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/indisponible/achat//ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-retronews"
+                },
+                "contenu": "icon-retronews",
+                "description": "Accéder au numéro complet",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/retronews/achat//ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "paramConn": "not_connected",
+                  "id": "icon-ajouter_document",
+                  "ariaLabel": "Ajouter ce document à votre espace personnel (nouvelle fenêtre)"
+                },
+                "contenu": "icon-ajouter_document",
+                "description": "Ajouter ce document",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/add_doc/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-corriger"
+                },
+                "contenu": "icon-corriger",
+                "description": "Signalement d'anomalie",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/flag/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-result-list"
+                },
+                "contenu": "icon-result-list",
+                "description": "Retour à la liste de résultat",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-aide"
+                },
+                "contenu": "icon-aide",
+                "description": "Aide",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/aide/ark:/12148/bpt6k519101d/f1.item.texteImage",
+                "etat": ""
+              }
+            ],
+            "etat": ""
+          }
+        },
+        "etat": ""
+      },
+      "IssuePaginationFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "currentPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "26 novembre 1899",
+          "description": "26 novembre 1899",
+          "selected": false,
+          "bindUrl": "",
+          "url": "https://gallica.bnf.fr/services/ajax/pagination/issue/cur/ark:/12148/cb34419111x/date18991126.item",
+          "etat": ""
+        },
+        "nbrTotalPages": 0,
+        "firstPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "Voir le premier numéro",
+          "description": "icon-page_gauche",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k518772s/f1.item",
+          "etat": ""
+        },
+        "previousPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "consulter fascicule précédent",
+          "description": "icon-page_gauche",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k5191001/f1.item",
+          "etat": ""
+        },
+        "nextPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "consulter fascicule suivant",
+          "description": "icon-page_droite",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k519102s/f1.item",
+          "etat": ""
+        },
+        "lastPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "Voir le dernier numéro",
+          "description": "icon-page_droite",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k519136b/f1.item",
+          "etat": ""
+        },
+        "resultsByPage": {
+          "display": true,
+          "active": true,
+          "parameters": {},
+          "contenu": [],
+          "selected": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "etat": ""
+          },
+          "etat": ""
+        },
+        "titleTitle": {
+          "display": false,
+          "active": false,
+          "parameters": {},
+          "etat": "optionHidden"
+        },
+        "titleDescription": {
+          "display": false,
+          "active": false,
+          "parameters": {},
+          "etat": "optionHidden"
+        },
+        "refinementButton": {
+          "display": true,
+          "active": false,
+          "parameters": {},
+          "etat": "optionDisabled"
+        },
+        "etat": ""
+      },
+      "Visualizer": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "affichage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "hasOcr": true,
+            "isDisplayableConvention": true
+          },
+          "contenu": {
+            "paginationFirst": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la page précédente",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "icon-backward",
+              "description": "Première(s) page(s)",
+              "selected": false,
+              "url": "/",
+              "etat": "optionHidden"
+            },
+            "paginationLast": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la première page",
+                  "etat": "optionDisabled"
+                },
+                "role": "link"
+              },
+              "contenu": "icon-forward",
+              "description": "Dernière(s) page(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519101d/f4.item.texteImage",
+              "etat": ""
+            },
+            "paginationNext": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la page suivante",
+                  "etat": "optionDisabled"
+                },
+                "role": "link"
+              },
+              "contenu": "icon-rightarrow",
+              "description": "Page(s) suivante(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519101d/f2.item.texteImage",
+              "etat": ""
+            },
+            "paginationPrevious": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la dernière page",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "icon-leftarrow",
+              "description": "Page(s) précédente(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage",
+              "etat": "optionHidden"
+            },
+            "paginationBrowse": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Décaler d'une page",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "",
+              "description": "Page +1",
+              "selected": false,
+              "url": "/",
+              "etat": "optionHidden"
+            },
+            "paginationCurrent": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "role": "link",
+                "updatePageUrl": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage"
+              },
+              "contenu": "",
+              "description": "Page courante",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/ark:/12148/bpt6k519101d/f1.item.texteImage.item",
+              "etat": ""
+            },
+            "renderModel": {
+              "display": true,
+              "active": true,
+              "parameters": {},
+              "contenu": {
+                "previousPage": {
+                  "display": false,
+                  "active": false,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "lastPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 4 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519101d/f4.highres",
+                      "screenNumber": 4,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519101d/f4.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/> ",
+                            "stringOCR": "YINGT-QUATHIÈME ANNÈE. -,Ne 8430. <br/><br/>Le numéro i 5 <br/><br/>DIMAKGÏiJS 26 KQVJ3MBBB <br/><br/>ABONNEMENTS <br/><br/>fcdHS et DÉPARTEMENTS Trois mois, 5 fr. Six mois, 9 fr. Un an, 18 fr. <br/>On s'abonne Max /rais dans tant Un Banaux de posta <br/><br/>Direction 18, nue dEnghien. f»ajê*is <br/><br/>TOUS LES JEUDIS <br/><br/>Supplément Littéraire tllustré (Huit Pages) 15 Centimee. <br/><br/>S'adresser à L'OFFICE D'ANNONCES, 10, Place de ta Bourse, 10, PAîMS <br/>et à la Salle des Dépêches du Petit Parisien, 2e, bouler. Montmartre. ( <br/><br/>Dernigre Edition <br/><br/>PROCHAINEMENT <br/>Le Petit Parisien <br/><br/>COMMENCERA <br/><br/>DEUX PASSIONS <br/>GHAND ROMAN INÉDIT <br/><br/>PAR <br/><br/>Charles MÉROUVEL <br/>Le projet de loi sur les modifications à <br/>apporter au fonctionnement de la justice <br/>militaire n'est pas né brusquement des cir- <br/>constances et il n'est pas exagéré de dire <br/>que son enfantement a été exceptionnelle- <br/>ment lent, car on s'en occupait sous la Res- <br/>tauration, il y a soixante-dix ans. <br/><br/>En 1829, le ministre de la Guerre du roi <br/>Charles X demandait déjà qne les militaires <br/>ne fussent justiciables des conseils de <br/>guerre que pour les délits militaires; et il <br/>proposait de les poursuivre devant les tri- <br/>Dunaux ordinaires pour les faits de droit <br/>Commun. <br/><br/>Il en donnait pour raison qu'avant d'être <br/>militaire on est homme et citoyen, soumis <br/>comme tel aux lois générales qui régissent <br/>notre pays, toutes les fois qu'il ne s'agit <br/>.pas de l'o bligation spéciale contractée par <br/>le fait de la présence sous les drapeaux. <br/>Cet argument a évidemment beaucoup <br/>plus de valeur encore il l'heure actuelle <br/>qu'à l'époque lointaine dont il s'agit, le ser- <br/>vice personnel obligatoire ayant établi des <br/>liens plus étroits entre l'armée et la nation. <br/>Les idées qui avaient prévalu au com- <br/>mencement du siècle, au milieu du fracas <br/>des batailles de la République et du pre- <br/>mier Empire, ne sont plus celles des géné- <br/>rations présentes; et ü sembla possible, en <br/>temps de paix, sans porter une main auda- <br/>cieuse sur la discipline qui est une néces- <br/>sité de salut public, de donner à l'armée <br/>toutes les garanties judiciaires accordées à <br/>chaque Français. <br/><br/>Sous le Ministère de M. de Freycinet, <br/>Cette question a été étudiée par le comité <br/>du contentieux que présidait un ancien <br/>garde des Sceaux, M. Guérin, dont faisaient <br/>partie des officiers généraux, des magis- <br/>trats, des membres du Parlement et de <br/>hauts fonctionnaires. <br/><br/>On avait soulevé l'objection, si on ne lais- <br/>sait pas aux seuls conseils de guerre la mis- <br/>sion de juger les militaires, quoi qu'ils aient <br/>fait, qu'on pourrait ouvrir la porte à des <br/>conflits regrettables mais cet argument <br/>de semble pas conforme à la réalité des <br/>choses. <br/><br/>Actuellement, en effet, un militaire peut <br/>fort bien être entraîné devant la justice or- <br/>dinaire, par acompte s'il a un complice <br/>Civil, ou encore s'il est en congé. <br/><br/>Il n'est pas exact de dire que la réforme <br/>projetée donnera lieu à des indécisions sur <br/>ta juridiction, puisque c'est l'acte délic- <br/>tueux commis qui en décidera, et non des' <br/>circonstances fortuites se produisant au <br/>Cours de l'instruction et amenant brusque- <br/>'ment à dessaisir le conseil de guerre, si on <br/>découvre la complicité d'un civil. <br/><br/>On a dit aussi que la justice militaire est <br/>plus prompte et que cette rapidité rend <br/>exemple plus saisissant pour le soldat. <br/>Cela peut être vrai pour la répression d'un <br/>délit militaire, mais cela n'a aucune impor- <br/>tance pour les faits de droit commun, aucun <br/>'intérêt militaire n'étant en jeu. <br/><br/>Dans le projet du général de Galliffet, les <br/>conseils de revision sont supprimés et rem- <br/>placés par la Cour de cassation. <br/><br/>On sait que maintenant il existe deux <br/>conseils de revision seulement, celui de <br/>Paris et celui d'Algex-Xatte dualité offrait <br/>un inconvénient qui saute aux yeux. Il est <br/>clair que pour juger des questions de droit, <br/>On doit craindre de voir rendre des. arrêts <br/>contradictoires. Aussi avait-on parlé de <br/>créer, à Paris, une Cour militaire supé- <br/>rieure <br/><br/>Mais il parait plus simule de soumettre <br/>toutes les interprétations du Code à la haute <br/>inagistrature qui a pour mission d'être la <br/>gardienne du droit, étant bien entendu que <br/>la Cour de cassation ne s'occupera, pas du <br/>fond même des affaires, mais examinera si <br/><br/>jl« FettÛleteB du Pmr Parisien. <br/>GRAND ROMAJS 1NÉDIT <br/><br/>DEUXIÈME PARTIE <br/><br/>LES TRAGÉDIES DE L'AMOUR <br/>lI (suite) <br/><br/>Lantnr, et Lanturlu <br/><br/>Sur une planche, auprès d'elle, dont cha- <br/>que extrémité était posée sur une chaise de <br/>bois, formant table ainsi, quelques fioles, de <br/>l'eau, des verres. <br/><br/>Mais cette enfant va mourir faute de. <br/>sains murmnra Colette. <br/><br/>Ille redescendit aussitôt. <br/><br/>Il y avait dans l'auberge une chambre <br/>claire et saine, bien aérée et qui était inoc- <br/>cupée. Elle la paya, donnant quinze jours <br/>d'avance. <br/><br/>Et un quart d'heure après Jeannette était <br/>étendue dans un lit bien propre, avec des <br/>draps bien blattce. <br/><br/>Colette, douce et bienfaisante comme une <br/>sœur de charité, lui avait fait sa toilette, avait <br/>arrangé sur ce front de pauvresse et de vaga- <br/>bonde de lourds et admirables cheveux <br/>blonds. <br/><br/>Elle avait envoyé l'aubergiste, à cheval, <br/>thercher la médecin du château. <br/><br/>Jeannette avait le délire, et alors, parfois, <br/>regardait cette étrangère, près de son lit, avec <br/>te refard éperdu de deux veux bleus si large- <br/><br/>toutes les prescriptions légales ont été ob- <br/>servées. <br/><br/>D'ailleurs, afin que la célérité des débats <br/>devant les conseils de guerre ne soit pas <br/>entravée par des arguties de procédure, par <br/>application à l'article 123 du Code de justice <br/>militaire, les jugements sur les exceptions <br/>ou incidents soulevés au cours des débats <br/>devant le conseil de guerre ne pourront être <br/>déférés à la Cour de cassation qu'après que <br/>la décision aura été rendue sur le fond. <br/>Une innovation très bonne est la faculté <br/>d'accorder des circonstances atténuantes en <br/>temps de paix. <br/><br/>Le législateur du Code de 1857 pensait, <br/>au contraire, qu'il fallait enlever au soldat <br/>tout espoir d'indulgence; mais des faits <br/>nombreux ont montré qu'il y avait là une <br/>fausse appréciation de l'état d'esprit des <br/>juges. <br/><br/>Que l'on soit militaire ou non, on subit les <br/>idées de son temps, de même qu'on en res- <br/>pire l'air. Il n'est pas douteux que, depuis <br/>un demi-siècle, la préoccupation constante <br/>de l'humanité est de se montrer moins im- <br/>placable, d'user de plus d'indulgence envers <br/>les égarés, de favoriser le repentir des cou- <br/>pables. <br/><br/>Souvent des acquittements de nature à <br/>troubler la conscience ont eu lieu, parce <br/>que le juge militaire ne pouvait pas graduer <br/>la peine, suivant le degré de perversité de <br/>l'accusé. <br/><br/>Mais, naturellement, cette réforme ne <br/>peut s'appliquer qu'au temps de paix car, <br/>à la guerre, tout serait une circonstance <br/>atténuante, et cependant la sécurité de tous <br/>ordonne de n'excuser aucune défaillance, car <br/>la moindre peut mettre en péril l'armée. <br/>Certes le factionnaire écrasé de fatigue <br/>qui s'endort est excusable et néanmoins on <br/>ne peut pas l'excuser, en vertu de ce prin- <br/>cipe d'airain que tout doit s'effacer en pré- <br/>sence de la gravité du danger que son som- <br/>meil fait courir. <br/><br/>Quiconque a fait partie d'un conseil de <br/>guerre approuvera le vote au scrutin secret <br/>demandé par le projet de loi. <br/><br/>Il est stipulé jusqu'à présent, en effet, <br/>que les votes sont recueillis il haute voix, <br/>en commençant par le grade inférieur, le <br/>président parlant le dernier; mais il y a <br/>deux inconvénients à ce mode. <br/><br/>D'abord, la liberté du juge n'est pas <br/>complète. Celui qui vote le premier, sous <br/>le regard de ses chefs, n'a qu'une indépen- <br/>dance apparente, et il lui faut une vraie <br/>force d'âme pour ne pas se conformer à <br/>l'opinion de son colonel, par exemple, dont <br/>il a facilement découvert l'avis pendant tes <br/>débats ou pendant la délibération. <br/><br/>En second lieu, ce vote public donne au <br/>président un pouvoir supérieur à celui que <br/>la loi lui confère. Légalement il est ce que <br/>les anciens appelaient « le premier entre <br/>les égaux Par le fait de parler le dernier, <br/>en sachant ce qu'on dit les autres, il peut <br/>corriger souvent leurs décisions, ea modi- <br/>fiant la sienne. <br/><br/>Par suite d'un raisonnement tout fait <br/>militaire, le projet de loi contient unn clause <br/>toute spéciale, pour le cas où des circons- <br/>tances atténuantes seraient accordées dans <br/>une affaire entraînant la peine de mort. <br/>Il se peut que le crime commis ne soit pas <br/>infamant, et il convient d'éviter au con- <br/>damné la flétrissure du bagne. <br/><br/>Dans les travaux de la commission extra- <br/>parlementaire, on s'était occupé de la fa- <br/>culté accordée par le Code d'instruction <br/>criminelle de mise en liberté provisoire <br/>d'un accusé, et on s'était demandé s'il con- <br/>venait d'étendre cette autorisation à la jus- <br/>tice militaire. <br/><br/>Le gouvernement ne l'a pas pensé, et le <br/>projet soumis au Parlement n'en fait aucune <br/>mention, avec raison, parce que cette idée <br/>rencontrerait de sérieuses difficultés d'exé- <br/>cution pratique. <br/><br/>S'agirait-il d'un officier ou même d'un <br/>simple gradé, comment ce supérieur, se <br/>trouvant sous le coup d'une poursuite judi- <br/>ciaire, pourrait-il exercer quelque autorité <br/>sur ses subordonnés ? <br/><br/>Pour un simple soldat, la situation serait <br/>tout aussi fausse. Le voit-on au milieu de <br/>ses camarades portés à le regarder comme <br/>atteint par avance d'une flétrissure? En face <br/>des sous-officiers et des caporaux, il devrait <br/>s'attendre à une malveillance il peine dissi- <br/>mulée et pour la moindre chqse il serait <br/>puni, en sa qualité de suspect. <br/><br/>Il semble que le' même raisonnement <br/>peut s'appliquer, à la loi de sursis, appelée <br/><br/>ment ouverts, si beaux, si purs, que la char- f <br/>meuse sestit son coeur profondément troublé <br/>par tant d'abandon et par tant de misère. <br/>Et pourtant, quand le médecin arriva, la <br/>mendiante était plus calme. <br/><br/>Elle dormait. Le docteur l'ausculta. Elle ne <br/>se réveilla point. <br/><br/>Colette revint le lendemain, de bon matin <br/>elle revint aussi le même soir. <br/><br/>L'absence du marquis de Vivarez la rendait <br/>plus libre. <br/><br/>Au bout 4e cinq ou six jours, Jeannette <br/>n'avait plus de fièvre. Le râle sourd de sa <br/>poitrine allait diminuant. La respiration était <br/>plus libre. <br/><br/>Et pour la première fois, un soir, se soule- <br/>vant sur son lit, elle examina Colette avec <br/>surprise, avec une attention soutenue. <br/>L intelligence revenait, vive, entière, et les <br/>yeux bleus avaient une douceur infinie, déjà <br/>l e sérieux de la jeune fille, avec je ne sais <br/>quelle expression lointaine qui était encore <br/>comme un charme de l'enfance. <br/><br/>Je ne sais pas qui vous êtes, mademoi- <br/>selle, dit Lanturlette. mais c'est vous qui avez <br/>soigné, qui avez sauvé la pauvre petite men- <br/>diante. Je souhaite qu'un jour la mendiante <br/>puisse vous prouver qu'elle n'est pas une in- <br/>grate. Et, si je pouvais faire un voeu, ce se- <br/>rait de donner ma vie pour vous. <br/><br/>Elle prit doucement la main de Colette et <br/>l'embrassa en pleurant. <br/><br/>Une intimité s'établissait entre elles, et Co- <br/>lette ne pouvait s'empêcher de prendre intérêt <br/>à cette enfant restée, comme par miracle, <br/>naïve et pure au milieu des hasards de sa vie <br/>aventureuse. <br/><br/>Colette l'interrogea sur cette vie, quand <br/>elle fut certaine qu elle pouvait le faire sans i <br/>la fatiguer. J <br/>Jeannette réooadit docilement <br/><br/>généralement du nom de son auteur, <br/>M. Bérenger. Un homme frappé par une <br/>condamnation ne peut pas rester au milieu <br/>de ses frères d'armes. La seule solution <br/>pratique, et elle se présente souvent, se <br/>trouve dans les mains du haut commande- <br/>ment qui remplace l'envoi devant le conseil <br/>de guerre par une punition disciplinaire, <br/>quand il apprécie, dans sa sollicitude, que <br/>l'indulgence est possible. <br/><br/>Ce qui frappera peut-être le plus l'opi- <br/>nion publique et ne saurait être trop ap- <br/>prouvé dans la réforme proposée, c'est la <br/>création d'un corps spécial possédant des <br/>connaissances juridiques complètes. <br/>Cela existe, d'ailleurs, depuis longtemps <br/>à l'étranger. En Autriche, ce corps est re- <br/>eruté parmi les jeunes officiers qui ont fait <br/>preuve de connaissances juridiques et ac- <br/>compli un stage dans les tribunaux. En <br/>Italie et en Allemagne, on prend des lau- <br/>réats ou des docteurs en droit. <br/><br/>En ce moment, en France, les rapporteurs <br/>et les commissaires du gouvernement près <br/>tes conseils de guerre sont des hommes <br/>respectables, ayant renoncé à toute ambi- <br/>tion et bornant leurs rêves à exercer paisi- <br/>blement un emploi pacifique. Leur droiture <br/>est certaine, leurs consciences sont scru- <br/>puleuses mais leur compétence est presque <br/>nulle, dès qu'il s'agit d'une question déli- <br/>cate. <br/><br/>Ces postes importants ne sont sollicité* <br/>que par des officiers de second plan, sou- <br/>vent âgés-, qui les obtiennent à l'époque de <br/>la vie où l'on a de la peine à acquérir des <br/>connaissances nouvelles. <br/><br/>La création d'un corps spécial, recruté <br/>au concours, après un examen de droit, <br/>parmi les capitaines de l'armée, comme cela <br/>se pratique pour l'intendance, remédiera <br/>aux inconvénients que tout ie monde a pu <br/>constater. <br/><br/>Entin, ces nouveaux commissaires et rap- <br/>porteurs, Quoique devant jouir à juste titre <br/>de l'état d'officier, ce qui parait nécessaire, <br/>n'auront pas d'assimilation de grade. Ou ne <br/>sera donc pas obligé de les changer, sui- <br/>vant la qualité de l'accusé. <br/><br/>Si cet ensemble de mesures ne forme pas <br/>la refonte complète de notre Code de justice <br/>militaire, œuvre longue, dont on ne voit pas <br/>la fin à bref délai, il marque un progrès <br/>sensible dans le sens des idées démo- <br/>cratiques. <br/><br/>JEAN FROLLO <br/><br/>INFORMATIONS POLITIQUES <br/>convocations d'Electeur» <br/><br/>Le lournal officiel d'hier a publié les décrets <br/>convoquant pour le 24 décembre les conseils <br/>municipaux des communes comprises dans les <br/>départements de t'Orne, du Pas-de-Calais, du <br/>Puy-de-Dôme, de» Basses-Pyçénées, des Hautes- <br/>Pyrénées, des Pyrénées-Orientales, du Haut- <br/>Rhin, du Rhône, de la Ha,ute-Saône. de Saône- <br/>et-Loire, de la-Sarthe, de la Savoie, je la Haute- <br/>Savoie, de la Saine, de la Seine-Inférieure, de <br/>Seine-et-Marne, de Seine-et-Oise, des Deux-Sè- <br/>vres, de la Somme, du Tarn, de Tarn-et-Garonne, <br/>du Var, de Vaucluse, de la Vendée, de la Vienne, <br/>de la Haute-Vienne, des Vosges, de l'Yonne et <br/>d'Oran, il l'effet de nommer leurs délégués en <br/>vue de l'élection des sénateurs de ces départe- <br/>ments. II s'agit, on le sait, du renouvellement <br/>partiel du Sénat. <br/><br/>Les conseils municipaux des départements des <br/>Hautes-Alpes, des Ardennes, du Cantal, du Fi- <br/>nistère, de la Loire-Inférieure et de la Nièvre, <br/>sont convoqués également à la date du 24 dé- <br/>cembre, pour élire leurs délégués, à l'effet de <br/>remplacer les sénateurs déeédée <br/><br/>MM. Chaix (Hautes-Alpes', Tirman (Ardennes), <br/>Devès (Cantal), Hallé$oien et Savary (Finistère), <br/>Chesnelong (Loire-Inférieure), Scheurer-Kestner <br/>(Nièvre). <br/><br/>La Loi sur les Accidents <br/><br/>M. Millerand, ministre du Commerce, a été <br/>entendu hier par la commission d'assurance et <br/>de prévoyance sociales, au sujet de diverses mo- <br/>difications proposées à la loi sur les accidents. <br/>Le ministre a demandé à la commission de ne <br/>pas mettre en question la loi qui fonctionne si <br/>facilement, toute proposition de modification <br/>pouvant mettre en péril cette loi qui a produit <br/>jusqu'à présent d'excellents résultats, <br/><br/>En conséquence. M. Millerand a demandé à la <br/>commission d'ajourner l'examen de ces modifi- <br/>eations. <br/><br/>A l'unanimité, la commission s'est rangée à <br/>l'avis du ministre du Commerce. <br/><br/>La Convention Franco-Américain» <br/>M. Delcassé, ministre des Affaires étrangères, <br/>a été entendu hier par la commission parle- <br/>mentaire des douanes qui désirait savoir de lui <br/>à quelle date il pourrait soumettre aux Cham- <br/>bres la convention de commerce passée avec tes <br/>Etats-Unis. <br/><br/>Le ministre des Affaires étrangères a déctaré <br/>que, suivant l'usage pratiqué dans les pays par- <br/>lementaires, ü saisirait le Parlement de cette <br/>convention le jour même où en sera saisi le <br/>Sénat américain, convoqué pour le 4 décembre- <br/>En réponse à diverse questions, M. Delcassé <br/><br/>}#ais la ehannease. tout à coup, fut surprise <br/>lorsque la petite, en finissant son histoire, <br/>ajouta <br/><br/>Ce n'est pas la première fois que nous <br/>parcourons la Vendée, et c'est la seconde fois <br/>en un an que nous nous arrêtons dans le pays <br/>que vous habitez, mademoiselle. <br/><br/>•– A quelle époque y êtes-vuus venus pour <br/>la première fois? <br/><br/>L'an dernier, au moment de la fête de <br/>Clisson. <br/><br/>Sans savoir pourquoi. Colette éprouva une <br/>vague surprise, presque une secousse. N'était- <br/>ce pas pourtant bien simple que ces petits <br/>ambulants se fussent trouvés à la fête. puis- <br/>qu'ils étaient à la solde de Gabarit, de Laha- <br/>che et de la belle Isabelle <br/><br/>Mais Colette, un peu superstitieuse, devi- <br/>nait dans cette coïncidence plus que le ha- <br/>sard, peut-être une intervention invisible et <br/>toute-puissante qui se lassait enfin de voir le <br/>malheur s'abattre sur des têtes innocentes. <br/>Il y avait longtemps que vous étiez avec <br/>ces saltimbanques? <br/><br/>Depuis deux mois à peine. <br/><br/>Et combien de jours ètes-vous restés à <br/>Clissou? <br/><br/>Le dimanche et le lundi. <br/><br/>Cependant la fête a duré presque toute <br/>la semaine <br/><br/>Vous nous sommes fâchés avec nos <br/>maîtres. <br/><br/>Pourquoi? <br/><br/>Jeannette parut embarrassée. Elle fut guel- <br/>ques secondes sans répondre, regardant 1 ins- <br/>tituttice comme si elle avait eu l'envie de <br/>parler et comme si quelque chose l'en eût <br/>retenut. <br/><br/>Nous nous sommes fâchés parce qu'ib <br/>nous battaient. <br/><br/>Mais. en disant cela, eUe avait baissé lei <br/><br/>a ajouté que les modifications douanières propo- <br/>sa pour les tarifa français ou américains avaient <br/>déjà été publiées dans le Bulletin officiel du com- <br/>merce, mais qu'il ne pouvant pas s'expliquer sur <br/>les autres situations diplomatiques avant le dépôt <br/>de la convention elle-même. <br/><br/>ESCROC ET MEURTRIER <br/>Une rentière de Nogent-sur-Marne, Mme Tas- <br/>siart, à la recherche d'un emploi qui pourrait <br/>augmenter ses modestes revenus, s'était mise <br/>dernièrement en rapport avec un nommé Etienne <br/>Machefort, dit Brillet, négociant à Neuiily-Plai- <br/>sance, qui cherchait des représentants et des <br/>gérants pour l'écoulement de ses produits dans <br/>les différentes communes de la banlieue pari- <br/>sienne. <br/><br/>Après quelques entrevues et le versement <br/>d'un cautionnement de plusieurs milliers de <br/>francs, Mme Tassiart se vit accorder la gérance <br/>d'un débit de vins avenue Ledru-Rollin, au Per- <br/>ivux, qui devait donner chaque année des béné- <br/>fices importants. <br/><br/>Une semame après la prise de possession du <br/>fond, où se trouvait seulement une intime <br/>quantité de marchandises et qui ne donnait que <br/>des recettes insignifiante: Mme Tassiart s'aper- <br/>çut qu'elle avait été victime d'un habile escroc. <br/>Ella voulut alors résilier son marché, mais le <br/>prétendu commerçant s'y refusa de la façon la <br/>plus formelle. <br/><br/>La gérante menaça alors son patron de porter <br/>plainte en escroquerie contre lui. <br/><br/>Hier matin, au cours d'une discussion des <br/>plus vives avec sa dupe, cet individu saisit une <br/>bouteille qu'il lui brisa sur la tête et s enfuit. <br/>La malheureuse femme s'affaissa sur le sol <br/>perdant le sang en abondance par une large et <br/>profonde blessure à la base du crâne. <br/><br/>Heureusement pour la victime, des voisins <br/>.avaient été témoins du drame et vinrent a son <br/>amours. <br/><br/>Une perquisition opérée au domicite du faux <br/>négociant a amené la découverte d'une volumi- <br/>neuae correspondance ne laissant aucun doute <br/>sur le genre d'opérations auxquelles rt-se livrait. <br/>La gendarmerie de Neuilly-sur-Marne recher- <br/>che activement le meurtrier. <br/><br/>GUIIUISE <br/><br/>Windsor, 23 novembre. <br/><br/>L'empereur et l'impératrice d'Allemagne sont <br/>partis pour Sandrlngham cette après-midi, ayant <br/>terminé leur visite à Windsor. •̃ <br/>Après avoir fait leurs adieux à la reine, ils <br/>ont quitté le château, un peu avant trois heures, <br/>accompagnés par le prince de Galles et le duc <br/>de Connaught. <br/><br/>Ils se sont rendus en voiture à la gare, escor- <br/>tés par les lite-guards, et au milieu d'une foule <br/>considérable. <br/><br/>L'Empereur et les princes étaient en costumes <br/>de voyage. <br/><br/>A la gare, la princesse Christian et la prin- <br/>cesse Béatrice, ainsi que les autres membres <br/>de la famille royale. ont fait leurs adieux aux <br/>souverains allemands, qui sont partis à trois <br/>heures vingt-cinq. <br/><br/>Le train spécial se compose de neuf wagons- <br/>salons; il est précédé par une machine-pilote <br/>qui éclaire la voie, avec dix minutes d'avance <br/>sur le train impérial. <br/><br/>Wolferton, 25 novembre. <br/><br/>Le train impérial est arrivé à Wolferton à <br/>aix heures quarante. <br/><br/>L'empereur, l'impératrice et le prince de Galles <br/>ont été reçus il. la gare par I princesse de Gatles, <br/>le duc d'York et la princesse Victoria de Galles. <br/>Tous se sont rendus aussitôt en voiture à Sand- <br/>ringham, qui est situé à trois millets do Wolfer- <br/>ton. <br/><br/>Sur toute la route, des agents de police étaient <br/>postés à intervalles rapprochés. <br/><br/>LE DISCOURS DE 1. DELCASSÉ <br/>Depuis plus d'un an la presse nationaliste <br/>et réactionnaire dirige contre la politique ex- <br/>térieure de M. Delcassé les attaques les plus <br/>violentes et les moins fondées. L'on pensait <br/>qu'à propos de la discussion du budget des <br/>Affaires étrangères quelque orateur de l'op- <br/>position jugerait nécessaire de monter à la <br/>tribune, de faire le procès du ministre et de <br/>présenter sous une forme précise les imputa- <br/>tions colportées sans répit. Est-ce décourage- <br/>ment, est-ce sagesse, aucun député n'a pris <br/>cette initiative redoutable. M. Delcassé n'en a <br/>pas moins estimé l'occasion excellente pour <br/>expliquer ses actes et faire justice de ses ac- <br/>cusateurs, et les applaudissements des trois <br/>quarts de la Chambre et de l'unanimité ré- <br/>publicaine sont venus lui attester qu'il avait <br/>toujours traduit fidèlement la pensée natio- <br/>nale. <br/><br/>Le pays se sentira pleinement rassuré, si <br/>toutefois on avait réussi à lui inspirer la <br/>moindre appréhension, en apprenant que l'en- <br/>tente franco-russe est plus intime, plus cor- <br/>diale que jamais. Il envisagera l'avenir avec <br/>une parfaite sérénité d'esprit lorsqu'il saura <br/>que tous nos intérêts sont sauvegardés en <br/>Chine et que, d'ailleurs, l'heure du morcel- <br/>lement de ce grand empire demeure encore <br/>lointaine. L'amélioration de nos relations <br/>commerciales avec l'Italie et les Etats-Unis <br/>ne peut de même qu'être saluée avec satis- <br/>faction. <br/><br/>Mais le point tout spécialement saillant de <br/>l'exposé de M. Delcassé, c'est la définition <br/>si nette, si juste et si pleine de sens qu'il a <br/>formulée de la politique nécessaire. Répu- <br/>diant l'impatience des uns, l'esprit agressif <br/>des autres, ce système du poing tendu qui <br/><br/>yeux et Colette crut comprendre que la pe- <br/>tite mendiante ne disait pas toute la vérité. <br/>Colette fut longtemps songeuse. <br/><br/>Cette fête de village, dit-elle, marque le <br/>point de départ de catastrophes au milieu <br/>desquelles a sombré l'honneur d'une famille. <br/>La voix de Jeannette tremblait lorsqu'elle <br/>demanda <br/><br/>De quoi voulez-voua parler, mademoi- <br/>selle? <br/><br/>D'un crime qui fut eommis ce jour-là. <br/>et d'un innocent qui expie encore, en dépit de <br/>son acquittement, le crime d'un autre. <br/>Vous parlez de Girodias? <br/><br/>Colette fit un brusque mouvement. <br/><br/>Comment le savez-vous ? Qui vous a si <br/>bien renseignée ? <br/><br/>N'étions-nous pas au village le jour du <br/>crime que tout le village apprit le soir <br/>même? <br/><br/>C'est vrai. <br/><br/>Malgré tout, Colette regardait la mendiante <br/>avec une certaine défiance, surprise de cette <br/>gène étrange qui avait succédé à sa première <br/>expansion. <br/><br/>Et sur ce meurtre, mon enfant, ne savez- <br/>vous rien ? <br/><br/>Toujours les yeux baissés, l'enfant dit <br/>Rien. • <br/><br/>Car, si vous saviez quelque chose, votre <br/>devoir eût été de le dire. <br/><br/>L'homme qui fut tué ne vous était de <br/>rien. <br/><br/>En effet, mais l'homme, innocent de ce <br/>meurtre et qui en fut accusé. <br/><br/>Le connaissez- vous donc? <br/><br/>Oui. <br/><br/>Il est de votre famille? Ou bien est-il un <br/>étranger pour vous? <br/><br/>Qu'importe. <br/><br/>Jeannette hocha la tète et dit <br/><br/>correspond si peu aux aspirations de la <br/>France, le ministre des Affaires étrangères a <br/>déclaré que les conditions mêmes de l'exis- <br/>tence nationale nous interdisaient des agran- <br/>dissements continus, une expansion coloniale <br/>peub-i'tre d'une belle apparence sur le papier, <br/>mais forcément illogique et dispendieuse. <br/>Avec un empire huit ou dix fois plus grand <br/>que la métropole, nous avons acquis le droit <br/>de nous reposer quelque peu. Il s'agit bien <br/>moins de nous assurer des possessions nou- <br/>velles que de conserver les anciennes et de <br/>les mettre en valeur. C'est par une exploi- <br/>tation progressive et pratique de notre gi- <br/>gantesque domaine que nous accroîtrons, <br/>avec la fortune publique, l'action morale de <br/>notre pays, et que nous nous préparerons un <br/>renouveau d'énergie. C'est en concentrant <br/>nos efforts, non en les gaspillant sur tous les <br/>points du globe, que nous demeurerons ca- <br/>pables d'une initiative vigoureuse, si jamais <br/>la nécessité s'en affirmait. <br/><br/>Ces idées, qui sont la base même de notre <br/>puissance et de notre rayonnement politique <br/>dans le monde, valaient d'être exprimées. La <br/>nécessité du discours de M. Delcassé, dont <br/>l'effet ne sera pas moins grand au dehors que <br/>chez nous, sera d'avoir affirmé devant le <br/>pays ces vérités incontestables. <br/><br/>LA FÊTE DES ÉTUDIANTS <br/>Le Président de la République a accepté l'in- <br/>vitation de l'Association générale des étudiants. <br/>Les nouveaux locaux du cercle dû la rue des <br/>Ecoles seront inaugurés aujourd'hui eu sa pré- <br/>sence. <br/><br/>Le président du Conseil des ministre. NI Wàl- <br/>deck-Housseau, MM. Leygues, ministre de l'Ins- <br/>truction publique, Pierre Baudin, ministre des <br/>Travaux publics, <>tMillerand, ministre rtuCom- <br/>meroo; M, Fallière», président du l'aul <br/>Deschanel, président de fa Chauv ¡'pu- <br/>tés, le prétet de police, le préfet a .e, le <br/>aénéral Brugère, gouverneur de Paris, Ni. Lu- <br/>cipia, président du conseil municipal, M. Oust- <br/>mir-Perier, M. Gr&ird, vice-recteur de l'acadé- <br/>mie, les dovètts, le corps professoral et de nom- <br/>breux députés recevront le chef de l'Etat à son <br/>M. ravisse, président d'honneur de l'asso- <br/>ciation, entoure rics membres du comité ac- <br/>tuellement en fonctions, conduira M. Loubet <br/>dans la salle des conférences, où des discours <br/>seront prononcés. M. Marcombes\", président du <br/>comité, prendra la parole au nom des étudiants. <br/>Un lunch sera ensuite servi xux invités avant le <br/>Accompagné, ainsi qu'à l'habitude, par un <br/>officier de sa maison militaire <t W. diivcIfMir de <br/>son cabinet civil, Ni. Loubet sera l'-c.ilenient <br/>par son fils, M. Paul Loohei, étudiant en droit <br/>et membre actif de l'association. <br/><br/>Après la cérémonie il inauguration, les étu- <br/>diants se retrouveront à doux heures en Sor- <br/>bonim. Dans le grand amphithéâtre du palais <br/>académique aura lieu un brillant concert aurluet <br/>participeront de nombreux artistes des princi- <br/>paux thoAtres. <br/><br/>Plusieurs de:; invités du comité, notamment <br/>MM. Leyguiw, l.ucipia, Casimir -Perier, Léon <br/>Bourgeois, Lavisse, Cochrry, Liard et Grpard, <br/>assisteront cnt1n au banquet du café Voltaire, <br/>qui terminera «••̃̃•̃ i/.v.iw imirm <br/><br/>Le disco'ur iprea une <br/>allocution ii i. Larron- <br/>met, secrétaire perj^iuei -le lA.adûtnie des <br/>beaux arts. <br/><br/>LES EMPLOIES MJŒS DE FER <br/><br/>On sait que M. Baudin, ministre des Travaux <br/>publics, a signé r. t un arrêté conter- <br/>nant la règlement 1 journée de travail <br/>des chauffeurs et .So.-i me.uictens dans les com- <br/>pagnies de chemins de fer. <br/><br/>Hier, le Journal offUitl a publié le texte de <br/>cet arrëté, datE du 4 novembre et le texte d'un <br/>nouvel arrêté du ministre dus Travaux pubiijt* <br/>daté du novembre. ainsi qu'une circulaire du <br/>24 novembre complétant les précédentes dispo- <br/>sitions. <br/><br/>La journée de travail de tons les agents dés <br/>gares, des stations et dae haltes dont le service <br/>peut intéresser la sécurité (1es trains on des ma- <br/>nœuvres se trouve ainsi fixée douze heures, et <br/>le grand repos sera d<; neuf heure» ininterrom- <br/>pues, du huit heures pour les agents logés dans <br/>les gares. <br/><br/>Des repos d'une heure environ rhacun seront <br/>accordés aux agents pour leurs repa; et, chaque <br/>mois, une journée ou deux demi-journées de <br/>repu; <br/><br/>Uans les gares qui cnmpnrtent service de jour <br/>et service de nuit, la période '̃>i1'\"1\"- ̃̃ 3<;rvieo <br/>de nuit ne devra pas cotth qua- <br/>torze nuits rnnséiMitivw\". 1'. rnant <br/>pour le servi <br/><br/>grand <br/>au moins, <br/><br/>Pour les grandes garPa il fw-rvice chargé, le <br/>ministre des Travaux surfit prescrire <br/>aux compagnies de ré<: riode J'alterne- <br/>ment à une durée inK: juatorie nuii* <br/>jusyu'à un minimum de sept nuîtsconsécu\" <br/>Toutefois, dans les petites gares qui ne <br/>pas desservies par plus de trois trams dans <br/>deux sens et qui ne comportent qu'un aèrent, <br/>la durée de présence de cet agent pourra c\\c-é- <br/>der la limite fixée, néanmoins «ansqueson grand <br/>repos journalier puisse être inférieur à huit <br/>heures. <br/><br/>Dans sa circulaire, le ministre ajoute <ju« \\<- <br/>service du contrôle -1 as-mer niir. IL. <br/>accula sont t\\* <br/><br/>periode de r<;> • k •vie. <br/><br/>arrêté d ri < j.; l'occasion <br/><br/>eontroli; •inr.û-T les cernât j> <br/><br/>Qu'importe, en effet, puisque je ne sais <br/>rien! <br/><br/>Et elle se laissa retomber, fatiguée, sur <br/>l'oreiller et ferma les paupières. <br/><br/>Mais Colette se disait en la quittant <br/>Cette pauvre petite ne ni pas tout dit. <br/>Comment faire pour la décider à parler?. <br/>Lantur et Lanturlu, la harpe et le violon, <br/>étaient toujours absents, par monts et par <br/>vaux, lors des visites de Colette. <br/><br/>Ils ne rentraient que le soir, hanssés de <br/>fatigue; ils avaient peine la force de man- <br/>ger et aliaient s'étendre tout de suite au gre- <br/>nier sur le foin. <br/><br/>Colette ne les voyait donc jamais. <br/><br/>Le dimanche suivant, toutefois, c'est- <br/>à-dire deux jours après la scène que nous <br/>venons de raconter, ils rentrèrent tout à <br/>coup, au milieu de l'après-midi, pâles, les <br/>yeux pleins de larmes et pleins de colère <br/>aussi. <br/><br/>Colette se trouvait encore dans la chambre <br/>de la malade. <br/><br/>Celle-ci, en voyant ses deux compagnons, <br/>comprit qu'il s était passé quelque chose do <br/>grave. <br/><br/>Elle se levait, ce jour-là, pour la première <br/>fois. <br/><br/>Assise dans un fauteuil de bois, rembourré <br/>d'oreillers pour la circonstance, elle aspirait <br/>à pleins poumons, par la fenêtre ouverte, ce <br/>gai soleil priutanier, ces premiers rayons <br/>de douce chaleur qui réveillent la campagne <br/>endormie et font s'égosiller tous les petit- <br/>oiseaux chanteurs. <br/><br/>En voyant les larmes de Gilbert et de Lu- <br/>cien, leurs lèvres frémissantes, le tremblç- <br/>ment de leurs main», elle s'écria <br/><br/>Quest-il arrivé ? <br/><br/>Ils éclatèrent en sanglots. Et leurs sanglots <br/>les ejn&*c»>4ic>'t de varier <br/><br/>le personnel dans tous les cas où il aura été in- <br/>sufrlsant. <br/>UNE HAINE MORTELLE <br/>Reims, Ï5 novembre. <br/><br/>La commune de Chavost vient d être le tbéatr* <br/>d'un drame sanglant <br/><br/>L'n nommé Louia Miche, S.gô de trente-ne nI <br/>ans, père de trois enfanta, qui nourrissait de- <br/>puis longtemps contre son voisin Alfred Ques; <br/>ne!, âgé de quar&nto-deux ans, une haine terri. <br/>ble, l'a tué d'une balle de revolver ta ven&e. <br/>Lassassin a essayé ensuite de se taire saute* <br/>la cervelle, mais il n'a réussi qu'à se blesser. <br/>Miellé est a la disposition do ta justice. <br/><br/>Les nouvelles du Natal faisaient hier com-» <br/>plètcment défaut, et le \\V*r Office ne com- <br/>muniquait à la presM aucun renseignement <br/>sur la situation a PletermarfUburg-, sérieuse- <br/>ment menace depuis quelques jours par le* <br/>troupes du général Joubert. <br/><br/>En revanche, des dépêches du Natal lit du <br/>Cap sigualeut une recrudescence dans mou- <br/>vement d'adhésion des Afrikaadws t <br/>des deux Heiiubligut-s- <br/><br/>Au sujet du bruit d'une médiation proba- <br/>ble, bruit recueilli par YFndépenrimift bel;}*, <br/>et dont nous parlions hier, un Uïlf'gramma <br/>de Munich adressé à un journal berlinois an- <br/>nonce que l'empereur Guillaume aurait for- <br/>mellement proposé une intervention des puis- <br/>sances en vue de mettre fin à b '̃ \"t qno <br/>M. Chamberlain lut aurait fai: les <br/>conditions que l'Angleterre ni i son <br/>acceptation. <br/><br/>Cette nouvelle, que rien jusqu'ici n'est <br/>venu confirmer, semble tout &11 moins pré- <br/>maturée. Quand l.'idysmilli, Esteourl et t'ie- <br/>termiiritzburg auront capitulé, les Anglais se- <br/>roiit peut-être heureux d accepter une propo- <br/>sition de ce genre, mais ce inontfMi! ̃» <br/>encore venu et l'orgueil brilaiuiiqii <br/><br/>rait se réiigner à traiter avant nithin. u .mur <br/>sérieusement combattu. <br/><br/>Les Afrikanders <br/><br/>Londres, ïft novembre. <br/><br/>La Westminster (iazelfe public une ik'pcctiii de <br/>Durban, eu date d'hier, ainsi conçue <br/><br/>On craint un soulèvement général des Afrikan- <br/>ders dans le district de Ladvgrey en faveur de» <br/>Boërs. <br/><br/>De son côté, le Timts, dans une deu.\\ <br/><br/>tton, annonce, d'ar1»' Il' .i.'n.h.. ,<. <br/><br/>luwn en date d. <br/><br/>ders du district i <br/>l'ennemi. <br/><br/>M. Sauor, Qui est veau isnicm 'lo <br/>maintenir les Afrikaners o-vun-, i-t <br/>alla à B.irkl.ïs ii ruvltiudri ;i i j ..iiî rn.îi t. <br/>Guillaume II et M. Chamberlain <br/><br/>Berlin. SB novembre. <br/><br/>qn> 1 on <br/>assi..tvfiî <br/>1 et! pni: <br/><br/>bcriain <br/><br/>Transvaat il iuis <br/>les deux pays. <br/><br/>M. OhAmberlain aurait fait un acctivil f.ivof»- <br/>blt: à c«s DUvertuv ̃ lus <br/>négociations fus- n ho- <br/>norable pour l'Ail* H: un' <br/><br/>A propos du Combat de Belmont <br/>Londres, a novembre. <br/><br/>Le oûTrcs|Mmitarit roilitairt! de la <br/>Gazelle f»it, remarquer que les <ii\" <br/><br/>bat de Belmont indiquent qu'il 1 <br/><br/>déroute des Boërs, et que le détai ̃1 <br/>par lord Metiiutsn constitua enoon- une umiiitia <br/>combat avec laquelle il faudra compter dans <br/>l'avenir. <br/><br/>Parlant de la situation il Maff.king, le corres- <br/>pondant dit qu'il eal nri| OHSililc (aie, la ville soit <br/>secourue avant un rnoi«, et qui! est douteux <br/>qu'elle puisse '•̃nir jusque-là. <br/><br/>«rs renfWMRnflments, tes pertes <br/>(Jr; *̃ A \".«t été <br/>il. mte <br/>bl. <br/><br/>Lea Uutrs oui i:i. ;un <br/>et la plupart de w le <br/>i-oir\" ̃̃<••̃<̃̃ ̃̃̃\" iUoil <br/>ot> <br/><br/>A .-(•, 1« <br/>coiuii'iauJi. i!op, <br/>évacuant ta >ti no <br/>iioni pu songer un «oui instant à <br/><br/>faire de Glen <br/>i:iUgu. m.us no s est pas <br/>su prendre cette tactique. <br/><br/>L'Opinion en Allemagne <br/><br/>l/imlns. novembre, <br/><br/>On W <br/><br/>'̃ B«O8 iUTj' t <br/><br/>Colette s'approcha d'eux. <br/><br/>!\\les pauvres enfants, dfteg-nci&s pour- <br/>quoi vous pleurez. <br/><br/>Ce fut Gilbert, ir, plus igé, qui prit la pa- <br/>role, toujours sanglotant: <br/><br/>Il y a, mademoiselle, il y a, Jeannette, <br/>que ce pays-ci est un pays maudit pour uout <br/>et que tnainteuant il ne uuus reste plus qu i <br/>mourir d'^ faim. <br/><br/>Expliquez- vous. <br/><br/>Il s'expliqua difficilement, car le« larme* <br/>redoublaient, ma > Colette, attentive, <br/>et Jeannette tout ..mirent l'une et l'au- <br/>tre par comprendre. <br/><br/>ils étaient partît comme d'habitude le ma- <br/>tin, de bonne rwure, Gilbert avec son violon <br/>et Lucien portant sa harpe.' <br/><br/>C'était dimanche, la recette avait été bonne, <br/>ils avaient récolté quelques sous. <br/><br/>A midi, comme il faisait beau, ils s'asalrent <br/>au coin d'un bois, mangèrent un morceau de <br/>pain avec un œuf <!>\"̃ hr.r, -ut une gorgée <br/>d'eau à une suurce, uguurdis <br/>parce soleil, ils s'ei. ucemeut, <br/>côte à câ'ib. on se teuaiit par k main. <br/>Lucieh .jvaii appuyé sa hirpe le long d'un <br/>arbre et le violon reposait au pied. <br/><br/>Us ne dormaient pas depuis une demi- <br/>heure, lorsqu'ils furent réveillés eu sursaut. <br/>Et ils poussèrent uu cri de terreur et de <br/>désespoir. <br/><br/>Un homme était là, déguenillé, Ivre, jurant, <br/>r.K/naaj et chantant, qui brisait à coups <br/>n, arec une joie féroce et bête, le vio- <br/><br/>Gilbert, devenu un atnas de débris, <br/>et la harjH' de Lucien, qui, sous chacun des <br/>coups, rendait des sons tristes et plaintifs, <br/>comme si elle avait souffert vraiment et com- <br/>me si elle avait été douée d'une âme. <br/><br/>Harpe violon n'existaient plus. <br/><br/>{A iuure.) JtLES MAaT. <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                },
+                "firstPage": {
+                  "display": false,
+                  "active": false,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "nextPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 2 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519101d/f2.highres",
+                      "screenNumber": 2,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519101d/f2.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/> ",
+                            "stringOCR": "YINGT-QUATHIÈME ANNÈE. -,Ne 8430. <br/><br/>Le numéro i 5 <br/><br/>DIMAKGÏiJS 26 KQVJ3MBBB <br/><br/>ABONNEMENTS <br/><br/>fcdHS et DÉPARTEMENTS Trois mois, 5 fr. Six mois, 9 fr. Un an, 18 fr. <br/>On s'abonne Max /rais dans tant Un Banaux de posta <br/><br/>Direction 18, nue dEnghien. f»ajê*is <br/><br/>TOUS LES JEUDIS <br/><br/>Supplément Littéraire tllustré (Huit Pages) 15 Centimee. <br/><br/>S'adresser à L'OFFICE D'ANNONCES, 10, Place de ta Bourse, 10, PAîMS <br/>et à la Salle des Dépêches du Petit Parisien, 2e, bouler. Montmartre. ( <br/><br/>Dernigre Edition <br/><br/>PROCHAINEMENT <br/>Le Petit Parisien <br/><br/>COMMENCERA <br/><br/>DEUX PASSIONS <br/>GHAND ROMAN INÉDIT <br/><br/>PAR <br/><br/>Charles MÉROUVEL <br/>Le projet de loi sur les modifications à <br/>apporter au fonctionnement de la justice <br/>militaire n'est pas né brusquement des cir- <br/>constances et il n'est pas exagéré de dire <br/>que son enfantement a été exceptionnelle- <br/>ment lent, car on s'en occupait sous la Res- <br/>tauration, il y a soixante-dix ans. <br/><br/>En 1829, le ministre de la Guerre du roi <br/>Charles X demandait déjà qne les militaires <br/>ne fussent justiciables des conseils de <br/>guerre que pour les délits militaires; et il <br/>proposait de les poursuivre devant les tri- <br/>Dunaux ordinaires pour les faits de droit <br/>Commun. <br/><br/>Il en donnait pour raison qu'avant d'être <br/>militaire on est homme et citoyen, soumis <br/>comme tel aux lois générales qui régissent <br/>notre pays, toutes les fois qu'il ne s'agit <br/>.pas de l'o bligation spéciale contractée par <br/>le fait de la présence sous les drapeaux. <br/>Cet argument a évidemment beaucoup <br/>plus de valeur encore il l'heure actuelle <br/>qu'à l'époque lointaine dont il s'agit, le ser- <br/>vice personnel obligatoire ayant établi des <br/>liens plus étroits entre l'armée et la nation. <br/>Les idées qui avaient prévalu au com- <br/>mencement du siècle, au milieu du fracas <br/>des batailles de la République et du pre- <br/>mier Empire, ne sont plus celles des géné- <br/>rations présentes; et ü sembla possible, en <br/>temps de paix, sans porter une main auda- <br/>cieuse sur la discipline qui est une néces- <br/>sité de salut public, de donner à l'armée <br/>toutes les garanties judiciaires accordées à <br/>chaque Français. <br/><br/>Sous le Ministère de M. de Freycinet, <br/>Cette question a été étudiée par le comité <br/>du contentieux que présidait un ancien <br/>garde des Sceaux, M. Guérin, dont faisaient <br/>partie des officiers généraux, des magis- <br/>trats, des membres du Parlement et de <br/>hauts fonctionnaires. <br/><br/>On avait soulevé l'objection, si on ne lais- <br/>sait pas aux seuls conseils de guerre la mis- <br/>sion de juger les militaires, quoi qu'ils aient <br/>fait, qu'on pourrait ouvrir la porte à des <br/>conflits regrettables mais cet argument <br/>de semble pas conforme à la réalité des <br/>choses. <br/><br/>Actuellement, en effet, un militaire peut <br/>fort bien être entraîné devant la justice or- <br/>dinaire, par acompte s'il a un complice <br/>Civil, ou encore s'il est en congé. <br/><br/>Il n'est pas exact de dire que la réforme <br/>projetée donnera lieu à des indécisions sur <br/>ta juridiction, puisque c'est l'acte délic- <br/>tueux commis qui en décidera, et non des' <br/>circonstances fortuites se produisant au <br/>Cours de l'instruction et amenant brusque- <br/>'ment à dessaisir le conseil de guerre, si on <br/>découvre la complicité d'un civil. <br/><br/>On a dit aussi que la justice militaire est <br/>plus prompte et que cette rapidité rend <br/>exemple plus saisissant pour le soldat. <br/>Cela peut être vrai pour la répression d'un <br/>délit militaire, mais cela n'a aucune impor- <br/>tance pour les faits de droit commun, aucun <br/>'intérêt militaire n'étant en jeu. <br/><br/>Dans le projet du général de Galliffet, les <br/>conseils de revision sont supprimés et rem- <br/>placés par la Cour de cassation. <br/><br/>On sait que maintenant il existe deux <br/>conseils de revision seulement, celui de <br/>Paris et celui d'Algex-Xatte dualité offrait <br/>un inconvénient qui saute aux yeux. Il est <br/>clair que pour juger des questions de droit, <br/>On doit craindre de voir rendre des. arrêts <br/>contradictoires. Aussi avait-on parlé de <br/>créer, à Paris, une Cour militaire supé- <br/>rieure <br/><br/>Mais il parait plus simule de soumettre <br/>toutes les interprétations du Code à la haute <br/>inagistrature qui a pour mission d'être la <br/>gardienne du droit, étant bien entendu que <br/>la Cour de cassation ne s'occupera, pas du <br/>fond même des affaires, mais examinera si <br/><br/>jl« FettÛleteB du Pmr Parisien. <br/>GRAND ROMAJS 1NÉDIT <br/><br/>DEUXIÈME PARTIE <br/><br/>LES TRAGÉDIES DE L'AMOUR <br/>lI (suite) <br/><br/>Lantnr, et Lanturlu <br/><br/>Sur une planche, auprès d'elle, dont cha- <br/>que extrémité était posée sur une chaise de <br/>bois, formant table ainsi, quelques fioles, de <br/>l'eau, des verres. <br/><br/>Mais cette enfant va mourir faute de. <br/>sains murmnra Colette. <br/><br/>Ille redescendit aussitôt. <br/><br/>Il y avait dans l'auberge une chambre <br/>claire et saine, bien aérée et qui était inoc- <br/>cupée. Elle la paya, donnant quinze jours <br/>d'avance. <br/><br/>Et un quart d'heure après Jeannette était <br/>étendue dans un lit bien propre, avec des <br/>draps bien blattce. <br/><br/>Colette, douce et bienfaisante comme une <br/>sœur de charité, lui avait fait sa toilette, avait <br/>arrangé sur ce front de pauvresse et de vaga- <br/>bonde de lourds et admirables cheveux <br/>blonds. <br/><br/>Elle avait envoyé l'aubergiste, à cheval, <br/>thercher la médecin du château. <br/><br/>Jeannette avait le délire, et alors, parfois, <br/>regardait cette étrangère, près de son lit, avec <br/>te refard éperdu de deux veux bleus si large- <br/><br/>toutes les prescriptions légales ont été ob- <br/>servées. <br/><br/>D'ailleurs, afin que la célérité des débats <br/>devant les conseils de guerre ne soit pas <br/>entravée par des arguties de procédure, par <br/>application à l'article 123 du Code de justice <br/>militaire, les jugements sur les exceptions <br/>ou incidents soulevés au cours des débats <br/>devant le conseil de guerre ne pourront être <br/>déférés à la Cour de cassation qu'après que <br/>la décision aura été rendue sur le fond. <br/>Une innovation très bonne est la faculté <br/>d'accorder des circonstances atténuantes en <br/>temps de paix. <br/><br/>Le législateur du Code de 1857 pensait, <br/>au contraire, qu'il fallait enlever au soldat <br/>tout espoir d'indulgence; mais des faits <br/>nombreux ont montré qu'il y avait là une <br/>fausse appréciation de l'état d'esprit des <br/>juges. <br/><br/>Que l'on soit militaire ou non, on subit les <br/>idées de son temps, de même qu'on en res- <br/>pire l'air. Il n'est pas douteux que, depuis <br/>un demi-siècle, la préoccupation constante <br/>de l'humanité est de se montrer moins im- <br/>placable, d'user de plus d'indulgence envers <br/>les égarés, de favoriser le repentir des cou- <br/>pables. <br/><br/>Souvent des acquittements de nature à <br/>troubler la conscience ont eu lieu, parce <br/>que le juge militaire ne pouvait pas graduer <br/>la peine, suivant le degré de perversité de <br/>l'accusé. <br/><br/>Mais, naturellement, cette réforme ne <br/>peut s'appliquer qu'au temps de paix car, <br/>à la guerre, tout serait une circonstance <br/>atténuante, et cependant la sécurité de tous <br/>ordonne de n'excuser aucune défaillance, car <br/>la moindre peut mettre en péril l'armée. <br/>Certes le factionnaire écrasé de fatigue <br/>qui s'endort est excusable et néanmoins on <br/>ne peut pas l'excuser, en vertu de ce prin- <br/>cipe d'airain que tout doit s'effacer en pré- <br/>sence de la gravité du danger que son som- <br/>meil fait courir. <br/><br/>Quiconque a fait partie d'un conseil de <br/>guerre approuvera le vote au scrutin secret <br/>demandé par le projet de loi. <br/><br/>Il est stipulé jusqu'à présent, en effet, <br/>que les votes sont recueillis il haute voix, <br/>en commençant par le grade inférieur, le <br/>président parlant le dernier; mais il y a <br/>deux inconvénients à ce mode. <br/><br/>D'abord, la liberté du juge n'est pas <br/>complète. Celui qui vote le premier, sous <br/>le regard de ses chefs, n'a qu'une indépen- <br/>dance apparente, et il lui faut une vraie <br/>force d'âme pour ne pas se conformer à <br/>l'opinion de son colonel, par exemple, dont <br/>il a facilement découvert l'avis pendant tes <br/>débats ou pendant la délibération. <br/><br/>En second lieu, ce vote public donne au <br/>président un pouvoir supérieur à celui que <br/>la loi lui confère. Légalement il est ce que <br/>les anciens appelaient « le premier entre <br/>les égaux Par le fait de parler le dernier, <br/>en sachant ce qu'on dit les autres, il peut <br/>corriger souvent leurs décisions, ea modi- <br/>fiant la sienne. <br/><br/>Par suite d'un raisonnement tout fait <br/>militaire, le projet de loi contient unn clause <br/>toute spéciale, pour le cas où des circons- <br/>tances atténuantes seraient accordées dans <br/>une affaire entraînant la peine de mort. <br/>Il se peut que le crime commis ne soit pas <br/>infamant, et il convient d'éviter au con- <br/>damné la flétrissure du bagne. <br/><br/>Dans les travaux de la commission extra- <br/>parlementaire, on s'était occupé de la fa- <br/>culté accordée par le Code d'instruction <br/>criminelle de mise en liberté provisoire <br/>d'un accusé, et on s'était demandé s'il con- <br/>venait d'étendre cette autorisation à la jus- <br/>tice militaire. <br/><br/>Le gouvernement ne l'a pas pensé, et le <br/>projet soumis au Parlement n'en fait aucune <br/>mention, avec raison, parce que cette idée <br/>rencontrerait de sérieuses difficultés d'exé- <br/>cution pratique. <br/><br/>S'agirait-il d'un officier ou même d'un <br/>simple gradé, comment ce supérieur, se <br/>trouvant sous le coup d'une poursuite judi- <br/>ciaire, pourrait-il exercer quelque autorité <br/>sur ses subordonnés ? <br/><br/>Pour un simple soldat, la situation serait <br/>tout aussi fausse. Le voit-on au milieu de <br/>ses camarades portés à le regarder comme <br/>atteint par avance d'une flétrissure? En face <br/>des sous-officiers et des caporaux, il devrait <br/>s'attendre à une malveillance il peine dissi- <br/>mulée et pour la moindre chqse il serait <br/>puni, en sa qualité de suspect. <br/><br/>Il semble que le' même raisonnement <br/>peut s'appliquer, à la loi de sursis, appelée <br/><br/>ment ouverts, si beaux, si purs, que la char- f <br/>meuse sestit son coeur profondément troublé <br/>par tant d'abandon et par tant de misère. <br/>Et pourtant, quand le médecin arriva, la <br/>mendiante était plus calme. <br/><br/>Elle dormait. Le docteur l'ausculta. Elle ne <br/>se réveilla point. <br/><br/>Colette revint le lendemain, de bon matin <br/>elle revint aussi le même soir. <br/><br/>L'absence du marquis de Vivarez la rendait <br/>plus libre. <br/><br/>Au bout 4e cinq ou six jours, Jeannette <br/>n'avait plus de fièvre. Le râle sourd de sa <br/>poitrine allait diminuant. La respiration était <br/>plus libre. <br/><br/>Et pour la première fois, un soir, se soule- <br/>vant sur son lit, elle examina Colette avec <br/>surprise, avec une attention soutenue. <br/>L intelligence revenait, vive, entière, et les <br/>yeux bleus avaient une douceur infinie, déjà <br/>l e sérieux de la jeune fille, avec je ne sais <br/>quelle expression lointaine qui était encore <br/>comme un charme de l'enfance. <br/><br/>Je ne sais pas qui vous êtes, mademoi- <br/>selle, dit Lanturlette. mais c'est vous qui avez <br/>soigné, qui avez sauvé la pauvre petite men- <br/>diante. Je souhaite qu'un jour la mendiante <br/>puisse vous prouver qu'elle n'est pas une in- <br/>grate. Et, si je pouvais faire un voeu, ce se- <br/>rait de donner ma vie pour vous. <br/><br/>Elle prit doucement la main de Colette et <br/>l'embrassa en pleurant. <br/><br/>Une intimité s'établissait entre elles, et Co- <br/>lette ne pouvait s'empêcher de prendre intérêt <br/>à cette enfant restée, comme par miracle, <br/>naïve et pure au milieu des hasards de sa vie <br/>aventureuse. <br/><br/>Colette l'interrogea sur cette vie, quand <br/>elle fut certaine qu elle pouvait le faire sans i <br/>la fatiguer. J <br/>Jeannette réooadit docilement <br/><br/>généralement du nom de son auteur, <br/>M. Bérenger. Un homme frappé par une <br/>condamnation ne peut pas rester au milieu <br/>de ses frères d'armes. La seule solution <br/>pratique, et elle se présente souvent, se <br/>trouve dans les mains du haut commande- <br/>ment qui remplace l'envoi devant le conseil <br/>de guerre par une punition disciplinaire, <br/>quand il apprécie, dans sa sollicitude, que <br/>l'indulgence est possible. <br/><br/>Ce qui frappera peut-être le plus l'opi- <br/>nion publique et ne saurait être trop ap- <br/>prouvé dans la réforme proposée, c'est la <br/>création d'un corps spécial possédant des <br/>connaissances juridiques complètes. <br/>Cela existe, d'ailleurs, depuis longtemps <br/>à l'étranger. En Autriche, ce corps est re- <br/>eruté parmi les jeunes officiers qui ont fait <br/>preuve de connaissances juridiques et ac- <br/>compli un stage dans les tribunaux. En <br/>Italie et en Allemagne, on prend des lau- <br/>réats ou des docteurs en droit. <br/><br/>En ce moment, en France, les rapporteurs <br/>et les commissaires du gouvernement près <br/>tes conseils de guerre sont des hommes <br/>respectables, ayant renoncé à toute ambi- <br/>tion et bornant leurs rêves à exercer paisi- <br/>blement un emploi pacifique. Leur droiture <br/>est certaine, leurs consciences sont scru- <br/>puleuses mais leur compétence est presque <br/>nulle, dès qu'il s'agit d'une question déli- <br/>cate. <br/><br/>Ces postes importants ne sont sollicité* <br/>que par des officiers de second plan, sou- <br/>vent âgés-, qui les obtiennent à l'époque de <br/>la vie où l'on a de la peine à acquérir des <br/>connaissances nouvelles. <br/><br/>La création d'un corps spécial, recruté <br/>au concours, après un examen de droit, <br/>parmi les capitaines de l'armée, comme cela <br/>se pratique pour l'intendance, remédiera <br/>aux inconvénients que tout ie monde a pu <br/>constater. <br/><br/>Entin, ces nouveaux commissaires et rap- <br/>porteurs, Quoique devant jouir à juste titre <br/>de l'état d'officier, ce qui parait nécessaire, <br/>n'auront pas d'assimilation de grade. Ou ne <br/>sera donc pas obligé de les changer, sui- <br/>vant la qualité de l'accusé. <br/><br/>Si cet ensemble de mesures ne forme pas <br/>la refonte complète de notre Code de justice <br/>militaire, œuvre longue, dont on ne voit pas <br/>la fin à bref délai, il marque un progrès <br/>sensible dans le sens des idées démo- <br/>cratiques. <br/><br/>JEAN FROLLO <br/><br/>INFORMATIONS POLITIQUES <br/>convocations d'Electeur» <br/><br/>Le lournal officiel d'hier a publié les décrets <br/>convoquant pour le 24 décembre les conseils <br/>municipaux des communes comprises dans les <br/>départements de t'Orne, du Pas-de-Calais, du <br/>Puy-de-Dôme, de» Basses-Pyçénées, des Hautes- <br/>Pyrénées, des Pyrénées-Orientales, du Haut- <br/>Rhin, du Rhône, de la Ha,ute-Saône. de Saône- <br/>et-Loire, de la-Sarthe, de la Savoie, je la Haute- <br/>Savoie, de la Saine, de la Seine-Inférieure, de <br/>Seine-et-Marne, de Seine-et-Oise, des Deux-Sè- <br/>vres, de la Somme, du Tarn, de Tarn-et-Garonne, <br/>du Var, de Vaucluse, de la Vendée, de la Vienne, <br/>de la Haute-Vienne, des Vosges, de l'Yonne et <br/>d'Oran, il l'effet de nommer leurs délégués en <br/>vue de l'élection des sénateurs de ces départe- <br/>ments. II s'agit, on le sait, du renouvellement <br/>partiel du Sénat. <br/><br/>Les conseils municipaux des départements des <br/>Hautes-Alpes, des Ardennes, du Cantal, du Fi- <br/>nistère, de la Loire-Inférieure et de la Nièvre, <br/>sont convoqués également à la date du 24 dé- <br/>cembre, pour élire leurs délégués, à l'effet de <br/>remplacer les sénateurs déeédée <br/><br/>MM. Chaix (Hautes-Alpes', Tirman (Ardennes), <br/>Devès (Cantal), Hallé$oien et Savary (Finistère), <br/>Chesnelong (Loire-Inférieure), Scheurer-Kestner <br/>(Nièvre). <br/><br/>La Loi sur les Accidents <br/><br/>M. Millerand, ministre du Commerce, a été <br/>entendu hier par la commission d'assurance et <br/>de prévoyance sociales, au sujet de diverses mo- <br/>difications proposées à la loi sur les accidents. <br/>Le ministre a demandé à la commission de ne <br/>pas mettre en question la loi qui fonctionne si <br/>facilement, toute proposition de modification <br/>pouvant mettre en péril cette loi qui a produit <br/>jusqu'à présent d'excellents résultats, <br/><br/>En conséquence. M. Millerand a demandé à la <br/>commission d'ajourner l'examen de ces modifi- <br/>eations. <br/><br/>A l'unanimité, la commission s'est rangée à <br/>l'avis du ministre du Commerce. <br/><br/>La Convention Franco-Américain» <br/>M. Delcassé, ministre des Affaires étrangères, <br/>a été entendu hier par la commission parle- <br/>mentaire des douanes qui désirait savoir de lui <br/>à quelle date il pourrait soumettre aux Cham- <br/>bres la convention de commerce passée avec tes <br/>Etats-Unis. <br/><br/>Le ministre des Affaires étrangères a déctaré <br/>que, suivant l'usage pratiqué dans les pays par- <br/>lementaires, ü saisirait le Parlement de cette <br/>convention le jour même où en sera saisi le <br/>Sénat américain, convoqué pour le 4 décembre- <br/>En réponse à diverse questions, M. Delcassé <br/><br/>}#ais la ehannease. tout à coup, fut surprise <br/>lorsque la petite, en finissant son histoire, <br/>ajouta <br/><br/>Ce n'est pas la première fois que nous <br/>parcourons la Vendée, et c'est la seconde fois <br/>en un an que nous nous arrêtons dans le pays <br/>que vous habitez, mademoiselle. <br/><br/>•– A quelle époque y êtes-vuus venus pour <br/>la première fois? <br/><br/>L'an dernier, au moment de la fête de <br/>Clisson. <br/><br/>Sans savoir pourquoi. Colette éprouva une <br/>vague surprise, presque une secousse. N'était- <br/>ce pas pourtant bien simple que ces petits <br/>ambulants se fussent trouvés à la fête. puis- <br/>qu'ils étaient à la solde de Gabarit, de Laha- <br/>che et de la belle Isabelle <br/><br/>Mais Colette, un peu superstitieuse, devi- <br/>nait dans cette coïncidence plus que le ha- <br/>sard, peut-être une intervention invisible et <br/>toute-puissante qui se lassait enfin de voir le <br/>malheur s'abattre sur des têtes innocentes. <br/>Il y avait longtemps que vous étiez avec <br/>ces saltimbanques? <br/><br/>Depuis deux mois à peine. <br/><br/>Et combien de jours ètes-vous restés à <br/>Clissou? <br/><br/>Le dimanche et le lundi. <br/><br/>Cependant la fête a duré presque toute <br/>la semaine <br/><br/>Vous nous sommes fâchés avec nos <br/>maîtres. <br/><br/>Pourquoi? <br/><br/>Jeannette parut embarrassée. Elle fut guel- <br/>ques secondes sans répondre, regardant 1 ins- <br/>tituttice comme si elle avait eu l'envie de <br/>parler et comme si quelque chose l'en eût <br/>retenut. <br/><br/>Nous nous sommes fâchés parce qu'ib <br/>nous battaient. <br/><br/>Mais. en disant cela, eUe avait baissé lei <br/><br/>a ajouté que les modifications douanières propo- <br/>sa pour les tarifa français ou américains avaient <br/>déjà été publiées dans le Bulletin officiel du com- <br/>merce, mais qu'il ne pouvant pas s'expliquer sur <br/>les autres situations diplomatiques avant le dépôt <br/>de la convention elle-même. <br/><br/>ESCROC ET MEURTRIER <br/>Une rentière de Nogent-sur-Marne, Mme Tas- <br/>siart, à la recherche d'un emploi qui pourrait <br/>augmenter ses modestes revenus, s'était mise <br/>dernièrement en rapport avec un nommé Etienne <br/>Machefort, dit Brillet, négociant à Neuiily-Plai- <br/>sance, qui cherchait des représentants et des <br/>gérants pour l'écoulement de ses produits dans <br/>les différentes communes de la banlieue pari- <br/>sienne. <br/><br/>Après quelques entrevues et le versement <br/>d'un cautionnement de plusieurs milliers de <br/>francs, Mme Tassiart se vit accorder la gérance <br/>d'un débit de vins avenue Ledru-Rollin, au Per- <br/>ivux, qui devait donner chaque année des béné- <br/>fices importants. <br/><br/>Une semame après la prise de possession du <br/>fond, où se trouvait seulement une intime <br/>quantité de marchandises et qui ne donnait que <br/>des recettes insignifiante: Mme Tassiart s'aper- <br/>çut qu'elle avait été victime d'un habile escroc. <br/>Ella voulut alors résilier son marché, mais le <br/>prétendu commerçant s'y refusa de la façon la <br/>plus formelle. <br/><br/>La gérante menaça alors son patron de porter <br/>plainte en escroquerie contre lui. <br/><br/>Hier matin, au cours d'une discussion des <br/>plus vives avec sa dupe, cet individu saisit une <br/>bouteille qu'il lui brisa sur la tête et s enfuit. <br/>La malheureuse femme s'affaissa sur le sol <br/>perdant le sang en abondance par une large et <br/>profonde blessure à la base du crâne. <br/><br/>Heureusement pour la victime, des voisins <br/>.avaient été témoins du drame et vinrent a son <br/>amours. <br/><br/>Une perquisition opérée au domicite du faux <br/>négociant a amené la découverte d'une volumi- <br/>neuae correspondance ne laissant aucun doute <br/>sur le genre d'opérations auxquelles rt-se livrait. <br/>La gendarmerie de Neuilly-sur-Marne recher- <br/>che activement le meurtrier. <br/><br/>GUIIUISE <br/><br/>Windsor, 23 novembre. <br/><br/>L'empereur et l'impératrice d'Allemagne sont <br/>partis pour Sandrlngham cette après-midi, ayant <br/>terminé leur visite à Windsor. •̃ <br/>Après avoir fait leurs adieux à la reine, ils <br/>ont quitté le château, un peu avant trois heures, <br/>accompagnés par le prince de Galles et le duc <br/>de Connaught. <br/><br/>Ils se sont rendus en voiture à la gare, escor- <br/>tés par les lite-guards, et au milieu d'une foule <br/>considérable. <br/><br/>L'Empereur et les princes étaient en costumes <br/>de voyage. <br/><br/>A la gare, la princesse Christian et la prin- <br/>cesse Béatrice, ainsi que les autres membres <br/>de la famille royale. ont fait leurs adieux aux <br/>souverains allemands, qui sont partis à trois <br/>heures vingt-cinq. <br/><br/>Le train spécial se compose de neuf wagons- <br/>salons; il est précédé par une machine-pilote <br/>qui éclaire la voie, avec dix minutes d'avance <br/>sur le train impérial. <br/><br/>Wolferton, 25 novembre. <br/><br/>Le train impérial est arrivé à Wolferton à <br/>aix heures quarante. <br/><br/>L'empereur, l'impératrice et le prince de Galles <br/>ont été reçus il. la gare par I princesse de Gatles, <br/>le duc d'York et la princesse Victoria de Galles. <br/>Tous se sont rendus aussitôt en voiture à Sand- <br/>ringham, qui est situé à trois millets do Wolfer- <br/>ton. <br/><br/>Sur toute la route, des agents de police étaient <br/>postés à intervalles rapprochés. <br/><br/>LE DISCOURS DE 1. DELCASSÉ <br/>Depuis plus d'un an la presse nationaliste <br/>et réactionnaire dirige contre la politique ex- <br/>térieure de M. Delcassé les attaques les plus <br/>violentes et les moins fondées. L'on pensait <br/>qu'à propos de la discussion du budget des <br/>Affaires étrangères quelque orateur de l'op- <br/>position jugerait nécessaire de monter à la <br/>tribune, de faire le procès du ministre et de <br/>présenter sous une forme précise les imputa- <br/>tions colportées sans répit. Est-ce décourage- <br/>ment, est-ce sagesse, aucun député n'a pris <br/>cette initiative redoutable. M. Delcassé n'en a <br/>pas moins estimé l'occasion excellente pour <br/>expliquer ses actes et faire justice de ses ac- <br/>cusateurs, et les applaudissements des trois <br/>quarts de la Chambre et de l'unanimité ré- <br/>publicaine sont venus lui attester qu'il avait <br/>toujours traduit fidèlement la pensée natio- <br/>nale. <br/><br/>Le pays se sentira pleinement rassuré, si <br/>toutefois on avait réussi à lui inspirer la <br/>moindre appréhension, en apprenant que l'en- <br/>tente franco-russe est plus intime, plus cor- <br/>diale que jamais. Il envisagera l'avenir avec <br/>une parfaite sérénité d'esprit lorsqu'il saura <br/>que tous nos intérêts sont sauvegardés en <br/>Chine et que, d'ailleurs, l'heure du morcel- <br/>lement de ce grand empire demeure encore <br/>lointaine. L'amélioration de nos relations <br/>commerciales avec l'Italie et les Etats-Unis <br/>ne peut de même qu'être saluée avec satis- <br/>faction. <br/><br/>Mais le point tout spécialement saillant de <br/>l'exposé de M. Delcassé, c'est la définition <br/>si nette, si juste et si pleine de sens qu'il a <br/>formulée de la politique nécessaire. Répu- <br/>diant l'impatience des uns, l'esprit agressif <br/>des autres, ce système du poing tendu qui <br/><br/>yeux et Colette crut comprendre que la pe- <br/>tite mendiante ne disait pas toute la vérité. <br/>Colette fut longtemps songeuse. <br/><br/>Cette fête de village, dit-elle, marque le <br/>point de départ de catastrophes au milieu <br/>desquelles a sombré l'honneur d'une famille. <br/>La voix de Jeannette tremblait lorsqu'elle <br/>demanda <br/><br/>De quoi voulez-voua parler, mademoi- <br/>selle? <br/><br/>D'un crime qui fut eommis ce jour-là. <br/>et d'un innocent qui expie encore, en dépit de <br/>son acquittement, le crime d'un autre. <br/>Vous parlez de Girodias? <br/><br/>Colette fit un brusque mouvement. <br/><br/>Comment le savez-vous ? Qui vous a si <br/>bien renseignée ? <br/><br/>N'étions-nous pas au village le jour du <br/>crime que tout le village apprit le soir <br/>même? <br/><br/>C'est vrai. <br/><br/>Malgré tout, Colette regardait la mendiante <br/>avec une certaine défiance, surprise de cette <br/>gène étrange qui avait succédé à sa première <br/>expansion. <br/><br/>Et sur ce meurtre, mon enfant, ne savez- <br/>vous rien ? <br/><br/>Toujours les yeux baissés, l'enfant dit <br/>Rien. • <br/><br/>Car, si vous saviez quelque chose, votre <br/>devoir eût été de le dire. <br/><br/>L'homme qui fut tué ne vous était de <br/>rien. <br/><br/>En effet, mais l'homme, innocent de ce <br/>meurtre et qui en fut accusé. <br/><br/>Le connaissez- vous donc? <br/><br/>Oui. <br/><br/>Il est de votre famille? Ou bien est-il un <br/>étranger pour vous? <br/><br/>Qu'importe. <br/><br/>Jeannette hocha la tète et dit <br/><br/>correspond si peu aux aspirations de la <br/>France, le ministre des Affaires étrangères a <br/>déclaré que les conditions mêmes de l'exis- <br/>tence nationale nous interdisaient des agran- <br/>dissements continus, une expansion coloniale <br/>peub-i'tre d'une belle apparence sur le papier, <br/>mais forcément illogique et dispendieuse. <br/>Avec un empire huit ou dix fois plus grand <br/>que la métropole, nous avons acquis le droit <br/>de nous reposer quelque peu. Il s'agit bien <br/>moins de nous assurer des possessions nou- <br/>velles que de conserver les anciennes et de <br/>les mettre en valeur. C'est par une exploi- <br/>tation progressive et pratique de notre gi- <br/>gantesque domaine que nous accroîtrons, <br/>avec la fortune publique, l'action morale de <br/>notre pays, et que nous nous préparerons un <br/>renouveau d'énergie. C'est en concentrant <br/>nos efforts, non en les gaspillant sur tous les <br/>points du globe, que nous demeurerons ca- <br/>pables d'une initiative vigoureuse, si jamais <br/>la nécessité s'en affirmait. <br/><br/>Ces idées, qui sont la base même de notre <br/>puissance et de notre rayonnement politique <br/>dans le monde, valaient d'être exprimées. La <br/>nécessité du discours de M. Delcassé, dont <br/>l'effet ne sera pas moins grand au dehors que <br/>chez nous, sera d'avoir affirmé devant le <br/>pays ces vérités incontestables. <br/><br/>LA FÊTE DES ÉTUDIANTS <br/>Le Président de la République a accepté l'in- <br/>vitation de l'Association générale des étudiants. <br/>Les nouveaux locaux du cercle dû la rue des <br/>Ecoles seront inaugurés aujourd'hui eu sa pré- <br/>sence. <br/><br/>Le président du Conseil des ministre. NI Wàl- <br/>deck-Housseau, MM. Leygues, ministre de l'Ins- <br/>truction publique, Pierre Baudin, ministre des <br/>Travaux publics, <>tMillerand, ministre rtuCom- <br/>meroo; M, Fallière», président du l'aul <br/>Deschanel, président de fa Chauv ¡'pu- <br/>tés, le prétet de police, le préfet a .e, le <br/>aénéral Brugère, gouverneur de Paris, Ni. Lu- <br/>cipia, président du conseil municipal, M. Oust- <br/>mir-Perier, M. Gr&ird, vice-recteur de l'acadé- <br/>mie, les dovètts, le corps professoral et de nom- <br/>breux députés recevront le chef de l'Etat à son <br/>M. ravisse, président d'honneur de l'asso- <br/>ciation, entoure rics membres du comité ac- <br/>tuellement en fonctions, conduira M. Loubet <br/>dans la salle des conférences, où des discours <br/>seront prononcés. M. Marcombes\", président du <br/>comité, prendra la parole au nom des étudiants. <br/>Un lunch sera ensuite servi xux invités avant le <br/>Accompagné, ainsi qu'à l'habitude, par un <br/>officier de sa maison militaire <t W. diivcIfMir de <br/>son cabinet civil, Ni. Loubet sera l'-c.ilenient <br/>par son fils, M. Paul Loohei, étudiant en droit <br/>et membre actif de l'association. <br/><br/>Après la cérémonie il inauguration, les étu- <br/>diants se retrouveront à doux heures en Sor- <br/>bonim. Dans le grand amphithéâtre du palais <br/>académique aura lieu un brillant concert aurluet <br/>participeront de nombreux artistes des princi- <br/>paux thoAtres. <br/><br/>Plusieurs de:; invités du comité, notamment <br/>MM. Leyguiw, l.ucipia, Casimir -Perier, Léon <br/>Bourgeois, Lavisse, Cochrry, Liard et Grpard, <br/>assisteront cnt1n au banquet du café Voltaire, <br/>qui terminera «••̃̃•̃ i/.v.iw imirm <br/><br/>Le disco'ur iprea une <br/>allocution ii i. Larron- <br/>met, secrétaire perj^iuei -le lA.adûtnie des <br/>beaux arts. <br/><br/>LES EMPLOIES MJŒS DE FER <br/><br/>On sait que M. Baudin, ministre des Travaux <br/>publics, a signé r. t un arrêté conter- <br/>nant la règlement 1 journée de travail <br/>des chauffeurs et .So.-i me.uictens dans les com- <br/>pagnies de chemins de fer. <br/><br/>Hier, le Journal offUitl a publié le texte de <br/>cet arrëté, datE du 4 novembre et le texte d'un <br/>nouvel arrêté du ministre dus Travaux pubiijt* <br/>daté du novembre. ainsi qu'une circulaire du <br/>24 novembre complétant les précédentes dispo- <br/>sitions. <br/><br/>La journée de travail de tons les agents dés <br/>gares, des stations et dae haltes dont le service <br/>peut intéresser la sécurité (1es trains on des ma- <br/>nœuvres se trouve ainsi fixée douze heures, et <br/>le grand repos sera d<; neuf heure» ininterrom- <br/>pues, du huit heures pour les agents logés dans <br/>les gares. <br/><br/>Des repos d'une heure environ rhacun seront <br/>accordés aux agents pour leurs repa; et, chaque <br/>mois, une journée ou deux demi-journées de <br/>repu; <br/><br/>Uans les gares qui cnmpnrtent service de jour <br/>et service de nuit, la période '̃>i1'\"1\"- ̃̃ 3<;rvieo <br/>de nuit ne devra pas cotth qua- <br/>torze nuits rnnséiMitivw\". 1'. rnant <br/>pour le servi <br/><br/>grand <br/>au moins, <br/><br/>Pour les grandes garPa il fw-rvice chargé, le <br/>ministre des Travaux surfit prescrire <br/>aux compagnies de ré<: riode J'alterne- <br/>ment à une durée inK: juatorie nuii* <br/>jusyu'à un minimum de sept nuîtsconsécu\" <br/>Toutefois, dans les petites gares qui ne <br/>pas desservies par plus de trois trams dans <br/>deux sens et qui ne comportent qu'un aèrent, <br/>la durée de présence de cet agent pourra c\\c-é- <br/>der la limite fixée, néanmoins «ansqueson grand <br/>repos journalier puisse être inférieur à huit <br/>heures. <br/><br/>Dans sa circulaire, le ministre ajoute <ju« \\<- <br/>service du contrôle -1 as-mer niir. IL. <br/>accula sont t\\* <br/><br/>periode de r<;> • k •vie. <br/><br/>arrêté d ri < j.; l'occasion <br/><br/>eontroli; •inr.û-T les cernât j> <br/><br/>Qu'importe, en effet, puisque je ne sais <br/>rien! <br/><br/>Et elle se laissa retomber, fatiguée, sur <br/>l'oreiller et ferma les paupières. <br/><br/>Mais Colette se disait en la quittant <br/>Cette pauvre petite ne ni pas tout dit. <br/>Comment faire pour la décider à parler?. <br/>Lantur et Lanturlu, la harpe et le violon, <br/>étaient toujours absents, par monts et par <br/>vaux, lors des visites de Colette. <br/><br/>Ils ne rentraient que le soir, hanssés de <br/>fatigue; ils avaient peine la force de man- <br/>ger et aliaient s'étendre tout de suite au gre- <br/>nier sur le foin. <br/><br/>Colette ne les voyait donc jamais. <br/><br/>Le dimanche suivant, toutefois, c'est- <br/>à-dire deux jours après la scène que nous <br/>venons de raconter, ils rentrèrent tout à <br/>coup, au milieu de l'après-midi, pâles, les <br/>yeux pleins de larmes et pleins de colère <br/>aussi. <br/><br/>Colette se trouvait encore dans la chambre <br/>de la malade. <br/><br/>Celle-ci, en voyant ses deux compagnons, <br/>comprit qu'il s était passé quelque chose do <br/>grave. <br/><br/>Elle se levait, ce jour-là, pour la première <br/>fois. <br/><br/>Assise dans un fauteuil de bois, rembourré <br/>d'oreillers pour la circonstance, elle aspirait <br/>à pleins poumons, par la fenêtre ouverte, ce <br/>gai soleil priutanier, ces premiers rayons <br/>de douce chaleur qui réveillent la campagne <br/>endormie et font s'égosiller tous les petit- <br/>oiseaux chanteurs. <br/><br/>En voyant les larmes de Gilbert et de Lu- <br/>cien, leurs lèvres frémissantes, le tremblç- <br/>ment de leurs main», elle s'écria <br/><br/>Quest-il arrivé ? <br/><br/>Ils éclatèrent en sanglots. Et leurs sanglots <br/>les ejn&*c»>4ic>'t de varier <br/><br/>le personnel dans tous les cas où il aura été in- <br/>sufrlsant. <br/>UNE HAINE MORTELLE <br/>Reims, Ï5 novembre. <br/><br/>La commune de Chavost vient d être le tbéatr* <br/>d'un drame sanglant <br/><br/>L'n nommé Louia Miche, S.gô de trente-ne nI <br/>ans, père de trois enfanta, qui nourrissait de- <br/>puis longtemps contre son voisin Alfred Ques; <br/>ne!, âgé de quar&nto-deux ans, une haine terri. <br/>ble, l'a tué d'une balle de revolver ta ven&e. <br/>Lassassin a essayé ensuite de se taire saute* <br/>la cervelle, mais il n'a réussi qu'à se blesser. <br/>Miellé est a la disposition do ta justice. <br/><br/>Les nouvelles du Natal faisaient hier com-» <br/>plètcment défaut, et le \\V*r Office ne com- <br/>muniquait à la presM aucun renseignement <br/>sur la situation a PletermarfUburg-, sérieuse- <br/>ment menace depuis quelques jours par le* <br/>troupes du général Joubert. <br/><br/>En revanche, des dépêches du Natal lit du <br/>Cap sigualeut une recrudescence dans mou- <br/>vement d'adhésion des Afrikaadws t <br/>des deux Heiiubligut-s- <br/><br/>Au sujet du bruit d'une médiation proba- <br/>ble, bruit recueilli par YFndépenrimift bel;}*, <br/>et dont nous parlions hier, un Uïlf'gramma <br/>de Munich adressé à un journal berlinois an- <br/>nonce que l'empereur Guillaume aurait for- <br/>mellement proposé une intervention des puis- <br/>sances en vue de mettre fin à b '̃ \"t qno <br/>M. Chamberlain lut aurait fai: les <br/>conditions que l'Angleterre ni i son <br/>acceptation. <br/><br/>Cette nouvelle, que rien jusqu'ici n'est <br/>venu confirmer, semble tout &11 moins pré- <br/>maturée. Quand l.'idysmilli, Esteourl et t'ie- <br/>termiiritzburg auront capitulé, les Anglais se- <br/>roiit peut-être heureux d accepter une propo- <br/>sition de ce genre, mais ce inontfMi! ̃» <br/>encore venu et l'orgueil brilaiuiiqii <br/><br/>rait se réiigner à traiter avant nithin. u .mur <br/>sérieusement combattu. <br/><br/>Les Afrikanders <br/><br/>Londres, ïft novembre. <br/><br/>La Westminster (iazelfe public une ik'pcctiii de <br/>Durban, eu date d'hier, ainsi conçue <br/><br/>On craint un soulèvement général des Afrikan- <br/>ders dans le district de Ladvgrey en faveur de» <br/>Boërs. <br/><br/>De son côté, le Timts, dans une deu.\\ <br/><br/>tton, annonce, d'ar1»' Il' .i.'n.h.. ,<. <br/><br/>luwn en date d. <br/><br/>ders du district i <br/>l'ennemi. <br/><br/>M. Sauor, Qui est veau isnicm 'lo <br/>maintenir les Afrikaners o-vun-, i-t <br/>alla à B.irkl.ïs ii ruvltiudri ;i i j ..iiî rn.îi t. <br/>Guillaume II et M. Chamberlain <br/><br/>Berlin. SB novembre. <br/><br/>qn> 1 on <br/>assi..tvfiî <br/>1 et! pni: <br/><br/>bcriain <br/><br/>Transvaat il iuis <br/>les deux pays. <br/><br/>M. OhAmberlain aurait fait un acctivil f.ivof»- <br/>blt: à c«s DUvertuv ̃ lus <br/>négociations fus- n ho- <br/>norable pour l'Ail* H: un' <br/><br/>A propos du Combat de Belmont <br/>Londres, a novembre. <br/><br/>Le oûTrcs|Mmitarit roilitairt! de la <br/>Gazelle f»it, remarquer que les <ii\" <br/><br/>bat de Belmont indiquent qu'il 1 <br/><br/>déroute des Boërs, et que le détai ̃1 <br/>par lord Metiiutsn constitua enoon- une umiiitia <br/>combat avec laquelle il faudra compter dans <br/>l'avenir. <br/><br/>Parlant de la situation il Maff.king, le corres- <br/>pondant dit qu'il eal nri| OHSililc (aie, la ville soit <br/>secourue avant un rnoi«, et qui! est douteux <br/>qu'elle puisse '•̃nir jusque-là. <br/><br/>«rs renfWMRnflments, tes pertes <br/>(Jr; *̃ A \".«t été <br/>il. mte <br/>bl. <br/><br/>Lea Uutrs oui i:i. ;un <br/>et la plupart de w le <br/>i-oir\" ̃̃<••̃<̃̃ ̃̃̃\" iUoil <br/>ot> <br/><br/>A .-(•, 1« <br/>coiuii'iauJi. i!op, <br/>évacuant ta >ti no <br/>iioni pu songer un «oui instant à <br/><br/>faire de Glen <br/>i:iUgu. m.us no s est pas <br/>su prendre cette tactique. <br/><br/>L'Opinion en Allemagne <br/><br/>l/imlns. novembre, <br/><br/>On W <br/><br/>'̃ B«O8 iUTj' t <br/><br/>Colette s'approcha d'eux. <br/><br/>!\\les pauvres enfants, dfteg-nci&s pour- <br/>quoi vous pleurez. <br/><br/>Ce fut Gilbert, ir, plus igé, qui prit la pa- <br/>role, toujours sanglotant: <br/><br/>Il y a, mademoiselle, il y a, Jeannette, <br/>que ce pays-ci est un pays maudit pour uout <br/>et que tnainteuant il ne uuus reste plus qu i <br/>mourir d'^ faim. <br/><br/>Expliquez- vous. <br/><br/>Il s'expliqua difficilement, car le« larme* <br/>redoublaient, ma > Colette, attentive, <br/>et Jeannette tout ..mirent l'une et l'au- <br/>tre par comprendre. <br/><br/>ils étaient partît comme d'habitude le ma- <br/>tin, de bonne rwure, Gilbert avec son violon <br/>et Lucien portant sa harpe.' <br/><br/>C'était dimanche, la recette avait été bonne, <br/>ils avaient récolté quelques sous. <br/><br/>A midi, comme il faisait beau, ils s'asalrent <br/>au coin d'un bois, mangèrent un morceau de <br/>pain avec un œuf <!>\"̃ hr.r, -ut une gorgée <br/>d'eau à une suurce, uguurdis <br/>parce soleil, ils s'ei. ucemeut, <br/>côte à câ'ib. on se teuaiit par k main. <br/>Lucieh .jvaii appuyé sa hirpe le long d'un <br/>arbre et le violon reposait au pied. <br/><br/>Us ne dormaient pas depuis une demi- <br/>heure, lorsqu'ils furent réveillés eu sursaut. <br/>Et ils poussèrent uu cri de terreur et de <br/>désespoir. <br/><br/>Un homme était là, déguenillé, Ivre, jurant, <br/>r.K/naaj et chantant, qui brisait à coups <br/>n, arec une joie féroce et bête, le vio- <br/><br/>Gilbert, devenu un atnas de débris, <br/>et la harjH' de Lucien, qui, sous chacun des <br/>coups, rendait des sons tristes et plaintifs, <br/>comme si elle avait souffert vraiment et com- <br/>me si elle avait été douée d'une âme. <br/><br/>Harpe violon n'existaient plus. <br/><br/>{A iuure.) JtLES MAaT. <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                },
+                "browsePage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "currentPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {
+                    "eligibleZoomIndisponible": false,
+                    "OpenSeadragonTitles": [
+                      "Plein écran",
+                      "Taille initiale",
+                      "Agrandir",
+                      "Réduire",
+                      "Page suivante",
+                      "Page précédente",
+                      "Rotation horaire 90°",
+                      "Rotation antihoraire 90°",
+                      "Sélection",
+                      "Quitter le mode zoom"
+                    ],
+                    "rtl": false,
+                    "isTabletOrMobile": false
+                  },
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "Le Petit Parisien : journal quotidien du soir - vue 1 - page NP",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k519101d/f1.highres",
+                      "screenNumber": 1,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519101d/f1.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/> ",
+                            "stringOCR": "YINGT-QUATHIÈME ANNÈE. -,Ne 8430. <br/><br/>Le numéro i 5 <br/><br/>DIMAKGÏiJS 26 KQVJ3MBBB <br/><br/>ABONNEMENTS <br/><br/>fcdHS et DÉPARTEMENTS Trois mois, 5 fr. Six mois, 9 fr. Un an, 18 fr. <br/>On s'abonne Max /rais dans tant Un Banaux de posta <br/><br/>Direction 18, nue dEnghien. f»ajê*is <br/><br/>TOUS LES JEUDIS <br/><br/>Supplément Littéraire tllustré (Huit Pages) 15 Centimee. <br/><br/>S'adresser à L'OFFICE D'ANNONCES, 10, Place de ta Bourse, 10, PAîMS <br/>et à la Salle des Dépêches du Petit Parisien, 2e, bouler. Montmartre. ( <br/><br/>Dernigre Edition <br/><br/>PROCHAINEMENT <br/>Le Petit Parisien <br/><br/>COMMENCERA <br/><br/>DEUX PASSIONS <br/>GHAND ROMAN INÉDIT <br/><br/>PAR <br/><br/>Charles MÉROUVEL <br/>Le projet de loi sur les modifications à <br/>apporter au fonctionnement de la justice <br/>militaire n'est pas né brusquement des cir- <br/>constances et il n'est pas exagéré de dire <br/>que son enfantement a été exceptionnelle- <br/>ment lent, car on s'en occupait sous la Res- <br/>tauration, il y a soixante-dix ans. <br/><br/>En 1829, le ministre de la Guerre du roi <br/>Charles X demandait déjà qne les militaires <br/>ne fussent justiciables des conseils de <br/>guerre que pour les délits militaires; et il <br/>proposait de les poursuivre devant les tri- <br/>Dunaux ordinaires pour les faits de droit <br/>Commun. <br/><br/>Il en donnait pour raison qu'avant d'être <br/>militaire on est homme et citoyen, soumis <br/>comme tel aux lois générales qui régissent <br/>notre pays, toutes les fois qu'il ne s'agit <br/>.pas de l'o bligation spéciale contractée par <br/>le fait de la présence sous les drapeaux. <br/>Cet argument a évidemment beaucoup <br/>plus de valeur encore il l'heure actuelle <br/>qu'à l'époque lointaine dont il s'agit, le ser- <br/>vice personnel obligatoire ayant établi des <br/>liens plus étroits entre l'armée et la nation. <br/>Les idées qui avaient prévalu au com- <br/>mencement du siècle, au milieu du fracas <br/>des batailles de la République et du pre- <br/>mier Empire, ne sont plus celles des géné- <br/>rations présentes; et ü sembla possible, en <br/>temps de paix, sans porter une main auda- <br/>cieuse sur la discipline qui est une néces- <br/>sité de salut public, de donner à l'armée <br/>toutes les garanties judiciaires accordées à <br/>chaque Français. <br/><br/>Sous le Ministère de M. de Freycinet, <br/>Cette question a été étudiée par le comité <br/>du contentieux que présidait un ancien <br/>garde des Sceaux, M. Guérin, dont faisaient <br/>partie des officiers généraux, des magis- <br/>trats, des membres du Parlement et de <br/>hauts fonctionnaires. <br/><br/>On avait soulevé l'objection, si on ne lais- <br/>sait pas aux seuls conseils de guerre la mis- <br/>sion de juger les militaires, quoi qu'ils aient <br/>fait, qu'on pourrait ouvrir la porte à des <br/>conflits regrettables mais cet argument <br/>de semble pas conforme à la réalité des <br/>choses. <br/><br/>Actuellement, en effet, un militaire peut <br/>fort bien être entraîné devant la justice or- <br/>dinaire, par acompte s'il a un complice <br/>Civil, ou encore s'il est en congé. <br/><br/>Il n'est pas exact de dire que la réforme <br/>projetée donnera lieu à des indécisions sur <br/>ta juridiction, puisque c'est l'acte délic- <br/>tueux commis qui en décidera, et non des' <br/>circonstances fortuites se produisant au <br/>Cours de l'instruction et amenant brusque- <br/>'ment à dessaisir le conseil de guerre, si on <br/>découvre la complicité d'un civil. <br/><br/>On a dit aussi que la justice militaire est <br/>plus prompte et que cette rapidité rend <br/>exemple plus saisissant pour le soldat. <br/>Cela peut être vrai pour la répression d'un <br/>délit militaire, mais cela n'a aucune impor- <br/>tance pour les faits de droit commun, aucun <br/>'intérêt militaire n'étant en jeu. <br/><br/>Dans le projet du général de Galliffet, les <br/>conseils de revision sont supprimés et rem- <br/>placés par la Cour de cassation. <br/><br/>On sait que maintenant il existe deux <br/>conseils de revision seulement, celui de <br/>Paris et celui d'Algex-Xatte dualité offrait <br/>un inconvénient qui saute aux yeux. Il est <br/>clair que pour juger des questions de droit, <br/>On doit craindre de voir rendre des. arrêts <br/>contradictoires. Aussi avait-on parlé de <br/>créer, à Paris, une Cour militaire supé- <br/>rieure <br/><br/>Mais il parait plus simule de soumettre <br/>toutes les interprétations du Code à la haute <br/>inagistrature qui a pour mission d'être la <br/>gardienne du droit, étant bien entendu que <br/>la Cour de cassation ne s'occupera, pas du <br/>fond même des affaires, mais examinera si <br/><br/>jl« FettÛleteB du Pmr Parisien. <br/>GRAND ROMAJS 1NÉDIT <br/><br/>DEUXIÈME PARTIE <br/><br/>LES TRAGÉDIES DE L'AMOUR <br/>lI (suite) <br/><br/>Lantnr, et Lanturlu <br/><br/>Sur une planche, auprès d'elle, dont cha- <br/>que extrémité était posée sur une chaise de <br/>bois, formant table ainsi, quelques fioles, de <br/>l'eau, des verres. <br/><br/>Mais cette enfant va mourir faute de. <br/>sains murmnra Colette. <br/><br/>Ille redescendit aussitôt. <br/><br/>Il y avait dans l'auberge une chambre <br/>claire et saine, bien aérée et qui était inoc- <br/>cupée. Elle la paya, donnant quinze jours <br/>d'avance. <br/><br/>Et un quart d'heure après Jeannette était <br/>étendue dans un lit bien propre, avec des <br/>draps bien blattce. <br/><br/>Colette, douce et bienfaisante comme une <br/>sœur de charité, lui avait fait sa toilette, avait <br/>arrangé sur ce front de pauvresse et de vaga- <br/>bonde de lourds et admirables cheveux <br/>blonds. <br/><br/>Elle avait envoyé l'aubergiste, à cheval, <br/>thercher la médecin du château. <br/><br/>Jeannette avait le délire, et alors, parfois, <br/>regardait cette étrangère, près de son lit, avec <br/>te refard éperdu de deux veux bleus si large- <br/><br/>toutes les prescriptions légales ont été ob- <br/>servées. <br/><br/>D'ailleurs, afin que la célérité des débats <br/>devant les conseils de guerre ne soit pas <br/>entravée par des arguties de procédure, par <br/>application à l'article 123 du Code de justice <br/>militaire, les jugements sur les exceptions <br/>ou incidents soulevés au cours des débats <br/>devant le conseil de guerre ne pourront être <br/>déférés à la Cour de cassation qu'après que <br/>la décision aura été rendue sur le fond. <br/>Une innovation très bonne est la faculté <br/>d'accorder des circonstances atténuantes en <br/>temps de paix. <br/><br/>Le législateur du Code de 1857 pensait, <br/>au contraire, qu'il fallait enlever au soldat <br/>tout espoir d'indulgence; mais des faits <br/>nombreux ont montré qu'il y avait là une <br/>fausse appréciation de l'état d'esprit des <br/>juges. <br/><br/>Que l'on soit militaire ou non, on subit les <br/>idées de son temps, de même qu'on en res- <br/>pire l'air. Il n'est pas douteux que, depuis <br/>un demi-siècle, la préoccupation constante <br/>de l'humanité est de se montrer moins im- <br/>placable, d'user de plus d'indulgence envers <br/>les égarés, de favoriser le repentir des cou- <br/>pables. <br/><br/>Souvent des acquittements de nature à <br/>troubler la conscience ont eu lieu, parce <br/>que le juge militaire ne pouvait pas graduer <br/>la peine, suivant le degré de perversité de <br/>l'accusé. <br/><br/>Mais, naturellement, cette réforme ne <br/>peut s'appliquer qu'au temps de paix car, <br/>à la guerre, tout serait une circonstance <br/>atténuante, et cependant la sécurité de tous <br/>ordonne de n'excuser aucune défaillance, car <br/>la moindre peut mettre en péril l'armée. <br/>Certes le factionnaire écrasé de fatigue <br/>qui s'endort est excusable et néanmoins on <br/>ne peut pas l'excuser, en vertu de ce prin- <br/>cipe d'airain que tout doit s'effacer en pré- <br/>sence de la gravité du danger que son som- <br/>meil fait courir. <br/><br/>Quiconque a fait partie d'un conseil de <br/>guerre approuvera le vote au scrutin secret <br/>demandé par le projet de loi. <br/><br/>Il est stipulé jusqu'à présent, en effet, <br/>que les votes sont recueillis il haute voix, <br/>en commençant par le grade inférieur, le <br/>président parlant le dernier; mais il y a <br/>deux inconvénients à ce mode. <br/><br/>D'abord, la liberté du juge n'est pas <br/>complète. Celui qui vote le premier, sous <br/>le regard de ses chefs, n'a qu'une indépen- <br/>dance apparente, et il lui faut une vraie <br/>force d'âme pour ne pas se conformer à <br/>l'opinion de son colonel, par exemple, dont <br/>il a facilement découvert l'avis pendant tes <br/>débats ou pendant la délibération. <br/><br/>En second lieu, ce vote public donne au <br/>président un pouvoir supérieur à celui que <br/>la loi lui confère. Légalement il est ce que <br/>les anciens appelaient « le premier entre <br/>les égaux Par le fait de parler le dernier, <br/>en sachant ce qu'on dit les autres, il peut <br/>corriger souvent leurs décisions, ea modi- <br/>fiant la sienne. <br/><br/>Par suite d'un raisonnement tout fait <br/>militaire, le projet de loi contient unn clause <br/>toute spéciale, pour le cas où des circons- <br/>tances atténuantes seraient accordées dans <br/>une affaire entraînant la peine de mort. <br/>Il se peut que le crime commis ne soit pas <br/>infamant, et il convient d'éviter au con- <br/>damné la flétrissure du bagne. <br/><br/>Dans les travaux de la commission extra- <br/>parlementaire, on s'était occupé de la fa- <br/>culté accordée par le Code d'instruction <br/>criminelle de mise en liberté provisoire <br/>d'un accusé, et on s'était demandé s'il con- <br/>venait d'étendre cette autorisation à la jus- <br/>tice militaire. <br/><br/>Le gouvernement ne l'a pas pensé, et le <br/>projet soumis au Parlement n'en fait aucune <br/>mention, avec raison, parce que cette idée <br/>rencontrerait de sérieuses difficultés d'exé- <br/>cution pratique. <br/><br/>S'agirait-il d'un officier ou même d'un <br/>simple gradé, comment ce supérieur, se <br/>trouvant sous le coup d'une poursuite judi- <br/>ciaire, pourrait-il exercer quelque autorité <br/>sur ses subordonnés ? <br/><br/>Pour un simple soldat, la situation serait <br/>tout aussi fausse. Le voit-on au milieu de <br/>ses camarades portés à le regarder comme <br/>atteint par avance d'une flétrissure? En face <br/>des sous-officiers et des caporaux, il devrait <br/>s'attendre à une malveillance il peine dissi- <br/>mulée et pour la moindre chqse il serait <br/>puni, en sa qualité de suspect. <br/><br/>Il semble que le' même raisonnement <br/>peut s'appliquer, à la loi de sursis, appelée <br/><br/>ment ouverts, si beaux, si purs, que la char- f <br/>meuse sestit son coeur profondément troublé <br/>par tant d'abandon et par tant de misère. <br/>Et pourtant, quand le médecin arriva, la <br/>mendiante était plus calme. <br/><br/>Elle dormait. Le docteur l'ausculta. Elle ne <br/>se réveilla point. <br/><br/>Colette revint le lendemain, de bon matin <br/>elle revint aussi le même soir. <br/><br/>L'absence du marquis de Vivarez la rendait <br/>plus libre. <br/><br/>Au bout 4e cinq ou six jours, Jeannette <br/>n'avait plus de fièvre. Le râle sourd de sa <br/>poitrine allait diminuant. La respiration était <br/>plus libre. <br/><br/>Et pour la première fois, un soir, se soule- <br/>vant sur son lit, elle examina Colette avec <br/>surprise, avec une attention soutenue. <br/>L intelligence revenait, vive, entière, et les <br/>yeux bleus avaient une douceur infinie, déjà <br/>l e sérieux de la jeune fille, avec je ne sais <br/>quelle expression lointaine qui était encore <br/>comme un charme de l'enfance. <br/><br/>Je ne sais pas qui vous êtes, mademoi- <br/>selle, dit Lanturlette. mais c'est vous qui avez <br/>soigné, qui avez sauvé la pauvre petite men- <br/>diante. Je souhaite qu'un jour la mendiante <br/>puisse vous prouver qu'elle n'est pas une in- <br/>grate. Et, si je pouvais faire un voeu, ce se- <br/>rait de donner ma vie pour vous. <br/><br/>Elle prit doucement la main de Colette et <br/>l'embrassa en pleurant. <br/><br/>Une intimité s'établissait entre elles, et Co- <br/>lette ne pouvait s'empêcher de prendre intérêt <br/>à cette enfant restée, comme par miracle, <br/>naïve et pure au milieu des hasards de sa vie <br/>aventureuse. <br/><br/>Colette l'interrogea sur cette vie, quand <br/>elle fut certaine qu elle pouvait le faire sans i <br/>la fatiguer. J <br/>Jeannette réooadit docilement <br/><br/>généralement du nom de son auteur, <br/>M. Bérenger. Un homme frappé par une <br/>condamnation ne peut pas rester au milieu <br/>de ses frères d'armes. La seule solution <br/>pratique, et elle se présente souvent, se <br/>trouve dans les mains du haut commande- <br/>ment qui remplace l'envoi devant le conseil <br/>de guerre par une punition disciplinaire, <br/>quand il apprécie, dans sa sollicitude, que <br/>l'indulgence est possible. <br/><br/>Ce qui frappera peut-être le plus l'opi- <br/>nion publique et ne saurait être trop ap- <br/>prouvé dans la réforme proposée, c'est la <br/>création d'un corps spécial possédant des <br/>connaissances juridiques complètes. <br/>Cela existe, d'ailleurs, depuis longtemps <br/>à l'étranger. En Autriche, ce corps est re- <br/>eruté parmi les jeunes officiers qui ont fait <br/>preuve de connaissances juridiques et ac- <br/>compli un stage dans les tribunaux. En <br/>Italie et en Allemagne, on prend des lau- <br/>réats ou des docteurs en droit. <br/><br/>En ce moment, en France, les rapporteurs <br/>et les commissaires du gouvernement près <br/>tes conseils de guerre sont des hommes <br/>respectables, ayant renoncé à toute ambi- <br/>tion et bornant leurs rêves à exercer paisi- <br/>blement un emploi pacifique. Leur droiture <br/>est certaine, leurs consciences sont scru- <br/>puleuses mais leur compétence est presque <br/>nulle, dès qu'il s'agit d'une question déli- <br/>cate. <br/><br/>Ces postes importants ne sont sollicité* <br/>que par des officiers de second plan, sou- <br/>vent âgés-, qui les obtiennent à l'époque de <br/>la vie où l'on a de la peine à acquérir des <br/>connaissances nouvelles. <br/><br/>La création d'un corps spécial, recruté <br/>au concours, après un examen de droit, <br/>parmi les capitaines de l'armée, comme cela <br/>se pratique pour l'intendance, remédiera <br/>aux inconvénients que tout ie monde a pu <br/>constater. <br/><br/>Entin, ces nouveaux commissaires et rap- <br/>porteurs, Quoique devant jouir à juste titre <br/>de l'état d'officier, ce qui parait nécessaire, <br/>n'auront pas d'assimilation de grade. Ou ne <br/>sera donc pas obligé de les changer, sui- <br/>vant la qualité de l'accusé. <br/><br/>Si cet ensemble de mesures ne forme pas <br/>la refonte complète de notre Code de justice <br/>militaire, œuvre longue, dont on ne voit pas <br/>la fin à bref délai, il marque un progrès <br/>sensible dans le sens des idées démo- <br/>cratiques. <br/><br/>JEAN FROLLO <br/><br/>INFORMATIONS POLITIQUES <br/>convocations d'Electeur» <br/><br/>Le lournal officiel d'hier a publié les décrets <br/>convoquant pour le 24 décembre les conseils <br/>municipaux des communes comprises dans les <br/>départements de t'Orne, du Pas-de-Calais, du <br/>Puy-de-Dôme, de» Basses-Pyçénées, des Hautes- <br/>Pyrénées, des Pyrénées-Orientales, du Haut- <br/>Rhin, du Rhône, de la Ha,ute-Saône. de Saône- <br/>et-Loire, de la-Sarthe, de la Savoie, je la Haute- <br/>Savoie, de la Saine, de la Seine-Inférieure, de <br/>Seine-et-Marne, de Seine-et-Oise, des Deux-Sè- <br/>vres, de la Somme, du Tarn, de Tarn-et-Garonne, <br/>du Var, de Vaucluse, de la Vendée, de la Vienne, <br/>de la Haute-Vienne, des Vosges, de l'Yonne et <br/>d'Oran, il l'effet de nommer leurs délégués en <br/>vue de l'élection des sénateurs de ces départe- <br/>ments. II s'agit, on le sait, du renouvellement <br/>partiel du Sénat. <br/><br/>Les conseils municipaux des départements des <br/>Hautes-Alpes, des Ardennes, du Cantal, du Fi- <br/>nistère, de la Loire-Inférieure et de la Nièvre, <br/>sont convoqués également à la date du 24 dé- <br/>cembre, pour élire leurs délégués, à l'effet de <br/>remplacer les sénateurs déeédée <br/><br/>MM. Chaix (Hautes-Alpes', Tirman (Ardennes), <br/>Devès (Cantal), Hallé$oien et Savary (Finistère), <br/>Chesnelong (Loire-Inférieure), Scheurer-Kestner <br/>(Nièvre). <br/><br/>La Loi sur les Accidents <br/><br/>M. Millerand, ministre du Commerce, a été <br/>entendu hier par la commission d'assurance et <br/>de prévoyance sociales, au sujet de diverses mo- <br/>difications proposées à la loi sur les accidents. <br/>Le ministre a demandé à la commission de ne <br/>pas mettre en question la loi qui fonctionne si <br/>facilement, toute proposition de modification <br/>pouvant mettre en péril cette loi qui a produit <br/>jusqu'à présent d'excellents résultats, <br/><br/>En conséquence. M. Millerand a demandé à la <br/>commission d'ajourner l'examen de ces modifi- <br/>eations. <br/><br/>A l'unanimité, la commission s'est rangée à <br/>l'avis du ministre du Commerce. <br/><br/>La Convention Franco-Américain» <br/>M. Delcassé, ministre des Affaires étrangères, <br/>a été entendu hier par la commission parle- <br/>mentaire des douanes qui désirait savoir de lui <br/>à quelle date il pourrait soumettre aux Cham- <br/>bres la convention de commerce passée avec tes <br/>Etats-Unis. <br/><br/>Le ministre des Affaires étrangères a déctaré <br/>que, suivant l'usage pratiqué dans les pays par- <br/>lementaires, ü saisirait le Parlement de cette <br/>convention le jour même où en sera saisi le <br/>Sénat américain, convoqué pour le 4 décembre- <br/>En réponse à diverse questions, M. Delcassé <br/><br/>}#ais la ehannease. tout à coup, fut surprise <br/>lorsque la petite, en finissant son histoire, <br/>ajouta <br/><br/>Ce n'est pas la première fois que nous <br/>parcourons la Vendée, et c'est la seconde fois <br/>en un an que nous nous arrêtons dans le pays <br/>que vous habitez, mademoiselle. <br/><br/>•– A quelle époque y êtes-vuus venus pour <br/>la première fois? <br/><br/>L'an dernier, au moment de la fête de <br/>Clisson. <br/><br/>Sans savoir pourquoi. Colette éprouva une <br/>vague surprise, presque une secousse. N'était- <br/>ce pas pourtant bien simple que ces petits <br/>ambulants se fussent trouvés à la fête. puis- <br/>qu'ils étaient à la solde de Gabarit, de Laha- <br/>che et de la belle Isabelle <br/><br/>Mais Colette, un peu superstitieuse, devi- <br/>nait dans cette coïncidence plus que le ha- <br/>sard, peut-être une intervention invisible et <br/>toute-puissante qui se lassait enfin de voir le <br/>malheur s'abattre sur des têtes innocentes. <br/>Il y avait longtemps que vous étiez avec <br/>ces saltimbanques? <br/><br/>Depuis deux mois à peine. <br/><br/>Et combien de jours ètes-vous restés à <br/>Clissou? <br/><br/>Le dimanche et le lundi. <br/><br/>Cependant la fête a duré presque toute <br/>la semaine <br/><br/>Vous nous sommes fâchés avec nos <br/>maîtres. <br/><br/>Pourquoi? <br/><br/>Jeannette parut embarrassée. Elle fut guel- <br/>ques secondes sans répondre, regardant 1 ins- <br/>tituttice comme si elle avait eu l'envie de <br/>parler et comme si quelque chose l'en eût <br/>retenut. <br/><br/>Nous nous sommes fâchés parce qu'ib <br/>nous battaient. <br/><br/>Mais. en disant cela, eUe avait baissé lei <br/><br/>a ajouté que les modifications douanières propo- <br/>sa pour les tarifa français ou américains avaient <br/>déjà été publiées dans le Bulletin officiel du com- <br/>merce, mais qu'il ne pouvant pas s'expliquer sur <br/>les autres situations diplomatiques avant le dépôt <br/>de la convention elle-même. <br/><br/>ESCROC ET MEURTRIER <br/>Une rentière de Nogent-sur-Marne, Mme Tas- <br/>siart, à la recherche d'un emploi qui pourrait <br/>augmenter ses modestes revenus, s'était mise <br/>dernièrement en rapport avec un nommé Etienne <br/>Machefort, dit Brillet, négociant à Neuiily-Plai- <br/>sance, qui cherchait des représentants et des <br/>gérants pour l'écoulement de ses produits dans <br/>les différentes communes de la banlieue pari- <br/>sienne. <br/><br/>Après quelques entrevues et le versement <br/>d'un cautionnement de plusieurs milliers de <br/>francs, Mme Tassiart se vit accorder la gérance <br/>d'un débit de vins avenue Ledru-Rollin, au Per- <br/>ivux, qui devait donner chaque année des béné- <br/>fices importants. <br/><br/>Une semame après la prise de possession du <br/>fond, où se trouvait seulement une intime <br/>quantité de marchandises et qui ne donnait que <br/>des recettes insignifiante: Mme Tassiart s'aper- <br/>çut qu'elle avait été victime d'un habile escroc. <br/>Ella voulut alors résilier son marché, mais le <br/>prétendu commerçant s'y refusa de la façon la <br/>plus formelle. <br/><br/>La gérante menaça alors son patron de porter <br/>plainte en escroquerie contre lui. <br/><br/>Hier matin, au cours d'une discussion des <br/>plus vives avec sa dupe, cet individu saisit une <br/>bouteille qu'il lui brisa sur la tête et s enfuit. <br/>La malheureuse femme s'affaissa sur le sol <br/>perdant le sang en abondance par une large et <br/>profonde blessure à la base du crâne. <br/><br/>Heureusement pour la victime, des voisins <br/>.avaient été témoins du drame et vinrent a son <br/>amours. <br/><br/>Une perquisition opérée au domicite du faux <br/>négociant a amené la découverte d'une volumi- <br/>neuae correspondance ne laissant aucun doute <br/>sur le genre d'opérations auxquelles rt-se livrait. <br/>La gendarmerie de Neuilly-sur-Marne recher- <br/>che activement le meurtrier. <br/><br/>GUIIUISE <br/><br/>Windsor, 23 novembre. <br/><br/>L'empereur et l'impératrice d'Allemagne sont <br/>partis pour Sandrlngham cette après-midi, ayant <br/>terminé leur visite à Windsor. •̃ <br/>Après avoir fait leurs adieux à la reine, ils <br/>ont quitté le château, un peu avant trois heures, <br/>accompagnés par le prince de Galles et le duc <br/>de Connaught. <br/><br/>Ils se sont rendus en voiture à la gare, escor- <br/>tés par les lite-guards, et au milieu d'une foule <br/>considérable. <br/><br/>L'Empereur et les princes étaient en costumes <br/>de voyage. <br/><br/>A la gare, la princesse Christian et la prin- <br/>cesse Béatrice, ainsi que les autres membres <br/>de la famille royale. ont fait leurs adieux aux <br/>souverains allemands, qui sont partis à trois <br/>heures vingt-cinq. <br/><br/>Le train spécial se compose de neuf wagons- <br/>salons; il est précédé par une machine-pilote <br/>qui éclaire la voie, avec dix minutes d'avance <br/>sur le train impérial. <br/><br/>Wolferton, 25 novembre. <br/><br/>Le train impérial est arrivé à Wolferton à <br/>aix heures quarante. <br/><br/>L'empereur, l'impératrice et le prince de Galles <br/>ont été reçus il. la gare par I princesse de Gatles, <br/>le duc d'York et la princesse Victoria de Galles. <br/>Tous se sont rendus aussitôt en voiture à Sand- <br/>ringham, qui est situé à trois millets do Wolfer- <br/>ton. <br/><br/>Sur toute la route, des agents de police étaient <br/>postés à intervalles rapprochés. <br/><br/>LE DISCOURS DE 1. DELCASSÉ <br/>Depuis plus d'un an la presse nationaliste <br/>et réactionnaire dirige contre la politique ex- <br/>térieure de M. Delcassé les attaques les plus <br/>violentes et les moins fondées. L'on pensait <br/>qu'à propos de la discussion du budget des <br/>Affaires étrangères quelque orateur de l'op- <br/>position jugerait nécessaire de monter à la <br/>tribune, de faire le procès du ministre et de <br/>présenter sous une forme précise les imputa- <br/>tions colportées sans répit. Est-ce décourage- <br/>ment, est-ce sagesse, aucun député n'a pris <br/>cette initiative redoutable. M. Delcassé n'en a <br/>pas moins estimé l'occasion excellente pour <br/>expliquer ses actes et faire justice de ses ac- <br/>cusateurs, et les applaudissements des trois <br/>quarts de la Chambre et de l'unanimité ré- <br/>publicaine sont venus lui attester qu'il avait <br/>toujours traduit fidèlement la pensée natio- <br/>nale. <br/><br/>Le pays se sentira pleinement rassuré, si <br/>toutefois on avait réussi à lui inspirer la <br/>moindre appréhension, en apprenant que l'en- <br/>tente franco-russe est plus intime, plus cor- <br/>diale que jamais. Il envisagera l'avenir avec <br/>une parfaite sérénité d'esprit lorsqu'il saura <br/>que tous nos intérêts sont sauvegardés en <br/>Chine et que, d'ailleurs, l'heure du morcel- <br/>lement de ce grand empire demeure encore <br/>lointaine. L'amélioration de nos relations <br/>commerciales avec l'Italie et les Etats-Unis <br/>ne peut de même qu'être saluée avec satis- <br/>faction. <br/><br/>Mais le point tout spécialement saillant de <br/>l'exposé de M. Delcassé, c'est la définition <br/>si nette, si juste et si pleine de sens qu'il a <br/>formulée de la politique nécessaire. Répu- <br/>diant l'impatience des uns, l'esprit agressif <br/>des autres, ce système du poing tendu qui <br/><br/>yeux et Colette crut comprendre que la pe- <br/>tite mendiante ne disait pas toute la vérité. <br/>Colette fut longtemps songeuse. <br/><br/>Cette fête de village, dit-elle, marque le <br/>point de départ de catastrophes au milieu <br/>desquelles a sombré l'honneur d'une famille. <br/>La voix de Jeannette tremblait lorsqu'elle <br/>demanda <br/><br/>De quoi voulez-voua parler, mademoi- <br/>selle? <br/><br/>D'un crime qui fut eommis ce jour-là. <br/>et d'un innocent qui expie encore, en dépit de <br/>son acquittement, le crime d'un autre. <br/>Vous parlez de Girodias? <br/><br/>Colette fit un brusque mouvement. <br/><br/>Comment le savez-vous ? Qui vous a si <br/>bien renseignée ? <br/><br/>N'étions-nous pas au village le jour du <br/>crime que tout le village apprit le soir <br/>même? <br/><br/>C'est vrai. <br/><br/>Malgré tout, Colette regardait la mendiante <br/>avec une certaine défiance, surprise de cette <br/>gène étrange qui avait succédé à sa première <br/>expansion. <br/><br/>Et sur ce meurtre, mon enfant, ne savez- <br/>vous rien ? <br/><br/>Toujours les yeux baissés, l'enfant dit <br/>Rien. • <br/><br/>Car, si vous saviez quelque chose, votre <br/>devoir eût été de le dire. <br/><br/>L'homme qui fut tué ne vous était de <br/>rien. <br/><br/>En effet, mais l'homme, innocent de ce <br/>meurtre et qui en fut accusé. <br/><br/>Le connaissez- vous donc? <br/><br/>Oui. <br/><br/>Il est de votre famille? Ou bien est-il un <br/>étranger pour vous? <br/><br/>Qu'importe. <br/><br/>Jeannette hocha la tète et dit <br/><br/>correspond si peu aux aspirations de la <br/>France, le ministre des Affaires étrangères a <br/>déclaré que les conditions mêmes de l'exis- <br/>tence nationale nous interdisaient des agran- <br/>dissements continus, une expansion coloniale <br/>peub-i'tre d'une belle apparence sur le papier, <br/>mais forcément illogique et dispendieuse. <br/>Avec un empire huit ou dix fois plus grand <br/>que la métropole, nous avons acquis le droit <br/>de nous reposer quelque peu. Il s'agit bien <br/>moins de nous assurer des possessions nou- <br/>velles que de conserver les anciennes et de <br/>les mettre en valeur. C'est par une exploi- <br/>tation progressive et pratique de notre gi- <br/>gantesque domaine que nous accroîtrons, <br/>avec la fortune publique, l'action morale de <br/>notre pays, et que nous nous préparerons un <br/>renouveau d'énergie. C'est en concentrant <br/>nos efforts, non en les gaspillant sur tous les <br/>points du globe, que nous demeurerons ca- <br/>pables d'une initiative vigoureuse, si jamais <br/>la nécessité s'en affirmait. <br/><br/>Ces idées, qui sont la base même de notre <br/>puissance et de notre rayonnement politique <br/>dans le monde, valaient d'être exprimées. La <br/>nécessité du discours de M. Delcassé, dont <br/>l'effet ne sera pas moins grand au dehors que <br/>chez nous, sera d'avoir affirmé devant le <br/>pays ces vérités incontestables. <br/><br/>LA FÊTE DES ÉTUDIANTS <br/>Le Président de la République a accepté l'in- <br/>vitation de l'Association générale des étudiants. <br/>Les nouveaux locaux du cercle dû la rue des <br/>Ecoles seront inaugurés aujourd'hui eu sa pré- <br/>sence. <br/><br/>Le président du Conseil des ministre. NI Wàl- <br/>deck-Housseau, MM. Leygues, ministre de l'Ins- <br/>truction publique, Pierre Baudin, ministre des <br/>Travaux publics, <>tMillerand, ministre rtuCom- <br/>meroo; M, Fallière», président du l'aul <br/>Deschanel, président de fa Chauv ¡'pu- <br/>tés, le prétet de police, le préfet a .e, le <br/>aénéral Brugère, gouverneur de Paris, Ni. Lu- <br/>cipia, président du conseil municipal, M. Oust- <br/>mir-Perier, M. Gr&ird, vice-recteur de l'acadé- <br/>mie, les dovètts, le corps professoral et de nom- <br/>breux députés recevront le chef de l'Etat à son <br/>M. ravisse, président d'honneur de l'asso- <br/>ciation, entoure rics membres du comité ac- <br/>tuellement en fonctions, conduira M. Loubet <br/>dans la salle des conférences, où des discours <br/>seront prononcés. M. Marcombes\", président du <br/>comité, prendra la parole au nom des étudiants. <br/>Un lunch sera ensuite servi xux invités avant le <br/>Accompagné, ainsi qu'à l'habitude, par un <br/>officier de sa maison militaire <t W. diivcIfMir de <br/>son cabinet civil, Ni. Loubet sera l'-c.ilenient <br/>par son fils, M. Paul Loohei, étudiant en droit <br/>et membre actif de l'association. <br/><br/>Après la cérémonie il inauguration, les étu- <br/>diants se retrouveront à doux heures en Sor- <br/>bonim. Dans le grand amphithéâtre du palais <br/>académique aura lieu un brillant concert aurluet <br/>participeront de nombreux artistes des princi- <br/>paux thoAtres. <br/><br/>Plusieurs de:; invités du comité, notamment <br/>MM. Leyguiw, l.ucipia, Casimir -Perier, Léon <br/>Bourgeois, Lavisse, Cochrry, Liard et Grpard, <br/>assisteront cnt1n au banquet du café Voltaire, <br/>qui terminera «••̃̃•̃ i/.v.iw imirm <br/><br/>Le disco'ur iprea une <br/>allocution ii i. Larron- <br/>met, secrétaire perj^iuei -le lA.adûtnie des <br/>beaux arts. <br/><br/>LES EMPLOIES MJŒS DE FER <br/><br/>On sait que M. Baudin, ministre des Travaux <br/>publics, a signé r. t un arrêté conter- <br/>nant la règlement 1 journée de travail <br/>des chauffeurs et .So.-i me.uictens dans les com- <br/>pagnies de chemins de fer. <br/><br/>Hier, le Journal offUitl a publié le texte de <br/>cet arrëté, datE du 4 novembre et le texte d'un <br/>nouvel arrêté du ministre dus Travaux pubiijt* <br/>daté du novembre. ainsi qu'une circulaire du <br/>24 novembre complétant les précédentes dispo- <br/>sitions. <br/><br/>La journée de travail de tons les agents dés <br/>gares, des stations et dae haltes dont le service <br/>peut intéresser la sécurité (1es trains on des ma- <br/>nœuvres se trouve ainsi fixée douze heures, et <br/>le grand repos sera d<; neuf heure» ininterrom- <br/>pues, du huit heures pour les agents logés dans <br/>les gares. <br/><br/>Des repos d'une heure environ rhacun seront <br/>accordés aux agents pour leurs repa; et, chaque <br/>mois, une journée ou deux demi-journées de <br/>repu; <br/><br/>Uans les gares qui cnmpnrtent service de jour <br/>et service de nuit, la période '̃>i1'\"1\"- ̃̃ 3<;rvieo <br/>de nuit ne devra pas cotth qua- <br/>torze nuits rnnséiMitivw\". 1'. rnant <br/>pour le servi <br/><br/>grand <br/>au moins, <br/><br/>Pour les grandes garPa il fw-rvice chargé, le <br/>ministre des Travaux surfit prescrire <br/>aux compagnies de ré<: riode J'alterne- <br/>ment à une durée inK: juatorie nuii* <br/>jusyu'à un minimum de sept nuîtsconsécu\" <br/>Toutefois, dans les petites gares qui ne <br/>pas desservies par plus de trois trams dans <br/>deux sens et qui ne comportent qu'un aèrent, <br/>la durée de présence de cet agent pourra c\\c-é- <br/>der la limite fixée, néanmoins «ansqueson grand <br/>repos journalier puisse être inférieur à huit <br/>heures. <br/><br/>Dans sa circulaire, le ministre ajoute <ju« \\<- <br/>service du contrôle -1 as-mer niir. IL. <br/>accula sont t\\* <br/><br/>periode de r<;> • k •vie. <br/><br/>arrêté d ri < j.; l'occasion <br/><br/>eontroli; •inr.û-T les cernât j> <br/><br/>Qu'importe, en effet, puisque je ne sais <br/>rien! <br/><br/>Et elle se laissa retomber, fatiguée, sur <br/>l'oreiller et ferma les paupières. <br/><br/>Mais Colette se disait en la quittant <br/>Cette pauvre petite ne ni pas tout dit. <br/>Comment faire pour la décider à parler?. <br/>Lantur et Lanturlu, la harpe et le violon, <br/>étaient toujours absents, par monts et par <br/>vaux, lors des visites de Colette. <br/><br/>Ils ne rentraient que le soir, hanssés de <br/>fatigue; ils avaient peine la force de man- <br/>ger et aliaient s'étendre tout de suite au gre- <br/>nier sur le foin. <br/><br/>Colette ne les voyait donc jamais. <br/><br/>Le dimanche suivant, toutefois, c'est- <br/>à-dire deux jours après la scène que nous <br/>venons de raconter, ils rentrèrent tout à <br/>coup, au milieu de l'après-midi, pâles, les <br/>yeux pleins de larmes et pleins de colère <br/>aussi. <br/><br/>Colette se trouvait encore dans la chambre <br/>de la malade. <br/><br/>Celle-ci, en voyant ses deux compagnons, <br/>comprit qu'il s était passé quelque chose do <br/>grave. <br/><br/>Elle se levait, ce jour-là, pour la première <br/>fois. <br/><br/>Assise dans un fauteuil de bois, rembourré <br/>d'oreillers pour la circonstance, elle aspirait <br/>à pleins poumons, par la fenêtre ouverte, ce <br/>gai soleil priutanier, ces premiers rayons <br/>de douce chaleur qui réveillent la campagne <br/>endormie et font s'égosiller tous les petit- <br/>oiseaux chanteurs. <br/><br/>En voyant les larmes de Gilbert et de Lu- <br/>cien, leurs lèvres frémissantes, le tremblç- <br/>ment de leurs main», elle s'écria <br/><br/>Quest-il arrivé ? <br/><br/>Ils éclatèrent en sanglots. Et leurs sanglots <br/>les ejn&*c»>4ic>'t de varier <br/><br/>le personnel dans tous les cas où il aura été in- <br/>sufrlsant. <br/>UNE HAINE MORTELLE <br/>Reims, Ï5 novembre. <br/><br/>La commune de Chavost vient d être le tbéatr* <br/>d'un drame sanglant <br/><br/>L'n nommé Louia Miche, S.gô de trente-ne nI <br/>ans, père de trois enfanta, qui nourrissait de- <br/>puis longtemps contre son voisin Alfred Ques; <br/>ne!, âgé de quar&nto-deux ans, une haine terri. <br/>ble, l'a tué d'une balle de revolver ta ven&e. <br/>Lassassin a essayé ensuite de se taire saute* <br/>la cervelle, mais il n'a réussi qu'à se blesser. <br/>Miellé est a la disposition do ta justice. <br/><br/>Les nouvelles du Natal faisaient hier com-» <br/>plètcment défaut, et le \\V*r Office ne com- <br/>muniquait à la presM aucun renseignement <br/>sur la situation a PletermarfUburg-, sérieuse- <br/>ment menace depuis quelques jours par le* <br/>troupes du général Joubert. <br/><br/>En revanche, des dépêches du Natal lit du <br/>Cap sigualeut une recrudescence dans mou- <br/>vement d'adhésion des Afrikaadws t <br/>des deux Heiiubligut-s- <br/><br/>Au sujet du bruit d'une médiation proba- <br/>ble, bruit recueilli par YFndépenrimift bel;}*, <br/>et dont nous parlions hier, un Uïlf'gramma <br/>de Munich adressé à un journal berlinois an- <br/>nonce que l'empereur Guillaume aurait for- <br/>mellement proposé une intervention des puis- <br/>sances en vue de mettre fin à b '̃ \"t qno <br/>M. Chamberlain lut aurait fai: les <br/>conditions que l'Angleterre ni i son <br/>acceptation. <br/><br/>Cette nouvelle, que rien jusqu'ici n'est <br/>venu confirmer, semble tout &11 moins pré- <br/>maturée. Quand l.'idysmilli, Esteourl et t'ie- <br/>termiiritzburg auront capitulé, les Anglais se- <br/>roiit peut-être heureux d accepter une propo- <br/>sition de ce genre, mais ce inontfMi! ̃» <br/>encore venu et l'orgueil brilaiuiiqii <br/><br/>rait se réiigner à traiter avant nithin. u .mur <br/>sérieusement combattu. <br/><br/>Les Afrikanders <br/><br/>Londres, ïft novembre. <br/><br/>La Westminster (iazelfe public une ik'pcctiii de <br/>Durban, eu date d'hier, ainsi conçue <br/><br/>On craint un soulèvement général des Afrikan- <br/>ders dans le district de Ladvgrey en faveur de» <br/>Boërs. <br/><br/>De son côté, le Timts, dans une deu.\\ <br/><br/>tton, annonce, d'ar1»' Il' .i.'n.h.. ,<. <br/><br/>luwn en date d. <br/><br/>ders du district i <br/>l'ennemi. <br/><br/>M. Sauor, Qui est veau isnicm 'lo <br/>maintenir les Afrikaners o-vun-, i-t <br/>alla à B.irkl.ïs ii ruvltiudri ;i i j ..iiî rn.îi t. <br/>Guillaume II et M. Chamberlain <br/><br/>Berlin. SB novembre. <br/><br/>qn> 1 on <br/>assi..tvfiî <br/>1 et! pni: <br/><br/>bcriain <br/><br/>Transvaat il iuis <br/>les deux pays. <br/><br/>M. OhAmberlain aurait fait un acctivil f.ivof»- <br/>blt: à c«s DUvertuv ̃ lus <br/>négociations fus- n ho- <br/>norable pour l'Ail* H: un' <br/><br/>A propos du Combat de Belmont <br/>Londres, a novembre. <br/><br/>Le oûTrcs|Mmitarit roilitairt! de la <br/>Gazelle f»it, remarquer que les <ii\" <br/><br/>bat de Belmont indiquent qu'il 1 <br/><br/>déroute des Boërs, et que le détai ̃1 <br/>par lord Metiiutsn constitua enoon- une umiiitia <br/>combat avec laquelle il faudra compter dans <br/>l'avenir. <br/><br/>Parlant de la situation il Maff.king, le corres- <br/>pondant dit qu'il eal nri| OHSililc (aie, la ville soit <br/>secourue avant un rnoi«, et qui! est douteux <br/>qu'elle puisse '•̃nir jusque-là. <br/><br/>«rs renfWMRnflments, tes pertes <br/>(Jr; *̃ A \".«t été <br/>il. mte <br/>bl. <br/><br/>Lea Uutrs oui i:i. ;un <br/>et la plupart de w le <br/>i-oir\" ̃̃<••̃<̃̃ ̃̃̃\" iUoil <br/>ot> <br/><br/>A .-(•, 1« <br/>coiuii'iauJi. i!op, <br/>évacuant ta >ti no <br/>iioni pu songer un «oui instant à <br/><br/>faire de Glen <br/>i:iUgu. m.us no s est pas <br/>su prendre cette tactique. <br/><br/>L'Opinion en Allemagne <br/><br/>l/imlns. novembre, <br/><br/>On W <br/><br/>'̃ B«O8 iUTj' t <br/><br/>Colette s'approcha d'eux. <br/><br/>!\\les pauvres enfants, dfteg-nci&s pour- <br/>quoi vous pleurez. <br/><br/>Ce fut Gilbert, ir, plus igé, qui prit la pa- <br/>role, toujours sanglotant: <br/><br/>Il y a, mademoiselle, il y a, Jeannette, <br/>que ce pays-ci est un pays maudit pour uout <br/>et que tnainteuant il ne uuus reste plus qu i <br/>mourir d'^ faim. <br/><br/>Expliquez- vous. <br/><br/>Il s'expliqua difficilement, car le« larme* <br/>redoublaient, ma > Colette, attentive, <br/>et Jeannette tout ..mirent l'une et l'au- <br/>tre par comprendre. <br/><br/>ils étaient partît comme d'habitude le ma- <br/>tin, de bonne rwure, Gilbert avec son violon <br/>et Lucien portant sa harpe.' <br/><br/>C'était dimanche, la recette avait été bonne, <br/>ils avaient récolté quelques sous. <br/><br/>A midi, comme il faisait beau, ils s'asalrent <br/>au coin d'un bois, mangèrent un morceau de <br/>pain avec un œuf <!>\"̃ hr.r, -ut une gorgée <br/>d'eau à une suurce, uguurdis <br/>parce soleil, ils s'ei. ucemeut, <br/>côte à câ'ib. on se teuaiit par k main. <br/>Lucieh .jvaii appuyé sa hirpe le long d'un <br/>arbre et le violon reposait au pied. <br/><br/>Us ne dormaient pas depuis une demi- <br/>heure, lorsqu'ils furent réveillés eu sursaut. <br/>Et ils poussèrent uu cri de terreur et de <br/>désespoir. <br/><br/>Un homme était là, déguenillé, Ivre, jurant, <br/>r.K/naaj et chantant, qui brisait à coups <br/>n, arec une joie féroce et bête, le vio- <br/><br/>Gilbert, devenu un atnas de débris, <br/>et la harjH' de Lucien, qui, sous chacun des <br/>coups, rendait des sons tristes et plaintifs, <br/>comme si elle avait souffert vraiment et com- <br/>me si elle avait été douée d'une âme. <br/><br/>Harpe violon n'existaient plus. <br/><br/>{A iuure.) JtLES MAaT. <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>99.42</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                }
+              },
+              "etat": ""
+            }
+          },
+          "increment": 1,
+          "etat": "EmptyCaption StyleTextAndImage StyleSimplePage"
+        },
+        "etat": ""
+      },
+      "ModeAffichageFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "title": "Affichage",
+          "changed": true
+        },
+        "contenu": [
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-singlepage",
+            "description": "Simple page",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k519101d/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-doublepage",
+            "description": "Double page",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/DOUBLE/ark:/12148/bpt6k519101d/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-verticalread",
+            "description": "Défilement  vertical",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/VERTICAL/ark:/12148/bpt6k519101d/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-mosaique",
+            "description": "Mosaïque",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MULTI/ark:/12148/bpt6k519101d/f1",
+            "etat": ""
+          },
+          {
+            "display": false,
+            "active": false,
+            "parameters": {
+              "role": "presentation"
+            },
+            "contenu": "icon-sound",
+            "description": "Enregistrement sonore",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MEDIA/ark:/12148/bpt6k519101d/f1",
+            "etat": "optionHidden"
+          },
+          {
+            "display": false,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-video",
+            "description": "Vidéo",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MEDIA/ark:/12148/bpt6k519101d/f1",
+            "etat": "optionHidden"
+          }
+        ],
+        "etat": ""
+      },
+      "OtherShareOptions": {
+        "display": true,
+        "active": true,
+        "parameters": {},
+        "contenu": [
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Intégrer",
+              "linkClass": "pictoPartageIntegrer",
+              "iconClass": "icon-partage-integrer"
+            },
+            "selected": false,
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Email",
+              "linkClass": "pictoPartageEmail",
+              "iconClass": "icon-partage-mail"
+            },
+            "selected": false,
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Lien",
+              "linkClass": "pictoPartageLien",
+              "iconClass": "icon-partage-link"
+            },
+            "selected": false,
+            "etat": ""
+          }
+        ],
+        "etat": ""
+      },
+      "SideBarFragment": {
+        "display": false,
+        "active": true,
+        "parameters": {
+          "changed": false
+        },
+        "contenu": {},
+        "etat": "optionHidden"
+      },
+      "DocumentInformationFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {},
+        "contenu": {
+          "IconsTitleDocument": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "icon-rawtextarrow",
+                "description": "Ce document est disponible en mode texte",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": ""
+              }
+            ],
+            "etat": ""
+          },
+          "DocumentSousDroits": {
+            "display": false,
+            "active": false,
+            "parameters": {},
+            "contenu": "",
+            "etat": "optionHidden"
+          },
+          "ConsulterRebondir": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "CONSULTER",
+                "selected": false,
+                "etat": "optionHidden"
+              },
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "REBONDIR",
+                "selected": false,
+                "etat": "optionHidden"
+              }
+            ],
+            "etat": ""
+          }
+        },
+        "etat": ""
+      },
+      "AmisBnFViewerModel": {
+        "display": false,
+        "active": false,
+        "parameters": {
+          "role": "presentation",
+          "changed": true
+        },
+        "selected": false,
+        "etat": "optionHidden"
+      }
+    },
+    "etat": ""
+  }
+}

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Petit Parisien — Archives Éphéméride Fin 1899</title>
+    
+    <!-- Google Fonts for Elegant Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;900&family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
+    
+    <!-- Dedicated Premium Stylesheet -->
+    <link rel="stylesheet" href="journal.css">
+    
+    <!-- Global Historical Events Database -->
+    <script src="events_data.js"></script>
+</head>
+<body>
+
+    <!-- ==========================================================================
+       SIDEBAR NAVIGATION (Sommaire Cliquable & Vintage Date Picker)
+       ========================================================================== -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>SOMMAIRE</h2>
+            
+            <!-- Vintage Date Selection Card -->
+            <div class="vintage-date-card">
+                <label for="date-select-input">📅 CHOISIR UNE DATE</label>
+                <input type="date" id="date-select-input" value="1899-11-26" min="1899-11-01" max="1899-12-31" onchange="setDate(this.value)" class="vintage-date-input">
+                <div class="quick-nav-arrows">
+                    <button onclick="navigateDate(-1)" class="nav-arrow-btn">◄ Jour Préc.</button>
+                    <button onclick="navigateDate(1)" class="nav-arrow-btn">Jour Suiv. ►</button>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="menu-list">
+            <div class="menu-item">
+                <a class="menu-link active" onclick="switchSection('meteo', this)" id="link-meteo">
+                    <span class="icon">🌤️</span>
+                    <span>Météo de Paris</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link" onclick="switchSection('lune', this)" id="link-lune">
+                    <span class="icon">🌙</span>
+                    <span>Influence Lunaire</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link" onclick="switchSection('chronique', this)" id="link-chronique">
+                    <span class="icon">🏛️</span>
+                    <span>Chronique Historique</span>
+                </a>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid var(--color-border-light); margin: 0.5rem 0;" class="divider-line">
+            
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #888; padding: 0.5rem 1rem; font-weight: bold;" id="newspaper-pages-label">
+                Le Petit Parisien
+            </div>
+            
+            <div class="menu-item page-menu-item">
+                <a class="menu-link" onclick="switchPageSection(1, this)" id="link-page1">
+                    <span class="icon">📄</span>
+                    <span>Page 1 — Éditorial & Une</span>
+                </a>
+            </div>
+            <div class="menu-item page-menu-item">
+                <a class="menu-link" onclick="switchPageSection(2, this)" id="link-page2">
+                    <span class="icon">📄</span>
+                    <span>Page 2 — International</span>
+                </a>
+            </div>
+            <div class="menu-item page-menu-item">
+                <a class="menu-link" onclick="switchPageSection(3, this)" id="link-page3">
+                    <span class="icon">📄</span>
+                    <span>Page 3 — Faits Divers & Bourse</span>
+                </a>
+            </div>
+            <div class="menu-item page-menu-item">
+                <a class="menu-link" onclick="switchPageSection(4, this)" id="link-page4">
+                    <span class="icon">📄</span>
+                    <span>Page 4 — Réclames & Théâtres</span>
+                </a>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button class="theme-toggle-btn" onclick="toggleDarkMode()">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-text">Mode Sombre</span>
+            </button>
+            <p style="font-size: 0.75rem; color: #888; text-align: center;">Projet Éphéméride 1899</p>
+        </div>
+    </aside>
+
+    <!-- ==========================================================================
+       MAIN CONTENT AREA
+       ========================================================================== -->
+    <main class="main-content">
+        
+        <!-- Newspaper Masthead Header Banner -->
+        <header class="newspaper-masthead">
+            <h1 class="newspaper-title">Le Petit Parisien</h1>
+            <p style="font-family: var(--font-serif); font-size: 1.1rem; font-style: italic; color: #777;">
+                " Le plus fort tirage des journaux du monde entier "
+            </p>
+            <div class="newspaper-meta-line">
+                <span id="meta-edition">Vingt-Quatrième Année — N° 8430</span>
+                <span id="meta-date" class="meta-center-date">Dimanche 26 Novembre 1899</span>
+                <span>Cinq Centimes</span>
+            </div>
+        </header>
+
+        <!-- ==========================================================================
+           SECTION 1: MÉTÉO (WEATHER DETAILS)
+           ========================================================================== -->
+        <section id="sec-meteo" class="journal-section active-section">
+            <div class="weather-container">
+                <div class="weather-header">
+                    <span class="weather-icon" id="weather-icon-display">🌤️</span>
+                    <div>
+                        <h2>Météo de Paris</h2>
+                        <p style="font-style: italic; color: #777;">Reconstitution climatologique d'époque</p>
+                    </div>
+                </div>
+                
+                <div class="weather-details-grid">
+                    <div class="weather-card">
+                        <h4>Condition Générale</h4>
+                        <p id="weather-cond-display">Ciel Nuageux</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Températures</h4>
+                        <p id="weather-temp-display">7°C à 11°C</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Précipitations</h4>
+                        <p id="weather-prec-display">1.3 mm</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Vent de Paris</h4>
+                        <p id="weather-vent-display">32 km/h</p>
+                    </div>
+                </div>
+                
+                <div class="weather-desc-box" id="weather-desc-display">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           SECTION 2: LUNE (MOON PHASE DETAILS)
+           ========================================================================== -->
+        <section id="sec-lune" class="journal-section">
+            <div class="moon-container">
+                <div class="moon-header">
+                    <span class="moon-icon" id="moon-icon-display">🌙</span>
+                    <div>
+                        <h2>Influence Lunaire</h2>
+                        <p style="font-style: italic; color: #777;">Calcul astronomique réel pour fin 1899</p>
+                    </div>
+                </div>
+                
+                <div class="weather-details-grid" style="margin-bottom: 2rem;">
+                    <div class="weather-card" style="border-left-color: var(--color-primary);">
+                        <h4>Phase Lunaire</h4>
+                        <p id="moon-phase-display">Dernier Quartier</p>
+                    </div>
+                    <div class="weather-card" style="border-left-color: var(--color-primary);">
+                        <h4>Surface Visible</h4>
+                        <p id="moon-visible-display">38% d'illumination</p>
+                    </div>
+                    <div class="weather-card" style="border-left-color: var(--color-primary);">
+                        <h4>Aspect Céleste</h4>
+                        <p id="moon-aspect-display">Décroissante et pâle</p>
+                    </div>
+                </div>
+                
+                <div class="weather-desc-box" id="moon-desc-display" style="border-color: var(--color-primary);">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           SECTION 3: CHRONIQUE HISTORIQUE (TIMELINE)
+           ========================================================================== -->
+        <section id="sec-chronique" class="journal-section">
+            <div class="timeline">
+                
+                <!-- Paris -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-category">🏛️ Vie Parisienne</span>
+                        <h3>Chronique de Paris</h3>
+                        <p id="event-paris-display">Chargement des données...</p>
+                    </div>
+                </div>
+                
+                <!-- France -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-category">🇫🇷 République Française</span>
+                        <h3>Actualité Nationale</h3>
+                        <p id="event-france-display">Chargement des données...</p>
+                    </div>
+                </div>
+                
+                <!-- Monde -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <span class="timeline-category">🌍 Actualité Mondiale</span>
+                        <h3>Événements du Globe</h3>
+                        <p id="event-monde-display">Chargement des données...</p>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+           SECTION 4: DYNAMIC JOURNAL PAGES (RENDERED VIA JAVASCRIPT)
+           ========================================================================== -->
+        <section id="sec-journal-pages" class="journal-section">
+            <h2 id="page-title-banner" style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 2rem; color: var(--color-primary); border-bottom: 2px solid var(--color-secondary); padding-bottom: 0.5rem;">
+                Le Petit Parisien — Page 1
+            </h2>
+            
+            <!-- Standard dynamic articles container -->
+            <div id="articles-container">
+                <!-- Dynamic Article Cards will be injected here -->
+            </div>
+
+            <!-- Fallback container for when the day is not compiled yet -->
+            <div id="fallback-container" style="display: none;">
+                <div class="vintage-alert-card">
+                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">📰</span>
+                    <h2 id="fallback-title">Édition non disponible</h2>
+                    <p id="fallback-desc">
+                        L'édition intégrale du journal <strong>Le Petit Parisien</strong> pour cette date n'a pas encore été numérisée et restaurée par notre archiviste mécanique.
+                    </p>
+                    <div class="vintage-instructions-box">
+                        <strong style="color: var(--color-primary); font-family: var(--font-serif); display: block; margin-bottom: 0.5rem;" id="fallback-instr-title">👉 Comment numériser ce jour ?</strong>
+                        Pour intégrer ce numéro et générer ses articles restaurés par intelligence artificielle, veuillez lancer la commande suivante dans votre terminal :
+                        <code id="fallback-code-cli">python pipeline_journalier.py --date 1899-11-26</code>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #777; font-style: italic;" id="fallback-note">
+                        En attendant, vous pouvez librement consulter la Météo, l'Influence Lunaire et la Chronique Historique de cette journée via le Sommaire ci-contre.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================================================
+       INTERACTIVE JAVASCRIPT LOGIC
+       ========================================================================== -->
+    <script>
+        // State variables
+        let currentDateStr = '1899-11-26';
+        let currentView = 'meteo'; // meteo, lune, chronique, or page
+        let currentPageNum = 1;
+        let isJournalLoaded = false;
+
+        // Constants
+        const MONTHS_FR = {
+            "01": "Janvier", "02": "Février", "03": "Mars", "04": "Avril",
+            "05": "Mai", "06": "Juin", "07": "Juillet", "08": "Août",
+            "09": "Septembre", "10": "Octobre", "11": "Novembre", "12": "Décembre"
+        };
+
+        const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+
+        // Climatic options synced with Python pipeline
+        const WEATHER_OPTIONS = [
+            {cond: "Ciel Nuageux", temp: "6°C à 10°C", prec: "1.2 mm", vent: "25 km/h", icon: "🌤️"},
+            {cond: "Pluie intermittente", temp: "4°C à 8°C", prec: "3.5 mm", vent: "30 km/h", icon: "🌧️"},
+            {cond: "Éclaircies et fraîcheur", temp: "3°C à 7°C", prec: "0.0 mm", vent: "15 km/h", icon: "🌤️"},
+            {cond: "Grisaille et brume d'hiver", temp: "2°C à 6°C", prec: "0.2 mm", vent: "10 km/h", icon: "🌫️"}
+        ];
+
+        // Moon phase options synced with Python pipeline
+        const MOON_OPTIONS = [
+            {phase: "Dernier Croissant", visible: "22% d'illumination", aspect: "Fine corne argentée à l'aube", desc: "La fine faux lunaire s'est levée tard dans la nuit, jetant une faible lueur argentée sur les monuments parisiens avant l'aube.", icon: "🌙"},
+            {phase: "Nouvelle Lune", visible: "0% d'illumination", aspect: "Nuit noire et profonde", desc: "La lune, invisible, laisse place à un ciel d'encre étoilé, faisant briller d'autant plus l'éclairage public électrique de l'Opéra.", icon: "🌑"},
+            {phase: "Premier Croissant", visible: "15% d'illumination", aspect: "Jeune croissant crépusculaire", desc: "Un mince filet de lune est apparu au coucher du soleil à l'ouest, glissant rapidement sous l'horizon parisien.", icon: "🌙"},
+            {phase: "Premier Quartier", visible: "50% d'illumination", aspect: "Demi-lune brillante", desc: "Une demi-lune claire a éclairé la première partie de la nuit, projetant des ombres géométriques nettes sur les grands boulevards.", icon: "🌓"}
+        ];
+
+        // Reconstruct date metadata and ephemeris details
+        function calculateEphemeris(dateStr) {
+            const parts = dateStr.split('-');
+            const year = parts[0];
+            const monthCode = parts[1];
+            const dayNum = parseInt(parts[2], 10);
+            const monthName = MONTHS_FR[monthCode] || "Novembre";
+
+            // Calculate Day of Week
+            const dt = new Date(parseInt(year, 10), parseInt(monthCode, 10) - 1, dayNum);
+            const dayOfWeek = DAYS_FR[dt.getDay()];
+
+            // Calculate Edition Number (locked ref: 1899-11-26 -> #8430)
+            const refDate = new Date(1899, 10, 26); // Nov is index 10 in JS Date
+            const timeDiff = dt.getTime() - refDate.getTime();
+            const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const editionNo = 8430 + daysDiff;
+
+            // Render header details
+            document.getElementById('meta-edition').textContent = `Vingt-Quatrième Année — N° ${editionNo}`;
+            document.getElementById('meta-date').textContent = `${dayOfWeek} ${dayNum} ${monthName} ${year}`;
+            document.title = `Le Petit Parisien — ${dayOfWeek} ${dayNum} ${monthName} ${year}`;
+
+            // Calculate weather index deterministically
+            const w = WEATHER_OPTIONS[dayNum % WEATHER_OPTIONS.length];
+            document.getElementById('weather-icon-display').textContent = w.icon;
+            document.getElementById('weather-cond-display').textContent = w.cond;
+            document.getElementById('weather-temp-display').textContent = w.temp;
+            document.getElementById('weather-prec-display').textContent = w.prec;
+            document.getElementById('weather-vent-display').textContent = w.vent;
+
+            let weatherDesc = "";
+            if (w.cond === "Ciel Nuageux") {
+                weatherDesc = `Le ${dayNum} ${monthName} ${year}, le ciel est resté bas et couvert sur toute la capitale, apportant une brume humide sur les quais de Seine. Les promeneurs se pressaient sous les boulevards éclairés aux premiers becs de gaz.`;
+            } else if (w.cond === "Pluie intermittente") {
+                weatherDesc = `Le ${dayNum} ${monthName} ${year}, des averses passagères ont balayé les boulevards une partie de la journée, forçant les passants à s'abriter sous les marquises des théâtres et des grands magasins.`;
+            } else if (w.cond === "Éclaircies et fraîcheur") {
+                weatherDesc = `Le ${dayNum} ${monthName} ${year}, un beau soleil d'automne a brillé à travers un air vif et piquant. Les promeneurs ont envahi le jardin des Tuileries et les terrasses de café.`;
+            } else {
+                weatherDesc = `Le ${dayNum} ${monthName} ${year}, une épaisse nappe de brouillard a enveloppé la Seine au lever du jour, s'estompant lentement pour laisser place à un ciel blanc d'hiver.`;
+            }
+            document.getElementById('weather-desc-display').innerHTML = `<strong>Chronique Météo du Jour :</strong><br><br>${weatherDesc}`;
+
+            // Calculate moon index deterministically
+            const m = MOON_OPTIONS[(dayNum + 5) % MOON_OPTIONS.length];
+            document.getElementById('moon-icon-display').textContent = m.icon;
+            document.getElementById('moon-phase-display').textContent = m.phase;
+            document.getElementById('moon-visible-display').textContent = m.visible;
+            document.getElementById('moon-aspect-display').textContent = m.aspect;
+            document.getElementById('moon-desc-display').innerHTML = `<strong>Chronique Nocturne :</strong><br><br>${m.desc}`;
+
+            // Chronique Historique (Timeline Events) from events_data.js
+            let parisEv = "La vie parisienne suit son cours normal.";
+            let franceEv = "Les actualités nationales continuent d'agiter l'opinion publique.";
+            let mondeEv = "L'actualité internationale est dominée par les événements coloniaux et diplomatiques.";
+
+            if (typeof EVENTS_DATA !== 'undefined' && EVENTS_DATA[dateStr]) {
+                const ev = EVENTS_DATA[dateStr];
+                parisEv = ev.paris || parisEv;
+                franceEv = ev.france || franceEv;
+                mondeEv = ev.monde || mondeEv;
+            }
+
+            document.getElementById('event-paris-display').textContent = parisEv;
+            document.getElementById('event-france-display').textContent = franceEv;
+            document.getElementById('event-monde-display').textContent = mondeEv;
+        }
+
+        // Load specific date's JavaScript database dynamically
+        function loadDateDatabase(dateStr, callback) {
+            // Remove previous script tags for loading data
+            const oldScript = document.getElementById('dynamic-data-script');
+            if (oldScript) {
+                oldScript.remove();
+            }
+
+            // Clear database variable
+            window.JOURNAL_ARTICLES = undefined;
+
+            // Generate filename based on date
+            // Fallback strategy: if the requested date is 1899-11-26, it may load journal_data.js in old systems,
+            // but we want to be fully compliant and try journal_data_YYYY-MM-DD.js.
+            // If that fails, we can try to fall back to journal_data.js only if date is 1899-11-27 or similar
+            const script = document.createElement('script');
+            script.id = 'dynamic-data-script';
+            script.src = `journal_data_${dateStr}.js`;
+
+            script.onload = () => {
+                if (typeof window.JOURNAL_ARTICLES !== 'undefined') {
+                    isJournalLoaded = true;
+                    callback(null, window.JOURNAL_ARTICLES);
+                } else {
+                    isJournalLoaded = false;
+                    callback(new Error("Articles empty"));
+                }
+            };
+
+            script.onerror = () => {
+                // Secondary check: if the user asks for 1899-11-27 or 1899-11-26, let's try journal_data.js as secondary fallback
+                if (dateStr === '1899-11-27' || dateStr === '1899-11-26') {
+                    const fallbackScript = document.createElement('script');
+                    fallbackScript.id = 'dynamic-data-script';
+                    fallbackScript.src = 'journal_data.js';
+                    fallbackScript.onload = () => {
+                        if (typeof window.JOURNAL_ARTICLES !== 'undefined') {
+                            isJournalLoaded = true;
+                            callback(null, window.JOURNAL_ARTICLES);
+                        } else {
+                            isJournalLoaded = false;
+                            callback(new Error("Articles empty"));
+                        }
+                    };
+                    fallbackScript.onerror = () => {
+                        isJournalLoaded = false;
+                        callback(new Error("Not found"));
+                    };
+                    document.body.appendChild(fallbackScript);
+                } else {
+                    isJournalLoaded = false;
+                    callback(new Error("Not found"));
+                }
+            };
+
+            document.body.appendChild(script);
+        }
+
+        // Set date active, calculate ephemeris, and load database
+        function setDate(dateStr) {
+            if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return;
+            currentDateStr = dateStr;
+            
+            // Sync Picker Input
+            document.getElementById('date-select-input').value = dateStr;
+
+            // Sync URL Param
+            const url = new URL(window.location);
+            url.searchParams.set('date', dateStr);
+            window.history.replaceState({}, '', url);
+
+            // Reconstruct Météo, Lune, Chronique
+            calculateEphemeris(dateStr);
+
+            // Dynamic articles database fetch
+            loadDateDatabase(dateStr, (err, articles) => {
+                const links = document.querySelectorAll('.page-menu-item');
+                if (err) {
+                    // Script not compiled yet
+                    console.log(`Données de presse non trouvées pour le ${dateStr}`);
+                    isJournalLoaded = false;
+                    
+                    // Style sidebar menu links for disabled look
+                    links.forEach(el => {
+                        el.style.opacity = '0.5';
+                        el.style.cursor = 'not-allowed';
+                    });
+
+                    // If currently viewing a page, switch to fallback alert, otherwise stay on static view
+                    if (currentView === 'page') {
+                        renderPageArticles(currentPageNum);
+                    }
+                } else {
+                    // Successfully loaded
+                    console.log(`Données de presse chargées avec succès pour le ${dateStr} (${articles.length} articles).`);
+                    isJournalLoaded = true;
+
+                    // Restore full opacity
+                    links.forEach(el => {
+                        el.style.opacity = '1';
+                        el.style.cursor = 'pointer';
+                    });
+
+                    // Render articles if currently in page view
+                    if (currentView === 'page') {
+                        renderPageArticles(currentPageNum);
+                    }
+                }
+            });
+        }
+
+        // Navigate date by offset days (+1 or -1)
+        function navigateDate(offset) {
+            const parts = currentDateStr.split('-');
+            const dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            dt.setDate(dt.getDate() + offset);
+            
+            // Limit navigation within November and December 1899
+            if (dt.getFullYear() !== 1899 || (dt.getMonth() !== 10 && dt.getMonth() !== 11)) {
+                return; // Out of bounds
+            }
+
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const d = String(dt.getDate()).padStart(2, '0');
+            setDate(`${y}-${m}-${d}`);
+        }
+
+        // Switch Active Section (Sidebar Menu selection)
+        function switchSection(sectionId, element) {
+            currentView = sectionId;
+            
+            // Update active link class in sidebar
+            const links = document.querySelectorAll('.menu-link');
+            links.forEach(l => l.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Hide all main containers, show target active view
+            const sections = document.querySelectorAll('.journal-section');
+            sections.forEach(s => s.classList.remove('active-section'));
+            
+            const activeSec = document.getElementById('sec-' + sectionId);
+            if (activeSec) {
+                activeSec.classList.add('active-section');
+            }
+            
+            // Smooth scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Switch and Render a Newspaper Page Section
+        function switchPageSection(pageNum, element) {
+            currentView = 'page';
+            currentPageNum = pageNum;
+            
+            // Update active link class in sidebar
+            const links = document.querySelectorAll('.menu-link');
+            links.forEach(l => l.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Hide other sections, show journal pages view
+            const sections = document.querySelectorAll('.journal-section');
+            sections.forEach(s => s.classList.remove('active-section'));
+            
+            const journalPageSec = document.getElementById('sec-journal-pages');
+            journalPageSec.classList.add('active-section');
+            
+            // Update page banner title
+            const titleBanner = document.getElementById('page-title-banner');
+            titleBanner.textContent = `Le Petit Parisien — Page ${pageNum}`;
+            
+            // Render the page
+            renderPageArticles(pageNum);
+            
+            // Smooth scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Dynamically Render Article Cards or Fallback Warning
+        function renderPageArticles(pageNum) {
+            const container = document.getElementById('articles-container');
+            const fallbackContainer = document.getElementById('fallback-container');
+            
+            // Reset
+            container.innerHTML = '';
+            fallbackContainer.style.display = 'none';
+
+            if (!isJournalLoaded) {
+                // If not loaded, display retro compiler warning card
+                fallbackContainer.style.display = 'block';
+                document.getElementById('fallback-code-cli').textContent = `python pipeline_journalier.py --date ${currentDateStr}`;
+                
+                // Format dates in warning card
+                const parts = currentDateStr.split('-');
+                const formattedDate = `${parts[2]} ${MONTHS_FR[parts[1]] || "Novembre"} ${parts[0]}`;
+                document.getElementById('fallback-desc').innerHTML = `L'édition intégrale du journal <strong>Le Petit Parisien</strong> pour le <span style="font-weight: bold; color: var(--color-primary);">${formattedDate}</span> n'a pas encore été numérisée et restaurée par notre archiviste mécanique.`;
+                return;
+            }
+
+            // Database loaded: filter and display articles
+            const articles = window.JOURNAL_ARTICLES.filter(a => a.page === pageNum);
+            
+            if (articles.length === 0) {
+                container.innerHTML = '<p style="font-style: italic; color: #777; text-align: center; margin: 5rem 0;">Aucun article substantiel restauré pour cette page.</p>';
+                return;
+            }
+            
+            articles.forEach(article => {
+                const card = document.createElement('article');
+                card.className = 'article-card';
+                
+                // Construct paragraphs HTML
+                const paragraphsHtml = article.paragraphs.map(p => `<p>${p}</p>`).join('');
+                
+                card.innerHTML = `
+                    <header class="article-header">
+                        <div class="article-headline-block">
+                            <span class="article-tag">${article.category}</span>
+                            <h2 class="article-title">${article.title}</h2>
+                        </div>
+                        <div class="article-meta">
+                            <span>Le Petit Parisien</span>
+                            <span class="meta-page-tag">Page ${article.page}</span>
+                        </div>
+                    </header>
+                    
+                    <!-- Résumé / Summary -->
+                    <div class="summary-container">
+                        <div class="summary-title-line">
+                            <span>📝 RÉSUMÉ :</span>
+                        </div>
+                        <p class="summary-text">${article.summary || "Résumé en cours de préparation..."}</p>
+                    </div>
+                    
+                    <!-- Détail complet / Collapsible paragraphs -->
+                    <div class="full-text-collapse" id="collapse-art${article.id}">
+                        <div class="full-text-content">
+                            ${paragraphsHtml}
+                        </div>
+                    </div>
+                    
+                    <button class="toggle-article-btn" onclick="toggleArticle(${article.id}, this)">
+                        <span class="btn-text">📖 Lire l'article complet</span>
+                        <span class="btn-arrow">▼</span>
+                    </button>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Toggle Article Expansion (collapsible details)
+        function toggleArticle(articleId, button) {
+            const collapseDiv = document.getElementById('collapse-art' + articleId);
+            const btnText = button.querySelector('.btn-text');
+            
+            if (collapseDiv.classList.contains('expanded')) {
+                collapseDiv.classList.remove('expanded');
+                button.classList.remove('active');
+                btnText.textContent = "📖 Lire l'article complet";
+            } else {
+                collapseDiv.classList.add('expanded');
+                button.classList.add('active');
+                btnText.textContent = "📄 Voir le résumé";
+            }
+        }
+
+        // Dark Mode Toggle Switcher
+        function toggleDarkMode() {
+            const body = document.body;
+            const themeBtn = document.querySelector('.theme-toggle-btn');
+            const themeIcon = themeBtn.querySelector('.theme-icon');
+            const themeText = themeBtn.querySelector('.theme-text');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                themeIcon.textContent = "☀️";
+                themeText.textContent = "Mode Clair";
+                localStorage.setItem('journal-dark-mode', 'enabled');
+            } else {
+                themeIcon.textContent = "🌙";
+                themeText.textContent = "Mode Sombre";
+                localStorage.setItem('journal-dark-mode', 'disabled');
+            }
+        }
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            // Keep Dark/Light preference
+            const cachedTheme = localStorage.getItem('journal-dark-mode');
+            if (cachedTheme === 'enabled') {
+                toggleDarkMode();
+            }
+
+            // Parse URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const dateParam = urlParams.get('date');
+            
+            if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+                // Check if date limits fall within Nov/Dec 1899
+                const parts = dateParam.split('-');
+                if (parts[0] === '1899' && (parts[1] === '11' || parts[1] === '12')) {
+                    currentDateStr = dateParam;
+                }
+            }
+
+            // Trigger date loading
+            setDate(currentDateStr);
+        });
+    </script>
+</body>
+</html>

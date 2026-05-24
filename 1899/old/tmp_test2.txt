@@ -1,0 +1,3 @@
+'a ses oôlés'                                      -> 'a ses côtés'
+'a ses côtés'                                      -> 'a ses côtés'
+'oôlé'                                             -> 'côtés'

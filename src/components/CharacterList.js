@@ -114,7 +114,7 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, profils = [], userProfile, gameData, session }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenActualite, profils = [], userProfile, gameData, session }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
@@ -468,27 +468,30 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       <div className="flex flex-col gap-6 mb-8 mt-2">
 
         {/* ─── BARRE DE NAVIGATION ─────────────────────────────────────── */}
-        <div className="relative z-50 flex flex-nowrap items-center gap-2 overflow-x-auto hide-scrollbar w-full pb-2">
-          <button onClick={onNewCharacter} className="flex-shrink-0 mr-auto flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
-            <Plus size={18} /> <span className="hidden sm:inline">Nouveau</span>
+        <div className="relative z-50 flex flex-nowrap items-center gap-1 overflow-x-auto hide-scrollbar w-full pb-2">
+          <button onClick={onNewCharacter} className="flex-shrink-0 mr-auto flex items-center space-x-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm">
+            <Plus size={15} /> <span className="hidden lg:inline">Nouveau</span>
           </button>
-          <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-sm shadow-sm" title="Accéder au Grimoire">
-            <Book size={16} /> <span className="hidden sm:inline">Encyclopédie</span>
+          <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
+            <Book size={14} /> <span className="hidden lg:inline">Encyclopédie</span>
           </button>
-          <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-sm shadow-sm" title="Gérer mes tables virtuelles">
-            <Users size={16} /> <span className="hidden sm:inline">Cercles</span>
+          <button onClick={onOpenActualite} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-emerald-100 text-emerald-950 border-2 border-emerald-200 rounded-lg hover:bg-emerald-200 hover:border-emerald-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Consulter la Gazette de l'époque (1899)">
+            <Globe size={14} /> <span className="hidden lg:inline">Actualité</span>
           </button>
-          <button onClick={onOpenAdmin} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
-            <BarChart2 size={16} /> <span className="hidden sm:inline">Communauté</span>
+          <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
+            <Users size={14} /> <span className="hidden lg:inline">Cercles</span>
           </button>
-          <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-rose-100 text-rose-800 border-2 border-rose-200 rounded-lg hover:bg-rose-200 transition-all font-serif font-bold text-sm shadow-sm" title="Signaler une faille dans la matrice">
-            <Bug size={16} /> <span className="hidden sm:inline">Anomalies</span>
+          <button onClick={onOpenAdmin} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
+            <BarChart2 size={14} /> <span className="hidden lg:inline">Communauté</span>
           </button>
-          <button onClick={onOpenAccount} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-sm shadow-sm">
-            <User size={16} /> <span className="hidden sm:inline">Compte</span>
+          <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-rose-100 text-rose-800 border-2 border-rose-200 rounded-lg hover:bg-rose-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Signaler une faille dans la matrice">
+            <Bug size={14} /> <span className="hidden lg:inline">Anomalies</span>
           </button>
-          <button onClick={onSignOut} className="flex-shrink-0 flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-sm shadow-sm" title="Se déconnecter">
-            <LogOut size={16} /> <span className="hidden sm:inline">Déconnexion</span>
+          <button onClick={onOpenAccount} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm">
+            <User size={14} /> <span className="hidden lg:inline">Compte</span>
+          </button>
+          <button onClick={onSignOut} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-red-100 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Se déconnecter">
+            <LogOut size={14} /> <span className="hidden lg:inline">Déconnexion</span>
           </button>
         </div>
 
