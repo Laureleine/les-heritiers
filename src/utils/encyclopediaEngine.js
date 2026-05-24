@@ -27,6 +27,19 @@ const normalizeTextListField = (value) => {
     return [];
 };
 
+const normalizeCommaListField = (value) => {
+    if (Array.isArray(value)) {
+        return value.map(entry => String(entry).trim()).filter(Boolean);
+    }
+    if (typeof value === 'string') {
+        return value
+            .split(',')
+            .map(entry => entry.trim())
+            .filter(Boolean);
+    }
+    return [];
+};
+
 // Parseur universel → délégué à src/utils/json.js (DRY)
 const parseSafeArray = safeParseArray;
 
@@ -107,6 +120,11 @@ export const submitEncyclopediaProposal = async ({
             const newGenders = proposal.allowed_genders || ['Homme', 'Femme'];
             if (!arraysEqual(newGenders, editingItem.allowed_genders)) surgicalData.allowed_genders = newGenders;
             if (proposal.description !== (editingItem.description || editingItem.desc || '')) surgicalData.description = proposal.description;
+
+            // Détection des traits de caractère
+            const newTraits = normalizeCommaListField(proposal.traits);
+            const oldTraits = normalizeCommaListField(editingItem.traits);
+            if (!arraysEqual(newTraits, oldTraits)) surgicalData.traits = newTraits;
 
             // 2. Relations (Capacités, Pouvoirs, Atouts)
             const newCapacites = [];
