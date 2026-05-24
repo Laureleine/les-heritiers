@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '16.0.2 - "Le Puits Libéré 💧"',
+    date: '24 Mai 2026',
+    description: 'Les Âmes retrouvent leur chemin : le Puits des Âmes était scellé pour tous les Héritiers, même propriétaires. Un champ mal nommé retenait les XP prisonniers.',
+    changes: [
+      '💧 **Fix — Puits des Âmes bloqué pour tous :** Les boutons `−1`, `+1` et `+5` du Puits des Âmes étaient grisés en permanence, même pour le propriétaire du personnage. Cause racine : la vérification d\'appartenance utilisait `character.user_id` (snake_case, nom de colonne Supabase) alors que le mappage client transforme ce champ en `character.userId` (camelCase). Résultat : `character.user_id` était toujours `undefined`, la condition échouait toujours, et le Puits restait verrouillé pour tous les Héritiers. Corrigé sur les 4 occurrences dans `CharacterCreator.jsx`.',
+      '🧪 **237 Sentinelles (dont 3 nouvelles) :** 3 tests de non-régression postés pour verrouiller le guard d\'appartenance : `userId` = propriétaire → autorisé, `user_id` (l\'ancien bug) → bloqué, `userId` différent → bloqué. 237 gardiens veillent.',
+    ]
+  },
+  {
     version: '16.0.1 - "Le Soufflet du Forgeron 🔧"',
     date: '17 Mai 2026',
     description: 'La Forge ne s\'emballe plus : le Registre arrête de clignoter comme un feu follet par une nuit de tempête.',
