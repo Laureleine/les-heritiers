@@ -1,0 +1,1033 @@
+{
+  "fragment": {
+    "display": true,
+    "active": true,
+    "parameters": {
+      "pageArkUrl": "ark:/12148/bpt6k702136k/f1.item.texteImage",
+      "externalPageArkUrl": "https://gallica.bnf.fr/ark:/12148/bpt6k702136k/f1.item.texteImage"
+    },
+    "contenu": {
+      "XitiFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "x8": "L%27Aurore%20%3A%20litt%C3%A9raire%2C%20artistique%2C%20sociale%20%2F%20dir.%20Ernest%20Vaughan%20%3B%20r%C3%A9d.%20Georges%20Clemenceau",
+          "x9": "domaine%20public",
+          "modeDev": true,
+          "x10": "WebExterne",
+          "x12": "1899-11-26",
+          "x1": "bpt6k702136k",
+          "x11": "GCFeTra_GCGen1",
+          "x2": "L%27Aurore%20%3A%20litt%C3%A9raire%2C%20artistique%2C%20sociale%20%2F%20dir.%20Ernest%20Vaughan%20%3B%20r%C3%A9d.%20Georges%20Clemenceau",
+          "x13": "2011%2F02%2F06",
+          "x4": "NUM%C3%89RO",
+          "x5": "Biblioth%C3%A8que%20nationale%20de%20France",
+          "x15": "texte",
+          "x6": "pageHTML",
+          "x18": "avec%20relation",
+          "x7": "L%27Aurore%20%28Paris%29",
+          "x17": "gallica",
+          "changed": true
+        },
+        "contenu": {},
+        "urlServiceScriptXiti": "https://logs",
+        "pageName": "Visualiseur::TEXT_IMAGE::ARKbpt6k702136k",
+        "codeNiveau2": "15",
+        "idSite": "18798",
+        "implicationDegree": "",
+        "paramXiti": "&amp;x1=[bpt6k702136k]&amp;x2=[L%27Aurore%20%3A%20litt%C3%A9raire%2C%20artistique%2C%20sociale%20%2F%20dir.%20Ernest%20Vaughan%20%3B%20r%C3%A9d.%20Georges%20Clemenceau]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France]&amp;x6=[pageHTML]&amp;x7=[L%27Aurore%20%28Paris%29]&amp;x8=[L%27Aurore%20%3A%20litt%C3%A9raire%2C%20artistique%2C%20sociale%20%2F%20dir.%20Ernest%20Vaughan%20%3B%20r%C3%A9d.%20Georges%20Clemenceau]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[GCFeTra_GCGen1]&amp;x12=[1899-11-26]&amp;x13=[2011%2F02%2F06]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]",
+        "motcle": "",
+        "numPageResultat": 1,
+        "logoNoScriptUrl": "https://logs.xiti.com/hit.xiti?s=18798&s2=15&p=Visualiseur::TEXT_IMAGE::ARKbpt6k702136k&amp;x1=[bpt6k702136k]&amp;x2=[L%27Aurore%20%3A%20litt%C3%A9raire%2C%20artistique%2C%20sociale%20%2F%20dir.%20Ernest%20Vaughan%20%3B%20r%C3%A9d.%20Georges%20Clemenceau]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France]&amp;x6=[pageHTML]&amp;x7=[L%27Aurore%20%28Paris%29]&amp;x8=[L%27Aurore%20%3A%20litt%C3%A9raire%2C%20artistique%2C%20sociale%20%2F%20dir.%20Ernest%20Vaughan%20%3B%20r%C3%A9d.%20Georges%20Clemenceau]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[GCFeTra_GCGen1]&amp;x12=[1899-11-26]&amp;x13=[2011%2F02%2F06]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]&mc=&amp;x1=[bpt6k702136k]&amp;x2=[L%27Aurore%20%3A%20litt%C3%A9raire%2C%20artistique%2C%20sociale%20%2F%20dir.%20Ernest%20Vaughan%20%3B%20r%C3%A9d.%20Georges%20Clemenceau]&amp;x4=[NUM%C3%89RO]&amp;x5=[Biblioth%C3%A8que%20nationale%20de%20France]&amp;x6=[pageHTML]&amp;x7=[L%27Aurore%20%28Paris%29]&amp;x8=[L%27Aurore%20%3A%20litt%C3%A9raire%2C%20artistique%2C%20sociale%20%2F%20dir.%20Ernest%20Vaughan%20%3B%20r%C3%A9d.%20Georges%20Clemenceau]&amp;x9=[domaine%20public]&amp;x10=[WebExterne]&amp;x11=[GCFeTra_GCGen1]&amp;x12=[1899-11-26]&amp;x13=[2011%2F02%2F06]&amp;x15=[texte]&amp;x17=[gallica]&amp;x18=[avec%20relation]",
+        "protocol": "https://",
+        "etat": ""
+      },
+      "PaginationViewerModel": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "ZoomBtn": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-zoom"
+            },
+            "contenu": "icon-zoom",
+            "description": "Zoom",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage.zoom",
+            "etat": ""
+          },
+          "ChangeFormatPageVertical": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "vertical",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/VERTICAL/ark:/12148/bpt6k702136k/f1.item.texteImage..VERTICAL",
+            "etat": ""
+          },
+          "DisplaySelected": "item",
+          "IconDisplay": "pictos icon-singlepage",
+          "role": "link",
+          "searchPageLink": "https://gallica.bnf.fr/services/ajax/pagination/searchPage/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage?searchPage=",
+          "urlShareEmbed": "https://gallica.bnf.fr/services/share/embed/ark:/12148/bpt6k702136k/f1.item.texteImage",
+          "nbTotalVues": 4,
+          "displayModeIcon": "icon-singlepage",
+          "IsPageAudioDisplay": true,
+          "ChangeFormatPageDouble": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "double",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/DOUBLE/ark:/12148/bpt6k702136k/f1.item.texteImage..DOUBLE",
+            "etat": ""
+          },
+          "IsPageMultiDisplay": true,
+          "urlDownload": "https://gallica.bnf.fr/services/ajax/action/download/ark:/12148/bpt6k702136k/f1.item.texteImage",
+          "ChangeFormatPageMulti": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "planchecontact",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MULTI/ark:/12148/bpt6k702136k/f1.item.texteImage..MULTI",
+            "etat": ""
+          },
+          "ChangeFormatPageVocal": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "vocal",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/AUDIO/ark:/12148/bpt6k702136k/f1.item.texteImage..AUDIO",
+            "etat": ""
+          },
+          "accessibleLabel": "chiffre de pagination",
+          "urlShareMail": "https://gallica.bnf.fr/services/share/mail/ark:/12148/bpt6k702136k/f1.item.texteImage",
+          "screenNumber": 1,
+          "nbPagination": "vue 1/4",
+          "paginationTitle": "Pagination",
+          "IsPageDoubleDisplay": true,
+          "urlHasChanged": true,
+          "buttonAccessibleLabel": "Pagination et liste des vues",
+          "defaut": "Numero",
+          "IsPage3DDisplay": false,
+          "ChangeFormatPageSimple": {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "id": "icon-display icon-singlepage"
+            },
+            "contenu": "icon-singlepage",
+            "description": "item",
+            "selected": false,
+            "bindUrl": "",
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage..SINGLE",
+            "etat": ""
+          },
+          "IsPageVerticalDisplay": true,
+          "changed": true
+        },
+        "contenu": "1",
+        "description": "Page",
+        "selected": false,
+        "url": "https://gallica.bnf.fr/services/ajax/pagination/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage",
+        "etat": ""
+      },
+      "BarreVerticaleFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "contenu": {
+          "OutilsFragment": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-infosdetails"
+                },
+                "contenu": "icon-infosdetails",
+                "description": "Informations détaillées",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/infosdetails/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": false,
+                "parameters": {
+                  "role": "presentation"
+                },
+                "contenu": "icon-caption",
+                "description": "Table des matières",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": "optionDisabled"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-search"
+                },
+                "contenu": "icon-search",
+                "description": "Recherche dans le document",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/search/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-display icon-singlepage"
+                },
+                "contenu": "icon-display icon-singlepage",
+                "description": "Modes d'affichage et vocal",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-3d"
+                },
+                "contenu": "icon-3d",
+                "description": "Visualiser en 3D",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/D3/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-zoom"
+                },
+                "contenu": "icon-zoom",
+                "description": "Zoom",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage.zoom",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-download"
+                },
+                "contenu": "icon-download",
+                "description": "Téléchargement / impression",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/download/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-export"
+                },
+                "contenu": "icon-export",
+                "description": "Export d'une sélection",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/export/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-share"
+                },
+                "contenu": "icon-share",
+                "description": "Partage et envoi par courriel",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/share/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-ecommerce"
+                },
+                "contenu": "icon-ecommerce",
+                "description": "Acheter une reproduction",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/ecommerce/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "paramConn": "not_connected",
+                  "id": "icon-bookmark",
+                  "ariaLabel": "Marquer cette page dans votre espace personnel (nouvelle fenêtre)"
+                },
+                "contenu": "icon-bookmark",
+                "description": "Marque-page",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/bookmark/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-indisponible"
+                },
+                "contenu": "icon-indisponible",
+                "description": "Acheter le livre complet",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/indisponible/achat//ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-retronews"
+                },
+                "contenu": "icon-retronews",
+                "description": "Accéder au numéro complet",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/retronews/achat//ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "paramConn": "not_connected",
+                  "id": "icon-ajouter_document",
+                  "ariaLabel": "Ajouter ce document à votre espace personnel (nouvelle fenêtre)"
+                },
+                "contenu": "icon-ajouter_document",
+                "description": "Ajouter ce document",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/add_doc/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-corriger"
+                },
+                "contenu": "icon-corriger",
+                "description": "Signalement d'anomalie",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/flag/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              },
+              {
+                "display": false,
+                "active": false,
+                "parameters": {
+                  "role": "presentation",
+                  "id": "icon-result-list"
+                },
+                "contenu": "icon-result-list",
+                "description": "Retour à la liste de résultat",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": "optionHidden"
+              },
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link",
+                  "id": "icon-aide"
+                },
+                "contenu": "icon-aide",
+                "description": "Aide",
+                "selected": false,
+                "bindUrl": "",
+                "url": "https://gallica.bnf.fr/services/ajax/action/aide/ark:/12148/bpt6k702136k/f1.item.texteImage",
+                "etat": ""
+              }
+            ],
+            "etat": ""
+          }
+        },
+        "etat": ""
+      },
+      "IssuePaginationFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "currentPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "26 novembre 1899",
+          "description": "26 novembre 1899",
+          "selected": false,
+          "bindUrl": "",
+          "url": "https://gallica.bnf.fr/services/ajax/pagination/issue/cur/ark:/12148/cb32706846t/date18991126.item",
+          "etat": ""
+        },
+        "nbrTotalPages": 0,
+        "firstPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "Voir le premier numéro",
+          "description": "icon-page_gauche",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k701807t/f1.item",
+          "etat": ""
+        },
+        "previousPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "consulter fascicule précédent",
+          "description": "icon-page_gauche",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k7021356/f1.item",
+          "etat": ""
+        },
+        "nextPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "consulter fascicule suivant",
+          "description": "icon-page_droite",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k702137z/f1.item",
+          "etat": ""
+        },
+        "lastPage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "role": "link"
+          },
+          "contenu": "Voir le dernier numéro",
+          "description": "icon-page_droite",
+          "selected": false,
+          "bindUrl": "",
+          "url": "/ark:/12148/bpt6k7021712/f1.item",
+          "etat": ""
+        },
+        "resultsByPage": {
+          "display": true,
+          "active": true,
+          "parameters": {},
+          "contenu": [],
+          "selected": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "etat": ""
+          },
+          "etat": ""
+        },
+        "titleTitle": {
+          "display": false,
+          "active": false,
+          "parameters": {},
+          "etat": "optionHidden"
+        },
+        "titleDescription": {
+          "display": false,
+          "active": false,
+          "parameters": {},
+          "etat": "optionHidden"
+        },
+        "refinementButton": {
+          "display": true,
+          "active": false,
+          "parameters": {},
+          "etat": "optionDisabled"
+        },
+        "etat": ""
+      },
+      "Visualizer": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "changed": true
+        },
+        "affichage": {
+          "display": true,
+          "active": true,
+          "parameters": {
+            "hasOcr": true,
+            "isDisplayableConvention": true
+          },
+          "contenu": {
+            "paginationFirst": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la page précédente",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "icon-backward",
+              "description": "Première(s) page(s)",
+              "selected": false,
+              "url": "/",
+              "etat": "optionHidden"
+            },
+            "paginationLast": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la première page",
+                  "etat": "optionDisabled"
+                },
+                "role": "link"
+              },
+              "contenu": "icon-forward",
+              "description": "Dernière(s) page(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k702136k/f4.item.texteImage",
+              "etat": ""
+            },
+            "paginationNext": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la page suivante",
+                  "etat": "optionDisabled"
+                },
+                "role": "link"
+              },
+              "contenu": "icon-rightarrow",
+              "description": "Page(s) suivante(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k702136k/f2.item.texteImage",
+              "etat": ""
+            },
+            "paginationPrevious": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Aller à la dernière page",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "icon-leftarrow",
+              "description": "Page(s) précédente(s)",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage",
+              "etat": "optionHidden"
+            },
+            "paginationBrowse": {
+              "display": false,
+              "active": false,
+              "parameters": {
+                "accessibleLbl": {
+                  "display": true,
+                  "active": false,
+                  "parameters": {
+                    "role": ""
+                  },
+                  "contenu": "Décaler d'une page",
+                  "etat": "optionDisabled"
+                },
+                "role": "presentation"
+              },
+              "contenu": "",
+              "description": "Page +1",
+              "selected": false,
+              "url": "/",
+              "etat": "optionHidden"
+            },
+            "paginationCurrent": {
+              "display": true,
+              "active": true,
+              "parameters": {
+                "role": "link",
+                "updatePageUrl": "https://gallica.bnf.fr/services/ajax/pagination/page/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage"
+              },
+              "contenu": "",
+              "description": "Page courante",
+              "selected": false,
+              "url": "https://gallica.bnf.fr/ark:/12148/bpt6k702136k/f1.item.texteImage.item",
+              "etat": ""
+            },
+            "renderModel": {
+              "display": true,
+              "active": true,
+              "parameters": {},
+              "contenu": {
+                "previousPage": {
+                  "display": false,
+                  "active": false,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "lastPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "L'Aurore : littéraire, artistique, sociale / dir. Ernest Vaughan ; réd. Georges Clemenceau - vue 4 - page 4",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k702136k/f4.highres",
+                      "screenNumber": 4,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k702136k/f4.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/> ",
+                            "stringOCR": "Troisième Annffe. - Nwrtfro 76& <br/><br/>DIMANCHE 6 NOVEMBRE 1899 <br/><br/>CHnq Ceatimes <br/><br/>L'AURORE <br/><br/>Littéraire, Artistique, Sociale <br/><br/>Directeur <br/><br/>ÇRNEST VAUGHAN <br/><br/>' ABOUlirEMKKTS <br/><br/>Six Trois <br/>On an mois moi( <br/><br/>É5A!US 20 » 10 » B » <br/><br/>DFTF ARTEMKNTS ET ALOÉRIE. 24 » 12 » 8 » <br/>ÇïRÀRCîEnlUNJOHpGSTAUÙ. * 18 » 10 * <br/><br/>POUR LA RÉDACTION 1 <br/>S'adresser à M. A. BBRTHIER <br/><br/>Secrétaire de la Rêiiactton <br/><br/>TOEESSÊ TÉLÉGRAPHIQUE : AURORE-PARIS <br/><br/>Directeur f î <br/><br/>ERNEST VAUGHAN | ] <br/><br/>LES AMNONCCS SONT REÇUES : <br/><br/>142 - Ru© Montmartre - 14$ <br/><br/>AUX BLKEAUI DU TOURNAI. <br/><br/>Le* manutciti non insérés ne sont pas rendit^ . <br/><br/>ADRESSER LETTRES ET MANDATS : <br/>à M. A. BOUIT, Administrateur <br/><br/>Téléphone : 102-BB <br/><br/>Les insertions de publicité de l'Au- <br/>rore seront reçues, à partir du Ier dé- <br/>cembre prochain,â l'Office d'Annon- <br/>ces» 10, place de la Bourse, et aux <br/>Bureaux du Journal. <br/><br/>1 Dernier Effort <br/><br/>Tonte besogne entamée doit être ache- <br/>vée. Une poignée d'hommes» soutenus par <br/>une indomptable ténacité, est capable <br/>d'emporter les pires résistances. L'his- <br/>toire de ces deux dernières années nous <br/>enseigne de quelles victoires la volonté est <br/>un gage certain. Ne jamais se lasser, ce <br/>devrait être la commune devise des hom- <br/>mes qui se mettent en tête de faire triom- <br/><br/>pher une cause juste. Et c'est pourquoi, <br/>'àme sereine, je reviens tranquillement à <br/>mes moutons, je veux dire aux dernières <br/>victimes des lois scélérates. <br/><br/>J'écris à dessein les dernières, parce <br/>qu'il n'en reste plus au bagne qu'une <br/>demi-douzaine à peine. Six ou sept indi- <br/>vidus condamnés sans raison, ce n'est <br/>pas peu de chose, certes, mais en compa- <br/>raison des quelques douzaines dont le <br/>corps fut jeté en pâture aux requins, cela <br/>ne compte pas. Cela fait pour M. Loubet <br/>quelques signatures à donner, une demi- <br/>minute de travail, une misère! <br/><br/>Il y a tout juste trois semaines, je re- <br/>grettais ici-même, à propos de Monod, <br/>d'être obligé de constater que M. Loubet <br/>se montrait avare de clémence. Le hasard <br/>voulut que cinq jours après cet article un <br/>peu amer M. Loubet signa la grâce de <br/>Monod, précisément. Je n'eus point la <br/>sotte pensée de m'en attribuer le mérite. <br/>VAurore fit d'ailleurs remarquer avec à <br/>propos que le bénéfice dé cette mesure pré- <br/>sidentielle revenait aux efforts delà Ligue <br/>des Droits de l'Homme, convaincue par le <br/>rapport de M. Joseph Reinach. JEt c'est <br/>justement parce que la Ligue jouit auprès <br/>du président de la République d'une telle <br/>influence que je la veux mettre à contri- <br/>bution sans répit. Puisque M. Loubet . a <br/>commencé d'exercer sa royale prérogative <br/>en faveur de l'une des victimes de 1894, <br/>pourquoi ne ferait-il pas de même envers <br/>les autres ? Et qui s'en plaindrait?... <br/><br/>Si je compte bien, les condamnés <br/>pour délit d'opinion libertaire en cours de <br/>peine sont au nombre de sept. Ce sont : <br/>A\" Meunier et Chevry, condamnés par le <br/>jury d'Angers, le premier à sept ans de <br/>travaux forcés, le second à cinq ans, <br/>tous deux à dix ans d'interdiction de sé- <br/>jour, Grime : avoir dansé et chanté au <br/>rythme de la Carmagnole, 2° Paul Bury, <br/>condamné à treize mois de prison et à la <br/>rélégation. Grime ; avoir souhaité dans <br/>nn discours public une société meilleure. <br/>3° Liard-Courtois, condamné à cinq ans <br/>de travaux forcés et à cinq ans de relé- <br/>gation. Grime : avoir signé Liard au lieu <br/>de Courtois, fait retenu comme crime de <br/>faux par le jury qui, à la même audience <br/>acquitta Romain, un entrepreneur cou- <br/>pable de faux en écritures commerciales. <br/>4° Mouysset, condamné à un an et un jour <br/>de prison et à la relégation. Grime : avoir <br/>vendu des journaux libertaires étant affu- <br/>blé d'une blouse rouge. 5° Théodore Lar- <br/>daux, condamné à cinq ans de réclusion et <br/>à la rélégation. Grime : avoir attiré l'atten- <br/>tion de la gendarmerie par son air suspecta <br/>6° Ernest Grangé, condamné en 1891 à <br/>douze ans de travaux forcés et à la relé- <br/>gation. Grime : avoir tiré en l'air un coup <br/>de revolver. <br/><br/>Un huitième condamné sollicité l'atten- <br/>tion : Philippe, condamné en décembre <br/>1897 » par le tribunal correctionnel de <br/>Lille, a la prison et à la relégation. <br/>Crime : avoir été, comme gérant du jour- <br/>nal la Cravache, responsable d'un article <br/>jugé diffamatoire pour un industriel du <br/>Nord !!! Mais Philippe, averti, eut le soin <br/>de mettre ]a frontière entre sa personne <br/>et ses doux juges. Il est donc en liberté. <br/>Son cas n'en est pas moins digne d'inté- <br/>rêt. Je prends la liberté de le recomman- <br/>der également à la Ligue des Droits de <br/>VHomme. Un de plus, un de moins, ce <br/>n'est pas cette unité qui entravera ses <br/>efforts. <br/><br/>Je n'ignore pas que, sur ces huit con- <br/>damnés, trois seulement sont visés par le <br/>rapport Reinach : Lardaux, Meunier, <br/>Courtois. (M. Reinach réclamait aussi la <br/>grâce de Monod, qui n'est plus en cause, <br/>de Girier-Lorion et de Vauthier, morts <br/>depuis). Est-ce à dire que ies cinq autres, <br/>Chevry, Bury, Mouysset, Orangé, Phi- <br/>lippe, aient été écartés par le rapporteur <br/>de la Ligue volontairement î Je ne le <br/>pense pas. Quoi qu'il en soit, le dossier de <br/>chacun d'eux a été très clairement dé- <br/>pouillé, et leur situation très nettement <br/>exposée, sans réticence aucune, dans <br/>l'importante brochure publiée à la Revue <br/>Blanche par MM- de Pressera sé et Emile <br/>Pouget. <br/><br/>J'invite de nouveau les personnes qui <br/>ont bien voulu m'offrir leur concours pour <br/>achever cette campagne à lire ce docu- <br/>ment: ils pourront ainsi se renseigner <br/>aux sources mêmes, et agir en connais- <br/>sance de cause. <br/><br/>Maintenant, me demande-t-on de divers <br/>côtés, comment agir ? Damel il me sem- <br/>ble qu'à l'heure actuelle noua ne pouvons <br/>espérer pour ces huit malheureux qu'une <br/>chose unique : la grâce. Quant à l'amnis- <br/>tie, il faut être général et s'appeler Mer- <br/>cier pour en bénéficier. Aussi bien, en <br/>repoussant l'abrogation des lois scéléra- <br/>tes, la Chambre vient de démontrer une <br/>fois de plus (et je le faisais prévoir il y a <br/>dix jours â un député socialiste qui vou- <br/>lait bien me proposer de réclamer ladite <br/>abrogation) qu'elle est incapable de géné- <br/>rosité collective. Ge n'est donc pas du <br/>Parlement qu'il faut espérer la mesure <br/>libératrice : c'est du pouvoir exécutif, des <br/>ministres, du président de la Républi- <br/>que. <br/><br/>Le moment est propice. M. Loubet si- <br/>gnera dans un mois plusieurs centaines <br/>de grâces touchant des délits de droit <br/>commun. Si l'on veut que soient compri- <br/>ses dans le nombre celles de nos malheu- <br/><br/>reux clients, il faut agir dès à présent. <br/>Désormais tout retard serait néfaste. Ne <br/>sait-on pas quelle est la longanimité des <br/>bureaux chargés d'examiner le dossier <br/>d'un condamné, de dresser un rapport <br/>pour le ministre, etc. ? Détails oiseux, <br/>certes, mais c'est le plus souvent en se <br/>retranchant derrière des questions aussi <br/>mesquines que les gardes des sceaux jus- <br/>tifient leur refus de saisir la commission <br/>des grâces ou de soumettre les décrets <br/>nécessaires à la signature présidentielle. <br/>Ainsi les plus petites choses retardent en <br/>général le succès des causes les plus hu- <br/>maines. <br/><br/>Je demander la Ligue, à mes amis, à <br/>mes confrères, et même aux parlementai- <br/>res de bonne volonté, un dernier effort. Je <br/>pressens que nous touchons au but. Mais <br/>nous ne l'atteindrons que si nous avons la <br/>ferme volonté d'y parvenir. Huit grâces à <br/>enlever? Huit signatures à obtenir du <br/>Président! N'ai-je pas raison de dire que, <br/>pour M. Loubet, c'est une misère ?. <br/><br/>Henry Leyret. <br/><br/>COUPS DE POINTE <br/><br/>J'adore le boulevard, pour ce que les associa- <br/>lions d'idées y sont plus qu'ailleurs imprévues <br/>et multiples. C'est ainsi qu'hier, en outrancier <br/>badaud, je regardais les étalages des mat*. <br/>chaudes de fleurs. Ce paradoxal printemps, <br/>étalé sur chaque trottoir, m'induisait aux idées <br/>mélancoliques. Car les marchandes, selon leur <br/>louable coutume, annonçaient la sainte à fêter, <br/>et c'était justement la fête de sainte Cathe- <br/>rine f <br/><br/>Ah! les vieilles filles! Celles qu'un atavisme <br/><br/>malheureux a J ai tes laides; celles qu'un hasard <br/>injuste a faites pauvres; celles qui, malchan- <br/>ceuses ou trop nonchalantes, n'ont pas trouvé <br/>Vâme-soeur! Ét je m'apitoyais, quand vinrent <br/>à passer de jolies ouvrières, portant avec une <br/>joie agressive des chrysanthèmes et des dahlias <br/>jaunes à leur corsage. Et je vis là un sym- <br/>bole : la fille restant vieille fille par esprit de <br/>révolte, parce que la société lui est mauvaise, <br/>parce que les chances de bonheur ne valent pas <br/>l'effort qu'il faudrait tenter. Ces fleurs jaunes, <br/>ces fleurs de sainte Catherine! Je me disais <br/>que le problème social, le vrai, celui qu'il fau- <br/>drait résoudre tout d'abord, est justement ce <br/>problème de l'hostilité des sexes. Les hommes <br/>sont égoïstes,' les femmes ne sont pas franches; <br/>une plus juste répartition des produits de la <br/>terre changera-t-elle quoi que ce soit à cette <br/>chose terrible et décourageante? <br/><br/>Puis, comme le temps doux était propice <br/>aux remembrances poétiques, je me répétais <br/>les deux vers d'Alfred de Vigny ; <br/><br/>Et jetant L'on sur l'autre un regard irrité, <br/><br/>Les deux sexes mourront chacun de son côté. <br/><br/>Et ma rêverie finit comme elle devait ; par <br/>cette constatation que le cigare est le meilleur <br/>ami de l'homme. <br/><br/>Eugène Thebault. <br/><br/>Applaudissements <br/><br/>Il a été très dur, M. Delcassé, pour le fa- <br/>rouche parti des Fachodistes; mais la Cham- <br/>bre aussi a été cruelle. <br/><br/>Dès l'interruption si patriotique de M. <br/>Charles Bernard : « Et votre attitude lors de <br/>l'affaire de Fachoda I » ou a fort malhonnê- <br/>tement crié de divers côtés à la fois : « Ne <br/>répondez pas! - Co n'est pas nécessaire! - <br/>Gela n'en vaut pas la peine ! » <br/><br/>Et quand, faisant allusion aux événements <br/>du Transvaal, le ministre prodigua le3 épi- <br/>thètes railleuses à « certains patriotes fNous <br/>les connaissons !) esprits pondérés (On rit), <br/>éclairés, réfléchis (Nouveaux rires)... qui af- <br/>fichent pour l'un des belligérants, pour son <br/>courage, pour sa ténacité, une sympathie <br/>bruyante, mais qui entendent tirer parti de <br/>sa défaite qu'ils se plaisent à prophétiser... », <br/>des applaudissements à tour de bras ajou- <br/>tèrent comme des paires de claques aux <br/>coups de griffe de l'orateur. <br/><br/>Nouveaux, applaudissements quand, de- <br/>vant Dramont, devant Millevoye, devant <br/>Lasies, devant Cassagnac, il désigne « cer- <br/>tains journaux qui se font lea exploiteurs de <br/>nos prétendues humiliations nationales, <br/>comme auparavant on cultivait nos gran- <br/>deurs. » <br/><br/>Lorsque plus loin, revenant à ces mêmes <br/>journaux, il apprécie « la politique du poing <br/>tendu contre tout le monde à la fois » et <br/>s'écrie :« Ignorance stupéfiante ou exploita- <br/>tion éhontéedu plus noble des sentiments...», <br/>le compte rendu officiel met encore entre <br/>parenthèses : {Applaudissements vifs et ré- <br/>pétés). <br/><br/>Que parmi ces applaudissements vifs et â <br/>répétition il ne se trouve aucun de ceux qui <br/>naguère acclamaient Hanotaux, Cavaignac, <br/>Méline, it n'en faudrait pas jurer. Mais jus- <br/>tement ces étranges retours des girouettes <br/>d'ici bas sont d'autant plus douloureux à <br/>qui se vantait de conduire le vent et mener <br/>en laisse la tempête. <br/><br/>A. G. <br/><br/>LE GRAND ASSASSIN <br/><br/>On a lu hier dans l'Aurore une dépêche de <br/>Constantinople annonçant que, sur l'ordre <br/>d'Abd-ul-Hamid, Said-Bey, président do la <br/>section civile du Conseil d'Etat; Firdi-Bey, <br/>membre du Conseil d'Etat, et Zia-Mollan, <br/>chef des ulémas, ont été arrêtés dimanche, <br/>jugés lundi par le tribunal extraordinaire <br/>réuni au palais, condamnés sans appel à la <br/>déportation perpétuelle et expédiés aussitôt, <br/>à bord d'un vapeur, pour l'Arabie Méridio- <br/>nale . Motif : Us auraient conspiré avec le fils <br/>'Ui le frère de la Bête Rouge. <br/><br/>^D'autres dépêches ajoutent que a Saïd-Bey, <br/>Incarcéré sous la surveillance du geôlier du <br/>sultan Mourad, a été soumis à une torture <br/>spéciale ». Il faut compléter et rectifier cette <br/>information. Ce n'est pas le geôlier du sultan <br/>Mourad qui a torturé Saïd-Bey, ma's bien le <br/>très célèbre Ay-Hassan-Pacha (l'ours Hassan- <br/>Pacha), directeur de la police de Bechik- <br/>Tach, illustre par sa cruauté, inventeur d'un <br/>système de torsion des testicules qui porte <br/>son nom en Turquie et qu'il applique lui- <br/>même aux prisonniers de marque. <br/><br/>Quant à l'exil dans l'Yémen, il équivaut à <br/>la mort un peu lente : Saïd-Bey et ses deux <br/>compagnons seront quelque jour assassinés, <br/>en vertu d'instructions officielles, comme le <br/>furent autrefois Midhat-Pacha et Damad <br/>Mahmoud à Taïf : et j'aime à croire qu'on <br/>enverra aussi leur tète à Abd-ul-Hamid, pour <br/>qu'il s'assure de leur mort et se réjouisse en <br/>son coeur d'assassin. <br/><br/>Mais il fera bien de ne pas trop laisser traî- <br/>ner ses victimes : les choses tournent mal <br/>pour lui et si les ulémas s'en mêlent, nous <br/>aurons, d'ici peu à annoncer sa mort À IUL <br/><br/>Ce sera pour le Petit Journal une belle né- <br/>crologie, pour peu que M. Marinoni eût de la <br/>reconnaissance. <br/><br/>Pierre Quillard. <br/><br/>+ : ' <br/><br/>L'Histoire dîme Me <br/><br/>Il n'y a pas de plaisir à piétiner sur les <br/>comploteurs en disgrâce. Mais vraiment <br/>je ne puis m'empêcher de remarquer que <br/>dè9 les premiers témoignages toute la <br/>troupe est prise dans l'acte et que les <br/>plus emphatiques dénégations reçoivent <br/>des faits le plus éclatant démenti. <br/><br/>Ces messieurs ont voulu renverser le <br/>gouvernement: voilà ce qui est établi avec <br/>surabondance. Royalistes, césariens, bo- <br/>napartistes s'y sont employés chacun de <br/>son côté avec une ardeur sans seconde. <br/>N'ayant pas réussi, ils se plaignent <br/>très fort <jue la République se défende et <br/>préféreraient, parait-il, que M. Waldeck- <br/>Rousseau leur livrât les clefs de la place <br/>sans coup férir. Je suppose qu'ils ont <br/>maintenant renoncé à cet espoir. Leur at- <br/>titude n'en est pas moins étrange. Ils se <br/>posent en preux chevaliers, se mettent en <br/>posture de combat, et, dès les premières <br/>charges, jurent qu'ils n'ont rien fait. <br/>Cependant nous apprenons qu'on a dis- <br/>tribué force monnaie royaliste pour pro- <br/>férer des Vive VArmée / sur le passage <br/>attendu de MM. Déroulède et Roget en <br/>marche sur l'Elysée. L'accord ici devient <br/>tellement manifeste qu'il est inutile d'in- <br/>sister. <br/><br/>C'est la répétition des spectacles que <br/>le Boulangisme nous a donnés. Bou- <br/>langer croyait travailler pour son compte, <br/>comme Déroulède qui prétend lui succé- <br/>der. Les royalistes cependant apportèrent <br/>des millions au général factieux et le <br/>comte de Paris ne lui ménagea pas son <br/>appui. Je ne dis rien des bonapartistes, qui <br/>sont de tradition au premier rang de ces <br/>sortes de fête. Hier, l'histoire s'est répétée <br/>toute pareille, et nous avons vu les roya- <br/>listes se joindre aux bonapartistes dans <br/>la Ligué des patriotes, et y apporter le con- <br/>cours pécuniaire le plus important. Ce <br/>que j'en retiens, c'est qu'alors comme au- <br/>jourd'hui tous les ennemis de la Répu- <br/>blique, masqués ou découverts, donnèrent <br/>d'ensemble contre le gouvernement qui ne <br/>faisait pas à leurs mérites une place suffi- <br/>sante. <br/><br/>Le régime sous lequel nous vivons a <br/>certainement beaucoup de défauts, et je <br/>fais mon possible pour les mettre en lu- <br/>mière à mesure que l'occasion s'en pré- <br/>sente. Mais il a une qualité supérieure, <br/>c'est de nous donner, somme toute, un <br/>gouvernement en conformité de senti- <br/>ments avec la nation elle-même. Je ne nie <br/>pas qu'il y ait encore des élections faus- <br/>sées. Pourtant il est vrai de dire qu'à au- <br/>cun moment de son histoire, le peuple <br/>français ne fut si complètement maître <br/>de choisir ses représentants, et libre de <br/>leur imposer ses volontés. Bien ou mal <br/>gouverne, il a le gouvernement qu'il se <br/>donne lui-même et ne peut s'en pren- <br/>dre qu'à ses votes de ses mécomptes. <br/><br/>ALORS pourquoi une révolution? Parce <br/>que îe duc d'Orléans s'ennuie en Angle- <br/>terre? Parce que Déroulède voudrait jouer <br/>au César? Parce que Bailly» Du Lac et Di- <br/>don rêvent de faire griller quelques héré- <br/>tiques dévotement? Qu'ils aillent dire cela <br/>aux électeurs. Ils ont la même liberté <br/>que tous les autres citoyens pour con- <br/>vertir le suffrage universel à leurs vues. <br/>Mais voilà le malheur. Ils n'ont pas <br/>confiance dans leur force de persuasion, et <br/>trouvent plus simple d'arrêter un géné- <br/>ral au passage pour le sommer de com- <br/>mander le feu sur le gouvernement» Le <br/><br/>général, prudent, n'obéit pas, sachant <br/><br/>ien çpie des balles pourraient s'égarer en <br/>chemin, et voilà nos gens devant la Haute <br/>Cour. Ils n'ont pas fait grand mal. Mais ce <br/>n'est pas leur faute. Gouvernants et fau- <br/>teurs de co ups d'Etat étaient tous à peu <br/>près de même taille. On peut dire que <br/>jusqu'au ministère Waldeck-Rousseau <br/>c'étaient des « ennemis » faits pour s'en- <br/>tendre. <br/><br/>Aussi s'entendaient-ils fort bien. Dé- <br/>roulède allait à l'Elysée proposer la for- <br/>faiture à Félix Faure, et celui-ci lui <br/>déduisait tranquillement les raisons pour <br/>lesquelles il aurait le regret de ne pas faire <br/>sabrer les mandataires de la nation de qui <br/>il tenait ses pouvoirs. Méline et Dupuy <br/>livrèrent la rue aux bandes des patriotes à <br/>quarante sous qui mêlèrent les a \"Vive <br/>Esterhazy ! » avec les « Vive l'armée î », <br/>et confondirent dans les mêmes hour- <br/>ras, le traître, des généraux faussaires, <br/>un prince d'Orléans et M. Déroulède. <br/>Et le soir les journaux officieux racon- <br/>taient qu'il avait fallu protéger Zola con- <br/>tre « le peuple » qui voulait le jeter h <br/>l'eau. On a pu voir il y a quelques jours, <br/>sur la place de la Nation, la différence en- <br/>tre le peuple et les bandes embauchées. <br/>Enfin, acte de forfaiture impuni, Dupuy, <br/>ayant en mains la preuve du complot <br/>contre la République, réduisait la cons- <br/>piration aux proportions d'un délit de <br/>presse. <br/><br/>Aujourd'hui c'est un autre système. La <br/>République se défend. Waldeck-Rous- <br/>seau et Millerand qui ne sont pas sans fai- <br/>blesses-on me rendra cette justice que je <br/>ne fais rien pour le leur cacher - ont au <br/>moins ce mérite de ne vouloir en aucune <br/>façon servir les intérêts du césarisme, de <br/>la monarchie orléaniste, ou de la domi- <br/>nation cléricale. Gela ne suffit pas, mais <br/>c'est un commencement nécessaire. Les <br/>ennemis de la République sont pour- <br/>suivis. La preuve est faite de leurs ma- <br/>chinations. La loi frappera les coupables. <br/>Il ne restera plus aux républicains qu'à <br/>faire vivre la République après l'avoir <br/>sauvée. <br/><br/>Le duc d'Orléans, qui est un philosophe <br/>joyeux, avait prévu cette fin d'une che- <br/>vauchée qui n enrichira pas notablement <br/>les annales de sa famille. M. Buffet lui <br/>criait : a Sire, venez chercher la couronne. » <br/>Il répondait : « Commandez-moi toujours <br/>une veste de chasse à la Belle-Jardi- <br/>nière. » Ce fût son premier acte, son <br/>acte unique de gouvernement. Je dis que <br/><br/>c'est d'un sage. Car s'il n'a pas eu îa <br/>couronne, notre prince garde sa veste, <br/>gracieux emblème des voeux du peuple <br/>Français pour son « Roi sauveur », <br/>Comme « la nation » donna Chambord <br/>au précédent roi de France, sans l'insigne <br/>royal si périlleux à porter, nous pourrions <br/>par voie de souscription publique, faire <br/>les frais des deux pans de bon drap qui <br/>feraient de la veste du « Roi » une bonne <br/>robe de chambre pour réchauffer le coeur <br/>après la douche. <br/><br/>G. Clemenceau. <br/><br/>(Echos et Nouvelles <br/><br/>CALENDHIER - Dimanche 3G novembre. <br/><br/>- La#er du sûîêll : 7 h. a?-; coucher : 4 h. 8. <br/><br/>Temps d'hier : Nuageux. <br/><br/>Tlïermomètrc ûe l'Aurore : Maximum. 0*1 <br/>au-dessus ; Minimum, 5' au-dessus. <br/><br/>Baromètre de l'ingénieur Sccretan : A midî, <br/>T73*-S; à minuit. 7?811'. <br/><br/>Temps probable: Nuageux. <br/><br/>. Ephêmérides. - Visite à Paria, de Philippe le <br/>Beau et de Jeanne la Folle (père et mère de Char- <br/>les-Quint) ; l'archiduc va jouer à la paume aux <br/>IlaîlcB (1501). <br/><br/>Passage (désaslre) de la Bérésïna (1812). <br/><br/>6,000 O/Q <br/><br/>On sait qu'on a enfin obtenu par une loi <br/>de février dernier que les huissiers remet- <br/>traient désormais sous enveloppe fermée <br/>leurs papiers bleus - rien de la Banque de <br/>France - de façon à éviter l'intempestive <br/>curiosité des concierges, En même temps, un <br/>décret du conseil d'Etat fixait le prix de l'en- <br/>veloppe, qui doit être payé par le destina- <br/>taire. <br/><br/>Les enveloppes commerciales coûtant <br/>2 fr, 50 le mille, ce ^ui donne quatre enve- <br/>loppes pour un centime ou vingt enveloppes <br/>pour un sou, on aurait accordé uo bénéfice <br/>de deux mille pour cent ù MM. les huissiers, <br/>en fixant le prix de l'enveloppe à cinq centi- <br/>mes. <br/><br/>Le conseil d'Etat a _ trouvé que ce n'était <br/>pas suffisant et a taxé l'enveloppe à quinze <br/>centimes, ce qui la met à 150 francs le mille, <br/>et donne un bénéfice de six mille pour <br/>cent ! <br/><br/>Et la justice est gratuite en France. <br/><br/>QUI PAIE SES DETTES.... <br/><br/>L'Etat ne les paie pas et laisse en souf- <br/>france des dettes qu'il a reconnues. Il doit en <br/>ce moment au département de la Seine sa <br/>quote-part dans les dépenses occasionnées <br/>par l'agrandissement et l'Aménagement du <br/>Palais de Justice. Ces dépenses étaient en- <br/>dossées par la Ville, l'Etat et le Département. <br/>Ce dernier fit les frais ; la Ville de Paris lui <br/>remboursa ce qu'elle devait, mais l'Etat, <br/>après avoir soulevé des contestations sur le <br/>montantde sadette,et obtenu une transaction, <br/>n'a pas soldé la somme de 1,686,312 fr. 10 qu'il <br/>avait reconnu devoir en 1896. <br/><br/>Le département de la Seine, par l'organe <br/>de ses conseillers généraux, commence à <br/>se fâcher et à trouver qu'il a eu tort de faire <br/>crédit à ce mauvais payeur. <br/><br/>APAISEMENT <br/><br/>De V Univers Israélite : <br/><br/>M, Gérard, ministre de France à Bruxelles,qui, <br/>au banquet du 14 juillet dernier, n'a pas protesté, <br/>lorsqu'un convive assis â ses côtés a erié : * A <br/>bas les juifs ! », vient de fonder une nouvelle <br/>chambre de commerce, par opposition â celle <br/>existante depuis quinze ans. et dans laquelle nous <br/>comptons deux de nos coreligionnaires. <br/><br/>M. Gérard est ouvertement soutenu par M. Del- <br/>cassé, ministre des affaires étrangères. <br/><br/>C'est l'apaisement !... <br/><br/>200 DESSINS <br/><br/>Hermann-Paul vient de réunir en un vo- <br/>lume ses dessins du Figaro. Ce livre de cro- <br/>quis est un livre d'histoire. Le spirituel ar- <br/>tiste, en ce recueil que publie la Revue blan- <br/>che, nous restitue, en effet, la campagne <br/>pour la revision, l'enquête de la Cour de cas- <br/>sation, le procès de Rennes. <br/><br/>Déjà si expressifs par leur forme seule, c?s <br/>dessins sont rendus plus explicites encore <br/>par lea légendes ironiques et profondes qui <br/>les soulignent. Une galerie de portraits ter- <br/>mine le volume, ceux de tous les personna- <br/>ges du procès de Rennes, juges, témoins, ex- <br/>perts, spectateurs - et on sait avec quelle <br/>maîtrise Hermann-Paul imprime sur le mas- <br/>que d'un contemporain la particularité mo- <br/>rale qui le hausse à l'effigie. <br/><br/>CAQE DE PA>X <br/><br/>On mande de Pékin : « Li-Hung-Tchang <br/>vient d'être nommé, par décret impérial, mi- <br/>nistre du commerce. » <br/><br/>Voilà une nomination qui fera du bruit. <br/>On disait que la politique chinoise était <br/>toute â la guerre. Cette nomination de Li- <br/>Hung-Tchang est évidemment un gage de <br/>paix. <br/><br/>AU MUSÉUM <br/><br/>Nous avons parlé, il y a quelque temps, <br/>des curieuses expériences auxquelles MM. <br/>Milne-Edwards, Viré et quelques autres sa <br/>vants se livrent dans la partie des catacom- <br/>bes située sous le Jardin des Plantes. Ces <br/>savants avaient entrepris des études sur la <br/>transformation des animaux soumis à l'in- <br/>fluence exclusive de l'obscurité. Aujourd'hui, <br/>comme nous le faisions entrevoir jadis, les <br/>expériences ont réussi au delà de toute espé- <br/>rance, Citons quelques cas qui attirent par- <br/>ticulièrement l'attention par leur anomalie <br/>et leur curiosité. <br/><br/>Des insectes tétraptères (à 4 ailes) ou dip- <br/>tères (à 2 ailes) ont perdu leurs ailes, leurs <br/>pattes se sont allongées, leuT tête s'est agré- <br/>mentée d'une sorte ae trompe; des rats sont <br/>devenus complètement aveugles, et même la <br/>trace extérieure de la vue a disparu; de <br/>même leur tête se termine maintenant paT <br/>une sorte de trompe avec laquelle ils ramas- <br/>sent par terre les atomes qui sont devenus <br/>leur nourriture ; leurs pattes se sont pour- <br/>vues d'une membrane semblable â celle des <br/>palmipèdes. Des crapauds ont subi à peu do <br/>chose près les mêmes transformations que <br/>les rats. <br/><br/>BARBAPOUX <br/><br/>Le Théâtre du Peuple se prépare ê donner, <br/>dans la première quinzaine de décembre, un <br/>spectacle privé qui ne manquera pas de faire <br/>sensation. On annonce, en effet, une confé- <br/>rence de notre distingué confrère Serge Bas- <br/>set, et la représentation de Suicide, pièce <br/>sociale en un acte, de Lucien Wahl, et de <br/>Chacun pour soi, drame en un acte, d'André <br/>Pétrel. La soirée sera terminée par une pièce <br/>très audacieuse, Barbapoux, revue symbolico- <br/>réaliste en deux actes, de notre collaborateur <br/>Charles Malato. Sous des noms transparents, <br/>des personnalités - quelques-unes bruyantes <br/>et malpropres - passeront de la scène poli- <br/>tique sur celle du théâtre : on rira. <br/><br/>ÇA ET LA <br/><br/>IJB on AND BANQUET d'inauguration du Comité <br/>républicain du commerce et de l'industrie aura <br/>lieu le 29 novembre 1895), à sept heures et demie, <br/>au Grand Hôtel, sons la présidence de M. le mi- <br/>nistre du commerce. <br/><br/>Le bureau du Comité rappelle â ses membres <br/>adhérents que les listes pour l'admission au ban- <br/>quet seront définitivement closes ie lundi 27 cou- <br/>rant. Avis aux retardataires. <br/><br/>LA PRESSE UTILE. - C'est dans la presse utile <br/><br/>Sue M, Gaston Boissier, dans son rapport A l'Aca- <br/>dmie, a rangé le Magasin pittoresque, que <br/>l'assemblée a « voulu honorer en lui apportant <br/>sos félicitations et SES RÉCOMPENSÉE J». <br/><br/>Cette très ancienne publication est depuis quel- <br/>que temps dirigée par notre confrère Ch. Formen- <br/>tin, qui a transporté ses bureaux, M, rue de <br/>Lille. <br/><br/>L'ESPRIT OU VOISIN <br/><br/>Au restaurant. <br/><br/>- Garçon, mon potage est bien long à <br/>venir... <br/><br/>- - Dame, monsieur a demandé un potage <br/>à la tortue 1 <br/><br/>Scara mouche. <br/><br/>LES ASSOMPTIONNISTES <br/><br/>Rapport et procès-verbal officiel de perqui- <br/>sition. - Les 1,800,000 francs <br/>constatés judiciairement <br/><br/>Le Père Bailly, on s'en souvient, a eu l'é- <br/>tonnant aplomb de démentir que M. Pé- <br/>chard, commissaire de police, eût trouvé <br/>dans la cellule du père Hippolyte Saugrain, <br/>trésorier de l'Ordre, entre diverses piè- <br/>ces importantes, une somme d'environ <br/>1,800,000 francs. Nous avions, en <br/>dépit de la lettre rectificative du Père Bailly, <br/>maintenu nos renseignements. <br/><br/>Nous avons eu raison. Le Figaro a publié <br/>hier le rapport de M. Péchard sur sa perqui- <br/>sition et son procès-verbal de saisie. <br/><br/>Rapport et procès-verbal confirment de <br/>point en point nos divers récits. <br/><br/>Détachons de ce rapport ce passage sail- <br/>lant ; <br/><br/>Nous remarquons, tant dans lés meubles gar- <br/>nissant la cellule (bibliothèque, armoires, bureau, <br/>table) qae dans un coffre-tort ouvert sur notre <br/>réquisition, une nombreuse correspondance rela- <br/>tive à des dons faits au nom do saint Antoine de <br/>Padoue, en exécution de voeux accomplis, et cons- <br/>tatons la présence de fonds importants en billets <br/>de banque, rouleaux d'or, titres ou actions di- <br/>verses que l'on peut estimer à 11,800.000 francs; <br/>noua trouvons également des testaments faits par <br/>des personnes en faveur de prêtres ou de reli- <br/>gieux dont les noms ne figurent pas dans la lista <br/>des individus faisant l'objet de notre commission <br/>regatoire. <br/><br/>Et dn procès-verbal de saisie extrayons ces <br/>quelques lignes significatives : <br/><br/>Nous avons également saisi et placé sous scellé <br/>portant le n* 2 un bail et une contre-lettre relatifs <br/>a l'immeuble de la rue François-Ier, n» 8. <br/><br/>Sous le ecelle n° 3, nous avons placé une lettre <br/>adressée par le P. Victorin au directeur de l'As- <br/>somption de Nîmes, dans laquelle ce religieux <br/>annonce que des poursuites vont être intentées <br/>prochainement contre la congrégation. <br/><br/>Dans le Figaro d'hier le premier docu- <br/>ment était porté comme ayant été signé par <br/>le père Hippolyte Saugrain. <br/><br/>C'était la une erreur matérielle sans im- <br/>portance. Mais le Père Bailly en a profité <br/>pour équivoquer et déclarer que cette pièce <br/>n'existait pas et que lea 1,800,000 francs <br/>étaient une légende. Le» 1,800,000 <br/>francs «lit été va» par M. Péchard, <br/>mais, â vrai dire, ce n est pa* dans un pro- <br/>cès-verbal, mais dans un rapport adressé <br/>par lui à ces chefs sur l'ensemble de ses opé- <br/>rations que le commissaire en a constaté <br/>l'existence. <br/><br/>- Je n'avais pas â faire signer ce rapport au <br/>père Hippolyte, nous a-t-il dit, et le père Hippo- <br/>lite ne l'a pas signé en effet. <br/><br/>La présence des 1,800,000 francs n'en reste <br/>pas moins judiciairement constatée par un <br/>commissaire de police agissant sur commis- <br/>sion rogatoire régulière. <br/><br/>Le P, Bailly, dans ses démentis, ne souffle <br/>mot de la contre-lettre saisie par M.Péchard. <br/>La pièce a bien son importance, mais la <br/>nier est impossible et serait de peu de pro- <br/><br/>A la vérité, le fisc fera payer cher aux bons <br/>Pères leur manoeuvre frauduleuse. Mais que <br/>leur importe ! Ils crieront à la persécution, et <br/>les fidèles augmenteront les offrandes. <br/><br/>Albéric Darthèze. <br/><br/>HAUTE COUR <br/><br/>Le spectacle que donne la Haute Cour n'est <br/>pas précisément édifiant. Je ne conseille <br/><br/>g oint d'y mener en caravanes les touristes <br/>ook pour leur faire voir la majesté de la <br/>République et la dignité de ses sénateurs sur <br/>leurs chaises curules. Quand, à Rome, les <br/>Pères conscrits se laissèrent tirer la barbe <br/><br/>f.ar les Gaulois de Brennus, il n'y avait point <br/>à d'assistants ironiques. <br/><br/>Ce n'est pas seulement qu'accusés, témoins <br/>et avocats eù prennent à leur aise avec le <br/>Code et les convenances, dirigent les débats <br/>à leur guise, accablent d'outrages leurs ju- <br/>ges et s'accordent à qui mieux mieux le plai- <br/>sir exquis de crier à la tyrannie en se li- <br/>vrant au désordre. La mollesse du président <br/>n'a d'égale que le manque d'à-propos et de <br/>présence d'esprit du procureur général. Et, <br/>brochant sur le tout, la prudence avisée de <br/>ceux des membres du Sénat qui, bien loin <br/>de méditer sur ce pauvre Déroulède et ses <br/>co-accusés de barbares vengeances, ne son- <br/>gent qu'à décliner une responsabilité qui leur <br/>pèse et qu'à fausser compagnie à leurs collè- <br/>gues sans tambour nt trompette f <br/><br/>Chaque jour voit se renouveler, à l'appel <br/>nominal, le petit tour de passe-passe par le- <br/>quel un sénateur, après l'autre, s'égrène et <br/>perd - volontairement - ie droit de siéger, <br/>sous prétexte de n'avoir pu faire acte de pré- <br/>sence à l'heure dite. De bons prophètes affir- <br/>ment que M. de Freycinet se dispose à pren- <br/>dre ainsi congé à l'anglaise. <br/><br/>Cette sortie discrète serait tout à fait dans <br/>le tempérament du délicieux vieillard qui <br/>n'a jamais cheminé que de guingois et qui <br/>aurait pu inventer la poudre... d'escampette. <br/>Il aurait tort toutefois de se flatter de l'espoir <br/>de filer sans bruit. Ses électeurs ont l'oeil sur <br/>lui. S'il esquive ce devoir républicain, il ne <br/>devra pas s'étonner, en dépit de tout l'art <br/>avec lequel il a toujours su s'insinuer dans <br/>les bonnes grâces de tout le monde, de se <br/>voir demander compte, au scrutin de jan- <br/>vier, de cette petite lâcheté avec quelques <br/>autres et d'être rendu prématurément aux <br/>joies domestiques et paisibles de la vie pri- <br/>vée. <br/><br/>Ce n'est pas d'ailleurs que je m'étonne ou <br/>me scandalise fort de cette espèce de torpeur <br/>générale. La raison en est simple. Ce procès <br/>repose sur une fiction. On y a pratiqué de <br/>force une disjonction arbitraire, On n'a pas <br/>voulu mettre en cause messieurs les mili- <br/>taires, qui étaient pourtant, par définition, <br/>les plus coupables. <br/><br/>Chacun sent l'impossibilité d'aller au fond <br/>d'une affaire ainsi volontairement mutilée. <br/><br/>Ii répugne à quelques-uns de réserver toute® <br/>leurs rigueurs pour les civils en épargnant <br/>la personne sacro-sainte des généraux - à <br/>qui l'on fait même risette, chemin faisant. <br/>Le Dauphin, sous l'ancien régime, avait â ses <br/>côtés un page destiné à être fouetté pour lea <br/>fautes princiéres. L'armée, de notre temps, <br/>jouerait-elle à sou tour, sinon de l'impecca- <br/>bilité, du moins de l'impunité absolue? <br/><br/>Cruelle énigme ! En attendant qu'elle soit <br/>résolue, ce privilège du galon choque les <br/>bonnes âmes, embarrasse les amis de îa jus- <br/>tice, offre aux habiles gens \\v.\\ prétexte à <br/>souhait pour se soustraire à un devoir péni- <br/><br/>II est certain, pourtant, qu'il ne s'agit pas <br/>en l'espèce de sévir bien terriblement contre <br/>Déroulède et eonsorts. La facilité par trop <br/>bonhomme avec laquelle le président Falliè- <br/>rea vient d'éviter à ce grand patriote une <br/>confrontation avec le général Roget d'où <br/>aurait Ju jaillir la preuve de la prémédita- <br/>tion scélérate du coup d'Etat de l'un et de la <br/>complicité à éclipse de l'autre, est un gage <br/>d'indulgence. C'est la contre-partie assez <br/>exacte de l'infâme collusion par laquelle la <br/>justice militaire de Carrière et de Jouaust <br/>feignit de croire â la maladie, sitôt et si <br/>complètement guérie, du colonel du Paty de <br/>Clam pour éviter à cet inquisiteur fantai- <br/>siste l'ennui d'une confrontation avec sa vic- <br/>time. <br/><br/>Vrai, les accusés auraient meilleure grâce â <br/>ne pas geindre â fendre le coeur sur de pré- <br/>tendues rigueurs. Outre que des hommes en <br/>état de grâce héroïque devraient payer ga- <br/>lamment l'enjeu d'une grosse partie qu iis <br/>auraient gagnée à nos dépens, il n'est pas <br/>sans quelque ridicule de les entendre récri- <br/>miner comme ils font quand on se souvient <br/>des façons d'agir du chancelier Pasquier et <br/>de la Cour des pairs et des procédés plus <br/>sommaires encore du second Empire. Il n'y <br/>a pas si longtemps d'ailleurs que ces conspi- <br/>rateurs, qui se plaignent du pli d'une rose et <br/>de la violation d'une formalité, se réjouis- <br/>saient en sauvages des souffrances du captif <br/>de l'île du Diable, des illégalités des conseils <br/>de guerre et des crimes de l'Etat-Major contre <br/>un innocent. <br/><br/>Francis de Pressensé. <br/><br/>NE VOUS GÊNEZ PAS <br/><br/>Si jamais vient au pouvoir un cabinet qui <br/>ait besoin de se débarrasser de MM. : <br/><br/>Millerand, directeur da la Lanterne, jour- <br/>nal socialiste; f <br/>Baudin, syndic des Journalistes parisiens ; <br/>De Lanessan, rédacteur au Rappel; <br/><br/>Jean Dupuy, président du Syndicat de la <br/>presse parisienne; <br/><br/>ce cabinet là n'aura pas besoin de se gêner. <br/><br/>La loi scélérate permet d'arrêter préventi- <br/>vement tous les journalistes. Il suffit de faire <br/>dresser par le parquet ua réquisitoire rele- <br/>vant, dans une phrase tronquée d'un article, <br/>une prétendue provocation anarchiste. <br/><br/>Ni Lanessan, ni Millerand, ni Baudin, ni <br/>Dupuy ne protesteront. Us auront donné <br/>1 exemple et subiront certainement avec plai- <br/>sir, comme journalistes, la loi qu'ils auront <br/>fait appliquer, comme ministres, dans un in- <br/>térêt de défense républicaine. <br/><br/>J. P. <br/><br/>GUERRES COLONIALES <br/><br/>Par Vigné d'Octon <br/><br/>A propos de ce que j'écris dans VA urore <br/>contre la traite des noirs, mon ami Camille <br/>Pelletan dit dans la Dépêche de Toulouse : <br/>« L'esclavage ruine les régions où il est ins- <br/>tallé parce qu'il les dépeuple. Il faut en effet <br/>pour achalander les marchés - dont la plu- <br/>part se tiennent sous notre surveillance - <br/>que les tyranneaux du pays se livrent à des <br/>guerres continuelles de village à village et <br/>tuent autant de malheureux qu'ils en amè- <br/>nent en captivité. Il faut ensuite que le bé- <br/>tail humain conquis de la sorte soit traîné <br/>sur d'énormes espaces par des caravanes de <br/>foi Bans devenus ae véritables bêtes fauyes et <br/>sème sa route de cadavres... » <br/><br/>Jamais paroles ne furent plus vraies et, <br/>pour le démontrer, je n'ai qu'à faire appel à <br/>ma mémoire, aux faits dont je fus le témoin <br/>ainsi qu'aux nombreux documents émanant <br/>de nos correspondants et dont l'authenticité <br/>est indiscutable. <br/><br/>Lorsque je fus envoyé dans le Sud pour <br/>prendre part & la colonne du Rio-Nunez, le <br/>bateau sur lequel j'étais fit escale dans la <br/>Basse-Cazamance. Nous eûmes, les autres of- <br/>ficiers et moi, assez de temps pour visiter» <br/>soit en pirogue, soit à pied, une bonne partie <br/>de cette région, et remonter dans le haut du <br/>fleuve jusqu'à notre poste de Sedhiou. Nous <br/><br/>J tûmes nous convaincre que la paix la plus pro- <br/>onde régnait sur les deux rives. Le pays pa- <br/>raissait même jouir d'une prospérité relative; <br/>les villages des Ballantes et des Yolos, que nous <br/>visitâmes, avaient un air de gaieté calme et <br/>sereine qui nous séduisit, malgré la mélan- <br/>colie profonde du paysage. lia étaient assez <br/>nombreux, assez rapprochés l'un de l'autre, <br/>les gamins - gentils négrillons à mine éveil- <br/>lée - grouillaient dans la poussière . des <br/>ruelles, parmi les chiens et les phacochères; <br/>nous croisions à chaque pas des jeunes fem- <br/>mes, des fillettes, qui nous saluaient du sou- <br/>rire de leurs dents Wanches. Bref, tout indi- <br/>quait une population assez dense et heureuse, <br/>et la Géographie d'Elisée Reclus, que je con- <br/>sultais, donnait, pour le pava par nous-vi- <br/>sité une population d'environ deux mille <br/>âmes. <br/><br/>Un an après, â mon retour, repassant par <br/>là, je trouvai cette région méconnaissable. <br/>Les champs cultivés, ies lougans, comme on <br/>dit là-bas, étaient devenus des broussailles. <br/>A la place des villages si gais, si tranquilles, <br/>il n'jr avait que des amoncellements de dé- <br/>combres ; dans la brousse qui remplaçait les <br/>cultures je ne rencontrais plus âme vivante, <br/>Où plutôt, de loin en loin, quelques miséra- <br/>bles noirs, éborgnés ou mutiles, qui, dès qu'ils <br/>apercevaient un homme blanc, s'enfuyaient <br/>comme des bêtes effarouchées dans la pro- <br/>fondeur des broussailles. Ah ! te recensement <br/>des pays Yolos et Ballantes n'eût pas été <br/>maintenant bien long à faire et, pour rester <br/>dans la vérité, l'illustre géographe aurait eu <br/>besoin de modifier sérieusement ses chiffres <br/>et aussi la description qu'il donnait de cette <br/>région africaine. Et ee n'est pas là-soit <br/>dit en passant - une des conséquences ïea <br/>moins curieuses et les moins tristes de la <br/>chasse à l'esclave et de notre colonisation & <br/>coups de fusil, que cette impossibilité de faire <br/>de ces pays-là des descriptions géographique» <br/>et fine cartographie précises. <br/><br/>Aujourd'hui, sur les rapports des plua <br/>consciencieux voyageurs, le géographe dé- <br/>crit tel coin du Soudan, en énumere les vil- <br/>lages, dont il indique la situation, la popu- <br/>lation, les cultures, ii en dresse une carte <br/>aussi juste que possible six mois, un an <br/>après, ee qu'il indiquait comme une oasis <br/>assez florissante n'est qu'un désert lamen- <br/>table ; il n'y a trace ni des villages marqués <br/>sur la carte, ni des cultures décrites ; partie <br/><br/>V 5-irS <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                },
+                "firstPage": {
+                  "display": false,
+                  "active": false,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "nextPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "L'Aurore : littéraire, artistique, sociale / dir. Ernest Vaughan ; réd. Georges Clemenceau - vue 2 - page 2",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k702136k/f2.highres",
+                      "screenNumber": 2,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k702136k/f2.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/> ",
+                            "stringOCR": "Troisième Annffe. - Nwrtfro 76& <br/><br/>DIMANCHE 6 NOVEMBRE 1899 <br/><br/>CHnq Ceatimes <br/><br/>L'AURORE <br/><br/>Littéraire, Artistique, Sociale <br/><br/>Directeur <br/><br/>ÇRNEST VAUGHAN <br/><br/>' ABOUlirEMKKTS <br/><br/>Six Trois <br/>On an mois moi( <br/><br/>É5A!US 20 » 10 » B » <br/><br/>DFTF ARTEMKNTS ET ALOÉRIE. 24 » 12 » 8 » <br/>ÇïRÀRCîEnlUNJOHpGSTAUÙ. * 18 » 10 * <br/><br/>POUR LA RÉDACTION 1 <br/>S'adresser à M. A. BBRTHIER <br/><br/>Secrétaire de la Rêiiactton <br/><br/>TOEESSÊ TÉLÉGRAPHIQUE : AURORE-PARIS <br/><br/>Directeur f î <br/><br/>ERNEST VAUGHAN | ] <br/><br/>LES AMNONCCS SONT REÇUES : <br/><br/>142 - Ru© Montmartre - 14$ <br/><br/>AUX BLKEAUI DU TOURNAI. <br/><br/>Le* manutciti non insérés ne sont pas rendit^ . <br/><br/>ADRESSER LETTRES ET MANDATS : <br/>à M. A. BOUIT, Administrateur <br/><br/>Téléphone : 102-BB <br/><br/>Les insertions de publicité de l'Au- <br/>rore seront reçues, à partir du Ier dé- <br/>cembre prochain,â l'Office d'Annon- <br/>ces» 10, place de la Bourse, et aux <br/>Bureaux du Journal. <br/><br/>1 Dernier Effort <br/><br/>Tonte besogne entamée doit être ache- <br/>vée. Une poignée d'hommes» soutenus par <br/>une indomptable ténacité, est capable <br/>d'emporter les pires résistances. L'his- <br/>toire de ces deux dernières années nous <br/>enseigne de quelles victoires la volonté est <br/>un gage certain. Ne jamais se lasser, ce <br/>devrait être la commune devise des hom- <br/>mes qui se mettent en tête de faire triom- <br/><br/>pher une cause juste. Et c'est pourquoi, <br/>'àme sereine, je reviens tranquillement à <br/>mes moutons, je veux dire aux dernières <br/>victimes des lois scélérates. <br/><br/>J'écris à dessein les dernières, parce <br/>qu'il n'en reste plus au bagne qu'une <br/>demi-douzaine à peine. Six ou sept indi- <br/>vidus condamnés sans raison, ce n'est <br/>pas peu de chose, certes, mais en compa- <br/>raison des quelques douzaines dont le <br/>corps fut jeté en pâture aux requins, cela <br/>ne compte pas. Cela fait pour M. Loubet <br/>quelques signatures à donner, une demi- <br/>minute de travail, une misère! <br/><br/>Il y a tout juste trois semaines, je re- <br/>grettais ici-même, à propos de Monod, <br/>d'être obligé de constater que M. Loubet <br/>se montrait avare de clémence. Le hasard <br/>voulut que cinq jours après cet article un <br/>peu amer M. Loubet signa la grâce de <br/>Monod, précisément. Je n'eus point la <br/>sotte pensée de m'en attribuer le mérite. <br/>VAurore fit d'ailleurs remarquer avec à <br/>propos que le bénéfice dé cette mesure pré- <br/>sidentielle revenait aux efforts delà Ligue <br/>des Droits de l'Homme, convaincue par le <br/>rapport de M. Joseph Reinach. JEt c'est <br/>justement parce que la Ligue jouit auprès <br/>du président de la République d'une telle <br/>influence que je la veux mettre à contri- <br/>bution sans répit. Puisque M. Loubet . a <br/>commencé d'exercer sa royale prérogative <br/>en faveur de l'une des victimes de 1894, <br/>pourquoi ne ferait-il pas de même envers <br/>les autres ? Et qui s'en plaindrait?... <br/><br/>Si je compte bien, les condamnés <br/>pour délit d'opinion libertaire en cours de <br/>peine sont au nombre de sept. Ce sont : <br/>A\" Meunier et Chevry, condamnés par le <br/>jury d'Angers, le premier à sept ans de <br/>travaux forcés, le second à cinq ans, <br/>tous deux à dix ans d'interdiction de sé- <br/>jour, Grime : avoir dansé et chanté au <br/>rythme de la Carmagnole, 2° Paul Bury, <br/>condamné à treize mois de prison et à la <br/>rélégation. Grime ; avoir souhaité dans <br/>nn discours public une société meilleure. <br/>3° Liard-Courtois, condamné à cinq ans <br/>de travaux forcés et à cinq ans de relé- <br/>gation. Grime : avoir signé Liard au lieu <br/>de Courtois, fait retenu comme crime de <br/>faux par le jury qui, à la même audience <br/>acquitta Romain, un entrepreneur cou- <br/>pable de faux en écritures commerciales. <br/>4° Mouysset, condamné à un an et un jour <br/>de prison et à la relégation. Grime : avoir <br/>vendu des journaux libertaires étant affu- <br/>blé d'une blouse rouge. 5° Théodore Lar- <br/>daux, condamné à cinq ans de réclusion et <br/>à la rélégation. Grime : avoir attiré l'atten- <br/>tion de la gendarmerie par son air suspecta <br/>6° Ernest Grangé, condamné en 1891 à <br/>douze ans de travaux forcés et à la relé- <br/>gation. Grime : avoir tiré en l'air un coup <br/>de revolver. <br/><br/>Un huitième condamné sollicité l'atten- <br/>tion : Philippe, condamné en décembre <br/>1897 » par le tribunal correctionnel de <br/>Lille, a la prison et à la relégation. <br/>Crime : avoir été, comme gérant du jour- <br/>nal la Cravache, responsable d'un article <br/>jugé diffamatoire pour un industriel du <br/>Nord !!! Mais Philippe, averti, eut le soin <br/>de mettre ]a frontière entre sa personne <br/>et ses doux juges. Il est donc en liberté. <br/>Son cas n'en est pas moins digne d'inté- <br/>rêt. Je prends la liberté de le recomman- <br/>der également à la Ligue des Droits de <br/>VHomme. Un de plus, un de moins, ce <br/>n'est pas cette unité qui entravera ses <br/>efforts. <br/><br/>Je n'ignore pas que, sur ces huit con- <br/>damnés, trois seulement sont visés par le <br/>rapport Reinach : Lardaux, Meunier, <br/>Courtois. (M. Reinach réclamait aussi la <br/>grâce de Monod, qui n'est plus en cause, <br/>de Girier-Lorion et de Vauthier, morts <br/>depuis). Est-ce à dire que ies cinq autres, <br/>Chevry, Bury, Mouysset, Orangé, Phi- <br/>lippe, aient été écartés par le rapporteur <br/>de la Ligue volontairement î Je ne le <br/>pense pas. Quoi qu'il en soit, le dossier de <br/>chacun d'eux a été très clairement dé- <br/>pouillé, et leur situation très nettement <br/>exposée, sans réticence aucune, dans <br/>l'importante brochure publiée à la Revue <br/>Blanche par MM- de Pressera sé et Emile <br/>Pouget. <br/><br/>J'invite de nouveau les personnes qui <br/>ont bien voulu m'offrir leur concours pour <br/>achever cette campagne à lire ce docu- <br/>ment: ils pourront ainsi se renseigner <br/>aux sources mêmes, et agir en connais- <br/>sance de cause. <br/><br/>Maintenant, me demande-t-on de divers <br/>côtés, comment agir ? Damel il me sem- <br/>ble qu'à l'heure actuelle noua ne pouvons <br/>espérer pour ces huit malheureux qu'une <br/>chose unique : la grâce. Quant à l'amnis- <br/>tie, il faut être général et s'appeler Mer- <br/>cier pour en bénéficier. Aussi bien, en <br/>repoussant l'abrogation des lois scéléra- <br/>tes, la Chambre vient de démontrer une <br/>fois de plus (et je le faisais prévoir il y a <br/>dix jours â un député socialiste qui vou- <br/>lait bien me proposer de réclamer ladite <br/>abrogation) qu'elle est incapable de géné- <br/>rosité collective. Ge n'est donc pas du <br/>Parlement qu'il faut espérer la mesure <br/>libératrice : c'est du pouvoir exécutif, des <br/>ministres, du président de la Républi- <br/>que. <br/><br/>Le moment est propice. M. Loubet si- <br/>gnera dans un mois plusieurs centaines <br/>de grâces touchant des délits de droit <br/>commun. Si l'on veut que soient compri- <br/>ses dans le nombre celles de nos malheu- <br/><br/>reux clients, il faut agir dès à présent. <br/>Désormais tout retard serait néfaste. Ne <br/>sait-on pas quelle est la longanimité des <br/>bureaux chargés d'examiner le dossier <br/>d'un condamné, de dresser un rapport <br/>pour le ministre, etc. ? Détails oiseux, <br/>certes, mais c'est le plus souvent en se <br/>retranchant derrière des questions aussi <br/>mesquines que les gardes des sceaux jus- <br/>tifient leur refus de saisir la commission <br/>des grâces ou de soumettre les décrets <br/>nécessaires à la signature présidentielle. <br/>Ainsi les plus petites choses retardent en <br/>général le succès des causes les plus hu- <br/>maines. <br/><br/>Je demander la Ligue, à mes amis, à <br/>mes confrères, et même aux parlementai- <br/>res de bonne volonté, un dernier effort. Je <br/>pressens que nous touchons au but. Mais <br/>nous ne l'atteindrons que si nous avons la <br/>ferme volonté d'y parvenir. Huit grâces à <br/>enlever? Huit signatures à obtenir du <br/>Président! N'ai-je pas raison de dire que, <br/>pour M. Loubet, c'est une misère ?. <br/><br/>Henry Leyret. <br/><br/>COUPS DE POINTE <br/><br/>J'adore le boulevard, pour ce que les associa- <br/>lions d'idées y sont plus qu'ailleurs imprévues <br/>et multiples. C'est ainsi qu'hier, en outrancier <br/>badaud, je regardais les étalages des mat*. <br/>chaudes de fleurs. Ce paradoxal printemps, <br/>étalé sur chaque trottoir, m'induisait aux idées <br/>mélancoliques. Car les marchandes, selon leur <br/>louable coutume, annonçaient la sainte à fêter, <br/>et c'était justement la fête de sainte Cathe- <br/>rine f <br/><br/>Ah! les vieilles filles! Celles qu'un atavisme <br/><br/>malheureux a J ai tes laides; celles qu'un hasard <br/>injuste a faites pauvres; celles qui, malchan- <br/>ceuses ou trop nonchalantes, n'ont pas trouvé <br/>Vâme-soeur! Ét je m'apitoyais, quand vinrent <br/>à passer de jolies ouvrières, portant avec une <br/>joie agressive des chrysanthèmes et des dahlias <br/>jaunes à leur corsage. Et je vis là un sym- <br/>bole : la fille restant vieille fille par esprit de <br/>révolte, parce que la société lui est mauvaise, <br/>parce que les chances de bonheur ne valent pas <br/>l'effort qu'il faudrait tenter. Ces fleurs jaunes, <br/>ces fleurs de sainte Catherine! Je me disais <br/>que le problème social, le vrai, celui qu'il fau- <br/>drait résoudre tout d'abord, est justement ce <br/>problème de l'hostilité des sexes. Les hommes <br/>sont égoïstes,' les femmes ne sont pas franches; <br/>une plus juste répartition des produits de la <br/>terre changera-t-elle quoi que ce soit à cette <br/>chose terrible et décourageante? <br/><br/>Puis, comme le temps doux était propice <br/>aux remembrances poétiques, je me répétais <br/>les deux vers d'Alfred de Vigny ; <br/><br/>Et jetant L'on sur l'autre un regard irrité, <br/><br/>Les deux sexes mourront chacun de son côté. <br/><br/>Et ma rêverie finit comme elle devait ; par <br/>cette constatation que le cigare est le meilleur <br/>ami de l'homme. <br/><br/>Eugène Thebault. <br/><br/>Applaudissements <br/><br/>Il a été très dur, M. Delcassé, pour le fa- <br/>rouche parti des Fachodistes; mais la Cham- <br/>bre aussi a été cruelle. <br/><br/>Dès l'interruption si patriotique de M. <br/>Charles Bernard : « Et votre attitude lors de <br/>l'affaire de Fachoda I » ou a fort malhonnê- <br/>tement crié de divers côtés à la fois : « Ne <br/>répondez pas! - Co n'est pas nécessaire! - <br/>Gela n'en vaut pas la peine ! » <br/><br/>Et quand, faisant allusion aux événements <br/>du Transvaal, le ministre prodigua le3 épi- <br/>thètes railleuses à « certains patriotes fNous <br/>les connaissons !) esprits pondérés (On rit), <br/>éclairés, réfléchis (Nouveaux rires)... qui af- <br/>fichent pour l'un des belligérants, pour son <br/>courage, pour sa ténacité, une sympathie <br/>bruyante, mais qui entendent tirer parti de <br/>sa défaite qu'ils se plaisent à prophétiser... », <br/>des applaudissements à tour de bras ajou- <br/>tèrent comme des paires de claques aux <br/>coups de griffe de l'orateur. <br/><br/>Nouveaux, applaudissements quand, de- <br/>vant Dramont, devant Millevoye, devant <br/>Lasies, devant Cassagnac, il désigne « cer- <br/>tains journaux qui se font lea exploiteurs de <br/>nos prétendues humiliations nationales, <br/>comme auparavant on cultivait nos gran- <br/>deurs. » <br/><br/>Lorsque plus loin, revenant à ces mêmes <br/>journaux, il apprécie « la politique du poing <br/>tendu contre tout le monde à la fois » et <br/>s'écrie :« Ignorance stupéfiante ou exploita- <br/>tion éhontéedu plus noble des sentiments...», <br/>le compte rendu officiel met encore entre <br/>parenthèses : {Applaudissements vifs et ré- <br/>pétés). <br/><br/>Que parmi ces applaudissements vifs et â <br/>répétition il ne se trouve aucun de ceux qui <br/>naguère acclamaient Hanotaux, Cavaignac, <br/>Méline, it n'en faudrait pas jurer. Mais jus- <br/>tement ces étranges retours des girouettes <br/>d'ici bas sont d'autant plus douloureux à <br/>qui se vantait de conduire le vent et mener <br/>en laisse la tempête. <br/><br/>A. G. <br/><br/>LE GRAND ASSASSIN <br/><br/>On a lu hier dans l'Aurore une dépêche de <br/>Constantinople annonçant que, sur l'ordre <br/>d'Abd-ul-Hamid, Said-Bey, président do la <br/>section civile du Conseil d'Etat; Firdi-Bey, <br/>membre du Conseil d'Etat, et Zia-Mollan, <br/>chef des ulémas, ont été arrêtés dimanche, <br/>jugés lundi par le tribunal extraordinaire <br/>réuni au palais, condamnés sans appel à la <br/>déportation perpétuelle et expédiés aussitôt, <br/>à bord d'un vapeur, pour l'Arabie Méridio- <br/>nale . Motif : Us auraient conspiré avec le fils <br/>'Ui le frère de la Bête Rouge. <br/><br/>^D'autres dépêches ajoutent que a Saïd-Bey, <br/>Incarcéré sous la surveillance du geôlier du <br/>sultan Mourad, a été soumis à une torture <br/>spéciale ». Il faut compléter et rectifier cette <br/>information. Ce n'est pas le geôlier du sultan <br/>Mourad qui a torturé Saïd-Bey, ma's bien le <br/>très célèbre Ay-Hassan-Pacha (l'ours Hassan- <br/>Pacha), directeur de la police de Bechik- <br/>Tach, illustre par sa cruauté, inventeur d'un <br/>système de torsion des testicules qui porte <br/>son nom en Turquie et qu'il applique lui- <br/>même aux prisonniers de marque. <br/><br/>Quant à l'exil dans l'Yémen, il équivaut à <br/>la mort un peu lente : Saïd-Bey et ses deux <br/>compagnons seront quelque jour assassinés, <br/>en vertu d'instructions officielles, comme le <br/>furent autrefois Midhat-Pacha et Damad <br/>Mahmoud à Taïf : et j'aime à croire qu'on <br/>enverra aussi leur tète à Abd-ul-Hamid, pour <br/>qu'il s'assure de leur mort et se réjouisse en <br/>son coeur d'assassin. <br/><br/>Mais il fera bien de ne pas trop laisser traî- <br/>ner ses victimes : les choses tournent mal <br/>pour lui et si les ulémas s'en mêlent, nous <br/>aurons, d'ici peu à annoncer sa mort À IUL <br/><br/>Ce sera pour le Petit Journal une belle né- <br/>crologie, pour peu que M. Marinoni eût de la <br/>reconnaissance. <br/><br/>Pierre Quillard. <br/><br/>+ : ' <br/><br/>L'Histoire dîme Me <br/><br/>Il n'y a pas de plaisir à piétiner sur les <br/>comploteurs en disgrâce. Mais vraiment <br/>je ne puis m'empêcher de remarquer que <br/>dè9 les premiers témoignages toute la <br/>troupe est prise dans l'acte et que les <br/>plus emphatiques dénégations reçoivent <br/>des faits le plus éclatant démenti. <br/><br/>Ces messieurs ont voulu renverser le <br/>gouvernement: voilà ce qui est établi avec <br/>surabondance. Royalistes, césariens, bo- <br/>napartistes s'y sont employés chacun de <br/>son côté avec une ardeur sans seconde. <br/>N'ayant pas réussi, ils se plaignent <br/>très fort <jue la République se défende et <br/>préféreraient, parait-il, que M. Waldeck- <br/>Rousseau leur livrât les clefs de la place <br/>sans coup férir. Je suppose qu'ils ont <br/>maintenant renoncé à cet espoir. Leur at- <br/>titude n'en est pas moins étrange. Ils se <br/>posent en preux chevaliers, se mettent en <br/>posture de combat, et, dès les premières <br/>charges, jurent qu'ils n'ont rien fait. <br/>Cependant nous apprenons qu'on a dis- <br/>tribué force monnaie royaliste pour pro- <br/>férer des Vive VArmée / sur le passage <br/>attendu de MM. Déroulède et Roget en <br/>marche sur l'Elysée. L'accord ici devient <br/>tellement manifeste qu'il est inutile d'in- <br/>sister. <br/><br/>C'est la répétition des spectacles que <br/>le Boulangisme nous a donnés. Bou- <br/>langer croyait travailler pour son compte, <br/>comme Déroulède qui prétend lui succé- <br/>der. Les royalistes cependant apportèrent <br/>des millions au général factieux et le <br/>comte de Paris ne lui ménagea pas son <br/>appui. Je ne dis rien des bonapartistes, qui <br/>sont de tradition au premier rang de ces <br/>sortes de fête. Hier, l'histoire s'est répétée <br/>toute pareille, et nous avons vu les roya- <br/>listes se joindre aux bonapartistes dans <br/>la Ligué des patriotes, et y apporter le con- <br/>cours pécuniaire le plus important. Ce <br/>que j'en retiens, c'est qu'alors comme au- <br/>jourd'hui tous les ennemis de la Répu- <br/>blique, masqués ou découverts, donnèrent <br/>d'ensemble contre le gouvernement qui ne <br/>faisait pas à leurs mérites une place suffi- <br/>sante. <br/><br/>Le régime sous lequel nous vivons a <br/>certainement beaucoup de défauts, et je <br/>fais mon possible pour les mettre en lu- <br/>mière à mesure que l'occasion s'en pré- <br/>sente. Mais il a une qualité supérieure, <br/>c'est de nous donner, somme toute, un <br/>gouvernement en conformité de senti- <br/>ments avec la nation elle-même. Je ne nie <br/>pas qu'il y ait encore des élections faus- <br/>sées. Pourtant il est vrai de dire qu'à au- <br/>cun moment de son histoire, le peuple <br/>français ne fut si complètement maître <br/>de choisir ses représentants, et libre de <br/>leur imposer ses volontés. Bien ou mal <br/>gouverne, il a le gouvernement qu'il se <br/>donne lui-même et ne peut s'en pren- <br/>dre qu'à ses votes de ses mécomptes. <br/><br/>ALORS pourquoi une révolution? Parce <br/>que îe duc d'Orléans s'ennuie en Angle- <br/>terre? Parce que Déroulède voudrait jouer <br/>au César? Parce que Bailly» Du Lac et Di- <br/>don rêvent de faire griller quelques héré- <br/>tiques dévotement? Qu'ils aillent dire cela <br/>aux électeurs. Ils ont la même liberté <br/>que tous les autres citoyens pour con- <br/>vertir le suffrage universel à leurs vues. <br/>Mais voilà le malheur. Ils n'ont pas <br/>confiance dans leur force de persuasion, et <br/>trouvent plus simple d'arrêter un géné- <br/>ral au passage pour le sommer de com- <br/>mander le feu sur le gouvernement» Le <br/><br/>général, prudent, n'obéit pas, sachant <br/><br/>ien çpie des balles pourraient s'égarer en <br/>chemin, et voilà nos gens devant la Haute <br/>Cour. Ils n'ont pas fait grand mal. Mais ce <br/>n'est pas leur faute. Gouvernants et fau- <br/>teurs de co ups d'Etat étaient tous à peu <br/>près de même taille. On peut dire que <br/>jusqu'au ministère Waldeck-Rousseau <br/>c'étaient des « ennemis » faits pour s'en- <br/>tendre. <br/><br/>Aussi s'entendaient-ils fort bien. Dé- <br/>roulède allait à l'Elysée proposer la for- <br/>faiture à Félix Faure, et celui-ci lui <br/>déduisait tranquillement les raisons pour <br/>lesquelles il aurait le regret de ne pas faire <br/>sabrer les mandataires de la nation de qui <br/>il tenait ses pouvoirs. Méline et Dupuy <br/>livrèrent la rue aux bandes des patriotes à <br/>quarante sous qui mêlèrent les a \"Vive <br/>Esterhazy ! » avec les « Vive l'armée î », <br/>et confondirent dans les mêmes hour- <br/>ras, le traître, des généraux faussaires, <br/>un prince d'Orléans et M. Déroulède. <br/>Et le soir les journaux officieux racon- <br/>taient qu'il avait fallu protéger Zola con- <br/>tre « le peuple » qui voulait le jeter h <br/>l'eau. On a pu voir il y a quelques jours, <br/>sur la place de la Nation, la différence en- <br/>tre le peuple et les bandes embauchées. <br/>Enfin, acte de forfaiture impuni, Dupuy, <br/>ayant en mains la preuve du complot <br/>contre la République, réduisait la cons- <br/>piration aux proportions d'un délit de <br/>presse. <br/><br/>Aujourd'hui c'est un autre système. La <br/>République se défend. Waldeck-Rous- <br/>seau et Millerand qui ne sont pas sans fai- <br/>blesses-on me rendra cette justice que je <br/>ne fais rien pour le leur cacher - ont au <br/>moins ce mérite de ne vouloir en aucune <br/>façon servir les intérêts du césarisme, de <br/>la monarchie orléaniste, ou de la domi- <br/>nation cléricale. Gela ne suffit pas, mais <br/>c'est un commencement nécessaire. Les <br/>ennemis de la République sont pour- <br/>suivis. La preuve est faite de leurs ma- <br/>chinations. La loi frappera les coupables. <br/>Il ne restera plus aux républicains qu'à <br/>faire vivre la République après l'avoir <br/>sauvée. <br/><br/>Le duc d'Orléans, qui est un philosophe <br/>joyeux, avait prévu cette fin d'une che- <br/>vauchée qui n enrichira pas notablement <br/>les annales de sa famille. M. Buffet lui <br/>criait : a Sire, venez chercher la couronne. » <br/>Il répondait : « Commandez-moi toujours <br/>une veste de chasse à la Belle-Jardi- <br/>nière. » Ce fût son premier acte, son <br/>acte unique de gouvernement. Je dis que <br/><br/>c'est d'un sage. Car s'il n'a pas eu îa <br/>couronne, notre prince garde sa veste, <br/>gracieux emblème des voeux du peuple <br/>Français pour son « Roi sauveur », <br/>Comme « la nation » donna Chambord <br/>au précédent roi de France, sans l'insigne <br/>royal si périlleux à porter, nous pourrions <br/>par voie de souscription publique, faire <br/>les frais des deux pans de bon drap qui <br/>feraient de la veste du « Roi » une bonne <br/>robe de chambre pour réchauffer le coeur <br/>après la douche. <br/><br/>G. Clemenceau. <br/><br/>(Echos et Nouvelles <br/><br/>CALENDHIER - Dimanche 3G novembre. <br/><br/>- La#er du sûîêll : 7 h. a?-; coucher : 4 h. 8. <br/><br/>Temps d'hier : Nuageux. <br/><br/>Tlïermomètrc ûe l'Aurore : Maximum. 0*1 <br/>au-dessus ; Minimum, 5' au-dessus. <br/><br/>Baromètre de l'ingénieur Sccretan : A midî, <br/>T73*-S; à minuit. 7?811'. <br/><br/>Temps probable: Nuageux. <br/><br/>. Ephêmérides. - Visite à Paria, de Philippe le <br/>Beau et de Jeanne la Folle (père et mère de Char- <br/>les-Quint) ; l'archiduc va jouer à la paume aux <br/>IlaîlcB (1501). <br/><br/>Passage (désaslre) de la Bérésïna (1812). <br/><br/>6,000 O/Q <br/><br/>On sait qu'on a enfin obtenu par une loi <br/>de février dernier que les huissiers remet- <br/>traient désormais sous enveloppe fermée <br/>leurs papiers bleus - rien de la Banque de <br/>France - de façon à éviter l'intempestive <br/>curiosité des concierges, En même temps, un <br/>décret du conseil d'Etat fixait le prix de l'en- <br/>veloppe, qui doit être payé par le destina- <br/>taire. <br/><br/>Les enveloppes commerciales coûtant <br/>2 fr, 50 le mille, ce ^ui donne quatre enve- <br/>loppes pour un centime ou vingt enveloppes <br/>pour un sou, on aurait accordé uo bénéfice <br/>de deux mille pour cent ù MM. les huissiers, <br/>en fixant le prix de l'enveloppe à cinq centi- <br/>mes. <br/><br/>Le conseil d'Etat a _ trouvé que ce n'était <br/>pas suffisant et a taxé l'enveloppe à quinze <br/>centimes, ce qui la met à 150 francs le mille, <br/>et donne un bénéfice de six mille pour <br/>cent ! <br/><br/>Et la justice est gratuite en France. <br/><br/>QUI PAIE SES DETTES.... <br/><br/>L'Etat ne les paie pas et laisse en souf- <br/>france des dettes qu'il a reconnues. Il doit en <br/>ce moment au département de la Seine sa <br/>quote-part dans les dépenses occasionnées <br/>par l'agrandissement et l'Aménagement du <br/>Palais de Justice. Ces dépenses étaient en- <br/>dossées par la Ville, l'Etat et le Département. <br/>Ce dernier fit les frais ; la Ville de Paris lui <br/>remboursa ce qu'elle devait, mais l'Etat, <br/>après avoir soulevé des contestations sur le <br/>montantde sadette,et obtenu une transaction, <br/>n'a pas soldé la somme de 1,686,312 fr. 10 qu'il <br/>avait reconnu devoir en 1896. <br/><br/>Le département de la Seine, par l'organe <br/>de ses conseillers généraux, commence à <br/>se fâcher et à trouver qu'il a eu tort de faire <br/>crédit à ce mauvais payeur. <br/><br/>APAISEMENT <br/><br/>De V Univers Israélite : <br/><br/>M, Gérard, ministre de France à Bruxelles,qui, <br/>au banquet du 14 juillet dernier, n'a pas protesté, <br/>lorsqu'un convive assis â ses côtés a erié : * A <br/>bas les juifs ! », vient de fonder une nouvelle <br/>chambre de commerce, par opposition â celle <br/>existante depuis quinze ans. et dans laquelle nous <br/>comptons deux de nos coreligionnaires. <br/><br/>M. Gérard est ouvertement soutenu par M. Del- <br/>cassé, ministre des affaires étrangères. <br/><br/>C'est l'apaisement !... <br/><br/>200 DESSINS <br/><br/>Hermann-Paul vient de réunir en un vo- <br/>lume ses dessins du Figaro. Ce livre de cro- <br/>quis est un livre d'histoire. Le spirituel ar- <br/>tiste, en ce recueil que publie la Revue blan- <br/>che, nous restitue, en effet, la campagne <br/>pour la revision, l'enquête de la Cour de cas- <br/>sation, le procès de Rennes. <br/><br/>Déjà si expressifs par leur forme seule, c?s <br/>dessins sont rendus plus explicites encore <br/>par lea légendes ironiques et profondes qui <br/>les soulignent. Une galerie de portraits ter- <br/>mine le volume, ceux de tous les personna- <br/>ges du procès de Rennes, juges, témoins, ex- <br/>perts, spectateurs - et on sait avec quelle <br/>maîtrise Hermann-Paul imprime sur le mas- <br/>que d'un contemporain la particularité mo- <br/>rale qui le hausse à l'effigie. <br/><br/>CAQE DE PA>X <br/><br/>On mande de Pékin : « Li-Hung-Tchang <br/>vient d'être nommé, par décret impérial, mi- <br/>nistre du commerce. » <br/><br/>Voilà une nomination qui fera du bruit. <br/>On disait que la politique chinoise était <br/>toute â la guerre. Cette nomination de Li- <br/>Hung-Tchang est évidemment un gage de <br/>paix. <br/><br/>AU MUSÉUM <br/><br/>Nous avons parlé, il y a quelque temps, <br/>des curieuses expériences auxquelles MM. <br/>Milne-Edwards, Viré et quelques autres sa <br/>vants se livrent dans la partie des catacom- <br/>bes située sous le Jardin des Plantes. Ces <br/>savants avaient entrepris des études sur la <br/>transformation des animaux soumis à l'in- <br/>fluence exclusive de l'obscurité. Aujourd'hui, <br/>comme nous le faisions entrevoir jadis, les <br/>expériences ont réussi au delà de toute espé- <br/>rance, Citons quelques cas qui attirent par- <br/>ticulièrement l'attention par leur anomalie <br/>et leur curiosité. <br/><br/>Des insectes tétraptères (à 4 ailes) ou dip- <br/>tères (à 2 ailes) ont perdu leurs ailes, leurs <br/>pattes se sont allongées, leuT tête s'est agré- <br/>mentée d'une sorte ae trompe; des rats sont <br/>devenus complètement aveugles, et même la <br/>trace extérieure de la vue a disparu; de <br/>même leur tête se termine maintenant paT <br/>une sorte de trompe avec laquelle ils ramas- <br/>sent par terre les atomes qui sont devenus <br/>leur nourriture ; leurs pattes se sont pour- <br/>vues d'une membrane semblable â celle des <br/>palmipèdes. Des crapauds ont subi à peu do <br/>chose près les mêmes transformations que <br/>les rats. <br/><br/>BARBAPOUX <br/><br/>Le Théâtre du Peuple se prépare ê donner, <br/>dans la première quinzaine de décembre, un <br/>spectacle privé qui ne manquera pas de faire <br/>sensation. On annonce, en effet, une confé- <br/>rence de notre distingué confrère Serge Bas- <br/>set, et la représentation de Suicide, pièce <br/>sociale en un acte, de Lucien Wahl, et de <br/>Chacun pour soi, drame en un acte, d'André <br/>Pétrel. La soirée sera terminée par une pièce <br/>très audacieuse, Barbapoux, revue symbolico- <br/>réaliste en deux actes, de notre collaborateur <br/>Charles Malato. Sous des noms transparents, <br/>des personnalités - quelques-unes bruyantes <br/>et malpropres - passeront de la scène poli- <br/>tique sur celle du théâtre : on rira. <br/><br/>ÇA ET LA <br/><br/>IJB on AND BANQUET d'inauguration du Comité <br/>républicain du commerce et de l'industrie aura <br/>lieu le 29 novembre 1895), à sept heures et demie, <br/>au Grand Hôtel, sons la présidence de M. le mi- <br/>nistre du commerce. <br/><br/>Le bureau du Comité rappelle â ses membres <br/>adhérents que les listes pour l'admission au ban- <br/>quet seront définitivement closes ie lundi 27 cou- <br/>rant. Avis aux retardataires. <br/><br/>LA PRESSE UTILE. - C'est dans la presse utile <br/><br/>Sue M, Gaston Boissier, dans son rapport A l'Aca- <br/>dmie, a rangé le Magasin pittoresque, que <br/>l'assemblée a « voulu honorer en lui apportant <br/>sos félicitations et SES RÉCOMPENSÉE J». <br/><br/>Cette très ancienne publication est depuis quel- <br/>que temps dirigée par notre confrère Ch. Formen- <br/>tin, qui a transporté ses bureaux, M, rue de <br/>Lille. <br/><br/>L'ESPRIT OU VOISIN <br/><br/>Au restaurant. <br/><br/>- Garçon, mon potage est bien long à <br/>venir... <br/><br/>- - Dame, monsieur a demandé un potage <br/>à la tortue 1 <br/><br/>Scara mouche. <br/><br/>LES ASSOMPTIONNISTES <br/><br/>Rapport et procès-verbal officiel de perqui- <br/>sition. - Les 1,800,000 francs <br/>constatés judiciairement <br/><br/>Le Père Bailly, on s'en souvient, a eu l'é- <br/>tonnant aplomb de démentir que M. Pé- <br/>chard, commissaire de police, eût trouvé <br/>dans la cellule du père Hippolyte Saugrain, <br/>trésorier de l'Ordre, entre diverses piè- <br/>ces importantes, une somme d'environ <br/>1,800,000 francs. Nous avions, en <br/>dépit de la lettre rectificative du Père Bailly, <br/>maintenu nos renseignements. <br/><br/>Nous avons eu raison. Le Figaro a publié <br/>hier le rapport de M. Péchard sur sa perqui- <br/>sition et son procès-verbal de saisie. <br/><br/>Rapport et procès-verbal confirment de <br/>point en point nos divers récits. <br/><br/>Détachons de ce rapport ce passage sail- <br/>lant ; <br/><br/>Nous remarquons, tant dans lés meubles gar- <br/>nissant la cellule (bibliothèque, armoires, bureau, <br/>table) qae dans un coffre-tort ouvert sur notre <br/>réquisition, une nombreuse correspondance rela- <br/>tive à des dons faits au nom do saint Antoine de <br/>Padoue, en exécution de voeux accomplis, et cons- <br/>tatons la présence de fonds importants en billets <br/>de banque, rouleaux d'or, titres ou actions di- <br/>verses que l'on peut estimer à 11,800.000 francs; <br/>noua trouvons également des testaments faits par <br/>des personnes en faveur de prêtres ou de reli- <br/>gieux dont les noms ne figurent pas dans la lista <br/>des individus faisant l'objet de notre commission <br/>regatoire. <br/><br/>Et dn procès-verbal de saisie extrayons ces <br/>quelques lignes significatives : <br/><br/>Nous avons également saisi et placé sous scellé <br/>portant le n* 2 un bail et une contre-lettre relatifs <br/>a l'immeuble de la rue François-Ier, n» 8. <br/><br/>Sous le ecelle n° 3, nous avons placé une lettre <br/>adressée par le P. Victorin au directeur de l'As- <br/>somption de Nîmes, dans laquelle ce religieux <br/>annonce que des poursuites vont être intentées <br/>prochainement contre la congrégation. <br/><br/>Dans le Figaro d'hier le premier docu- <br/>ment était porté comme ayant été signé par <br/>le père Hippolyte Saugrain. <br/><br/>C'était la une erreur matérielle sans im- <br/>portance. Mais le Père Bailly en a profité <br/>pour équivoquer et déclarer que cette pièce <br/>n'existait pas et que lea 1,800,000 francs <br/>étaient une légende. Le» 1,800,000 <br/>francs «lit été va» par M. Péchard, <br/>mais, â vrai dire, ce n est pa* dans un pro- <br/>cès-verbal, mais dans un rapport adressé <br/>par lui à ces chefs sur l'ensemble de ses opé- <br/>rations que le commissaire en a constaté <br/>l'existence. <br/><br/>- Je n'avais pas â faire signer ce rapport au <br/>père Hippolyte, nous a-t-il dit, et le père Hippo- <br/>lite ne l'a pas signé en effet. <br/><br/>La présence des 1,800,000 francs n'en reste <br/>pas moins judiciairement constatée par un <br/>commissaire de police agissant sur commis- <br/>sion rogatoire régulière. <br/><br/>Le P, Bailly, dans ses démentis, ne souffle <br/>mot de la contre-lettre saisie par M.Péchard. <br/>La pièce a bien son importance, mais la <br/>nier est impossible et serait de peu de pro- <br/><br/>A la vérité, le fisc fera payer cher aux bons <br/>Pères leur manoeuvre frauduleuse. Mais que <br/>leur importe ! Ils crieront à la persécution, et <br/>les fidèles augmenteront les offrandes. <br/><br/>Albéric Darthèze. <br/><br/>HAUTE COUR <br/><br/>Le spectacle que donne la Haute Cour n'est <br/>pas précisément édifiant. Je ne conseille <br/><br/>g oint d'y mener en caravanes les touristes <br/>ook pour leur faire voir la majesté de la <br/>République et la dignité de ses sénateurs sur <br/>leurs chaises curules. Quand, à Rome, les <br/>Pères conscrits se laissèrent tirer la barbe <br/><br/>f.ar les Gaulois de Brennus, il n'y avait point <br/>à d'assistants ironiques. <br/><br/>Ce n'est pas seulement qu'accusés, témoins <br/>et avocats eù prennent à leur aise avec le <br/>Code et les convenances, dirigent les débats <br/>à leur guise, accablent d'outrages leurs ju- <br/>ges et s'accordent à qui mieux mieux le plai- <br/>sir exquis de crier à la tyrannie en se li- <br/>vrant au désordre. La mollesse du président <br/>n'a d'égale que le manque d'à-propos et de <br/>présence d'esprit du procureur général. Et, <br/>brochant sur le tout, la prudence avisée de <br/>ceux des membres du Sénat qui, bien loin <br/>de méditer sur ce pauvre Déroulède et ses <br/>co-accusés de barbares vengeances, ne son- <br/>gent qu'à décliner une responsabilité qui leur <br/>pèse et qu'à fausser compagnie à leurs collè- <br/>gues sans tambour nt trompette f <br/><br/>Chaque jour voit se renouveler, à l'appel <br/>nominal, le petit tour de passe-passe par le- <br/>quel un sénateur, après l'autre, s'égrène et <br/>perd - volontairement - ie droit de siéger, <br/>sous prétexte de n'avoir pu faire acte de pré- <br/>sence à l'heure dite. De bons prophètes affir- <br/>ment que M. de Freycinet se dispose à pren- <br/>dre ainsi congé à l'anglaise. <br/><br/>Cette sortie discrète serait tout à fait dans <br/>le tempérament du délicieux vieillard qui <br/>n'a jamais cheminé que de guingois et qui <br/>aurait pu inventer la poudre... d'escampette. <br/>Il aurait tort toutefois de se flatter de l'espoir <br/>de filer sans bruit. Ses électeurs ont l'oeil sur <br/>lui. S'il esquive ce devoir républicain, il ne <br/>devra pas s'étonner, en dépit de tout l'art <br/>avec lequel il a toujours su s'insinuer dans <br/>les bonnes grâces de tout le monde, de se <br/>voir demander compte, au scrutin de jan- <br/>vier, de cette petite lâcheté avec quelques <br/>autres et d'être rendu prématurément aux <br/>joies domestiques et paisibles de la vie pri- <br/>vée. <br/><br/>Ce n'est pas d'ailleurs que je m'étonne ou <br/>me scandalise fort de cette espèce de torpeur <br/>générale. La raison en est simple. Ce procès <br/>repose sur une fiction. On y a pratiqué de <br/>force une disjonction arbitraire, On n'a pas <br/>voulu mettre en cause messieurs les mili- <br/>taires, qui étaient pourtant, par définition, <br/>les plus coupables. <br/><br/>Chacun sent l'impossibilité d'aller au fond <br/>d'une affaire ainsi volontairement mutilée. <br/><br/>Ii répugne à quelques-uns de réserver toute® <br/>leurs rigueurs pour les civils en épargnant <br/>la personne sacro-sainte des généraux - à <br/>qui l'on fait même risette, chemin faisant. <br/>Le Dauphin, sous l'ancien régime, avait â ses <br/>côtés un page destiné à être fouetté pour lea <br/>fautes princiéres. L'armée, de notre temps, <br/>jouerait-elle à sou tour, sinon de l'impecca- <br/>bilité, du moins de l'impunité absolue? <br/><br/>Cruelle énigme ! En attendant qu'elle soit <br/>résolue, ce privilège du galon choque les <br/>bonnes âmes, embarrasse les amis de îa jus- <br/>tice, offre aux habiles gens \\v.\\ prétexte à <br/>souhait pour se soustraire à un devoir péni- <br/><br/>II est certain, pourtant, qu'il ne s'agit pas <br/>en l'espèce de sévir bien terriblement contre <br/>Déroulède et eonsorts. La facilité par trop <br/>bonhomme avec laquelle le président Falliè- <br/>rea vient d'éviter à ce grand patriote une <br/>confrontation avec le général Roget d'où <br/>aurait Ju jaillir la preuve de la prémédita- <br/>tion scélérate du coup d'Etat de l'un et de la <br/>complicité à éclipse de l'autre, est un gage <br/>d'indulgence. C'est la contre-partie assez <br/>exacte de l'infâme collusion par laquelle la <br/>justice militaire de Carrière et de Jouaust <br/>feignit de croire â la maladie, sitôt et si <br/>complètement guérie, du colonel du Paty de <br/>Clam pour éviter à cet inquisiteur fantai- <br/>siste l'ennui d'une confrontation avec sa vic- <br/>time. <br/><br/>Vrai, les accusés auraient meilleure grâce â <br/>ne pas geindre â fendre le coeur sur de pré- <br/>tendues rigueurs. Outre que des hommes en <br/>état de grâce héroïque devraient payer ga- <br/>lamment l'enjeu d'une grosse partie qu iis <br/>auraient gagnée à nos dépens, il n'est pas <br/>sans quelque ridicule de les entendre récri- <br/>miner comme ils font quand on se souvient <br/>des façons d'agir du chancelier Pasquier et <br/>de la Cour des pairs et des procédés plus <br/>sommaires encore du second Empire. Il n'y <br/>a pas si longtemps d'ailleurs que ces conspi- <br/>rateurs, qui se plaignent du pli d'une rose et <br/>de la violation d'une formalité, se réjouis- <br/>saient en sauvages des souffrances du captif <br/>de l'île du Diable, des illégalités des conseils <br/>de guerre et des crimes de l'Etat-Major contre <br/>un innocent. <br/><br/>Francis de Pressensé. <br/><br/>NE VOUS GÊNEZ PAS <br/><br/>Si jamais vient au pouvoir un cabinet qui <br/>ait besoin de se débarrasser de MM. : <br/><br/>Millerand, directeur da la Lanterne, jour- <br/>nal socialiste; f <br/>Baudin, syndic des Journalistes parisiens ; <br/>De Lanessan, rédacteur au Rappel; <br/><br/>Jean Dupuy, président du Syndicat de la <br/>presse parisienne; <br/><br/>ce cabinet là n'aura pas besoin de se gêner. <br/><br/>La loi scélérate permet d'arrêter préventi- <br/>vement tous les journalistes. Il suffit de faire <br/>dresser par le parquet ua réquisitoire rele- <br/>vant, dans une phrase tronquée d'un article, <br/>une prétendue provocation anarchiste. <br/><br/>Ni Lanessan, ni Millerand, ni Baudin, ni <br/>Dupuy ne protesteront. Us auront donné <br/>1 exemple et subiront certainement avec plai- <br/>sir, comme journalistes, la loi qu'ils auront <br/>fait appliquer, comme ministres, dans un in- <br/>térêt de défense républicaine. <br/><br/>J. P. <br/><br/>GUERRES COLONIALES <br/><br/>Par Vigné d'Octon <br/><br/>A propos de ce que j'écris dans VA urore <br/>contre la traite des noirs, mon ami Camille <br/>Pelletan dit dans la Dépêche de Toulouse : <br/>« L'esclavage ruine les régions où il est ins- <br/>tallé parce qu'il les dépeuple. Il faut en effet <br/>pour achalander les marchés - dont la plu- <br/>part se tiennent sous notre surveillance - <br/>que les tyranneaux du pays se livrent à des <br/>guerres continuelles de village à village et <br/>tuent autant de malheureux qu'ils en amè- <br/>nent en captivité. Il faut ensuite que le bé- <br/>tail humain conquis de la sorte soit traîné <br/>sur d'énormes espaces par des caravanes de <br/>foi Bans devenus ae véritables bêtes fauyes et <br/>sème sa route de cadavres... » <br/><br/>Jamais paroles ne furent plus vraies et, <br/>pour le démontrer, je n'ai qu'à faire appel à <br/>ma mémoire, aux faits dont je fus le témoin <br/>ainsi qu'aux nombreux documents émanant <br/>de nos correspondants et dont l'authenticité <br/>est indiscutable. <br/><br/>Lorsque je fus envoyé dans le Sud pour <br/>prendre part & la colonne du Rio-Nunez, le <br/>bateau sur lequel j'étais fit escale dans la <br/>Basse-Cazamance. Nous eûmes, les autres of- <br/>ficiers et moi, assez de temps pour visiter» <br/>soit en pirogue, soit à pied, une bonne partie <br/>de cette région, et remonter dans le haut du <br/>fleuve jusqu'à notre poste de Sedhiou. Nous <br/><br/>J tûmes nous convaincre que la paix la plus pro- <br/>onde régnait sur les deux rives. Le pays pa- <br/>raissait même jouir d'une prospérité relative; <br/>les villages des Ballantes et des Yolos, que nous <br/>visitâmes, avaient un air de gaieté calme et <br/>sereine qui nous séduisit, malgré la mélan- <br/>colie profonde du paysage. lia étaient assez <br/>nombreux, assez rapprochés l'un de l'autre, <br/>les gamins - gentils négrillons à mine éveil- <br/>lée - grouillaient dans la poussière . des <br/>ruelles, parmi les chiens et les phacochères; <br/>nous croisions à chaque pas des jeunes fem- <br/>mes, des fillettes, qui nous saluaient du sou- <br/>rire de leurs dents Wanches. Bref, tout indi- <br/>quait une population assez dense et heureuse, <br/>et la Géographie d'Elisée Reclus, que je con- <br/>sultais, donnait, pour le pava par nous-vi- <br/>sité une population d'environ deux mille <br/>âmes. <br/><br/>Un an après, â mon retour, repassant par <br/>là, je trouvai cette région méconnaissable. <br/>Les champs cultivés, ies lougans, comme on <br/>dit là-bas, étaient devenus des broussailles. <br/>A la place des villages si gais, si tranquilles, <br/>il n'jr avait que des amoncellements de dé- <br/>combres ; dans la brousse qui remplaçait les <br/>cultures je ne rencontrais plus âme vivante, <br/>Où plutôt, de loin en loin, quelques miséra- <br/>bles noirs, éborgnés ou mutiles, qui, dès qu'ils <br/>apercevaient un homme blanc, s'enfuyaient <br/>comme des bêtes effarouchées dans la pro- <br/>fondeur des broussailles. Ah ! te recensement <br/>des pays Yolos et Ballantes n'eût pas été <br/>maintenant bien long à faire et, pour rester <br/>dans la vérité, l'illustre géographe aurait eu <br/>besoin de modifier sérieusement ses chiffres <br/>et aussi la description qu'il donnait de cette <br/>région africaine. Et ee n'est pas là-soit <br/>dit en passant - une des conséquences ïea <br/>moins curieuses et les moins tristes de la <br/>chasse à l'esclave et de notre colonisation & <br/>coups de fusil, que cette impossibilité de faire <br/>de ces pays-là des descriptions géographique» <br/>et fine cartographie précises. <br/><br/>Aujourd'hui, sur les rapports des plua <br/>consciencieux voyageurs, le géographe dé- <br/>crit tel coin du Soudan, en énumere les vil- <br/>lages, dont il indique la situation, la popu- <br/>lation, les cultures, ii en dresse une carte <br/>aussi juste que possible six mois, un an <br/>après, ee qu'il indiquait comme une oasis <br/>assez florissante n'est qu'un désert lamen- <br/>table ; il n'y a trace ni des villages marqués <br/>sur la carte, ni des cultures décrites ; partie <br/><br/>V 5-irS <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                },
+                "browsePage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {},
+                  "contenu": [],
+                  "etat": "optionHidden"
+                },
+                "currentPage": {
+                  "display": false,
+                  "active": true,
+                  "parameters": {
+                    "eligibleZoomIndisponible": false,
+                    "OpenSeadragonTitles": [
+                      "Plein écran",
+                      "Taille initiale",
+                      "Agrandir",
+                      "Réduire",
+                      "Page suivante",
+                      "Page précédente",
+                      "Rotation horaire 90°",
+                      "Rotation antihoraire 90°",
+                      "Sélection",
+                      "Quitter le mode zoom"
+                    ],
+                    "rtl": false,
+                    "isTabletOrMobile": false
+                  },
+                  "contenu": [
+                    {
+                      "display": true,
+                      "active": true,
+                      "parameters": {
+                        "pageIsDisplayable": true,
+                        "altDescription": "L'Aurore : littéraire, artistique, sociale / dir. Ernest Vaughan ; réd. Georges Clemenceau - vue 1 - page 1",
+                        "isAudioDoc": false,
+                        "displayMode": "item"
+                      },
+                      "contenu": "https://gallica.bnf.fr/ark:/12148/bpt6k702136k/f1.highres",
+                      "screenNumber": 1,
+                      "description": "",
+                      "highlight": "",
+                      "zoomService": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k702136k/f1.item.texteImage.zoom",
+                      "zoomable": true,
+                      "options": [
+                        {
+                          "name": "text",
+                          "data": {
+                            "paSousTitreOCR1": "Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/>",
+                            "paSousTitreOCR2": "<a href=\"/edit/und/consulter-les-documents\"><u><strong>En savoir plus sur l'OCR</strong><u></a>",
+                            "sousTitreOCR": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/> ",
+                            "stringOCR": "Troisième Annffe. - Nwrtfro 76& <br/><br/>DIMANCHE 6 NOVEMBRE 1899 <br/><br/>CHnq Ceatimes <br/><br/>L'AURORE <br/><br/>Littéraire, Artistique, Sociale <br/><br/>Directeur <br/><br/>ÇRNEST VAUGHAN <br/><br/>' ABOUlirEMKKTS <br/><br/>Six Trois <br/>On an mois moi( <br/><br/>É5A!US 20 » 10 » B » <br/><br/>DFTF ARTEMKNTS ET ALOÉRIE. 24 » 12 » 8 » <br/>ÇïRÀRCîEnlUNJOHpGSTAUÙ. * 18 » 10 * <br/><br/>POUR LA RÉDACTION 1 <br/>S'adresser à M. A. BBRTHIER <br/><br/>Secrétaire de la Rêiiactton <br/><br/>TOEESSÊ TÉLÉGRAPHIQUE : AURORE-PARIS <br/><br/>Directeur f î <br/><br/>ERNEST VAUGHAN | ] <br/><br/>LES AMNONCCS SONT REÇUES : <br/><br/>142 - Ru© Montmartre - 14$ <br/><br/>AUX BLKEAUI DU TOURNAI. <br/><br/>Le* manutciti non insérés ne sont pas rendit^ . <br/><br/>ADRESSER LETTRES ET MANDATS : <br/>à M. A. BOUIT, Administrateur <br/><br/>Téléphone : 102-BB <br/><br/>Les insertions de publicité de l'Au- <br/>rore seront reçues, à partir du Ier dé- <br/>cembre prochain,â l'Office d'Annon- <br/>ces» 10, place de la Bourse, et aux <br/>Bureaux du Journal. <br/><br/>1 Dernier Effort <br/><br/>Tonte besogne entamée doit être ache- <br/>vée. Une poignée d'hommes» soutenus par <br/>une indomptable ténacité, est capable <br/>d'emporter les pires résistances. L'his- <br/>toire de ces deux dernières années nous <br/>enseigne de quelles victoires la volonté est <br/>un gage certain. Ne jamais se lasser, ce <br/>devrait être la commune devise des hom- <br/>mes qui se mettent en tête de faire triom- <br/><br/>pher une cause juste. Et c'est pourquoi, <br/>'àme sereine, je reviens tranquillement à <br/>mes moutons, je veux dire aux dernières <br/>victimes des lois scélérates. <br/><br/>J'écris à dessein les dernières, parce <br/>qu'il n'en reste plus au bagne qu'une <br/>demi-douzaine à peine. Six ou sept indi- <br/>vidus condamnés sans raison, ce n'est <br/>pas peu de chose, certes, mais en compa- <br/>raison des quelques douzaines dont le <br/>corps fut jeté en pâture aux requins, cela <br/>ne compte pas. Cela fait pour M. Loubet <br/>quelques signatures à donner, une demi- <br/>minute de travail, une misère! <br/><br/>Il y a tout juste trois semaines, je re- <br/>grettais ici-même, à propos de Monod, <br/>d'être obligé de constater que M. Loubet <br/>se montrait avare de clémence. Le hasard <br/>voulut que cinq jours après cet article un <br/>peu amer M. Loubet signa la grâce de <br/>Monod, précisément. Je n'eus point la <br/>sotte pensée de m'en attribuer le mérite. <br/>VAurore fit d'ailleurs remarquer avec à <br/>propos que le bénéfice dé cette mesure pré- <br/>sidentielle revenait aux efforts delà Ligue <br/>des Droits de l'Homme, convaincue par le <br/>rapport de M. Joseph Reinach. JEt c'est <br/>justement parce que la Ligue jouit auprès <br/>du président de la République d'une telle <br/>influence que je la veux mettre à contri- <br/>bution sans répit. Puisque M. Loubet . a <br/>commencé d'exercer sa royale prérogative <br/>en faveur de l'une des victimes de 1894, <br/>pourquoi ne ferait-il pas de même envers <br/>les autres ? Et qui s'en plaindrait?... <br/><br/>Si je compte bien, les condamnés <br/>pour délit d'opinion libertaire en cours de <br/>peine sont au nombre de sept. Ce sont : <br/>A\" Meunier et Chevry, condamnés par le <br/>jury d'Angers, le premier à sept ans de <br/>travaux forcés, le second à cinq ans, <br/>tous deux à dix ans d'interdiction de sé- <br/>jour, Grime : avoir dansé et chanté au <br/>rythme de la Carmagnole, 2° Paul Bury, <br/>condamné à treize mois de prison et à la <br/>rélégation. Grime ; avoir souhaité dans <br/>nn discours public une société meilleure. <br/>3° Liard-Courtois, condamné à cinq ans <br/>de travaux forcés et à cinq ans de relé- <br/>gation. Grime : avoir signé Liard au lieu <br/>de Courtois, fait retenu comme crime de <br/>faux par le jury qui, à la même audience <br/>acquitta Romain, un entrepreneur cou- <br/>pable de faux en écritures commerciales. <br/>4° Mouysset, condamné à un an et un jour <br/>de prison et à la relégation. Grime : avoir <br/>vendu des journaux libertaires étant affu- <br/>blé d'une blouse rouge. 5° Théodore Lar- <br/>daux, condamné à cinq ans de réclusion et <br/>à la rélégation. Grime : avoir attiré l'atten- <br/>tion de la gendarmerie par son air suspecta <br/>6° Ernest Grangé, condamné en 1891 à <br/>douze ans de travaux forcés et à la relé- <br/>gation. Grime : avoir tiré en l'air un coup <br/>de revolver. <br/><br/>Un huitième condamné sollicité l'atten- <br/>tion : Philippe, condamné en décembre <br/>1897 » par le tribunal correctionnel de <br/>Lille, a la prison et à la relégation. <br/>Crime : avoir été, comme gérant du jour- <br/>nal la Cravache, responsable d'un article <br/>jugé diffamatoire pour un industriel du <br/>Nord !!! Mais Philippe, averti, eut le soin <br/>de mettre ]a frontière entre sa personne <br/>et ses doux juges. Il est donc en liberté. <br/>Son cas n'en est pas moins digne d'inté- <br/>rêt. Je prends la liberté de le recomman- <br/>der également à la Ligue des Droits de <br/>VHomme. Un de plus, un de moins, ce <br/>n'est pas cette unité qui entravera ses <br/>efforts. <br/><br/>Je n'ignore pas que, sur ces huit con- <br/>damnés, trois seulement sont visés par le <br/>rapport Reinach : Lardaux, Meunier, <br/>Courtois. (M. Reinach réclamait aussi la <br/>grâce de Monod, qui n'est plus en cause, <br/>de Girier-Lorion et de Vauthier, morts <br/>depuis). Est-ce à dire que ies cinq autres, <br/>Chevry, Bury, Mouysset, Orangé, Phi- <br/>lippe, aient été écartés par le rapporteur <br/>de la Ligue volontairement î Je ne le <br/>pense pas. Quoi qu'il en soit, le dossier de <br/>chacun d'eux a été très clairement dé- <br/>pouillé, et leur situation très nettement <br/>exposée, sans réticence aucune, dans <br/>l'importante brochure publiée à la Revue <br/>Blanche par MM- de Pressera sé et Emile <br/>Pouget. <br/><br/>J'invite de nouveau les personnes qui <br/>ont bien voulu m'offrir leur concours pour <br/>achever cette campagne à lire ce docu- <br/>ment: ils pourront ainsi se renseigner <br/>aux sources mêmes, et agir en connais- <br/>sance de cause. <br/><br/>Maintenant, me demande-t-on de divers <br/>côtés, comment agir ? Damel il me sem- <br/>ble qu'à l'heure actuelle noua ne pouvons <br/>espérer pour ces huit malheureux qu'une <br/>chose unique : la grâce. Quant à l'amnis- <br/>tie, il faut être général et s'appeler Mer- <br/>cier pour en bénéficier. Aussi bien, en <br/>repoussant l'abrogation des lois scéléra- <br/>tes, la Chambre vient de démontrer une <br/>fois de plus (et je le faisais prévoir il y a <br/>dix jours â un député socialiste qui vou- <br/>lait bien me proposer de réclamer ladite <br/>abrogation) qu'elle est incapable de géné- <br/>rosité collective. Ge n'est donc pas du <br/>Parlement qu'il faut espérer la mesure <br/>libératrice : c'est du pouvoir exécutif, des <br/>ministres, du président de la Républi- <br/>que. <br/><br/>Le moment est propice. M. Loubet si- <br/>gnera dans un mois plusieurs centaines <br/>de grâces touchant des délits de droit <br/>commun. Si l'on veut que soient compri- <br/>ses dans le nombre celles de nos malheu- <br/><br/>reux clients, il faut agir dès à présent. <br/>Désormais tout retard serait néfaste. Ne <br/>sait-on pas quelle est la longanimité des <br/>bureaux chargés d'examiner le dossier <br/>d'un condamné, de dresser un rapport <br/>pour le ministre, etc. ? Détails oiseux, <br/>certes, mais c'est le plus souvent en se <br/>retranchant derrière des questions aussi <br/>mesquines que les gardes des sceaux jus- <br/>tifient leur refus de saisir la commission <br/>des grâces ou de soumettre les décrets <br/>nécessaires à la signature présidentielle. <br/>Ainsi les plus petites choses retardent en <br/>général le succès des causes les plus hu- <br/>maines. <br/><br/>Je demander la Ligue, à mes amis, à <br/>mes confrères, et même aux parlementai- <br/>res de bonne volonté, un dernier effort. Je <br/>pressens que nous touchons au but. Mais <br/>nous ne l'atteindrons que si nous avons la <br/>ferme volonté d'y parvenir. Huit grâces à <br/>enlever? Huit signatures à obtenir du <br/>Président! N'ai-je pas raison de dire que, <br/>pour M. Loubet, c'est une misère ?. <br/><br/>Henry Leyret. <br/><br/>COUPS DE POINTE <br/><br/>J'adore le boulevard, pour ce que les associa- <br/>lions d'idées y sont plus qu'ailleurs imprévues <br/>et multiples. C'est ainsi qu'hier, en outrancier <br/>badaud, je regardais les étalages des mat*. <br/>chaudes de fleurs. Ce paradoxal printemps, <br/>étalé sur chaque trottoir, m'induisait aux idées <br/>mélancoliques. Car les marchandes, selon leur <br/>louable coutume, annonçaient la sainte à fêter, <br/>et c'était justement la fête de sainte Cathe- <br/>rine f <br/><br/>Ah! les vieilles filles! Celles qu'un atavisme <br/><br/>malheureux a J ai tes laides; celles qu'un hasard <br/>injuste a faites pauvres; celles qui, malchan- <br/>ceuses ou trop nonchalantes, n'ont pas trouvé <br/>Vâme-soeur! Ét je m'apitoyais, quand vinrent <br/>à passer de jolies ouvrières, portant avec une <br/>joie agressive des chrysanthèmes et des dahlias <br/>jaunes à leur corsage. Et je vis là un sym- <br/>bole : la fille restant vieille fille par esprit de <br/>révolte, parce que la société lui est mauvaise, <br/>parce que les chances de bonheur ne valent pas <br/>l'effort qu'il faudrait tenter. Ces fleurs jaunes, <br/>ces fleurs de sainte Catherine! Je me disais <br/>que le problème social, le vrai, celui qu'il fau- <br/>drait résoudre tout d'abord, est justement ce <br/>problème de l'hostilité des sexes. Les hommes <br/>sont égoïstes,' les femmes ne sont pas franches; <br/>une plus juste répartition des produits de la <br/>terre changera-t-elle quoi que ce soit à cette <br/>chose terrible et décourageante? <br/><br/>Puis, comme le temps doux était propice <br/>aux remembrances poétiques, je me répétais <br/>les deux vers d'Alfred de Vigny ; <br/><br/>Et jetant L'on sur l'autre un regard irrité, <br/><br/>Les deux sexes mourront chacun de son côté. <br/><br/>Et ma rêverie finit comme elle devait ; par <br/>cette constatation que le cigare est le meilleur <br/>ami de l'homme. <br/><br/>Eugène Thebault. <br/><br/>Applaudissements <br/><br/>Il a été très dur, M. Delcassé, pour le fa- <br/>rouche parti des Fachodistes; mais la Cham- <br/>bre aussi a été cruelle. <br/><br/>Dès l'interruption si patriotique de M. <br/>Charles Bernard : « Et votre attitude lors de <br/>l'affaire de Fachoda I » ou a fort malhonnê- <br/>tement crié de divers côtés à la fois : « Ne <br/>répondez pas! - Co n'est pas nécessaire! - <br/>Gela n'en vaut pas la peine ! » <br/><br/>Et quand, faisant allusion aux événements <br/>du Transvaal, le ministre prodigua le3 épi- <br/>thètes railleuses à « certains patriotes fNous <br/>les connaissons !) esprits pondérés (On rit), <br/>éclairés, réfléchis (Nouveaux rires)... qui af- <br/>fichent pour l'un des belligérants, pour son <br/>courage, pour sa ténacité, une sympathie <br/>bruyante, mais qui entendent tirer parti de <br/>sa défaite qu'ils se plaisent à prophétiser... », <br/>des applaudissements à tour de bras ajou- <br/>tèrent comme des paires de claques aux <br/>coups de griffe de l'orateur. <br/><br/>Nouveaux, applaudissements quand, de- <br/>vant Dramont, devant Millevoye, devant <br/>Lasies, devant Cassagnac, il désigne « cer- <br/>tains journaux qui se font lea exploiteurs de <br/>nos prétendues humiliations nationales, <br/>comme auparavant on cultivait nos gran- <br/>deurs. » <br/><br/>Lorsque plus loin, revenant à ces mêmes <br/>journaux, il apprécie « la politique du poing <br/>tendu contre tout le monde à la fois » et <br/>s'écrie :« Ignorance stupéfiante ou exploita- <br/>tion éhontéedu plus noble des sentiments...», <br/>le compte rendu officiel met encore entre <br/>parenthèses : {Applaudissements vifs et ré- <br/>pétés). <br/><br/>Que parmi ces applaudissements vifs et â <br/>répétition il ne se trouve aucun de ceux qui <br/>naguère acclamaient Hanotaux, Cavaignac, <br/>Méline, it n'en faudrait pas jurer. Mais jus- <br/>tement ces étranges retours des girouettes <br/>d'ici bas sont d'autant plus douloureux à <br/>qui se vantait de conduire le vent et mener <br/>en laisse la tempête. <br/><br/>A. G. <br/><br/>LE GRAND ASSASSIN <br/><br/>On a lu hier dans l'Aurore une dépêche de <br/>Constantinople annonçant que, sur l'ordre <br/>d'Abd-ul-Hamid, Said-Bey, président do la <br/>section civile du Conseil d'Etat; Firdi-Bey, <br/>membre du Conseil d'Etat, et Zia-Mollan, <br/>chef des ulémas, ont été arrêtés dimanche, <br/>jugés lundi par le tribunal extraordinaire <br/>réuni au palais, condamnés sans appel à la <br/>déportation perpétuelle et expédiés aussitôt, <br/>à bord d'un vapeur, pour l'Arabie Méridio- <br/>nale . Motif : Us auraient conspiré avec le fils <br/>'Ui le frère de la Bête Rouge. <br/><br/>^D'autres dépêches ajoutent que a Saïd-Bey, <br/>Incarcéré sous la surveillance du geôlier du <br/>sultan Mourad, a été soumis à une torture <br/>spéciale ». Il faut compléter et rectifier cette <br/>information. Ce n'est pas le geôlier du sultan <br/>Mourad qui a torturé Saïd-Bey, ma's bien le <br/>très célèbre Ay-Hassan-Pacha (l'ours Hassan- <br/>Pacha), directeur de la police de Bechik- <br/>Tach, illustre par sa cruauté, inventeur d'un <br/>système de torsion des testicules qui porte <br/>son nom en Turquie et qu'il applique lui- <br/>même aux prisonniers de marque. <br/><br/>Quant à l'exil dans l'Yémen, il équivaut à <br/>la mort un peu lente : Saïd-Bey et ses deux <br/>compagnons seront quelque jour assassinés, <br/>en vertu d'instructions officielles, comme le <br/>furent autrefois Midhat-Pacha et Damad <br/>Mahmoud à Taïf : et j'aime à croire qu'on <br/>enverra aussi leur tète à Abd-ul-Hamid, pour <br/>qu'il s'assure de leur mort et se réjouisse en <br/>son coeur d'assassin. <br/><br/>Mais il fera bien de ne pas trop laisser traî- <br/>ner ses victimes : les choses tournent mal <br/>pour lui et si les ulémas s'en mêlent, nous <br/>aurons, d'ici peu à annoncer sa mort À IUL <br/><br/>Ce sera pour le Petit Journal une belle né- <br/>crologie, pour peu que M. Marinoni eût de la <br/>reconnaissance. <br/><br/>Pierre Quillard. <br/><br/>+ : ' <br/><br/>L'Histoire dîme Me <br/><br/>Il n'y a pas de plaisir à piétiner sur les <br/>comploteurs en disgrâce. Mais vraiment <br/>je ne puis m'empêcher de remarquer que <br/>dè9 les premiers témoignages toute la <br/>troupe est prise dans l'acte et que les <br/>plus emphatiques dénégations reçoivent <br/>des faits le plus éclatant démenti. <br/><br/>Ces messieurs ont voulu renverser le <br/>gouvernement: voilà ce qui est établi avec <br/>surabondance. Royalistes, césariens, bo- <br/>napartistes s'y sont employés chacun de <br/>son côté avec une ardeur sans seconde. <br/>N'ayant pas réussi, ils se plaignent <br/>très fort <jue la République se défende et <br/>préféreraient, parait-il, que M. Waldeck- <br/>Rousseau leur livrât les clefs de la place <br/>sans coup férir. Je suppose qu'ils ont <br/>maintenant renoncé à cet espoir. Leur at- <br/>titude n'en est pas moins étrange. Ils se <br/>posent en preux chevaliers, se mettent en <br/>posture de combat, et, dès les premières <br/>charges, jurent qu'ils n'ont rien fait. <br/>Cependant nous apprenons qu'on a dis- <br/>tribué force monnaie royaliste pour pro- <br/>férer des Vive VArmée / sur le passage <br/>attendu de MM. Déroulède et Roget en <br/>marche sur l'Elysée. L'accord ici devient <br/>tellement manifeste qu'il est inutile d'in- <br/>sister. <br/><br/>C'est la répétition des spectacles que <br/>le Boulangisme nous a donnés. Bou- <br/>langer croyait travailler pour son compte, <br/>comme Déroulède qui prétend lui succé- <br/>der. Les royalistes cependant apportèrent <br/>des millions au général factieux et le <br/>comte de Paris ne lui ménagea pas son <br/>appui. Je ne dis rien des bonapartistes, qui <br/>sont de tradition au premier rang de ces <br/>sortes de fête. Hier, l'histoire s'est répétée <br/>toute pareille, et nous avons vu les roya- <br/>listes se joindre aux bonapartistes dans <br/>la Ligué des patriotes, et y apporter le con- <br/>cours pécuniaire le plus important. Ce <br/>que j'en retiens, c'est qu'alors comme au- <br/>jourd'hui tous les ennemis de la Répu- <br/>blique, masqués ou découverts, donnèrent <br/>d'ensemble contre le gouvernement qui ne <br/>faisait pas à leurs mérites une place suffi- <br/>sante. <br/><br/>Le régime sous lequel nous vivons a <br/>certainement beaucoup de défauts, et je <br/>fais mon possible pour les mettre en lu- <br/>mière à mesure que l'occasion s'en pré- <br/>sente. Mais il a une qualité supérieure, <br/>c'est de nous donner, somme toute, un <br/>gouvernement en conformité de senti- <br/>ments avec la nation elle-même. Je ne nie <br/>pas qu'il y ait encore des élections faus- <br/>sées. Pourtant il est vrai de dire qu'à au- <br/>cun moment de son histoire, le peuple <br/>français ne fut si complètement maître <br/>de choisir ses représentants, et libre de <br/>leur imposer ses volontés. Bien ou mal <br/>gouverne, il a le gouvernement qu'il se <br/>donne lui-même et ne peut s'en pren- <br/>dre qu'à ses votes de ses mécomptes. <br/><br/>ALORS pourquoi une révolution? Parce <br/>que îe duc d'Orléans s'ennuie en Angle- <br/>terre? Parce que Déroulède voudrait jouer <br/>au César? Parce que Bailly» Du Lac et Di- <br/>don rêvent de faire griller quelques héré- <br/>tiques dévotement? Qu'ils aillent dire cela <br/>aux électeurs. Ils ont la même liberté <br/>que tous les autres citoyens pour con- <br/>vertir le suffrage universel à leurs vues. <br/>Mais voilà le malheur. Ils n'ont pas <br/>confiance dans leur force de persuasion, et <br/>trouvent plus simple d'arrêter un géné- <br/>ral au passage pour le sommer de com- <br/>mander le feu sur le gouvernement» Le <br/><br/>général, prudent, n'obéit pas, sachant <br/><br/>ien çpie des balles pourraient s'égarer en <br/>chemin, et voilà nos gens devant la Haute <br/>Cour. Ils n'ont pas fait grand mal. Mais ce <br/>n'est pas leur faute. Gouvernants et fau- <br/>teurs de co ups d'Etat étaient tous à peu <br/>près de même taille. On peut dire que <br/>jusqu'au ministère Waldeck-Rousseau <br/>c'étaient des « ennemis » faits pour s'en- <br/>tendre. <br/><br/>Aussi s'entendaient-ils fort bien. Dé- <br/>roulède allait à l'Elysée proposer la for- <br/>faiture à Félix Faure, et celui-ci lui <br/>déduisait tranquillement les raisons pour <br/>lesquelles il aurait le regret de ne pas faire <br/>sabrer les mandataires de la nation de qui <br/>il tenait ses pouvoirs. Méline et Dupuy <br/>livrèrent la rue aux bandes des patriotes à <br/>quarante sous qui mêlèrent les a \"Vive <br/>Esterhazy ! » avec les « Vive l'armée î », <br/>et confondirent dans les mêmes hour- <br/>ras, le traître, des généraux faussaires, <br/>un prince d'Orléans et M. Déroulède. <br/>Et le soir les journaux officieux racon- <br/>taient qu'il avait fallu protéger Zola con- <br/>tre « le peuple » qui voulait le jeter h <br/>l'eau. On a pu voir il y a quelques jours, <br/>sur la place de la Nation, la différence en- <br/>tre le peuple et les bandes embauchées. <br/>Enfin, acte de forfaiture impuni, Dupuy, <br/>ayant en mains la preuve du complot <br/>contre la République, réduisait la cons- <br/>piration aux proportions d'un délit de <br/>presse. <br/><br/>Aujourd'hui c'est un autre système. La <br/>République se défend. Waldeck-Rous- <br/>seau et Millerand qui ne sont pas sans fai- <br/>blesses-on me rendra cette justice que je <br/>ne fais rien pour le leur cacher - ont au <br/>moins ce mérite de ne vouloir en aucune <br/>façon servir les intérêts du césarisme, de <br/>la monarchie orléaniste, ou de la domi- <br/>nation cléricale. Gela ne suffit pas, mais <br/>c'est un commencement nécessaire. Les <br/>ennemis de la République sont pour- <br/>suivis. La preuve est faite de leurs ma- <br/>chinations. La loi frappera les coupables. <br/>Il ne restera plus aux républicains qu'à <br/>faire vivre la République après l'avoir <br/>sauvée. <br/><br/>Le duc d'Orléans, qui est un philosophe <br/>joyeux, avait prévu cette fin d'une che- <br/>vauchée qui n enrichira pas notablement <br/>les annales de sa famille. M. Buffet lui <br/>criait : a Sire, venez chercher la couronne. » <br/>Il répondait : « Commandez-moi toujours <br/>une veste de chasse à la Belle-Jardi- <br/>nière. » Ce fût son premier acte, son <br/>acte unique de gouvernement. Je dis que <br/><br/>c'est d'un sage. Car s'il n'a pas eu îa <br/>couronne, notre prince garde sa veste, <br/>gracieux emblème des voeux du peuple <br/>Français pour son « Roi sauveur », <br/>Comme « la nation » donna Chambord <br/>au précédent roi de France, sans l'insigne <br/>royal si périlleux à porter, nous pourrions <br/>par voie de souscription publique, faire <br/>les frais des deux pans de bon drap qui <br/>feraient de la veste du « Roi » une bonne <br/>robe de chambre pour réchauffer le coeur <br/>après la douche. <br/><br/>G. Clemenceau. <br/><br/>(Echos et Nouvelles <br/><br/>CALENDHIER - Dimanche 3G novembre. <br/><br/>- La#er du sûîêll : 7 h. a?-; coucher : 4 h. 8. <br/><br/>Temps d'hier : Nuageux. <br/><br/>Tlïermomètrc ûe l'Aurore : Maximum. 0*1 <br/>au-dessus ; Minimum, 5' au-dessus. <br/><br/>Baromètre de l'ingénieur Sccretan : A midî, <br/>T73*-S; à minuit. 7?811'. <br/><br/>Temps probable: Nuageux. <br/><br/>. Ephêmérides. - Visite à Paria, de Philippe le <br/>Beau et de Jeanne la Folle (père et mère de Char- <br/>les-Quint) ; l'archiduc va jouer à la paume aux <br/>IlaîlcB (1501). <br/><br/>Passage (désaslre) de la Bérésïna (1812). <br/><br/>6,000 O/Q <br/><br/>On sait qu'on a enfin obtenu par une loi <br/>de février dernier que les huissiers remet- <br/>traient désormais sous enveloppe fermée <br/>leurs papiers bleus - rien de la Banque de <br/>France - de façon à éviter l'intempestive <br/>curiosité des concierges, En même temps, un <br/>décret du conseil d'Etat fixait le prix de l'en- <br/>veloppe, qui doit être payé par le destina- <br/>taire. <br/><br/>Les enveloppes commerciales coûtant <br/>2 fr, 50 le mille, ce ^ui donne quatre enve- <br/>loppes pour un centime ou vingt enveloppes <br/>pour un sou, on aurait accordé uo bénéfice <br/>de deux mille pour cent ù MM. les huissiers, <br/>en fixant le prix de l'enveloppe à cinq centi- <br/>mes. <br/><br/>Le conseil d'Etat a _ trouvé que ce n'était <br/>pas suffisant et a taxé l'enveloppe à quinze <br/>centimes, ce qui la met à 150 francs le mille, <br/>et donne un bénéfice de six mille pour <br/>cent ! <br/><br/>Et la justice est gratuite en France. <br/><br/>QUI PAIE SES DETTES.... <br/><br/>L'Etat ne les paie pas et laisse en souf- <br/>france des dettes qu'il a reconnues. Il doit en <br/>ce moment au département de la Seine sa <br/>quote-part dans les dépenses occasionnées <br/>par l'agrandissement et l'Aménagement du <br/>Palais de Justice. Ces dépenses étaient en- <br/>dossées par la Ville, l'Etat et le Département. <br/>Ce dernier fit les frais ; la Ville de Paris lui <br/>remboursa ce qu'elle devait, mais l'Etat, <br/>après avoir soulevé des contestations sur le <br/>montantde sadette,et obtenu une transaction, <br/>n'a pas soldé la somme de 1,686,312 fr. 10 qu'il <br/>avait reconnu devoir en 1896. <br/><br/>Le département de la Seine, par l'organe <br/>de ses conseillers généraux, commence à <br/>se fâcher et à trouver qu'il a eu tort de faire <br/>crédit à ce mauvais payeur. <br/><br/>APAISEMENT <br/><br/>De V Univers Israélite : <br/><br/>M, Gérard, ministre de France à Bruxelles,qui, <br/>au banquet du 14 juillet dernier, n'a pas protesté, <br/>lorsqu'un convive assis â ses côtés a erié : * A <br/>bas les juifs ! », vient de fonder une nouvelle <br/>chambre de commerce, par opposition â celle <br/>existante depuis quinze ans. et dans laquelle nous <br/>comptons deux de nos coreligionnaires. <br/><br/>M. Gérard est ouvertement soutenu par M. Del- <br/>cassé, ministre des affaires étrangères. <br/><br/>C'est l'apaisement !... <br/><br/>200 DESSINS <br/><br/>Hermann-Paul vient de réunir en un vo- <br/>lume ses dessins du Figaro. Ce livre de cro- <br/>quis est un livre d'histoire. Le spirituel ar- <br/>tiste, en ce recueil que publie la Revue blan- <br/>che, nous restitue, en effet, la campagne <br/>pour la revision, l'enquête de la Cour de cas- <br/>sation, le procès de Rennes. <br/><br/>Déjà si expressifs par leur forme seule, c?s <br/>dessins sont rendus plus explicites encore <br/>par lea légendes ironiques et profondes qui <br/>les soulignent. Une galerie de portraits ter- <br/>mine le volume, ceux de tous les personna- <br/>ges du procès de Rennes, juges, témoins, ex- <br/>perts, spectateurs - et on sait avec quelle <br/>maîtrise Hermann-Paul imprime sur le mas- <br/>que d'un contemporain la particularité mo- <br/>rale qui le hausse à l'effigie. <br/><br/>CAQE DE PA>X <br/><br/>On mande de Pékin : « Li-Hung-Tchang <br/>vient d'être nommé, par décret impérial, mi- <br/>nistre du commerce. » <br/><br/>Voilà une nomination qui fera du bruit. <br/>On disait que la politique chinoise était <br/>toute â la guerre. Cette nomination de Li- <br/>Hung-Tchang est évidemment un gage de <br/>paix. <br/><br/>AU MUSÉUM <br/><br/>Nous avons parlé, il y a quelque temps, <br/>des curieuses expériences auxquelles MM. <br/>Milne-Edwards, Viré et quelques autres sa <br/>vants se livrent dans la partie des catacom- <br/>bes située sous le Jardin des Plantes. Ces <br/>savants avaient entrepris des études sur la <br/>transformation des animaux soumis à l'in- <br/>fluence exclusive de l'obscurité. Aujourd'hui, <br/>comme nous le faisions entrevoir jadis, les <br/>expériences ont réussi au delà de toute espé- <br/>rance, Citons quelques cas qui attirent par- <br/>ticulièrement l'attention par leur anomalie <br/>et leur curiosité. <br/><br/>Des insectes tétraptères (à 4 ailes) ou dip- <br/>tères (à 2 ailes) ont perdu leurs ailes, leurs <br/>pattes se sont allongées, leuT tête s'est agré- <br/>mentée d'une sorte ae trompe; des rats sont <br/>devenus complètement aveugles, et même la <br/>trace extérieure de la vue a disparu; de <br/>même leur tête se termine maintenant paT <br/>une sorte de trompe avec laquelle ils ramas- <br/>sent par terre les atomes qui sont devenus <br/>leur nourriture ; leurs pattes se sont pour- <br/>vues d'une membrane semblable â celle des <br/>palmipèdes. Des crapauds ont subi à peu do <br/>chose près les mêmes transformations que <br/>les rats. <br/><br/>BARBAPOUX <br/><br/>Le Théâtre du Peuple se prépare ê donner, <br/>dans la première quinzaine de décembre, un <br/>spectacle privé qui ne manquera pas de faire <br/>sensation. On annonce, en effet, une confé- <br/>rence de notre distingué confrère Serge Bas- <br/>set, et la représentation de Suicide, pièce <br/>sociale en un acte, de Lucien Wahl, et de <br/>Chacun pour soi, drame en un acte, d'André <br/>Pétrel. La soirée sera terminée par une pièce <br/>très audacieuse, Barbapoux, revue symbolico- <br/>réaliste en deux actes, de notre collaborateur <br/>Charles Malato. Sous des noms transparents, <br/>des personnalités - quelques-unes bruyantes <br/>et malpropres - passeront de la scène poli- <br/>tique sur celle du théâtre : on rira. <br/><br/>ÇA ET LA <br/><br/>IJB on AND BANQUET d'inauguration du Comité <br/>républicain du commerce et de l'industrie aura <br/>lieu le 29 novembre 1895), à sept heures et demie, <br/>au Grand Hôtel, sons la présidence de M. le mi- <br/>nistre du commerce. <br/><br/>Le bureau du Comité rappelle â ses membres <br/>adhérents que les listes pour l'admission au ban- <br/>quet seront définitivement closes ie lundi 27 cou- <br/>rant. Avis aux retardataires. <br/><br/>LA PRESSE UTILE. - C'est dans la presse utile <br/><br/>Sue M, Gaston Boissier, dans son rapport A l'Aca- <br/>dmie, a rangé le Magasin pittoresque, que <br/>l'assemblée a « voulu honorer en lui apportant <br/>sos félicitations et SES RÉCOMPENSÉE J». <br/><br/>Cette très ancienne publication est depuis quel- <br/>que temps dirigée par notre confrère Ch. Formen- <br/>tin, qui a transporté ses bureaux, M, rue de <br/>Lille. <br/><br/>L'ESPRIT OU VOISIN <br/><br/>Au restaurant. <br/><br/>- Garçon, mon potage est bien long à <br/>venir... <br/><br/>- - Dame, monsieur a demandé un potage <br/>à la tortue 1 <br/><br/>Scara mouche. <br/><br/>LES ASSOMPTIONNISTES <br/><br/>Rapport et procès-verbal officiel de perqui- <br/>sition. - Les 1,800,000 francs <br/>constatés judiciairement <br/><br/>Le Père Bailly, on s'en souvient, a eu l'é- <br/>tonnant aplomb de démentir que M. Pé- <br/>chard, commissaire de police, eût trouvé <br/>dans la cellule du père Hippolyte Saugrain, <br/>trésorier de l'Ordre, entre diverses piè- <br/>ces importantes, une somme d'environ <br/>1,800,000 francs. Nous avions, en <br/>dépit de la lettre rectificative du Père Bailly, <br/>maintenu nos renseignements. <br/><br/>Nous avons eu raison. Le Figaro a publié <br/>hier le rapport de M. Péchard sur sa perqui- <br/>sition et son procès-verbal de saisie. <br/><br/>Rapport et procès-verbal confirment de <br/>point en point nos divers récits. <br/><br/>Détachons de ce rapport ce passage sail- <br/>lant ; <br/><br/>Nous remarquons, tant dans lés meubles gar- <br/>nissant la cellule (bibliothèque, armoires, bureau, <br/>table) qae dans un coffre-tort ouvert sur notre <br/>réquisition, une nombreuse correspondance rela- <br/>tive à des dons faits au nom do saint Antoine de <br/>Padoue, en exécution de voeux accomplis, et cons- <br/>tatons la présence de fonds importants en billets <br/>de banque, rouleaux d'or, titres ou actions di- <br/>verses que l'on peut estimer à 11,800.000 francs; <br/>noua trouvons également des testaments faits par <br/>des personnes en faveur de prêtres ou de reli- <br/>gieux dont les noms ne figurent pas dans la lista <br/>des individus faisant l'objet de notre commission <br/>regatoire. <br/><br/>Et dn procès-verbal de saisie extrayons ces <br/>quelques lignes significatives : <br/><br/>Nous avons également saisi et placé sous scellé <br/>portant le n* 2 un bail et une contre-lettre relatifs <br/>a l'immeuble de la rue François-Ier, n» 8. <br/><br/>Sous le ecelle n° 3, nous avons placé une lettre <br/>adressée par le P. Victorin au directeur de l'As- <br/>somption de Nîmes, dans laquelle ce religieux <br/>annonce que des poursuites vont être intentées <br/>prochainement contre la congrégation. <br/><br/>Dans le Figaro d'hier le premier docu- <br/>ment était porté comme ayant été signé par <br/>le père Hippolyte Saugrain. <br/><br/>C'était la une erreur matérielle sans im- <br/>portance. Mais le Père Bailly en a profité <br/>pour équivoquer et déclarer que cette pièce <br/>n'existait pas et que lea 1,800,000 francs <br/>étaient une légende. Le» 1,800,000 <br/>francs «lit été va» par M. Péchard, <br/>mais, â vrai dire, ce n est pa* dans un pro- <br/>cès-verbal, mais dans un rapport adressé <br/>par lui à ces chefs sur l'ensemble de ses opé- <br/>rations que le commissaire en a constaté <br/>l'existence. <br/><br/>- Je n'avais pas â faire signer ce rapport au <br/>père Hippolyte, nous a-t-il dit, et le père Hippo- <br/>lite ne l'a pas signé en effet. <br/><br/>La présence des 1,800,000 francs n'en reste <br/>pas moins judiciairement constatée par un <br/>commissaire de police agissant sur commis- <br/>sion rogatoire régulière. <br/><br/>Le P, Bailly, dans ses démentis, ne souffle <br/>mot de la contre-lettre saisie par M.Péchard. <br/>La pièce a bien son importance, mais la <br/>nier est impossible et serait de peu de pro- <br/><br/>A la vérité, le fisc fera payer cher aux bons <br/>Pères leur manoeuvre frauduleuse. Mais que <br/>leur importe ! Ils crieront à la persécution, et <br/>les fidèles augmenteront les offrandes. <br/><br/>Albéric Darthèze. <br/><br/>HAUTE COUR <br/><br/>Le spectacle que donne la Haute Cour n'est <br/>pas précisément édifiant. Je ne conseille <br/><br/>g oint d'y mener en caravanes les touristes <br/>ook pour leur faire voir la majesté de la <br/>République et la dignité de ses sénateurs sur <br/>leurs chaises curules. Quand, à Rome, les <br/>Pères conscrits se laissèrent tirer la barbe <br/><br/>f.ar les Gaulois de Brennus, il n'y avait point <br/>à d'assistants ironiques. <br/><br/>Ce n'est pas seulement qu'accusés, témoins <br/>et avocats eù prennent à leur aise avec le <br/>Code et les convenances, dirigent les débats <br/>à leur guise, accablent d'outrages leurs ju- <br/>ges et s'accordent à qui mieux mieux le plai- <br/>sir exquis de crier à la tyrannie en se li- <br/>vrant au désordre. La mollesse du président <br/>n'a d'égale que le manque d'à-propos et de <br/>présence d'esprit du procureur général. Et, <br/>brochant sur le tout, la prudence avisée de <br/>ceux des membres du Sénat qui, bien loin <br/>de méditer sur ce pauvre Déroulède et ses <br/>co-accusés de barbares vengeances, ne son- <br/>gent qu'à décliner une responsabilité qui leur <br/>pèse et qu'à fausser compagnie à leurs collè- <br/>gues sans tambour nt trompette f <br/><br/>Chaque jour voit se renouveler, à l'appel <br/>nominal, le petit tour de passe-passe par le- <br/>quel un sénateur, après l'autre, s'égrène et <br/>perd - volontairement - ie droit de siéger, <br/>sous prétexte de n'avoir pu faire acte de pré- <br/>sence à l'heure dite. De bons prophètes affir- <br/>ment que M. de Freycinet se dispose à pren- <br/>dre ainsi congé à l'anglaise. <br/><br/>Cette sortie discrète serait tout à fait dans <br/>le tempérament du délicieux vieillard qui <br/>n'a jamais cheminé que de guingois et qui <br/>aurait pu inventer la poudre... d'escampette. <br/>Il aurait tort toutefois de se flatter de l'espoir <br/>de filer sans bruit. Ses électeurs ont l'oeil sur <br/>lui. S'il esquive ce devoir républicain, il ne <br/>devra pas s'étonner, en dépit de tout l'art <br/>avec lequel il a toujours su s'insinuer dans <br/>les bonnes grâces de tout le monde, de se <br/>voir demander compte, au scrutin de jan- <br/>vier, de cette petite lâcheté avec quelques <br/>autres et d'être rendu prématurément aux <br/>joies domestiques et paisibles de la vie pri- <br/>vée. <br/><br/>Ce n'est pas d'ailleurs que je m'étonne ou <br/>me scandalise fort de cette espèce de torpeur <br/>générale. La raison en est simple. Ce procès <br/>repose sur une fiction. On y a pratiqué de <br/>force une disjonction arbitraire, On n'a pas <br/>voulu mettre en cause messieurs les mili- <br/>taires, qui étaient pourtant, par définition, <br/>les plus coupables. <br/><br/>Chacun sent l'impossibilité d'aller au fond <br/>d'une affaire ainsi volontairement mutilée. <br/><br/>Ii répugne à quelques-uns de réserver toute® <br/>leurs rigueurs pour les civils en épargnant <br/>la personne sacro-sainte des généraux - à <br/>qui l'on fait même risette, chemin faisant. <br/>Le Dauphin, sous l'ancien régime, avait â ses <br/>côtés un page destiné à être fouetté pour lea <br/>fautes princiéres. L'armée, de notre temps, <br/>jouerait-elle à sou tour, sinon de l'impecca- <br/>bilité, du moins de l'impunité absolue? <br/><br/>Cruelle énigme ! En attendant qu'elle soit <br/>résolue, ce privilège du galon choque les <br/>bonnes âmes, embarrasse les amis de îa jus- <br/>tice, offre aux habiles gens \\v.\\ prétexte à <br/>souhait pour se soustraire à un devoir péni- <br/><br/>II est certain, pourtant, qu'il ne s'agit pas <br/>en l'espèce de sévir bien terriblement contre <br/>Déroulède et eonsorts. La facilité par trop <br/>bonhomme avec laquelle le président Falliè- <br/>rea vient d'éviter à ce grand patriote une <br/>confrontation avec le général Roget d'où <br/>aurait Ju jaillir la preuve de la prémédita- <br/>tion scélérate du coup d'Etat de l'un et de la <br/>complicité à éclipse de l'autre, est un gage <br/>d'indulgence. C'est la contre-partie assez <br/>exacte de l'infâme collusion par laquelle la <br/>justice militaire de Carrière et de Jouaust <br/>feignit de croire â la maladie, sitôt et si <br/>complètement guérie, du colonel du Paty de <br/>Clam pour éviter à cet inquisiteur fantai- <br/>siste l'ennui d'une confrontation avec sa vic- <br/>time. <br/><br/>Vrai, les accusés auraient meilleure grâce â <br/>ne pas geindre â fendre le coeur sur de pré- <br/>tendues rigueurs. Outre que des hommes en <br/>état de grâce héroïque devraient payer ga- <br/>lamment l'enjeu d'une grosse partie qu iis <br/>auraient gagnée à nos dépens, il n'est pas <br/>sans quelque ridicule de les entendre récri- <br/>miner comme ils font quand on se souvient <br/>des façons d'agir du chancelier Pasquier et <br/>de la Cour des pairs et des procédés plus <br/>sommaires encore du second Empire. Il n'y <br/>a pas si longtemps d'ailleurs que ces conspi- <br/>rateurs, qui se plaignent du pli d'une rose et <br/>de la violation d'une formalité, se réjouis- <br/>saient en sauvages des souffrances du captif <br/>de l'île du Diable, des illégalités des conseils <br/>de guerre et des crimes de l'Etat-Major contre <br/>un innocent. <br/><br/>Francis de Pressensé. <br/><br/>NE VOUS GÊNEZ PAS <br/><br/>Si jamais vient au pouvoir un cabinet qui <br/>ait besoin de se débarrasser de MM. : <br/><br/>Millerand, directeur da la Lanterne, jour- <br/>nal socialiste; f <br/>Baudin, syndic des Journalistes parisiens ; <br/>De Lanessan, rédacteur au Rappel; <br/><br/>Jean Dupuy, président du Syndicat de la <br/>presse parisienne; <br/><br/>ce cabinet là n'aura pas besoin de se gêner. <br/><br/>La loi scélérate permet d'arrêter préventi- <br/>vement tous les journalistes. Il suffit de faire <br/>dresser par le parquet ua réquisitoire rele- <br/>vant, dans une phrase tronquée d'un article, <br/>une prétendue provocation anarchiste. <br/><br/>Ni Lanessan, ni Millerand, ni Baudin, ni <br/>Dupuy ne protesteront. Us auront donné <br/>1 exemple et subiront certainement avec plai- <br/>sir, comme journalistes, la loi qu'ils auront <br/>fait appliquer, comme ministres, dans un in- <br/>térêt de défense républicaine. <br/><br/>J. P. <br/><br/>GUERRES COLONIALES <br/><br/>Par Vigné d'Octon <br/><br/>A propos de ce que j'écris dans VA urore <br/>contre la traite des noirs, mon ami Camille <br/>Pelletan dit dans la Dépêche de Toulouse : <br/>« L'esclavage ruine les régions où il est ins- <br/>tallé parce qu'il les dépeuple. Il faut en effet <br/>pour achalander les marchés - dont la plu- <br/>part se tiennent sous notre surveillance - <br/>que les tyranneaux du pays se livrent à des <br/>guerres continuelles de village à village et <br/>tuent autant de malheureux qu'ils en amè- <br/>nent en captivité. Il faut ensuite que le bé- <br/>tail humain conquis de la sorte soit traîné <br/>sur d'énormes espaces par des caravanes de <br/>foi Bans devenus ae véritables bêtes fauyes et <br/>sème sa route de cadavres... » <br/><br/>Jamais paroles ne furent plus vraies et, <br/>pour le démontrer, je n'ai qu'à faire appel à <br/>ma mémoire, aux faits dont je fus le témoin <br/>ainsi qu'aux nombreux documents émanant <br/>de nos correspondants et dont l'authenticité <br/>est indiscutable. <br/><br/>Lorsque je fus envoyé dans le Sud pour <br/>prendre part & la colonne du Rio-Nunez, le <br/>bateau sur lequel j'étais fit escale dans la <br/>Basse-Cazamance. Nous eûmes, les autres of- <br/>ficiers et moi, assez de temps pour visiter» <br/>soit en pirogue, soit à pied, une bonne partie <br/>de cette région, et remonter dans le haut du <br/>fleuve jusqu'à notre poste de Sedhiou. Nous <br/><br/>J tûmes nous convaincre que la paix la plus pro- <br/>onde régnait sur les deux rives. Le pays pa- <br/>raissait même jouir d'une prospérité relative; <br/>les villages des Ballantes et des Yolos, que nous <br/>visitâmes, avaient un air de gaieté calme et <br/>sereine qui nous séduisit, malgré la mélan- <br/>colie profonde du paysage. lia étaient assez <br/>nombreux, assez rapprochés l'un de l'autre, <br/>les gamins - gentils négrillons à mine éveil- <br/>lée - grouillaient dans la poussière . des <br/>ruelles, parmi les chiens et les phacochères; <br/>nous croisions à chaque pas des jeunes fem- <br/>mes, des fillettes, qui nous saluaient du sou- <br/>rire de leurs dents Wanches. Bref, tout indi- <br/>quait une population assez dense et heureuse, <br/>et la Géographie d'Elisée Reclus, que je con- <br/>sultais, donnait, pour le pava par nous-vi- <br/>sité une population d'environ deux mille <br/>âmes. <br/><br/>Un an après, â mon retour, repassant par <br/>là, je trouvai cette région méconnaissable. <br/>Les champs cultivés, ies lougans, comme on <br/>dit là-bas, étaient devenus des broussailles. <br/>A la place des villages si gais, si tranquilles, <br/>il n'jr avait que des amoncellements de dé- <br/>combres ; dans la brousse qui remplaçait les <br/>cultures je ne rencontrais plus âme vivante, <br/>Où plutôt, de loin en loin, quelques miséra- <br/>bles noirs, éborgnés ou mutiles, qui, dès qu'ils <br/>apercevaient un homme blanc, s'enfuyaient <br/>comme des bêtes effarouchées dans la pro- <br/>fondeur des broussailles. Ah ! te recensement <br/>des pays Yolos et Ballantes n'eût pas été <br/>maintenant bien long à faire et, pour rester <br/>dans la vérité, l'illustre géographe aurait eu <br/>besoin de modifier sérieusement ses chiffres <br/>et aussi la description qu'il donnait de cette <br/>région africaine. Et ee n'est pas là-soit <br/>dit en passant - une des conséquences ïea <br/>moins curieuses et les moins tristes de la <br/>chasse à l'esclave et de notre colonisation & <br/>coups de fusil, que cette impossibilité de faire <br/>de ces pays-là des descriptions géographique» <br/>et fine cartographie précises. <br/><br/>Aujourd'hui, sur les rapports des plua <br/>consciencieux voyageurs, le géographe dé- <br/>crit tel coin du Soudan, en énumere les vil- <br/>lages, dont il indique la situation, la popu- <br/>lation, les cultures, ii en dresse une carte <br/>aussi juste que possible six mois, un an <br/>après, ee qu'il indiquait comme une oasis <br/>assez florissante n'est qu'un désert lamen- <br/>table ; il n'y a trace ni des villages marqués <br/>sur la carte, ni des cultures décrites ; partie <br/><br/>V 5-irS <br/><br/>",
+                            "paSousTitreOCRInfoBulle": "Le texte affiché peut comporter un certain nombre d'erreurs. En effet, le mode texte de ce document a été généré de façon automatique par un programme de reconnaissance optique de caractères (OCR). Le taux de reconnaissance estimé pour ce document est de <b>98.5</b>%.<br/> "
+                          }
+                        }
+                      ],
+                      "etat": ""
+                    }
+                  ],
+                  "etat": "optionHidden"
+                }
+              },
+              "etat": ""
+            }
+          },
+          "increment": 1,
+          "etat": "EmptyCaption StyleTextAndImage StyleSimplePage"
+        },
+        "etat": ""
+      },
+      "ModeAffichageFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {
+          "title": "Affichage",
+          "changed": true
+        },
+        "contenu": [
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-singlepage",
+            "description": "Simple page",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/SINGLE/ark:/12148/bpt6k702136k/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-doublepage",
+            "description": "Double page",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/DOUBLE/ark:/12148/bpt6k702136k/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-verticalread",
+            "description": "Défilement  vertical",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/VERTICAL/ark:/12148/bpt6k702136k/f1",
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-mosaique",
+            "description": "Mosaïque",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MULTI/ark:/12148/bpt6k702136k/f1",
+            "etat": ""
+          },
+          {
+            "display": false,
+            "active": false,
+            "parameters": {
+              "role": "presentation"
+            },
+            "contenu": "icon-sound",
+            "description": "Enregistrement sonore",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MEDIA/ark:/12148/bpt6k702136k/f1",
+            "etat": "optionHidden"
+          },
+          {
+            "display": false,
+            "active": true,
+            "parameters": {
+              "role": "link"
+            },
+            "contenu": "icon-video",
+            "description": "Vidéo",
+            "selected": false,
+            "url": "https://gallica.bnf.fr/services/ajax/mode/MEDIA/ark:/12148/bpt6k702136k/f1",
+            "etat": "optionHidden"
+          }
+        ],
+        "etat": ""
+      },
+      "OtherShareOptions": {
+        "display": true,
+        "active": true,
+        "parameters": {},
+        "contenu": [
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Intégrer",
+              "linkClass": "pictoPartageIntegrer",
+              "iconClass": "icon-partage-integrer"
+            },
+            "selected": false,
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Email",
+              "linkClass": "pictoPartageEmail",
+              "iconClass": "icon-partage-mail"
+            },
+            "selected": false,
+            "etat": ""
+          },
+          {
+            "display": true,
+            "active": true,
+            "parameters": {
+              "role": "link",
+              "libelle": "Lien",
+              "linkClass": "pictoPartageLien",
+              "iconClass": "icon-partage-link"
+            },
+            "selected": false,
+            "etat": ""
+          }
+        ],
+        "etat": ""
+      },
+      "SideBarFragment": {
+        "display": false,
+        "active": true,
+        "parameters": {
+          "changed": false
+        },
+        "contenu": {},
+        "etat": "optionHidden"
+      },
+      "DocumentInformationFragment": {
+        "display": true,
+        "active": true,
+        "parameters": {},
+        "contenu": {
+          "IconsTitleDocument": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": true,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "icon-rawtextarrow",
+                "description": "Ce document est disponible en mode texte",
+                "selected": false,
+                "bindUrl": "",
+                "url": "",
+                "etat": ""
+              }
+            ],
+            "etat": ""
+          },
+          "DocumentSousDroits": {
+            "display": false,
+            "active": false,
+            "parameters": {},
+            "contenu": "",
+            "etat": "optionHidden"
+          },
+          "ConsulterRebondir": {
+            "display": true,
+            "active": true,
+            "parameters": {},
+            "contenu": [
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "CONSULTER",
+                "selected": false,
+                "etat": "optionHidden"
+              },
+              {
+                "display": false,
+                "active": true,
+                "parameters": {
+                  "role": "link"
+                },
+                "contenu": "REBONDIR",
+                "selected": false,
+                "etat": "optionHidden"
+              }
+            ],
+            "etat": ""
+          }
+        },
+        "etat": ""
+      },
+      "AmisBnFViewerModel": {
+        "display": false,
+        "active": false,
+        "parameters": {
+          "role": "presentation",
+          "changed": true
+        },
+        "selected": false,
+        "etat": "optionHidden"
+      }
+    },
+    "etat": ""
+  }
+}

@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.0.0 - "La Gazette Mécanique 📰"',
+    date: '24 Mai 2026',
+    description: 'Le Petit Parisien s\'émancipe de son carcan de papier : toutes les archives quotidiennes sont migrées en base de données Supabase, et un magnifique calendrier interactif permet de naviguer de 1899 à 1914. Les Héritiers peuvent désormais voter pour numériser leurs journées préférées, et les Gardiens piloter la Forge.',
+    changes: [
+      '📰 **Migration vers Supabase :** Les articles et les événements historiques du sous-projet `/1899` ne dépendent plus de fichiers statiques volumineux. Ils sont récupérés de façon dynamique et optimale en base de données Supabase depuis les tables `journal_articles` et `historical_events`.',
+      '📅 **Calendrier Interactif Popover (1899 - 1914) :** Remplacement du sélecteur de date natif du navigateur par un calendrier sur-mesure en pur React/CSS. Il permet de naviguer à travers un siècle naissant (de novembre 1899 à décembre 1914) et de visualiser l\'état des archives.',
+      '💚 **Mise en surbrillance stricte des articles :** Le calendrier mensuel et l\'indicateur d\'état allument en vert *uniquement* les dates pour lesquelles de vrais articles de presse sont chargés en base. Les données de météo et d\'influence lunaire (générées à la volée côté client) sont sagement exclues du calcul.',
+      '🗳️ **Démocratie Féérique & Votes :** Les Héritiers standards disposent désormais d\'un bouton de vote persistant dans le cache local (anti-double-vote) pour demander la numérisation des dates non encore archivées.',
+      '👑 **Pupitre d\'Administration :** Les administrateurs visualisent les commandes exactes de génération (`python pipeline_journalier.py --date AAAA-MM-JJ`) et disposent d\'un onglet exclusif classant les requêtes des joueurs par popularité.',
+      '⚙️ **Pipeline automatisé :** Le pipeline en Python et le script d\'importation Node (`insert_journal_day.js`) ont été harmonisés pour supporter l\'extraction et l\'insertion quotidienne unitaire par fichiers JSON de manière isolée.',
+    ]
+  },
+  {
     version: '16.0.3 - "Le Tarif du Solitaire 🗡️"',
     date: '24 Mai 2026',
     description: 'Les remises accordées par les items de vie sociale prenaient la poussière — le moteur ne les lisait jamais. Le Membre solo des Sicaires peut enfin négocier ses contacts au juste prix.',

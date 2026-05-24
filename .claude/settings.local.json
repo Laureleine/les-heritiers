@@ -46,7 +46,11 @@
       "Bash(git commit -m 'Fix appel Edge Function : fetch brut → supabase.functions.invoke\\(\\) *)",
       "Bash(git commit *)",
       "mcp__claude_ai_Supabase__get_publishable_keys",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\" -Recurse -Directory)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Get-ChildItem -Path \"src\" -Recurse -Filter \"*.js*\")",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

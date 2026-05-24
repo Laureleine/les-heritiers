@@ -1,5 +1,5 @@
--- Ajoute statut, xp_total et xp_depense au retour de get_cercle_members
--- Permet au Docte de voir si un personnage est scellé ou non
+-- Ajoute statut, XP et portraits au retour de get_cercle_members
+-- Permet au Docte de voir si un personnage est scellé et d'afficher le portrait actif dans les Cercles
 
 CREATE OR REPLACE FUNCTION public.get_cercle_members(p_cercle_id uuid)
  RETURNS jsonb
@@ -29,7 +29,10 @@ BEGIN
           'typeFee', c.type_fee,
           'statut', c.statut,
           'xp_total', c.xp_total,
-          'xp_depense', c.xp_depense
+          'xp_depense', c.xp_depense,
+          'portrait_masked_url', c.portrait_masked_url,
+          'portrait_unmasked_url', c.portrait_unmasked_url,
+          'is_unmasked_revealed', c.is_unmasked_revealed
         )
       ELSE NULL END
     )

@@ -1,0 +1,1017 @@
+/* ==========================================================================
+   DESIGN SYSTEM & VARIABLES (Aesthetic Paper & Vintage Ink)
+   ========================================================================== */
+:root {
+    /* Color Palette */
+    --color-bg-light: #FAF8F5;       /* Warm crème parchment */
+    --color-bg-dark: #141311;        /* Deep charcoal coal */
+    --color-text-light: #2A2621;     /* Charcoal ink */
+    --color-text-dark: #E6E1DA;      /* Soft parchment grey */
+    --color-primary: #8B1A1A;        /* Bordeaux red (vintage accent) */
+    --color-primary-hover: #A52A2A;  /* Lighter bordeaux */
+    --color-secondary: #C5A059;      /* Warm metallic gold */
+    --color-border-light: #E1DBD3;   /* Light paper crease */
+    --color-border-dark: #2C2824;    /* Dark charcoal seam */
+    --color-card-bg-light: #FFFFFF;  /* Fresh white paper */
+    --color-card-bg-dark: #1D1B18;   /* Warm coal block */
+    --color-summary-bg-light: #FDF9F0; /* Soft amber tint */
+    --color-summary-bg-dark: #26211C;  /* Deep amber amber charcoal */
+    
+    /* Fonts */
+    --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-gothic: 'Cinzel', serif; /* Elegant heading capital letters */
+
+    /* Layout & Transitions */
+    --sidebar-width: 320px;
+    --shadow-soft: 0 4px 20px rgba(42, 38, 33, 0.05);
+    --shadow-bold: 0 10px 30px rgba(42, 38, 33, 0.12);
+    --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   RESET & BASE STYLES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    background-color: var(--color-bg-light);
+    color: var(--color-text-light);
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    overflow-x: hidden;
+    transition: var(--transition-smooth);
+    display: flex;
+    min-height: 100vh;
+}
+
+body.dark-mode {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-dark);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-border-light);
+    border-radius: 4px;
+}
+.dark-mode ::-webkit-scrollbar-thumb {
+    background: var(--color-border-dark);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary);
+}
+
+/* ==========================================================================
+   APP LAYOUT STRUCTURE
+   ========================================================================== */
+/* Interactive Left Sidebar (Sommaire Cliquable) */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #F3ECE2; /* Vintage library folder color */
+    border-right: 1px solid var(--color-border-light);
+    display: flex;
+    flex-direction: flex-column;
+    z-index: 100;
+    overflow-y: auto;
+    padding: 2.5rem 1.5rem;
+    transition: var(--transition-smooth);
+    display: flex;
+    flex-direction: column;
+}
+
+.dark-mode .sidebar {
+    background-color: #171513;
+    border-right: 1px solid var(--color-border-dark);
+}
+
+/* Masthead in Sidebar */
+.sidebar-header {
+    margin-bottom: 2.5rem;
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: 1.5rem;
+    text-align: center;
+}
+
+.sidebar-header h2 {
+    font-family: var(--font-gothic);
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    color: var(--color-primary);
+    margin-bottom: 0.3rem;
+}
+
+.sidebar-header p {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #7A6F62;
+}
+
+.dark-mode .sidebar-header p {
+    color: #9C8E7D;
+}
+
+/* Interactive Navigation Menu */
+.menu-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-grow: 1;
+}
+
+.menu-item {
+    width: 100%;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    border-radius: 8px;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.dark-mode .menu-link {
+    color: var(--color-text-dark);
+}
+
+.menu-link:hover, .menu-link.active {
+    background-color: #E8DEC9;
+    border-left-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateX(4px);
+}
+
+.dark-mode .menu-link:hover, .dark-mode .menu-link.active {
+    background-color: #26211C;
+    color: var(--color-secondary);
+    border-left-color: var(--color-secondary);
+}
+
+.menu-link .icon {
+    font-size: 1.2rem;
+    transition: var(--transition-smooth);
+}
+
+.menu-link:hover .icon {
+    transform: scale(1.2);
+}
+
+/* Sidebar Footer & Theme Toggle */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.dark-mode .sidebar-footer {
+    border-top-color: rgba(255,255,255,0.05);
+}
+
+.theme-toggle-btn {
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .theme-toggle-btn {
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+}
+
+.dark-mode .theme-toggle-btn:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-bg-dark);
+}
+
+/* ==========================================================================
+   MAIN CONTENT AREA
+   ========================================================================== */
+.main-content {
+    margin-left: var(--sidebar-width);
+    flex-grow: 1;
+    min-height: 100vh;
+    padding: 3rem 4rem;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    width: calc(100% - var(--sidebar-width));
+    transition: var(--transition-smooth);
+}
+
+/* Retro Newspaper Header Masthead */
+.newspaper-masthead {
+    text-align: center;
+    border-bottom: 4px double var(--color-text-light);
+    border-top: 4px double var(--color-text-light);
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.dark-mode .newspaper-masthead {
+    border-color: var(--color-text-dark);
+}
+
+.newspaper-title {
+    font-family: var(--font-gothic);
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--color-text-light);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.dark-mode .newspaper-title {
+    color: var(--color-text-dark);
+}
+
+.newspaper-meta-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--color-text-light);
+    border-bottom: 1px solid var(--color-text-light);
+    padding: 0.5rem 1rem;
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 1rem;
+    color: #555;
+}
+
+.dark-mode .newspaper-meta-line {
+    border-color: var(--color-text-dark);
+    color: #AAA;
+}
+
+.meta-center-date {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--color-primary);
+}
+
+.dark-mode .meta-center-date {
+    color: var(--color-secondary);
+}
+
+/* ==========================================================================
+   INTERACTIVE SECTIONS CONTROLLER
+   ========================================================================== */
+.journal-section {
+    display: none; /* Controlled via JS */
+    animation: fadeInSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.journal-section.active-section {
+    display: block;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   METEO & LUNE CARDS DESIGN
+   ========================================================================== */
+.weather-container, .moon-container {
+    background-color: var(--color-card-bg-light);
+    border: 1px solid var(--color-border-light);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 2rem;
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .weather-container, .dark-mode .moon-container {
+    background-color: var(--color-card-bg-dark);
+    border-color: var(--color-border-dark);
+}
+
+.weather-header, .moon-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border-bottom: 2px solid var(--color-secondary);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.weather-icon, .moon-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+}
+
+.weather-header h2, .moon-header h2 {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    color: var(--color-primary);
+}
+
+.dark-mode .weather-header h2, .dark-mode .moon-header h2 {
+    color: var(--color-secondary);
+}
+
+.weather-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.weather-card {
+    background: #FAF8F5;
+    border-left: 4px solid var(--color-secondary);
+    padding: 1.25rem;
+    border-radius: 6px;
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .weather-card {
+    background: #25221F;
+}
+
+.weather-card h4 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #7A6F62;
+    margin-bottom: 0.4rem;
+}
+
+.dark-mode .weather-card h4 {
+    color: #9C8E7D;
+}
+
+.weather-card p {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--color-text-light);
+}
+
+.dark-mode .weather-card p {
+    color: var(--color-text-dark);
+}
+
+.weather-desc-box {
+    margin-top: 2rem;
+    background: var(--color-summary-bg-light);
+    border: 1px dashed var(--color-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    text-align: justify;
+    line-height: 1.8;
+}
+
+.dark-mode .weather-desc-box {
+    background: var(--color-summary-bg-dark);
+}
+
+/* ==========================================================================
+   ACTUALITES TIMELINE DESIGN
+   ========================================================================== */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin-top: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 7px;
+    width: 2px;
+    height: 100%;
+    background-color: var(--color-border-light);
+}
+
+.dark-mode .timeline::before {
+    background-color: var(--color-border-dark);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.timeline-dot {
+    position: absolute;
+    top: 0.5rem;
+    left: -2rem;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    border: 3px solid var(--color-bg-light);
+    box-shadow: 0 0 0 4px var(--color-border-light);
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .timeline-dot {
+    background-color: var(--color-secondary);
+    border-color: var(--color-bg-dark);
+    box-shadow: 0 0 0 4px var(--color-border-dark);
+}
+
+.timeline-item:hover .timeline-dot {
+    transform: scale(1.3);
+    background-color: var(--color-secondary);
+}
+
+.dark-mode .timeline-item:hover .timeline-dot {
+    background-color: var(--color-primary);
+}
+
+.timeline-card {
+    background-color: var(--color-card-bg-light);
+    border: 1px solid var(--color-border-light);
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .timeline-card {
+    background-color: var(--color-card-bg-dark);
+    border-color: var(--color-border-dark);
+}
+
+.timeline-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-bold);
+    border-color: var(--color-secondary);
+}
+
+.timeline-category {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.timeline-card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.dark-mode .timeline-card h3 {
+    color: var(--color-text-dark);
+}
+
+.timeline-card p {
+    font-size: 1.05rem;
+    text-align: justify;
+    color: var(--color-text-light);
+}
+
+.dark-mode .timeline-card p {
+    color: var(--color-text-dark);
+}
+
+/* ==========================================================================
+   NEWSPAPER ARTICLE CARD (RESUME vs DETAIL COMPLET)
+   ========================================================================== */
+.article-card {
+    background-color: var(--color-card-bg-light);
+    border: 1px solid var(--color-border-light);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.dark-mode .article-card {
+    background-color: var(--color-card-bg-dark);
+    border-color: var(--color-border-dark);
+}
+
+.article-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background-color: var(--color-primary);
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .article-card::after {
+    background-color: var(--color-secondary);
+}
+
+.article-card:hover {
+    box-shadow: var(--shadow-bold);
+    border-color: var(--color-secondary);
+}
+
+.article-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border-light);
+    padding-bottom: 1rem;
+    gap: 1.5rem;
+}
+
+.dark-mode .article-header {
+    border-color: var(--color-border-dark);
+}
+
+.article-headline-block {
+    flex-grow: 1;
+}
+
+.article-tag {
+    display: inline-block;
+    background-color: #FAF2E6;
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(139,26,26,0.15);
+}
+
+.dark-mode .article-tag {
+    background-color: #2D231A;
+    color: var(--color-secondary);
+    border-color: rgba(197,160,89,0.15);
+}
+
+.article-title {
+    font-family: var(--font-serif);
+    font-size: 2.2rem;
+    line-height: 1.3;
+    color: var(--color-primary);
+    font-weight: 800;
+}
+
+.dark-mode .article-title {
+    color: var(--color-text-dark);
+}
+
+.article-meta {
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    color: #7A6F62;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dark-mode .article-meta {
+    color: #9C8E7D;
+}
+
+.meta-page-tag {
+    background: #EFE8DC;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    font-weight: bold;
+    font-style: normal;
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+
+.dark-mode .meta-page-tag {
+    background: #2D2A26;
+    color: var(--color-text-dark);
+}
+
+/* Clean, Highly Legible Summary (Résumé) Box */
+.summary-container {
+    background-color: var(--color-summary-bg-light);
+    border-left: 4px solid var(--color-secondary);
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: inset 0 0 10px rgba(197,160,89,0.03);
+}
+
+.dark-mode .summary-container {
+    background-color: var(--color-summary-bg-dark);
+}
+
+.summary-title-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: var(--color-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.summary-text {
+    font-size: 1.1rem;
+    text-align: justify;
+    line-height: 1.75;
+    color: var(--color-text-light);
+    font-style: italic;
+}
+
+.dark-mode .summary-text {
+    color: var(--color-text-dark);
+}
+
+/* Collapsible Detailed Content (Détail Complet) */
+.full-text-collapse {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    border-top: 1px dashed var(--color-border-light);
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.dark-mode .full-text-collapse {
+    border-color: var(--color-border-dark);
+}
+
+.full-text-collapse.expanded {
+    max-height: 2500px; /* Big enough for full articles */
+    opacity: 1;
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.full-text-content {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    line-height: 1.85;
+    color: var(--color-text-light);
+    text-align: justify;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem 1.5rem;
+    border-left: 2px solid var(--color-border-light);
+    background-color: rgba(255,255,255,0.4);
+    border-radius: 0 6px 6px 0;
+}
+
+.dark-mode .full-text-content {
+    color: var(--color-text-dark);
+    border-left-color: var(--color-border-dark);
+    background-color: rgba(0,0,0,0.1);
+}
+
+.full-text-content p {
+    text-indent: 2rem;
+}
+
+/* Expansion Button UI */
+.toggle-article-btn {
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    font-family: var(--font-sans);
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: var(--transition-smooth);
+    margin-top: 0.5rem;
+    outline: none;
+}
+
+.dark-mode .toggle-article-btn {
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+}
+
+.toggle-article-btn:hover {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139,26,26,0.2);
+}
+
+.dark-mode .toggle-article-btn:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-bg-dark);
+    box-shadow: 0 4px 12px rgba(197,160,89,0.2);
+}
+
+.toggle-article-btn .btn-arrow {
+    font-size: 1.1rem;
+    transition: var(--transition-smooth);
+}
+
+.toggle-article-btn.active .btn-arrow {
+    transform: rotate(180deg);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (Adaptive layout)
+   ========================================================================== */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 260px;
+    }
+    .main-content {
+        padding: 2rem 2.5rem;
+    }
+    .newspaper-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        overflow-y: visible;
+        padding: 1.5rem;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+    .dark-mode .sidebar {
+        border-bottom-color: var(--color-border-dark);
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 2rem 1.5rem;
+    }
+    .newspaper-title {
+        font-size: 2.2rem;
+    }
+    .article-title {
+        font-size: 1.6rem;
+    }
+    .article-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .article-meta {
+        align-self: flex-start;
+    }
+}
+
+/* ==========================================================================
+   DATE SELECTOR & FALLBACK INTERACTIVE STYLES
+   ========================================================================== */
+.vintage-date-card {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border: 1px dashed var(--color-primary);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .vintage-date-card {
+    border-color: var(--color-secondary);
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.vintage-date-card label {
+    font-family: var(--font-serif);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: 0.4rem;
+    letter-spacing: 1px;
+}
+
+.dark-mode .vintage-date-card label {
+    color: var(--color-secondary);
+}
+
+.vintage-date-input {
+    width: 100%;
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--color-text-light);
+    background-color: #FAF8F5;
+    border: 1px solid var(--color-border-light);
+    border-radius: 4px;
+    padding: 0.3rem;
+    cursor: pointer;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .vintage-date-input {
+    color: var(--color-text-dark);
+    background-color: #1A1816;
+    border-color: var(--color-border-dark);
+}
+
+.vintage-date-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(139, 26, 26, 0.1);
+}
+
+.dark-mode .vintage-date-input:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.1);
+}
+
+.quick-nav-arrows {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    gap: 0.5rem;
+}
+
+.nav-arrow-btn {
+    flex: 1;
+    font-family: var(--font-serif);
+    font-weight: bold;
+    background: #FAF8F5;
+    border: 1px solid var(--color-border-light);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    color: var(--color-primary);
+    font-size: 0.85rem;
+    transition: var(--transition-smooth);
+}
+
+.dark-mode .nav-arrow-btn {
+    background: #1A1816;
+    border-color: var(--color-border-dark);
+    color: var(--color-secondary);
+}
+
+.nav-arrow-btn:hover {
+    background: var(--color-primary);
+    color: #FFFFFF;
+    border-color: var(--color-primary);
+}
+
+.dark-mode .nav-arrow-btn:hover {
+    background: var(--color-secondary);
+    color: var(--color-bg-dark);
+    border-color: var(--color-secondary);
+}
+
+/* Fallback card styles when journal_data for date is missing */
+.vintage-alert-card {
+    border: 2px dashed var(--color-primary);
+    border-radius: 12px;
+    background-color: var(--color-summary-bg-light);
+    padding: 3rem 2rem;
+    text-align: center;
+    max-width: 750px;
+    margin: 3rem auto;
+    box-shadow: var(--shadow-soft);
+    animation: fadeInSlide 0.5s ease-out;
+}
+
+.dark-mode .vintage-alert-card {
+    border-color: var(--color-secondary);
+    background-color: var(--color-summary-bg-dark);
+}
+
+.vintage-alert-card h2 {
+    font-family: var(--font-serif);
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.dark-mode .vintage-alert-card h2 {
+    color: var(--color-secondary);
+}
+
+.vintage-alert-card p {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+}
+
+.dark-mode .vintage-alert-card p {
+    color: var(--color-text-dark);
+}
+
+.vintage-instructions-box {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: left;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.dark-mode .vintage-instructions-box {
+    background-color: #1A1816;
+    border-color: var(--color-border-dark);
+}
+
+.vintage-instructions-box code {
+    display: block;
+    background: #FAF8F5;
+    border: 1px solid var(--color-border-light);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: #8B1A1A;
+    overflow-x: auto;
+    font-weight: bold;
+}
+
+.dark-mode .vintage-instructions-box code {
+    background: #12100E;
+    border-color: var(--color-border-dark);
+    color: #C5A059;
+}
+
