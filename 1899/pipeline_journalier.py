@@ -328,41 +328,14 @@ def run_step_4_output_generation(date_str, articles, pass_count):
     
     js_path.write_text(js_content, encoding="utf-8")
     print(f"✅ Fichier écrit avec succès : {js_path}")
-    
-def run_step_5_render_html(date_str):
-    """Étape 5 : Lance la génération de la page HTML rétro-premium conforme à journal_26_novembre.html."""
-    print(f"\n--- [Étape 5] Génération du Rendu Visuel HTML ---")
-    
-    html_path = OUTPUT_DIR / f"journal_{date_str.replace('-', '_')}.html"
+
+def run_step_5_export_events_json(date_str):
+    """Étape 5 : Génère et exporte les événements historiques du jour au format JSON pour l'uploader BDD."""
+    print(f"\n--- [Étape 5] Génération & Exportation du JSON d'événements ---")
     
     # Extraction de la date
     parts = date_str.split("-")
-    year = parts[0]
-    month_code = parts[1]
-    day_num = int(parts[2])
     
-    MONTHS_FR = {
-        "01": "Janvier", "02": "Février", "03": "Mars", "04": "Avril",
-        "05": "Mai", "06": "Juin", "07": "Juillet", "08": "Août",
-        "09": "Septembre", "10": "Octobre", "11": "Novembre", "12": "Décembre"
-    }
-    month_name = MONTHS_FR.get(month_code, "Novembre")
-    
-    from datetime import datetime
-    try:
-        dt = datetime.strptime(date_str, "%Y-%m-%d")
-        days_fr = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
-        day_of_week = days_fr[dt.weekday()]
-        
-        # Calcul du numéro d'édition
-        ref_date = datetime(1899, 11, 26)
-        ref_no = 8430
-        delta = (dt - ref_date).days
-        edition_no = ref_no + delta
-    except Exception:
-        day_of_week = "Mardi"
-        edition_no = 8432
-        
     # Charger les événements historiques depuis events_1899_nov_dec.py
     try:
         sys.path.insert(0, str(BASE_DIR))
@@ -380,461 +353,14 @@ def run_step_5_render_html(date_str):
             "monde": "Bataille de Modder River : Lord Methuen défait les forces boers de Cronjé et De la Rey, mais les pertes britanniques sont lourdes (71 morts, 400 blessés). Les Boers évacuent la position pendant la nuit"
         }
         
-    # Météo déterministe réaliste par jour
-    weather_options = [
-        {"cond": "Ciel Nuageux", "temp": "6°C à 10°C", "prec": "1.2 mm", "vent": "25 km/h", "desc": f"Le {day_num} {month_name} {year}, le ciel est resté bas et couvert sur toute la capitale, apportant une brume humide sur les quais de Seine. Les promeneurs se pressaient sous les boulevards éclairés aux premiers becs de gaz."},
-        {"cond": "Pluie intermittente", "temp": "4°C à 8°C", "prec": "3.5 mm", "vent": "30 km/h", "desc": f"Le {day_num} {month_name} {year}, des averses passagères ont balayé les boulevards une partie de la journée, forçant les passants à s'abriter sous les marquises des théâtres et des grands magasins."},
-        {"cond": "Éclaircies et fraîcheur", "temp": "3°C à 7°C", "prec": "0.0 mm", "vent": "15 km/h", "desc": f"Le {day_num} {month_name} {year}, un beau soleil d'automne a brillé à travers un air vif et piquant. Les promeneurs ont envahi le jardin des Tuileries et les terrasses de café."},
-        {"cond": "Grisaille et brume d'hiver", "temp": "2°C à 6°C", "prec": "0.2 mm", "vent": "10 km/h", "desc": f"Le {day_num} {month_name} {year}, une épaisse nappe de brouillard a enveloppé la Seine au lever du jour, s'estompant lentement pour laisser place à un ciel blanc d'hiver."}
-    ]
-    w = weather_options[day_num % len(weather_options)]
-    
-    # Phase lunaire déterministe réaliste
-    moon_options = [
-        {"phase": "Dernier Croissant", "visible": "22% d'illumination", "aspect": "Fine corne argentée à l'aube", "desc": "La fine faux lunaire s'est levée tard dans la nuit, jetant une faible lueur argentée sur les monuments parisiens avant l'aube."},
-        {"phase": "Nouvelle Lune", "visible": "0% d'illumination", "aspect": "Nuit noire et profonde", "desc": "La lune, invisible, laisse place à un ciel d'encre étoilé, faisant briller d'autant plus l'éclairage public électrique de l'Opéra."},
-        {"phase": "Premier Croissant", "visible": "15% d'illumination", "aspect": "Jeune croissant crépusculaire", "desc": "Un mince filet de lune est apparu au coucher du soleil à l'ouest, glissant rapidement sous l'horizon parisien."},
-        {"phase": "Premier Quartier", "visible": "50% d'illumination", "aspect": "Demi-lune brillante", "desc": "Une demi-lune claire a éclairé la première partie de la nuit, projetant des ombres géométriques nettes sur les grands boulevards."}
-    ]
-    m = moon_options[(day_num + 5) % len(moon_options)]
-
-    template = """<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Petit Parisien — __DAY_OF_WEEK__ __DAY_NUM__ __MONTH_NAME__ __YEAR__</title>
-    
-    <!-- Google Fonts for Elegant Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;900&family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
-    
-    <!-- Dedicated Premium Stylesheet -->
-    <link rel="stylesheet" href="journal.css">
-    
-    <!-- Dynamic Newspaper Data File -->
-    <script src="journal_data___DATE_STR__.js"></script>
-</head>
-<body>
-
-    <!-- ==========================================================================
-       SIDEBAR NAVIGATION (Sommaire Cliquable)
-       ========================================================================== -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>SOMMAIRE</h2>
-            <p>__DAY_NUM__ __MONTH_NAME__ __YEAR__</p>
-        </div>
-        
-        <nav class="menu-list">
-            <div class="menu-item">
-                <a class="menu-link active" onclick="switchSection('meteo', this)">
-                    <span class="icon">🌤️</span>
-                    <span>Météo de Paris</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a class="menu-link" onclick="switchSection('lune', this)">
-                    <span class="icon">🌙</span>
-                    <span>Influence Lunaire</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a class="menu-link" onclick="switchSection('chronique', this)">
-                    <span class="icon">🏛️</span>
-                    <span>Chronique Historique</span>
-                </a>
-            </div>
-            
-            <hr style="border: none; border-top: 1px solid var(--color-border-light); margin: 0.5rem 0;">
-            
-            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #888; padding: 0.5rem 1rem; font-weight: bold;">
-                Le Petit Parisien
-            </div>
-            
-            <div class="menu-item">
-                <a class="menu-link" onclick="switchPageSection(1, this)">
-                    <span class="icon">📄</span>
-                    <span>Page 1 — Éditorial & Une</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a class="menu-link" onclick="switchPageSection(2, this)">
-                    <span class="icon">📄</span>
-                    <span>Page 2 — International</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a class="menu-link" onclick="switchPageSection(3, this)">
-                    <span class="icon">📄</span>
-                    <span>Page 3 — Faits Divers & Bourse</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a class="menu-link" onclick="switchPageSection(4, this)">
-                    <span class="icon">📄</span>
-                    <span>Page 4 — Réclames & Théâtres</span>
-                </a>
-            </div>
-        </nav>
-        
-        <div class="sidebar-footer">
-            <button class="theme-toggle-btn" onclick="toggleDarkMode()">
-                <span class="theme-icon">🌙</span>
-                <span class="theme-text">Mode Sombre</span>
-            </button>
-            <p style="font-size: 0.75rem; color: #888; text-align: center;">Projet Éphéméride 1899</p>
-        </div>
-    </aside>
-
-    <!-- ==========================================================================
-       MAIN CONTENT AREA
-       ========================================================================== -->
-    <main class="main-content">
-        
-        <!-- Newspaper Masthead Header Banner -->
-        <header class="newspaper-masthead">
-            <h1 class="newspaper-title">Le Petit Parisien</h1>
-            <p style="font-family: var(--font-serif); font-size: 1.1rem; font-style: italic; color: #777;">
-                " Le plus fort tirage des journaux du monde entier "
-            </p>
-            <div class="newspaper-meta-line">
-                <span>Vingt-Quatrième Année — N° __EDITION_NO__</span>
-                <span class="meta-center-date">__DAY_OF_WEEK__ __DAY_NUM__ __MONTH_NAME__ __YEAR__</span>
-                <span>Cinq Centimes</span>
-            </div>
-        </header>
-
-        <!-- ==========================================================================
-           SECTION 1: MÉTÉO (WEATHER DETAILS)
-           ========================================================================== -->
-        <section id="sec-meteo" class="journal-section active-section">
-            <div class="weather-container">
-                <div class="weather-header">
-                    <span class="weather-icon">🌤️</span>
-                    <div>
-                        <h2>Météo de Paris</h2>
-                        <p style="font-style: italic; color: #777;">Reconstitution climatologique d'époque</p>
-                    </div>
-                </div>
-                
-                <div class="weather-details-grid">
-                    <div class="weather-card">
-                        <h4>Condition Générale</h4>
-                        <p>__WEATHER_COND__</p>
-                    </div>
-                    <div class="weather-card">
-                        <h4>Températures</h4>
-                        <p>__WEATHER_TEMP__</p>
-                    </div>
-                    <div class="weather-card">
-                        <h4>Précipitations</h4>
-                        <p>__WEATHER_PREC__</p>
-                    </div>
-                    <div class="weather-card">
-                        <h4>Vent de Paris</h4>
-                        <p>__WEATHER_VENT__</p>
-                    </div>
-                </div>
-                
-                <div class="weather-desc-box">
-                    <strong>Chronique Météo du Jour :</strong><br><br>
-                    __WEATHER_DESC__
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================================================
-           SECTION 2: LUNE (MOON PHASE DETAILS)
-           ========================================================================== -->
-        <section id="sec-lune" class="journal-section">
-            <div class="moon-container">
-                <div class="moon-header">
-                    <span class="moon-icon">🌙</span>
-                    <div>
-                        <h2>Influence Lunaire</h2>
-                        <p style="font-style: italic; color: #777;">Calcul astronomique réel pour fin 1899</p>
-                    </div>
-                </div>
-                
-                <div class="weather-details-grid" style="margin-bottom: 2rem;">
-                    <div class="weather-card" style="border-left-color: var(--color-primary);">
-                        <h4>Phase Lunaire</h4>
-                        <p>__MOON_PHASE__</p>
-                    </div>
-                    <div class="weather-card" style="border-left-color: var(--color-primary);">
-                        <h4>Surface Visible</h4>
-                        <p>__MOON_VISIBLE__</p>
-                    </div>
-                    <div class="weather-card" style="border-left-color: var(--color-primary);">
-                        <h4>Aspect Céleste</h4>
-                        <p>__MOON_ASPECT__</p>
-                    </div>
-                </div>
-                
-                <div class="weather-desc-box" style="border-color: var(--color-primary);">
-                    <strong>Chronique Nocturne :</strong><br><br>
-                    __MOON_DESC__
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================================================
-           SECTION 3: CHRONIQUE HISTORIQUE (TIMELINE)
-           ========================================================================== -->
-        <section id="sec-chronique" class="journal-section">
-            <div class="timeline">
-                
-                <!-- Paris -->
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <span class="timeline-category">🏛️ Vie Parisienne</span>
-                        <h3>Chronique de Paris</h3>
-                        <p>__EVENT_PARIS__</p>
-                    </div>
-                </div>
-                
-                <!-- France -->
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <span class="timeline-category">🇫🇷 République Française</span>
-                        <h3>Actualité Nationale</h3>
-                        <p>__EVENT_FRANCE__</p>
-                    </div>
-                </div>
-                
-                <!-- Monde -->
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <span class="timeline-category">🌍 Actualité Mondiale</span>
-                        <h3>Événements du Globe</h3>
-                        <p>__EVENT_MONDE__</p>
-                    </div>
-                </div>
-                
-            </div>
-        </section>
-
-        <!-- ==========================================================================
-           SECTION 4: DYNAMIC JOURNAL PAGES (RENDERED VIA JAVASCRIPT)
-           ========================================================================== -->
-        <section id="sec-journal-pages" class="journal-section">
-            <h2 id="page-title-banner" style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 2rem; color: var(--color-primary); border-bottom: 2px solid var(--color-secondary); padding-bottom: 0.5rem;">
-                Le Petit Parisien — Page 1
-            </h2>
-            
-            <div id="articles-container">
-                <!-- Dynamic Article Cards will be injected here -->
-            </div>
-        </section>
-
-    </main>
-
-    <!-- ==========================================================================
-       INTERACTIVE JAVASCRIPT LOGIC
-       ========================================================================== -->
-    <script>
-        // Track the current view state
-        let currentView = 'meteo'; // meteo, lune, chronique, or page
-        let currentPageNum = 1;
-
-        // Toggle Active Section (Sommaire Selection)
-        function switchSection(sectionId, element) {
-            currentView = sectionId;
-            
-            // Update active link class in sidebar
-            const links = document.querySelectorAll('.menu-link');
-            links.forEach(l => l.classList.remove('active'));
-            element.classList.add('active');
-            
-            // Hide journal pages view, show target static view
-            const sections = document.querySelectorAll('.journal-section');
-            sections.forEach(s => s.classList.remove('active-section'));
-            
-            const activeSec = document.getElementById('sec-' + sectionId);
-            if (activeSec) {
-                activeSec.classList.add('active-section');
-            }
-            
-            // Smooth scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Switch and Render a Newspaper Page Section
-        function switchPageSection(pageNum, element) {
-            currentView = 'page';
-            currentPageNum = pageNum;
-            
-            // Update active link class in sidebar
-            const links = document.querySelectorAll('.menu-link');
-            links.forEach(l => l.classList.remove('active'));
-            element.classList.add('active');
-            
-            // Hide other sections, show journal pages view
-            const sections = document.querySelectorAll('.journal-section');
-            sections.forEach(s => s.classList.remove('active-section'));
-            
-            const journalPageSec = document.getElementById('sec-journal-pages');
-            journalPageSec.classList.add('active-section');
-            
-            // Update the banner title
-            const titleBanner = document.getElementById('page-title-banner');
-            titleBanner.textContent = `Le Petit Parisien — Page ${pageNum}`;
-            
-            // Render articles
-            renderPageArticles(pageNum);
-            
-            // Smooth scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Dynamically Render Article Cards for the selected page from journal_data.js
-        function renderPageArticles(pageNum) {
-            const container = document.getElementById('articles-container');
-            container.innerHTML = ''; // Clear previous content
-            
-            // Filter articles belonging to the requested page
-            const articles = JOURNAL_ARTICLES.filter(a => a.page === pageNum);
-            
-            if (articles.length === 0) {
-                container.innerHTML = '<p style="font-style: italic; color: #777; text-align: center; margin: 3rem 0;">Aucun article substantiel disponible pour cette page.</p>';
-                return;
-            }
-            
-            articles.forEach(article => {
-                const card = document.createElement('article');
-                card.className = 'article-card';
-                
-                // Construct paragraphs HTML
-                const paragraphsHtml = article.paragraphs.map(p => `<p>${p}</p>`).join('');
-                
-                card.innerHTML = `
-                    <header class="article-header">
-                        <div class="article-headline-block">
-                            <span class="article-tag">${article.category}</span>
-                            <h2 class="article-title">${article.title}</h2>
-                        </div>
-                        <div class="article-meta">
-                            <span>Le Petit Parisien</span>
-                            <span class="meta-page-tag">Page ${article.page}</span>
-                        </div>
-                    </header>
-                    
-                    <!-- Résumé / Summary -->
-                    <div class="summary-container">
-                        <div class="summary-title-line">
-                            <span>📝 RÉSUMÉ :</span>
-                        </div>
-                        <p class="summary-text">${article.summary}</p>
-                    </div>
-                    
-                    <!-- Détail complet / Collapsible paragraphs -->
-                    <div class="full-text-collapse" id="collapse-art${article.id}">
-                        <div class="full-text-content">
-                            ${paragraphsHtml}
-                        </div>
-                    </div>
-                    
-                    <button class="toggle-article-btn" onclick="toggleArticle(${article.id}, this)">
-                        <span class="btn-text">📖 Lire l'article complet</span>
-                        <span class="btn-arrow">▼</span>
-                    </button>
-                `;
-                
-                container.appendChild(card);
-            });
-        }
-
-        // Toggle Article Expansion (Résumé vs Détail Complet)
-        function toggleArticle(articleId, button) {
-            const collapseDiv = document.getElementById('collapse-art' + articleId);
-            const btnText = button.querySelector('.btn-text');
-            
-            if (collapseDiv.classList.contains('expanded')) {
-                // Collapse the article
-                collapseDiv.classList.remove('expanded');
-                button.classList.remove('active');
-                btnText.textContent = "📖 Lire l'article complet";
-            } else {
-                // Expand the article
-                collapseDiv.classList.add('expanded');
-                button.classList.add('active');
-                btnText.textContent = "📄 Voir le résumé";
-            }
-        }
-
-        // Dark Mode Toggle Switcher
-        function toggleDarkMode() {
-            const body = document.body;
-            const themeBtn = document.querySelector('.theme-toggle-btn');
-            const themeIcon = themeBtn.querySelector('.theme-icon');
-            const themeText = themeBtn.querySelector('.theme-text');
-            
-            body.classList.toggle('dark-mode');
-            
-            if (body.classList.contains('dark-mode')) {
-                themeIcon.textContent = "☀️";
-                themeText.textContent = "Mode Clair";
-                localStorage.setItem('journal-dark-mode', 'enabled');
-            } else {
-                themeIcon.textContent = "🌙";
-                themeText.textContent = "Mode Sombre";
-                localStorage.setItem('journal-dark-mode', 'disabled');
-            }
-        }
-
-        // Keep theme settings on page reload
-        window.addEventListener('DOMContentLoaded', () => {
-            const cachedTheme = localStorage.getItem('journal-dark-mode');
-            if (cachedTheme === 'enabled') {
-                toggleDarkMode();
-            }
-            
-            // Pre-load Page 1 if JOURNAL_ARTICLES is defined
-            if (typeof JOURNAL_ARTICLES !== 'undefined') {
-                console.log("Données de journal chargées avec succès :", JOURNAL_ARTICLES.length, "articles.");
-            } else {
-                console.error("Erreur : JOURNAL_ARTICLES n'est pas défini. Assurez-vous d'avoir exécuté parse_full_journal.py !");
-            }
-        });
-    </script>
-</body>
-</html>
-"""
-    # Safe string replacements
-    html_content = template
-    html_content = html_content.replace("__DAY_OF_WEEK__", day_of_week)
-    html_content = html_content.replace("__DAY_NUM__", str(day_num))
-    html_content = html_content.replace("__MONTH_NAME__", month_name)
-    html_content = html_content.replace("__YEAR__", str(year))
-    html_content = html_content.replace("__DATE_STR__", date_str)
-    html_content = html_content.replace("__EDITION_NO__", str(edition_no))
-    html_content = html_content.replace("__WEATHER_COND__", w["cond"])
-    html_content = html_content.replace("__WEATHER_TEMP__", w["temp"])
-    html_content = html_content.replace("__WEATHER_PREC__", w["prec"])
-    html_content = html_content.replace("__WEATHER_VENT__", w["vent"])
-    html_content = html_content.replace("__WEATHER_DESC__", w["desc"])
-    html_content = html_content.replace("__MOON_PHASE__", m["phase"])
-    html_content = html_content.replace("__MOON_VISIBLE__", m["visible"])
-    html_content = html_content.replace("__MOON_ASPECT__", m["aspect"])
-    html_content = html_content.replace("__MOON_DESC__", m["desc"])
-    html_content = html_content.replace("__EVENT_PARIS__", day_events["paris"])
-    html_content = html_content.replace("__EVENT_FRANCE__", day_events["france"])
-    html_content = html_content.replace("__EVENT_MONDE__", day_events["monde"])
-
-    html_path.write_text(html_content, encoding="utf-8")
-    print(f"✅ Rendu HTML premium généré avec succès : {html_path}")
-    print(f"👉 Ouvrir le fichier dans votre navigateur pour visualiser le résultat !")
-
-    # Exporter également les événements historiques du jour au format JSON pour l'uploader BDD
     event_json_path = OUTPUT_DIR / f"event_day_{date_str}.json"
     try:
         event_json_path.write_text(json.dumps(day_events, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"✅ Fichier JSON d'événements écrit : {event_json_path}")
+        return True
     except Exception as e:
         print(f"⚠️ Impossible d'écrire le fichier JSON d'événements : {e}")
+        return False
 
 def run_step_6_database_upload(date_str):
     """Étape 6 : Téléverse les articles et les événements dans la base de données Supabase."""
@@ -883,53 +409,114 @@ def main():
             if pass_match:
                 pass_count = int(pass_match.group(1))
                 
-    # Garde-fou de sécurité : Alerte avant la 4ème passe
-    if pass_count >= 3:
-        print("\n🛡️ ALERTE SÉCURITÉ MAJEURE (4ème passe et +) 🛡️")
-        print(f"Le fichier 'journal_data_{date_str}.js' affiche déjà {pass_count} passes de restauration.")
-        print("Une passe supplémentaire présente des risques de dérive sémantique ou d'hallucinations.")
-        confirm = input("Voulez-vous vraiment forcer cette passe supplémentaire ? (oui/non) : ").strip().lower()
-        if confirm != 'oui':
-            print("Opération annulée. Le fichier existant est préservé.")
+    # Garde-fou de sécurité : Alerte et choix pour les passes existantes
+    force_new_pass = True
+    if pass_count >= 2:
+        print(f"\n⚡ L'édition du {date_str} a déjà subi {pass_count} passes de restauration. Elle est considérée comme finalisée.")
+        print("1. Lancer le téléversement direct en BDD (Étape 6) et régénérer le JSON d'événements (Étape 5)")
+        print("2. Forcer une passe de restauration supplémentaire par l'IA (Passe 3 et +)")
+        choix = input("Fais ton choix (1 ou 2) : ").strip()
+        if choix == '1':
+            print("🚀 Option 1 sélectionnée : Régénération des événements et injection directe Supabase...")
+            run_step_5_export_events_json(date_str)
+            run_step_6_database_upload(date_str)
+            print(f"🎉 Données rafraîchies et importées avec succès pour le {date_str} !")
             sys.exit(0)
+        else:
+            print("⚠️ Option 2 sélectionnée : Préparation d'une passe supplémentaire IA...")
+            confirm = input("Es-tu sûr de vouloir forcer cette passe ? Une accumulation de passes peut créer des hallucinations IA. (oui/non) : ").strip().lower()
+            if confirm != 'oui':
+                print("Opération annulée. Le fichier existant est préservé.")
+                sys.exit(0)
+            force_new_pass = True
             
-    new_pass_count = pass_count + 1
-    print(f"ℹ️ Établissement de la passe : Passe {new_pass_count}")
-    
     # Configuration API
     has_api = configure_gemini()
     if has_api:
         articles = None
-        # Si une passe précédente existe déjà sur la bonne date, charger les articles existants
-        if pass_count > 0:
-            print(f"ℹ️ Chargement des articles existants de la passe {pass_count} pour la passe {new_pass_count}...")
+        
+        # CAS 1 : Date complètement nouvelle -> Double passe automatique !
+        if pass_count == 0:
+            print("\n🌟 Nouvelle date détectée ! Lancement automatique de la DOUBLE PASSE sémantique par l'IA.")
+            
+            # Étape 2 : Découpage avec l'IA
+            articles = run_step_2_segmentation_ia(date_str)
+            if not articles:
+                print("❌ Impossible de découper les articles de la page.")
+                sys.exit(1)
+                
+            # Étape 3 - Passe 1 : Restauration sémantique
+            print("\n🔄 [PASSE 1] Restauration sémantique initiale en cours...")
+            articles_pass_1 = run_step_3_restauration_ia(articles)
+            if not articles_pass_1:
+                print("❌ Échec de la Passe 1 de restauration.")
+                sys.exit(1)
+                
+            # Étape 3 - Passe 2 : Deuxième passe de raffinement sémantique
+            print("\n🔄 [PASSE 2] Lancement immédiat de la passe de raffinement et correction d'orthographe...")
+            articles_pass_2 = run_step_3_restauration_ia(articles_pass_1)
+            if not articles_pass_2:
+                print("❌ Échec de la Passe 2 de restauration.")
+                sys.exit(1)
+                
+            # Étape 4 : Écriture finale de journal_data_{date}.js (marquée Pass 2)
+            run_step_4_output_generation(date_str, articles_pass_2, 2)
+            
+            # Étape 5 : Rendu / Export JSON des événements
+            run_step_5_export_events_json(date_str)
+            
+            # Étape 6 : Téléversement en base de données Supabase (Passe 2 finale)
+            run_step_6_database_upload(date_str)
+            
+            print(f"\n🎉 PIPELINE DOUBLE-PASSE COMPLÉTÉ AVEC SUCCÈS POUR LE {date_str} !")
+            sys.exit(0)
+            
+        # CAS 2 : Date existant déjà en Passe 1 -> Exécution de la Passe 2 finale !
+        elif pass_count == 1:
+            print(f"\n🌟 L'édition a déjà 1 passe de restauration. Lancement de la PASSE 2 finale de raffinement...")
             try:
                 content = js_path.read_text(encoding="utf-8")
                 json_part = content.split("const JOURNAL_ARTICLES = ")[1].strip().rstrip(";")
                 articles = json.loads(json_part)
-                print("✅ Articles existants chargés avec succès.")
+                print("✅ Articles de la Passe 1 chargés avec succès.")
             except Exception as e:
-                print(f"⚠️ Impossible de charger les articles existants : {e}. Re-découpage depuis l'OCR propre.")
+                print(f"⚠️ Impossible de charger les articles existants : {e}. Re-découpage complet.")
+                articles = run_step_2_segmentation_ia(date_str)
                 
-        # Sinon (ou si échec du chargement), on découpe avec l'IA
-        if not articles:
-            articles = run_step_2_segmentation_ia(date_str)
-            
-        if articles:
-            # Étape 3 : Restauration sémantique & résumés par IA
-            restored = run_step_3_restauration_ia(articles)
-            if restored:
-                # Étape 4 : Écriture de journal_data_{date}.js
-                run_step_4_output_generation(date_str, restored, new_pass_count)
-                # Étape 5 : Rendu HTML
-                run_step_5_render_html(date_str)
-                # Étape 6 : Téléversement en base de données Supabase
-                run_step_6_database_upload(date_str)
-                print(f"\n🎉 PIPELINE COMPLÉTÉ AVEC SUCCÈS POUR LE {date_str} (Passe {new_pass_count}) !")
-                print(f"👉 Visualisez cette édition sur le portail interactif unique :")
-                print(f"   output/index.html?date={date_str}")
-                sys.exit(0)
+            if articles:
+                # Étape 3 : Restauration sémantique Passe 2
+                restored = run_step_3_restauration_ia(articles)
+                if restored:
+                    # Étape 4 : Écriture finale
+                    run_step_4_output_generation(date_str, restored, 2)
+                    # Étape 5 : Export JSON
+                    run_step_5_export_events_json(date_str)
+                    # Étape 6 : Téléversement
+                    run_step_6_database_upload(date_str)
+                    print(f"\n🎉 PIPELINE PASSE 2 COMPLÉTÉ AVEC SUCCÈS POUR LE {date_str} !")
+                    sys.exit(0)
+                    
+        # CAS 3 : Forçage d'une passe supplémentaire (Passe 3 et +)
+        elif pass_count >= 2 and force_new_pass:
+            new_pass_count = pass_count + 1
+            print(f"\n🔄 Lancement forcé de la PASSE {new_pass_count}...")
+            try:
+                content = js_path.read_text(encoding="utf-8")
+                json_part = content.split("const JOURNAL_ARTICLES = ")[1].strip().rstrip(";")
+                articles = json.loads(json_part)
+            except Exception as e:
+                print(f"❌ Impossible de charger les articles existants : {e}")
+                sys.exit(1)
                 
+            if articles:
+                restored = run_step_3_restauration_ia(articles)
+                if restored:
+                    run_step_4_output_generation(date_str, restored, new_pass_count)
+                    run_step_5_export_events_json(date_str)
+                    run_step_6_database_upload(date_str)
+                    print(f"\n🎉 PIPELINE COMPLÉTÉ AVEC SUCCÈS (Passe {new_pass_count}) POUR LE {date_str} !")
+                    sys.exit(0)
+                    
     # Fallback si pas de clé API ou échec IA
     print("\n⚠️ Fin de traitement en mode sans IA.")
     print("Le fichier propre de l'OCR brut est disponible dans 'output/'.")
