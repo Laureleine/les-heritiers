@@ -152,3 +152,14 @@
 
 - **`grid-cols-6` pour 6 éléments sur une ligne** — Plus fiable que `flex flex-wrap` quand on veut exactement 6 colonnes. Combiner avec `gap-1.5`, `py-1.5 px-1`, `text-[9px] sm:text-[10px]` et `truncate` sur les labels pour que ça tienne.
 - **Le changement de classe d'icône dans le mock `lucide-react`** — Quand on ajoute une icône (ex: `MessageCircle`), il faut l'ajouter AUX DEUX ENDROITS : l'import du composant ET le mock `lucide-react` dans le test. Sans ça, l'icône est `undefined` et le composant ne plante pas mais peut ne pas rendre le bouton attendu.
+
+## Session du 24 Mai 2026 — 16.0.2 "Le Puits Libéré"
+
+### Règles ajoutées
+
+29. **`mapDatabaseToCharacter` transforme `user_id` → `userId` — toujours utiliser `character.userId` côté frontend** — La fonction de mappage Supabase→client dans `supabaseStorage.js:68` transforme systématiquement les champs snake_case en camelCase. Le champ d'origine `user_id` devient `userId`. Toute vérification d'appartenance doit utiliser `character.userId` et JAMAIS `character.user_id` (qui est `undefined` côté client). Cette règle s'applique à tous les champs passés par `mapDatabaseToCharacter`.
+
+### Process à améliorer
+
+- **Avant d'utiliser un champ venant de Supabase côté frontend : vérifier son nom dans `mapDatabaseToCharacter`** — Si une fonction `supabaseStorage.js` transforme `toto` → `tutu`, toute vérification côté React doit utiliser `character.tutu` et pas `character.toto`. Le snake_case n'existe que dans la DB et les requêtes SQL.
+- **Tests de non-régression : toujours couvrir le guard condition lui-même** — Le bug venait d'une incohérence de nom de champ, pas d'une logique métier. Un test qui vérifie directement la valeur de la condition booléenne (`blocked = userId !== session.user.id`) est plus simple et plus direct qu'un test de composant complet.

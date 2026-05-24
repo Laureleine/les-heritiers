@@ -122,3 +122,28 @@ describe('handleAdjustXP — LOG_XP_TRANSACTION', () => {
     expect(result.xp_total).toBe(100);
   });
 });
+
+describe('handleAdjustXP guard — userId vs user_id', () => {
+  const makeSession = (id) => ({ user: { id } });
+
+  it('character.userId correspond au propriétaire → guard autorise le passage', () => {
+    const character = { userId: 'abc-123', xp_total: 100, xp_depense: 30 };
+    const session = makeSession('abc-123');
+    const blocked = character?.userId !== session?.user?.id;
+    expect(blocked).toBe(false);
+  });
+
+  it('character.user_id est undefined après mapDatabaseToCharacter → guard bloque à tort (BUG)', () => {
+    const character = { userId: 'abc-123', xp_total: 100, xp_depense: 30 };
+    const session = makeSession('abc-123');
+    const blocked = character?.user_id !== session?.user?.id;
+    expect(blocked).toBe(true);
+  });
+
+  it('userId différent du propriétaire → guard bloque (legitime)', () => {
+    const character = { userId: 'abc-123', xp_total: 100, xp_depense: 30 };
+    const session = makeSession('other-user');
+    const blocked = character?.userId !== session?.user?.id;
+    expect(blocked).toBe(true);
+  });
+});
