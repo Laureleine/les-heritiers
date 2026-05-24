@@ -163,3 +163,18 @@
 
 - **Avant d'utiliser un champ venant de Supabase côté frontend : vérifier son nom dans `mapDatabaseToCharacter`** — Si une fonction `supabaseStorage.js` transforme `toto` → `tutu`, toute vérification côté React doit utiliser `character.tutu` et pas `character.toto`. Le snake_case n'existe que dans la DB et les requêtes SQL.
 - **Tests de non-régression : toujours couvrir le guard condition lui-même** — Le bug venait d'une incohérence de nom de champ, pas d'une logique métier. Un test qui vérifie directement la valeur de la condition booléenne (`blocked = userId !== session.user.id`) est plus simple et plus direct qu'un test de composant complet.
+
+## Session du 24 Mai 2026 (2e partie) — 17.0.0 "La Gazette Mécanique"
+
+### Règles ajoutées
+
+30. **Surbrillance stricte des dates d'articles dans le Date Picker** — Le surbrillance verte dans la grille calendaire et l'indicateur d'état doivent être liés de manière stricte et exclusive aux articles de presse réels. Les catégories générées dynamiquement côté client (comme la météo et l'influence lunaire, qui existent toujours) ou les simples entrées d'événements historiques (`historical_events`) ne doivent pas colorer indûment les dates en vert. Pour ce faire, il faut requérir le champ `category` lors du recensement des dates disponibles et filtrer explicitement pour exclure `"Météo"`, `"Lune"` et `"Meteo"`.
+31. **O(1) Set pour les vérifications de dates dans le Calendrier** — Pour assurer une navigation fluide et des performances instantanées lors du défilement des mois et des années (de 1899 à 1914), stocker les dates chargées sous forme de `Set` et effectuer des vérifications en temps constant `Set.has(formattedDate)` dans le `useMemo` de rendu de la grille de jours.
+32. **Zéro warning sous CI=true pour Vercel** — Sur Vercel, toute variable inutilisée, import orphelin ou avertissement ESLint provoque l'échec immédiat de la compilation. Tout objet d'erreur de transaction ou de requête (comme `{ data, error }`) dont l'objet `error` n'est pas utilisé doit être élidé ou préfixé (ex. `_error`) pour préserver un build vert.
+
+### Process à améliorer
+
+- **Nettoyage automatique du terminal et builds locaux avec CI=true** — Avant de pousser sur `main`, toujours s'assurer qu'un test unitaire non interactif (`npm.cmd test -- --watchAll=false`) et un build complet de production (`$env:CI="true"; npm.cmd run build`) ont été exécutés avec succès.
+- **Sauvegarde systématique Supabase avant version** — Suivre scrupuleusement la règle consistant à exécuter `node scripts/backup_supabase.js` juste avant d'incrémenter le numéro de version et de committer les fichiers de version.
+- **Rédaction féérique Discord (Belle Époque)** — Rédiger le message destiné à Discord de manière romancée dans le ton merveilleux du jeu en se gardant d'y mentionner Isabelle.
+
