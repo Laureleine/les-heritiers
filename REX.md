@@ -178,3 +178,17 @@
 - **Sauvegarde systématique Supabase avant version** — Suivre scrupuleusement la règle consistant à exécuter `node scripts/backup_supabase.js` juste avant d'incrémenter le numéro de version et de committer les fichiers de version.
 - **Rédaction féérique Discord (Belle Époque)** — Rédiger le message destiné à Discord de manière romancée dans le ton merveilleux du jeu en se gardant d'y mentionner Isabelle.
 
+## Session du 24 Mai 2026 (3e partie) — 17.0.1 "Le Trait Révélé"
+
+### Règles ajoutées
+
+33. **Comparaison systématique de tous les champs éditables de l'Encyclopédie dans `submitEncyclopediaProposal`** — L'absence de comparaison de tout champ (comme les `traits` pour les espèces féériques) dans la fonction centrale de validation empêche le bouton « Appliquer » d'être activé si seul ce champ est modifié, et bloque sa persistance. Chaque champ éditable de l'interface doit obligatoirement avoir son bloc de comparaison dédié dans `submitEncyclopediaProposal`.
+34. **Utilisation d'un nettoyeur de liste de chaînes séparées par des virgules (`normalizeCommaListField`)** — Pour les champs de texte libre où l'utilisateur sépare des mots par des virgules, utiliser un parser qui nettoie les espaces parasites de chaque élément et filtre les entrées vides. Cela garantit une comparaison d'équivalence de tableau propre (`arraysEqual`) et évite les détections de faux changements sémantiques.
+35. **Contournement du hoisting de `jest.mock` en configurant les retours dans `beforeEach`** — Lors du mock complexe d'enchaînements de méthodes (comme l'insertion d'une proposition Supabase), déclarer les variables d'espion Jest au niveau du scope du fichier, mais ne configurer leurs retours (ex: `supabase.from.mockReturnValue(...)`) qu'à l'intérieur du bloc `beforeEach`. Cela évite que le hoisting de Jest n'évalue les variables de mock avant leur instanciation et ne jette des erreurs silencieuses de type `TypeError`.
+
+### Process à améliorer
+
+- **Vigilance sur les types de champs en base (Supabase) vs formulaires** : Les traits de fée sont stockés sous forme de tableau `text[]` en base de données, mais présentés et édités sous forme de chaîne simple séparée par des virgules dans l'interface utilisateur. Toujours s'assurer d'effectuer la conversion en tableau propre lors de la soumission de la proposition, plutôt que d'envoyer la chaîne brute.
+- **Tests de non-régression ciblés** : Toujours créer un fichier de test dédié (`encyclopediaEngine.test.js`) pour isoler et valider à 100% le comportement de l'API de comparaison avant et après modification, ce qui accélère la détection de conflits et protège le socle.
+
+
