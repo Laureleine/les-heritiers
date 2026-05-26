@@ -203,3 +203,32 @@ useEffect(() => { fetch(); }, [fetch]);
 3. **Atomicité** — Un fichier refactoré = un commit (ou un lot logique).
 4. **Imports nommés** — Éviter le shadowing de noms (ex: `isAdmin` importé puis redéfini en variable locale).
 5. **Backup** — `node scripts/backup_supabase.js` en début de session.
+
+---
+
+## 🗞️ 1899 — Pipeline de restauration (session 2026-05-24)
+
+### Bugs corrigés
+
+#### 1. ARK Gallica toujours le même (`ocr_petit_parisien.py`)
+- `--ark` avait `default='bpt6k519101d'` → `if not issue_ark` toujours False, la résolution auto depuis la date était **contournée**.
+- **Toutes les dates** récupéraient le journal du **26 novembre 1899**.
+- Fix : `default=None` → la résolution via `resolve_issue_ark(serial_ark, date_str)` est maintenant systématique.
+
+#### 2. Contamination des summaries par `// Date:` (`prompt_restauration_llm.md`)
+- La consigne (ancienne ligne 60-64) demandait à l'IA de préfixer la sortie JSON avec `// Date:` et `// Restauration Pass:` → l'IA les fourrait dans le champ `summary`.
+- Fix : retiré cette instruction ; le pipeline ajoute les métadonnées dans `run_step_4_output_generation`.
+
+#### 3. Regex trop agressif (`scripts/clean_contaminated_summaries.js`)
+- `replace(/^\/\/\s*(Date|Restauration Pass)[^:\n]*:[^\n]*\n*/gm, '')` avalait tout le résumé quand métadonnées et summary tenaient sur une même ligne.
+- Fix : `split('\n').filter(line => !line.match(...))` pour ne supprimer que les lignes entièrement metadata.
+
+### État des données
+- **1899-11-26** : ✅ correct (c'était l'ARK par défaut)
+- **1899-11-28 → 1899-12-02** : ✅ régénérés avec le bon ARK (5 dates, ~260 articles)
+- **1899-12-03 et suivants** : ❌ pas encore traités — utiliser `pipeline_journalier.py --date AAAA-MM-JJ`
+
+### Notes pour la suite
+- Une date prend ~5 min (OCR + 2 passes IA × lots de 5).
+- Certains lots LLM tombent en `"Extra data" JSON parse error` → le fallback individuel fonctionne.
+- Pour lancer en batch : `for d in 1899-12-{03..31}; do python 1899/pipeline_journalier.py --date "$d"; done`

@@ -191,4 +191,23 @@
 - **Vigilance sur les types de champs en base (Supabase) vs formulaires** : Les traits de fée sont stockés sous forme de tableau `text[]` en base de données, mais présentés et édités sous forme de chaîne simple séparée par des virgules dans l'interface utilisateur. Toujours s'assurer d'effectuer la conversion en tableau propre lors de la soumission de la proposition, plutôt que d'envoyer la chaîne brute.
 - **Tests de non-régression ciblés** : Toujours créer un fichier de test dédié (`encyclopediaEngine.test.js`) pour isoler et valider à 100% le comportement de l'API de comparaison avant et après modification, ce qui accélère la détection de conflits et protège le socle.
 
+## Session du 26 Mai 2026 — 17.0.2 "Le Sceau du Secret"
+
+### Règles ajoutées
+
+36. **`jest.clearAllMocks()` efface aussi les implémentations de `jest.fn(impl)`** — Contrairement à ce que la doc suggère, `clearAllMocks()` remet à `undefined` les implémentations fournies via `jest.fn(() => ...)`. Pour les fonctions mockées avec une implémentation par défaut (comme `translateError` dans Auth.test.js), utiliser `jest.requireActual` pour réimporter l'original dans le test, ou configurer les `mockReturnValue` dans `beforeEach` **après** le `clearAllMocks()`.
+
+37. **Anti-énumération : ne jamais distinguer "email existant" de "email nouveau" dans la réponse** — Qu'un compte existe déjà ou non, la réponse au submit d'inscription doit être identique. Le message "Missive expédiée !" est renvoyé dans les deux cas, empêchant un attaquant de savoir si une adresse est déjà enregistrée.
+
+38. **Vérification du mot de passe actuel via `signInWithPassword` avant `updateUser`** — Pour changer de mot de passe, le pattern sûr est : (1) `signInWithPassword(email, currentPassword)` pour vérifier l'identité avec le mot de passe actuel, (2) `updateUser({ password: newPassword })` si la vérification réussit. Ne pas se fier à `reauthenticate()` qui peut être bloqué par la config Supabase.
+
+39. **Turnstile : `turnstile.render()` ne fonctionne pas si le conteneur est détruit puis recréé** — En SPA React, si le composant Auth se remonte (route change, état local), le conteneur DOM du captcha est détruit. Il faut appeler `turnstile.remove()` avant de quitter ou gérer l'ID retourné par `turnstile.render()` pour un nettoyage explicite.
+
+### Process à améliorer
+
+- **Ne pas modifier le comportement des appels Supabase dans les tests sans vérifier l'effet sur `jest.clearAllMocks()`** — Si le test utilise `clearAllMocks()` dans `beforeEach`, toute implémentation définie par `jest.fn(impl)` sera perdue. Préférer la configuration des valeurs de retour dans `beforeEach` plutôt qu'à la déclaration du mock.
+- **Config Supabase (config.toml) au diapason du code frontend** — `minimum_password_length`, `password_requirements`, `enable_confirmations`, `secure_password_change`, et `captcha` doivent être modifiés en même temps que le code frontend d'inscription. Ces valeurs ne sont pas du "sugar" ; elles font partie intégrante de la sécurité.
+- **Backup Supabase avant version** — Appliqué en début de session (vérifié).
+- **Build CI=true avant de pousser** — Appliqué : `npx react-scripts build` réussi sans warning.
+
 

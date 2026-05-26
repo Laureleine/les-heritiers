@@ -1,7 +1,7 @@
 // src/hooks/useAccountSettings.js
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../config/supabase';
-import { showInAppNotification, requestNotificationPermission } from '../utils/SystemeServices';
+import { showInAppNotification, requestNotificationPermission, translateError } from '../utils/SystemeServices';
 import { useCharacter } from '../context/CharacterContext';
 
 export function useAccountSettings(session, userProfile, onUpdateProfile) {
@@ -22,6 +22,12 @@ export function useAccountSettings(session, userProfile, onUpdateProfile) {
     const [loading, setLoading] = useState(false);
     const [isFormInitialized, setIsFormInitialized] = useState(false);
     const [pushSupported, setPushSupported] = useState(false);
+
+    // --- PASSWORD CHANGE ---
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordLoading, setPasswordLoading] = useState(false);
     
     const [notifPrefs, setNotifPrefs] = useState({
         subscribe_to_updates: false,
@@ -185,16 +191,69 @@ export function useAccountSettings(session, userProfile, onUpdateProfile) {
         setNotifPrefs(prev => ({ ...prev, [field]: !prev[field] }));
     };
 
+    const handleChangePassword = useCallback(async () => {
+        if (!currentPassword.trim()) {
+            showInAppNotification("Veuillez entrer votre mot de passe actuel.", "error");
+            return;
+        }
+        if (newPassword.length < 8) {
+            showInAppNotification("Le nouveau mot de passe doit contenir au moins 8 caractères.", "error");
+            return;
+        }
+        if (!/[A-Z]/.test(newPassword)) {
+            showInAppNotification("Le nouveau mot de passe doit contenir au moins une majuscule.", "error");
+            return;
+        }
+        if (!/[0-9]/.test(newPassword)) {
+            showInAppNotification("Le nouveau mot de passe doit contenir au moins un chiffre.", "error");
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            showInAppNotification("Les nouveaux mots de passe ne correspondent pas.", "error");
+            return;
+        }
+
+        setPasswordLoading(true);
+        try {
+            const { error: verifyError } = await supabase.auth.signInWithPassword({
+                email: session.user.email,
+                password: currentPassword,
+            });
+
+            if (verifyError) {
+                showInAppNotification("Mot de passe actuel incorrect. Veuillez réessayer.", "error");
+                return;
+            }
+
+            const { error: updateError } = await supabase.auth.updateUser({
+                password: newPassword,
+            });
+
+            if (updateError) throw updateError;
+
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            showInAppNotification("Votre mot de passe a été modifié avec succès !", "success");
+        } catch (error) {
+            showInAppNotification(translateError(error), "error");
+        } finally {
+            setPasswordLoading(false);
+        }
+    }, [currentPassword, newPassword, confirmPassword, session]);
+
     return {
         state: { 
             newUsername, showPixie, notifyTelegraphe, activeBadge, diceTheme, 
-            use3DDice, isJoueur, isDocte, notifPrefs, pushSupported, loading, hasChanges 
+            use3DDice, isJoueur, isDocte, notifPrefs, pushSupported, loading, hasChanges,
+            currentPassword, newPassword, confirmPassword, passwordLoading
         },
         setters: { 
             setNewUsername, setShowPixie, setNotifyTelegraphe, setActiveBadge, 
-            setDiceTheme, setUse3DDice, setIsJoueur, setIsDocte 
+            setDiceTheme, setUse3DDice, setIsJoueur, setIsDocte,
+            setCurrentPassword, setNewPassword, setConfirmPassword
         },
         computed: { myBadges },
-        handlers: { handleUpdate, handleTogglePushNotifications, handleToggleNotifField }
+        handlers: { handleUpdate, handleTogglePushNotifications, handleToggleNotifField, handleChangePassword }
     };
 }

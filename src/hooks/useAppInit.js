@@ -64,7 +64,18 @@ export function useAppInit() {
                         .eq('id', activeSession.user.id)
                         .single();
 
-                    if (profileData) setUserProfile({ ...activeSession.user, profile: profileData });
+                    if (profileData) {
+                      setUserProfile({ ...activeSession.user, profile: profileData });
+                    } else {
+                      // ✨ FALLBACK : si le trigger handle_new_user n'a pas créé le profil
+                      const username = activeSession.user.user_metadata?.username || 'Héritier';
+                      const { data: newProfile } = await supabase
+                        .from('profiles')
+                        .insert({ id: activeSession.user.id, username, role: 'user' })
+                        .select()
+                        .single();
+                      if (newProfile) setUserProfile({ ...activeSession.user, profile: newProfile });
+                    }
                     
                     setIsInitialized(true);
                     setGlobalLoading(false);

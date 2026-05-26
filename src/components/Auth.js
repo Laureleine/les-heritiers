@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { Mail, Lock, User, AlertCircle, Eye, EyeOff } from '../config/icons';
@@ -14,6 +14,23 @@ export default function Auth() {
   const [resetMode, setResetMode] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const turnstileRef = useRef(null);
+
+  useEffect(() => {
+    const siteKey = process.env.REACT_APP_TURNSTILE_SITE_KEY;
+    if (!siteKey || typeof window.turnstile === 'undefined') return;
+    if (!isSignUp) return;
+
+    window.turnstile.render(turnstileRef.current, {
+      sitekey: siteKey,
+      callback: (token) => setCaptchaToken(token),
+    });
+
+    return () => {
+      if (window.turnstile) window.turnstile.reset();
+    };
+  }, [isSignUp]);
 
   // ✨ LE NETTOYEUR INTELLIGENT : On ne vide la mémoire qu'en Inscription !
   const handleModeSwitch = (modeInscription) => {
@@ -43,8 +60,26 @@ export default function Auth() {
         setResetMode(false);
       } 
       else if (isSignUp) {
-        if (!username.trim()) throw new Error("Le nom d'utilisateur est requis.");
-        if (password.length < 6) throw new Error("Le mot de passe doit contenir au moins 6 caractères.");
+        if (!username.trim()) {
+          setError("Le nom d'utilisateur est requis.");
+          setLoading(false);
+          return;
+        }
+        if (password.length < 8) {
+          setError("Le mot de passe doit contenir au moins 8 caractères.");
+          setLoading(false);
+          return;
+        }
+        if (!/[A-Z]/.test(password)) {
+          setError("Le mot de passe doit contenir au moins une majuscule.");
+          setLoading(false);
+          return;
+        }
+        if (!/[0-9]/.test(password)) {
+          setError("Le mot de passe doit contenir au moins un chiffre.");
+          setLoading(false);
+          return;
+        }
 
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -52,19 +87,28 @@ export default function Auth() {
           options: {
             data: {
               username: username.trim(),
-            }
+            },
+            ...(captchaToken && { captchaToken }),
           }
         });
 
         if (error) throw error;
 
         // ✨ LE DÉTECTEUR DE MENSONGE (Anti-Énumération)
-        if (data?.user && data.user.identities && data.user.identities.length === 0) {
-           throw new Error("User already registered");
+        // email existant (sans session) → Missive expédiée
+        if (data?.user && data.user.identities?.length === 0) {
+          setEmailSent(true);
+          return;
         }
 
-        // ✨ LE FIX : On bascule sur l'écran d'attente du Télégraphe !
-        setEmailSent(true);
+        // email nouveau avec confirmations activées → Missive expédiée
+        if (!data?.session) {
+          setEmailSent(true);
+          return;
+        }
+
+        // email nouveau sans confirmation → la session est créée,
+        // onAuthStateChange fermera cet écran naturellement
       } 
       else {
         // ✨ On fait confiance à React et Supabase !
@@ -221,14 +265,19 @@ export default function Auth() {
 				  </div>
 				)}
 
-				{/* Bouton Dynamique */}
-				<button
-				  type="submit"
-				  disabled={loading}
-				  className="w-full bg-amber-600 text-white py-3 rounded-lg font-serif font-bold hover:bg-amber-700 transition-all shadow-md transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-				>
-				  {getButtonText()}
-				</button>
+        {/* Captcha Turnstile (inscription) */}
+        {isSignUp && process.env.REACT_APP_TURNSTILE_SITE_KEY && (
+          <div ref={turnstileRef} className="flex justify-center" />
+        )}
+
+        {/* Bouton Dynamique */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-amber-600 text-white py-3 rounded-lg font-serif font-bold hover:bg-amber-700 transition-all shadow-md transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {getButtonText()}
+        </button>
 			  </form>
           )}
 
