@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.0.5 - "Le Journal en Poche 📱"',
+    date: '26 Mai 2026',
+    description: 'Le Petit Parisien s\'apprivoise sur les écrans de téléphone : le sommaire ne chevauche plus le contenu quand on défile. Un fix d\'une ligne, mais quel soulagement pour les Héritiers nomades.',
+    changes: [
+      '📱 **Sommaire apprivoisé (fix mobile) :** Le panneau "Sommaire" de la Gazette était en `sticky` sur toutes les tailles d\'écran. Sur téléphone, il restait collé en haut et recouvrait le contenu du journal quand on défilait. Désormais le sticky est réservé aux écrans larges — sur mobile, le sommaire coule paisiblement dans le flux.',
+      '🧪 **272 Sentinelles** — inchangées, toujours vigilantes.',
+    ]
+  },
+  {
     version: '17.0.4 - "Le Ciseau du Portraitiste ✂️"',
     date: '26 Mai 2026',
     description: 'Le Daguerréotype s\'affine : les Héritiers peuvent désormais recadrer leur portrait avant de le graver dans le Grimoire. Plus besoin d\'un logiciel externe — un simple coup de ciseau visuel, avec zoom et ajustement, directement dans la modale de personnalisation. Le résultat s\'applique aux deux masques comme au médaillon du Cercle.',

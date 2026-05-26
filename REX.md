@@ -245,3 +245,15 @@
 - **Backup Supabase avant version** — Appliqué.
 - **Build CI avant push** — Appliqué (build réussi sans warning).
 
+## Session du 26 Mai 2026 (4e partie) — 17.0.5 "Le Journal en Poche"
+
+### Règle ajoutée
+
+47. **`sticky` toujours conditionnel à la taille d'écran via `lg:` préfixe** — Un `sticky top-24 z-10` sans préfixe responsive s'applique sur mobile et fait chevaucher l'élément avec le contenu suivant. Le pattern sûr : `lg:sticky lg:top-24 lg:z-10` pour que le comportement sticky n'existe que dans la colonne dédiée.
+
+### Process à améliorer
+
+- **Vérifier les `sticky` non-responsifs dans chaque composant** — Une recherche `grep -rn "sticky\b" src/components/` montre 7 composants avec sticky. La plupart sont corrects (sticky dans leur propre section), mais un `sticky` positionné à `top-24` dans une colonne qui disparaît sur mobile provoque un chevauchement. La règle : si l'élément change de layout (colonne → ligne) entre breakpoints, le sticky doit aussi être responsive.
+- **Backup Supabase** — Appliqué.
+- **Build CI avant push** — Appliqué.
+

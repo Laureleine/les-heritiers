@@ -592,7 +592,7 @@ export default function Actualite1899({ onBack, userProfile }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Sommaire Interactif (Colonne Gauche - w-1/4) */}
-          <aside className="lg:col-span-3 flex flex-col gap-3 sticky top-24 z-10 select-none">
+          <aside className="lg:col-span-3 flex flex-col gap-3 lg:sticky lg:top-24 lg:z-10 select-none">
             <div className={`p-4 rounded-xl border ${darkMode ? 'bg-stone-950/20 border-stone-800' : 'bg-[#F2ECE6] border-[#2c1b12]/10'}`}>
               <h2 className="text-base font-bold tracking-widest uppercase mb-4 border-b border-current pb-2 font-sans">
                 Sommaire
@@ -853,7 +853,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                             <strong className="text-[10px] font-bold text-amber-800 dark:text-amber-400 block mb-1 uppercase tracking-wider">
                               📝 RÉSUMÉ RESTAURÉ :
                             </strong>
-                            <p className="italic">{article.summary || "Résumé en cours de chargement..."}</p>
+                            <p className="italic">{article.summary?.replace(/^\/\/\s*(Date|Restauration\s+Pass)[^]*?(?:\n|$)/gm, '').replace(/^\/\/\s*Date:\s*\S+\s*\/\/\s*Restauration\s+Pass:\s*\d+[.\s]*/i, '').replace(/^\/\/\s*Date:\s*\S+\s*/i, '').trim() || "Résumé en cours de chargement..."}</p>
                           </div>
 
                           {/* Détails paragraphe pliables */}
