@@ -226,3 +226,22 @@
 - **Tests + build avant version** — Appliqué : 272 tests verts, build réussi.
 - **Backup Supabase répété** — Une deuxième backup a été faite pour cette sous-version.
 
+## Session du 26 Mai 2026 (3e partie) — 17.0.4 "Le Ciseau du Portraitiste"
+
+### Règles ajoutées
+
+43. **Interception du fichier avant upload pour recadrage** — Ne jamais uploader le fichier brut. `handleFileSelected` remplace `handlePortraitChange` dans les `onChange` des inputs file : il stocke le fichier + le type dans un état `cropModal`, ce qui ouvre la modale de recadrage. Ce n'est qu'après confirmation du crop que `handlePortraitChange` est appelée avec le fichier recadré.
+
+44. **`getCroppedBlob` : canvas natif pour le crop final** — `react-easy-crop` fournit l'UI tactile + les coordonnées du crop, mais le fichier final est produit par un canvas 2D natif : `Image()` → `ctx.drawImage(cropped)` → `canvas.toBlob()`. Pattern sans librairie lourde.
+
+45. **`react-easy-crop` nécessite un wrapper modal avec `z-50`** — Le composant Cropper utilise un conteneur `position: relative` et des `div` absolues. Pour qu'il fonctionne dans une modale, le parent doit avoir une hauteur fixe (`h-80`) et la modale doit être en `fixed inset-0 z-50`.
+
+46. **Ajout systématique des nouvelles icônes dans le hub** — `ZoomIn` et `ZoomOut` ont été ajoutés à `src/config/icons.js` avant utilisation. Oubli = icône `undefined` sans erreur.
+
+### Process à améliorer
+
+- **Nouvelles dépendances = `npm install` avant tout** — `react-easy-crop` a été installé en début d'implémentation. Toujours le faire immédiatement plutôt qu'après avoir écrit le code.
+- **Tests du StepPersonnalisation** — Pas de test existant pour ce composant. À créer si une prochaine session touche à nouveau cette zone.
+- **Backup Supabase avant version** — Appliqué.
+- **Build CI avant push** — Appliqué (build réussi sans warning).
+

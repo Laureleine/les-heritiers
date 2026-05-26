@@ -72,6 +72,8 @@ export {
     LayoutList,
     Search,
     List,
+    ZoomIn,
+    ZoomOut,
 
     // Jeu & féérique
     Sparkles,

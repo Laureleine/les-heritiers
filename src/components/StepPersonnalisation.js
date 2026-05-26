@@ -1,10 +1,11 @@
 // src/components/StepPersonnalisation.js
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { User, Feather, Briefcase, Gift, Camera, Eye, EyeOff, Loader } from '../config/icons';
 import WidgetLangues from './personnalisation/WidgetLangues';
 import { usePersonnalisation } from './personnalisation/usePersonnalisation';
 import { useFileUpload } from '../hooks/useFileUpload';
+import CropPortraitModal from './CropPortraitModal';
 
 export default function StepPersonnalisation() {
   const {
@@ -24,11 +25,29 @@ export default function StepPersonnalisation() {
   const maskedInputRef   = useRef(null);
   const unmaskedInputRef = useRef(null);
 
+  // 🖼️ Recadrage portrait
+  const [cropModal, setCropModal] = useState({ open: false, file: null, type: null });
+
   const handlePortraitChange = (file, type) =>
     handleUpload(file, (f) => uploadPortrait(f, type), type, {
       success: '✓ Portrait enregistré dans le grimoire !',
       error: (err) => `Erreur lors du dépôt du portrait : ${err.message}`
     });
+
+  const handleFileSelected = (file, type) => {
+    if (!file) return;
+    setCropModal({ open: true, file, type });
+  };
+
+  const handleCropConfirm = (croppedFile) => {
+    const { type } = cropModal;
+    setCropModal({ open: false, file: null, type: null });
+    handlePortraitChange(croppedFile, type);
+  };
+
+  const handleCropCancel = () => {
+    setCropModal({ open: false, file: null, type: null });
+  };
 
   return (
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-12">
@@ -199,7 +218,7 @@ export default function StepPersonnalisation() {
                 </div>
               </div>
               <input ref={maskedInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
-                onChange={e => { handlePortraitChange(e.target.files?.[0], 'masked'); e.target.value = ''; }} />
+                onChange={e => { handleFileSelected(e.target.files?.[0], 'masked'); e.target.value = ''; }} />
               <span className="text-xs font-bold text-amber-700 text-center">L'Apparence Sociale<br/><span className="font-normal text-stone-400">Portrait Humain</span></span>
             </div>
 
@@ -223,7 +242,7 @@ export default function StepPersonnalisation() {
                 </div>
               </div>
               <input ref={unmaskedInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
-                onChange={e => { handlePortraitChange(e.target.files?.[0], 'unmasked'); e.target.value = ''; }} />
+                onChange={e => { handleFileSelected(e.target.files?.[0], 'unmasked'); e.target.value = ''; }} />
               <span className="text-xs font-bold text-purple-700 text-center">La Nature Profonde<br/><span className="font-normal text-stone-400">Forme Féérique</span></span>
             </div>
           </div>
@@ -283,6 +302,14 @@ export default function StepPersonnalisation() {
           </div>
         </div>
       </div>
+
+      {cropModal.open && (
+        <CropPortraitModal
+          file={cropModal.file}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
+      )}
     </div>
   );
 }

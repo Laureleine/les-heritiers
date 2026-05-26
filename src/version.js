@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.0.4 - "Le Ciseau du Portraitiste ✂️"',
+    date: '26 Mai 2026',
+    description: 'Le Daguerréotype s\'affine : les Héritiers peuvent désormais recadrer leur portrait avant de le graver dans le Grimoire. Plus besoin d\'un logiciel externe — un simple coup de ciseau visuel, avec zoom et ajustement, directement dans la modale de personnalisation. Le résultat s\'applique aux deux masques comme au médaillon du Cercle.',
+    changes: [
+      '✂️ **Recadrage intégré (Nouveau) :** Après avoir choisi une photo, une modale de recadrage s\'ouvre avec un ratio 3:4 (format portrait). L\'utilisateur ajuste la zone visible et le zoom (×1 à ×3) avant de confirmer.',
+      '🖼️ **Propagation automatique :** Le portrait recadré remplace l\'original dans le bucket `portraits`. Toutes les zones d\'affichage bénéficient du nouveau cadre — le masque humain, la forme féérique, et le petit médaillon rond du Cercle.',
+      '🔧 **Moteur canvas pur :** Le recadrage utilise `react-easy-crop` pour l\'interface tactile, et un canvas natif (`getCroppedBlob`) pour produire le fichier final — zéro dépendance lourde, zéro envoi réseau inutile.',
+      '🧪 **272 Sentinelles** veillent toujours au grain.',
+    ]
+  },
+  {
     version: '17.0.3 - "La Fenêtre de la Forge 🖼️"',
     date: '26 Mai 2026',
     description: 'La Forge s\'ouvre sur le monde : plus besoin de glisser-déposer pour joindre une capture à son rapport — un simple clic suffit, depuis un téléphone comme depuis un ordinateur. Un aperçu s\'affiche avant la gravure, et le tout est gardé par les mêmes garde-fous que le Grimoire des portraits.',
