@@ -1,6 +1,6 @@
 // src/components/AccountSettings.js
-import React from 'react';
-import { User, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, BellOff, Smartphone, MessageCircle, ArrowLeft } from '../config/icons';
+import React, { useState } from 'react';
+import { User, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, BellOff, Smartphone, MessageCircle, ArrowLeft, Lock, Eye, EyeOff } from '../config/icons';
 import { useAccountSettings } from '../hooks/useAccountSettings';
 import * as LucideIcons from 'lucide-react';
 
@@ -176,6 +176,12 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                 </div>
             </div>
 
+            <PasswordSection
+                state={state}
+                setters={setters}
+                handlers={handlers}
+            />
+
             <div className="mt-8 mb-8">
                 <button
                     onClick={handlers.handleUpdate}
@@ -284,6 +290,109 @@ const NotificationPreferences = ({ userEmail, preferences, onTogglePush, onToggl
 
             <div className="mt-6 pt-4 border-t border-blue-200 text-sm text-blue-800 flex items-center gap-2">
                 <Mail size={16} /> Les emails seront envoyés à : <strong>{userEmail}</strong>
+            </div>
+        </div>
+    );
+};
+
+// ============================================================================
+// ✨ Composant Enfant Pur (Mot de passe)
+// ============================================================================
+const PasswordSection = ({ state, setters, handlers }) => {
+    const [showCurrent, setShowCurrent] = useState(false);
+    const [showNew, setShowNew] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    return (
+        <div className="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden mt-8">
+            <div className="bg-red-50 p-4 border-b border-red-100">
+                <h3 className="font-serif font-bold text-red-900 flex items-center gap-2">
+                    <Lock size={18} className="text-red-600" /> Sceau d'Argent (Mot de passe)
+                </h3>
+                <p className="text-xs text-red-700 mt-1">
+                    Modifiez le mot de passe de votre compte. Après validation, vous serez invité à vous reconnecter.
+                </p>
+            </div>
+
+            <div className="p-5 space-y-4">
+                <div>
+                    <label className="block text-sm font-bold text-stone-700 mb-1">Mot de passe actuel</label>
+                    <div className="relative">
+                        <input
+                            type={showCurrent ? 'text' : 'password'}
+                            value={state.currentPassword}
+                            onChange={(e) => setters.setCurrentPassword(e.target.value)}
+                            className="w-full p-2 pr-10 border border-stone-300 rounded focus:ring-2 focus:ring-red-500 bg-stone-50"
+                            placeholder="••••••••"
+                            autoComplete="current-password"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowCurrent(v => !v)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                            tabIndex={-1}
+                        >
+                            {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-bold text-stone-700 mb-1">Nouveau mot de passe</label>
+                    <div className="relative">
+                        <input
+                            type={showNew ? 'text' : 'password'}
+                            value={state.newPassword}
+                            onChange={(e) => setters.setNewPassword(e.target.value)}
+                            className="w-full p-2 pr-10 border border-stone-300 rounded focus:ring-2 focus:ring-red-500 bg-stone-50"
+                            placeholder="8+ caractères, majuscule, chiffre"
+                            autoComplete="new-password"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowNew(v => !v)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                            tabIndex={-1}
+                        >
+                            {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-bold text-stone-700 mb-1">Confirmer le nouveau mot de passe</label>
+                    <div className="relative">
+                        <input
+                            type={showConfirm ? 'text' : 'password'}
+                            value={state.confirmPassword}
+                            onChange={(e) => setters.setConfirmPassword(e.target.value)}
+                            className="w-full p-2 pr-10 border border-stone-300 rounded focus:ring-2 focus:ring-red-500 bg-stone-50"
+                            placeholder="Retaper le nouveau mot de passe"
+                            autoComplete="new-password"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowConfirm(v => !v)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                            tabIndex={-1}
+                        >
+                            {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    </div>
+                </div>
+
+                <button
+                    onClick={handlers.handleChangePassword}
+                    disabled={state.passwordLoading}
+                    className={`w-full py-3 rounded-lg font-bold font-serif shadow-md transition-all flex justify-center items-center gap-2 ${
+                        state.passwordLoading
+                            ? 'bg-stone-300 text-stone-500 cursor-not-allowed'
+                            : 'bg-red-600 hover:bg-red-700 text-white transform active:scale-95'
+                    }`}
+                >
+                    <Lock size={16} />
+                    {state.passwordLoading ? 'Modification en cours...' : 'Changer mon mot de passe'}
+                </button>
             </div>
         </div>
     );

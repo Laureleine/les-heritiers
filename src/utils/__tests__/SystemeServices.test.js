@@ -35,7 +35,7 @@ describe('translateError', () => {
   });
 
   it('traduit "password should be at least"', () => {
-    expect(translateError({ message: 'password should be at least 6 characters' })).toBe('Votre mot de passe est trop faible pour repousser les chasseurs (6 caractères minimum).');
+    expect(translateError({ message: 'password should be at least 6 characters' })).toBe('Votre mot de passe est trop faible pour repousser les chasseurs (8 caractères minimum, une majuscule et un chiffre requis).');
   });
 
   it('traduit "JWT expired"', () => {

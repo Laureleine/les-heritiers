@@ -17,7 +17,7 @@ export const translateError = (error) => {
   if (msgLower.includes('invalid login credentials')) return "Les Docteurs refusent cet accès. Vos identifiants sont erronés.";
   if (msgLower.includes('user already registered')) return "Ce nom est déjà gravé dans nos registres. Veuillez vous connecter.";
   if (msgLower.includes('rate limit exceeded') || msg.includes('Too many requests')) return "Les rouages du Télégraphe surchauffent ! Attendez quelques instants avant de réessayer.";
-  if (msgLower.includes('password should be at least')) return "Votre mot de passe est trop faible pour repousser les chasseurs (6 caractères minimum).";
+  if (msgLower.includes('password should be at least')) return "Votre mot de passe est trop faible pour repousser les chasseurs (8 caractères minimum, une majuscule et un chiffre requis).";
   if (msgLower.includes('jwt') || msg.includes('expired')) return "Votre sceau de protection a expiré. Veuillez refermer et rouvrir le grimoire (Reconnexion).";
   if (code === '23505') return "Une anomalie temporelle : cet élément existe déjà dans nos archives !";
   if (code === '23503') return "Cette action briserait un lien sacré dans la base de données (Violation de clé étrangère).";

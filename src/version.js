@@ -2,13 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
-    version: '17.0.1 - "Le Trait Révélé 🖋️"',
-    date: '24 Mai 2026',
-    description: 'Le Grand Archiviste libère les plumes de l\'Encyclopédie : les traits de caractère des espèces féériques sont désormais capturés avec justesse et pérennité lors de leur modification, sans se soucier des virgules ou des espaces parasites.',
+    version: '17.0.2 - "Le Sceau du Secret 🔐"',
+    date: '26 Mai 2026',
+    description: 'Le Grimoire renforce ses portes : les Héritiers peuvent désormais sceller leur propre accès d\'un mot de passe robuste, les curieux ne devinent plus si une adresse est déjà gravée dans nos registres, et un automate Turnstile veille à l\'entrée de l\'inscription. Le Grand Livre crée aussi un profil par défaut si l\'encre du nouveau venu venait à manquer.',
     changes: [
-      '🖋️ **Saisie des traits libérée (fix) :** Correction d\'une omission dans le moteur de proposition (`encyclopediaEngine.js`) où la modification des « Traits de caractère » d\'une fée n\'était jamais comparée ni capturée. C\'est désormais corrigé : le bouton « Appliquer » s\'illumine à nouveau et propage durablement les traits sous forme de tableau (`text[]`) dans Supabase.',
-      '🧪 **249 Sentinelles aux aguets (tests) :** 3 tests unitaires de non-régression ont été postés aux frontières du moteur (`encyclopediaEngine.test.js`) pour sceller la détection du changement et le formatage rigoureux.',
-      '⚙️ **Build de production certifié :** La compilation optimisée de l\'application a été éprouvée avec succès, garantissant une intégration fluide.',
+      '🔐 **Sceau d\'Argent (Nouveau) :** Chaque Héritier peut modifier son mot de passe depuis ses Préférences. Le formulaire vérifie l\'ancien sceau avant d\'en graver un nouveau, avec les mêmes exigences que l\'inscription : 8 caractères, une majuscule, un chiffre.',
+      '🤫 **Anti-Énumération (Sécurité) :** Fini les "User already registered" qui trahissaient les adresses existantes. Qu\'un email soit nouveau ou déjà gravé dans nos registres, le Grimoire répond toujours d\'un seul message : "Missive expédiée !".',
+      '🛡️ **Mot de passe renforcé :** Les nouveaux Héritiers doivent choisir un mot de passe d\'au moins 8 caractères, avec une majuscule et un chiffre — barrière supplémentaire contre les chasseurs d\'identités.',
+      '🌀 **Automate Turnstile (Anti-Bot) :** Un gardien invisible (Cloudflare Turnstile) veille à la porte de l\'inscription et bloque les automates malveillants sans déranger les Héritiers légitimes.',
+      '📜 **Profil de secours :** Si le déclencheur automatique de création de profil vient à faillir, le Grimoire crée lui-même un profil de base pour le nouvel arrivant — plus d\'Héritiers orphelins errant dans les limbes.',
+      '🧪 **272 Sentinelles montent la garde (+29) :** 11 tests sur l\'inscription (validation, anti-énumération, connexion, mot de passe oublié), 3 tests sur le fallback de profil, et 3 tests sur le changement de mot de passe.',
     ]
   },
   {
