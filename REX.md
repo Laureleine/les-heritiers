@@ -210,4 +210,19 @@
 - **Backup Supabase avant version** — Appliqué en début de session (vérifié).
 - **Build CI=true avant de pousser** — Appliqué : `npx react-scripts build` réussi sans warning.
 
+## Session du 26 Mai 2026 (2e partie) — 17.0.3 "La Fenêtre de la Forge"
+
+### Règles ajoutées
+
+40. **Zone de drop cliquable = `<input type="file">` caché + ref + `onClick` sur le parent** — Le pattern éprouvé dans `StepPersonnalisation.js` (clic → `fileInputRef.current.click()`) s'applique aussi à la Forge. Permet le support mobile là où le drag-and-drop est impossible.
+
+41. **Preview et nettoyage `URL.createObjectURL`** — Générer l'aperçu via `URL.createObjectURL(file)` et le révoquer dans `removeFile()` avec `URL.revokeObjectURL(filePreview)` pour éviter les fuites mémoire. Stocker l'URL dans un état `filePreview` séparé du `file` lui-même.
+
+42. **Icônes dans le hub central `icons.js`** — Chaque nouvelle icône Lucide utilisée par un composant doit être ajoutée dans `src/config/icons.js`. `FolderOpen` a été ajouté pour le texte "ou cliquez pour parcourir".
+
+### Process à améliorer
+
+- **Toujours vérifier les icônes avant build** — L'import d'une icône Lucide non exportée par `icons.js` cause une erreur silencieuse (rendu `undefined`) ou une regression visuelle. Vérifier systématiquement que l'icône est dans la liste des exports.
+- **Tests + build avant version** — Appliqué : 272 tests verts, build réussi.
+- **Backup Supabase répété** — Une deuxième backup a été faite pour cette sous-version.
 

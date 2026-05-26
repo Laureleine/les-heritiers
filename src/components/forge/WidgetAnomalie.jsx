@@ -1,12 +1,13 @@
 // src/components/forge/WidgetAnomalie.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { Bug, Sparkles, X, Image as ImageIcon, Send, Key } from '../../config/icons'; // ✨ Ajout de Key
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Bug, Sparkles, X, Image as ImageIcon, Send, Key, Trash2, FolderOpen } from '../../config/icons';
 import { useForge } from '../../context/ForgeContext';
 import { isAdmin } from '../../utils/authRoles';
-// ✨ FIX ESLINT : L'import fantôme de 'useCharacter' a été pulvérisé !
+import { useFileUpload } from '../../hooks/useFileUpload';
 
 export default function WidgetAnomalie({ userProfile }) {
   const { soumettreEntree } = useForge();
+  const { validateFile } = useFileUpload({ maxSizeMB: 10, allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] });
 
   // ✨ DÉTECTION DU VIP
   const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin(userProfile);
@@ -26,7 +27,10 @@ export default function WidgetAnomalie({ userProfile }) {
 
   const logsRef = useRef([]);
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [fileError, setFileError] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const originalError = console.error;
@@ -49,12 +53,42 @@ export default function WidgetAnomalie({ userProfile }) {
     return () => window.removeEventListener('open-forge-widget', handleOpenWidget);
   }, []);
 
+  const previewFile = useCallback((f) => {
+    if (filePreview) URL.revokeObjectURL(filePreview);
+    setFile(f);
+    setFilePreview(f ? URL.createObjectURL(f) : null);
+    setFileError(null);
+  }, [filePreview]);
+
+  const acceptFile = useCallback((f) => {
+    try {
+      validateFile(f);
+      previewFile(f);
+    } catch (err) {
+      setFileError(err.message);
+    }
+  }, [validateFile, previewFile]);
+
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setFile(e.dataTransfer.files[0]);
+      acceptFile(e.dataTransfer.files[0]);
     }
+  };
+
+  const handleFileInputChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      acceptFile(e.target.files[0]);
+    }
+    e.target.value = '';
+  };
+
+  const removeFile = () => {
+    if (filePreview) URL.revokeObjectURL(filePreview);
+    setFile(null);
+    setFilePreview(null);
+    setFileError(null);
   };
 
   const handleSubmit = async (e) => {
@@ -78,7 +112,8 @@ export default function WidgetAnomalie({ userProfile }) {
 
     if (success) {
       setIsOpen(false);
-      setTitre(''); setDescription(''); setFile(null);
+      setTitre(''); setDescription('');
+      removeFile();
       // ✨ On purge la boîte noire
       logsRef.current = []; 
     }
@@ -156,15 +191,29 @@ export default function WidgetAnomalie({ userProfile }) {
                 </label>
               )}
 
-              <div 
-                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center transition-colors ${isDragging ? 'border-amber-500 bg-amber-50' : 'border-stone-300 bg-stone-50'}`}
-              >
-                <ImageIcon size={24} className={isDragging ? 'text-amber-500' : 'text-stone-400'} />
-                <p className="text-xs text-stone-500 mt-2 font-bold">{file ? file.name : 'Glissez une capture d\'écran ici'}</p>
-              </div>
+              {filePreview ? (
+                <div className="relative rounded-xl overflow-hidden border border-stone-300">
+                  <img src={filePreview} alt="Aperçu" className="w-full max-h-40 object-contain bg-stone-100" />
+                  <button type="button" onClick={removeFile} className="absolute top-2 right-2 p-1.5 bg-stone-900/60 hover:bg-red-600 text-white rounded-full transition-colors">
+                    <Trash2 size={16} />
+                  </button>
+                  <p className="text-[10px] text-stone-500 text-center py-1 truncate px-2">{file?.name}</p>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={handleDrop}
+                  className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center transition-colors cursor-pointer ${isDragging ? 'border-amber-500 bg-amber-50' : 'border-stone-300 bg-stone-50 hover:bg-stone-100'}`}
+                >
+                  <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFileInputChange} />
+                  <ImageIcon size={24} className={isDragging ? 'text-amber-500' : 'text-stone-400'} />
+                  <p className="text-xs text-stone-500 mt-2 font-bold">Glissez une capture d'écran ici</p>
+                  <p className="text-[10px] text-stone-400 mt-1 flex items-center gap-1"><FolderOpen size={12} /> ou cliquez pour parcourir</p>
+                </div>
+              )}
+              {fileError && <p className="text-xs text-red-600 mt-1">⚠️ {fileError}</p>}
 
               <button type="submit" disabled={isSubmitting || !titre} className="w-full mt-4 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2 disabled:opacity-50">
                 <Send size={18} /> {isSubmitting ? 'Transmission...' : 'Graver dans le Registre'}

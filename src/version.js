@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.0.3 - "La Fenêtre de la Forge 🖼️"',
+    date: '26 Mai 2026',
+    description: 'La Forge s\'ouvre sur le monde : plus besoin de glisser-déposer pour joindre une capture à son rapport — un simple clic suffit, depuis un téléphone comme depuis un ordinateur. Un aperçu s\'affiche avant la gravure, et le tout est gardé par les mêmes garde-fous que le Grimoire des portraits.',
+    changes: [
+      '🖼️ **Clic pour joindre (Mobile + Desktop) :** La zone de dépôt de la Forge est désormais cliquable. Un simple tap ouvre la galerie ou le dossier. Les Héritiers nomades ne sont plus condamnés au silence faute de glisser-déposer.',
+      '👁️ **Aperçu avant gravure :** L\'image sélectionnée s\'affiche en direct dans la modale. On peut la retirer d\'un clic (corbeille) sans perdre le formulaire rempli.',
+      '🛡️ **Garde-fous :** Mêmes règles que les portraits — validation taille (10 Mo max) et formats (JPEG, PNG, WebP, GIF) avec message d\'erreur clair.',
+    ]
+  },
+  {
     version: '17.0.2 - "Le Sceau du Secret 🔐"',
     date: '26 Mai 2026',
     description: 'Le Grimoire renforce ses portes : les Héritiers peuvent désormais sceller leur propre accès d\'un mot de passe robuste, les curieux ne devinent plus si une adresse est déjà gravée dans nos registres, et un automate Turnstile veille à l\'entrée de l\'inscription. Le Grand Livre crée aussi un profil par défaut si l\'encre du nouveau venu venait à manquer.',
