@@ -120,4 +120,5 @@ export {
     Smartphone,
     Palette,
     Wrench,
+    FolderOpen,
 } from 'lucide-react';
