@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.1.0 - "La Gazette Apprivoisée 📰✨"',
+    date: '30 Mai 2026',
+    description: 'Les articles regagnent de l\'air : le badge catégorie monte sur la ligne du titre, le lourd "RÉSUMÉ RESTAURÉ" disparaît, le bouton s\'allège, le sélecteur en double est retiré. La lecture de la Gazette gagne en clarté et en compacité.',
+    changes: [
+      '📰 **Badge catégorie sur la ligne du titre :** Le badge "Politique", "Feuilleton", etc. remonte sur la même ligne que le titre de l\'article — `flex flex-wrap items-center gap-2`. Une ligne entière de gagnée par article.',
+      '✂️ **"RÉSUMÉ RESTAURÉ" supprimé :** L\'en-tête `📝 RÉSUMÉ RESTAURÉ :` ne s\'affichait que par habitude technique — le résumé se suffit à lui-même. Une ligne de gagnée.',
+      '📖 **Bouton allégé :** "Lire l\'article complet restauré" → "Lire l\'article complet". 3 mots de moins, même clarté.',
+      '🗑️ **Sélecteur de date retiré :** La combo liste déroulante des dates doublonnait le calendrier popover. Supprimée.',
+      '🧹 **Double icône calendrier retirée :** L\'icône Lucide `<Calendar>` doublonnait l\'emoji 📅 dans le texte "DATE ARCHIVÉE". L\'import a été nettoyé.',
+      '🧪 **272 Sentinelles** — toujours en faction.',
+    ]
+  },
+  {
     version: '17.0.9 - "Le Treizième au Grand Jour 🟢📅"',
     date: '30 Mai 2026',
     description: 'Le 13 décembre 1899 refusait obstinément de verdir. La cause : PostgREST limite les requêtes à 1000 lignes, et sans `ORDER BY`, le découpage aléatoire excluait certaines dates. Désormais le tri est déterministe et la limite repoussée à 3000.',
