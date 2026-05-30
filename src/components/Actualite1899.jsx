@@ -397,7 +397,7 @@ export default function Actualite1899({ onBack, userProfile }) {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button 
             onClick={onBack} 
-            className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg font-sans font-bold text-sm transition-all border ${darkMode ? 'bg-stone-900 text-stone-300 hover:text-white border-stone-800 hover:bg-stone-850' : 'bg-white text-stone-700 hover:text-[#92400e] border-stone-200 hover:bg-[#FDFBF7]'}`}
+            className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg font-sans font-bold text-sm transition-all border ${darkMode ? 'bg-stone-900 text-stone-200 hover:text-white border-stone-700 hover:bg-stone-800' : 'bg-white text-stone-700 hover:text-[#92400e] border-stone-200 hover:bg-[#FDFBF7]'}`}
           >
             <ArrowLeft size={16} /> <span>Retour à l'accueil</span>
           </button>
@@ -405,7 +405,7 @@ export default function Actualite1899({ onBack, userProfile }) {
           <div className="flex items-center space-x-4">
             <button 
               onClick={() => setDarkMode(prev => !prev)}
-              className={`p-2 rounded-lg transition-colors border ${darkMode ? 'bg-stone-900 border-stone-800 text-amber-400 hover:bg-stone-850' : 'bg-white border-stone-200 text-[#92400e] hover:bg-stone-50'}`}
+              className={`p-2 rounded-lg transition-colors border ${darkMode ? 'bg-stone-900 border-stone-700 text-amber-400 hover:bg-stone-800' : 'bg-white border-stone-200 text-[#92400e] hover:bg-stone-50'}`}
               title={darkMode ? "Passer en mode clair" : "Passer en mode sombre"}
             >
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -446,7 +446,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                 className={`px-4 py-2 rounded-lg font-mono text-sm font-bold border transition-all flex items-center gap-2.5 outline-none hover:scale-[1.01] active:scale-[0.99] select-none ${
                   availableArticleDates.has(dateStr) 
                     ? 'border-emerald-600 bg-emerald-500/10 text-emerald-950 dark:text-emerald-300 focus:ring-1 focus:ring-emerald-500' 
-                    : (darkMode ? 'bg-stone-900 border-stone-850 text-white' : 'bg-stone-50 border-stone-300 text-stone-900')
+                    : (darkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-stone-50 border-stone-300 text-stone-900')
                 }`}
               >
                 <span>{dateStr.split('-').reverse().join('/')}</span>
@@ -455,7 +455,7 @@ export default function Actualite1899({ onBack, userProfile }) {
 
               {isCalendarOpen && (
                 <div className={`absolute top-full left-0 mt-2 p-4 rounded-xl border shadow-2xl z-50 w-72 font-sans transition-all border-[#92400e]/25 animate-fade-in ${
-                  darkMode ? 'bg-stone-950 border-stone-800 text-white' : 'bg-white border-stone-250 text-stone-900 shadow-amber-900/5'
+                  darkMode ? 'bg-stone-950 border-stone-800 text-white' : 'bg-white border-stone-200 text-stone-900 shadow-amber-900/5'
                 }`}>
                   {/* Navigation mois et année */}
                   <div className="flex justify-between items-center mb-3 select-none">
@@ -477,7 +477,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                           }
                         }
                       }}
-                      className="p-1.5 rounded hover:bg-stone-150 dark:hover:bg-stone-800 text-xs font-bold font-sans"
+                      className="p-1.5 rounded hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-bold font-sans"
                     >
                       ◄
                     </button>
@@ -497,7 +497,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                           setCalMonth(calMonth + 1);
                         }
                       }}
-                      className="p-1.5 rounded hover:bg-stone-150 dark:hover:bg-stone-800 text-xs font-bold font-sans"
+                      className="p-1.5 rounded hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-bold font-sans"
                     >
                       ►
                     </button>
@@ -526,7 +526,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                               ? 'bg-[#92400e] border-[#7c330c] text-white font-bold'
               : day.hasArticles
                 ? (darkMode ? 'bg-emerald-950/60 border-emerald-700 text-emerald-300 hover:bg-emerald-900/80 font-bold' : 'bg-emerald-200/70 border-emerald-400 text-emerald-800 hover:bg-emerald-300/80 font-bold')
-                                : 'border-transparent hover:bg-stone-150 dark:hover:bg-stone-800 text-stone-750 dark:text-stone-300'
+                                : 'border-transparent hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300'
                           }`}
                         >
                           <span>{day.dayNum}</span>
@@ -555,13 +555,13 @@ export default function Actualite1899({ onBack, userProfile }) {
           <div className="flex items-center gap-2 font-sans font-bold shrink-0">
             <button 
               onClick={() => navigateDate(-1)} 
-              className={`px-3 py-2 rounded-lg text-xs transition-colors border ${darkMode ? 'bg-stone-900 border-stone-800 hover:bg-stone-850 text-stone-300' : 'bg-stone-100 border-stone-200 hover:bg-stone-200 text-stone-700'}`}
+              className={`px-3 py-2 rounded-lg text-xs transition-colors border ${darkMode ? 'bg-stone-900 border-stone-700 hover:bg-stone-800 text-stone-200' : 'bg-stone-100 border-stone-200 hover:bg-stone-200 text-stone-700'}`}
             >
               ◄ Jour Précédent
             </button>
             <button 
               onClick={() => navigateDate(1)} 
-              className={`px-3 py-2 rounded-lg text-xs transition-colors border ${darkMode ? 'bg-stone-900 border-stone-800 hover:bg-stone-850 text-stone-300' : 'bg-stone-100 border-stone-200 hover:bg-stone-200 text-stone-700'}`}
+              className={`px-3 py-2 rounded-lg text-xs transition-colors border ${darkMode ? 'bg-stone-900 border-stone-700 hover:bg-stone-800 text-stone-200' : 'bg-stone-100 border-stone-200 hover:bg-stone-200 text-stone-700'}`}
             >
               Jour Suivant ►
             </button>
@@ -598,7 +598,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                   <span className="text-base">🏛️</span> <span>Chronique Historique</span>
                 </button>
                 
-                <hr className={`my-2 ${darkMode ? 'border-stone-850' : 'border-stone-200'}`} />
+                <hr className={`my-2 ${darkMode ? 'border-stone-700' : 'border-stone-200'}`} />
                 
                 <div className="text-[10px] opacity-60 px-1 py-1 font-bold">Le Petit Parisien</div>
                 
@@ -617,7 +617,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                 {/* Administration : demandes de votes (Admin unique) */}
                 {hasAdminRights && (
                   <>
-                    <hr className={`my-2 ${darkMode ? 'border-stone-850' : 'border-stone-200'}`} />
+                    <hr className={`my-2 ${darkMode ? 'border-stone-700' : 'border-stone-200'}`} />
                     <div className="text-[10px] opacity-60 px-1 py-1 font-bold">Administration</div>
                     <button 
                       onClick={() => setActiveMenu('votes')} 
@@ -721,12 +721,12 @@ export default function Actualite1899({ onBack, userProfile }) {
                   ].map((ev, i) => (
                     <div key={i} className="relative group animate-fade-in">
                       <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-amber-600 border-2 border-white dark:border-stone-900 group-hover:scale-125 transition-transform" />
-                      <div className={`p-4 rounded-xl border transition-all ${darkMode ? 'bg-stone-900 border-stone-850 hover:bg-stone-850' : 'bg-stone-50 border-stone-250 hover:bg-stone-100 shadow-sm'}`}>
+                      <div className={`p-4 rounded-xl border transition-all ${darkMode ? 'bg-stone-900 border-stone-700 hover:bg-stone-800' : 'bg-stone-50 border-stone-200 hover:bg-stone-100 shadow-sm'}`}>
                         <span className="text-[10px] font-sans font-bold text-[#92400e] dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5 mb-1">
                           <span>{ev.icon}</span> {ev.cat}
                         </span>
                         <h3 className="text-base font-bold font-serif mb-2 text-stone-900 dark:text-stone-100">{ev.title}</h3>
-                        <p className="text-sm md:text-base leading-relaxed text-stone-600 dark:text-stone-350 italic">
+                        <p className="text-sm md:text-base leading-relaxed text-stone-600 dark:text-stone-300 italic">
                           {ev.desc}
                         </p>
                       </div>
@@ -750,19 +750,19 @@ export default function Actualite1899({ onBack, userProfile }) {
                   <div className={`p-8 rounded-2xl border text-center ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-stone-200 shadow-sm'}`}>
                     <span className="text-5xl block mb-4 select-none">📰</span>
                     <h2 className="text-2xl font-bold font-serif text-[#92400e] dark:text-amber-400 mb-2">Édition non numérisée</h2>
-                    <p className="text-stone-600 dark:text-stone-400 italic text-sm md:text-base max-w-lg mx-auto mb-6">
+                    <p className="text-stone-600 dark:text-stone-300 italic text-sm md:text-base max-w-lg mx-auto mb-6">
                       L'édition intégrale du journal <strong>Le Petit Parisien</strong> pour le <span className="font-bold underline">{dateMeta.dayNum} {dateMeta.monthName} {dateMeta.year}</span> n'a pas encore été numérisée et restaurée en base de données par notre archiviste mécanique.
                     </p>
                     
                     {hasAdminRights ? (
-                      <div className={`p-5 rounded-xl border text-left max-w-xl mx-auto font-sans text-xs ${darkMode ? 'bg-stone-900 border-stone-800 text-stone-300' : 'bg-amber-50/50 border-[#92400e]/15 text-[#2c1b12]'}`}>
+                      <div className={`p-5 rounded-xl border text-left max-w-xl mx-auto font-sans text-xs ${darkMode ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-amber-50/50 border-[#92400e]/15 text-[#2c1b12]'}`}>
                         <strong className="text-sm font-serif text-[#92400e] dark:text-amber-400 block mb-2 flex items-center gap-1.5">
                           <Bug size={16} /> 👉 Comment numériser ce jour ?
                         </strong>
                         <p className="mb-3 opacity-90">
                           Pour lancer la numérisation complète de cette date et générer ses articles restaurés par l'intelligence artificielle Gemini (Flash-Lite), exécutez la commande suivante dans le terminal de l'application :
                         </p>
-                        <pre className={`p-2.5 rounded font-mono text-sm overflow-x-auto select-all border ${darkMode ? 'bg-stone-950 border-stone-850 text-emerald-400' : 'bg-white border-stone-250 text-emerald-700 font-bold'}`}>
+                        <pre className={`p-2.5 rounded font-mono text-sm overflow-x-auto select-all border ${darkMode ? 'bg-stone-950 border-stone-700 text-emerald-400' : 'bg-white border-stone-200 text-emerald-700 font-bold'}`}>
                           python pipeline_journalier.py --date {dateStr}
                         </pre>
                         {voteCount > 0 && (
@@ -814,30 +814,25 @@ export default function Actualite1899({ onBack, userProfile }) {
                           key={article.id}
                           className={`p-6 rounded-2xl border transition-all ${darkMode ? 'bg-stone-950/40 border-stone-800 hover:border-stone-700' : 'bg-white border-stone-200 hover:border-stone-300 shadow-sm hover:shadow-md'}`}
                         >
-                          <header className="flex flex-col sm:flex-row justify-between sm:items-start gap-3 mb-4 select-none">
-                            <div>
-                              <div className="flex flex-wrap items-center gap-2">
+                          <header className="mb-4 select-none">
+                            <div className="flex flex-wrap items-center gap-2">
                               <span className="inline-block text-[10px] font-sans font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-amber-600/10 text-amber-800 dark:text-amber-400 shrink-0">
                                 {article.category}
                               </span>
-                              <h3 className="text-lg md:text-xl font-bold font-serif text-stone-950 dark:text-white leading-tight">
+                              <h3 className="text-base md:text-lg font-bold font-serif text-stone-950 dark:text-white leading-tight">
                                 {article.title}
                               </h3>
                             </div>
-                            </div>
-                            <span className="text-xs text-stone-500 dark:text-stone-400 font-sans italic self-start shrink-0">
-                              Page {article.page}
-                            </span>
                           </header>
 
                           {/* Résumé / Summary */}
-                          <div className={`p-4 rounded-xl border mb-4 font-sans text-xs md:text-sm leading-relaxed ${darkMode ? 'bg-stone-900/60 border-stone-800 text-stone-300' : 'bg-[#FAF6EE] border-stone-200/60 text-stone-750'}`}>
+                          <div className={`p-4 rounded-xl border mb-4 font-sans text-xs md:text-sm leading-relaxed ${darkMode ? 'bg-stone-900/60 border-stone-700 text-stone-200' : 'bg-[#FAF6EE] border-stone-200/60 text-stone-700'}`}>
                             <p className="italic">{article.summary?.replace(/^\/\/\s*(Date|Restauration\s+Pass)[^]*?(?:\n|$)/gm, '').replace(/^\/\/\s*Date:\s*\S+\s*\/\/\s*Restauration\s+Pass:\s*\d+[.\s]*/i, '').replace(/^\/\/\s*Date:\s*\S+\s*/i, '').trim() || "Résumé en cours de chargement..."}</p>
                           </div>
 
                           {/* Détails paragraphe pliables */}
                           {isExpanded && (
-                            <div className="mt-4 border-t border-dashed border-stone-300 dark:border-stone-850 pt-4 leading-relaxed text-sm md:text-base text-stone-800 dark:text-stone-300 flex flex-col gap-4 animate-fade-in font-serif font-normal">
+                            <div className="mt-4 border-t border-dashed border-stone-300 dark:border-stone-700 pt-4 leading-relaxed text-sm md:text-base text-stone-800 dark:text-stone-200 flex flex-col gap-4 animate-fade-in font-serif font-normal">
                               {article.paragraphs.map((p, idx) => (
                                 <p key={idx}>{p}</p>
                               ))}
@@ -846,7 +841,7 @@ export default function Actualite1899({ onBack, userProfile }) {
 
                           <button 
                             onClick={() => toggleArticleCollapse(article.id)}
-                            className={`w-full mt-4 py-2 bg-stone-50 hover:bg-stone-100 dark:bg-stone-900/60 dark:hover:bg-stone-850 border rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${darkMode ? 'border-stone-800 text-stone-300' : 'border-stone-200 text-stone-700'}`}
+                            className={`w-full mt-4 py-2 bg-stone-50 hover:bg-stone-100 dark:bg-stone-900/60 dark:hover:bg-stone-800 border rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${darkMode ? 'border-stone-700 text-stone-200' : 'border-stone-200 text-stone-700'}`}
                           >
                             {isExpanded ? (
                               <>
