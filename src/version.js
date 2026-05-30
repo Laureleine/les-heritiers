@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.1.1 - "L\'Article sans Page 🗞️✂️"',
+    date: '30 Mai 2026',
+    description: 'Le numéro de page qui alourdissait chaque article de la Gazette disparaît. Le titre rétrécit juste assez pour que le badge et le nom tiennent toujours sur une seule ligne, même sur les écrans les plus étroits.',
+    changes: [
+      '🗞️ **Page de l\'article supprimée :** Le petit "Page X" en italique à droite du titre a été retiré. L\'article respire mieux, le regard ne part plus en diagonale.',
+      '🔤 **Titre réduit (`text-base md:text-lg`) :** Le titre passait de `text-lg` (18px) à `md:text-xl` (20px). Il est maintenant en `text-base` (16px) / `md:text-lg` (18px). Juste ce qu\'il faut pour que le badge catégorie et le titre restent côte à côte sans casser à la ligne.',
+      '🧹 **Header simplifié :** Plus besoin du `flex sm:flex-row justify-between` qui alignait le titre à gauche et la page à droite. Le header est maintenant un simple `mb-4` — moins de layout, plus de lisibilité.',
+      '🧪 **272 Sentinelles** — toujours en faction.',
+    ]
+  },
+  {
     version: '17.1.0 - "La Gazette Apprivoisée 📰✨"',
     date: '30 Mai 2026',
     description: 'Les articles regagnent de l\'air : le badge catégorie monte sur la ligne du titre, le lourd "RÉSUMÉ RESTAURÉ" disparaît, le bouton s\'allège, le sélecteur en double est retiré. La lecture de la Gazette gagne en clarté et en compacité.',
