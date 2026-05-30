@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.0.8 - "Le Point Vert du Jour Actif 🟢🎯"',
+    date: '30 Mai 2026',
+    description: 'Quand on ouvrait le calendrier sur le 13 décembre, cette date était la sélectionnée — et le style brun de sélection écrasait tout signe vert. Le point vert est désormais visible même sur la date active.',
+    changes: [
+      '🎯 **Point vert sur la date sélectionnée :** Le point vert (`!isSelected`) était masqué pour la date active. Résultat : le 13 décembre — pourtant bien chargé — semblait gris dans le calendrier parce qu\'il était la date sélectionnée. Le point s\'affiche maintenant sur toutes les dates avec articles, sélectionnée ou non. La couleur s\'adapte : `bg-emerald-300` (plus clair) sur fond brun sélectionné, `bg-emerald-500` (vif) sur les autres.',
+      '🧪 **272 Sentinelles** — toujours en faction.',
+    ]
+  },
+  {
     version: '17.0.7 - "Le Vert Visible 🟢✨"',
     date: '30 Mai 2026',
     description: 'Le point vert était bien là, mais le fond des cases du calendrier restait désespérément pâle — `bg-emerald-50`, quasi blanc, noyait la couleur. Les dates archivées brillent désormais d\'un vert franc et lisible.',

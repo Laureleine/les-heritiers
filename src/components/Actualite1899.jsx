@@ -535,8 +535,8 @@ export default function Actualite1899({ onBack, userProfile }) {
                         >
                           <span>{day.dayNum}</span>
                           {/* Point vert émeraude discret signalant la présence d'articles de presse en base de données */}
-                          {day.hasArticles && !isSelected && (
-                            <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-emerald-500"></span>
+                          {day.hasArticles && (
+                            <span className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${isSelected ? 'bg-emerald-300' : 'bg-emerald-500'}`}></span>
                           )}
                         </button>
                       );
