@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.0.9 - "Le Treizième au Grand Jour 🟢📅"',
+    date: '30 Mai 2026',
+    description: 'Le 13 décembre 1899 refusait obstinément de verdir. La cause : PostgREST limite les requêtes à 1000 lignes, et sans `ORDER BY`, le découpage aléatoire excluait certaines dates. Désormais le tri est déterministe et la limite repoussée à 3000.',
+    changes: [
+      '📅 **Fix racine — limite PostgREST 1000 lignes :** `fetchAvailableArticleDates()` appelait `.select(\'date, category\')` sans `.order()` ni `.limit()`. PostgREST impose une limite par défaut de 1000 lignes. Avec 1159 articles en base, les 159 dernières lignes étaient aléatoirement coupées. Le 13 décembre (43 articles) tombait parfois dans la partie tronquée. Ajout de `.order(\'date\', { ascending: true }).limit(3000)`.',
+      '🔄 **Re-fetch sur dateStr supprimé :** Le `useEffect` qui re-déclenchait `fetchAvailableArticleDates()` à chaque changement de date créait une race condition avec l\'ajout atomique de `fetchArticlesForDate`. Le re-fetch replaçait le Set entier depuis Supabase, écrasant l\'ajout frais. Désormais seul l\'appel initial (avec order + limit) peuple le Set ; l\'ajout atomique le maintient à jour.',
+      '🧪 **272 Sentinelles** — toujours en faction.',
+    ]
+  },
+  {
     version: '17.0.8 - "Le Point Vert du Jour Actif 🟢🎯"',
     date: '30 Mai 2026',
     description: 'Quand on ouvrait le calendrier sur le 13 décembre, cette date était la sélectionnée — et le style brun de sélection écrasait tout signe vert. Le point vert est désormais visible même sur la date active.',
