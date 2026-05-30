@@ -34,9 +34,11 @@ export default function EncyclopediaModal({
     // 🧠 ÉTATS LOCAUX PURIFIÉS (L'autonomie est de retour !)
     const [proposal, setProposal] = useState(() => {
         const base = editingItem || {};
+        const isNew = Object.keys(base).length === 0;
         return {
             ...base,
-            is_official: Object.keys(base).length === 0 ? false : (base.is_official ?? true),
+            is_official: isNew ? false : (base.is_official ?? true),
+            ...(isNew && activeTab === 'fairy_types' ? { era: 'traditionnelle', taille: 'moyenne' } : {}),
         };
     });
     const [justification, setJustification] = useState('');
