@@ -1,6 +1,6 @@
 // src/components/Actualite1899.jsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ArrowLeft, Calendar, Sun, Moon, Info, ChevronDown, ChevronUp, FileText, Bug } from '../config/icons';
+import { ArrowLeft, Sun, Moon, Info, ChevronDown, ChevronUp, FileText, Bug } from '../config/icons';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { supabase } from '../config/supabase';
 import { isSuperAdmin } from '../utils/authRoles';
@@ -437,7 +437,6 @@ export default function Actualite1899({ onBack, userProfile }) {
         {/* Vintage Datepicker Card (Ultra-Compact con Custom Calendar Popover) */}
         <div className={`p-4 rounded-xl border mb-8 flex flex-col md:flex-row justify-between items-center gap-4 ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-[#92400e]/20 shadow-sm'}`}>
           <div className="flex flex-wrap items-center gap-3 font-sans font-bold w-full md:w-auto">
-            <Calendar size={18} className="text-amber-600 shrink-0" />
             <span className="text-sm shrink-0">📅 DATE ARCHIVÉE (1899 - 1914) :</span>
             
             {/* Custom Interactive Popover Date Picker */}
@@ -551,29 +550,6 @@ export default function Actualite1899({ onBack, userProfile }) {
               </span>
             )}
 
-            {/* Menu déroulant compact des dates chargées avec articles */}
-            {availableArticleDates.size > 0 && (
-              <select
-                onChange={e => {
-                  if (e.target.value) setDateStr(e.target.value);
-                }}
-                value={availableArticleDates.has(dateStr) ? dateStr : ""}
-                className={`p-2 rounded-lg font-sans text-xs outline-none border transition-all shrink-0 ${
-                  darkMode ? 'bg-stone-900 border-stone-850 text-stone-300 focus:border-amber-650' : 'bg-white border-stone-300 text-stone-700 focus:border-amber-600'
-                }`}
-              >
-                <option value="">⚡ Gazette numérisée ({availableArticleDates.size})...</option>
-                {Array.from(availableArticleDates).sort().map(d => {
-                  const parts = d.split('-');
-                  const formatted = `${parts[2]} ${MONTHS_FR[parts[1]]} ${parts[0]}`;
-                  return (
-                    <option key={d} value={d}>
-                      {formatted}
-                    </option>
-                  );
-                })}
-              </select>
-            )}
           </div>
           
           <div className="flex items-center gap-2 font-sans font-bold shrink-0">
@@ -840,12 +816,14 @@ export default function Actualite1899({ onBack, userProfile }) {
                         >
                           <header className="flex flex-col sm:flex-row justify-between sm:items-start gap-3 mb-4 select-none">
                             <div>
-                              <span className="inline-block text-[10px] font-sans font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-amber-600/10 text-amber-800 dark:text-amber-400 mb-1.5">
+                              <div className="flex flex-wrap items-center gap-2">
+                              <span className="inline-block text-[10px] font-sans font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-amber-600/10 text-amber-800 dark:text-amber-400 shrink-0">
                                 {article.category}
                               </span>
                               <h3 className="text-lg md:text-xl font-bold font-serif text-stone-950 dark:text-white leading-tight">
                                 {article.title}
                               </h3>
+                            </div>
                             </div>
                             <span className="text-xs text-stone-500 dark:text-stone-400 font-sans italic self-start shrink-0">
                               Page {article.page}
@@ -854,9 +832,6 @@ export default function Actualite1899({ onBack, userProfile }) {
 
                           {/* Résumé / Summary */}
                           <div className={`p-4 rounded-xl border mb-4 font-sans text-xs md:text-sm leading-relaxed ${darkMode ? 'bg-stone-900/60 border-stone-800 text-stone-300' : 'bg-[#FAF6EE] border-stone-200/60 text-stone-750'}`}>
-                            <strong className="text-[10px] font-bold text-amber-800 dark:text-amber-400 block mb-1 uppercase tracking-wider">
-                              📝 RÉSUMÉ RESTAURÉ :
-                            </strong>
                             <p className="italic">{article.summary?.replace(/^\/\/\s*(Date|Restauration\s+Pass)[^]*?(?:\n|$)/gm, '').replace(/^\/\/\s*Date:\s*\S+\s*\/\/\s*Restauration\s+Pass:\s*\d+[.\s]*/i, '').replace(/^\/\/\s*Date:\s*\S+\s*/i, '').trim() || "Résumé en cours de chargement..."}</p>
                           </div>
 
@@ -880,7 +855,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                               </>
                             ) : (
                               <>
-                                <span>📖 Lire l'article complet restauré</span>
+                                <span>📖 Lire l'article complet</span>
                                 <ChevronDown size={14} />
                               </>
                             )}
