@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.0.7 - "Le Vert Visible 🟢✨"',
+    date: '30 Mai 2026',
+    description: 'Le point vert était bien là, mais le fond des cases du calendrier restait désespérément pâle — `bg-emerald-50`, quasi blanc, noyait la couleur. Les dates archivées brillent désormais d\'un vert franc et lisible.',
+    changes: [
+      '🎨 **Vert visible (fix CSS calendrier) :** `bg-emerald-50` était si pâle (`#ecfdf5`) qu\'il se confondait avec le fond blanc. Et `border-emerald-250` n\'existant pas dans Tailwind standard, la bordure était absente. Remplacé par `bg-emerald-200/70` avec `border-emerald-400` — un vert soutenu mais élégant, visible au premier coup d\'œil. En mode sombre, le fond passe de `bg-emerald-950/45` à `/60` et la bordure à `emerald-700`.',
+      '🧪 **272 Sentinelles** — toujours en faction.',
+    ]
+  },
+  {
     version: '17.0.6 - "Le Point Vert Émeraude 🟢"',
     date: '30 Mai 2026',
     description: 'Les dates chargées dans la Gazette brillent désormais d\'un vert émeraude dans le calendrier, même si elles ont été insérées après l\'ouverture du journal. Plus aucune date ne reste grise alors qu\'elle recèle des articles.',

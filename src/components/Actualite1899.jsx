@@ -528,8 +528,8 @@ export default function Actualite1899({ onBack, userProfile }) {
                           className={`py-1 rounded-lg text-xs font-mono relative transition-all border ${
                             isSelected
                               ? 'bg-[#92400e] border-[#7c330c] text-white font-bold'
-                              : day.hasArticles
-                                ? (darkMode ? 'bg-emerald-950/45 border-emerald-800/80 text-emerald-400 hover:bg-emerald-900/60 font-bold' : 'bg-emerald-50 border-emerald-250 text-emerald-800 hover:bg-emerald-100 font-bold')
+              : day.hasArticles
+                ? (darkMode ? 'bg-emerald-950/60 border-emerald-700 text-emerald-300 hover:bg-emerald-900/80 font-bold' : 'bg-emerald-200/70 border-emerald-400 text-emerald-800 hover:bg-emerald-300/80 font-bold')
                                 : 'border-transparent hover:bg-stone-150 dark:hover:bg-stone-800 text-stone-750 dark:text-stone-300'
                           }`}
                         >
