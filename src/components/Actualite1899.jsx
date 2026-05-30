@@ -128,7 +128,6 @@ export default function Actualite1899({ onBack, userProfile }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        setAvailableArticleDates(prev => new Set([...prev, targetDate]));
         const mappedArticles = data.map(art => ({
           id: art.article_index,
           page: art.page,
@@ -137,8 +136,15 @@ export default function Actualite1899({ onBack, userProfile }) {
           summary: art.summary,
           paragraphs: art.paragraphs
         }));
-        setArticles(mappedArticles);
-        setJournalAvailable(true);
+        const hasAnySummary = mappedArticles.some(art => art.summary && art.summary.trim());
+        if (!hasAnySummary) {
+          setArticles([]);
+          setJournalAvailable(false);
+        } else {
+          setAvailableArticleDates(prev => new Set([...prev, targetDate]));
+          setArticles(mappedArticles);
+          setJournalAvailable(true);
+        }
       } else {
         setArticles([]);
         setJournalAvailable(false);
@@ -825,10 +831,11 @@ export default function Actualite1899({ onBack, userProfile }) {
                             </div>
                           </header>
 
-                          {/* Résumé / Summary */}
-                          <div className={`p-4 rounded-xl border mb-4 font-sans text-xs md:text-sm leading-relaxed ${darkMode ? 'bg-stone-900/60 border-stone-700 text-stone-200' : 'bg-[#FAF6EE] border-stone-200/60 text-stone-700'}`}>
-                            <p className="italic">{article.summary?.replace(/^\/\/\s*(Date|Restauration\s+Pass)[^]*?(?:\n|$)/gm, '').replace(/^\/\/\s*Date:\s*\S+\s*\/\/\s*Restauration\s+Pass:\s*\d+[.\s]*/i, '').replace(/^\/\/\s*Date:\s*\S+\s*/i, '').trim() || "Résumé en cours de chargement..."}</p>
-                          </div>
+                          {article.summary?.replace(/^\/\/\s*(Date|Restauration\s+Pass)[^]*?(?:\n|$)/gm, '').replace(/^\/\/\s*Date:\s*\S+\s*\/\/\s*Restauration\s+Pass:\s*\d+[.\s]*/i, '').replace(/^\/\/\s*Date:\s*\S+\s*/i, '').trim() && (
+                            <div className={`p-4 rounded-xl border mb-4 font-sans text-xs md:text-sm leading-relaxed ${darkMode ? 'bg-stone-900/60 border-stone-700 text-stone-200' : 'bg-[#FAF6EE] border-stone-200/60 text-stone-700'}`}>
+                              <p className="italic">{article.summary.replace(/^\/\/\s*(Date|Restauration\s+Pass)[^]*?(?:\n|$)/gm, '').replace(/^\/\/\s*Date:\s*\S+\s*\/\/\s*Restauration\s+Pass:\s*\d+[.\s]*/i, '').replace(/^\/\/\s*Date:\s*\S+\s*/i, '').trim()}</p>
+                            </div>
+                          )}
 
                           {/* Détails paragraphe pliables */}
                           {isExpanded && (
