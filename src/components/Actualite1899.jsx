@@ -64,7 +64,9 @@ export default function Actualite1899({ onBack, userProfile }) {
     try {
       const { data, error } = await supabase
         .from('journal_articles')
-        .select('date, category');
+        .select('date, category')
+        .order('date', { ascending: true })
+        .limit(3000);
       
       if (error) throw error;
       
@@ -111,11 +113,6 @@ export default function Actualite1899({ onBack, userProfile }) {
     fetchEvents();
     fetchAvailableArticleDates();
   }, [fetchAvailableArticleDates]);
-
-  // Rafraîchir les dates disponibles à chaque changement de date
-  useEffect(() => {
-    fetchAvailableArticleDates();
-  }, [dateStr, fetchAvailableArticleDates]);
 
   // --- Chargement des articles du jour depuis Supabase ---
   const fetchArticlesForDate = useCallback(async (targetDate) => {
