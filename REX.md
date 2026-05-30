@@ -257,3 +257,83 @@
 - **Backup Supabase** — Appliqué.
 - **Build CI avant push** — Appliqué.
 
+## Session du 30 Mai 2026 — 17.0.6 "Le Point Vert Émeraude"
+
+### Règles ajoutées
+
+48. **Données d'articles insérées après le montage du composant : le Set `availableArticleDates` devient obsolète** — `fetchAvailableArticleDates()` était défini à l'intérieur d'un `useEffect([], [])` et n'était appelé qu'au montage. Si les données sont insérées en base après (pipeline, autre session), le Set reste vide pour ces dates. Le correctif : (a) extraire la fonction en `useCallback` au niveau du composant, (b) ajouter un `useEffect` sur `dateStr` pour re-fetcher à chaque navigation, (c) ajouter un SET atomique dans `fetchArticlesForDate` pour le feedback immédiat.
+
+49. **Extraction d'une fonction d'un `useEffect` vers `useCallback` : la rendre accessible depuis d'autres effets** — Quand une fonction async est déclarée dans un `useEffect([], [])`, elle est prisonnière de ce scope. Pour la réutiliser ailleurs (un second effet), il faut la promouvoir en `useCallback` au niveau du composant avec ses dépendances listées. La fonction initiale reste appelée au montage via le premier effet ; le second effet peut l'appeler sans duplication de code.
+
+### Patterns
+
+- **Triple mécanisme de rafraîchissement des dates** :
+  1. `useEffect([fetchAvailableArticleDates], [])` au montage — Set initial complet.
+  2. `useEffect([fetchAvailableArticleDates, dateStr], [dateStr])` — Re-fetch à chaque changement de jour.
+  3. `setAvailableArticleDates(prev => new Set([...prev, targetDate]))` — Ajout immédiat sans attendre le fetch.
+  Les trois mécanismes sont complémentaires : le fetch est une boucle de rapprochement, le SET atomique est un feedback instantané. Aucun ne dépend de l'autre, donc aucun risque de stale closure.
+
+### Process à améliorer
+
+- **Quand une date est chargée mais pas en vert dans le calendrier** : Debugger en premier `fetchAvailableArticleDates`. Vérifier que la date est bien dans le Set retourné. Vérifier que `.select('date, category')` n'est pas limité par PostgREST (max-rows).
+- **Backup Supabase** — Appliqué (test + backup systématique avant version).
+- **Build Vercel** — Vérifié après push : `● Ready` en < 2 min.
+- **272 tests verts** avant ET après modification — Aucune régression.
+
+## Session du 30 Mai 2026 (2e partie) — 17.0.7 "Le Vert Visible"
+
+### Règles ajoutées
+
+50. **`bg-emerald-50` est quasi invisible sur fond blanc (`#ecfdf5`)** — Toujours vérifier visuellement les classes Tailwind utilisées pour les états "actif/sélectionné". Une classe `bg-emerald-50` paraît vert pâle dans l'éditeur mais se confond avec le fond blanc de la popover. Préférer `bg-emerald-200/70` ou plus foncé pour un rendu perceptible. De même, `border-emerald-250` n'étant pas défini dans le thème Tailwind standard ni dans la config du projet, la bordure était absente silencieusement.
+
+51. **Vérifier que les classes Tailwind non-standards existent dans `tailwind.config.js`** — `border-emerald-250` était utilisé sans être défini dans `theme.extend`. Tailwind ignore silencieusement les classes inconnues — aucun warning, aucune erreur. Si une classe non-standard est nécessaire, l'ajouter dans `tailwind.config.js` ; sinon, utiliser une classe standard (100, 200, 300...).
+
+### Process à améliorer
+
+- **Avant de déployer un changement visuel : toujours tester visuellement dans l'interface réelle** — La logique (`day.hasArticles`) était correcte, mais la classe CSS `bg-emerald-50` était trop subtile. Un coup d'œil sur la popover aurait immédiatement révélé le problème.
+- **Backup Supabase** — Pas de changement DB, backup non requis pour cette sous-version.
+- **Build Vercel** — Vérifié après push (build < 1 min).
+- **272 tests verts** — inchangés.
+
+## Session du 30 Mai 2026 (3e partie) — 17.0.8 "Le Point Vert du Jour Actif" + 17.0.9 "Le Treizième au Grand Jour"
+
+### Règles ajoutées
+
+52. **PostgREST impose un `max-rows` par défaut (généralement 1000)** — Toute requête Supabase sans `.limit()` explicite est limitée à ce nombre. Si les données dépassent ce seuil, les lignes excédentaires sont silencieusement tronquées. Sans `.order()`, le découpage est non-déterministe. **Toujours** ajouter `.order()` + `.limit(N)` avec N assez grand pour couvrir le volume attendu, surtout pour des requêtes d'inventaire (`.select('date')` sur toutes les lignes).
+
+53. **Le mécanisme d'ajout atomique (`set(prev => ...)`) et le re-fetch intégral sont en conflit** — Si un `useEffect` re-fetch le Set complet depuis Supabase après l'ajout atomique, la seconde opération écrase la première. Résultat : la date fraîchement ajoutée disparaît si la requête complète ne la contient pas. Le correctif : un seul responsable du Set — soit le fetch initial (avec order + limit), soit l'ajout atomique. Pas les deux en concurrence.
+
+### Process à améliorer
+
+- **Pour déboguer un problème de données** : toujours reproduire EXACTEMENT la requête côté serveur (`node -e` avec le client Supabase), avec les mêmes `.select()`, `.order()`, `.filter()` que le code. La différence entre "avec order" et "sans order" a révélé le bug.
+- **Tester avec un volume de données réaliste** — 272 tests passaient, mais le jeu de données réel (1223 articles) dépassait les limites implicites de l'infra. Ajouter un test d'intégration avec un volume proche du réel.
+
+## Session du 30 Mai 2026 (4e partie) — 17.1.0 "La Gazette Apprivoisée"
+
+### Règles ajoutées
+
+54. **`import { Calendar }` non utilisé = erreur CI (Vercel)** — Quand on retire un composant du JSX (l'icône Lucide `<Calendar>`), il faut aussi le retirer de l'import. Vercel avec `CI=true` transforme les imports inutilisés en erreurs. Vérification rapide : `grep "Calendar" src/components/Actualite1899.jsx` pour confirmer qu'il n'y a plus d'occurrence.
+
+55. **Badge + titre sur une ligne : `flex flex-wrap items-center gap-2`** — Quand un badge (catégorie) précède un titre, les mettre dans un conteneur `flex` avec `flex-wrap` permet de les afficher sur la même ligne, le badge passant au-dessus en cas de manque de place. `shrink-0` sur le badge empêche son rétrécissement.
+
+### Patterns validés
+
+- **Gagner des lignes dans l'UI** : trois économies — suppression de l'en-tête "RÉSUMÉ RESTAURÉ" (1 ligne), badge sur la ligne du titre (1 ligne), bouton allégé (3 mots). La lisibilité gagne en compacité.
+- **Deux sélecteurs de date, un seul gardé** : le `<select>` liste des dates était redondant avec la popover calendrier. La règle : si deux éléments UI offrent la même fonction, garder le plus visuel (calendrier) et supprimer le plus textuel (liste).
+
+## Session du 30 Mai 2026 (5e partie) — 17.1.1 "L'Article sans Page"
+
+### Règles ajoutées
+
+56. **Supprimer un élément d'information qui crée du bruit visuel** — Le "Page X" en italique à droite de chaque article apportait peu de valeur (la Gazette n'a qu'une page par article dans le contexte narratif). Sa suppression allège chaque carte et évite un mouvement oculaire inutile.
+
+57. **Quand le badge + titre ne tiennent pas sur une ligne, réduire le titre avant de réduire le layout** — `text-lg md:text-xl` → `text-base md:text-lg` : le badge (10px) + titre (16→18px) tiennent sans `flex-wrap` sur la plupart des écrans. Moins de wrapping = meilleure lisibilité.
+
+### Patterns validés
+
+- **Header simplifié après suppression** : le `flex sm:flex-row justify-between` qui alignait titre à gauche et page à droite peut être remplacé par un simple `mb-4`. Moins de layout = moins de bugs responsive.
+
+### Process à améliorer
+
+- **Avant de déployer un changement UI** : vérifier à l'œil sur mobile et desktop que badge + titre tiennent sur une ligne. Un simple test responsive navigateur suffit.
+

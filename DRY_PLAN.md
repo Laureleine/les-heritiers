@@ -4,16 +4,15 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-## 🧠 Session Memory — 16.0.1 "Le Soufflet du Forgeron" (17 Mai 2026)
+## 🧠 Session Memory — 17.1.1 "L'Article sans Page" (30 Mai 2026)
 
-**Tests :** 243 passes / 18 suites / 0 échecs
+**Tests :** 272 passes / 18 suites / 0 échecs
 
 ### Dernières modifications
 
-1. **Sceau d'Officialité (16.0.0)** — `is_official` badge/toggle/engine/confirmations sur toute l'Encyclopédie.
-2. **Fix INSERT (16.0.0)** — `surgicalData.id = recordId` dans le moteur de proposition.
-3. **Fix ForgeContext (16.0.1)** — `fetchForge` wrappée dans `useCallback([])` pour stopper la boucle infinie.
-4. **Items récupérés (16.0.0)** — "Architecte restaurateur" et "Ecrivain célèbre" réinsérés manuellement.
+1. **Suppression de l'affichage "Page X" dans la Gazette (17.1.1)** — Chaque article de la Gazette n'affiche plus son numéro de page en italique à droite du titre. Le badge et le titre restent alignés sur une seule ligne.
+2. **Titre réduit (text-base md:text-lg)** — Passage de 18→20px à 16→18px pour que le badge catégorie et le titre tiennent côte à côte sans wrapping intempestif.
+3. **Header simplifié** — Le `flex sm:flex-row justify-between` qui alignait titre à gauche et page à droite a été remplacé par un simple `mb-4`.
 
 ### Prochaine session
 
@@ -232,3 +231,18 @@ useEffect(() => { fetch(); }, [fetch]);
 - Une date prend ~5 min (OCR + 2 passes IA × lots de 5).
 - Certains lots LLM tombent en `"Extra data" JSON parse error` → le fallback individuel fonctionne.
 - Pour lancer en batch : `for d in 1899-12-{03..31}; do python 1899/pipeline_journalier.py --date "$d"; done`
+
+---
+
+## 📖 Encyclopédie — Champs Initiés (session 2026-05-26)
+
+### Objectif
+Ajouter les champs narratifs de la Fiche du Docte (`FairyLoreSection`) comme champs modifiables dans l'encyclopédie, visibles uniquement pour les initiés.
+
+### Questions en suspens (première question demain)
+Voir `.opencode/plans/add-lore-to-encyclopedia.md` pour le détail.
+
+1. **Périmètre** — Tout le narratif (apparence, taille, reproduction, habitat, caractère, personnages célèbres, note du Docte) OU seulement Note + Caractère ?
+2. **Migration** — Backfill des données de `FairyLore.js` vers Supabase OU partir de zéro ?
+3. **Source de vérité** — La création du personnage doit-elle lire la DB (remplace FairyLore.js) ou garder les deux indépendants ?
+
