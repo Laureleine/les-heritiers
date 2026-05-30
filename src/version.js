@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.0 - "Le Ciel Révélé ☀️🌙"',
+    date: '30 Mai 2026',
+    description: 'La météo déterministe à 4 options et la lune cyclique laissent place à de véritables données astronomiques : lever/coucher du soleil calculé par la librairie Astral, phase lunaire réelle, et conditions météo historiques. Un nouveau script Python, une table dédiée en base, et une étape 7 dans le pipeline automatisent le tout. 38 jours déjà peuplés, les suivants le seront à la création.',
+    changes: [
+      '☀️ **Soleil réel (Astral) :** Le lever et le coucher du soleil sont désormais calculés par la librairie Python `astral` pour les coordonnées de Paris en 1899. Fin du déterminisme — l\'astre du jour se lève et se couche aux vraies heures de l\'époque.',
+      '🌙 **Lune réelle :** La phase lunaire n\'est plus une rotation sur 4 options. Le calcul astronomique (âge de la lune, cycle de 29.5 jours) donne la vraie phase pour chaque date de 1899 — Nouvelle Lune, Premier Croissant, Pleine Lune, etc.',
+      '🌤️ **Météo historique :** Les conditions météo sont générées par `daily_info.py` avec scraping de données réelles (températures, précipitations, vent) et une description narrative enrichie.',
+      '🗄️ **Nouvelle table `journal_daily_info` :** Les données météo, soleil et lune sont stockées dans une table Supabase dédiée avec upsert — levée du soleil, coucher, phase lunaire, icône, description, et toutes les données météo structurées.',
+      '⚙️ **Pipeline étape 7 :** Le pipeline journalier intègre désormais une étape 7 qui génère et insère automatiquement les données de `journal_daily_info` après l\'upload des articles. Également nettoyée lors de l\'option "Annuler et tout refaire".',
+      '📜 **Backfill 38 jours :** Les 38 dates déjà en base (26 novembre → 2 janvier) ont été rétroactivement peuplées avec leurs données météo, soleil et lune.',
+      '🧪 **272 Sentinelles** — toujours en faction.',
+    ]
+  },
+  {
     version: '17.1.2 - "Le Résumé Honnête 🗞️🩺"',
     date: '30 Mai 2026',
     description: 'Les jours sans résumé de la Gazette disparaissent au lieu d\'afficher un message trompeur. Le pipeline sait désormais tout effacer et recommencer une journée depuis zéro. Le max-rows PostgREST est passé de 1000 à 5000 — tout décembre verdit enfin.',

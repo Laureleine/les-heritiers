@@ -392,6 +392,7 @@ def run_step_0_cleanup(date_str):
             cur.execute("DELETE FROM public.journal_articles WHERE date = %s", (date_str,))
             deleted = cur.rowcount
             cur.execute("DELETE FROM public.historical_events WHERE date = %s", (date_str,))
+            cur.execute("DELETE FROM public.journal_daily_info WHERE date = %s", (date_str,))
             cur.close()
             conn.close()
             print(f"  🗑️ {deleted} articles supprimés de Supabase.")
@@ -464,6 +465,60 @@ def run_step_6_database_upload(date_str):
         print(f"❌ Échec de l'étape 6 (téléversement base de données) : {e}")
         return False
 
+def run_step_7_daily_info(date_str):
+    """Étape 7 : Génère et insère météo, soleil et lune pour la date donnée."""
+    print(f"\n--- [Étape 7] Météo, Soleil & Lune pour le {date_str} ---", flush=True)
+    try:
+        from daily_info import generate_for_date
+        data = generate_for_date(date_str)
+
+        db_url = os.environ.get("SUPABASE_DB_URL")
+        if not db_url:
+            env_path = BASE_DIR.parent / ".env"
+            if env_path.exists():
+                for line in env_path.read_text(encoding="utf-8").splitlines():
+                    line = line.strip()
+                    if line.startswith("SUPABASE_DB_URL="):
+                        db_url = line.split("=", 1)[1].strip().strip("'\"")
+                        break
+
+        import psycopg2
+        conn = psycopg2.connect(db_url)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO public.journal_daily_info
+                (date, sunrise, sunset, moon_phase, moon_visible, moon_aspect, moon_desc, moon_icon,
+                 weather_condition, weather_tmin, weather_tmax, weather_precip_mm, weather_wind_kmh,
+                 weather_icon, weather_desc)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            ON CONFLICT (date) DO UPDATE SET
+                sunrise=EXCLUDED.sunrise, sunset=EXCLUDED.sunset,
+                moon_phase=EXCLUDED.moon_phase, moon_visible=EXCLUDED.moon_visible,
+                moon_aspect=EXCLUDED.moon_aspect, moon_desc=EXCLUDED.moon_desc,
+                moon_icon=EXCLUDED.moon_icon,
+                weather_condition=EXCLUDED.weather_condition,
+                weather_tmin=EXCLUDED.weather_tmin, weather_tmax=EXCLUDED.weather_tmax,
+                weather_precip_mm=EXCLUDED.weather_precip_mm,
+                weather_wind_kmh=EXCLUDED.weather_wind_kmh,
+                weather_icon=EXCLUDED.weather_icon, weather_desc=EXCLUDED.weather_desc,
+                updated_at=now()
+        """, (
+            date_str, data['sunrise'], data['sunset'],
+            data['moon_phase'], data['moon_visible'], data['moon_aspect'],
+            data['moon_desc'], data['moon_icon'],
+            data['weather_condition'], data['weather_tmin'], data['weather_tmax'],
+            data['weather_precip_mm'], data['weather_wind_kmh'],
+            data['weather_icon'], data['weather_desc'],
+        ))
+        cur.close()
+        conn.close()
+        print(f"✅ Étape 7 complétée : ☀️{data['sunrise']}-{data['sunset']} 🌙{data['moon_phase']} 🌤️{data['weather_condition'][:30]}", flush=True)
+        return True
+    except Exception as e:
+        print(f"⚠️ Étape 7 (daily_info) ignorée : {e}", flush=True)
+        return False
+
 def main():
     parser = argparse.ArgumentParser(description="Pipeline d'Archivage Historique complet fin 1899.")
     parser.add_argument('--date', type=str, help="Date du journal (AAAA-MM-JJ)")
@@ -508,6 +563,7 @@ def main():
             print("🚀 Option 1 sélectionnée : Régénération des événements et injection directe Supabase...")
             run_step_5_export_events_json(date_str)
             run_step_6_database_upload(date_str)
+            run_step_7_daily_info(date_str)
             print(f"🎉 Données rafraîchies et importées avec succès pour le {date_str} !")
             sys.exit(0)
         elif choix == '3':
@@ -565,6 +621,9 @@ def main():
             # Étape 6 : Téléversement en base de données Supabase (Passe 2 finale)
             run_step_6_database_upload(date_str)
             
+            # Étape 7 : Météo, Soleil & Lune
+            run_step_7_daily_info(date_str)
+            
             print(f"\n🎉 PIPELINE DOUBLE-PASSE COMPLÉTÉ AVEC SUCCÈS POUR LE {date_str} !")
             sys.exit(0)
             
@@ -590,6 +649,8 @@ def main():
                     run_step_5_export_events_json(date_str)
                     # Étape 6 : Téléversement
                     run_step_6_database_upload(date_str)
+                    # Étape 7 : Météo, Soleil & Lune
+                    run_step_7_daily_info(date_str)
                     print(f"\n🎉 PIPELINE PASSE 2 COMPLÉTÉ AVEC SUCCÈS POUR LE {date_str} !")
                     sys.exit(0)
                     
@@ -611,6 +672,7 @@ def main():
                     run_step_4_output_generation(date_str, restored, new_pass_count)
                     run_step_5_export_events_json(date_str)
                     run_step_6_database_upload(date_str)
+                    run_step_7_daily_info(date_str)
                     print(f"\n🎉 PIPELINE COMPLÉTÉ AVEC SUCCÈS (Passe {new_pass_count}) POUR LE {date_str} !")
                     sys.exit(0)
                     

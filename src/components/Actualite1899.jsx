@@ -14,20 +14,6 @@ const MONTHS_FR = {
 
 const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
-const WEATHER_OPTIONS = [
-  { cond: "Ciel Nuageux", temp: "6°C à 10°C", prec: "1.2 mm", vent: "25 km/h", icon: "🌤️" },
-  { cond: "Pluie intermittente", temp: "4°C à 8°C", prec: "3.5 mm", vent: "30 km/h", icon: "🌧️" },
-  { cond: "Éclaircies et fraîcheur", temp: "3°C à 7°C", prec: "0.0 mm", vent: "15 km/h", icon: "🌤️" },
-  { cond: "Grisaille et brume d'hiver", temp: "2°C à 6°C", prec: "0.2 mm", vent: "10 km/h", icon: "🌫️" }
-];
-
-const MOON_OPTIONS = [
-  { phase: "Dernier Croissant", visible: "22% d'illumination", aspect: "Fine corne argentée à l'aube", desc: "La fine faux lunaire s'est levée tard dans la nuit, jetant une faible lueur argentée sur les monuments parisiens avant l'aube.", icon: "🌙" },
-  { phase: "Nouvelle Lune", visible: "0% d'illumination", aspect: "Nuit noire et profonde", desc: "La lune, invisible, laisse place à un ciel d'encre étoilé, faisant briller d'autant plus l'éclairage public électrique de l'Opéra.", icon: "🌑" },
-  { phase: "Premier Croissant", visible: "15% d'illumination", aspect: "Jeune croissant crépusculaire", desc: "Un mince filet de lune est apparu au coucher du soleil à l'ouest, glissant rapidement sous l'horizon parisien.", icon: "🌙" },
-  { phase: "Premier Quartier", visible: "50% d'illumination", aspect: "Demi-lune brillante", desc: "Une demi-lune claire a éclairé la première partie de la nuit, projetant des ombres géométriques nettes sur les grands boulevards.", icon: "🌓" }
-];
-
 export default function Actualite1899({ onBack, userProfile }) {
   const [dateStr, setDateStr] = useState('1899-11-26');
   const [activeMenu, setActiveMenu] = useState('meteo'); // meteo, lune, chronique, page1, page2, page3, page4, votes
@@ -39,6 +25,7 @@ export default function Actualite1899({ onBack, userProfile }) {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('journal-dark-mode') === 'enabled';
   });
+  const [dailyInfo, setDailyInfo] = useState(null);
 
   // --- Dates pour lesquelles des articles existent en BDD ---
   const [availableArticleDates, setAvailableArticleDates] = useState(new Set());
@@ -113,6 +100,26 @@ export default function Actualite1899({ onBack, userProfile }) {
     fetchEvents();
     fetchAvailableArticleDates();
   }, [fetchAvailableArticleDates]);
+
+  // --- Chargement des données météo/lune/soleil du jour ---
+  useEffect(() => {
+    const fetchDailyInfo = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('journal_daily_info')
+          .select('*')
+          .eq('date', dateStr)
+          .single();
+
+        if (error && error.code !== 'PGRST116') throw error;
+        setDailyInfo(data || null);
+      } catch (err) {
+        console.error("Erreur chargement daily_info :", err);
+        setDailyInfo(null);
+      }
+    };
+    fetchDailyInfo();
+  }, [dateStr]);
 
   // --- Chargement des articles du jour depuis Supabase ---
   const fetchArticlesForDate = useCallback(async (targetDate) => {
@@ -321,31 +328,7 @@ export default function Actualite1899({ onBack, userProfile }) {
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     const editionNo = 8430 + daysDiff;
 
-    // Calcul météo déterministe
-    const w = WEATHER_OPTIONS[dayNum % WEATHER_OPTIONS.length];
-    let weatherDesc = "";
-    if (w.cond === "Ciel Nuageux") {
-      weatherDesc = `Le ${dayNum} ${monthName} ${year}, le ciel est resté bas et couvert sur toute la capitale, apportant une brume humide sur les quais de Seine. Les promeneurs se pressaient sous les boulevards éclairés aux premiers becs de gaz.`;
-    } else if (w.cond === "Pluie intermittente") {
-      weatherDesc = `Le ${dayNum} ${monthName} ${year}, des averses passagères ont balayé les boulevards une partie de la journée, forçant les passants à s'abriter sous les marquises des théâtres et des grands magasins.`;
-    } else if (w.cond === "Éclaircies et fraîcheur") {
-      weatherDesc = `Le ${dayNum} ${monthName} ${year}, un beau soleil d'automne a brillé à travers un air vif et piquant. Les promeneurs ont envahi le jardin des Tuileries et les terrasses de café.`;
-    } else {
-      weatherDesc = `Le ${dayNum} ${monthName} ${year}, une épaisse nappe de brouillard a enveloppé la Seine au lever du jour, s'estompant lentement pour laisser place à un ciel blanc d'hiver.`;
-    }
-
-    // Calcul lune déterministe
-    const m = MOON_OPTIONS[(dayNum + 5) % MOON_OPTIONS.length];
-
-    return {
-      year,
-      monthName,
-      dayNum,
-      dayOfWeek,
-      editionNo,
-      weather: { ...w, desc: weatherDesc },
-      moon: m
-    };
+    return { year, monthName, dayNum, dayOfWeek, editionNo };
   }, [dateStr]);
 
   // --- Événements chronologiques du jour ---
@@ -652,63 +635,83 @@ export default function Actualite1899({ onBack, userProfile }) {
             {/* 🌤️ VIEW 1: MÉTÉO */}
             {activeMenu === 'meteo' && (
               <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-stone-200 shadow-sm'}`}>
-                <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
-                  <span className="text-5xl">{dateMeta.weather.icon}</span>
-                  <div>
-                    <h2 className="text-2xl font-bold font-serif">Météo de Paris</h2>
-                    <p className="text-xs font-sans italic opacity-75">Reconstitution climatologique d'époque</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                  {[
-                    { label: "Condition", val: dateMeta.weather.cond, border: 'border-amber-600/30' },
-                    { label: "Températures", val: dateMeta.weather.temp, border: 'border-blue-600/30' },
-                    { label: "Précipitations", val: dateMeta.weather.prec, border: 'border-emerald-600/30' },
-                    { label: "Vents", val: dateMeta.weather.vent, border: 'border-purple-600/30' }
-                  ].map((wInfo, i) => (
-                    <div key={i} className={`p-3 rounded-xl border bg-stone-50 dark:bg-stone-900/60 ${wInfo.border}`}>
-                      <h4 className="text-[10px] uppercase font-sans font-bold opacity-60 tracking-wider mb-1">{wInfo.label}</h4>
-                      <p className="text-sm font-bold font-serif">{wInfo.val}</p>
+                {dailyInfo ? (
+                  <>
+                    <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
+                      <span className="text-5xl">{dailyInfo.weather_icon}</span>
+                      <div>
+                        <h2 className="text-2xl font-bold font-serif">Météo de Paris</h2>
+                        <p className="text-xs font-sans italic opacity-75">Reconstitution climatologique d'époque</p>
+                      </div>
                     </div>
-                  ))}
-                </div>
 
-                <div className={`p-4 rounded-xl border text-sm md:text-base leading-relaxed italic ${darkMode ? 'bg-stone-900 border-stone-800' : 'bg-amber-50/50 border-[#92400e]/10'}`}>
-                  <strong>Chronique Météorologique Réduite :</strong>
-                  <p className="mt-2 text-stone-700 dark:text-stone-300">{dateMeta.weather.desc}</p>
-                </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+                      {[
+                        { label: "Condition", val: dailyInfo.weather_condition, border: 'border-amber-600/30' },
+                        { label: "Températures", val: `${dailyInfo.weather_tmin ?? '?'}°C à ${dailyInfo.weather_tmax ?? '?'}°C`, border: 'border-blue-600/30' },
+                        { label: "Précipitations", val: dailyInfo.weather_precip_mm != null ? `${dailyInfo.weather_precip_mm} mm` : '—', border: 'border-emerald-600/30' },
+                        { label: "Vents", val: dailyInfo.weather_wind_kmh != null ? `${dailyInfo.weather_wind_kmh} km/h` : '—', border: 'border-purple-600/30' },
+                        { label: "Lever du soleil", val: dailyInfo.sunrise, border: 'border-orange-600/30' },
+                        { label: "Coucher du soleil", val: dailyInfo.sunset, border: 'border-red-600/30' },
+                      ].map((wInfo, i) => (
+                        <div key={i} className={`p-3 rounded-xl border bg-stone-50 dark:bg-stone-900/60 ${wInfo.border}`}>
+                          <h4 className="text-[10px] uppercase font-sans font-bold opacity-60 tracking-wider mb-1">{wInfo.label}</h4>
+                          <p className="text-sm font-bold font-serif">{wInfo.val}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className={`p-4 rounded-xl border text-sm md:text-base leading-relaxed italic ${darkMode ? 'bg-stone-900 border-stone-800' : 'bg-amber-50/50 border-[#92400e]/10'}`}>
+                      <strong>Chronique Météorologique Réduite :</strong>
+                      <p className="mt-2 text-stone-700 dark:text-stone-300">{dailyInfo.weather_desc}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12 text-stone-500">
+                    <p className="text-4xl mb-2">🌤️</p>
+                    <p className="font-sans text-sm">Données météo non disponibles pour cette date</p>
+                  </div>
+                )}
               </section>
             )}
 
             {/* 🌙 VIEW 2: LUNE */}
             {activeMenu === 'lune' && (
               <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-stone-200 shadow-sm'}`}>
-                <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
-                  <span className="text-5xl">{dateMeta.moon.icon}</span>
-                  <div>
-                    <h2 className="text-2xl font-bold font-serif">Influence Lunaire</h2>
-                    <p className="text-xs font-sans italic opacity-75">Calcul astronomique réel pour le bassin céleste parisien</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                  {[
-                    { label: "Phase Lunaire", val: dateMeta.moon.phase },
-                    { label: "Surface Visible", val: dateMeta.moon.visible },
-                    { label: "Aspect Céleste", val: dateMeta.moon.aspect }
-                  ].map((mInfo, i) => (
-                    <div key={i} className="p-3 rounded-xl border bg-stone-50 dark:bg-stone-900/60 border-amber-600/30">
-                      <h4 className="text-[10px] uppercase font-sans font-bold opacity-60 tracking-wider mb-1">{mInfo.label}</h4>
-                      <p className="text-sm font-bold font-serif">{mInfo.val}</p>
+                {dailyInfo ? (
+                  <>
+                    <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
+                      <span className="text-5xl">{dailyInfo.moon_icon}</span>
+                      <div>
+                        <h2 className="text-2xl font-bold font-serif">Influence Lunaire</h2>
+                        <p className="text-xs font-sans italic opacity-75">Calcul astronomique réel pour le bassin céleste parisien</p>
+                      </div>
                     </div>
-                  ))}
-                </div>
 
-                <div className={`p-4 rounded-xl border text-sm md:text-base leading-relaxed italic ${darkMode ? 'bg-stone-900 border-stone-800' : 'bg-amber-50/50 border-[#92400e]/10'}`}>
-                  <strong>Chronique Lunaire & Influence :</strong>
-                  <p className="mt-2 text-stone-700 dark:text-stone-300">{dateMeta.moon.desc}</p>
-                </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                      {[
+                        { label: "Phase Lunaire", val: dailyInfo.moon_phase },
+                        { label: "Surface Visible", val: dailyInfo.moon_visible },
+                        { label: "Aspect Céleste", val: dailyInfo.moon_aspect }
+                      ].map((mInfo, i) => (
+                        <div key={i} className="p-3 rounded-xl border bg-stone-50 dark:bg-stone-900/60 border-amber-600/30">
+                          <h4 className="text-[10px] uppercase font-sans font-bold opacity-60 tracking-wider mb-1">{mInfo.label}</h4>
+                          <p className="text-sm font-bold font-serif">{mInfo.val}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className={`p-4 rounded-xl border text-sm md:text-base leading-relaxed italic ${darkMode ? 'bg-stone-900 border-stone-800' : 'bg-amber-50/50 border-[#92400e]/10'}`}>
+                      <strong>Chronique Lunaire & Influence :</strong>
+                      <p className="mt-2 text-stone-700 dark:text-stone-300">{dailyInfo.moon_desc}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12 text-stone-500">
+                    <p className="text-4xl mb-2">🌙</p>
+                    <p className="font-sans text-sm">Données lunaires non disponibles pour cette date</p>
+                  </div>
+                )}
               </section>
             )}
 
