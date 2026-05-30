@@ -71,7 +71,7 @@ def configure_gemini():
 
 def run_step_1_ocr(date_str):
     """Étape 1 : Lance ocr_petit_parisien.py pour télécharger et nettoyer l'OCR."""
-    print(f"\n--- [Étape 1] Téléchargement & Extraction OCR BnF pour le {date_str} ---")
+    print(f"\n--- [Étape 1] Téléchargement & Extraction OCR BnF pour le {date_str} ---", flush=True)
     ocr_script = BASE_DIR / "ocr_petit_parisien.py"
     
     if not ocr_script.exists():
@@ -80,9 +80,12 @@ def run_step_1_ocr(date_str):
         
     cmd = [sys.executable, str(ocr_script), "--date", date_str, "--method", "api"]
     try:
-        subprocess.run(cmd, check=True)
-        print("✅ Étape 1 complétée avec succès.")
+        subprocess.run(cmd, check=True, timeout=180)
+        print("✅ Étape 1 complétée avec succès.", flush=True)
         return True
+    except subprocess.TimeoutExpired:
+        print(f"⏰ Étape 1 a expiré après 180s.")
+        return False
     except subprocess.CalledProcessError as e:
         print(f"❌ Échec de l'étape 1 : {e}")
         return False
@@ -362,17 +365,101 @@ def run_step_5_export_events_json(date_str):
         print(f"⚠️ Impossible d'écrire le fichier JSON d'événements : {e}")
         return False
 
+def run_step_0_cleanup(date_str):
+    """Nettoie toutes les données existantes pour une date (Supabase + fichiers)."""
+    print(f"\n--- [Étape 0] Nettoyage des données existantes pour le {date_str} ---")
+
+    # 1. Suppression en base Supabase
+    cwd_dir = BASE_DIR.parent
+    env_path = cwd_dir / ".env"
+    db_url = None
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line.startswith("SUPABASE_DB_URL="):
+                db_url = line.split("=", 1)[1].strip().strip("'\"")
+                break
+    
+    if not db_url:
+        db_url = os.environ.get("SUPABASE_DB_URL")
+
+    if db_url:
+        try:
+            import psycopg2
+            conn = psycopg2.connect(db_url)
+            conn.autocommit = True
+            cur = conn.cursor()
+            cur.execute("DELETE FROM public.journal_articles WHERE date = %s", (date_str,))
+            deleted = cur.rowcount
+            cur.execute("DELETE FROM public.historical_events WHERE date = %s", (date_str,))
+            cur.close()
+            conn.close()
+            print(f"  🗑️ {deleted} articles supprimés de Supabase.")
+        except ImportError:
+            print("  ⚠️ psycopg2 non installé, tentative avec sous-processus Node...")
+            try:
+                subprocess.run(
+                    ["node", "-e", """
+                        const { Client } = require('pg');
+                        require('dotenv').config();
+                        (async () => {
+                            const client = new Client({ connectionString: process.env.SUPABASE_DB_URL });
+                            await client.connect();
+                            const r = await client.query('DELETE FROM public.journal_articles WHERE date = $1', ['%s']);
+                            console.log('Supprimés:', r.rowCount);
+                            await client.query('DELETE FROM public.historical_events WHERE date = $1', ['%s']);
+                            await client.end();
+                        })();
+                    """ % (date_str, date_str)],
+                    cwd=str(cwd_dir), check=True, timeout=30
+                )
+            except Exception as e:
+                print(f"  ⚠️ Échec nettoyage base : {e}")
+    else:
+        print("  ⚠️ SUPABASE_DB_URL non trouvée, nettoyage base ignoré.")
+
+    # 2. Suppression des fichiers générés
+    for pattern in [f"journal_data_{date_str}.js", f"event_day_{date_str}.json",
+                    f"le_petit_parisien_{date_str}_brut.txt", f"le_petit_parisien_{date_str}_propre.txt"]:
+        fpath = OUTPUT_DIR / pattern
+        if fpath.exists():
+            fpath.unlink()
+            print(f"  🗑️ Fichier supprimé : {fpath.name}")
+
+    # 3. Suppression du dossier raw OCR
+    raw_dir = OUTPUT_DIR / "raw" / "le_petit_parisien"
+    if raw_dir.exists():
+        for sub in raw_dir.iterdir():
+            if sub.is_dir():
+                ark_file = sub / "ocr.json"
+                if ark_file.exists():
+                    try:
+                        import json
+                        meta = json.loads(ark_file.read_text(encoding="utf-8"))
+                        if meta.get("date") == date_str:
+                            import shutil
+                            shutil.rmtree(sub)
+                            print(f"  🗑️ Dossier OCR brut supprimé : {sub.name}")
+                    except Exception:
+                        pass
+
+    print(f"✅ Nettoyage terminé pour le {date_str}.")
+
+
 def run_step_6_database_upload(date_str):
     """Étape 6 : Téléverse les articles et les événements dans la base de données Supabase."""
-    print(f"\n--- [Étape 6] Téléversement dans la base de données Supabase pour le {date_str} ---")
+    print(f"\n--- [Étape 6] Téléversement dans la base de données Supabase pour le {date_str} ---", flush=True)
     
     # On se place à la racine pour lancer le script node
     cwd_dir = BASE_DIR.parent
     cmd = ["node", "scripts/insert_journal_day.js", "--date", date_str]
     try:
-        subprocess.run(cmd, cwd=str(cwd_dir), check=True)
-        print("✅ Étape 6 complétée avec succès (données injectées dans Supabase).")
+        subprocess.run(cmd, cwd=str(cwd_dir), check=True, timeout=60)
+        print("✅ Étape 6 complétée avec succès (données injectées dans Supabase).", flush=True)
         return True
+    except subprocess.TimeoutExpired:
+        print(f"⏰ Étape 6 (téléversement base de données) a expiré après 60s.")
+        return False
     except Exception as e:
         print(f"❌ Échec de l'étape 6 (téléversement base de données) : {e}")
         return False
@@ -415,13 +502,23 @@ def main():
         print(f"\n⚡ L'édition du {date_str} a déjà subi {pass_count} passes de restauration. Elle est considérée comme finalisée.")
         print("1. Lancer le téléversement direct en BDD (Étape 6) et régénérer le JSON d'événements (Étape 5)")
         print("2. Forcer une passe de restauration supplémentaire par l'IA (Passe 3 et +)")
-        choix = input("Fais ton choix (1 ou 2) : ").strip()
+        print("3. ❌ Annuler et tout refaire depuis le début (supprime les données en base + fichiers)")
+        choix = input("Fais ton choix (1, 2 ou 3) : ").strip()
         if choix == '1':
             print("🚀 Option 1 sélectionnée : Régénération des événements et injection directe Supabase...")
             run_step_5_export_events_json(date_str)
             run_step_6_database_upload(date_str)
             print(f"🎉 Données rafraîchies et importées avec succès pour le {date_str} !")
             sys.exit(0)
+        elif choix == '3':
+            print("💥 Option 3 sélectionnée : Annulation et reprise complète...")
+            confirm = input("Es-tu sûr de vouloir supprimer toutes les données de cette journée et repartir de zéro ? (oui/non) : ").strip().lower()
+            if confirm != 'oui':
+                print("Opération annulée. Les données sont préservées.")
+                sys.exit(0)
+            run_step_0_cleanup(date_str)
+            pass_count = 0
+            force_new_pass = True
         else:
             print("⚠️ Option 2 sélectionnée : Préparation d'une passe supplémentaire IA...")
             confirm = input("Es-tu sûr de vouloir forcer cette passe ? Une accumulation de passes peut créer des hallucinations IA. (oui/non) : ").strip().lower()

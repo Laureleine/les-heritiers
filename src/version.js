@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.1.2 - "Le Résumé Honnête 🗞️🩺"',
+    date: '30 Mai 2026',
+    description: 'Les jours sans résumé de la Gazette disparaissent au lieu d\'afficher un message trompeur. Le pipeline sait désormais tout effacer et recommencer une journée depuis zéro. Le max-rows PostgREST est passé de 1000 à 5000 — tout décembre verdit enfin.',
+    changes: [
+      '🩺 **Résumé masqué quand absent :** Fini le "Résumé en cours de chargement..." mensonger. Si un article n\'a pas de résumé en base, le bloc beige ne s\'affiche tout simplement pas. Si aucun article du jour n\'a de résumé, la journée est considérée comme non chargée — le bouton de vote réapparaît.',
+      '🗑️ **Pipeline : option "Annuler et tout refaire" :** Nouvelle option 3 dans le menu des dates déjà traitées. Supprime les articles en base (`DELETE`), efface les fichiers générés (OCR, journal_data, events), puis relance le pipeline complet depuis l\'étape 1.',
+      '🟢 **Limite PostgREST repoussée à 5000 :** Le `max-rows` du projet Supabase est passé de 1000 à 5000. Les 1554 articles sont désormais tous chargés. Tout décembre 1899 verdit dans le calendrier — fin du "trou" à partir du 17.',
+      '🧪 **272 Sentinelles** — toujours en faction.',
+    ]
+  },
+  {
     version: '17.1.1 - "L\'Article sans Page 🗞️✂️"',
     date: '30 Mai 2026',
     description: 'Le numéro de page qui alourdissait chaque article de la Gazette disparaît. Le titre rétrécit juste assez pour que le badge et le nom tiennent toujours sur une seule ligne, même sur les écrans les plus étroits.',
