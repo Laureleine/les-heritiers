@@ -59,7 +59,30 @@ export default function Actualite1899({ onBack, userProfile }) {
     return isSuperAdmin(userProfile);
   }, [userProfile]);
 
-  // --- Chargement initial : événements et dates d'articles uniques ---
+  // --- Rafraîchir les dates disponibles depuis Supabase ---
+  const fetchAvailableArticleDates = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('journal_articles')
+        .select('date, category');
+      
+      if (error) throw error;
+      
+      if (data) {
+        const validArticles = data.filter(
+          item => item.category !== 'Météo' && 
+                  item.category !== 'Lune' && 
+                  item.category !== 'Meteo'
+        );
+        const datesSet = new Set(validArticles.map(item => item.date));
+        setAvailableArticleDates(datesSet);
+      }
+    } catch (err) {
+      console.error("Erreur chargement dates articles :", err);
+    }
+  }, []);
+
+  // --- Chargement initial : événements ---
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -85,31 +108,14 @@ export default function Actualite1899({ onBack, userProfile }) {
       }
     };
 
-    const fetchAvailableArticleDates = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('journal_articles')
-          .select('date, category');
-        
-        if (error) throw error;
-        
-        if (data) {
-          const validArticles = data.filter(
-            item => item.category !== 'Météo' && 
-                    item.category !== 'Lune' && 
-                    item.category !== 'Meteo'
-          );
-          const datesSet = new Set(validArticles.map(item => item.date));
-          setAvailableArticleDates(datesSet);
-        }
-      } catch (err) {
-        console.error("Erreur chargement dates articles :", err);
-      }
-    };
-
     fetchEvents();
     fetchAvailableArticleDates();
-  }, []);
+  }, [fetchAvailableArticleDates]);
+
+  // Rafraîchir les dates disponibles à chaque changement de date
+  useEffect(() => {
+    fetchAvailableArticleDates();
+  }, [dateStr, fetchAvailableArticleDates]);
 
   // --- Chargement des articles du jour depuis Supabase ---
   const fetchArticlesForDate = useCallback(async (targetDate) => {
@@ -125,6 +131,7 @@ export default function Actualite1899({ onBack, userProfile }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
+        setAvailableArticleDates(prev => new Set([...prev, targetDate]));
         const mappedArticles = data.map(art => ({
           id: art.article_index,
           page: art.page,

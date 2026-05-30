@@ -2,12 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
-    version: '17.0.5 - "Le Journal en Poche 📱"',
-    date: '26 Mai 2026',
-    description: 'Le Petit Parisien s\'apprivoise sur les écrans de téléphone : le sommaire ne chevauche plus le contenu quand on défile. Un fix d\'une ligne, mais quel soulagement pour les Héritiers nomades.',
+    version: '17.0.6 - "Le Point Vert Émeraude 🟢"',
+    date: '30 Mai 2026',
+    description: 'Les dates chargées dans la Gazette brillent désormais d\'un vert émeraude dans le calendrier, même si elles ont été insérées après l\'ouverture du journal. Plus aucune date ne reste grise alors qu\'elle recèle des articles.',
     changes: [
-      '📱 **Sommaire apprivoisé (fix mobile) :** Le panneau "Sommaire" de la Gazette était en `sticky` sur toutes les tailles d\'écran. Sur téléphone, il restait collé en haut et recouvrait le contenu du journal quand on défilait. Désormais le sticky est réservé aux écrans larges — sur mobile, le sommaire coule paisiblement dans le flux.',
-      '🧪 **272 Sentinelles** — inchangées, toujours vigilantes.',
+      '🟢 **Point vert enfin fidèle (fix calendrier) :** `fetchAvailableArticleDates()` n\'était appelée qu\'au montage du composant. Si un Héritier insérait des articles en base pendant sa consultation, le calendrier restait aveugle — la date apparaissait grise alors que la gazette était bien là. Désormais la liste des dates disponibles se rafraîchit à chaque changement de jour, et s\'enrichit instantanément dès que le chargement confirme la présence d\'articles.',
+      '🔄 **Réactivité accrue :** Deux mécanismes se relaient : un `useEffect` sur `dateStr` relance la requête complète à chaque navigation, et un ajout atomique au Set dès que `fetchArticlesForDate` réussit. Le point vert et le badge "Gazette en base" apparaissent sans attendre le prochain rechargement.',
+      '🏗️ **Code extrait du `useEffect` de montée :** La fonction `fetchAvailableArticleDates` a été promue au rang de `useCallback` au niveau du composant, libérée de son carcan initial. Elle peut désormais être invoquée depuis n\'importe quel effet.',
+      '🧪 **272 Sentinelles** — toujours en faction, toujours vigilantes.',
     ]
   },
   {
