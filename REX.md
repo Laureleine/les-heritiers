@@ -337,3 +337,22 @@
 
 - **Avant de déployer un changement UI** : vérifier à l'œil sur mobile et desktop que badge + titre tiennent sur une ligne. Un simple test responsive navigateur suffit.
 
+## Session du 30 Mai 2026 (6e partie) — 17.2.0 "Le Ciel Révélé ☀️🌙"
+
+### Règles ajoutées
+
+58. **`phase()` d'Astral retourne l'âge de la lune en jours (0-29.5), pas un ratio [0-1)** — `astral.moon.phase(date)` retourne un nombre flottant correspondant au nombre de jours écoulés depuis la nouvelle lune. Pour obtenir un indice de phase (0-7), il faut d'abord faire `age = phase_num % 29.5`, puis `int(age / 29.5 * 8) % 8`. Multiplier directement par 8 (comme si `phase()` retournait un ratio) donne des résultats aberrants.
+
+59. **`.single()` Supabase + code `PGRST116` pour gérer l'absence de ligne** — Quand on utilise `.single()` sur une requête Supabase qui peut ne retourner aucune ligne, le client Supabase jette une erreur avec `error.code === 'PGRST116'` (PostgREST: "The result contains 0 rows"). Il faut explicitement ignorer cette erreur : `if (error && error.code !== 'PGRST116') throw error;`. Sinon le `catch` traite l'absence de données comme une erreur.
+
+### Patterns validés
+
+- **Nouvelle table = nouvelle étape pipeline** : L'étape 7 a été ajoutée en suivant exactement le même pattern que l'étape 6 — une fonction dédiée, appelée après chaque `run_step_6_database_upload` dans les 4 branches du pipeline. La fonction de cleanup (step 0) a été mise à jour pour inclure la nouvelle table.
+- **Backfill via psycopg2** : Utiliser `psycopg2` directement depuis le script Python plutôt que de passer par un subprocess Node par date. Beaucoup plus rapide (38 dates en quelques secondes au lieu de plusieurs minutes).
+- **La météo/lune client-side était un fallback fragile** : Les 4 options cycliques en dur avec `dayNum % 4` donnaient la même météo tous les 4 jours du mois — totalement décorrélée de la réalité. Le passage à une table DB dédiée avec des données réelles améliore la crédibilité du monde.
+
+### Process à améliorer
+
+- **Vérifier les imports de fonctions depuis des librairies externes** : `astral.moon.phase()` a été testé rapidement mais le calcul de l'indice de phase était erroné. Ajouter un test de validation sur les fonctions astronomiques avant backfill.
+- **Pipeline : toujours nettoyer les nouvelles tables dans `run_step_0_cleanup`** — L'étape 0 supprime les articles et événements d'une date, mais pas les `journal_daily_info`. Oubli corrigé dans cette session.
+
