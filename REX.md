@@ -356,3 +356,11 @@
 - **Vérifier les imports de fonctions depuis des librairies externes** : `astral.moon.phase()` a été testé rapidement mais le calcul de l'indice de phase était erroné. Ajouter un test de validation sur les fonctions astronomiques avant backfill.
 - **Pipeline : toujours nettoyer les nouvelles tables dans `run_step_0_cleanup`** — L'étape 0 supprime les articles et événements d'une date, mais pas les `journal_daily_info`. Oubli corrigé dans cette session.
 
+## Session du 31 Mai 2026 — 17.2.1
+
+### Règle ajoutée
+60. **Toujours lancer les tests avec `npm test` (ou `npx react-scripts test`), jamais `npx jest`** — Le projet utilise Create React App (`react-scripts`), qui embarque sa propre configuration Jest + Babel (transform des JSX et ESM). Lancer `npx jest` directement ne trouve pas cette config → 26 suites en échec pour "SyntaxError: Cannot use import statement outside a module" et "Support for the experimental syntax 'jsx' isn't currently enabled". Avec `npx react-scripts test --watchAll=false`, les 23 suites / 279 tests passent. La commande correcte est dans le `scripts.test` du `package.json` : `"test": "react-scripts test"`.
+
+### Process à améliorer
+- **Vérifier `package.json` → `scripts.test` avant de lancer les tests** — Le nom de la commande (`jest`, `vitest`, `react-scripts test`, `next test`, etc.) est toujours dans les scripts. Ne jamais deviner.
+

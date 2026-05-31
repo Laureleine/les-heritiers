@@ -14,6 +14,10 @@
 - Avant chaque refacto significatif, créer d'abord les tests de non-régression.
 - Ne pas toucher au code sans avoir les tests verts avant ET après.
 
+# Tests
+
+- Le projet utilise `react-scripts` (CRA) — toujours lancer les tests avec `npm test`, jamais `npx jest` directement.
+
 # Commands
 
 - `/version` (ou l'utilisateur dit "version") : Exécuter dans l'ordre :
