@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.2 - "L\'Almanach sans Doublon ✝️🌿🌑"',
+    date: '31 Mai 2026',
+    description: 'Le calendrier des fêtes perd ses doublons (fin des Immaculée Conception en double le 8 décembre !), le filtre Toutes/Chrétiennes/Celtiques migre dans le titre de Fêtes & Traditions où il est toujours visible. Quand on cherche une fête celtique et qu\'il n\'y en a pas ce jour-là, le Petit Parisien annonce la prochaine avec sa date. Et dans Influence Lunaire, les éclipses de 1899 à 1914 défilent — solaires et lunaires, avec leur visibilité géographique.',
+    changes: [
+      '✝️ **304 doublons supprimés du calendrier :** 19 fêtes chrétiennes fixes étaient en double avec les saints du jour (Épiphanie, Toussaint, Immaculée Conception, Noël, etc.). Le seed passe de 6 595 à 6 291 entrées — plus aucune redite, chaque fête apparaît une seule fois par an.',
+      '🌿 **Filtre déplacé dans le titre :** Le sélecteur Toutes/Chrétiennes/Celtiques est désormais toujours visible, intégré à l\'en-tête de Fêtes & Traditions. Plus besoin d\'attendre qu\'il y ait plusieurs fêtes pour filtrer.',
+      '📅 **Prochaine fête celtique :** Quand le filtre Celtiques est actif mais qu\'aucune fête n\'a lieu ce jour, le bloc affiche la prochaine fête celtique à venir — nom, date et description — dans un encart vert bien visible.',
+      '🌑 **Éclipses 1899-1914 dans Influence Lunaire :** Les 48 éclipses (solaires et lunaires) de toute la période sont listées sous la chronique lunaire — nature (totale, partielle, annulaire, hybride) et visibilité géographique.',
+      '🧪 **280 Sentinelles — toujours en faction.',
+    ]
+  },
+  {
     version: '17.2.1 - "Les Saints du Calendrier ✝️📅"',
     date: '31 Mai 2026',
     description: 'Le Petit Parisien s\'enrichit d\'un véritable almanach : les 365 saints du calendrier romain (nom, domaine, petite histoire) accompagnent désormais chaque jour de l\'année, de 1899 à 1914. En ouvrant Fêtes & Traditions, les Héritiers découvrent le saint du jour — Sylvestre, Catherine, Nicolas, Éloi, et tous leurs compagnons — exactement comme dans les almanachs de la Belle Époque.',

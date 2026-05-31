@@ -203,6 +203,30 @@ const fixedGaulish = [
     trad: 'Concours de bardes, récitation des légendes, chants à la harpe, fabrication de talismans sonores, veillées de contes.' },
 ];
 
+// Saints déjà couverts par fixedChristian (même fête, pas besoin de doublon)
+// Exception : 01-01 a "Circoncision" ET "Saint Odilon" (différents)
+const SAINT_DUPES = new Map([
+  ['01-06', 'Épiphanie'],
+  ['02-02', 'Chandeleur'],
+  ['02-14', 'Saint-Valentin'],
+  ['03-19', 'Saint-Joseph'],
+  ['03-25', 'Annonciation'],
+  ['04-23', 'Saint-Georges'],
+  ['04-25', 'Saint-Marc'],
+  ['06-24', 'Nativité de saint Jean-Baptiste'],
+  ['06-29', 'Saint-Pierre et Saint-Paul'],
+  ['07-22', 'Sainte-Marie-Madeleine'],
+  ['08-15', 'Assomption de la Vierge Marie'],
+  ['09-08', 'Nativité de la Vierge Marie'],
+  ['09-29', 'Saint-Michel'],
+  ['10-18', 'Saint-Luc'],
+  ['11-01', 'Toussaint'],
+  ['11-02', 'Commémoration des fidèles défunts'],
+  ['12-08', 'Immaculée Conception'],
+  ['12-25', 'Noël'],
+  ['12-26', 'Saint-Étienne'],
+]);
+
 function generateFixedFeasts(templates, year) {
   return templates.map(t => ({
     date: `${year}-${t.mmdd}`,
@@ -237,8 +261,9 @@ async function main() {
       // Fêtes gauloises fixes
       allHolidays.push(...generateFixedFeasts(fixedGaulish, year));
       // Saints du calendrier romain
-      // Saints du calendrier romain
       saints.forEach(s => {
+        // Éviter les doublons avec fixedChristian (même fête en double)
+        if (SAINT_DUPES.has(s.mmdd)) return;
         const saintName = s.name.split(' — ')[0].trim();
         allHolidays.push({
           date: `${year}-${s.mmdd}`,

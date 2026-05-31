@@ -1,6 +1,7 @@
 // src/components/Actualite1899.jsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ArrowLeft, Sun, Moon, Info, ChevronDown, ChevronUp, FileText, Bug } from '../config/icons';
+import eclipses from '../data/eclipses_data';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { supabase } from '../config/supabase';
 import { isSuperAdmin } from '../utils/authRoles';
@@ -370,6 +371,21 @@ export default function Actualite1899({ onBack, userProfile }) {
       return matchesDate && matchesType;
     });
   }, [holidaysData, dateStr, holidaysTypeFilter]);
+
+  // --- Éclipses de l'année en cours ---
+  const eclipsesForYear = useMemo(() => {
+    return eclipses.filter(e => e.date.startsWith(dateMeta.year));
+  }, [dateMeta.year]);
+
+  // --- Prochaine fête celtique (quand rien aujourd'hui avec le filtre actif) ---
+  const nextCelticHoliday = useMemo(() => {
+    if (holidaysTypeFilter !== 'celtique') return null;
+    if (dailyHolidays.length > 0) return null;
+    const future = holidaysData
+      .filter(h => h.type === 'celtique' && h.date > dateStr)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    return future[0] || null;
+  }, [holidaysData, dateStr, holidaysTypeFilter, dailyHolidays]);
 
   // --- Articles filtrés par page ---
   const filteredArticles = useMemo(() => {
@@ -741,6 +757,49 @@ export default function Actualite1899({ onBack, userProfile }) {
                       <strong>Chronique Lunaire & Influence :</strong>
                       <p className="mt-2 text-stone-700 dark:text-stone-200">{dailyInfo.moon_desc}</p>
                     </div>
+
+                    {/* Éclipses de l'année */}
+                    {eclipsesForYear.length > 0 && (
+                      <>
+                        <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-stone-700' : 'border-stone-200'}`}>
+                          <h3 className="text-lg font-bold font-serif mb-3 flex items-center gap-2">
+                            <span>🌑</span> Éclipses en {dateMeta.year}
+                          </h3>
+                          <div className="flex flex-col gap-3">
+                            {eclipsesForYear.map((e, i) => {
+                              const edate = new Date(e.date + 'T12:00:00');
+                              const label = e.type === 'solaire' ? '☀️ Solaire' : '🌙 Lunaire';
+                              const badgeClass = e.type === 'solaire'
+                                ? (darkMode ? 'bg-orange-950/40 border-orange-800 text-orange-300' : 'bg-orange-50 border-orange-300 text-orange-800')
+                                : (darkMode ? 'bg-indigo-950/40 border-indigo-800 text-indigo-300' : 'bg-indigo-50 border-indigo-300 text-indigo-800');
+                              return (
+                                <div
+                                  key={e.date}
+                                  className={`p-3 rounded-xl border text-sm ${
+                                    darkMode ? 'bg-stone-900 border-stone-700' : 'bg-stone-50 border-stone-200'
+                                  }`}
+                                >
+                                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                                    <span className={`inline-block text-[10px] font-sans font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${badgeClass}`}>
+                                      {label}
+                                    </span>
+                                    <span className="font-bold font-serif text-stone-900 dark:text-white">
+                                      {edate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                    </span>
+                                    <span className="text-xs font-sans font-bold uppercase opacity-60">
+                                      — {e.nature}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-stone-600 dark:text-stone-400 mt-1">
+                                    Visible depuis : {e.visible}
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </>
                 ) : (
                   <div className="text-center py-12 text-stone-500 dark:text-stone-400">
@@ -786,44 +845,53 @@ export default function Actualite1899({ onBack, userProfile }) {
               <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
                   <span className="text-4xl">✨</span>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <h2 className="text-2xl font-bold font-serif">Fêtes & Traditions</h2>
                     <p className="text-xs font-sans italic opacity-75">
                       Fêtes du {dateMeta.dayOfWeek} {dateMeta.dayNum} {dateMeta.monthName} {dateMeta.year}
                     </p>
                   </div>
+                  <div className="flex flex-wrap gap-1.5 shrink-0">
+                    {[
+                      { key: 'all', label: 'Toutes', icon: '📅' },
+                      { key: 'chrétien', label: 'Chrétiennes', icon: '✝️' },
+                      { key: 'celtique', label: 'Celtiques', icon: '🌿' },
+                    ].map(f => (
+                      <button
+                        key={f.key}
+                        onClick={() => setHolidaysTypeFilter(f.key)}
+                        className={`px-3 py-1.5 rounded-lg text-[11px] font-sans font-bold transition-all border ${
+                          holidaysTypeFilter === f.key
+                            ? (darkMode ? 'bg-amber-600/20 border-amber-600 text-amber-400' : 'bg-amber-50 border-[#92400e] text-[#92400e]')
+                            : (darkMode ? 'bg-stone-900 border-stone-700 text-stone-500 hover:text-stone-200' : 'bg-stone-50 border-stone-200 text-stone-500 hover:text-stone-900')
+                        }`}
+                      >
+                        {f.icon} {f.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {dailyHolidays.length === 0 ? (
+                {/* Prochaine fête celtique si rien aujourd'hui avec le filtre actif */}
+                {nextCelticHoliday && (
+                  <div className={`mb-4 p-4 rounded-xl border text-sm leading-relaxed ${
+                    darkMode ? 'bg-emerald-950/30 border-emerald-800 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                  }`}>
+                    <p className="font-sans font-bold text-xs uppercase tracking-wider mb-1">🌿 Prochaine fête celtique</p>
+                    <p className="font-serif">
+                      <strong>{nextCelticHoliday.name}</strong> — le {new Date(nextCelticHoliday.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                    </p>
+                    <p className="text-xs mt-1 opacity-80">{nextCelticHoliday.description}</p>
+                  </div>
+                )}
+
+                {dailyHolidays.length === 0 && !nextCelticHoliday ? (
                   <div className="text-center py-16 text-stone-500 dark:text-stone-400">
                     <p className="text-4xl mb-2">📅</p>
                     <p className="font-sans text-sm">Aucune fête ou tradition associée à cette date</p>
                   </div>
-                ) : (
+                ) : dailyHolidays.length === 0 && nextCelticHoliday ? null : (
                   <div className="flex flex-col gap-4">
-                    {/* Filtres par type — utiles quand plusieurs fêtes le même jour */}
-                    {dailyHolidays.length > 1 && (
-                      <div className="flex flex-wrap gap-2 mb-2">
-                        {[
-                          { key: 'all', label: 'Toutes', icon: '📅' },
-                          { key: 'chrétien', label: 'Chrétiennes', icon: '✝️' },
-                          { key: 'celtique', label: 'Celtiques', icon: '🌿' },
-                        ].map(f => (
-                          <button
-                            key={f.key}
-                            onClick={() => setHolidaysTypeFilter(f.key)}
-                            className={`px-4 py-2 rounded-lg text-xs font-sans font-bold transition-all border ${
-                              holidaysTypeFilter === f.key
-                                ? (darkMode ? 'bg-amber-600/20 border-amber-600 text-amber-400' : 'bg-amber-50 border-[#92400e] text-[#92400e]')
-                                : (darkMode ? 'bg-stone-900 border-stone-700 text-stone-400 hover:text-stone-200' : 'bg-stone-50 border-stone-200 text-stone-600 hover:text-stone-900')
-                            }`}
-                          >
-                            {f.icon} {f.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
                     {dailyHolidays.map((h, i) => (
                       <div
                         key={`${h.date}-${h.name}`}
