@@ -243,6 +243,21 @@ Ajouter les champs narratifs de la Fiche du Docte (`FairyLoreSection`) comme cha
 ### Questions en suspens (première question demain)
 Voir `.opencode/plans/add-lore-to-encyclopedia.md` pour le détail.
 
+---
+
+## 🏗️ Chantier — Performance Audit (31 Mai 2026)
+
+Un audit performance complet a été réalisé. Voir `.opencode/plans/perf-audit.md` pour le détail.
+
+**Résumé Top 5 :**
+1. `animate-fade-in*` — 124 occurrences inertes (undefined dans Tailwind)
+2. `CharacterContext` / `ForgeContext` — providers sans `useMemo` → re-rendus cascade
+3. 4 imports `* as LucideIcons` → 43 MB inutiles dans le bundle
+4. `CharacterList.js` — `commonCardProps` brise `React.memo` sur les cartes
+5. PixieAssistant — ailes à 20 Hz continu (batterie)
+
+**À attaquer en premier lors de la prochaine session.**
+
 1. **Périmètre** — Tout le narratif (apparence, taille, reproduction, habitat, caractère, personnages célèbres, note du Docte) OU seulement Note + Caractère ?
 2. **Migration** — Backfill des données de `FairyLore.js` vers Supabase OU partir de zéro ?
 3. **Source de vérité** — La création du personnage doit-elle lire la DB (remplace FairyLore.js) ou garder les deux indépendants ?
