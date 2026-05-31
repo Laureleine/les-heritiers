@@ -364,3 +364,19 @@
 ### Process à améliorer
 - **Vérifier `package.json` → `scripts.test` avant de lancer les tests** — Le nom de la commande (`jest`, `vitest`, `react-scripts test`, `next test`, etc.) est toujours dans les scripts. Ne jamais deviner.
 
+### Règle ajoutée (2e partie)
+
+61. **Ajout de `.in()` et `.neq()` au MockChain des tests Supabase** — Quand on ajoute un nouveau filtre Supabase dans un composant (ex: `.neq('type', 'saint')`), le MockChain utilisé par les tests doit aussi supporter cette méthode, sinon le test jette `TypeError: chain.neq is not a function`. Les tests existants qui n'exercent pas ce chemin passent mais laissent un `console.error` dans le bloc `catch`. Solution : ajouter la méthode dans `makeChain()` retournant `this`.
+
+### Patterns validés
+
+- **Seed multi-années par script unique** : `scripts/seed_all_holidays.js` peuple 16 années, 6 595 lignes dans `journal_holidays`. Insertion par lots de 100 pour éviter les dépassements PostgreSQL. Beaucoup plus efficace que 16 scripts séparés.
+- **Données des saints externalisées** : `scripts/saints_data.js` contient 365 entrées (nom, domaine, description) dans un fichier pur, séparé de la logique d'insertion. Facile à éditer ou corriger sans toucher au seed.
+- **Pâques calculé algorithmiquement** : Méthode de Gauss pour les 16 années, vérifié contre l'histoire (Pâques 1899 = 2 avril). Aucune table en dur.
+
+### Process à améliorer
+
+- **Bruit `console.error` persistant dans les mocks partagés** : Le test `useCerbere.test.js` logge des erreurs car le MockChain global ne supporte pas `.neq()` et `.in()`. Une solution serait un mock centralisé exporté depuis `src/test/supabaseMock.js` partagé par tous les fichiers de test. À faire dans une session future si le bruit devient gênant.
+- **Après création d'un script de seed** : l'exécuter immédiatement pour vérifier le résultat, puis ajouter un test qui compte les lignes en base (ou mocke le count) pour non-régression.
+- **280 tests verts (23 suites)** avant ET après — inchangés pour cette version.
+
