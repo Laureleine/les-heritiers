@@ -9,7 +9,7 @@
 import { SKILLS_ESPRIT } from '../components/competencesLibres/useCompetencesLibres';
 
 const POINTS_UTILES_TOTAUX  = 15;
-const POINTS_FUTILES_TOTAUX = 10;
+const POINTS_FUTILES_TOTAUX = 14;
 const MAX_ATOUTS             = 2;
 
 /**
