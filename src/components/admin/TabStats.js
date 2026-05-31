@@ -264,7 +264,7 @@ function TabStats() {
           {stats.activity.length > 0 && (
             <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-sm">
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-3 border-b border-stone-200">
-                <h3 className="font-bold text-stone-800 text-sm flex items-center gap-2"><Activity size={16} className="text-amber-600" /> Activit\u00e9 r\u00e9cente</h3>
+                <h3 className="font-bold text-stone-800 text-sm flex items-center gap-2"><Activity size={16} className="text-amber-600" /> Activité récente</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
