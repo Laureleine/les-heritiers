@@ -4,16 +4,16 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-## 🧠 Session Memory — 17.1.2 "Fêtes & Traditions" (31 Mai 2026)
+## 🧠 Session Memory — 17.2.1 "Les Saints du Calendrier" (31 Mai 2026)
 
-**Tests :** 95 passes / 10 suites / 0 échecs
+**Tests :** 280 passes / 23 suites / 0 échecs
 
 ### Dernières modifications
 
-1. **Nouvelle section "Fêtes & Traditions" dans la Gazette (17.1.2)** — Table Supabase `journal_holidays` avec 47 fêtes (chrétiennes fixes + mobiles depuis Pâques 1899 + celtiques Roue de l'An + gauloises).
-2. **Entrée "Fêtes & Traditions" dans le sommaire** — entre Chronique Historique et les pages, icône ✨.
-3. **Filtrage par date sélectionnée** — seules les fêtes du jour s'affichent (avec filtre type chrétien/celtique si 2+ fêtes le même jour).
-4. **Migration + seed automatisés** — `scripts/create_holidays_tables.js` et `scripts/seed_holidays_1899.js`.
+1. **365 saints du calendrier tridentin français (17.2.1)** — `scripts/saints_data.js` contient nom, domaine, description pour chaque jour de l'année. Insérés par année (×16) dans `journal_holidays`.
+2. **Seed multi-années** — `scripts/seed_all_holidays.js` passe de 752 à 6 595 entrées (saints × 16 ans + fêtes fixes + mobiles + celtiques).
+3. **Ajout de `.neq()` et `.in()` au MockChain des tests** — pour supporter les nouveaux filtres Supabase.
+4. **280 tests verts** — 23 suites, aucune régression.
 
 ### Prochaine session
 
