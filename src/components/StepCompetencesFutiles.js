@@ -9,7 +9,7 @@ import { getFutileCost } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
 
-const POINTS_TOTAUX = 10;
+const POINTS_TOTAUX = 14;
 
 export default function StepCompetencesFutiles() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
