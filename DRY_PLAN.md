@@ -4,15 +4,16 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-## 🧠 Session Memory — 17.1.1 "L'Article sans Page" (30 Mai 2026)
+## 🧠 Session Memory — 17.1.2 "Fêtes & Traditions" (31 Mai 2026)
 
-**Tests :** 272 passes / 18 suites / 0 échecs
+**Tests :** 95 passes / 10 suites / 0 échecs
 
 ### Dernières modifications
 
-1. **Suppression de l'affichage "Page X" dans la Gazette (17.1.1)** — Chaque article de la Gazette n'affiche plus son numéro de page en italique à droite du titre. Le badge et le titre restent alignés sur une seule ligne.
-2. **Titre réduit (text-base md:text-lg)** — Passage de 18→20px à 16→18px pour que le badge catégorie et le titre tiennent côte à côte sans wrapping intempestif.
-3. **Header simplifié** — Le `flex sm:flex-row justify-between` qui alignait titre à gauche et page à droite a été remplacé par un simple `mb-4`.
+1. **Nouvelle section "Fêtes & Traditions" dans la Gazette (17.1.2)** — Table Supabase `journal_holidays` avec 47 fêtes (chrétiennes fixes + mobiles depuis Pâques 1899 + celtiques Roue de l'An + gauloises).
+2. **Entrée "Fêtes & Traditions" dans le sommaire** — entre Chronique Historique et les pages, icône ✨.
+3. **Filtrage par date sélectionnée** — seules les fêtes du jour s'affichent (avec filtre type chrétien/celtique si 2+ fêtes le même jour).
+4. **Migration + seed automatisés** — `scripts/create_holidays_tables.js` et `scripts/seed_holidays_1899.js`.
 
 ### Prochaine session
 

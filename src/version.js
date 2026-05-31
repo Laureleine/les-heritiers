@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.1 - "Les Saints du Calendrier ✝️📅"',
+    date: '31 Mai 2026',
+    description: 'Le Petit Parisien s\'enrichit d\'un véritable almanach : les 365 saints du calendrier romain (nom, domaine, petite histoire) accompagnent désormais chaque jour de l\'année, de 1899 à 1914. En ouvrant Fêtes & Traditions, les Héritiers découvrent le saint du jour — Sylvestre, Catherine, Nicolas, Éloi, et tous leurs compagnons — exactement comme dans les almanachs de la Belle Époque.',
+    changes: [
+      '✝️ **365 saints du calendrier romain :** Chaque jour de l\'année a désormais son saint — prénoms, domaines de patronage (abbés, évêques, martyrs, vierges, docteurs), et une courte notice biographique. Calendrier complet et historiquement fidèle au rit romain français de 1899.',
+      '📅 **Almanach perpétuel :** Les saints sont générés pour chaque année de 1899 à 1914, y compris le 29 février pour les années bissextiles. Le saint du jour s\'affiche dans Fêtes & Traditions aux côtés des autres fêtes chrétiennes et celtiques.',
+      '🗄️ **6 595 entrées en base :** Le seed passe de 752 à 6 595 fêtes dans `journal_holidays` — un almanach complet peuplé en une seule commande.',
+      '🧪 **280 Sentinelles — toujours en faction, toujours vigilantes.',
+    ]
+  },
+  {
+  {
     version: '17.2.0 - "Le Ciel Révélé ☀️🌙"',
     date: '30 Mai 2026',
     description: 'La météo déterministe à 4 options et la lune cyclique laissent place à de véritables données astronomiques : lever/coucher du soleil calculé par la librairie Astral, phase lunaire réelle, et conditions météo historiques. Un nouveau script Python, une table dédiée en base, et une étape 7 dans le pipeline automatisent le tout. 38 jours déjà peuplés, les suivants le seront à la création.',

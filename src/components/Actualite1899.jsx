@@ -16,7 +16,7 @@ const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", 
 
 export default function Actualite1899({ onBack, userProfile }) {
   const [dateStr, setDateStr] = useState('1899-11-26');
-  const [activeMenu, setActiveMenu] = useState('meteo'); // meteo, lune, chronique, page1, page2, page3, page4, votes
+  const [activeMenu, setActiveMenu] = useState('meteo'); // meteo, lune, chronique, fetes, page1, page2, page3, page4, votes
   const [eventsData, setEventsData] = useState({});
   const [articles, setArticles] = useState([]);
   const [loadingArticles, setLoadingArticles] = useState(false);
@@ -26,6 +26,8 @@ export default function Actualite1899({ onBack, userProfile }) {
     return localStorage.getItem('journal-dark-mode') === 'enabled';
   });
   const [dailyInfo, setDailyInfo] = useState(null);
+  const [holidaysData, setHolidaysData] = useState([]);
+  const [holidaysTypeFilter, setHolidaysTypeFilter] = useState('all');
 
   // --- Dates pour lesquelles des articles existent en BDD ---
   const [availableArticleDates, setAvailableArticleDates] = useState(new Set());
@@ -120,6 +122,25 @@ export default function Actualite1899({ onBack, userProfile }) {
     };
     fetchDailyInfo();
   }, [dateStr]);
+
+  // --- Chargement des fêtes et traditions ---
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('journal_holidays')
+          .select('*')
+          .order('date', { ascending: true });
+
+        if (error) throw error;
+        setHolidaysData(data || []);
+      } catch (err) {
+        console.error("Erreur chargement fêtes :", err);
+        setHolidaysData([]);
+      }
+    };
+    fetchHolidays();
+  }, []);
 
   // --- Chargement des articles du jour depuis Supabase ---
   const fetchArticlesForDate = useCallback(async (targetDate) => {
@@ -341,6 +362,15 @@ export default function Actualite1899({ onBack, userProfile }) {
     };
   }, [eventsData, dateStr]);
 
+  // --- Fêtes du jour filtrées par date (et par type) ---
+  const dailyHolidays = useMemo(() => {
+    return holidaysData.filter(h => {
+      const matchesDate = h.date === dateStr;
+      const matchesType = holidaysTypeFilter === 'all' || h.type === holidaysTypeFilter;
+      return matchesDate && matchesType;
+    });
+  }, [holidaysData, dateStr, holidaysTypeFilter]);
+
   // --- Articles filtrés par page ---
   const filteredArticles = useMemo(() => {
     if (activeMenu.startsWith('page')) {
@@ -379,7 +409,7 @@ export default function Actualite1899({ onBack, userProfile }) {
   };
 
   return (
-    <div className={`min-h-screen font-serif transition-colors duration-300 ${darkMode ? 'bg-stone-900 text-stone-200' : 'bg-[#FAF6EE] text-[#2c1b12]'}`}>
+    <div className={`min-h-screen font-serif transition-colors duration-300 ${darkMode ? 'bg-stone-900 text-stone-200' : 'bg-[#FAF6EE] text-[#2c1b12]'} ${darkMode ? 'dark' : ''}`}>
       
       {/* ─── EN-TÊTE PRINCIPAL ─── */}
       <div className={`border-b ${darkMode ? 'border-stone-800 bg-stone-950/40' : 'border-[#92400e]/20 bg-[#F5EFEB]'} px-4 py-3 sticky top-0 z-40 shadow-sm backdrop-blur-md`}>
@@ -424,7 +454,7 @@ export default function Actualite1899({ onBack, userProfile }) {
         </header>
 
         {/* Vintage Datepicker Card (Ultra-Compact con Custom Calendar Popover) */}
-        <div className={`p-4 rounded-xl border mb-8 flex flex-col md:flex-row justify-between items-center gap-4 ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-[#92400e]/20 shadow-sm'}`}>
+        <div className={`p-4 rounded-xl border mb-8 flex flex-col md:flex-row justify-between items-center gap-4 ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-[#92400e]/20 shadow-sm'}`}>
           <div className="flex flex-wrap items-center gap-3 font-sans font-bold w-full md:w-auto">
             <span className="text-sm shrink-0">📅 DATE ARCHIVÉE (1899 - 1914) :</span>
             
@@ -444,7 +474,7 @@ export default function Actualite1899({ onBack, userProfile }) {
 
               {isCalendarOpen && (
                 <div className={`absolute top-full left-0 mt-2 p-4 rounded-xl border shadow-2xl z-50 w-72 font-sans transition-all border-[#92400e]/25 animate-fade-in ${
-                  darkMode ? 'bg-stone-950 border-stone-800 text-white' : 'bg-white border-stone-200 text-stone-900 shadow-amber-900/5'
+                  darkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-200 text-stone-900 shadow-amber-900/5'
                 }`}>
                   {/* Navigation mois et année */}
                   <div className="flex justify-between items-center mb-3 select-none">
@@ -515,7 +545,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                               ? 'bg-[#92400e] border-[#7c330c] text-white font-bold'
               : day.hasArticles
                 ? (darkMode ? 'bg-emerald-950/60 border-emerald-700 text-emerald-300 hover:bg-emerald-900/80 font-bold' : 'bg-emerald-200/70 border-emerald-400 text-emerald-800 hover:bg-emerald-300/80 font-bold')
-                                : 'border-transparent hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300'
+                                : 'border-transparent hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-200'
                           }`}
                         >
                           <span>{day.dayNum}</span>
@@ -562,7 +592,7 @@ export default function Actualite1899({ onBack, userProfile }) {
           
           {/* Sommaire Interactif (Colonne Gauche - w-1/4) */}
           <aside className="lg:col-span-3 flex flex-col gap-3 lg:sticky lg:top-24 lg:z-10 select-none">
-            <div className={`p-4 rounded-xl border ${darkMode ? 'bg-stone-950/20 border-stone-800' : 'bg-[#F2ECE6] border-[#2c1b12]/10'}`}>
+            <div className={`p-4 rounded-xl border ${darkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-[#F2ECE6] border-[#2c1b12]/10'}`}>
               <h2 className="text-base font-bold tracking-widest uppercase mb-4 border-b border-current pb-2 font-sans">
                 Sommaire
               </h2>
@@ -585,6 +615,12 @@ export default function Actualite1899({ onBack, userProfile }) {
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'chronique' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
                 >
                   <span className="text-base">🏛️</span> <span>Chronique Historique</span>
+                </button>
+                <button 
+                  onClick={() => setActiveMenu('fetes')} 
+                  className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'fetes' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
+                >
+                  <span className="text-base">✨</span> <span>Fêtes & Traditions</span>
                 </button>
                 
                 <hr className={`my-2 ${darkMode ? 'border-stone-700' : 'border-stone-200'}`} />
@@ -634,7 +670,7 @@ export default function Actualite1899({ onBack, userProfile }) {
             
             {/* 🌤️ VIEW 1: MÉTÉO */}
             {activeMenu === 'meteo' && (
-              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-stone-200 shadow-sm'}`}>
+              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 {dailyInfo ? (
                   <>
                     <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
@@ -654,20 +690,20 @@ export default function Actualite1899({ onBack, userProfile }) {
                         { label: "Lever du soleil", val: dailyInfo.sunrise, border: 'border-orange-600/30' },
                         { label: "Coucher du soleil", val: dailyInfo.sunset, border: 'border-red-600/30' },
                       ].map((wInfo, i) => (
-                        <div key={i} className={`p-3 rounded-xl border bg-stone-50 dark:bg-stone-900/60 ${wInfo.border}`}>
+                        <div key={i} className={`p-3 rounded-xl border bg-stone-50 dark:bg-stone-900 ${wInfo.border}`}>
                           <h4 className="text-[10px] uppercase font-sans font-bold opacity-60 tracking-wider mb-1">{wInfo.label}</h4>
                           <p className="text-sm font-bold font-serif">{wInfo.val}</p>
                         </div>
                       ))}
                     </div>
 
-                    <div className={`p-4 rounded-xl border text-sm md:text-base leading-relaxed italic ${darkMode ? 'bg-stone-900 border-stone-800' : 'bg-amber-50/50 border-[#92400e]/10'}`}>
+                      <div className={`p-4 rounded-xl border text-sm md:text-base leading-relaxed italic ${darkMode ? 'bg-stone-900 border-stone-700' : 'bg-amber-50/50 border-[#92400e]/10'}`}>
                       <strong>Chronique Météorologique Réduite :</strong>
-                      <p className="mt-2 text-stone-700 dark:text-stone-300">{dailyInfo.weather_desc}</p>
+                      <p className="mt-2 text-stone-700 dark:text-stone-200">{dailyInfo.weather_desc}</p>
                     </div>
                   </>
                 ) : (
-                  <div className="text-center py-12 text-stone-500">
+                  <div className="text-center py-12 text-stone-500 dark:text-stone-400">
                     <p className="text-4xl mb-2">🌤️</p>
                     <p className="font-sans text-sm">Données météo non disponibles pour cette date</p>
                   </div>
@@ -677,7 +713,7 @@ export default function Actualite1899({ onBack, userProfile }) {
 
             {/* 🌙 VIEW 2: LUNE */}
             {activeMenu === 'lune' && (
-              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-stone-200 shadow-sm'}`}>
+              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 {dailyInfo ? (
                   <>
                     <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
@@ -694,20 +730,20 @@ export default function Actualite1899({ onBack, userProfile }) {
                         { label: "Surface Visible", val: dailyInfo.moon_visible },
                         { label: "Aspect Céleste", val: dailyInfo.moon_aspect }
                       ].map((mInfo, i) => (
-                        <div key={i} className="p-3 rounded-xl border bg-stone-50 dark:bg-stone-900/60 border-amber-600/30">
+                        <div key={i} className="p-3 rounded-xl border bg-stone-50 dark:bg-stone-900 border-amber-600/30">
                           <h4 className="text-[10px] uppercase font-sans font-bold opacity-60 tracking-wider mb-1">{mInfo.label}</h4>
                           <p className="text-sm font-bold font-serif">{mInfo.val}</p>
                         </div>
                       ))}
                     </div>
 
-                    <div className={`p-4 rounded-xl border text-sm md:text-base leading-relaxed italic ${darkMode ? 'bg-stone-900 border-stone-800' : 'bg-amber-50/50 border-[#92400e]/10'}`}>
+                    <div className={`p-4 rounded-xl border text-sm md:text-base leading-relaxed italic ${darkMode ? 'bg-stone-900 border-stone-700' : 'bg-amber-50/50 border-[#92400e]/10'}`}>
                       <strong>Chronique Lunaire & Influence :</strong>
-                      <p className="mt-2 text-stone-700 dark:text-stone-300">{dailyInfo.moon_desc}</p>
+                      <p className="mt-2 text-stone-700 dark:text-stone-200">{dailyInfo.moon_desc}</p>
                     </div>
                   </>
                 ) : (
-                  <div className="text-center py-12 text-stone-500">
+                  <div className="text-center py-12 text-stone-500 dark:text-stone-400">
                     <p className="text-4xl mb-2">🌙</p>
                     <p className="font-sans text-sm">Données lunaires non disponibles pour cette date</p>
                   </div>
@@ -717,7 +753,7 @@ export default function Actualite1899({ onBack, userProfile }) {
 
             {/* 🏛️ VIEW 3: CHRONIQUE TIMELINE */}
             {activeMenu === 'chronique' && (
-              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-stone-200 shadow-sm'}`}>
+              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 <h2 className="text-2xl font-bold font-serif mb-6 border-b border-current pb-4 flex items-center gap-2">
                   <span>🏛️</span> Chronique Historique du Jour
                 </h2>
@@ -729,13 +765,13 @@ export default function Actualite1899({ onBack, userProfile }) {
                     { cat: "Actualité Mondiale", icon: "🌍", title: "Événements du Globe", desc: dailyEvents.monde }
                   ].map((ev, i) => (
                     <div key={i} className="relative group animate-fade-in">
-                      <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-amber-600 border-2 border-white dark:border-stone-900 group-hover:scale-125 transition-transform" />
-                      <div className={`p-4 rounded-xl border transition-all ${darkMode ? 'bg-stone-900 border-stone-700 hover:bg-stone-800' : 'bg-stone-50 border-stone-200 hover:bg-stone-100 shadow-sm'}`}>
+                      <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-amber-600 border-2 border-white dark:border-stone-800 group-hover:scale-125 transition-transform" />
+                      <div className={`p-4 rounded-xl border transition-all ${darkMode ? 'bg-stone-900 border-stone-600 hover:bg-stone-800' : 'bg-stone-50 border-stone-200 hover:bg-stone-100 shadow-sm'}`}>
                         <span className="text-[10px] font-sans font-bold text-[#92400e] dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5 mb-1">
                           <span>{ev.icon}</span> {ev.cat}
                         </span>
                         <h3 className="text-base font-bold font-serif mb-2 text-stone-900 dark:text-stone-100">{ev.title}</h3>
-                        <p className="text-sm md:text-base leading-relaxed text-stone-600 dark:text-stone-300 italic">
+                         <p className="text-sm md:text-base leading-relaxed text-stone-600 dark:text-stone-200 italic">
                           {ev.desc}
                         </p>
                       </div>
@@ -745,7 +781,108 @@ export default function Actualite1899({ onBack, userProfile }) {
               </section>
             )}
 
-            {/* 📄 VIEW 4: PAGES DE JOURNAL DYNAMIQUES */}
+            {/* ✨ VIEW 4: FÊTES & TRADITIONS */}
+            {activeMenu === 'fetes' && (
+              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
+                  <span className="text-4xl">✨</span>
+                  <div>
+                    <h2 className="text-2xl font-bold font-serif">Fêtes & Traditions</h2>
+                    <p className="text-xs font-sans italic opacity-75">
+                      Fêtes du {dateMeta.dayOfWeek} {dateMeta.dayNum} {dateMeta.monthName} {dateMeta.year}
+                    </p>
+                  </div>
+                </div>
+
+                {dailyHolidays.length === 0 ? (
+                  <div className="text-center py-16 text-stone-500 dark:text-stone-400">
+                    <p className="text-4xl mb-2">📅</p>
+                    <p className="font-sans text-sm">Aucune fête ou tradition associée à cette date</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {/* Filtres par type — utiles quand plusieurs fêtes le même jour */}
+                    {dailyHolidays.length > 1 && (
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {[
+                          { key: 'all', label: 'Toutes', icon: '📅' },
+                          { key: 'chrétien', label: 'Chrétiennes', icon: '✝️' },
+                          { key: 'celtique', label: 'Celtiques', icon: '🌿' },
+                        ].map(f => (
+                          <button
+                            key={f.key}
+                            onClick={() => setHolidaysTypeFilter(f.key)}
+                            className={`px-4 py-2 rounded-lg text-xs font-sans font-bold transition-all border ${
+                              holidaysTypeFilter === f.key
+                                ? (darkMode ? 'bg-amber-600/20 border-amber-600 text-amber-400' : 'bg-amber-50 border-[#92400e] text-[#92400e]')
+                                : (darkMode ? 'bg-stone-900 border-stone-700 text-stone-400 hover:text-stone-200' : 'bg-stone-50 border-stone-200 text-stone-600 hover:text-stone-900')
+                            }`}
+                          >
+                            {f.icon} {f.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {dailyHolidays.map((h, i) => (
+                      <div
+                        key={`${h.date}-${h.name}`}
+                        className={`p-4 rounded-xl border transition-all animate-fade-in ${
+                          darkMode
+                            ? 'bg-stone-900 border-stone-700 hover:border-stone-600'
+                            : 'bg-stone-50 border-stone-200 hover:border-stone-300'
+                        }`}
+                      >
+                        <div className="flex flex-col md:flex-row md:items-start gap-3">
+                          <div className="shrink-0 text-center md:text-left">
+                            <p className="text-xs font-sans font-bold uppercase tracking-widest text-[#92400e] dark:text-amber-400">
+                              {new Date(h.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long' })}
+                            </p>
+                            <p className="text-lg font-bold font-serif text-stone-900 dark:text-white leading-tight">
+                              {new Date(h.date + 'T12:00:00').getDate()} {MONTHS_FR[h.date.split('-')[1]]}
+                            </p>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <span className={`inline-block text-[10px] font-sans font-bold uppercase tracking-widest px-2 py-0.5 rounded ${
+                                h.type === 'celtique'
+                                  ? 'bg-emerald-600/10 text-emerald-800 dark:text-emerald-400'
+                                  : 'bg-amber-600/10 text-amber-800 dark:text-amber-400'
+                              }`}>
+                                {h.type === 'celtique' ? '🌿 Celtique' : '✝️ Chrétien'}
+                              </span>
+                              <h3 className="text-base md:text-lg font-bold font-serif text-stone-950 dark:text-white leading-tight">
+                                {h.name}
+                              </h3>
+                            </div>
+                            <p className="text-sm leading-relaxed text-stone-600 dark:text-stone-300 mb-3">
+                              {h.description}
+                            </p>
+                            {h.traditions && (
+                              <div className={`p-3 rounded-lg border text-xs leading-relaxed ${
+                                darkMode ? 'bg-stone-800 border-stone-700 text-stone-300' : 'bg-[#FAF6EE] border-stone-200/60 text-stone-600'
+                              }`}>
+                                <span className="font-bold text-[#92400e] dark:text-amber-400 text-[10px] uppercase tracking-widest font-sans block mb-1">
+                                  Traditions associées
+                                </span>
+                                {h.traditions}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <p className="mt-8 text-[10px] font-sans italic opacity-50 text-center">
+                  Fêtes chrétiennes (fixes, mobiles, saints du jour) et traditions
+                  celtiques de la Roue de l'An (insulaires et gauloises), 1899-1914.
+                </p>
+              </section>
+            )}
+
+            {/* 📄 VIEW 5: PAGES DE JOURNAL DYNAMIQUES */}
             {activeMenu.startsWith('page') && (
               <section className="animate-fade-in">
                 
@@ -756,15 +893,15 @@ export default function Actualite1899({ onBack, userProfile }) {
                   </div>
                 ) : !journalAvailable ? (
                   // Retro compiler warning card
-                  <div className={`p-8 rounded-2xl border text-center ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-stone-200 shadow-sm'}`}>
+                  <div className={`p-8 rounded-2xl border text-center ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                     <span className="text-5xl block mb-4 select-none">📰</span>
                     <h2 className="text-2xl font-bold font-serif text-[#92400e] dark:text-amber-400 mb-2">Édition non numérisée</h2>
-                    <p className="text-stone-600 dark:text-stone-300 italic text-sm md:text-base max-w-lg mx-auto mb-6">
+                     <p className="text-stone-600 dark:text-stone-200 italic text-sm md:text-base max-w-lg mx-auto mb-6">
                       L'édition intégrale du journal <strong>Le Petit Parisien</strong> pour le <span className="font-bold underline">{dateMeta.dayNum} {dateMeta.monthName} {dateMeta.year}</span> n'a pas encore été numérisée et restaurée en base de données par notre archiviste mécanique.
                     </p>
                     
                     {hasAdminRights ? (
-                      <div className={`p-5 rounded-xl border text-left max-w-xl mx-auto font-sans text-xs ${darkMode ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-amber-50/50 border-[#92400e]/15 text-[#2c1b12]'}`}>
+                      <div className={`p-5 rounded-xl border text-left max-w-xl mx-auto font-sans text-xs ${darkMode ? 'bg-stone-900 border-stone-600 text-stone-200' : 'bg-amber-50/50 border-[#92400e]/15 text-[#2c1b12]'}`}>
                         <strong className="text-sm font-serif text-[#92400e] dark:text-amber-400 block mb-2 flex items-center gap-1.5">
                           <Bug size={16} /> 👉 Comment numériser ce jour ?
                         </strong>
@@ -782,7 +919,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                       </div>
                     ) : (
                       <div className="max-w-md mx-auto">
-                        <p className="text-sm mb-4 text-stone-600 dark:text-stone-300">
+                        <p className="text-sm mb-4 text-stone-600 dark:text-stone-200">
                           Vous aimeriez lire l'actualité de ce jour-là ? Proposez à notre archiviste mécanique de s'y atteler en votant pour cette date !
                         </p>
                         <button
@@ -790,7 +927,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                           disabled={hasVoted}
                           className={`w-full py-3 px-6 rounded-xl font-sans font-bold text-sm transition-all border shadow-sm ${
                             hasVoted
-                              ? 'bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-500 border-transparent cursor-not-allowed'
+                              ? 'bg-stone-200 dark:bg-stone-700 text-stone-400 dark:text-stone-300 border-transparent cursor-not-allowed'
                               : 'bg-amber-600 hover:bg-amber-700 text-white border-amber-700 hover:scale-[1.02] active:scale-[0.98]'
                           }`}
                         >
@@ -804,7 +941,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                     </p>
                   </div>
                 ) : filteredArticles.length === 0 ? (
-                  <div className={`py-20 text-center font-serif italic ${darkMode ? 'text-stone-500' : 'text-stone-400'}`}>
+                  <div className={`py-20 text-center font-serif italic ${darkMode ? 'text-stone-300' : 'text-stone-400'}`}>
                     Aucun article substantiel disponible pour cette page.
                   </div>
                 ) : (
@@ -821,7 +958,7 @@ export default function Actualite1899({ onBack, userProfile }) {
                       return (
                         <article 
                           key={article.id}
-                          className={`p-6 rounded-2xl border transition-all ${darkMode ? 'bg-stone-950/40 border-stone-800 hover:border-stone-700' : 'bg-white border-stone-200 hover:border-stone-300 shadow-sm hover:shadow-md'}`}
+                          className={`p-6 rounded-2xl border transition-all ${darkMode ? 'bg-stone-800 border-stone-700 hover:border-stone-600' : 'bg-white border-stone-200 hover:border-stone-300 shadow-sm hover:shadow-md'}`}
                         >
                           <header className="mb-4 select-none">
                             <div className="flex flex-wrap items-center gap-2">
@@ -835,14 +972,14 @@ export default function Actualite1899({ onBack, userProfile }) {
                           </header>
 
                           {article.summary?.replace(/^\/\/\s*(Date|Restauration\s+Pass)[^]*?(?:\n|$)/gm, '').replace(/^\/\/\s*Date:\s*\S+\s*\/\/\s*Restauration\s+Pass:\s*\d+[.\s]*/i, '').replace(/^\/\/\s*Date:\s*\S+\s*/i, '').trim() && (
-                            <div className={`p-4 rounded-xl border mb-4 font-sans text-xs md:text-sm leading-relaxed ${darkMode ? 'bg-stone-900/60 border-stone-700 text-stone-200' : 'bg-[#FAF6EE] border-stone-200/60 text-stone-700'}`}>
+                            <div className={`p-4 rounded-xl border mb-4 font-sans text-xs md:text-sm leading-relaxed ${darkMode ? 'bg-stone-800 border-stone-600 text-stone-100' : 'bg-[#FAF6EE] border-stone-200/60 text-stone-700'}`}>
                               <p className="italic">{article.summary.replace(/^\/\/\s*(Date|Restauration\s+Pass)[^]*?(?:\n|$)/gm, '').replace(/^\/\/\s*Date:\s*\S+\s*\/\/\s*Restauration\s+Pass:\s*\d+[.\s]*/i, '').replace(/^\/\/\s*Date:\s*\S+\s*/i, '').trim()}</p>
                             </div>
                           )}
 
                           {/* Détails paragraphe pliables */}
                           {isExpanded && (
-                            <div className="mt-4 border-t border-dashed border-stone-300 dark:border-stone-700 pt-4 leading-relaxed text-sm md:text-base text-stone-800 dark:text-stone-200 flex flex-col gap-4 animate-fade-in font-serif font-normal">
+                            <div className="mt-4 border-t border-dashed border-stone-300 dark:border-stone-600 pt-4 leading-relaxed text-sm md:text-base text-stone-800 dark:text-stone-100 flex flex-col gap-4 animate-fade-in font-serif font-normal">
                               {article.paragraphs.map((p, idx) => (
                                 <p key={idx}>{p}</p>
                               ))}
@@ -851,7 +988,7 @@ export default function Actualite1899({ onBack, userProfile }) {
 
                           <button 
                             onClick={() => toggleArticleCollapse(article.id)}
-                            className={`w-full mt-4 py-2 bg-stone-50 hover:bg-stone-100 dark:bg-stone-900/60 dark:hover:bg-stone-800 border rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${darkMode ? 'border-stone-700 text-stone-200' : 'border-stone-200 text-stone-700'}`}
+                            className={`w-full mt-4 py-2 bg-stone-50 hover:bg-stone-100 dark:bg-stone-900 dark:hover:bg-stone-800 border rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${darkMode ? 'border-stone-600 text-stone-200' : 'border-stone-200 text-stone-700'}`}
                           >
                             {isExpanded ? (
                               <>
@@ -873,9 +1010,9 @@ export default function Actualite1899({ onBack, userProfile }) {
               </section>
             )}
 
-            {/* 🗳️ VIEW 5: VOTES LIST (ADMIN ONLY) */}
+            {/* 🗳️ VIEW 6: VOTES LIST (ADMIN ONLY) */}
             {activeMenu === 'votes' && hasAdminRights && (
-              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-950/40 border-stone-800' : 'bg-white border-stone-200 shadow-sm'}`}>
+              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 <h2 className="text-2xl font-bold font-serif mb-4 border-b border-current pb-3 flex items-center gap-2">
                   <span>🗳️</span> Demandes de Numérisation des Joueurs
                 </h2>
@@ -895,13 +1032,13 @@ export default function Actualite1899({ onBack, userProfile }) {
                   <div className="overflow-x-auto">
                     <table className={`w-full text-left border-collapse text-sm ${darkMode ? 'text-stone-300' : 'text-stone-800'}`}>
                       <thead>
-                        <tr className={`border-b font-sans font-bold uppercase text-xs ${darkMode ? 'border-stone-800 text-stone-400' : 'border-stone-200 text-stone-600'}`}>
+                        <tr className={`border-b font-sans font-bold uppercase text-xs ${darkMode ? 'border-stone-700 text-stone-400' : 'border-stone-200 text-stone-600'}`}>
                           <th className="py-3 px-4">Date</th>
                           <th className="py-3 px-4 text-center">Votes</th>
                           <th className="py-3 px-4">Commande de Numérisation</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-stone-200/50 dark:divide-stone-800/50">
+                      <tbody className="divide-y divide-stone-200/50 dark:divide-stone-700/50">
                         {votesList.map((vote) => {
                           const dateObj = new Date(vote.date);
                           const formattedDate = `${dateObj.getDate()} ${MONTHS_FR[String(dateObj.getMonth() + 1).padStart(2, '0')]} 1899`;
