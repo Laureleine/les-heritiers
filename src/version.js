@@ -13,7 +13,6 @@ export const VERSION_HISTORY = [
     ]
   },
   {
-  {
     version: '17.2.0 - "Le Ciel Révélé ☀️🌙"',
     date: '30 Mai 2026',
     description: 'La météo déterministe à 4 options et la lune cyclique laissent place à de véritables données astronomiques : lever/coucher du soleil calculé par la librairie Astral, phase lunaire réelle, et conditions météo historiques. Un nouveau script Python, une table dédiée en base, et une étape 7 dans le pipeline automatisent le tout. 38 jours déjà peuplés, les suivants le seront à la création.',
