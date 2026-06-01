@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../config/supabase';
-import { Search, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award } from '../../config/icons';
+import { iconMap, Search, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award, Key } from '../../config/icons';
 import { showInAppNotification } from '../../utils/SystemeServices';
-import * as LucideIcons from 'lucide-react';
 
 // ============================================================================
 // --- 1. ONGLET : GESTION DES HÉRITIERS (Ancien AdminUserList) ---
@@ -297,7 +296,7 @@ function TabUsers({ session }) {
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     {isSuperAdmin && <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full border border-amber-200"><Crown size={12} /> Super Admin</span>}
                                                     {isGardien && <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full border border-blue-200"><Shield size={12} /> Gardien du Savoir</span>}
-                                                    {u.is_initiated && <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full border border-emerald-200"><LucideIcons.Key size={12} /> Initié</span>}
+                                                    {u.is_initiated && <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full border border-emerald-200"><Key size={12} /> Initié</span>}
                                                     {!isSuperAdmin && !isGardien && <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full border border-gray-200"><User size={12} /> Héritier (Joueur)</span>}
                                                 </div>
 
@@ -308,7 +307,7 @@ function TabUsers({ session }) {
                                                             if (!badgeDef) return null;
 
                                                             const isLegacy = typeof badgeDef === 'string';
-                                                            const DynamicIcon = !isLegacy && badgeDef.icon_name && LucideIcons[badgeDef.icon_name] ? LucideIcons[badgeDef.icon_name] : null;
+                                                            const DynamicIcon = !isLegacy && badgeDef.icon_name && iconMap[badgeDef.icon_name] ? iconMap[badgeDef.icon_name] : null;
 
                                                             return (
                                                                 <span key={badgeId} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold shadow-sm ${isLegacy ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : badgeDef.color_classes}`}>
@@ -353,7 +352,7 @@ function TabUsers({ session }) {
                                                                 className={`text-xs px-3 py-1.5 rounded font-bold border transition-colors flex items-center justify-center gap-1.5 shadow-sm ${u.is_initiated ? 'bg-white text-emerald-700 border-emerald-300 hover:bg-emerald-50' : 'bg-stone-100 text-stone-500 border-stone-300 hover:bg-stone-200'}`}
                                                                 title={u.is_initiated ? 'Révoquer l\'Initié' : 'Initier'}
                                                             >
-                                                                <LucideIcons.Key size={14} /> <span className="hidden lg:inline">{u.is_initiated ? 'Révoquer' : 'Initier'}</span>
+                                                                <Key size={14} /> <span className="hidden lg:inline">{u.is_initiated ? 'Révoquer' : 'Initier'}</span>
                                                             </button>
                                                         </div>
                                                     )}
@@ -377,7 +376,7 @@ function TabUsers({ session }) {
                                                                     <div className="space-y-1 max-h-48 overflow-y-auto custom-scrollbar pr-1">
                                                                         {(dbBadges?.length ? dbBadges : typeof allBadgesToAssign !== 'undefined' ? allBadgesToAssign : []).map(badge => {
                                                                             const hasBadge = userBadges.includes(badge.id);
-                                                                            const bIcon = badge.icon_name && LucideIcons[badge.icon_name] ? LucideIcons[badge.icon_name] : LucideIcons.Award;
+                                                                            const bIcon = badge.icon_name && iconMap[badge.icon_name] ? iconMap[badge.icon_name] : Award;
                                                                             const IconComp = bIcon;
                                                                             return (
                                                                                 <button

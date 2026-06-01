@@ -1,6 +1,6 @@
 // 1
 import React from 'react';
-import * as LucideIcons from 'lucide-react';
+import { iconMap, HelpCircle, Hammer, Save, Edit, Trash2 } from '../../config/icons';
 import { useForgeTitres } from '../../hooks/useForgeTitres';
 import ConfirmModal from '../ConfirmModal';
 
@@ -18,7 +18,7 @@ export default function TabForgeTitres({ userProfile }) {
     cancelDelete
   } = useForgeTitres(userProfile);
 
-  const PreviewIcon = LucideIcons[form.icon_name] || LucideIcons.HelpCircle;
+  const PreviewIcon = iconMap[form.icon_name] || HelpCircle;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
@@ -27,7 +27,7 @@ export default function TabForgeTitres({ userProfile }) {
       {isSuperAdmin && (
         <div className="bg-white p-6 rounded-xl border border-amber-200 shadow-sm flex flex-col gap-4">
           <h3 className="font-serif font-bold text-amber-900 flex items-center gap-2 border-b border-amber-100 pb-3">
-            <LucideIcons.Hammer size={18} /> L'Enclume du Façonneur
+            <Hammer size={18} /> L'Enclume du Façonneur
           </h3>
 
           <div>
@@ -65,7 +65,7 @@ export default function TabForgeTitres({ userProfile }) {
           </div>
 
           <button onClick={handleSave} className="mt-2 w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-md transition-colors flex justify-center items-center gap-2">
-            <LucideIcons.Save size={18} /> Forger le Titre
+            <Save size={18} /> Forger le Titre
           </button>
         </div>
       )}
@@ -78,7 +78,7 @@ export default function TabForgeTitres({ userProfile }) {
           <div className="p-8 text-center text-stone-500 bg-white rounded-xl border border-stone-200 shadow-sm">La vitrine est vide pour le moment.</div>
         ) : (
           badges.map(b => {
-            const BIcon = LucideIcons[b.icon_name] || LucideIcons.HelpCircle;
+            const BIcon = iconMap[b.icon_name] || HelpCircle;
             return (
               <div key={b.id} className="bg-white p-4 rounded-xl border border-stone-200 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 shadow-sm hover:shadow-md transition-shadow group">
                 <div>
@@ -92,8 +92,8 @@ export default function TabForgeTitres({ userProfile }) {
                 {/* ✨ BOUTONS D'ACTION - RÉSERVÉS AU SUPER ADMIN */}
                 {isSuperAdmin && (
                   <div className="flex gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => setForm(b)} className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 rounded-lg transition-colors shadow-sm" title="Modifier le design"><LucideIcons.Edit size={16}/></button>
-                    <button onClick={() => triggerDelete(b.id)} className="p-2 text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-800 rounded-lg transition-colors shadow-sm" title="Détruire le titre"><LucideIcons.Trash2 size={16}/></button>
+                    <button onClick={() => setForm(b)} className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 rounded-lg transition-colors shadow-sm" title="Modifier le design"><Edit size={16}/></button>
+                    <button onClick={() => triggerDelete(b.id)} className="p-2 text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-800 rounded-lg transition-colors shadow-sm" title="Détruire le titre"><Trash2 size={16}/></button>
                   </div>
                 )}
               </div>
