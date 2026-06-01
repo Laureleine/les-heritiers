@@ -2,13 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
-    version: '17.2.3 - "Le Faux-Semblant à sa Place 🎭🔧"',
+    version: '17.2.4 - "Le Journal sans An 🗞️✂️"',
     date: '1 Juin 2026',
-    description: 'Le Faux-Semblant enfoui trônait parmi les fées traditionnelles — le voici à sa place, dans sa propre carte au-dessus du sélecteur. Et dans la Forge, les images trop lourdes ou les réseaux trop lents ne bloquent plus le bouton : un garde-temps de 30 secondes protège l\'envoi, et un message d\'erreur clair prévient l\'Héritier quand la transmission échoue.',
+    description: 'Le Petit Parisien perd son millésime — le composant Actualite1899 devient simplement Actualite. Le Faux-Semblant enfoui était commité partiellement : ses capacités, ses 19 points de caractéristiques, son bonus de tricherie et son enregistrement encyclopedia sont maintenant au complet. Les tests Supabase ont leur MockChain unifiée, et le mode sombre peut être activé par classe CSS — prêt pour une future bascule nuit.',
     changes: [
-      '🎭 **Faux-Semblant enfui remonté :** Le choix du Faux-Semblant enfoui ne se perd plus parmi les fées traditionnelles. Il apparaît désormais dans sa propre carte distincte, au-dessus du sélecteur de type de fée, dans la même colonne — visible au premier coup d\'œil, sans confusion possible.',
-      '🔧 **Forge — Timeout de 30s sur les images :** L\'envoi d\'une capture d\'écran dans la Forge est désormais protégé par un AbortController qui interrompt la transmission après 30 secondes. Fini le bouton bloqué en "Transmission..." sans aucune réaction.',
-      '🛡️ **Forge — Filet de sécurité try/catch :** Le formulaire de signalement est entouré d\'un try/catch qui rattrape toute erreur inattendue et affiche une notification à l\'Héritier, même si l\'échec vient d\'un endroit non couvert auparavant.',
+      '✂️ **Actualite1899 → Actualite :** Le composant de la Gazette perd son millésime. Fichier renommé, imports, tests, et routage mis à jour — zéro occurrence de l\'ancien nom dans le code source.',
+      '🎭 **Faux-Semblant enfoui au complet :** Capacités, caractéristiques (19 points au lieu de 10), bonus de Tricherie pour Féérie < 3, et enregistrement encyclopedia — tous les fichiers de support enfoui précédemment oubliés sont maintenant commités.',
+      '🧪 **MockChain unifiée dans les tests :** Le mock Supabase utilise désormais une classe MockChain complète avec toutes les méthodes (neq, in, limit, gte, lte...) — fin des TypeError silencieux dans les tests.',
+      '🌙 **darkMode: class dans Tailwind :** Le mode sombre peut être activé par la classe CSS `dark` sur un élément parent, au lieu du media query automatique — prêt pour le bouton de bascule.',
       '🧪 **280 Sentinelles — toujours en faction.',
     ]
   },
