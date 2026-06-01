@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.6 - "La File d\'Attente Domptée 🐉📦"',
+    date: '1 Juin 2026',
+    description: 'Le Grimoire cesse de supplier Supabase à chaque contact ajouté : la file de synchronisation parle désormais en un seul échange, et les missives du Télégraphe ne s\'effondrent plus sur les canaux bavards. 280 Sentinelles en faction.',
+    changes: [
+      '🐉 **N+1 terrassé dans la synchronisation du Grimoire :** `flushContactsToGrimoire` exécutait 2 requêtes `SELECT…INSERT` ou `SELECT…DELETE` par contact — une par item dans la file d\'attente. Ajouter 5 contacts à la fois déclenchait 10 requêtes. Désormais : un seul `SELECT … IN(noms)` pour détecter les doublons, un seul `INSERT` en rafale pour les ajouts, et une requête par type pour les suppressions — 2 à 4 requêtes au total, quel que soit le nombre d\'actions.',
+      '📦 **100+ missives par canal ne font plus tomber le Télégraphe :** La requête `.in(\'message_id\', ids)` sur `chat_message_reads` passait tous les IDs en une seule clause URL. Pour un canal avec 500 messages, l\'URL dépassait la limite PostgREST et la requête échouait silencieusement. Les IDs sont désormais découpés en paquets de 100 et requêtés en parallèle via `Promise.all` — canaux bavards, canaux chargés d\'histoire, le Télégraphe ne bronche plus.',
+      '🧪 **280 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.2.5 - "Le Souffle du Forgeron 🔥⚡"',
     date: '1 Juin 2026',
     description: 'Le Grimoire prend un bain de performance : animations réelles (plus de classes Tailwind fantômes), providers stabilisés (fin des re-rendus en cascade), 43 Mo de bundle envolés (imports wildcard Lucide remplacés), et le battement d\'ailes de Pixie ralenti pour ne plus vider les batteries. 280 Sentinelles veillent, aucune régression.',

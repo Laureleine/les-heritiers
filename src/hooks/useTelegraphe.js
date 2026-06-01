@@ -4,6 +4,11 @@ import { supabase } from '../config/supabase';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import { isAdmin as checkIsAdmin } from '../utils/authRoles';
 
+const chunk = (arr, size) =>
+  Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, i * size + size)
+  );
+
 export function useTelegraphe(session, userProfile) {
   const [channels, setChannels] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -170,10 +175,14 @@ export function useTelegraphe(session, userProfile) {
               .then(); 
           }
 
-          const { data: readsData } = await supabase
-            .from('chat_message_reads')
-            .select('message_id, user_id')
-            .in('message_id', data.map(m => m.id));
+          const ids = data.map(m => m.id);
+          const chunks = chunk(ids, 100);
+          const results = await Promise.all(
+            chunks.map(c =>
+              supabase.from('chat_message_reads').select('message_id, user_id').in('message_id', c)
+            )
+          );
+          const readsData = results.flatMap(r => r.data || []);
 
           const readsMap = {};
           readsData?.forEach(r => {
