@@ -33,7 +33,7 @@ jest.mock('../../utils/authRoles', () => ({
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { supabase } from '../../config/supabase';
-import Actualite1899 from '../Actualite1899';
+import Actualite from '../Actualite';
 
 function makeChain(returnData = []) {
   const chain = { then: undefined };
@@ -62,10 +62,10 @@ beforeEach(() => {
   supabase.from.mockReturnValue(makeChain());
 });
 
-describe('Actualite1899', () => {
+describe('Actualite', () => {
   it('rend sans planter', async () => {
     const { container } = render(
-      <Actualite1899 onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
+      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
     );
     await waitFor(() => {
       expect(container).toBeTruthy();
@@ -74,7 +74,7 @@ describe('Actualite1899', () => {
 
   it('affiche le titre Le Petit Parisien', async () => {
     const { findAllByText } = render(
-      <Actualite1899 onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
+      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
     );
     const titles = await findAllByText('Le Petit Parisien');
     expect(titles.length).toBeGreaterThanOrEqual(1);
@@ -82,7 +82,7 @@ describe('Actualite1899', () => {
 
   it('affiche le bouton retour', async () => {
     const { findByText } = render(
-      <Actualite1899 onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
+      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
     );
     const btn = await findByText("Retour à l'accueil");
     expect(btn).toBeTruthy();
@@ -90,7 +90,7 @@ describe('Actualite1899', () => {
 
   it('affiche le bouton de bascule mode nuit', async () => {
     const { container } = render(
-      <Actualite1899 onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
+      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
     );
     await waitFor(() => {
       const toggle = container.querySelector('button[title*="mode sombre"]');
@@ -100,7 +100,7 @@ describe('Actualite1899', () => {
 
   it('rend la section sommaire avec les entrées attendues', async () => {
     const { findByText } = render(
-      <Actualite1899 onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
+      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
     );
     expect(await findByText('Sommaire')).toBeTruthy();
     expect(await findByText('Météo de Paris')).toBeTruthy();
@@ -112,7 +112,7 @@ describe('Actualite1899', () => {
 
   it('passe en mode nuit au clic sur le toggle et persiste dans localStorage', async () => {
     const { container } = render(
-      <Actualite1899 onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
+      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
     );
     await waitFor(() => {
       const toggle = container.querySelector('button[title*="mode sombre"]');
@@ -135,7 +135,7 @@ describe('Actualite1899', () => {
   it('restaure le mode nuit depuis localStorage', async () => {
     localStorage.setItem('journal-dark-mode', 'enabled');
     const { container } = render(
-      <Actualite1899 onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
+      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
     );
     await waitFor(() => {
       const toggle = container.querySelector('button[title*="mode clair"]');
@@ -180,7 +180,7 @@ describe('Actualite1899', () => {
     supabase.from.mockReturnValue(chain);
 
     const { findByText } = render(
-      <Actualite1899 onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
+      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
     );
 
     // Ouvrir Fêtes & Traditions

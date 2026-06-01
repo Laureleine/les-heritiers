@@ -1,4 +1,4 @@
-// src/components/Actualite1899.jsx
+// src/components/Actualite.jsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ArrowLeft, Sun, Moon, Info, ChevronDown, ChevronUp, FileText, Bug } from '../config/icons';
 import eclipses from '../data/eclipses_data';
@@ -15,7 +15,7 @@ const MONTHS_FR = {
 
 const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
-export default function Actualite1899({ onBack, userProfile }) {
+export default function Actualite({ onBack, userProfile }) {
   const [dateStr, setDateStr] = useState('1899-11-26');
   const [activeMenu, setActiveMenu] = useState('meteo'); // meteo, lune, chronique, fetes, page1, page2, page3, page4, votes
   const [eventsData, setEventsData] = useState({});

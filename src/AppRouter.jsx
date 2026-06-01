@@ -18,7 +18,7 @@ const CerclesDashboard = lazy(() => import('./components/CerclesDashboard'));
 const MesPropositions = lazy(() => import('./components/MesPropositions'));
 const RegistrePage = lazy(() => import('./components/forge/RegistrePage'));
 const CharacterCreator = lazy(() => import('./components/creator/CharacterCreator'));
-const Actualite1899 = lazy(() => import('./components/Actualite1899'));
+const Actualite = lazy(() => import('./components/Actualite'));
 
 export default function AppRouter({ session, userProfile, refreshUserProfile }) {
   const { character, dispatchCharacter, setIsReadOnly, gameData } = useCharacter();
@@ -110,7 +110,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
         <Route path="/mes_propositions" element={<MesPropositions session={session} onBack={() => navigate('/encyclopedia')} />} />
         <Route path="/bureau_anomalies" element={<RegistrePage onBack={() => navigate('/')} userProfile={userProfile} />} />
         <Route path="/creator" element={<CharacterCreator session={session} userProfile={userProfile} />} />
-        <Route path="/actualite" element={<Actualite1899 onBack={() => navigate('/')} userProfile={userProfile} />} />
+        <Route path="/actualite" element={<Actualite onBack={() => navigate('/')} userProfile={userProfile} />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

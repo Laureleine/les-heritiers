@@ -380,3 +380,21 @@
 - **Après création d'un script de seed** : l'exécuter immédiatement pour vérifier le résultat, puis ajouter un test qui compte les lignes en base (ou mocke le count) pour non-régression.
 - **280 tests verts (23 suites)** avant ET après — inchangés pour cette version.
 
+## Session du 1 Juin 2026 — Le Faux-Semblant à sa Place 🎭🔧
+
+### Règles ajoutées
+
+62. **`try/catch/finally` sur tout `handleSubmit` async** — Si `soumettreEntree` attrape ses erreurs mais qu'une erreur inattendue se produit avant (ex: au niveau du `JSON.stringify`), `setIsSubmitting(false)` ne s'exécute jamais et le bouton reste bloqué en "Transmission..." indéfiniment. Le pattern sûr : `try { ... } catch { notify } finally { setIsSubmitting(false) }` — le `finally` garantit le déblocage quoi qu'il arrive.
+
+63. **AbortController + timeout sur les uploads Supabase Storage** — `supabase.storage.upload()` peut bloquer indéfiniment sur un fichier volumineux (pas de timeout par défaut). Toujours passer un `AbortSignal` avec un timeout (30s) pour éviter de laisser l'utilisateur avec un bouton bloqué sans retour. Bien catcher `AbortError` pour afficher un message clair ("L'envoi a pris trop de temps").
+
+64. **Toujours ajouter `showInAppNotification` import manuellement** — Quand on utilise `showInAppNotification` dans un composant qui ne l'importait pas, ne pas compter sur le linter pour prévenir. Vérifier les imports manuellement après avoir ajouté un bloc `catch` qui notifie l'utilisateur.
+
+### Problème résolu
+
+- **Upload silencieux dans la Forge** : La combinaison `maxSizeMB: 10` + pas de timeout + pas de `try/catch` dans `handleSubmit` faisait que les images volumineuses bloquaient le formulaire sans aucun message d'erreur. Le fix ajoute un timeout 30s, un `try/catch/finally` et un message d'erreur explicite.
+
+### Leçon
+
+- **Demander la limite Supabase avant de réduire la taille client** : J'ai d'abord réduit `maxSizeMB` de 10 à 5 en supposant une limite Supabase à 5 Mo, mais l'utilisateur a fait remarquer que les photos téléphone sont souvent 3-5 Mo et 5 Mo aurait trop serré. Vérification faite : la limite Supabase est 50 Mo, pas besoin de réduire. Le timeout et le try/catch suffisent à régler le problème.
+
