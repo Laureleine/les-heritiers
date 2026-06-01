@@ -398,3 +398,21 @@
 
 - **Demander la limite Supabase avant de réduire la taille client** : J'ai d'abord réduit `maxSizeMB` de 10 à 5 en supposant une limite Supabase à 5 Mo, mais l'utilisateur a fait remarquer que les photos téléphone sont souvent 3-5 Mo et 5 Mo aurait trop serré. Vérification faite : la limite Supabase est 50 Mo, pas besoin de réduire. Le timeout et le try/catch suffisent à régler le problème.
 
+## Session du 1 Juin 2026 (soir) — Le Journal sans An 🗞️✂️
+
+### Règles ajoutées
+
+65. **Toujours vérifier `git status` pour les fichiers oubliés avant de versionner** — Quand on fait un commit de version, ne pas se limiter aux fichiers modifiés dans la session courante. Vérifier tous les fichiers modifiés (`git status`) et inclure ceux qui font partie du même lot de fonctionnalités, même s'ils datent d'une session précédente. Demander au développeur avant d'exclure quoi que ce soit.
+
+66. **git mv pour les renommages de fichiers** — Utiliser `git mv` plutôt que `mv` + `git add` pour préserver l'historique git et le suivi de similarité. Vérifier les imports dans tous les fichiers (composant, test, routage) après un rename pour garantir zéro occurrence de l'ancien nom dans le code source.
+
+### Problème résolu
+
+- **Support enfoui incomplètement commité** : Les fichiers StepCapacites.js, StepCaracteristiques.js, characterEngine.js, encyclopediaEngine.js, CharacterContext.js contenaient des modifications du support enfoui qui n'avaient pas été commitées lors du version 17.2.3. Le `git status` montrait pourtant les modifications — l'IA s'est contentée des fichiers qu'elle venait d'éditer.
+
+- **Actualite1899 → Actualite** : Renommage simple via `git mv` + 3 fichiers modifiés (composant, test, routeur). 280 tests verts avant et après.
+
+### Leçon
+
+- **Ne pas supposer que l'IA a tout commité** : Vérifier `git log --oneline` entre la dernière version et HEAD pour s'assurer que tous les changements associés ont été inclus. En cas de doute, demander au développeur.
+
