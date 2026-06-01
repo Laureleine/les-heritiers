@@ -58,7 +58,7 @@ export const addCompetenceFutile = async (name, description) => {
 // ============================================================================
 
 export const loadProfils = async () => {
-    const { data, error } = await supabase.from('profils').select('*').order('name_masculine');
+    const { data, error } = await supabase.from('profils').select('id, name_masculine, name_feminine, description, traits, icon').order('name_masculine');
     if (error) {
         console.error("🔥 [Erreur Critique] Impossible de charger la table 'profils':", error);
         return [];
@@ -328,7 +328,7 @@ export const addGlobalSpeciality = async (competenceId, newSpeciality) => {
 
 export const loadBadges = async () => {
     try {
-        const { data, error } = await supabase.from('titres_honorifiques').select('*').order('label');
+        const { data, error } = await supabase.from('titres_honorifiques').select('id, label, icon_name, color_classes, description').order('label');
         if (error) throw error;
         return data || [];
     } catch (error) {

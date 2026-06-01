@@ -46,7 +46,7 @@ function TabUsers({ session }) {
                 { data: badgesData }
             ] = await Promise.all([
                 usersPromise,
-                supabase.from('titres_honorifiques').select('*')
+                supabase.from('titres_honorifiques').select('id, icon_name, color_classes, label')
             ]);
 
             if (!usersError) setUsers(profiles || []);
