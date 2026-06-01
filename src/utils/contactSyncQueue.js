@@ -37,61 +37,81 @@ export const flushContactsToGrimoire = async (characterId, userId) => {
 
     if (queue.length === 0) return;
 
-    for (const { item, action, isMultiple, itemType = 'contact' } of queue) {
+    const adds = queue.filter(({ action }) => action === 'add');
+    const removes = queue.filter(({ action }) => action === 'remove');
+
+    // ── BATCH ADD ───────────────────────────────────────────────────────────
+    if (adds.length > 0) {
         try {
-            if (action === 'add') {
-                if (!isMultiple) {
-                    const { data: existing } = await supabase
-                        .from('heritier_notes')
-                        .select('id')
-                        .eq('character_id', characterId)
-                        .eq('type', itemType)
-                        .eq('content->>nom', item.nom)
-                        .limit(1);
+            const singlesToCheck = adds.filter(({ isMultiple }) => !isMultiple);
 
-                    if (existing && existing.length > 0) continue;
+            // Vérifier tous les doublons en une requête
+            const existingNames = new Set();
+            if (singlesToCheck.length > 0) {
+                const names = singlesToCheck.map(({ item }) => item.nom);
+                const { data: existing } = await supabase
+                    .from('heritier_notes')
+                    .select('id, type, content->>nom')
+                    .eq('character_id', characterId)
+                    .in('content->>nom', names);
+
+                if (existing) {
+                    existing.forEach(e => existingNames.add(`${e.type}:${e.nom}`));
                 }
+            }
 
-                const content = itemType === 'possession'
-                    ? {
-                        nom: item.nom,
-                        description: item.description || '',
-                        date_creation: new Date().toISOString(),
-                        source_social_item_id: item.id
-                    }
-                    : {
-                        nom: item.nom,
-                        description: item.description || '',
-                        localisation: '',
-                        statut_relation: 'Contact',
-                        date_creation: new Date().toISOString(),
-                        source_social_item_id: item.id
-                    };
-
-                await supabase.from('heritier_notes').insert([{
+            const toInsert = adds
+                .filter(({ item, isMultiple, itemType = 'contact' }) =>
+                    isMultiple || !existingNames.has(`${itemType}:${item.nom}`)
+                )
+                .map(({ item, itemType = 'contact' }) => ({
                     character_id: characterId,
                     player_id: userId,
                     cercle_id: null,
                     type: itemType,
-                    content,
-                    is_shared: false
-                }]);
+                    content: itemType === 'possession'
+                        ? { nom: item.nom, description: item.description || '', date_creation: new Date().toISOString(), source_social_item_id: item.id }
+                        : { nom: item.nom, description: item.description || '', localisation: '', statut_relation: 'Contact', date_creation: new Date().toISOString(), source_social_item_id: item.id },
+                    is_shared: false,
+                }));
 
-            } else if (action === 'remove') {
-                const { data: toDelete } = await supabase
+            if (toInsert.length > 0) {
+                const { error } = await supabase.from('heritier_notes').insert(toInsert);
+                if (error) console.error('Erreur batch insert grimoire:', error);
+            }
+        } catch (error) {
+            console.error('Erreur batch add grimoire:', error);
+        }
+    }
+
+    // ── BATCH REMOVE ────────────────────────────────────────────────────────
+    if (removes.length > 0) {
+        try {
+            // Trouver tous les IDs à supprimer en une requête par type
+            const byType = {};
+            removes.forEach(({ item, itemType = 'contact' }) => {
+                if (!byType[itemType]) byType[itemType] = [];
+                byType[itemType].push(item.nom);
+            });
+
+            const idsToDelete = [];
+            for (const [type, noms] of Object.entries(byType)) {
+                const { data: matches } = await supabase
                     .from('heritier_notes')
                     .select('id')
                     .eq('character_id', characterId)
-                    .eq('type', itemType)
-                    .eq('content->>nom', item.nom)
-                    .limit(1);
+                    .eq('type', type)
+                    .in('content->>nom', noms);
 
-                if (toDelete && toDelete.length > 0) {
-                    await supabase.from('heritier_notes').delete().eq('id', toDelete[0].id);
-                }
+                if (matches) idsToDelete.push(...matches.map(d => d.id));
+            }
+
+            if (idsToDelete.length > 0) {
+                const { error } = await supabase.from('heritier_notes').delete().in('id', idsToDelete);
+                if (error) console.error('Erreur batch delete grimoire:', error);
             }
         } catch (error) {
-            console.error('Erreur sync grimoire:', error);
+            console.error('Erreur batch remove grimoire:', error);
         }
     }
 
