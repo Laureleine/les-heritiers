@@ -1,11 +1,34 @@
+class MockChain {
+  constructor() {
+    this._resolved = false;
+    this._resolveValue = { data: [], error: null };
+    this._rejectValue = null;
+  }
+  select() { return this; }
+  eq() { return this; }
+  order() { return this._promise(); }
+  insert() { return this._promise(); }
+  update() { return this._promise(); }
+  delete() { return this._promise(); }
+  single() { return this._promise(); }
+  limit() { return this; }
+  gte() { return this; }
+  lte() { return this; }
+  in() { return this; }
+  match() { return this; }
+  neq() { return this; }
+  maybeSingle() { return this._promise(); }
+  _promise() { return Promise.resolve(this._resolveValue); }
+  then(resolve, reject) {
+    if (this._rejectValue) return Promise.reject(this._rejectValue).then(resolve, reject);
+    return Promise.resolve(this._resolveValue).then(resolve, reject);
+  }
+  catch(reject) { return Promise.resolve(this._resolveValue).catch(reject); }
+}
+
 jest.mock('../../config/supabase', () => ({
   supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      order: jest.fn().mockResolvedValue({ data: [], error: null }),
-      insert: jest.fn().mockResolvedValue({ data: null, error: null }),
-    })),
+    from: jest.fn(() => new MockChain()),
     rpc: jest.fn().mockResolvedValue({ data: null, error: null }),
   },
 }));
