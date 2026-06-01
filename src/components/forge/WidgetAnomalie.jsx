@@ -4,6 +4,7 @@ import { Bug, Sparkles, X, Image as ImageIcon, Send, Key, Trash2, FolderOpen } f
 import { useForge } from '../../context/ForgeContext';
 import { isAdmin } from '../../utils/authRoles';
 import { useFileUpload } from '../../hooks/useFileUpload';
+import { showInAppNotification } from '../../utils/SystemeServices';
 
 export default function WidgetAnomalie({ userProfile }) {
   const { soumettreEntree } = useForge();
@@ -95,27 +96,31 @@ export default function WidgetAnomalie({ userProfile }) {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const payload = {
-      type_entree: typeEntree,
-      titre,
-      description,
-      version_constatee: version,
-      niveau_gravite: typeEntree === 'Anomalie' ? gravite : null,
-      benefice_creatif: typeEntree === 'Inspiration' ? benefice : null,
-      // ✨ On lit la mémoire silencieuse ici :
-      logs_techniques: typeEntree === 'Anomalie' ? JSON.stringify(logsRef.current) : null,
-      is_initie_only: isInitiated ? isInitieOnly : false
-    };
+    try {
+      const payload = {
+        type_entree: typeEntree,
+        titre,
+        description,
+        version_constatee: version,
+        niveau_gravite: typeEntree === 'Anomalie' ? gravite : null,
+        benefice_creatif: typeEntree === 'Inspiration' ? benefice : null,
+        // ✨ On lit la mémoire silencieuse ici :
+        logs_techniques: typeEntree === 'Anomalie' ? JSON.stringify(logsRef.current) : null,
+        is_initie_only: isInitiated ? isInitieOnly : false
+      };
 
-    const success = await soumettreEntree(payload, file);
-    setIsSubmitting(false);
-
-    if (success) {
-      setIsOpen(false);
-      setTitre(''); setDescription('');
-      removeFile();
-      // ✨ On purge la boîte noire
-      logsRef.current = []; 
+      const success = await soumettreEntree(payload, file);
+      if (success) {
+        setIsOpen(false);
+        setTitre(''); setDescription('');
+        removeFile();
+        // ✨ On purge la boîte noire
+        logsRef.current = [];
+      }
+    } catch (err) {
+      showInAppNotification?.("La transmission s'est interrompue : " + (err?.message || 'Erreur inconnue'), 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
