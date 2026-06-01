@@ -1,5 +1,6 @@
 // src/utils/supabaseGameData.js
 import { supabase } from '../config/supabase';
+import { APP_VERSION } from '../version';
 
 // ============================================================================
 // COMPÉTENCES FUTILES
@@ -218,7 +219,7 @@ export const loadFairyTypes = async () => {
         }
 
         const fairyData = {};
-        const fairyTypesByAge = { traditionnelles: [], modernes: [] };
+        const fairyTypesByAge = { enfoui: [], traditionnelles: [], modernes: [] };
 
         data.forEach(fairy => {
             const rawAssetsLinks = fairy.fairy_type_assets || [];
@@ -272,6 +273,7 @@ export const loadFairyTypes = async () => {
                     sangFroid: { min: fairy.sang_froid_min, max: fairy.sang_froid_max }
                 },
                 isSecret: fairy.is_secret,
+                isEnfoui: fairy.era === 'enfoui',
                 competencesPredilection: compPredByFairy[fairy.id] || [],
                 competencesFutilesPredilection: compFutPredByFairy[fairy.id] || [],
                 capacites: capacitesStruct,
@@ -279,19 +281,25 @@ export const loadFairyTypes = async () => {
                 atouts: assetsTries
             };
 
+            if (fairy.era === 'enfoui') {
+                fairyInfo.caracteristiques.feerie = { min: 1, max: 6 };
+                fairyInfo.caracteristiques.masque = { min: 6, max: 6 };
+            }
+
             fairyData[fairy.name] = fairyInfo;
-            if (fairy.era === 'traditionnelle') fairyTypesByAge.traditionnelles.push(fairy.name);
+            if (fairy.era === 'enfoui') fairyTypesByAge.enfoui.push(fairy.name);
+            else if (fairy.era === 'traditionnelle') fairyTypesByAge.traditionnelles.push(fairy.name);
             else fairyTypesByAge.modernes.push(fairy.name);
         });
 
         return {
             fairyData,
-            fairyTypes: [...fairyTypesByAge.traditionnelles, ...fairyTypesByAge.modernes],
+            fairyTypes: [...fairyTypesByAge.enfoui, ...fairyTypesByAge.traditionnelles, ...fairyTypesByAge.modernes],
             fairyTypesByAge
         };
     } catch (error) {
         console.error('Erreur chargement types de fées:', error);
-        return { fairyData: {}, fairyTypes: [], fairyTypesByAge: { traditionnelles: [], modernes: [] } };
+        return { fairyData: {}, fairyTypes: [], fairyTypesByAge: { enfoui: [], traditionnelles: [], modernes: [] } };
     }
 };
 
@@ -376,8 +384,14 @@ export const loadCoreGameData = async () => {
     if (localData) {
         try {
             const parsedData = JSON.parse(localData);
-            // Si on a le cache, on retourne TOUT instantanément !
-            return parsedData;
+            // ✨ VÉRIFICATION DE VERSION : Si le cache est d'une version antérieure, on le purge
+            if (parsedData._version !== APP_VERSION) {
+                console.log(`📦 Cache obsolète (${parsedData._version || 'inconnue'} → ${APP_VERSION}), on rafraîchit...`);
+                localStorage.removeItem(LOCAL_CACHE_KEY);
+            } else {
+                // Si on a le cache à jour, on retourne TOUT instantanément !
+                return parsedData;
+            }
         } catch (e) {
             console.warn("Cache corrompu, on purge la poche...");
             localStorage.removeItem(LOCAL_CACHE_KEY);
@@ -397,7 +411,7 @@ export const loadCoreGameData = async () => {
             badges: b,
             // ✨ LA MAGIE : On renvoie des coquilles vides pour le reste pour ne pas faire crasher l'UI
             competences: {}, competencesParProfil: {}, competencesFutiles: [],
-            fairyData: {}, fairyTypes: [], fairyTypesByAge: { traditionnelles: [], modernes: [] },
+            fairyData: {}, fairyTypes: [], fairyTypesByAge: { enfoui: [], traditionnelles: [], modernes: [] },
             socialItems: [], encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] }
         };
     } catch (error) {
@@ -424,7 +438,8 @@ export const loadHeavyLoreData = async (currentCoreData) => {
             fairyTypes: f.fairyTypes,
             fairyTypesByAge: f.fairyTypesByAge,
             socialItems: soc,
-            encyclopediaRefs: refs
+            encyclopediaRefs: refs,
+            _version: APP_VERSION  // ✨ Sceau de version pour invalidation future
         };
 
         // 💾 On grave le grand dictionnaire complet et on le retourne
