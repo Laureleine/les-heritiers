@@ -35,9 +35,24 @@ export const useAutoUpdate = (intervalMs = 60000) => { // Vérifie toutes les mi
     // ✨ LE FIX EST LÀ : L'horloge temporelle qui réveille le détecteur !
     useEffect(() => {
         checkForUpdate(); // Au démarrage de l'app
-        const intervalId = setInterval(checkForUpdate, intervalMs); // Puis toutes les X secondes
-        
-        return () => clearInterval(intervalId); // Nettoyage propre au démontage
+
+        let intervalId = setInterval(checkForUpdate, intervalMs);
+
+        // Mettre en pause quand l'onglet est caché
+        const onVisibilityChange = () => {
+            if (document.hidden) {
+                clearInterval(intervalId);
+            } else {
+                checkForUpdate();
+                intervalId = setInterval(checkForUpdate, intervalMs);
+            }
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            clearInterval(intervalId);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
     }, [checkForUpdate, intervalMs]);
 
     const applyUpdate = async () => {

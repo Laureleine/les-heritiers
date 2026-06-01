@@ -253,18 +253,19 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     setXpSubmitting(true);
     const notSealed = [];
     try {
-      for (const member of recipients) {
+      const results = await Promise.all(recipients.map(member => {
         const amount = amounts[member.user_id];
-        const { error } = await supabase.rpc('award_xp', {
+        return supabase.rpc('award_xp', {
           p_character_id: member.characters.id,
           p_amount: amount,
           p_motif: motif,
+        }).then(({ error }) => {
+          if (error) throw error;
+          if (member.characters?.statut && member.characters.statut !== 'scelle') {
+            notSealed.push(member.characters.nom || member.profiles?.username);
+          }
         });
-        if (error) throw error;
-        if (member.characters?.statut && member.characters.statut !== 'scelle') {
-          notSealed.push(member.characters.nom || member.profiles?.username);
-        }
-      }
+      }));
 
       let msg = `🎁 ${recipients.length} Héritier(s) ont reçu leurs XP !`;
       if (notSealed.length > 0) {

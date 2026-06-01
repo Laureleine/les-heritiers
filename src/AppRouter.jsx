@@ -4,9 +4,6 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useCharacter, initialCharacterState } from './context/CharacterContext';
 import { supabase } from './config/supabase';
 import { Lock } from './config/icons';
-
-import CharacterList from './components/CharacterList';
-import PixieAssistant from './components/PixieAssistant';
 import { isCharacterScelle } from './utils/lockUtils';
 
 // Code Splitting
@@ -19,6 +16,8 @@ const MesPropositions = lazy(() => import('./components/MesPropositions'));
 const RegistrePage = lazy(() => import('./components/forge/RegistrePage'));
 const CharacterCreator = lazy(() => import('./components/creator/CharacterCreator'));
 const Actualite = lazy(() => import('./components/Actualite'));
+const CharacterList = lazy(() => import('./components/CharacterList'));
+const PixieAssistant = lazy(() => import('./components/PixieAssistant'));
 
 export default function AppRouter({ session, userProfile, refreshUserProfile }) {
   const { character, dispatchCharacter, setIsReadOnly, gameData } = useCharacter();

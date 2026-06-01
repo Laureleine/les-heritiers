@@ -1,7 +1,7 @@
 // src/components/DiceRoller.js
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Dices, RefreshCcw } from '../config/icons'; // ✨ FIX : On ne garde que les icônes réellement utilisées
-import DiceBox from '@3d-dice/dice-box';
+// import dynamique dans le useEffect ci-dessous (économie ~11 MB de bundle)
 
 const parseAdj = (str) => str.split(',').map(n => parseInt(n.trim()));
 
@@ -41,10 +41,11 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
         return () => { if (timer) clearTimeout(timer); };
     }, []);
 
-    // --- INITIALISATION (ANTI-PRISON & API MODERNE) ---
+    // --- INITIALISATION (ANTI-PRISON, API MODERNE & IMPORT DYNAMIQUE) ---
     useEffect(() => {
         if (!use3DDice || !isOpen || diceBoxRef.current) return;
-        const initDice = () => {
+        let cancelled = false;
+        const initDice = async () => {
             const containerEl = document.getElementById("casino-dice-canvas");
             if (!containerEl) return;
 
@@ -55,6 +56,10 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
             }
 
             try {
+                const DiceBoxModule = await import('@3d-dice/dice-box');
+                const DiceBox = DiceBoxModule.default || DiceBoxModule;
+                if (cancelled) return;
+
                 containerEl.innerHTML = '';
                 diceBoxRef.current = new DiceBox({
                     container: "#casino-dice-canvas",
@@ -83,7 +88,7 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
             } catch (e) { console.error("Défaut DiceBox:", e); }
         };
         const timer = setTimeout(initDice, 800);
-        return () => clearTimeout(timer);
+        return () => { cancelled = true; clearTimeout(timer); };
     }, [use3DDice, diceTheme, isOpen]);
 
     // ✨ FIX : Suppression de `handleClear` inutile
