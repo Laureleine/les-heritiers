@@ -4,12 +4,8 @@ import { Check, Sparkles, Plus, Minus } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getFeerieCost, getCaracCost } from '../utils/xpCalculator';
-import AnomalieFeeriqueWidget from './AnomalieFeeriqueWidget';
-
-// ✨ L'IMPORT DRY (Usine à Badges)
-import { getMagicBadges } from '../data/DictionnaireJeu';
-import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
+import { xpTransaction } from '../utils/xpTransaction';
 
 export default function StepPouvoirs() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
@@ -53,9 +49,8 @@ export default function StepPouvoirs() {
 
         const newCaracs = { ...(character.caracteristiques || {}), [stat]: currentRank + 1 };
 
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
-        dispatchCharacter({
-            type: 'LOG_XP_TRANSACTION',
+        xpTransaction(dispatchCharacter, {
+            updates: { caracteristiques: newCaracs },
             transaction: {
                 type: 'DEPENSE',
                 code: stat === 'feerie' ? XP_CODES.FEERIE_EVEIL : XP_CODES.MASQUE_EPAISSISSEMENT,
@@ -63,9 +58,8 @@ export default function StepPouvoirs() {
                 valeur: cost,
                 rang_final: currentRank + 1
             },
-            gameData
-        });
-        showInAppNotification(`${stat === 'feerie' ? 'Féérie' : 'Masque'} augmenté(e) pour ${cost} XP !`, "success");
+            notification: { text: `${stat === 'feerie' ? 'Féérie' : 'Masque'} augmenté(e) pour ${cost} XP !`, type: 'success' }
+        }, gameData);
     };
 
     const handleDowngradeStat = (stat) => {
@@ -86,9 +80,8 @@ export default function StepPouvoirs() {
         const refund = stat === 'feerie' ? getFeerieCost(currentRank - 1) : getCaracCost(currentRank - 1);
         const newCaracs = { ...(character.caracteristiques || {}), [stat]: currentRank - 1 };
 
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { caracteristiques: newCaracs }, gameData });
-        dispatchCharacter({
-            type: 'LOG_XP_TRANSACTION',
+        xpTransaction(dispatchCharacter, {
+            updates: { caracteristiques: newCaracs },
             transaction: {
                 type: 'REMBOURSEMENT',
                 code: stat === 'feerie' ? XP_CODES.FEERIE_EVEIL : XP_CODES.MASQUE_EPAISSISSEMENT,
@@ -96,9 +89,8 @@ export default function StepPouvoirs() {
                 valeur: refund,
                 rang_final: currentRank - 1
             },
-            gameData
-        });
-        showInAppNotification(`Niveau annulé : +${refund} XP récupérés !`, "success");
+            notification: { text: `Niveau annulé : +${refund} XP récupérés !`, type: 'success' }
+        }, gameData);
     };
 
     // ========================================================================

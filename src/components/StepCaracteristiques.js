@@ -4,8 +4,8 @@ import { Plus, Minus, RotateCcw } from '../config/icons';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
-import ConfirmModal from './ConfirmModal';
-import { getCaracCost } from '../utils/xpCalculator';
+import { XP_CODES } from '../data/xpCosts';
+import { xpTransaction } from '../utils/xpTransaction';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
 
@@ -74,25 +74,17 @@ export default function StepCaracteristiques() {
             const costToRefund = getCaracCost(newValue);
 
             // 1. On met à jour le score de la caractéristique
-            dispatchCharacter({
-                type: 'UPDATE_MULTIPLE',
-                payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
-                gameData
-            });
-
             // 2. ✨ LE CERVEAU CENTRAL : On consigne le remboursement dans le journal
-            dispatchCharacter({
-                type: 'LOG_XP_TRANSACTION',
+            xpTransaction(dispatchCharacter, {
+                updates: { caracteristiques: { ...currentCaracs, [key]: newValue } },
                 transaction: {
                     type: 'REMBOURSEMENT',
                     code: XP_CODES.CARAC_AUGMENTATION,
                     label: `Annulation : ${caracName}`,
                     valeur: costToRefund
                 },
-                gameData
-            });
-
-            showInAppNotification(`Dépense annulée : +${costToRefund} XP récupérés !`, "success");
+                notification: { text: `Dépense annulée : +${costToRefund} XP récupérés !`, type: 'success' }
+            }, gameData);
             return;
         }
 
@@ -111,15 +103,9 @@ export default function StepCaracteristiques() {
             }
 
             // 1. On met à jour le score de la caractéristique
-            dispatchCharacter({
-                type: 'UPDATE_MULTIPLE',
-                payload: { caracteristiques: { ...currentCaracs, [key]: newValue } },
-                gameData
-            });
-
             // 2. ✨ LE CERVEAU CENTRAL : On consigne l'achat dans le journal
-            dispatchCharacter({
-                type: 'LOG_XP_TRANSACTION',
+            xpTransaction(dispatchCharacter, {
+                updates: { caracteristiques: { ...currentCaracs, [key]: newValue } },
                 transaction: {
                     type: 'DEPENSE',
                     code: XP_CODES.CARAC_AUGMENTATION,
@@ -127,10 +113,8 @@ export default function StepCaracteristiques() {
                     valeur: cost,
                     rang_final: newValue
                 },
-                gameData
-            });
-
-            showInAppNotification(`Évolution acquise pour ${cost} XP !`, "success");
+                notification: { text: `Évolution acquise pour ${cost} XP !`, type: 'success' }
+            }, gameData);
         }
     };
 

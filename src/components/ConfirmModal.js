@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { HelpCircle, X, Check, AlertTriangle, AlertCircle } from '../config/icons';
+import ModalShell from './ui/ModalShell';
 
 /**
  * Modale de confirmation générique.
@@ -27,8 +28,7 @@ export default function ConfirmModal({
     const hasWarnings = warnings.length > 0;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
-            <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-amber-900/20 overflow-hidden transform animate-fade-in-up">
+        <ModalShell maxWidth="max-w-md" compact>
 
                 {/* En-tête */}
                 <div className={`text-amber-50 p-4 flex items-center gap-3 border-b-4 ${hasErrors ? 'bg-red-800 border-red-700' : 'bg-amber-900 border-amber-700'}`}>
@@ -100,7 +100,6 @@ export default function ConfirmModal({
                         </button>
                     )}
                 </div>
-            </div>
-        </div>
+        </ModalShell>
     );
 }
