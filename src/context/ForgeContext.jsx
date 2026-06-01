@@ -38,13 +38,22 @@ export function ForgeProvider({ children }) {
       if (file) {
         const fileName = `${Date.now()}_${sanitizeFileName(file.name)}`;
         
-		// ✨ FIX ESLINT : On ne garde que l'erreur, on ignore la data renvoyée par Supabase
-		const { error: uploadError } = await supabase.storage
-			.from('bug_captures')
-			.upload(fileName, file);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000);
 
-        if (uploadError) throw new Error("L'envoi de la capture a échoué : " + uploadError.message);
-        captureUrl = supabase.storage.from('bug_captures').getPublicUrl(fileName).data.publicUrl;
+        try {
+          const { error: uploadError } = await supabase.storage
+            .from('bug_captures')
+            .upload(fileName, file, { signal: controller.signal });
+
+          clearTimeout(timeout);
+          if (uploadError) throw new Error("L'envoi de la capture a échoué : " + uploadError.message);
+          captureUrl = supabase.storage.from('bug_captures').getPublicUrl(fileName).data.publicUrl;
+        } catch (uploadErr) {
+          clearTimeout(timeout);
+          if (uploadErr.name === 'AbortError') throw new Error("L'envoi de l'image a pris trop de temps (30s max). Réduisez la taille ou le poids de l'image.");
+          throw uploadErr;
+        }
       }
 
       const payload = {

@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.3 - "Le Faux-Semblant à sa Place 🎭🔧"',
+    date: '1 Juin 2026',
+    description: 'Le Faux-Semblant enfoui trônait parmi les fées traditionnelles — le voici à sa place, dans sa propre carte au-dessus du sélecteur. Et dans la Forge, les images trop lourdes ou les réseaux trop lents ne bloquent plus le bouton : un garde-temps de 30 secondes protège l\'envoi, et un message d\'erreur clair prévient l\'Héritier quand la transmission échoue.',
+    changes: [
+      '🎭 **Faux-Semblant enfui remonté :** Le choix du Faux-Semblant enfoui ne se perd plus parmi les fées traditionnelles. Il apparaît désormais dans sa propre carte distincte, au-dessus du sélecteur de type de fée, dans la même colonne — visible au premier coup d\'œil, sans confusion possible.',
+      '🔧 **Forge — Timeout de 30s sur les images :** L\'envoi d\'une capture d\'écran dans la Forge est désormais protégé par un AbortController qui interrompt la transmission après 30 secondes. Fini le bouton bloqué en "Transmission..." sans aucune réaction.',
+      '🛡️ **Forge — Filet de sécurité try/catch :** Le formulaire de signalement est entouré d\'un try/catch qui rattrape toute erreur inattendue et affiche une notification à l\'Héritier, même si l\'échec vient d\'un endroit non couvert auparavant.',
+      '🧪 **280 Sentinelles — toujours en faction.',
+    ]
+  },
+  {
     version: '17.2.2 - "L\'Almanach sans Doublon ✝️🌿🌑"',
     date: '31 Mai 2026',
     description: 'Le calendrier des fêtes perd ses doublons (fin des Immaculée Conception en double le 8 décembre !), le filtre Toutes/Chrétiennes/Celtiques migre dans le titre de Fêtes & Traditions où il est toujours visible. Quand on cherche une fête celtique et qu\'il n\'y en a pas ce jour-là, le Petit Parisien annonce la prochaine avec sa date. Et dans Influence Lunaire, les éclipses de 1899 à 1914 défilent — solaires et lunaires, avec leur visibilité géographique.',

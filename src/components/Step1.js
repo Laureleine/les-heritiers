@@ -107,7 +107,7 @@ export default function Step1() {
         return null;
     }, [selectedPreview, fairyData]);
 
-    const categories = Object.keys(fairyTypesByAge || {});
+    const categories = ['traditionnelles', 'modernes'];
 
     // ✨ Auto-correction du sexe si la fée est asynchrone / mono-genre
     useEffect(() => {
@@ -160,29 +160,60 @@ export default function Step1() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 overflow-hidden">
                 
-                {/* PANNEAU DE GAUCHE : LE SÉLECTEUR */}
-                <div className="lg:col-span-4 flex flex-col h-full bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-                    <div className="flex flex-col gap-2 p-2 bg-gray-100 rounded-xl border border-gray-200">
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">Filtrer par origine</span>
-                        {categories.map(cat => (
-                            <button
-                                key={cat}
-                                onClick={() => setActiveCategory(cat)}
-                                disabled={isLocked}
-                                className={`flex-1 py-2 rounded-md font-bold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-                                    activeCategory === cat
-                                        ? 'bg-white text-amber-900 shadow-md ring-1 ring-amber-200 border-l-4 border-amber-500'
-                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                                }`}
-                            >
-                                <span className="flex items-center gap-2">
-                                    {cat === 'traditionnelles' && "🏛️"}
-                                    {cat === 'modernes' && "⚡"}
-                                    {cat}
-                                </span>
-                                {activeCategory === cat && <div className="w-2 h-2 rounded-full bg-amber-500"></div>}
-                            </button>
+                {/* COLONNE DE GAUCHE : ENFOUI + SÉLECTEUR */}
+                <div className="lg:col-span-4 flex flex-col gap-6 h-full overflow-hidden">
+
+                    {/* ENTRÉE SPÉCIALE : FAUX-SEMBLANT ENFOUI */}
+                    {fairyData && Object.entries(fairyData)
+                        .filter(([_, data]) => data.isEnfoui)
+                        .map(([fairyName]) => (
+                            <div key={fairyName} className="bg-amber-50/40 border border-amber-200 rounded-xl p-3 shrink-0">
+                                <button
+                                    onClick={() => {
+                                        if (selectedPreview !== fairyName) {
+                                            setSelectedPreview(fairyName);
+                                            if (character.traitsFeeriques && character.traitsFeeriques.length > 0) {
+                                                onCharacterChange({ traitsFeeriques: [] });
+                                            }
+                                        }
+                                    }}
+                                    disabled={isLocked}
+                                    className={`w-full text-left px-4 py-3 rounded-lg transition-all flex items-center justify-between disabled:opacity-60 disabled:cursor-not-allowed ${
+                                        selectedPreview === fairyName
+                                            ? 'bg-amber-100 text-amber-900 border-l-4 border-l-amber-600 pl-3'
+                                            : 'hover:bg-amber-100/50 text-gray-600'
+                                    }`}
+                                >
+                                    <span className="font-serif font-medium italic">🎭 {fairyName}</span>
+                                    {character.typeFee === fairyName && <CheckCircle size={16} className="text-green-600"/>}
+                                </button>
+                            </div>
                         ))}
+
+                    {/* SÉLECTEUR DE TYPE DE FÉE */}
+                    <div className="flex flex-col flex-1 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+
+                    <div className="flex flex-col gap-2 p-2 bg-gray-100 rounded-xl border border-gray-200">
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">Filtrer par origine</span>
+                            {categories.map(cat => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setActiveCategory(cat)}
+                                    disabled={isLocked}
+                                    className={`flex-1 py-2 rounded-md font-bold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                                        activeCategory === cat
+                                            ? 'bg-white text-amber-900 shadow-md ring-1 ring-amber-200 border-l-4 border-amber-500'
+                                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                                    }`}
+                                >
+                                    <span className="flex items-center gap-2">
+                                        {cat === 'traditionnelles' && "🏛️"}
+                                        {cat === 'modernes' && "⚡"}
+                                        {cat}
+                                    </span>
+                                    {activeCategory === cat && <div className="w-2 h-2 rounded-full bg-amber-500"></div>}
+                                </button>
+                            ))}
                     </div>
 
                     <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -196,6 +227,7 @@ export default function Step1() {
                                 ?.filter(fairyName => {
                                     const fData = fairyData[fairyName];
                                     if (!fData) return false;
+                                    if (fData.isEnfoui) return false;
                                     const isFairySecret = fData.isSecret === true || fData.is_secret === true;
                                     return !isFairySecret || isUserDocte || unlockedFairies.includes(fData.id);
                                 })
@@ -222,6 +254,7 @@ export default function Step1() {
                                     </button>
                                 ))
                         )}
+                        </div>
                     </div>
                 </div>
 
