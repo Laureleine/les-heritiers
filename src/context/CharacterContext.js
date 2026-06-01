@@ -25,7 +25,7 @@ export function CharacterProvider({ children }) {
   // L'état global du jeu (Données Supabase)
   const [gameData, setGameData] = useState({
     profils: [], competences: {}, competencesParProfil: {}, competencesFutiles: [],
-    fairyData: {}, fairyTypes: [], fairyTypesByAge: { traditionnelles: [], modernes: [] },
+    fairyData: {}, fairyTypes: [], fairyTypesByAge: { enfoui: [], traditionnelles: [], modernes: [] },
     socialItems: [],
     encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] } // ✨ NOUVEAU
   });

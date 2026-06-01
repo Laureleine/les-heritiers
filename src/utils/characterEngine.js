@@ -206,7 +206,8 @@ export function characterReducer(state, action) {
                 // Fusion sans écraser les investissements réels
                 newState.caracteristiques = { ...baseCaracs, ...(newState.caracteristiques || {}) };
                 const tricherieBase = feeData.caracteristiques.tricherie?.min || Math.floor((newState.caracteristiques.feerie + newState.caracteristiques.masque) / 2);
-                newState.caracteristiques.tricherie = Math.max(tricherieBase, Math.floor((newState.caracteristiques.feerie + newState.caracteristiques.masque) / 2));
+                const enfoiBonus = feeData.isEnfoui && newState.caracteristiques.feerie < 3 ? 1 : 0;
+                newState.caracteristiques.tricherie = Math.max(tricherieBase, Math.floor((newState.caracteristiques.feerie + newState.caracteristiques.masque) / 2)) + enfoiBonus;
 
                 // Hydratation de l'Archive Scellée (Plancher de Verre)
                 if (newState.data?.stats_scellees?.caracteristiques) {
@@ -217,7 +218,8 @@ export function characterReducer(state, action) {
                     const sf = newState.data.stats_scellees.caracteristiques.feerie;
                     const sm = newState.data.stats_scellees.caracteristiques.masque;
                     const stBase = feeData.caracteristiques.tricherie?.min || Math.floor((sf + sm) / 2);
-                    newState.data.stats_scellees.caracteristiques.tricherie = Math.max(stBase, Math.floor((sf + sm) / 2));
+                    const stEnfoiBonus = feeData.isEnfoui && sf < 3 ? 1 : 0;
+                    newState.data.stats_scellees.caracteristiques.tricherie = Math.max(stBase, Math.floor((sf + sm) / 2)) + stEnfoiBonus;
                 }
             }
         }

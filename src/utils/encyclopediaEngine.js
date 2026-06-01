@@ -98,21 +98,29 @@ export const submitEncyclopediaProposal = async ({
                 const eMin = Number(editingItem[`${dbKey}_min`] !== undefined ? editingItem[`${dbKey}_min`] : (editingItem.caracteristiques?.[key]?.min || 1));
                 const eMax = Number(editingItem[`${dbKey}_max`] !== undefined ? editingItem[`${dbKey}_max`] : (editingItem.caracteristiques?.[key]?.max || 6));
                 
-                if (pMin !== eMin) surgicalData[`${dbKey}_min`] = pMin;
-                if (pMax !== eMax) surgicalData[`${dbKey}_max`] = pMax;
+                if (isCreating) {
+                    surgicalData[`${dbKey}_min`] = pMin;
+                    surgicalData[`${dbKey}_max`] = pMax;
+                } else {
+                    if (pMin !== eMin) surgicalData[`${dbKey}_min`] = pMin;
+                    if (pMax !== eMax) surgicalData[`${dbKey}_max`] = pMax;
+                }
             };
 
-            checkAndAddCarac('agilite', 'agilite');
-            checkAndAddCarac('constitution', 'constitution');
-            checkAndAddCarac('force', 'force');
-            checkAndAddCarac('precision', 'precision');
-            checkAndAddCarac('esprit', 'esprit');
-            checkAndAddCarac('perception', 'perception');
-            checkAndAddCarac('prestance', 'prestance');
-            checkAndAddCarac('sangFroid', 'sang_froid');
-            checkAndAddCarac('feerie', 'feerie');
-            checkAndAddCarac('masque', 'masque');
-            checkAndAddCarac('tricherie', 'tricherie');
+            const fairyStatFields = [
+                ['agilite', 'agilite'], ['constitution', 'constitution'],
+                ['force', 'force'], ['precision', 'precision'],
+                ['esprit', 'esprit'], ['perception', 'perception'],
+                ['prestance', 'prestance'], ['sangFroid', 'sang_froid'],
+            ];
+            const isFairyType = activeTab === 'fairy_types';
+            (isFairyType ? fairyStatFields : [
+                ['agilite', 'agilite'], ['constitution', 'constitution'],
+                ['force', 'force'], ['precision', 'precision'],
+                ['esprit', 'esprit'], ['perception', 'perception'],
+                ['prestance', 'prestance'], ['sangFroid', 'sang_froid'],
+                ['feerie', 'feerie'], ['masque', 'masque'], ['tricherie', 'tricherie'],
+            ]).forEach(([key, dbKey]) => checkAndAddCarac(key, dbKey));
 
             // Autres champs des Fées
             if (proposal.era !== editingItem.era) surgicalData.era = proposal.era;
