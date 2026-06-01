@@ -12,7 +12,7 @@ import Telegraphe from './components/Telegraphe';
 import DiceRoller from './components/DiceRoller';
 import WidgetAnomalie from './components/forge/WidgetAnomalie';
 import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
-import { APP_VERSION, BUILD_DATE, VERSION_HISTORY } from './version';
+import { APP_VERSION, BUILD_DATE } from './version';
 import { useCorrectionCheck } from './hooks/useCorrectionCheck';
 import CorrectionRequestModal from './components/CorrectionRequestModal';
 import AdminCorrectionWidget from './components/AdminCorrectionWidget';
@@ -20,10 +20,18 @@ import AdminCorrectionWidget from './components/AdminCorrectionWidget';
 export default function App() {
   const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate } = useAppInit();
   const [showVersionModal, setShowVersionModal] = useState(false);
+  const [versionHistory, setVersionHistory] = useState(null);
 
   // Système de correction : joueur + admin
   const { pendingCorrections, adminQueue, respondToCorrection, markCorrected } = useCorrectionCheck(userProfile);
   const navigate = useNavigate();
+
+  // Chargement différé de l'historique des versions (103 KB économisés du bundle initial)
+  React.useEffect(() => {
+    if (showVersionModal && !versionHistory) {
+      import('./version').then(m => setVersionHistory(m.VERSION_HISTORY));
+    }
+  }, [showVersionModal, versionHistory]);
 
   if (globalLoading) {
     return (
@@ -123,7 +131,7 @@ export default function App() {
             
             {/* ✨ LE FIX : On ouvre le parchemin et on affiche le vrai historique ! */}
             <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
-              {VERSION_HISTORY.map((entry, index) => (
+              {versionHistory ? versionHistory.map((entry, index) => (
                 <div key={index} className="mb-6 last:mb-0">
                   <h4 className="text-lg font-bold text-amber-900 font-serif border-b border-amber-200 pb-1 mb-3">
                     {entry.version} <span className="text-sm font-normal text-amber-700 italic ml-2">({entry.date})</span>
@@ -143,7 +151,12 @@ export default function App() {
                     })}
                   </ul>
                 </div>
-              ))}
+              )) : (
+                <div className="flex items-center justify-center py-12 text-stone-400">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mr-3"></div>
+                  Chargement du registre...
+                </div>
+              )}
             </div>
             
           </div>

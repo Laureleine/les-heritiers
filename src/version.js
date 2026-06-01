@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.7 - "Le Sac à Dos du Voyageur 🎒⚡"',
+    date: '1 Juin 2026',
+    description: 'Le Grimoire ne transporte plus de bagages inutiles : le Casino physique (11 Mo) ne se décharge que quand on lance les dés, le Registre des versions (103 Ko) ne s\'ouvre que quand on le consulte, la Porte des Personnages et Pixie ne lestent plus le chargement initial, la distribution d\'XP dans les Cercles se fait en un éclair, et le Veilleur de Mise à Jour ne réveille plus le Grimoire quand on range l\'écran. 280 Sentinelles, toujours en faction.',
+    changes: [
+      '🎲 **11 Mo économisés — DiceBox en import différé :** La bibliothèque `@3d-dice/dice-box` (11 Mo) n\'est plus téléchargée au démarrage de l\'application. Elle ne se charge que quand le Héritier ouvre le Casino — un `await import()` dans le `useEffect` d\'initialisation. Un onglet ouvert en arrière-plan ne pompe plus 11 Mo de bande passante.',
+      '📜 **103 Ko économisés — Registre des versions différé :** L\'intégralité de l\'historique des mises à jour (`VERSION_HISTORY`, 103 Ko) n\'est plus importé statiquement dans `App.js`. Il se charge dynamiquement à l\'ouverture de la modale. Le bundle critique perd 103 Ko, le temps avant premier affichage diminue d\'autant.',
+      '🚪 **CharacterList (42 Ko) + PixieAssistant (23 Ko) passent en React.lazy :** Ces deux composants étaient importés statiquement dans le routeur. Désormais comme tous les autres, ils sont découpés en chunks séparés et chargés uniquement quand la route `/` est visitée.',
+      '⚡ **Distribution XP dans les Cercles parallélisée :** `executeDistributeXp` exécutait une RPC `award_xp` par membre en séquence — une file d\'attente de 10 Héritiers = 10 appels à la suite. Les appels sont désormais lancés en parallèle via `Promise.all` : 10 appels simultanés au lieu de 10 séquentiels.',
+      '💤 **Veilleur de mise à jour assagi :** `useAutoUpdate` interrogeait `/version.json` toutes les 60 secondes, même quand l\'onglet était caché dans un coin du navigateur. Il met désormais l\'horloge en pause quand le document est masqué (`visibilitychange`), et la relance au retour — zéro requête inutile.',
+      '🧪 **280 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.2.6 - "La File d\'Attente Domptée 🐉📦"',
     date: '1 Juin 2026',
     description: 'Le Grimoire cesse de supplier Supabase à chaque contact ajouté : la file de synchronisation parle désormais en un seul échange, et les missives du Télégraphe ne s\'effondrent plus sur les canaux bavards. 280 Sentinelles en faction.',
