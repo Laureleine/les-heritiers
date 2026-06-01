@@ -443,7 +443,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   }, [gameData]);
 
   // ─── Props communes pour CharacterCard ───────────────────────────────────
-  const commonCardProps = {
+  const commonCardProps = useMemo(() => ({
     profils, gameData, isAdmin,
     onSelect: handleSelectCharacter,
     onToggleVisibility: handleToggleVisibility,
@@ -454,7 +454,9 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     onAppropriate: handleAppropriate,
     onExportJson: handleExportJson,
     onExportPDF: handleExportPDF,
-  };
+  }), [profils, gameData, isAdmin, handleSelectCharacter, handleToggleVisibility,
+      handleDuplicate, handleCreateGiftCode, handleDeleteClick, setActiveGrimoireCharId,
+      handleAppropriate, handleExportJson, handleExportPDF]);
 
   // ─── Compteur de résultats filtrés ───────────────────────────────────────
   const activeCount = {
@@ -586,7 +588,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       isMyCharacter={true}
                       userProfile={userProfile}
                       repairStatus={isAdmin ? repairRows[char.id]?.status : undefined}
-                      onRepairRequest={isAdmin ? () => requestRepairOne(char.id) : undefined}
+                      onRepairRequest={isAdmin ? requestRepairOne : undefined}
                     />
                   </div>
                 ))}
@@ -617,7 +619,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       isMyCharacter={char.userId === session?.user?.id}
                       userProfile={userProfile}
                       repairStatus={isAdmin ? repairRows[char.id]?.status : undefined}
-                      onRepairRequest={isAdmin ? () => requestRepairOne(char.id) : undefined}
+                      onRepairRequest={isAdmin ? requestRepairOne : undefined}
                     />
                   </div>
                 ))}
@@ -645,7 +647,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       isMyCharacter={char.userId === session?.user?.id}
                       userProfile={userProfile}
                       repairStatus={repairRows[char.id]?.status}
-                      onRepairRequest={() => requestRepairOne(char.id)}
+                      onRepairRequest={requestRepairOne}
                     />
                   </div>
                 ))}

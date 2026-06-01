@@ -1,11 +1,8 @@
 // src/config/icons.js
 // Hub centralisé des exports Lucide React.
 // Les nouveaux composants importent d'ici plutôt que directement de 'lucide-react'.
-// Les fichiers avec `import * as LucideIcons` (TabForgeTitres, TabUsers,
-// AccountSettings, ValidationsPendantes) conservent leur import wildcard
-// car ils font du rendu d'icône dynamique par nom.
 
-export {
+import {
     // Navigation & actions
     ArrowLeft,
     ChevronDown,
@@ -123,4 +120,43 @@ export {
     Palette,
     Wrench,
     FolderOpen,
+    Hammer,
 } from 'lucide-react';
+
+export {
+    ArrowLeft, ChevronDown, ChevronUp, X, XCircle, Plus, PlusCircle, Minus,
+    Save, Download, Upload, Share, Share2, Copy, ExternalLink, Edit, Trash2,
+    Send, Printer, RotateCcw, RefreshCcw, LogOut,
+    Check, CheckCheck, CheckCircle, CheckCircle2, AlertCircle, AlertTriangle,
+    Info, HelpCircle, ShieldAlert, Clock, Loader, Moon, Sun,
+    User, Users, Mail, MessageCircle, Inbox, Globe,
+    Lock, Unlock, Key, Shield, ShieldCheck, Crown,
+    BookOpen, Book, FileText, Archive, Tag, Filter, ListFilter, LayoutList,
+    Search, List, ZoomIn, ZoomOut,
+    Sparkles, Star, Feather, Zap, Wand2, VenetianMask, Dices, Brain,
+    Activity, BarChart2, TrendingUp, TrendingDown, GitMerge, Settings, TestTubeDiagonal,
+    Award, Gem, Gift, Heart, Briefcase, Coins, ShoppingBag, Package, MapPin,
+    Scaling, Calendar, Camera,
+    Eye, EyeOff, Image,
+    ThumbsUp, ThumbsDown, Bug, Bell, BellOff, Smartphone, Palette, Wrench, FolderOpen,
+    Hammer,
+};
+
+export const iconMap = {
+    ArrowLeft, ChevronDown, ChevronUp, X, XCircle, Plus, PlusCircle, Minus,
+    Save, Download, Upload, Share, Share2, Copy, ExternalLink, Edit, Trash2,
+    Send, Printer, RotateCcw, RefreshCcw, LogOut,
+    Check, CheckCheck, CheckCircle, CheckCircle2, AlertCircle, AlertTriangle,
+    Info, HelpCircle, ShieldAlert, Clock, Loader, Moon, Sun,
+    User, Users, Mail, MessageCircle, Inbox, Globe,
+    Lock, Unlock, Key, Shield, ShieldCheck, Crown,
+    BookOpen, Book, FileText, Archive, Tag, Filter, ListFilter, LayoutList,
+    Search, List, ZoomIn, ZoomOut,
+    Sparkles, Star, Feather, Zap, Wand2, VenetianMask, Dices, Brain,
+    Activity, BarChart2, TrendingUp, TrendingDown, GitMerge, Settings, TestTubeDiagonal,
+    Award, Gem, Gift, Heart, Briefcase, Coins, ShoppingBag, Package, MapPin,
+    Scaling, Calendar, Camera,
+    Eye, EyeOff, Image,
+    ThumbsUp, ThumbsDown, Bug, Bell, BellOff, Smartphone, Palette, Wrench, FolderOpen,
+    Hammer,
+};

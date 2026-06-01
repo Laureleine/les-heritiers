@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useState } from 'react';
+import React, { createContext, useContext, useMemo, useReducer, useState } from 'react';
 import { characterReducer } from '../utils/characterEngine';
 
 // L'état vierge d'un personnage (Transféré depuis App.js)
@@ -36,13 +36,15 @@ export function CharacterProvider({ children }) {
   // L'état global de sécurité (Mode vue seule)
   const [isReadOnly, setIsReadOnly] = useState(false);
 
+  const ctxValue = useMemo(() => ({
+    character, dispatchCharacter,
+    gameData, setGameData,
+    isReadOnly, setIsReadOnly,
+    initialCharacterState
+  }), [character, dispatchCharacter, gameData, setGameData, isReadOnly, setIsReadOnly]);
+
   return (
-    <CharacterContext.Provider value={{
-      character, dispatchCharacter,
-      gameData, setGameData,
-      isReadOnly, setIsReadOnly,
-      initialCharacterState
-    }}>
+    <CharacterContext.Provider value={ctxValue}>
       {children}
     </CharacterContext.Provider>
   );

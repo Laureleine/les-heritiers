@@ -1,8 +1,7 @@
 // src/components/AccountSettings.js
 import React, { useState } from 'react';
-import { User, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, BellOff, Smartphone, MessageCircle, ArrowLeft, Lock, Eye, EyeOff } from '../config/icons';
+import { iconMap, User, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, BellOff, Smartphone, MessageCircle, ArrowLeft, Lock, Eye, EyeOff } from '../config/icons';
 import { useAccountSettings } from '../hooks/useAccountSettings';
-import * as LucideIcons from 'lucide-react';
 
 export default function AccountSettings({ session, userProfile, onBack, onUpdateProfile }) {
     const { state, setters, computed, handlers } = useAccountSettings(session, userProfile, onUpdateProfile);
@@ -66,7 +65,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                                     <div className="flex flex-wrap gap-2">
                                         {computed.myBadges.map(badge => {
                                             const isLegacy = !badge.icon_name;
-                                            const DynamicIcon = badge.icon_name && LucideIcons[badge.icon_name] ? LucideIcons[badge.icon_name] : null;
+                                            const DynamicIcon = badge.icon_name && iconMap[badge.icon_name] ? iconMap[badge.icon_name] : null;
                                             return (
                                                 <button
                                                     key={badge.id}

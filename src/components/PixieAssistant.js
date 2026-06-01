@@ -152,6 +152,9 @@ export default function PixieAssistant({ character, step, session, onSleep, fair
                     0% { transform: rotate(10deg) translateY(0px) scaleY(1); opacity: 0.8; }
                     100% { transform: rotate(40deg) translateY(6px) scaleY(0.5); opacity: 0.3; }
                 }
+                @media (prefers-reduced-motion) {
+                    .pixie-wing { animation: none !important; }
+                }
                 `}
             </style>
             <div
@@ -186,11 +189,11 @@ export default function PixieAssistant({ character, step, session, onSleep, fair
                 >
                     <div
                         className="absolute top-1 -left-5 w-8 h-3 rounded-[50%] border border-cyan-200 bg-cyan-100/60 backdrop-blur-sm origin-right"
-                        style={{ animation: !isTalking ? 'battementGauche 0.05s infinite alternate' : 'none', transform: isTalking ? 'rotate(-20deg)' : 'none' }}
+                        style={{ animation: !isTalking ? 'battementGauche 0.3s infinite alternate' : 'none', transform: isTalking ? 'rotate(-20deg)' : 'none' }}
                     ></div>
                     <div
                         className="absolute top-1 -right-5 w-8 h-3 rounded-[50%] border border-cyan-200 bg-cyan-100/60 backdrop-blur-sm origin-left"
-                        style={{ animation: !isTalking ? 'battementDroit 0.05s infinite alternate' : 'none', transform: isTalking ? 'rotate(20deg)' : 'none' }}
+                        style={{ animation: !isTalking ? 'battementDroit 0.3s infinite alternate' : 'none', transform: isTalking ? 'rotate(20deg)' : 'none' }}
                     ></div>
                     <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-300 to-fuchsia-300 shadow-[0_0_15px_rgba(34,211,238,0.6)] flex items-center justify-center z-10">
                         <Sparkles size={12} className="text-white" />

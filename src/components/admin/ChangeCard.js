@@ -1,8 +1,7 @@
 // src/components/admin/ChangeCard.js
 import React from 'react';
-import { Check, X, Plus, Minus, TestTubeDiagonal, ShieldAlert, Shield, User } from '../../config/icons';
+import { iconMap, Check, X, Plus, Minus, TestTubeDiagonal, ShieldAlert, Shield, User } from '../../config/icons';
 import { isSuperAdmin } from '../../utils/authRoles';
-import * as LucideIcons from 'lucide-react';
 
 const ChangeCard = React.memo(({ change, context, actions }) => {
   const { originalRecords, referenceNames, myRole, dbBadges } = context;
@@ -49,7 +48,7 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
                 const badgeDef = dbBadges.find(b => b.id === badgeId);
                 if (!badgeDef) return null;
 
-                const DynamicIcon = badgeDef.icon_name && LucideIcons[badgeDef.icon_name] ? LucideIcons[badgeDef.icon_name] : null;
+                const DynamicIcon = badgeDef.icon_name && iconMap[badgeDef.icon_name] ? iconMap[badgeDef.icon_name] : null;
 
                 return (
                   <span key={badgeId} className={`inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-full border ${badgeDef.color_classes} font-bold`} title={badgeDef.label}>

@@ -36,7 +36,7 @@ const CharacterCard = React.memo(({
   onExportPDF,
   // ✨ Nouvelles props admin (undefined pour les non-admins)
   repairStatus,    // 'pending'|'ok'|'repaired'|'skipped'|'error'
-  onRepairRequest, // () => void
+  onRepairRequest, // (charId) => void
 }) => {
 
   const getProfilInfo = (nomBrut, sexe) => {
@@ -98,7 +98,7 @@ const CharacterCard = React.memo(({
           <div className="mt-1.5">
             {(repairStatus === 'pending' || repairStatus === 'error') && onRepairRequest ? (
               <button
-                onClick={onRepairRequest}
+                onClick={() => onRepairRequest(char.id)}
                 className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer hover:brightness-95 active:scale-95 transition-all ${REPAIR_BADGE[repairStatus]}`}
                 title="Cliquer pour reconstruire le journal XP"
               >

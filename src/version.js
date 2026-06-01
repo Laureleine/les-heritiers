@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.5 - "Le Souffle du Forgeron 🔥⚡"',
+    date: '1 Juin 2026',
+    description: 'Le Grimoire prend un bain de performance : animations réelles (plus de classes Tailwind fantômes), providers stabilisés (fin des re-rendus en cascade), 43 Mo de bundle envolés (imports wildcard Lucide remplacés), et le battement d\'ailes de Pixie ralenti pour ne plus vider les batteries. 280 Sentinelles veillent, aucune régression.',
+    changes: [
+      '🔥 **Animations `fade-in*` ressuscitées :** 124 classes Tailwind `animate-fade-in*` flottaient dans le vide — aucune keyframes définie. Les transitions d\'entrée de tous les composants sont désormais réelles : fondu, glissement vers le haut et vers le bas fonctionnent enfin.',
+      '⚡ **Providers stabilisés (CharacterContext + ForgeContext) :** Les valeurs des providers sont désormais wrappées dans `useMemo`, et les 7 fonctions de la Forge dans `useCallback`. Fini les re-rendus en cascade qui redessinaient toute l\'arborescence au moindre changement.',
+      '📦 **43 Mo retirés du bundle :** 4 fichiers (AccountSettings, ChangeCard, TabForgeTitres, TabUsers) importaient `* as LucideIcons` — la bibliothèque entière à chaque fois. Un `iconMap` centralisé dans `icons.js` ne référence que les icônes réellement utilisées (98 vs 1000+).',
+      '🃏 **React.memo(CharacterCard) redevient efficace :** `commonCardProps` créait un nouvel objet à chaque render, brisant le memo. Désormais stabilisé par `useMemo`, et `onRepairRequest` n\'est plus une fonction inline par carte.',
+      '🦋 **Ailes de Pixie ralenties :** Le battement passait de 0.05s (20 Hz — aussi rapide qu\'un ventilateur d\'ordinateur) à 0.3s (3 Hz). Ajout du respect de `prefers-reduced-motion` pour les utilisateurs sensibles.',
+      '🧪 **280 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.2.4 - "Le Journal sans An 🗞️✂️"',
     date: '1 Juin 2026',
     description: 'Le Petit Parisien perd son millésime — le composant Actualite1899 devient simplement Actualite. Le Faux-Semblant enfoui était commité partiellement : ses capacités, ses 19 points de caractéristiques, son bonus de tricherie et son enregistrement encyclopedia sont maintenant au complet. Les tests Supabase ont leur MockChain unifiée, et le mode sombre peut être activé par classe CSS — prêt pour une future bascule nuit.',

@@ -1,5 +1,5 @@
 // src/context/ForgeContext.jsx
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getCurrentUser } from '../utils/authUtils';
@@ -29,7 +29,7 @@ export function ForgeProvider({ children }) {
     fetchForge();
   }, [fetchForge]);
 
-  const soumettreEntree = async (data, file) => {
+  const soumettreEntree = useCallback(async (data, file) => {
     try {
       const { id: userId } = await getCurrentUser() ?? {};
       if (!userId) throw new Error("Vous devez être identifié pour forger une entrée.");
@@ -78,9 +78,9 @@ export function ForgeProvider({ children }) {
       showInAppNotification("La gravure a échoué : " + error.message, "error");
       return false;
     }
-  };
+  }, []);
 
-  const deplacerCarteKanban = async (idCarte, statutCible, idCarteSurvolee) => {
+  const deplacerCarteKanban = useCallback(async (idCarte, statutCible, idCarteSurvolee) => {
     const nouvellesEntrees = [...entrees];
     const indexCarte = nouvellesEntrees.findIndex(c => c.id === idCarte);
     if (indexCarte === -1) return;
@@ -110,32 +110,32 @@ export function ForgeProvider({ children }) {
       console.error("Kanban sync:", err);
       fetchForge();
     }
-  };
+  }, [entrees, fetchForge]);
 
-  const verifierRoleAdmin = async (userId) => {
+  const verifierRoleAdmin = useCallback(async (userId) => {
     const { data } = await supabase.from('profiles').select('role').eq('id', userId).single();
     if (!isAdmin(data)) {
       throw new Error("Accès refusé : droits insuffisants.");
     }
-  };
+  }, []);
 
-  const toggleArchive = async (id, currentState) => {
+  const toggleArchive = useCallback(async (id, currentState) => {
     const { id: userId } = await getCurrentUser() ?? {};
     if (!userId) return;
     await verifierRoleAdmin(userId);
     const { error } = await supabase.from('registre_forge').update({ is_masque: !currentState }).eq('id', id);
     if (!error) setEntrees(prev => prev.map(c => c.id === id ? { ...c, is_masque: !currentState } : c));
-  };
+  }, [verifierRoleAdmin]);
 
-  const toggleInitieOnly = async (id, currentState) => {
+  const toggleInitieOnly = useCallback(async (id, currentState) => {
     const { id: userId } = await getCurrentUser() ?? {};
     if (!userId) return;
     await verifierRoleAdmin(userId);
     const { error } = await supabase.from('registre_forge').update({ is_initie_only: !currentState }).eq('id', id);
     if (!error) setEntrees(prev => prev.map(c => c.id === id ? { ...c, is_initie_only: !currentState } : c));
-  };
+  }, [verifierRoleAdmin]);
 
-  const voterEntree = async (idCarte, typeVote) => {
+  const voterEntree = useCallback(async (idCarte, typeVote) => {
     const currentUser = await getCurrentUser();
     const userId = currentUser?.id;
 
@@ -167,9 +167,9 @@ export function ForgeProvider({ children }) {
 
       return { ...carte, votes: newVotes };
     }));
-  };
+  }, []);
 
-  const rejeterEntree = async (id, commentaire) => {
+  const rejeterEntree = useCallback(async (id, commentaire) => {
     try {
       const { id: userId } = await getCurrentUser() ?? {};
       if (!userId) throw new Error("Vous devez être identifié pour rejeter un ticket.");
@@ -200,13 +200,16 @@ export function ForgeProvider({ children }) {
       showInAppNotification("La clôture a échoué : " + error.message, "error");
       return false;
     }
-  };
+  }, [verifierRoleAdmin]);
+
+  const ctxValue = useMemo(() => ({
+    entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban,
+    toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree
+  }), [entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban,
+    toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree]);
 
   return (
-    <ForgeContext.Provider value={{
-      entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban,
-      toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree
-    }}>
+    <ForgeContext.Provider value={ctxValue}>
       {children}
     </ForgeContext.Provider>
   );

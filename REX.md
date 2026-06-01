@@ -416,3 +416,21 @@
 
 - **Ne pas supposer que l'IA a tout commité** : Vérifier `git log --oneline` entre la dernière version et HEAD pour s'assurer que tous les changements associés ont été inclus. En cas de doute, demander au développeur.
 
+## Session du 1 Juin 2026 (fin) — Perf Audit 🔥⚡
+
+### Règles ajoutées
+
+67. **`import * as LucideIcons` → `iconMap` centralisé** — Quand un fichier a besoin d'icônes dynamiques (`LucideIcons[nom]`), ne pas importer toute la librairie. Créer un `iconMap` dans `icons.js` avec seulement les icônes utilisées, et fallback `|| HelpCircle` si l'icône n'est pas dans la map. ~43 Mo retirés du bundle pour 4 fichiers.
+
+68. **Fusionner les imports depuis le même module** — Ne pas écrire `import { A } from 'x'` puis `import { B } from 'x'` sur deux lignes. Fusionner en une seule : `import { A, B } from 'x'`. Jest échoue avec `SyntaxError: Identifier 'X' has already been declared` si un nom est importé deux fois depuis le même module.
+
+69. **Mocker lucide-react dans les tests quand on utilise `iconMap`** — Si un test importe un fichier qui utilise `iconMap`, le mock de `lucide-react` doit exporter toutes les icônes que `icons.js` importe, sinon un nom manquant devient `undefined` et le test plante à l'import (pas à l'exécution).
+
+### Problème résolu
+
+- **Perf Top 5** : Les 5 correctifs de l'audit performance ont été appliqués sans régression. Le bundle perd 43 MB (imports wildcard), les re-rendus cascade sont stoppés (useMemo/useCallback), les animations mortes ressuscitent (keyframes Tailwind), et Pixie arrête de pomper la batterie (0.05s → 0.3s).
+
+### Leçon
+
+- **Toujours vérifier après rename/refacto qu'un test compile** : TabUsers.test.js importait TabUsers.js, qui importait `import * as LucideIcons`. Après remplacement par l'`iconMap`, il fallait merger les imports et s'assurer que le mock de `lucide-react` dans le test fournisse toutes les icônes nécessaires. Le test a échoué à la compilation avec `Identifier 'Award' has already been declared` à cause d'imports dupliqués.
+
