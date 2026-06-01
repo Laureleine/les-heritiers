@@ -434,3 +434,23 @@
 
 - **Toujours vérifier après rename/refacto qu'un test compile** : TabUsers.test.js importait TabUsers.js, qui importait `import * as LucideIcons`. Après remplacement par l'`iconMap`, il fallait merger les imports et s'assurer que le mock de `lucide-react` dans le test fournisse toutes les icônes nécessaires. Le test a échoué à la compilation avec `Identifier 'Award' has already been declared` à cause d'imports dupliqués.
 
+---
+
+# Retour d'EXpérience — Session du 1 Juin 2026 (soir)
+
+## Règles gravées dans le marbre
+
+70. **N+1 dans les boucles `for...of` avec Supabase** — Si une boucle itère sur une file d'attente et fait 1-2 requêtes par itération, c'est un N+1. Le fix : séparer les actions (add/remove) et faire un batch unique par type d'action (`.in()` pour les SELECT, bulk insert/delete).
+71. **`.or()` PostgREST est fragile avec les valeurs utilisateur** — Les noms de contacts peuvent contenir des apostrophes, parenthèses, etc. Passés en string dans `.or()`, ils brisent l'URL. Préférer `.eq('type', type).in('content->>nom', noms)` — le JS client URL-encode automatiquement les valeurs.
+72. **Chunker les `.in()` > 100 IDs** — PostgREST a une limite de taille d'URL. Si une requête `.in('id', largeArray)` peut dépasser 100 IDs, découper en paquets de 100 et lancer en parallèle avec `Promise.all`.
+
+## Problème résolu
+
+- **N+1 contactSyncQueue.js** : `flushContactsToGrimoire` faisait 2 requêtes par item dans la queue. Fix : une seule vérification des doublons (`.in()`), un seul `INSERT` batch, et un `DELETE` batch par type. De 2N à ~4 requêtes max.
+- **Chunking useTelegraphe.js** : `.in('message_id', data.map(m => m.id))` avec 500+ IDs dépassait la limite URL de PostgREST. Fix : `chunk(ids, 100)` + `Promise.all`.
+
+## Leçon
+
+- **Penser aux limites PostgREST dès qu'on fait des `.in()`** : la limite d'URL est vite atteinte avec des listes d'IDs. Un petit utilitaire `chunk(arr, size)` est désormais disponible dans `useTelegraphe.js`. Le mutualiser plus tard si d'autres fichiers en ont besoin.
+
+
