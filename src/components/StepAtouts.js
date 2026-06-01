@@ -5,6 +5,7 @@ import { showInAppNotification } from '../utils/SystemeServices';
 import { FIXED_XP_COSTS } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
+import { xpTransaction } from '../utils/xpTransaction';
 
 // 🛡️ Constante requise pour les Atouts
 const MAX_ATOUTS_GLOBAL = 2;
@@ -46,18 +47,16 @@ export default function StepAtouts() {
         
         // ✨ REVENTE DIRECTE ET INSTANTANÉE
         const newAtouts = character.atouts.filter(a => a !== valueToToggle);
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { atouts: newAtouts }, gameData });
-        dispatchCharacter({
-          type: 'LOG_XP_TRANSACTION',
-          transaction: {
-            type: 'REMBOURSEMENT',
-            code: XP_CODES.ATOUT_ACQUISITION,
-            label: `Acquisition : Atout ${atout.nom}`,
-            valeur: FIXED_XP_COSTS.nouvel_atout
-          },
-          gameData
-        });
-        showInAppNotification(`Atout désappris : +${FIXED_XP_COSTS.nouvel_atout} XP récupérés !`, "success");
+        xpTransaction(dispatchCharacter, {
+            updates: { atouts: newAtouts },
+            transaction: {
+                type: 'REMBOURSEMENT',
+                code: XP_CODES.ATOUT_ACQUISITION,
+                label: `Acquisition : Atout ${atout.nom}`,
+                valeur: FIXED_XP_COSTS.nouvel_atout
+            },
+            notification: { text: `Atout désappris : +${FIXED_XP_COSTS.nouvel_atout} XP récupérés !`, type: 'success' }
+        }, gameData);
         return;
       } else {
         // ✨ ACHAT DIRECT ET INSTANTANÉ
@@ -66,18 +65,16 @@ export default function StepAtouts() {
           return;
         }
         const newAtouts = [...(character.atouts || []), atout.nom];
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { atouts: newAtouts }, gameData });
-        dispatchCharacter({
-          type: 'LOG_XP_TRANSACTION',
-          transaction: {
-            type: 'DEPENSE',
-            code: XP_CODES.ATOUT_ACQUISITION,
-            label: `Acquisition : Atout ${atout.nom}`,
-            valeur: FIXED_XP_COSTS.nouvel_atout
-          },
-          gameData
-        });
-        showInAppNotification(`L'Atout "${atout.nom}" a été acquis pour ${FIXED_XP_COSTS.nouvel_atout} XP !`, "success");
+        xpTransaction(dispatchCharacter, {
+            updates: { atouts: newAtouts },
+            transaction: {
+                type: 'DEPENSE',
+                code: XP_CODES.ATOUT_ACQUISITION,
+                label: `Acquisition : Atout ${atout.nom}`,
+                valeur: FIXED_XP_COSTS.nouvel_atout
+            },
+            notification: { text: `L'Atout "${atout.nom}" a été acquis pour ${FIXED_XP_COSTS.nouvel_atout} XP !`, type: 'success' }
+        }, gameData);
         return;
       }
     }

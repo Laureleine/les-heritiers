@@ -8,6 +8,7 @@ import { showInAppNotification } from '../utils/SystemeServices';
 import { getFutileCost } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
+import { xpTransaction } from '../utils/xpTransaction';
 
 const POINTS_TOTAUX = 14;
 
@@ -113,9 +114,11 @@ export default function StepCompetencesFutiles() {
         }
 
         const newRangs = { ...rangsInvestis, [nomComp]: current + 1 };
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesFutiles: { ...character.competencesFutiles, rangs: newRangs } }, gameData });
-        dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'DEPENSE', code: XP_CODES.COMP_FUTILE_RANG, label: `Loisir : ${nomComp}`, valeur: costXP, rang_final: scoreTotal + 1 }, gameData });
-        showInAppNotification(`Passion perfectionnée pour ${costXP} XP !`, "success");
+        xpTransaction(dispatchCharacter, {
+            updates: { competencesFutiles: { ...character.competencesFutiles, rangs: newRangs } },
+            transaction: { type: 'DEPENSE', code: XP_CODES.COMP_FUTILE_RANG, label: `Loisir : ${nomComp}`, valeur: costXP, rang_final: scoreTotal + 1 },
+            notification: { text: `Passion perfectionnée pour ${costXP} XP !`, type: 'success' }
+        }, gameData);
 
       } else if (delta < 0) {
         if (current <= plancher) {
@@ -129,9 +132,11 @@ export default function StepCompetencesFutiles() {
         if (current - 1 === 0) delete newRangs[nomComp];
         else newRangs[nomComp] = current - 1;
 
-        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesFutiles: { ...character.competencesFutiles, rangs: newRangs } }, gameData });
-        dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: { type: 'REMBOURSEMENT', code: XP_CODES.COMP_FUTILE_RANG, label: `Loisir : ${nomComp}`, valeur: refundXP, rang_final: scoreTotal - 1 }, gameData });
-        showInAppNotification(`Dépense annulée. +${refundXP} XP récupérés.`, "info");
+        xpTransaction(dispatchCharacter, {
+            updates: { competencesFutiles: { ...character.competencesFutiles, rangs: newRangs } },
+            transaction: { type: 'REMBOURSEMENT', code: XP_CODES.COMP_FUTILE_RANG, label: `Loisir : ${nomComp}`, valeur: refundXP, rang_final: scoreTotal - 1 },
+            notification: { text: `Dépense annulée. +${refundXP} XP récupérés.`, type: 'info' }
+        }, gameData);
       }
       return;
     }
