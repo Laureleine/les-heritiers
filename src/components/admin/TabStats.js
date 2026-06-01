@@ -56,9 +56,9 @@ function TabStats() {
 
       // ── 4. Activité quotidienne (30 derniers jours) ────────
       const [{ data: profiles }, { data: characters }, { data: requests }] = await Promise.all([
-        supabase.from('profiles').select('created_at').gte('created_at', thirtyDaysAgo),
-        supabase.from('characters').select('created_at, updated_at').or(`created_at.gte.${thirtyDaysAgo},updated_at.gte.${thirtyDaysAgo}`),
-        supabase.from('data_change_requests').select('created_at').gte('created_at', thirtyDaysAgo),
+        supabase.from('profiles').select('created_at').gte('created_at', thirtyDaysAgo).limit(10000),
+        supabase.from('characters').select('created_at, updated_at').or(`created_at.gte.${thirtyDaysAgo},updated_at.gte.${thirtyDaysAgo}`).limit(10000),
+        supabase.from('data_change_requests').select('created_at').gte('created_at', thirtyDaysAgo).limit(10000),
       ]);
 
       const dailyData = {};

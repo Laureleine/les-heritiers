@@ -19,7 +19,7 @@ export default function TabNotifications() {
 
             const [{ data: statsData }, { data: historyData }] = await Promise.all([
                 supabase.rpc('get_notification_stats'),
-                supabase.from('notification_history').select('*').order('created_at', { ascending: false }).limit(20)
+                supabase.from('notification_history').select('id, email_status, version, version_type, created_at').order('created_at', { ascending: false }).limit(20)
             ]);
 
             if (statsData) setStats(statsData);

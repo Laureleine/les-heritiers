@@ -19,7 +19,7 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
 
     // 🧠 Requête Hybride : Nos notes personnelles OU les notes partagées du Cercle
     // 👑 Si admin : on voit TOUT le Grimoire du personnage
-    let query = supabase.from('heritier_notes').select('*');
+    let query = supabase.from('heritier_notes').select('id, type, is_shared, player_id, content, created_at, character_id, cercle_id');
 
     if (isAdmin) {
       // Admin voit toutes les entrées du personnage

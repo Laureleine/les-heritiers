@@ -16,7 +16,7 @@ export function useForgeTitres(userProfile) {
 
   const fetchBadges = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase.from('titres_honorifiques').select('*').order('label');
+    const { data, error } = await supabase.from('titres_honorifiques').select('id, label, icon_name, color_classes, description').order('label');
     if (!error && data) setBadges(data);
     setLoading(false);
   }, []);

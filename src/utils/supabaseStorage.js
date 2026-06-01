@@ -291,7 +291,8 @@ export const getAllCharactersAdmin = async () => {
         const { data, error } = await supabase
             .from('characters')
             .select(`${LIGHT_SELECT}, profiles(username)`)
-            .order('updated_at', { ascending: false });
+            .order('updated_at', { ascending: false })
+            .limit(500);
 
         if (error) throw error;
         return (data || []).map(char => mapDatabaseToCharacter(char));
