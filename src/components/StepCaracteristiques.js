@@ -9,7 +9,6 @@ import { getCaracCost } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
 
-const POINTS_A_REPARTIR = 10;
 const MAX_SCORE_INVESTISSEMENT = 5;
 
 export default function StepCaracteristiques() {
@@ -38,6 +37,7 @@ export default function StepCaracteristiques() {
         }, 0);
     }, [currentCaracs, feeData]); // On a mis feeData au lieu de feeData.caracteristiques pour éviter un crash de dépendance
 
+    const POINTS_A_REPARTIR = feeData?.isEnfoui ? 19 : 10;
     const pointsRestants = POINTS_A_REPARTIR - pointsDepenses;
 
     // 🛡️ LA DOUANE EST ICI (Early return) : Placée obligatoirement APRÈS les Hooks !
