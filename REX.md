@@ -453,4 +453,29 @@
 
 - **Penser aux limites PostgREST dès qu'on fait des `.in()`** : la limite d'URL est vite atteinte avec des listes d'IDs. Un petit utilitaire `chunk(arr, size)` est désormais disponible dans `useTelegraphe.js`. Le mutualiser plus tard si d'autres fichiers en ont besoin.
 
+---
+
+# Retour d'EXpérience — Session du 2 Juin 2026
+
+## Version : 17.2.8 — "Le Flash-Info de la Belle Époque 📺🗞️"
+
+### Règles ajoutées
+
+73. **Pipeline — L'étape 0 (cleanup) supprime les OCR, mais ne les régénère pas** — Dans le flux "Tout refaire" (`--tout` ou `-a`), `run_step_0_cleanup()` est appelée d'abord pour nettoyer les fichiers de la date cible, y compris les OCR. Ensuite les étapes 1→6 s'exécutent normalement. Mais entre la cleanup et l'étape 1, la liste des dates est fixée dans le `main()`. Si l'étape 1 a déjà tourné pour une date dans un run précédent, la cleanup supprime les OCR et l'étape 1 ne les re-génère pas (elle saute). Correction : après le cleanup, relancer `run_step_1_ocr(date_str)` explicitement (ligne 579 dans `pipeline_journalier.py`).
+
+74. **Step 8 du pipeline : résumé IA via Gemini, stocké dans `journal_daily_info.daily_summary`** — Nouvelle étape `run_step_8_daily_summary()` qui collecte les articles restaurés d'une date, envoie titres+résumés à Gemini (`gemini-flash-lite-latest`) avec un prompt façon JT Belle Époque, et INSERT/UPDATE le résultat dans `journal_daily_info.daily_summary`. Appelée dans les 3 branches du `main()` + Option 1.
+
+75. **Affichage frontend du flash-info : onglet dédié "📺 Résumé du Jour"** — Sidebar enrichie d'un onglet entre "Lune" et "Chronique". Affiche le contenu formaté (`**TITRE**` en gras, `— lignes` en listé). Message par défaut "Aucun flash-info disponible pour cette date." si `daily_summary` est null.
+
+### Problèmes résolus
+
+- **Build Vercel cassé par 3 erreurs préexistantes** : 1) `XP_CODES` importé deux fois dans `StepCaracteristiques.js` (fichier `xpCosts.js` inexistant), 2) `isCharacterScelle`, `getMagicBadges`, `AnomalieFeeriqueWidget` non importés dans `StepPouvoirs.js`, 3) variable `results` inutilisée dans `CerclesDashboard.js`. Toutes corrigées, build vert désormais.
+
+### Process à améliorer
+
+- **Vérifier le build local AVANT toute version** : les 3 erreurs étaient préexistantes et le build était cassé depuis ~23h sur Vercel. Un `npx react-scripts build` local les aurait révélées immédiatement.
+- **Pipeline cleanup** : quand une nouvelle étape insère en base, vérifier qu'elle est incluse dans `run_step_0_cleanup()`.
+- **Backup Supabase** systématique avant version (appliqué).
+- **Tests** : 280 tests verts avant et après (23 suites).
+
 
