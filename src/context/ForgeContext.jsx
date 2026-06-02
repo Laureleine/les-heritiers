@@ -206,7 +206,9 @@ export function ForgeProvider({ children }) {
     entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban,
     toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree
   }), [entrees, loading, fetchForge, soumettreEntree, deplacerCarteKanban,
-    toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree]);
+    toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree,
+    // Toutes les fonctions sont en useCallback, leurs refs sont stables
+  ]);
 
   return (
     <ForgeContext.Provider value={ctxValue}>

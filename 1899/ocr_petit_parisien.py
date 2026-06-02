@@ -350,7 +350,7 @@ class GallicaDownloader:
 def main():
     parser = argparse.ArgumentParser(description='Télécharge, scrape et OCRise "Le Petit Parisien".')
     parser.add_argument('--date', type=str, default='1899-11-26', help='Date du journal (AAAA-MM-JJ)')
-    parser.add_argument('--ark', type=str, default='bpt6k519101d', help='ARK Gallica spécifique si déjà connu')
+    parser.add_argument('--ark', type=str, default=None, help='ARK Gallica spécifique si déjà connu (sinon résolu auto depuis la date)')
     parser.add_argument('--method', type=str, choices=['api', 'tesseract'], default='api', 
                         help='Méthode OCR : "api" (BnF officiel, rapide) ou "tesseract" (OCR local sur image)')
     parser.add_argument('--pages', type=str, default='1,2,3,4', help='Liste des pages à extraire (ex: 1,2,3,4)')

@@ -50,7 +50,10 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\" -Recurse -Directory)",
       "Bash(Select-Object -First 20)",
       "Bash(Get-ChildItem -Path \"src\" -Recurse -Filter \"*.js*\")",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\\\\src\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\\\\src\" -Recurse -File | Where-Object {$_.Extension -in '.tsx', '.ts', '.json'} | Select-Object -First 80 FullName)"
     ]
   }
 }

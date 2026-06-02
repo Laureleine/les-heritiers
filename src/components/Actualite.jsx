@@ -630,7 +630,7 @@ export default function Actualite({ onBack, userProfile }) {
                   onClick={() => setActiveMenu('resume')} 
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'resume' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
                 >
-                  <span className="text-base">📺</span> <span>Résumé du Jour</span>
+                  <span className="text-base">📰</span> <span>Résumé du Jour</span>
                 </button>
                 <button 
                   onClick={() => setActiveMenu('chronique')} 
@@ -690,11 +690,11 @@ export default function Actualite({ onBack, userProfile }) {
           {/* Corps Actif (Colonne Droite - w-3/4) */}
           <main className="lg:col-span-9">
             
-            {/* 📺 VIEW 1: RÉSUMÉ DU JOUR */}
+            {/* 📰 VIEW 1: RÉSUMÉ DU JOUR */}
             {activeMenu === 'resume' && (
               <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
-                  <span className="text-4xl">📺</span>
+                  <span className="text-4xl">📰</span>
                   <div>
                     <h2 className="text-2xl font-bold font-serif">Résumé du Jour</h2>
                     <p className="text-xs font-sans italic opacity-75">
@@ -716,13 +716,11 @@ export default function Actualite({ onBack, userProfile }) {
                         return <p key={i} className="text-base leading-relaxed mb-2 text-stone-700 dark:text-stone-300">{line}</p>;
                       })}
                     </div>
-                    <p className="text-xs font-sans italic opacity-60 mt-4 text-right">
-                      ✦ Résumé généré par l'IA — Belle Époque
-                    </p>
+
                   </div>
                 ) : (
                   <div className="text-center py-16 text-stone-500 dark:text-stone-400">
-                    <p className="text-5xl mb-4">📡</p>
+                    <p className="text-5xl mb-4">📰</p>
                     <p className="font-sans text-sm">Aucun flash-info disponible pour cette édition</p>
                     <p className="font-sans text-xs mt-2 opacity-60">Le résumé est généré lors de la numérisation du journal</p>
                   </div>
