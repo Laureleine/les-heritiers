@@ -253,7 +253,7 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     setXpSubmitting(true);
     const notSealed = [];
     try {
-      const results = await Promise.all(recipients.map(member => {
+      await Promise.all(recipients.map(member => {
         const amount = amounts[member.user_id];
         return supabase.rpc('award_xp', {
           p_character_id: member.characters.id,
