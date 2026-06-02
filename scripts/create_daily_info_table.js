@@ -23,6 +23,7 @@ require('dotenv').config();
       weather_wind_kmh numeric,
       weather_icon text NOT NULL,
       weather_desc text NOT NULL,
+      daily_summary text,
       created_at timestamptz NOT NULL DEFAULT now(),
       updated_at timestamptz NOT NULL DEFAULT now()
     );
