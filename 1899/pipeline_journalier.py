@@ -465,6 +465,93 @@ def run_step_6_database_upload(date_str):
         print(f"❌ Échec de l'étape 6 (téléversement base de données) : {e}")
         return False
 
+def run_step_8_daily_summary(date_str, articles):
+    """Étape 8 : Génère un résumé global façon flash-info TV 1899 et l'insère en BDD."""
+    print(f"\n--- [Étape 8] Résumé global du journal pour le {date_str} ---", flush=True)
+    try:
+        articles_json = json.dumps([
+            {"category": a.get("category",""), "title": a.get("title",""), "summary": a.get("summary","")}
+            for a in articles if a.get("summary")
+        ], ensure_ascii=False, indent=2)
+
+        if not articles_json or len(articles_json) < 50:
+            print("  ⚠️ Pas assez d'articles avec résumé pour générer un flash-info.")
+            return True
+
+        model = genai.GenerativeModel('gemini-flash-lite-latest')
+        prompt = f"""
+Tu es un présentateur du journal télévisé de la Belle Époque. Tu viens de recevoir les dépêches du Petit Parisien pour la journée du {date_str}.
+
+À partir des articles ci-dessous (titre, résumé, rubrique), rédige un flash-info de 5 à 8 lignes maximum, comme si tu ouvrais le JT de 20h en 1899.
+
+Règles de style :
+- Ton alerte et solennel, façon speaker radio/télé de l'époque
+- Vocabulaire 1900 : "la une", "dépêche", "notre correspondant", "la capitale", "la chambre des députés", "l'opinion publique", "le tout-Paris", "les faits divers"
+- Pas d'anachronismes techniques
+- Alterner grands sujets politiques/sociaux et faits divers pittoresques
+- Terminer par une note légère ou une curiosité
+
+Format attendu (texte brut, sans JSON) :
+
+**TITRE ACCROCHE** (1 ligne)
+— Sujet principal : 1-2 phrases
+— Sujet secondaire : 1 phrase
+— Fait divers ou curiosité : 1 phrase
+— Phrase de conclusion choc ou transition
+
+Articles du jour :
+{articles_json}
+"""
+        response = call_gemini_with_retry(model, prompt)
+        daily_summary = response.text.strip()
+
+        if not daily_summary:
+            print("  ⚠️ Résumé vide généré par l'IA.")
+            return True
+
+        print(f"  📺 Flash-info généré ({len(daily_summary)} caractères).")
+
+        # Insertion en BDD
+        db_url = os.environ.get("SUPABASE_DB_URL")
+        if not db_url:
+            env_path = BASE_DIR.parent / ".env"
+            if env_path.exists():
+                for line in env_path.read_text(encoding="utf-8").splitlines():
+                    line = line.strip()
+                    if line.startswith("SUPABASE_DB_URL="):
+                        db_url = line.split("=", 1)[1].strip().strip("'\"")
+                        break
+
+        if db_url:
+            import psycopg2
+            conn = psycopg2.connect(db_url)
+            conn.autocommit = True
+            cur = conn.cursor()
+            cur.execute("""
+                UPDATE public.journal_daily_info
+                SET daily_summary = %s, updated_at = now()
+                WHERE date = %s
+            """, (daily_summary, date_str))
+            if cur.rowcount == 0:
+                cur.execute("""
+                    INSERT INTO public.journal_daily_info (date, sunrise, sunset, moon_phase, moon_visible, moon_aspect, moon_desc, moon_icon,
+                        weather_condition, weather_tmin, weather_tmax, weather_precip_mm, weather_wind_kmh, weather_icon, weather_desc, daily_summary)
+                    VALUES (%s, '06:00', '18:00', 'Nouvelle Lune', '0%', 'Invisible', 'Non calculé', '🌑',
+                        'Non disponible', NULL, NULL, NULL, NULL, '❓', 'Non disponible', %s)
+                    ON CONFLICT (date) DO UPDATE SET daily_summary = EXCLUDED.daily_summary, updated_at = now()
+                """, (date_str, daily_summary))
+            cur.close()
+            conn.close()
+            print(f"  💾 Résumé inséré en base pour le {date_str}.")
+        else:
+            print("  ⚠️ SUPABASE_DB_URL non trouvée, résumé non sauvegardé.")
+
+        return True
+    except Exception as e:
+        print(f"  ⚠️ Étape 8 (résumé global) ignorée : {e}", flush=True)
+        return True
+
+
 def run_step_7_daily_info(date_str):
     """Étape 7 : Génère et insère météo, soleil et lune pour la date donnée."""
     print(f"\n--- [Étape 7] Météo, Soleil & Lune pour le {date_str} ---", flush=True)
@@ -564,6 +651,14 @@ def main():
             run_step_5_export_events_json(date_str)
             run_step_6_database_upload(date_str)
             run_step_7_daily_info(date_str)
+            # Recharger les articles depuis le fichier pour le résumé
+            try:
+                content = js_path.read_text(encoding="utf-8")
+                json_part = content.split("const JOURNAL_ARTICLES = ")[1].strip().rstrip(";")
+                existing_articles = json.loads(json_part)
+                run_step_8_daily_summary(date_str, existing_articles)
+            except Exception:
+                print("  ⚠️ Impossible de charger les articles pour le résumé global.")
             print(f"🎉 Données rafraîchies et importées avec succès pour le {date_str} !")
             sys.exit(0)
         elif choix == '3':
@@ -575,6 +670,10 @@ def main():
             run_step_0_cleanup(date_str)
             pass_count = 0
             force_new_pass = True
+            # Relancer l'OCR car cleanup a supprimé les fichiers OCR
+            if not run_step_1_ocr(date_str):
+                print("❌ Le pipeline s'est arrêté lors de la reprise de l'Étape 1 après nettoyage.")
+                sys.exit(1)
         else:
             print("⚠️ Option 2 sélectionnée : Préparation d'une passe supplémentaire IA...")
             confirm = input("Es-tu sûr de vouloir forcer cette passe ? Une accumulation de passes peut créer des hallucinations IA. (oui/non) : ").strip().lower()
@@ -623,10 +722,13 @@ def main():
             
             # Étape 7 : Météo, Soleil & Lune
             run_step_7_daily_info(date_str)
-            
+
+            # Étape 8 : Résumé global du journal
+            run_step_8_daily_summary(date_str, articles_pass_2)
+
             print(f"\n🎉 PIPELINE DOUBLE-PASSE COMPLÉTÉ AVEC SUCCÈS POUR LE {date_str} !")
             sys.exit(0)
-            
+
         # CAS 2 : Date existant déjà en Passe 1 -> Exécution de la Passe 2 finale !
         elif pass_count == 1:
             print(f"\n🌟 L'édition a déjà 1 passe de restauration. Lancement de la PASSE 2 finale de raffinement...")
@@ -651,6 +753,8 @@ def main():
                     run_step_6_database_upload(date_str)
                     # Étape 7 : Météo, Soleil & Lune
                     run_step_7_daily_info(date_str)
+                    # Étape 8 : Résumé global du journal
+                    run_step_8_daily_summary(date_str, restored)
                     print(f"\n🎉 PIPELINE PASSE 2 COMPLÉTÉ AVEC SUCCÈS POUR LE {date_str} !")
                     sys.exit(0)
                     
@@ -673,6 +777,7 @@ def main():
                     run_step_5_export_events_json(date_str)
                     run_step_6_database_upload(date_str)
                     run_step_7_daily_info(date_str)
+                    run_step_8_daily_summary(date_str, restored)
                     print(f"\n🎉 PIPELINE COMPLÉTÉ AVEC SUCCÈS (Passe {new_pass_count}) POUR LE {date_str} !")
                     sys.exit(0)
                     

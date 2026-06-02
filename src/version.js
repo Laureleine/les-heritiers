@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.8 - "Le Flash-Info de la Belle Époque 📺🗞️"',
+    date: '2 Juin 2026',
+    description: 'Le Petit Parisien prend la parole : chaque édition se voit désormais dotée d\'un flash-info façon présentateur de journal télévisé 1899 — les gros titres de la une, les faits divers pittoresques, le tout dans la langue des soirées fin-de-siècle. Un nouvel onglet Résumé du Jour dans la Gazette lit le bulletin à la place des Héritiers. Le pipeline a été assaini (plus d\'OCR perdu après un "Tout refaire") et 9 dates de la base ont été nettoyées pour repartir sur des bases saines.',
+    changes: [
+      '📺 **Flash-info quotidien (Nouveau) :** Le pipeline génère désormais un résumé global façon JT Belle Époque pour chaque édition numérisée. Gemini reçoit la liste des articles (titre, rubrique, résumé) et pond un bulletin de 5 à 8 lignes — ton solennel, vocabulaire 1900, alternance grands sujets et faits divers, le tout gravé dans `journal_daily_info.daily_summary`.',
+      '🗞️ **Nouvel onglet "Résumé du Jour" :** Dans le sommaire de la Gazette, entre Lune et Chronique, un bouton 📺 Résumé du Jour affiche le flash-info. Les titres en gras, les lignes en retrait, la signature "Résumé généré par l\'IA — Belle Époque" — comme un vrai téléscripteur.',
+      '🔧 **Fix pipeline — OCR après "Tout refaire" :** L\'option 3 (Annuler et tout refaire) déclenchait `run_step_0_cleanup` qui supprimait les fichiers OCR fraîchement téléchargés à l\'étape 1, puis le pipeline tentait l\'étape 2 sans OCR et s\'effondrait. Désormais l\'étape 1 est relancée automatiquement après le nettoyage.',
+      '🗄️ **Colonne daily_summary ajoutée :** `journal_daily_info` s\'enrichit d\'un champ `daily_summary text` pour accueillir le flash-info — accessible côté frontend en même temps que la météo et la lune.',
+      '🧹 **9 dates purgées de Supabase :** Les articles des éditions 1899-11-27 à 1899-11-30, 1899-12-09, 1899-12-11, 1899-12-23, 1900-02-11 et 1890-01-01 ont été supprimés de la base — les pipelines de regénération peuvent repartir sur une ardoise propre.',
+      '🧪 **280 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.2.7 - "Le Sac à Dos du Voyageur 🎒⚡"',
     date: '1 Juin 2026',
     description: 'Le Grimoire ne transporte plus de bagages inutiles : le Casino physique (11 Mo) ne se décharge que quand on lance les dés, le Registre des versions (103 Ko) ne s\'ouvre que quand on le consulte, la Porte des Personnages et Pixie ne lestent plus le chargement initial, la distribution d\'XP dans les Cercles se fait en un éclair, et le Veilleur de Mise à Jour ne réveille plus le Grimoire quand on range l\'écran. 280 Sentinelles, toujours en faction.',

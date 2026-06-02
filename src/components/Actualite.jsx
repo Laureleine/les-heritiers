@@ -627,6 +627,12 @@ export default function Actualite({ onBack, userProfile }) {
                   <span className="text-base">🌙</span> <span>Influence Lunaire</span>
                 </button>
                 <button 
+                  onClick={() => setActiveMenu('resume')} 
+                  className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'resume' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
+                >
+                  <span className="text-base">📺</span> <span>Résumé du Jour</span>
+                </button>
+                <button 
                   onClick={() => setActiveMenu('chronique')} 
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'chronique' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
                 >
@@ -684,7 +690,47 @@ export default function Actualite({ onBack, userProfile }) {
           {/* Corps Actif (Colonne Droite - w-3/4) */}
           <main className="lg:col-span-9">
             
-            {/* 🌤️ VIEW 1: MÉTÉO */}
+            {/* 📺 VIEW 1: RÉSUMÉ DU JOUR */}
+            {activeMenu === 'resume' && (
+              <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
+                  <span className="text-4xl">📺</span>
+                  <div>
+                    <h2 className="text-2xl font-bold font-serif">Résumé du Jour</h2>
+                    <p className="text-xs font-sans italic opacity-75">
+                      Flash-info — {dateMeta.dayOfWeek} {dateMeta.dayNum} {dateMeta.monthName} {dateMeta.year}
+                    </p>
+                  </div>
+                </div>
+                {dailyInfo?.daily_summary ? (
+                  <div className="prose prose-stone dark:prose-invert max-w-none">
+                    <div className={`p-6 rounded-xl border-l-4 border-amber-600 ${darkMode ? 'bg-stone-900 border-stone-700' : 'bg-stone-50 border-stone-200'}`}>
+                      {dailyInfo.daily_summary.split('\n').map((line, i) => {
+                        if (line.startsWith('**') && line.endsWith('**')) {
+                          return <h3 key={i} className="text-xl font-bold font-serif mb-3 text-stone-900 dark:text-stone-100">{line.replace(/\*\*/g, '')}</h3>;
+                        }
+                        if (line.startsWith('—')) {
+                          return <p key={i} className="text-base leading-relaxed mb-2 text-stone-700 dark:text-stone-300 ml-4">{line}</p>;
+                        }
+                        if (!line.trim()) return <br key={i} />;
+                        return <p key={i} className="text-base leading-relaxed mb-2 text-stone-700 dark:text-stone-300">{line}</p>;
+                      })}
+                    </div>
+                    <p className="text-xs font-sans italic opacity-60 mt-4 text-right">
+                      ✦ Résumé généré par l'IA — Belle Époque
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center py-16 text-stone-500 dark:text-stone-400">
+                    <p className="text-5xl mb-4">📡</p>
+                    <p className="font-sans text-sm">Aucun flash-info disponible pour cette édition</p>
+                    <p className="font-sans text-xs mt-2 opacity-60">Le résumé est généré lors de la numérisation du journal</p>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* 🌤️ VIEW 2: MÉTÉO */}
             {activeMenu === 'meteo' && (
               <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 {dailyInfo ? (
