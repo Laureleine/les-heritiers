@@ -480,9 +480,11 @@ def run_step_8_daily_summary(date_str, articles):
 
         model = genai.GenerativeModel('gemini-flash-lite-latest')
         prompt = f"""
-Tu es un présentateur du journal télévisé de la Belle Époque. Tu viens de recevoir les dépêches du Petit Parisien pour la journée du {date_str}.
+Tu es un rédacteur en chef du Petit Parisien. Tu viens de recevoir les dépêches pour la journée du {date_str}.
 
-À partir des articles ci-dessous (titre, résumé, rubrique), rédige un flash-info de 5 à 8 lignes maximum, comme si tu ouvrais le JT de 20h en 1899.
+À partir des articles ci-dessous (titre, résumé, rubrique), rédige un flash-info de 5 à 8 lignes maximum, comme si tu composais la une du journal du lendemain.
+
+N'ajoute PAS d'en-tête avec la date ou le nom du journal — la date est déjà affichée dans l'interface.
 
 Règles de style :
 - Ton alerte et solennel, façon speaker radio/télé de l'époque
@@ -645,7 +647,8 @@ def main():
         print("1. Lancer le téléversement direct en BDD (Étape 6) et régénérer le JSON d'événements (Étape 5)")
         print("2. Forcer une passe de restauration supplémentaire par l'IA (Passe 3 et +)")
         print("3. ❌ Annuler et tout refaire depuis le début (supprime les données en base + fichiers)")
-        choix = input("Fais ton choix (1, 2 ou 3) : ").strip()
+        print("4. 📰 Régénérer uniquement le résumé global (Flash-info)")
+        choix = input("Fais ton choix (1, 2, 3 ou 4) : ").strip()
         if choix == '1':
             print("🚀 Option 1 sélectionnée : Régénération des événements et injection directe Supabase...")
             run_step_5_export_events_json(date_str)
@@ -660,6 +663,19 @@ def main():
             except Exception:
                 print("  ⚠️ Impossible de charger les articles pour le résumé global.")
             print(f"🎉 Données rafraîchies et importées avec succès pour le {date_str} !")
+            sys.exit(0)
+        elif choix == '4':
+            print("📰 Option 4 sélectionnée : Régénération du flash-info uniquement...")
+            if not configure_gemini():
+                print("  ❌ Clé API Gemini manquante.")
+                sys.exit(1)
+            try:
+                content = js_path.read_text(encoding="utf-8")
+                json_part = content.split("const JOURNAL_ARTICLES = ")[1].strip().rstrip(";")
+                existing_articles = json.loads(json_part)
+                run_step_8_daily_summary(date_str, existing_articles)
+            except Exception:
+                print("  ⚠️ Impossible de charger les articles pour le résumé global.")
             sys.exit(0)
         elif choix == '3':
             print("💥 Option 3 sélectionnée : Annulation et reprise complète...")
