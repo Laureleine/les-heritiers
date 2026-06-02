@@ -6,6 +6,9 @@ import { showInAppNotification } from '../utils/SystemeServices';
 import { getFeerieCost, getCaracCost } from '../utils/xpCalculator';
 import { getXpState, XP_CODES } from '../utils/xpActions';
 import { xpTransaction } from '../utils/xpTransaction';
+import { isCharacterScelle } from '../utils/lockUtils';
+import { getMagicBadges } from '../data/DictionnaireJeu';
+import AnomalieFeeriqueWidget from './AnomalieFeeriqueWidget';
 
 export default function StepPouvoirs() {
     const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();

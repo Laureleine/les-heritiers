@@ -4,10 +4,11 @@ import { Plus, Minus, RotateCcw } from '../config/icons';
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
-import { XP_CODES } from '../data/xpCosts';
+import { getCaracCost } from '../utils/xpCalculator';
 import { xpTransaction } from '../utils/xpTransaction';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
+import ConfirmModal from './ConfirmModal';
 
 const MAX_SCORE_INVESTISSEMENT = 5;
 
