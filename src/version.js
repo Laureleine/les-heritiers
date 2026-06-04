@@ -2,12 +2,13 @@
 
 export const VERSION_HISTORY = [
   {
-    version: '17.2.10 - "L\'Éveil du Faux-Semblant 🎭✨"',
+    version: '17.2.11 - "Le Cache du Phénix 🔥📦"',
     date: '4 Juin 2026',
-    description: 'Les Pouvoirs et les Atouts du Faux-Semblant enfoui se cachent désormais tant que la Féérie n\'a pas atteint 3 — comme les Capacités naturelles. Un message clair prévient l\'Héritier que tout se révélera en son temps.',
+    description: 'Le Nuage Féérique renaît de ses cendres : les tris de données protégés contre les noms manquants, le cache localStorage refuse les données vides, et les Héritiers bloqués depuis deux jours retrouvent l\'accès à leurs personnages sans manipulation manuelle.',
     changes: [
-      '🎭 **Faux-Semblant enfoui : Pouvoirs et Atouts verrouillés jusqu\'à Féérie 3 :** Les étapes Pouvoirs (`StepPouvoirs.js`) et Atouts (`StepAtouts.js`) affichent désormais un écran d\'attente quand l\'espèce est enfouie et que la Féérie est inférieure à 3. Même traitement que les Capacités (`StepCapacites.js`), qui vérifie désormais aussi le rang de Féérie (au lieu d\'un blocage permanent).',
-      '📜 **Message d\'attente dans les trois étapes :** « Le Faux-Semblant enfoui n\'a pas de [capacités/pouvoirs/atouts] pour le moment. Ils se révèleront lorsque la Féérie atteindra 3. »',
+      '🔥 **Crash du Nuage Féérique corrigé :** Le chargement des types de fées plantait silencieusement sur un `null` dans les tris alphabétiques (assets, pouvoirs, spécialités) — le `try/catch` avalait l\'erreur et retournait des données vides, mises en cache pour l\'éternité.',
+      '📦 **Cache vide automatiquement purgé :** Si le cache localStorage contient `fairyTypes: []` (traces du bug), il est détecté et invalidé au démarrage. Le Nuage se recharge à partir de Supabase.',
+      '🛡️ **Tris null-safe :** `a.nom || \'\'.localeCompare(b.nom || \'\')` dans les 3 comparateurs de `supabaseGameData.js` — plus aucun crash si une donnée a un nom manquant.',
       '🧪 **291 Sentinelles — toujours en faction, aucune régression.',
     ]
   },
