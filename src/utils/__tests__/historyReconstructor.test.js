@@ -3,6 +3,7 @@ jest.mock('../xpCalculator', () => ({
   getUtileCost: jest.fn((i) => (i + 1) * 3),
   getFutileCost: jest.fn((i) => i + 1),
   getFortuneCost: jest.fn((i, stats) => Math.max(5, (i + 1) * 2)),
+  getFortuneSpecialites: jest.fn(() => ({})),
   FIXED_XP_COSTS: { nouvel_atout: 8, specialite_utile: 8 },
 }));
 

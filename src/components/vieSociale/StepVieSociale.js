@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins, Briefcase, Plus, Minus, AlertCircle, Package, Users, Crown, Check, Lock, Search, X } from '../../config/icons';
 import { useVieSociale } from './useVieSociale';
-import { getFortuneCost } from '../../utils/xpCalculator';
+import { getFortuneCost, getFortuneSpecialites } from '../../utils/xpCalculator';
 import { parseIfString } from '../../utils/json';
 
 // 🎨 COMPOSANT D'ACCORDÉON
@@ -256,7 +256,7 @@ export default function StepVieSociale() {
               <Plus size={18} />
               {currentFortune < 15 && (
                 <span className="text-[9px] font-bold mt-0.5 leading-none">
-                  ({getFortuneCost(currentFortune, character.computedStats)} XP)
+                  ({getFortuneCost(currentFortune, character.computedStats, getFortuneSpecialites(character))} XP)
                 </span>
               )}
             </button>

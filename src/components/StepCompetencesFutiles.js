@@ -10,8 +10,6 @@ import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
 import { xpTransaction } from '../utils/xpTransaction';
 
-const POINTS_TOTAUX = 14;
-
 export default function StepCompetencesFutiles() {
   const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
   const fairyData = gameData?.fairyData;
@@ -54,7 +52,8 @@ export default function StepCompetencesFutiles() {
   // Calcul des points
   const rangsInvestis = character.competencesFutiles?.rangs || {};
   const pointsDepenses = Object.values(rangsInvestis).reduce((sum, rangs) => sum + rangs, 0);
-  const pointsRestants = POINTS_TOTAUX - pointsDepenses;
+  const maxPoints = feeData?.pointsFutiles ?? 10;
+  const pointsRestants = maxPoints - pointsDepenses;
 
   // Helper de limite (Utilise le score total calculé par App.js)
   const canAddRang = (nomComp) => {

@@ -2,7 +2,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
 import { showInAppNotification } from '../../utils/SystemeServices';
-import { getFortuneCost } from '../../utils/xpCalculator';
+import { getFortuneCost, getFortuneSpecialites } from '../../utils/xpCalculator';
 import { isCharacterScelle } from '../../utils/lockUtils';
 import { safeParse, safeParseArray } from '../../utils/json';
 import { getXpState, XP_CODES } from '../../utils/xpActions';
@@ -318,7 +318,8 @@ export function useVieSociale() {
         if (currentFortune >= 15) { showInAppNotification("Votre Fortune a atteint son apogée !", "warning"); return; }
 
         const { xpDispo } = getXpState(character);
-        const cost = getFortuneCost(currentFortune, character.computedStats);
+        const specialites = getFortuneSpecialites(character);
+        const cost = getFortuneCost(currentFortune, character.computedStats, specialites);
 
         if (xpDispo < cost) { showInAppNotification(`Fonds insuffisants ! Il vous faut ${cost} XP.`, "error"); return; }
 
@@ -336,7 +337,7 @@ export function useVieSociale() {
 
         if (currentFortune <= originFloor) { showInAppNotification("Votre Fortune originelle est scellée !", "warning"); return; }
 
-        const refund = getFortuneCost(currentFortune - 1, character.computedStats);
+        const refund = getFortuneCost(currentFortune - 1, character.computedStats, getFortuneSpecialites(character));
         xpTransaction(dispatchCharacter, {
             updates: { fortune: currentFortune - 1 },
             transaction: { type: 'REMBOURSEMENT', code: XP_CODES.FORTUNE_ELEVATION, label: 'Élévation Sociale : Fortune', valeur: refund, rang_final: currentFortune - 1 },

@@ -4,6 +4,7 @@ import {
   getUtileCost,
   getFutileCost,
   getFortuneCost,
+  getFortuneSpecialites,
   FIXED_XP_COSTS,
 } from './xpCalculator';
 
@@ -92,6 +93,80 @@ describe('getFortuneCost', () => {
     // next=1, raw=2-0=2, max(5,2)=5
     expect(getFortuneCost(0, null)).toBe(5);
     expect(getFortuneCost(0, {})).toBe(5);
+  });
+});
+
+describe('getFortuneCost — spécialités', () => {
+  const baseStats = { competencesTotal: { Classe: 0, Sciences: 0 } };
+
+  it('Argent (Classe) ajoute +1 à la réduction', () => {
+    // next=5, sans spé: raw=10-0=10, max(5,10)=10
+    // avec spé Argent: rangClasse=0+1=1, raw=10-1=9, max(5,9)=9
+    expect(getFortuneCost(4, baseStats, { Classe: ['Argent'] })).toBe(9);
+  });
+
+  it('Finance (Sciences) ajoute +1 à la réduction', () => {
+    // next=5, sans spé: raw=10-0=10
+    // avec spé Finance: rangSciences=0+1=1, raw=10-1=9
+    expect(getFortuneCost(4, baseStats, { Sciences: ['Finance'] })).toBe(9);
+  });
+
+  it('Argent et Finance cumulés', () => {
+    // next=5, sans spé: raw=10-0=10
+    // les deux: max(0+1, 0+1)=1, raw=10-1=9
+    expect(getFortuneCost(4, baseStats, { Classe: ['Argent'], Sciences: ['Finance'] })).toBe(9);
+  });
+
+  it('Argent se cumule avec le rang de Classe', () => {
+    // Classe=3 + Argent=1 => reduction=4, next=5, raw=10-4=6
+    const stats = { competencesTotal: { Classe: 3, Sciences: 0 } };
+    expect(getFortuneCost(4, stats, { Classe: ['Argent'] })).toBe(6);
+  });
+
+  it('specialites null/undefined ne plante pas', () => {
+    expect(getFortuneCost(4, baseStats, null)).toBe(10);
+    expect(getFortuneCost(4, baseStats, {})).toBe(10);
+    expect(getFortuneCost(4, baseStats, { Classe: [] })).toBe(10);
+  });
+});
+
+describe('getFortuneSpecialites', () => {
+  it('détecte Argent dans choixSpecialiteUser.Classe', () => {
+    const char = { competencesLibres: { choixSpecialiteUser: { Classe: ['Argent'] } } };
+    const result = getFortuneSpecialites(char);
+    expect(result).toEqual({ Classe: ['Argent'] });
+  });
+
+  it('détecte Finance dans choixSpecialiteUser.Sciences', () => {
+    const char = { competencesLibres: { choixSpecialiteUser: { Sciences: ['Finance'] } } };
+    const result = getFortuneSpecialites(char);
+    expect(result).toEqual({ Sciences: ['Finance'] });
+  });
+
+  it('retourne vide si aucune spécialité pertinente', () => {
+    const char = { competencesLibres: { choixSpecialiteUser: { Classe: ['Crochetage'] } } };
+    expect(getFortuneSpecialites(char)).toEqual({});
+  });
+
+  it('retourne vide si pas de competencesLibres', () => {
+    expect(getFortuneSpecialites({})).toEqual({});
+  });
+
+  it('détecte les spécialités gratuites', () => {
+    const char = {
+      competencesLibres: { choixSpecialiteUser: {} },
+      computedStats: {
+        specialites: { gratuites: { Classe: [{ specialite: 'Argent' }] } }
+      }
+    };
+    expect(getFortuneSpecialites(char)).toEqual({ Classe: ['Argent'] });
+  });
+
+  it('détecte la spécialité métier', () => {
+    const char = {
+      competencesLibres: { specialiteMetier: { comp: 'Classe', nom: 'Argent' } }
+    };
+    expect(getFortuneSpecialites(char)).toEqual({ Classe: ['Argent'] });
   });
 });
 

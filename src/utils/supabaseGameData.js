@@ -274,6 +274,7 @@ export const loadFairyTypes = async () => {
                 },
                 isSecret: fairy.is_secret,
                 isEnfoui: fairy.era === 'enfoui',
+                pointsFutiles: fairy.era === 'enfoui' ? 14 : 10,
                 competencesPredilection: compPredByFairy[fairy.id] || [],
                 competencesFutilesPredilection: compFutPredByFairy[fairy.id] || [],
                 capacites: capacitesStruct,

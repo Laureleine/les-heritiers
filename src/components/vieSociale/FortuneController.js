@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Coins, Plus, Minus } from '../../config/icons';
-import { getFortuneCost } from '../../utils/xpCalculator';
+import { getFortuneCost, getFortuneSpecialites } from '../../utils/xpCalculator';
 import { getXpState } from '../../utils/xpActions';
 
 export default function FortuneController({ 
@@ -52,13 +52,13 @@ export default function FortuneController({
           {isScelle && (
             <button
               onClick={onUpgrade}
-              disabled={isReadOnly || currentFortune >= 15 || xpDispo < getFortuneCost(currentFortune, character.computedStats)}
+              disabled={isReadOnly || currentFortune >= 15 || xpDispo < getFortuneCost(currentFortune, character.computedStats, getFortuneSpecialites(character))}
               className="h-10 px-3 flex flex-col items-center justify-center rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-30 disabled:bg-gray-400 transition-colors shadow-md"
             >
               <Plus size={18} />
               {currentFortune < 15 && (
                 <span className="text-[9px] font-bold -mt-1 tracking-wider">
-                  ({getFortuneCost(currentFortune, character.computedStats)} XP)
+                  ({getFortuneCost(currentFortune, character.computedStats, getFortuneSpecialites(character))} XP)
                 </span>
               )}
             </button>
