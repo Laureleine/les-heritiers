@@ -9,7 +9,6 @@
 import { SKILLS_ESPRIT } from '../components/competencesLibres/useCompetencesLibres';
 
 const POINTS_UTILES_TOTAUX  = 15;
-const POINTS_FUTILES_TOTAUX = 14;
 const MAX_ATOUTS             = 2;
 
 /**
@@ -133,9 +132,10 @@ export function validateBeforeSeal(character, gameData, feeData) {
     // =========================================================================
     // G futiles — Points de loisirs restants
     // =========================================================================
+    const maxPointsFutiles = feeData?.pointsFutiles ?? 10;
     const pointsFutilesDepenses = Object.values(character.competencesFutiles?.rangs || {})
         .reduce((s, v) => s + v, 0);
-    const pointsRestantsFutiles = POINTS_FUTILES_TOTAUX - pointsFutilesDepenses;
+    const pointsRestantsFutiles = maxPointsFutiles - pointsFutilesDepenses;
     if (pointsRestantsFutiles > 0) {
         warnings.push(`Il vous reste ${pointsRestantsFutiles} point(s) de loisirs (futiles) non dépensé(s).`);
     }

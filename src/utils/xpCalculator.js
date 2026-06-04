@@ -43,21 +43,52 @@ export const getFutileCost = (currentRank) => {
 /**
  * Calcule le coût en XP pour augmenter la Fortune.
  * Règle : (Rang à atteindre x 2) - (Rang de Classe ou Sciences).
+ *   - La spécialité Argent (Classe) ajoute +1 au rang de Classe.
+ *   - La spécialité Finance (Sciences) ajoute +1 au rang de Sciences.
  * Minimum : 5 XP. Maximum absolu de la Fortune : 15.
+ *
+ * @param {number} currentRank - Rang actuel de Fortune
+ * @param {object} characterStats - computedStats du personnage
+ * @param {object} [specialites] - Spécialités pertinentes { Classe?: string[], Sciences?: string[] }
  */
-export const getFortuneCost = (currentRank, characterStats) => {
+export const getFortuneCost = (currentRank, characterStats, specialites) => {
   const nextRank = currentRank + 1;
   if (nextRank > 15) return null;
 
-  // On extrait les scores totaux des compétences sociales utiles pour la réduction
-  const rangClasse = characterStats?.competencesTotal?.['Classe'] || 0;
-  const rangSciences = characterStats?.competencesTotal?.['Sciences'] || 0;
+  const bonusClasse = specialites?.Classe?.includes('Argent') ? 1 : 0;
+  const bonusSciences = specialites?.Sciences?.includes('Finance') ? 1 : 0;
+
+  const rangClasse = (characterStats?.competencesTotal?.['Classe'] || 0) + bonusClasse;
+  const rangSciences = (characterStats?.competencesTotal?.['Sciences'] || 0) + bonusSciences;
   
-  // La règle de base permet de déduire la meilleure des deux compétences
   const reduction = Math.max(rangClasse, rangSciences);
 
   const rawCost = (nextRank * 2) - reduction;
   return Math.max(5, rawCost);
+};
+
+/**
+ * Extrait les spécialités pertinentes pour le calcul du coût de Fortune
+ * (Argent pour Classe, Finance pour Sciences) depuis un personnage.
+ *
+ * @param {object} character - Le personnage complet
+ * @returns {object} { Classe?: string[], Sciences?: string[] }
+ */
+export const getFortuneSpecialites = (character) => {
+  const specialites = {};
+
+  const check = (comp, specName) => {
+    if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
+    if (character.computedStats?.specialites?.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+    const metier = character.competencesLibres?.specialiteMetier;
+    if (metier?.comp === comp && metier?.nom === specName) return true;
+    return false;
+  };
+
+  if (check('Classe', 'Argent')) specialites.Classe = ['Argent'];
+  if (check('Sciences', 'Finance')) specialites.Sciences = ['Finance'];
+
+  return specialites;
 };
 
 /**

@@ -2,8 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
-    version: '17.2.8 - "Le Flash-Info de la Belle Époque 📺🗞️"',
-    date: '2 Juin 2026',
+    version: '17.2.9 - "Le Savoir des Spécialistes 🎭💰"',
+    date: '4 Juin 2026',
+    description: 'Les points de Loisirs ne sont plus les mêmes pour toutes les fées : 10 pour les Révélés, 14 pour les Faux-Semblants enfouis. Le coût d\'élévation de Fortune reconnaît désormais les spécialités Argent (Classe) et Finance (Sciences) pour réduire la note. Un script Python enchaîne les dates manquantes du Petit Parisien sans surveillance, et un Héritier Golem a été rappelé à l\'ordre.',
+    changes: [
+      '🎭 **Points de Loisirs ajustés par espèce :** Chaque type de fée dispose désormais de son propre budget de Compétences Futiles — 10 points pour toutes, 14 pour le Faux-Semblant enfoui (constante `pointsFutiles` dans `supabaseGameData.js`). Les personnages existants ne perdent rien : seuls les rangs de création comptent.',
+      '💰 **Spécialités Argent & Finance réduisent le coût de Fortune :** La formule `getFortuneCost` intègre désormais les spécialités Argent (Classe) et Finance (Sciences). Posséder l\'une d\'elles ajoute +1 au rang de la compétence pour le calcul de la réduction. La nouvelle helper `getFortuneSpecialites` fouille toutes les sources (achats, dons, métier).',
+      '🤖 **Batch pipeline pour les dates manquantes :** `batch_missing_dates.py` trouve les 293 trous dans la Gazette et les traite du plus récent au plus ancien. En cas de crise de tokens Gemini, la date est nettoyée de la base et le script s\'arrête proprement pour reprise le lendemain.',
+      '🧹 **Emet Elohit (Aimé Éloit) rappelé à l\'ordre :** Le double Golem sans XP a été supprimé de la base. Sa copie (13 pts futiles) a été renommée et conserve son état.',
+      '🧪 **291 Sentinelles — toujours en faction, aucune régression.',
+    ]
     description: 'Le Petit Parisien prend la parole : chaque édition se voit désormais dotée d\'un flash-info façon présentateur de journal télévisé 1899 — les gros titres de la une, les faits divers pittoresques, le tout dans la langue des soirées fin-de-siècle. Un nouvel onglet Résumé du Jour dans la Gazette lit le bulletin à la place des Héritiers. Le pipeline a été assaini (plus d\'OCR perdu après un "Tout refaire") et 9 dates de la base ont été nettoyées pour repartir sur des bases saines.',
     changes: [
       '📺 **Flash-info quotidien (Nouveau) :** Le pipeline génère désormais un résumé global façon JT Belle Époque pour chaque édition numérisée. Gemini reçoit la liste des articles (titre, rubrique, résumé) et pond un bulletin de 5 à 8 lignes — ton solennel, vocabulaire 1900, alternance grands sujets et faits divers, le tout gravé dans `journal_daily_info.daily_summary`.',

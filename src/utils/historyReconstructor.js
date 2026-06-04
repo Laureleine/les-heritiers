@@ -1,6 +1,6 @@
 // src/utils/historyReconstructor.js
 import { CARAC_LIST } from '../data/DictionnaireJeu';
-import { getCaracCost, getUtileCost, getFutileCost, getFortuneCost, FIXED_XP_COSTS } from './xpCalculator';
+import { getCaracCost, getUtileCost, getFutileCost, getFortuneCost, getFortuneSpecialites, FIXED_XP_COSTS } from './xpCalculator';
 import { XP_CODES } from './xpActions';
 
 export const reconstructHistory = (character, gameData) => {
@@ -159,8 +159,9 @@ export const reconstructHistory = (character, gameData) => {
   const rangClasse = character.competencesLibres?.rangs?.['Classe'] || 0;
   const rangSciences = character.competencesLibres?.rangs?.['Sciences'] || 0;
   const fortuneStats = { competencesTotal: { Classe: rangClasse, Sciences: rangSciences } };
+  const fortuneSpecialites = getFortuneSpecialites(character);
   for (let i = baseFortune; i < curFortune; i++) {
-    addTx(`Élévation Sociale : Fortune`, getFortuneCost(i, fortuneStats), i + 1, XP_CODES.FORTUNE_ELEVATION);
+    addTx(`Élévation Sociale : Fortune`, getFortuneCost(i, fortuneStats, fortuneSpecialites), i + 1, XP_CODES.FORTUNE_ELEVATION);
   }
 
   return transactions;
