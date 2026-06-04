@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.2.10 - "L\'Éveil du Faux-Semblant 🎭✨"',
+    date: '4 Juin 2026',
+    description: 'Les Pouvoirs et les Atouts du Faux-Semblant enfoui se cachent désormais tant que la Féérie n\'a pas atteint 3 — comme les Capacités naturelles. Un message clair prévient l\'Héritier que tout se révélera en son temps.',
+    changes: [
+      '🎭 **Faux-Semblant enfoui : Pouvoirs et Atouts verrouillés jusqu\'à Féérie 3 :** Les étapes Pouvoirs (`StepPouvoirs.js`) et Atouts (`StepAtouts.js`) affichent désormais un écran d\'attente quand l\'espèce est enfouie et que la Féérie est inférieure à 3. Même traitement que les Capacités (`StepCapacites.js`), qui vérifie désormais aussi le rang de Féérie (au lieu d\'un blocage permanent).',
+      '📜 **Message d\'attente dans les trois étapes :** « Le Faux-Semblant enfoui n\'a pas de [capacités/pouvoirs/atouts] pour le moment. Ils se révèleront lorsque la Féérie atteindra 3. »',
+      '🧪 **291 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.2.9 - "Le Savoir des Spécialistes 🎭💰"',
     date: '4 Juin 2026',
     description: 'Les points de Loisirs ne sont plus les mêmes pour toutes les fées : 10 pour les Révélés, 14 pour les Faux-Semblants enfouis. Le coût d\'élévation de Fortune reconnaît désormais les spécialités Argent (Classe) et Finance (Sciences) pour réduire la note. Un script Python enchaîne les dates manquantes du Petit Parisien sans surveillance, et un Héritier Golem a été rappelé à l\'ordre.',
