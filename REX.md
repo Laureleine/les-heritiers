@@ -507,4 +507,23 @@
 - **Backup Supabase** : effectué (backup_2026-06-04T11-56-42.json).
 - **Tests** : 291 tests verts (23 suites).
 
+---
+
+# Retour d'EXpérience — Session du 4 Juin 2026 (2e partie)
+
+## Version : 17.2.10 — "L'Éveil du Faux-Semblant 🎭✨"
+
+### Règles ajoutées
+
+79. **Faux-Semblant enfoui : Pouvoirs et Atouts suivent le même pattern que Capacités** — `StepPouvoirs.js` et `StepAtouts.js` bloquent désormais toute sélection quand `data.isEnfoui && currentFeerie < 3`. `StepCapacites.js` a été mis à jour : la condition passée de `data.isEnfoui` (blocage permanent) à `data.isEnfoui && (character.caracteristiques?.feerie || 3) < 3` (déblocage à Féérie ≥ 3).
+
+80. **Message d'attente unifié dans les 3 composants** — "Le Faux-Semblant enfoui n'a pas de [capacités/pouvoirs/atouts] pour le moment. Ils se révèleront lorsque la Féérie atteindra 3." Même icône Sparkles, même classe bg-amber-50, même palette.
+
+### Process à améliorer
+
+- **Rester cohérent entre les étapes de création** : Quand on ajoute une restriction pour une espèce (ex: enfoui), vérifier toutes les étapes (Capacités, Pouvoirs, Atouts) pour appliquer le même pattern. Une recherche `grep -rn "isEnfoui" src/components/` montre 3 composants — tous doivent être traités ensemble.
+- **Vérifier build local avant push** : Appliqué, build vert du premier coup.
+- **Backup Supabase** : effectué (backup_2026-06-04T12-34-25.json).
+- **Tests** : 291 tests verts (23 suites), inchangés.
+
 
