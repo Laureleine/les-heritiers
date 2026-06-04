@@ -98,7 +98,7 @@ export const loadCompetences = async () => {
             const rawSpecs = comp.specialites_ref || [];
             const formattedSpecs = rawSpecs.sort((a, b) => {
                 if (a.is_official !== b.is_official) return a.is_official ? -1 : 1;
-                return a.nom.localeCompare(b.nom);
+                return (a.nom || '').localeCompare(b.nom || '');
             });
 
             const competence = {
@@ -224,7 +224,7 @@ export const loadFairyTypes = async () => {
         data.forEach(fairy => {
             const rawAssetsLinks = fairy.fairy_type_assets || [];
             const rawAssets = rawAssetsLinks.map(link => link.asset).filter(Boolean);
-            const assetsTries = rawAssets.sort((a, b) => a.nom.localeCompare(b.nom));
+            const assetsTries = rawAssets.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
 
             const rawPouvoirsLinks = fairy.fairy_type_powers || [];
             const rawPouvoirs = rawPouvoirsLinks.map(link => link.power).filter(p => p != null);
@@ -235,7 +235,7 @@ export const loadFairyTypes = async () => {
                 };
                 const orderA = order[a.type_pouvoir] || 99;
                 const orderB = order[b.type_pouvoir] || 99;
-                return orderA - orderB || a.nom.localeCompare(b.nom);
+                return orderA - orderB || (a.nom || '').localeCompare(b.nom || '');
             });
 
             const rawCapacitesLinks = fairy.fairy_type_capacites || [];
@@ -389,6 +389,9 @@ export const loadCoreGameData = async () => {
             if (parsedData._version !== APP_VERSION) {
                 console.log(`📦 Cache obsolète (${parsedData._version || 'inconnue'} → ${APP_VERSION}), on rafraîchit...`);
                 localStorage.removeItem(LOCAL_CACHE_KEY);
+            } else if (!parsedData.fairyTypes || parsedData.fairyTypes.length === 0) {
+                console.warn('📦 Cache vide (fairyTypes manquant), bug connu du 04/06 — on rafraîchit...');
+                localStorage.removeItem(LOCAL_CACHE_KEY);
             } else {
                 // Si on a le cache à jour, on retourne TOUT instantanément !
                 return parsedData;
@@ -444,7 +447,9 @@ export const loadHeavyLoreData = async (currentCoreData) => {
         };
 
         // 💾 On grave le grand dictionnaire complet et on le retourne
-        localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(completeData));
+        if (f.fairyTypes && f.fairyTypes.length > 0) {
+            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(completeData));
+        }
         return completeData;
     } catch (error) {
         console.error("❌ Erreur lors de l'injection du Lore :", error);
