@@ -158,11 +158,17 @@ def main():
         print(f">>> Traitement de la date : {date_str}")
         print(sep)
 
-        result = subprocess.run(
-            [python_exe, str(pipeline_script), "--date", date_str],
-            capture_output=True, text=True, encoding='utf-8', errors='replace',
-            timeout=7200, cwd=str(BASE_DIR)
-        )
+        try:
+            result = subprocess.run(
+                [python_exe, str(pipeline_script), "--date", date_str],
+                capture_output=True, text=True, encoding='utf-8', errors='replace',
+                timeout=14400, cwd=str(BASE_DIR)
+            )
+        except subprocess.TimeoutExpired:
+            print(f"\nTIMEOUT: {date_str} a depasse 4h. Nettoyage des donnees partielles...")
+            delete_date_from_db(db_url, date_str)
+            print(f"   -> Date {date_str} ignoree, passage a la suivante.\n")
+            continue
 
         # Afficher la sortie du pipeline
         if result.stdout:
