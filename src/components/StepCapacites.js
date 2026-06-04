@@ -26,7 +26,7 @@ export default function StepCapacites() {
     );
   }
 
-  if (data.isEnfoui) {
+  if (data.isEnfoui && (character.caracteristiques?.feerie || 3) < 3) {
     return (
       <div className="space-y-6 animate-fade-in">
         <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">

@@ -85,6 +85,23 @@ export default function StepAtouts() {
     }
   };
 
+  const currentFeerie = character.caracteristiques?.feerie || 3;
+  if (data?.isEnfoui && currentFeerie < 3) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
+          <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
+          <div>
+            <h3 className="font-serif font-bold text-amber-900">Atouts Féériques</h3>
+            <p className="text-sm text-amber-800">
+              Le Faux-Semblant enfoui n'a pas d'atouts pour le moment. Ils se révèleront lorsque la Féérie atteindra 3.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!data || !data.atouts) return null;
 
   return (
