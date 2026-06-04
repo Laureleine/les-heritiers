@@ -478,4 +478,33 @@
 - **Backup Supabase** systématique avant version (appliqué).
 - **Tests** : 280 tests verts avant et après (23 suites).
 
+---
+
+# Retour d'EXpérience — Session du 4 Juin 2026
+
+## Version : 17.2.9 — "Le Savoir des Spécialistes 🎭💰"
+
+### Règles ajoutées
+
+76. **Points de Loisirs par type de fée (constante `pointsFutiles`)** — Le code en dur `14` pour toutes les fées est remplacé par `feeData.pointsFutiles` : 10 pour les Révélés, 14 pour les Faux-Semblants enfouis (`era === 'enfoui'`). La constante est stockée dans `supabaseGameData.js` (ligne `pointsFutiles: type === 'faux-semblant' && era === 'enfoui' ? 14 : 10`). `StepCompetencesFutiles.js` et `sealValidation.js` utilisent `feeData?.pointsFutiles ?? 10`. Les personnages existants gardent leurs rangs ; seuls les rangs de création sont concernés.
+
+77. **`getFortuneCost` 3e paramètre `specialites`** — Le calcul de réduction du coût de Fortune intègre désormais les spécialités Argent (Classe) et Finance (Sciences). La helper `getFortuneSpecialites(character)` centralise la détection dans toutes les sources (choixSpecialiteUser, gratuites, métier). 4 call sites mis à jour.
+
+78. **`getFortuneSpecialites` centralisée** — Plutôt que de dupliquer la logique de détection des spécialités Argent/Finance dans chaque call site, une fonction exportée par `xpCalculator.js` fait le travail. Rétrocompatible : `getFortuneCost(a, b, undefined)` ignore le bonus.
+
+### Problèmes résolus
+
+- **Suppression DB via clé service** : L'anon key n'a pas les droits DELETE sur `characters`. Le script `backup_supabase.js` (clé service) a été réutilisé pour supprimer `Emet Elohit (Aimé Éloit)` (id `b5ef2f36-...`, 0 XP).
+- **Renommage personnage** : Le doublon "Copie" a été renommé en `Emet Elohit (Aimé Éloit)` — le nom officiel est restauré.
+- **`batch_missing_dates.py`** : Script autonome qui trouve les dates sans articles entre MIN et MAX de `journal_articles`, les traite de la plus récente à la plus ancienne via `pipeline_journalier.py --date`. Capture les erreurs 429, nettoie la date en base et s'arrête proprement pour reprise. Option `--dry-run`.
+- **Build Vercel cassé par `version.js`** : L'édition du fichier a supprimé accidentellement le `},` entre les objets (fin du nouvel entry → début de 17.2.8) et les champs `version`/`date` de 17.2.8. Le build a échoué avec `SyntaxError: Unexpected token`. Corrigé manuellement en 2 passes (insertion du `},\n{` + restauration des champs manquants).
+
+### Process à améliorer
+
+- **Vérifier `git commit` de `version.js` AVANT de déployer** : Le fichier version.js n'a pas été relu avant le `git add` initial. Une `SyntaxError` a cassé le build Vercel. Toujours exécuter `npx react-scripts build` localement après chaque modification de `version.js`, même cosmétique.
+- **`edit` tool peut déborder sur les lignes adjacentes** : remplacer `version:` + `date:` par un bloc plus large (description + changes) a supprimé le `},\n{` qui suivait. Pour une éditoriale, préférer l'insertion complète d'un nouvel objet (en tête du tableau) plutôt qu'un remplacement de champs existants.
+- **Vérifier les personnages en sur-répartition de points futiles** : Ariel RUPIN (Ondine, 16 pts), Théodore d'ABZAC (Fée électricité, 14 pts) dépassent les 10 pts de création. Décision en attente.
+- **Backup Supabase** : effectué (backup_2026-06-04T11-56-42.json).
+- **Tests** : 291 tests verts (23 suites).
+
 
