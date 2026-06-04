@@ -12,6 +12,10 @@ export const VERSION_HISTORY = [
       '🧹 **Emet Elohit (Aimé Éloit) rappelé à l\'ordre :** Le double Golem sans XP a été supprimé de la base. Sa copie (13 pts futiles) a été renommée et conserve son état.',
       '🧪 **291 Sentinelles — toujours en faction, aucune régression.',
     ]
+  },
+  {
+    version: '17.2.8 - "Le Flash-Info de la Belle Époque 📺🗞️"',
+    date: '2 Juin 2026',
     description: 'Le Petit Parisien prend la parole : chaque édition se voit désormais dotée d\'un flash-info façon présentateur de journal télévisé 1899 — les gros titres de la une, les faits divers pittoresques, le tout dans la langue des soirées fin-de-siècle. Un nouvel onglet Résumé du Jour dans la Gazette lit le bulletin à la place des Héritiers. Le pipeline a été assaini (plus d\'OCR perdu après un "Tout refaire") et 9 dates de la base ont été nettoyées pour repartir sur des bases saines.',
     changes: [
       '📺 **Flash-info quotidien (Nouveau) :** Le pipeline génère désormais un résumé global façon JT Belle Époque pour chaque édition numérisée. Gemini reçoit la liste des articles (titre, rubrique, résumé) et pond un bulletin de 5 à 8 lignes — ton solennel, vocabulaire 1900, alternance grands sujets et faits divers, le tout gravé dans `journal_daily_info.daily_summary`.',
