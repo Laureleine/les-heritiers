@@ -526,4 +526,28 @@
 - **Backup Supabase** : effectué (backup_2026-06-04T12-34-25.json).
 - **Tests** : 291 tests verts (23 suites), inchangés.
 
+---
+
+# Retour d'EXpérience — Session du 4 Juin 2026 (3e partie)
+
+## Version : 17.2.11 — "Le Cache du Phénix 🔥📦"
+
+### Bug corrigé
+
+81. **Crash silencieux de `loadFairyTypes`** — Le tri alphabétique `.sort((a, b) => a.nom.localeCompare(b.nom))` plantait si un enregistrement dans `fairy_assets`, `fairy_powers` ou `specialites` avait un `nom: null`. Le `try/catch` de `loadFairyTypes` (ligne 301) attrapait l'erreur et retournait `{ fairyData: {}, fairyTypes: [] }` — données vides qui étaient ensuite mises en cache localStorage. Le spinner "Déchiffrage du Nuage..." tournait indéfiniment.
+
+### Correctifs
+
+- **3 `.sort()` null-safe** (`supabaseGameData.js` lignes 101, 227, 238) : `(a.nom || '').localeCompare(b.nom || '')` — plus aucun crash si `nom` est manquant.
+- **Cache vide interdit** (`supabaseGameData.js` ligne 447) : `loadHeavyLoreData` ne sauvegarde plus le cache si `fairyTypes` est vide.
+- **Auto-invalidation du cache vide** (`supabaseGameData.js` ligne 392) : si le cache localStorage a `fairyTypes: []`, il est détecté et purgé au démarrage, forçant un rechargement frais depuis Supabase.
+
+### Leçons
+
+- **Un `try/catch` qui attrape tout peut cacher un vrai bug** : `loadFairyTypes` retournait silencieusement des données vides sans aucun signe visible pour les utilisateurs. Le `catch` devrait logger un avertissement lisible côté frontend (`showInAppNotification`) quand le chargement des données critiques échoue.
+- **Cache localStorage = dette technique** : Les données vides mises en cache verrouillent l'utilisateur dans un état dégradé jusqu'à la purge manuelle. Toujours valider l'intégrité des données AVANT d'écrire dans le cache (et après la lecture).
+- **Impossible de reproduire le crash avec les données actuelles** : Aucun `nom: null` n'existe dans la base au moment du diagnostic. Le crash était probablement causé par une donnée corrompue qui a été corrigée entre-temps (ou un enregistrement supprimé). Les null-safe sorts restent une protection défensive valide.
+- **Backup Supabase** : effectué (backup_2026-06-04T13-25-21.json).
+- **Tests** : 291 tests verts (23 suites), inchangés.
+
 
