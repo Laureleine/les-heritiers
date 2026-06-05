@@ -2,7 +2,7 @@
 // 15.17.8
 
 import React, { useState, useMemo } from 'react';
-import { BookOpen, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Filter, Eye, EyeOff, Search } from '../../config/icons';
+import { BookOpen, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Eye, EyeOff, Search } from '../../config/icons';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
 import { migrateContactContent, getCategoryStyle, getVisibleRelations, hasActiveFauxSemblant, getFauxSemblantTypeFee, CATEGORIES_SUGGESTIONS } from '../../utils/relationsHelper';
