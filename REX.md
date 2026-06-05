@@ -1,6 +1,19 @@
 # REX — Session du 5 Juin 2026
 
-## Nouveau : Onglet Figures dans l'Encyclopédie (v17.4.0)
+## Hotfix : Points verts & Corrections (v17.4.1)
+
+### Ce qui a été fait
+- **Mini calendrier réparé** : remplacement de `.select('date, category').limit(3000)` par `rpc('get_article_dates')` — fonction SQL `SELECT DISTINCT date WHERE category NOT IN (...)` qui retourne les 129 dates en 129 lignes au lieu de 4849.
+- **Figures en base** : exécution de la migration SQL `CREATE TABLE figures` dans Supabase + mise à jour de la whitelist de `toggle_item_seal`.
+- **setData([]) au changement d'onglet** : empêche l'affichage de données périmées quand une requête échoue.
+- **Build fix** : description et changelog de 17.4.0 restaurés après un `edit` trop large dans version.js.
+
+### Enseignements
+7. **`edit` trop large** : en réécrivant un bloc de version.js, le `oldString` a capturé tout l'objet 17.4.0 mais le `newString` n'en a réécrit que l'en-tête → perte de `description` et `changes`. Vérifier toujours la sortie de `npm run build` après une édition.
+8. **RPC vs rows** : quand une requête `.select()` avec `.limit()` ne peut pas garantir de ramener toutes les lignes, la bonne solution est une fonction SQL `SELECT DISTINCT` retournant uniquement les données nécessaires. Plus propre, plus performant, pas de limite à configurer.
+9. **Accès DB direct** : `node -e "new Client({connectionString: SUPABASE_DB_URL})"` permet d'exécuter du SQL arbitraire (migrations, RPC, whitelist) sans passer par le dashboard Supabase.
+
+## Précédent : Onglet Figures dans l'Encyclopédie (v17.4.0)
 
 ### Ce qui a été fait
 - Nouvelle table `figures` Supabase avec migration SQL versionnée
