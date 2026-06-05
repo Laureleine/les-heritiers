@@ -17,6 +17,15 @@ export const VERSION_HISTORY = [
   {
     version: '17.4.0 - "Le Livre des Figures 🎭📜"',
     date: '5 Juin 2026',
+    description: 'L\'Encyclopédie s\'enrichit d\'une nouvelle section : les Figures. Chaque personnage notable dispose désormais d\'une fiche dédiée avec son nom, son titre, son clan, son apparence masquée et démasquée, et la possibilité d\'un Faux-Semblant — un type de fée d\'emprunt qui voile sa véritable nature.',
+    changes: [
+      '🎭 **Figures (Nouvel onglet) :** Un septième onglet dans l\'Encyclopédie pour cataloguer les personnages et entités notables du monde des Héritiers.',
+      '📜 **Fiche Figure enrichie :** Chaque Figure peut porter un nom, un titre, un clan, une description narrative, et deux apparences — masquée (publique) et démasquée (véritable).',
+      '🐺 **Faux-Semblant intégré :** Une section dédiée permet d\'activer un Faux-Semblant sur une Figure et de choisir son type de fée (parmi les espèces connues ou en saisie libre), avec suggestion automatique.',
+      '👁️ **Visibilité dans l\'Encyclopédie :** Comme les autres entités, les Figures sont visibles par tous, modifiables via le système de propositions, et scellables par les Gardiens.',
+      '🧪 **335 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
   {
     version: '17.3.0 - "Les Masques du Grimoire 🎭📖"',
     date: '5 Juin 2026',
