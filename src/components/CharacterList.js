@@ -775,6 +775,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               cercleId={null}
               playerId={session?.user?.id}
               isAdmin={isAdmin}
+              userProfile={userProfile}
             />
           </div>
         </div>

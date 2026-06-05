@@ -71,7 +71,13 @@ export const flushContactsToGrimoire = async (characterId, userId) => {
                     type: itemType,
                     content: itemType === 'possession'
                         ? { nom: item.nom, description: item.description || '', date_creation: new Date().toISOString(), source_social_item_id: item.id }
-                        : { nom: item.nom, description: item.description || '', localisation: '', statut_relation: 'Contact', date_creation: new Date().toISOString(), source_social_item_id: item.id },
+                        : {
+                            nom: item.nom, description: item.description || '',
+                            localisation: { texte: '', rue: '', quartier: '', ville: '', pays: '' },
+                            relations: [{ categorie: 'Neutre', sous_categorie: 'Contact', visibilite: 'prive' }],
+                            faux_semblant: { actif: false, type_fee: '', publie: [], realite: [] },
+                            date_creation: new Date().toISOString(), source_social_item_id: item.id
+                          },
                     is_shared: false,
                 }));
 

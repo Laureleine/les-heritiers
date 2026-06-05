@@ -1,36 +1,82 @@
 // src/components/cercle/GrimoirePersonnel.js
 // 15.17.8
 
-import React, { useState } from 'react';
-import { BookOpen, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle } from '../../config/icons';
+import React, { useState, useMemo } from 'react';
+import { BookOpen, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Filter, Eye, EyeOff, Search } from '../../config/icons';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
+import { migrateContactContent, getCategoryStyle, getVisibleRelations, hasActiveFauxSemblant, getFauxSemblantTypeFee, CATEGORIES_SUGGESTIONS } from '../../utils/relationsHelper';
 
-// ✨ FIX : On réceptionne le characterId
-// isAdmin : permet de voir toutes les entrées (lecture seule pour les entrées des autres)
-export default function GrimoirePersonnel({ characterId, cercleId, playerId, isAdmin = false }) {
+const FAIRY_TYPES = [
+  'Ange', 'Bastet', 'Elfe', 'Farfadet', 'Gnome', 'Gobelin', 'Korrigan',
+  'Léporide', 'Loup-Garou', 'Ogre', 'Ondine', 'Orc', 'Phénix', 'Succube',
+  'Sylve', 'Troll', 'Vampyr',
+  'Fée Électricité', 'Fleur de Métal', 'Fouinard', 'Gargouille',
+  'Golem', 'Gremelin', 'Protys', 'Smog',
+  'Faux-Semblant Enfoui',
+];
+
+function parseLocalisation(loc) {
+  if (!loc) return { texte: '', rue: '', quartier: '', ville: '', pays: '' };
+  if (typeof loc === 'string') return { texte: loc, rue: '', quartier: '', ville: '', pays: '' };
+  return { texte: loc.texte || '', rue: loc.rue || '', quartier: loc.quartier || '', ville: loc.ville || '', pays: loc.pays || '' };
+}
+
+function formatLocalisation(loc) {
+  const p = parseLocalisation(loc);
+  return p.texte || [p.ville, p.pays].filter(Boolean).join(', ') || 'Lieu inconnu';
+}
+
+export default function GrimoirePersonnel({ characterId, cercleId, playerId, isAdmin = false, userProfile }) {
   const [activeTab, setActiveTab] = useState('notes');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({});
-  const [editingEntry, setEditingEntry] = useState(null); // { id, type } si en mode édition
-  const [deleteConfirm, setDeleteConfirm] = useState(null); // { id, type, name } si confirmation en cours
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [contactFilter, setContactFilter] = useState('');
+  const [showReality, setShowReality] = useState(false);
 
-  // ✨ On passe la clé au Cerveau
+  const isDocte = userProfile?.profile?.is_docte === true || isAdmin;
+
   const { notes, contacts, possessions, loading, toggleShare, createEntry, updateEntry, deleteEntry } = useGrimoire(characterId, cercleId, playerId, isAdmin);
+
+  const migratedContacts = useMemo(() =>
+    contacts.map(c => ({ ...c, content: migrateContactContent(c.content) })),
+    [contacts]
+  );
+
+  const filteredContacts = useMemo(() => {
+    if (!contactFilter) return migratedContacts;
+    const f = contactFilter.toLowerCase();
+    return migratedContacts.filter(c => {
+      const content = c.content || {};
+      if ((content.nom || '').toLowerCase().includes(f)) return true;
+      if ((content.description || '').toLowerCase().includes(f)) return true;
+      const loc = formatLocalisation(content.localisation).toLowerCase();
+      if (loc.includes(f)) return true;
+      const visible = getVisibleRelations(content, showReality && isDocte);
+      if (visible.some(r => (r.categorie || '').toLowerCase().includes(f))) return true;
+      return false;
+    });
+  }, [migratedContacts, contactFilter, showReality, isDocte]);
 
   const handleOpenModal = (entry = null) => {
     if (entry) {
-      // Mode édition : on pré-remplit avec les données existantes
       setEditingEntry({ id: entry.id, type: entry.type });
-      setFormData({ ...entry.content });
+      const content = migrateContactContent(entry.content);
+      setFormData({ ...content });
     } else {
-      // Mode création
       setEditingEntry(null);
       if (activeTab === 'notes') {
         setFormData({ titre: '', categorie: 'Lieu', contenu: '' });
       } else if (activeTab === 'contacts') {
-        setFormData({ nom: '', localisation: '', statut_relation: 'Neutre', description: '' });
+        setFormData({
+          nom: '', description: '',
+          localisation: { texte: '', rue: '', quartier: '', ville: '', pays: '' },
+          relations: [{ categorie: 'Neutre', sous_categorie: 'Connaissance', visibilite: 'prive' }],
+          faux_semblant: { actif: false, type_fee: '', publie: [], realite: [] },
+        });
       } else {
         setFormData({ nom: '', description: '' });
       }
@@ -44,8 +90,29 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
     setFormData({});
   };
 
+  const handleAddRelation = () => {
+    setFormData(prev => ({
+      ...prev,
+      relations: [...(prev.relations || []), { categorie: 'Neutre', sous_categorie: '', visibilite: 'prive' }],
+    }));
+  };
+
+  const handleRemoveRelation = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      relations: (prev.relations || []).filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleRelationChange = (index, field, value) => {
+    setFormData(prev => {
+      const relations = [...(prev.relations || [])];
+      relations[index] = { ...relations[index], [field]: value };
+      return { ...prev, relations };
+    });
+  };
+
   const handleSave = async () => {
-    // 🛡️ Bouclier anti-vide
     const activeType = editingEntry ? editingEntry.type : (activeTab === 'notes' ? 'note' : activeTab === 'contacts' ? 'contact' : 'possession');
     const isNoteMode = activeType === 'note';
 
@@ -60,19 +127,14 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
     setIsSubmitting(true);
 
-    const dbType = activeType;
-
     let success;
     if (editingEntry) {
-      // Mode édition
       success = await updateEntry(editingEntry.id, editingEntry.type, formData);
     } else {
-      // Mode création
-      success = await createEntry(dbType, formData);
+      success = await createEntry(activeType, formData);
     }
 
     setIsSubmitting(false);
-
     if (success) handleCloseModal();
   };
 
@@ -217,76 +279,121 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
 					{/* ONGLET 2 : LES CONTACTS */}
 					{activeTab === 'contacts' && (
-						contacts.length === 0 ? (
-							<div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4">
-								<Users size={48} className="opacity-20" />
-								<p className="font-serif italic text-lg">Aucune rencontre consignée dans ce Cercle.</p>
+						<>
+							{/* Barre de recherche et filtres */}
+							<div className="flex flex-wrap items-center gap-3 mb-4">
+								<div className="relative flex-1 min-w-[200px]">
+									<Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+									<input
+										type="text" value={contactFilter}
+										onChange={e => setContactFilter(e.target.value)}
+										placeholder="Filtrer par nom, lieu, catégorie..."
+										className="w-full pl-9 pr-3 py-2 border-2 border-stone-200 rounded-xl text-sm outline-none focus:border-blue-400 bg-white"
+									/>
+								</div>
+								{isDocte && migratedContacts.some(c => hasActiveFauxSemblant(c.content)) && (
+									<button
+										onClick={() => setShowReality(v => !v)}
+										className={`text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-colors border-2 ${showReality
+											? 'bg-purple-100 text-purple-800 border-purple-300'
+											: 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
+										}`}
+									>
+										{showReality ? <EyeOff size={14} /> : <Eye size={14} />}
+										{showReality ? 'Masquer la réalité' : 'Voir la réalité'}
+									</button>
+								)}
 							</div>
-						) : (
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								{contacts.map((contact) => {
-									// 🧠 On détermine si le contact appartient au joueur ou à un camarade
-									const isMine = contact.player_id === playerId;
-									const data = contact.content || {};
 
-									return (
-										<div key={contact.id} className="p-4 border border-stone-200 rounded-xl bg-white shadow-sm flex flex-col gap-3 relative overflow-hidden hover:shadow-md transition-shadow">
+							{filteredContacts.length === 0 ? (
+								<div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4">
+									<Users size={48} className="opacity-20" />
+									<p className="font-serif italic text-lg">
+										{contactFilter ? 'Aucun contact ne correspond à ce filtre.' : 'Aucune rencontre consignée dans ce Cercle.'}
+									</p>
+								</div>
+							) : (
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									{filteredContacts.map((contact) => {
+										const isMine = contact.player_id === playerId;
+										const data = migrateContactContent(contact.content || {});
+										const visibleRelations = getVisibleRelations(data, showReality && isDocte);
+										const hasFs = hasActiveFauxSemblant(data);
+										const fsType = getFauxSemblantTypeFee(data);
 
-											<div className="flex justify-between items-start">
-												<div className="pr-6">
-													<h4 className="font-serif font-bold text-lg text-blue-900">{data.nom || 'Inconnu'}</h4>
-													<div className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1 mt-1">
-														<MapPin size={12} className="text-blue-500" /> {data.localisation || 'Lieu inconnu'}
+										return (
+											<div key={contact.id} className="p-4 border border-stone-200 rounded-xl bg-white shadow-sm flex flex-col gap-3 relative overflow-hidden hover:shadow-md transition-shadow">
+												{/* Indicateur de faux-semblant */}
+												{hasFs && (
+													<div className="absolute top-2 right-2 text-purple-400" title={`Faux-semblant (${fsType || 'type inconnu'})`}>
+														<VenetianMask size={16} />
+													</div>
+												)}
+
+												<div className="flex justify-between items-start">
+													<div className="pr-6">
+														<h4 className="font-serif font-bold text-lg text-blue-900">{data.nom || 'Inconnu'}</h4>
+														<div className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1 mt-1">
+															<MapPin size={12} className="text-blue-500" /> {formatLocalisation(data.localisation)}
+														</div>
 													</div>
 												</div>
-												{/* Badge de Statut (Couleurs dynamiques) */}
-												<span className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider shrink-0 ${data.statut_relation === 'Allié' ? 'bg-green-100 text-green-800 border border-green-200' :
-														data.statut_relation === 'Hostile' ? 'bg-red-100 text-red-800 border border-red-200' :
-															'bg-stone-100 text-stone-600 border border-stone-200'
-													}`}>
-													{data.statut_relation || 'Neutre'}
-												</span>
+
+												{/* Badges de relation */}
+												{visibleRelations.length > 0 && (
+													<div className="flex flex-wrap gap-1.5">
+														{visibleRelations.map((r, i) => {
+															const style = getCategoryStyle(r.categorie);
+															return (
+																<span key={i} className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider shrink-0 border ${style.bg} ${style.text} ${style.border}`}>
+																	{r.categorie || '?'}
+																	{r.sous_categorie && <span className="font-normal lowercase ml-0.5 opacity-75">· {r.sous_categorie}</span>}
+																</span>
+															);
+														})}
+													</div>
+												)}
+
+												<p className="text-sm text-stone-600 italic line-clamp-3 flex-1 bg-stone-50 p-2 rounded border border-stone-100">
+													{data.description || "Aucune description."}
+												</p>
+
+												{/* Boutons d'action */}
+												{isMine && (
+													<div className="mt-2 pt-3 border-t border-stone-100 flex justify-between items-center">
+														<div className="flex gap-2">
+															<button
+																onClick={() => handleOpenModal(contact)}
+																className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+															>
+																<Edit size={12} />
+															</button>
+															<button
+																onClick={() => handleDeleteClick(contact, data.nom)}
+																className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+															>
+																<Trash2 size={12} />
+															</button>
+														</div>
+														{cercleId && (
+															<button
+																onClick={() => toggleShare(contact.id, contact.is_shared)}
+																className={`text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border ${contact.is_shared
+																		? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+																		: 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
+																	}`}
+															>
+																{contact.is_shared ? <Share2 size={12} /> : <Lock size={12} />}
+															</button>
+														)}
+													</div>
+												)}
 											</div>
-
-											<p className="text-sm text-stone-600 italic line-clamp-3 flex-1 bg-stone-50 p-2 rounded border border-stone-100">
-												{data.description || "Aucune description."}
-											</p>
-
-											{/* 🧠 Boutons d'action (Édition, Suppression, Partage) */}
-											{isMine && (
-												<div className="mt-2 pt-3 border-t border-stone-100 flex justify-between items-center">
-													<div className="flex gap-2">
-														<button
-															onClick={() => handleOpenModal(contact)}
-															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
-														>
-															<Edit size={12} />
-														</button>
-														<button
-															onClick={() => handleDeleteClick(contact, data.nom)}
-															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
-														>
-															<Trash2 size={12} />
-														</button>
-													</div>
-													{cercleId && (
-														<button
-															onClick={() => toggleShare(contact.id, contact.is_shared)}
-															className={`text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border ${contact.is_shared
-																	? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
-																	: 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
-																}`}
-														>
-															{contact.is_shared ? <Share2 size={12} /> : <Lock size={12} />}
-														</button>
-													)}
-												</div>
-											)}
-										</div>
-									);
-								})}
-							</div>
-						)
+										);
+									})}
+								</div>
+							)}
+						</>
 					)}
 						{/* ONGLET 3 : LES POSSESSIONS */}
 						{activeTab === 'possessions' && (
@@ -391,20 +498,123 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
                     <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-1">Nom du Contact</label>
                     <input type="text" autoFocus value={formData.nom || ''} onChange={e => setFormData({...formData, nom: e.target.value})} className="w-full p-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 outline-none font-bold text-stone-800 bg-white" placeholder="Ex: Archibald, chef des Mendiants"/>
                   </div>
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-1 flex items-center gap-1"><MapPin size={12}/> Localisation</label>
-                      <input type="text" value={formData.localisation || ''} onChange={e => setFormData({...formData, localisation: e.target.value})} className="w-full p-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 outline-none text-sm font-bold text-stone-700 bg-white" placeholder="Ex: Rive Gauche"/>
-                    </div>
-                    <div className="w-1/3">
-                      <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-1 flex items-center gap-1"><Shield size={12}/> Statut</label>
-                      <select value={formData.statut_relation || 'Neutre'} onChange={e => setFormData({...formData, statut_relation: e.target.value})} className="w-full p-3 border-2 border-blue-200 rounded-xl outline-none font-bold text-stone-700 bg-blue-50 cursor-pointer">
-                        <option value="Allié">Allié</option>
-                        <option value="Neutre">Neutre</option>
-                        <option value="Hostile">Hostile</option>
-                      </select>
+
+                  {/* Localisation structurée */}
+                  <div>
+                    <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-1 flex items-center gap-1"><MapPin size={12}/> Localisation</label>
+                    <input type="text" value={parseLocalisation(formData.localisation).texte} onChange={e => setFormData({...formData, localisation: { ...parseLocalisation(formData.localisation), texte: e.target.value }})} className="w-full p-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 outline-none text-sm font-bold text-stone-700 bg-white" placeholder="Ex: Rive Gauche, Paris"/>
+                    <div className="flex gap-2 mt-2">
+                      <input type="text" value={parseLocalisation(formData.localisation).ville} onChange={e => setFormData({...formData, localisation: { ...parseLocalisation(formData.localisation), ville: e.target.value }})} className="flex-1 p-2 border-2 border-stone-200 rounded-lg outline-none text-xs font-bold text-stone-700 bg-white" placeholder="Ville"/>
+                      <input type="text" value={parseLocalisation(formData.localisation).pays} onChange={e => setFormData({...formData, localisation: { ...parseLocalisation(formData.localisation), pays: e.target.value }})} className="flex-1 p-2 border-2 border-stone-200 rounded-lg outline-none text-xs font-bold text-stone-700 bg-white" placeholder="Pays"/>
                     </div>
                   </div>
+
+                  {/* Relations multiples */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1"><Shield size={12}/> Relations</label>
+                      <button onClick={handleAddRelation} className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors flex items-center gap-1">
+                        <Plus size={10} /> Ajouter
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {(formData.relations || []).map((rel, i) => (
+                        <div key={i} className="flex gap-2 items-start p-2 bg-blue-50/50 rounded-lg border border-blue-100">
+                          <div className="flex-1 space-y-1.5">
+                            <div className="flex gap-1.5">
+                              <input
+                                type="text" value={rel.categorie || ''}
+                                onChange={e => handleRelationChange(i, 'categorie', e.target.value)}
+                                list="categories-suggestions"
+                                className="flex-1 p-2 border-2 border-blue-200 rounded-lg outline-none text-xs font-bold text-stone-700 bg-white"
+                                placeholder="Allié, Neutre..."
+                              />
+                              <input
+                                type="text" value={rel.sous_categorie || ''}
+                                onChange={e => handleRelationChange(i, 'sous_categorie', e.target.value)}
+                                className="flex-1 p-2 border-2 border-blue-200 rounded-lg outline-none text-xs font-bold text-stone-700 bg-white"
+                                placeholder="Sous-catégorie"
+                              />
+                            </div>
+                            <select
+                              value={rel.visibilite || 'prive'}
+                              onChange={e => handleRelationChange(i, 'visibilite', e.target.value)}
+                              className="w-full p-1.5 border-2 border-stone-200 rounded-lg outline-none text-[10px] font-bold text-stone-600 bg-white cursor-pointer"
+                            >
+                              <option value="prive">Privé</option>
+                              <option value="cercle">Cercle</option>
+                              <option value="public">Public</option>
+                            </select>
+                          </div>
+                          <button onClick={() => handleRemoveRelation(i)} className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors mt-0.5">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <datalist id="categories-suggestions">
+                      {CATEGORIES_SUGGESTIONS.map(cat => <option key={cat} value={cat} />)}
+                    </datalist>
+                  </div>
+
+                  {/* Faux-semblant */}
+                  <div className="border-2 border-purple-200 rounded-xl p-4 bg-purple-50/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.faux_semblant?.actif || false}
+                          onChange={e => setFormData({
+                            ...formData,
+                            faux_semblant: {
+                              ...(formData.faux_semblant || {}),
+                              actif: e.target.checked,
+                              type_fee: formData.faux_semblant?.type_fee || '',
+                              publie: formData.faux_semblant?.publie || [],
+                              realite: formData.faux_semblant?.realite || [],
+                            }
+                          })}
+                          className="w-4 h-4 rounded border-purple-300 text-purple-600 focus:ring-purple-500"
+                        />
+                        <span className="text-xs font-bold text-purple-800 uppercase tracking-wider flex items-center gap-1">
+                          <VenetianMask size={14} /> Faux-semblant actif
+                        </span>
+                      </label>
+                    </div>
+
+                    {formData.faux_semblant?.actif && (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[10px] font-bold text-purple-800 uppercase tracking-wider mb-1">Type de fée</label>
+                          <input
+                            type="text" value={formData.faux_semblant?.type_fee || ''}
+                            onChange={e => setFormData({ ...formData, faux_semblant: { ...formData.faux_semblant, type_fee: e.target.value } })}
+                            list="fairy-types"
+                            className="w-full p-2 border-2 border-purple-200 rounded-lg outline-none text-xs font-bold text-stone-700 bg-white"
+                            placeholder="Songeuse, Sirène..."
+                          />
+                          <datalist id="fairy-types">
+                            {FAIRY_TYPES.map(ft => <option key={ft} value={ft} />)}
+                          </datalist>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-2">
+                            <p className="text-[10px] font-bold text-green-700 uppercase tracking-wider mb-1">Publié (visible)</p>
+                            <div className="text-[10px] text-stone-500 italic">
+                              Les relations définies plus haut sont celles visibles par les autres.
+                            </div>
+                          </div>
+                          <div className="bg-red-50 border border-red-200 rounded-lg p-2">
+                            <p className="text-[10px] font-bold text-red-700 uppercase tracking-wider mb-1">Réalité (caché)</p>
+                            <div className="text-[10px] text-stone-500 italic">
+                              Seul vous et le Docte voyez la réalité.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div>
                     <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-1">Description</label>
                     <textarea value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full h-24 p-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 outline-none font-serif text-stone-700 resize-none custom-scrollbar bg-white" placeholder="Où l'avez-vous rencontré ? À quoi sert-il ?"/>
