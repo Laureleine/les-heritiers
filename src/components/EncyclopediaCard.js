@@ -1,6 +1,6 @@
 // src/components/EncyclopediaCard.js
 import React from 'react';
-import { Feather, Sparkles, Lock, ShieldCheck, Unlock, Trash2, Eye, Users, Coins, Tag } from '../config/icons';
+import { Feather, Sparkles, Lock, ShieldCheck, Unlock, Trash2, Eye, Users, Coins, Tag, VenetianMask, MapPin } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
 import { safeParseArray } from '../utils/json';
 import { isAdmin, isSuperAdmin } from '../utils/authRoles';
@@ -99,6 +99,30 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
                     </div>
                 </div>
             ))}
+
+            {/* 🎭 SPÉCIFIQUE AUX FIGURES : Faux-semblant, Titre, Clan */}
+            {activeTab === 'figures' && (
+                <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
+                    {item.faux_semblant && (
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200 w-fit">
+                            <VenetianMask size={12} /> Faux-Semblant
+                            {item.faux_semblant_type_fee && <span className="font-normal text-purple-600">({item.faux_semblant_type_fee})</span>}
+                        </div>
+                    )}
+                    <div className="flex flex-wrap gap-1.5">
+                        {item.titre && (
+                            <span className="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full border border-amber-100 font-medium">
+                                {item.titre}
+                            </span>
+                        )}
+                        {item.clan && (
+                            <span className="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-100 font-medium">
+                                {item.clan}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* ✨ NOUVEAU : LISTE DES PROFILS AUTORISÉS (Onglet Vie Sociale) */}
             {activeTab === 'social_items' && linkedProfiles.length > 0 && (

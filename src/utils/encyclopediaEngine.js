@@ -299,6 +299,17 @@ export const submitEncyclopediaProposal = async ({
                 }
             }
 
+            // ✨ Figures : champs spécifiques
+            if (activeTab === 'figures') {
+                if (proposal.faux_semblant !== editingItem.faux_semblant) surgicalData.faux_semblant = proposal.faux_semblant;
+                if (proposal.faux_semblant_type_fee !== editingItem.faux_semblant_type_fee) surgicalData.faux_semblant_type_fee = proposal.faux_semblant_type_fee;
+                if (proposal.titre !== editingItem.titre) surgicalData.titre = proposal.titre;
+                if (proposal.clan !== editingItem.clan) surgicalData.clan = proposal.clan;
+                if (proposal.apparence_masquee !== editingItem.apparence_masquee) surgicalData.apparence_masquee = proposal.apparence_masquee;
+                if (proposal.apparence_demasquee !== editingItem.apparence_demasquee) surgicalData.apparence_demasquee = proposal.apparence_demasquee;
+                if (proposal.description !== (editingItem.description || editingItem.desc || '')) surgicalData.description = proposal.description;
+            }
+
             // ✨ LE FIX SAUVEGARDE : On capture les champs de la Vie Sociale !
             if (activeTab === 'social_items') {
                 if (proposal.cout !== editingItem.cout) surgicalData.cout = proposal.cout;
