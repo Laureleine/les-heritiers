@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity, Briefcase, Coins, Crown, TrendingUp } from '../config/icons';
+import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity, Briefcase, Coins, Crown, TrendingUp, Users, VenetianMask } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
 
 export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
@@ -16,6 +16,7 @@ export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
   if (activeTab === 'fairy_assets') Icon = Star;
   if (activeTab === 'fairy_capacites') Icon = Sparkles;
   if (activeTab === 'social_items') Icon = Briefcase;
+  if (activeTab === 'figures') Icon = Users;
 
   // Extraction des Fées compatibles (si l'on regarde un atout, un pouvoir ou une capacité)
   let linkedFairies = [];
@@ -302,6 +303,58 @@ export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
                         {profil}
                       </span>
                     ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 🎭 SPÉCIFIQUE AUX FIGURES */}
+          {activeTab === 'figures' && (
+            <div className="space-y-4 animate-fade-in">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {item.titre && (
+                  <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm">
+                    <h4 className="text-xs font-bold text-amber-800 uppercase tracking-widest mb-1">Titre</h4>
+                    <p className="text-sm font-bold text-amber-900 font-serif">{item.titre}</p>
+                  </div>
+                )}
+                {item.clan && (
+                  <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-200 shadow-sm">
+                    <h4 className="text-xs font-bold text-indigo-800 uppercase tracking-widest mb-1">Clan</h4>
+                    <p className="text-sm font-bold text-indigo-900 font-serif">{item.clan}</p>
+                  </div>
+                )}
+              </div>
+
+              {item.faux_semblant && (
+                <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 shadow-sm">
+                  <h4 className="text-xs font-bold text-purple-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <VenetianMask size={16} /> Faux-Semblant
+                  </h4>
+                  {item.faux_semblant_type_fee && (
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-bold text-purple-600 uppercase">Type de Fée :</span>
+                      <span className="text-sm font-bold text-purple-900">{item.faux_semblant_type_fee}</span>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {item.apparence_masquee && (
+                      <div className="bg-white p-3 rounded-lg border border-purple-100">
+                        <h5 className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <Users size={12} /> Apparence Masquée
+                        </h5>
+                        <p className="text-sm text-purple-900 font-serif whitespace-pre-wrap">{item.apparence_masquee}</p>
+                      </div>
+                    )}
+                    {item.apparence_demasquee && (
+                      <div className="bg-white p-3 rounded-lg border border-purple-100">
+                        <h5 className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <VenetianMask size={12} /> Apparence Démasquée
+                        </h5>
+                        <p className="text-sm text-purple-900 font-serif whitespace-pre-wrap">{item.apparence_demasquee}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

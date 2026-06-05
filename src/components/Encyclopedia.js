@@ -13,6 +13,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
     const tabs = [
         { id: 'fairy_types', label: 'Espèces Féériques' },
+        { id: 'figures', label: 'Figures' },
         { id: 'fairy_capacites', label: 'Capacités' },
         { id: 'fairy_powers', label: 'Pouvoirs' },
         { id: 'fairy_assets', label: 'Atouts' },
@@ -100,9 +101,14 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                         className="w-full pl-10 pr-4 py-2.5 border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none shadow-sm"
                     />
                 </div>
-                {isDocte && state.activeTab !== 'specialites' && (
+                {isDocte && state.activeTab !== 'specialites' && state.activeTab !== 'figures' && (
                     <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
                         <Plus size={20} /> Forger une Entité
+                    </button>
+                )}
+                {isDocte && state.activeTab === 'figures' && (
+                    <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
+                        <Plus size={20} /> Forger une Figure
                     </button>
                 )}
             </div>

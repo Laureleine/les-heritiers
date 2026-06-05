@@ -181,10 +181,13 @@ export function useEncyclopedia() {
                 query = supabase.from('fairy_powers').select('*, fairy_type_powers(fairy_types(id, name))');
             } else if (activeTab === 'fairy_assets') {
                 query = supabase.from('fairy_assets').select('*, fairy_type_assets(fairy_types(id, name))');
+            } else if (activeTab === 'figures') {
+                query = supabase.from('figures').select('*');
             }
 
             if (activeTab === 'fairy_types') query = query.order('name');
             else if (activeTab === 'social_items') query = query.order('cout', { ascending: true }).order('nom');
+            else if (activeTab === 'figures') query = query.order('name');
             else query = query.order('nom');
 
             const { data: results, error } = await query;
@@ -266,6 +269,8 @@ export function useEncyclopedia() {
                 profils_autorises: autorises,
                 techData: item.effets_techniques ? JSON.stringify(item.effets_techniques, null, 2) : '{}'
             });
+        } else if (activeTab === 'figures') {
+            setEditingItem({ ...item });
         } else {
             let existingFairyIds = [];
             if (activeTab === 'fairy_capacites') existingFairyIds = item.fairy_type_capacites?.map(link => link.fairy_types?.id).filter(Boolean) || [];

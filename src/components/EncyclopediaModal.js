@@ -7,6 +7,7 @@ import { safeParse } from '../utils/json';
 import FairyTypeForm from './encyclopedia/FairyTypeForm';
 import EntityForm from './encyclopedia/EntityForm';
 import SocialItemForm from './encyclopedia/SocialItemForm';
+import FigureForm from './encyclopedia/FigureForm';
 
 import { logger, showInAppNotification, translateError } from '../utils/SystemeServices';
 import { useCharacter } from '../context/CharacterContext';
@@ -186,6 +187,11 @@ export default function EncyclopediaModal({
                             competencesData={competencesData} usefulSkills={usefulSkills} allCompFutiles={allCompFutiles}
                             localCapacites={localCapacites} localPouvoirs={localPouvoirs} localAtouts={localAtouts}
                             setHasPendingTech={setHasPendingTech} setQuickForge={setQuickForge}
+                        />
+                    ) : activeTab === 'figures' ? (
+                        <FigureForm
+                            proposal={proposal} setProposal={setProposal}
+                            allFairyTypes={allFairyTypes}
                         />
                     ) : (
                         <EntityForm
