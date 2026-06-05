@@ -56,7 +56,7 @@ export default function Actualite({ onBack, userProfile }) {
         .from('journal_articles')
         .select('date, category')
         .order('date', { ascending: true })
-        .limit(3000);
+        .limit(10000);
       
       if (error) throw error;
       
