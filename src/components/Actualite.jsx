@@ -53,20 +53,12 @@ export default function Actualite({ onBack, userProfile }) {
   const fetchAvailableArticleDates = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('journal_articles')
-        .select('date, category')
-        .order('date', { ascending: true })
-        .limit(10000);
+        .rpc('get_article_dates');
       
       if (error) throw error;
       
       if (data) {
-        const validArticles = data.filter(
-          item => item.category !== 'Météo' && 
-                  item.category !== 'Lune' && 
-                  item.category !== 'Meteo'
-        );
-        const datesSet = new Set(validArticles.map(item => item.date));
+        const datesSet = new Set(data.map(item => item.date_col));
         setAvailableArticleDates(datesSet);
       }
     } catch (err) {
