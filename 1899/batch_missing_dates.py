@@ -20,6 +20,8 @@ import re
 import json
 import subprocess
 import time
+import threading
+import queue
 from pathlib import Path
 from datetime import date, timedelta
 
@@ -121,6 +123,57 @@ def is_token_error(stderr_text):
     return False
 
 
+def run_pipeline(python_exe, script_path, date_str, timeout=14400):
+    """Lance pipeline_journalier.py en streamant la sortie en temps reel.
+
+    Retourne (returncode, stdout_text, stderr_text).
+    """
+    cmd = [python_exe, str(script_path), "--date", date_str]
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        stdin=subprocess.DEVNULL,
+        text=True, encoding='utf-8', errors='replace',
+        cwd=str(BASE_DIR)
+    )
+
+    stdout_lines = []
+    stderr_lines = []
+    deadline = time.time() + timeout
+
+    def pipe_reader(pipe, lines, output_stream):
+        try:
+            for line in iter(pipe.readline, ''):
+                lines.append(line)
+                if output_stream:
+                    output_stream.write(line)
+                    output_stream.flush()
+        finally:
+            pipe.close()
+
+    threads = [
+        threading.Thread(target=pipe_reader, args=(process.stdout, stdout_lines, sys.stdout), daemon=True),
+        threading.Thread(target=pipe_reader, args=(process.stderr, stderr_lines, sys.stderr), daemon=True),
+    ]
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        remaining = deadline - time.time()
+        if remaining <= 0:
+            process.kill()
+            raise subprocess.TimeoutExpired(cmd, timeout)
+        t.join(timeout=max(remaining, 1))
+
+    # Vérifier si le délai est dépassé après les joins
+    if time.time() >= deadline:
+        process.kill()
+        raise subprocess.TimeoutExpired(cmd, timeout)
+
+    process.wait()
+    return process.returncode, ''.join(stdout_lines), ''.join(stderr_lines)
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Traite les dates manquantes du journal.")
@@ -159,10 +212,8 @@ def main():
         print(sep)
 
         try:
-            result = subprocess.run(
-                [python_exe, str(pipeline_script), "--date", date_str],
-                capture_output=True, text=True, encoding='utf-8', errors='replace',
-                timeout=14400, cwd=str(BASE_DIR)
+            returncode, stdout_text, stderr_text = run_pipeline(
+                python_exe, pipeline_script, date_str
             )
         except subprocess.TimeoutExpired:
             print(f"\nTIMEOUT: {date_str} a depasse 4h. Nettoyage des donnees partielles...")
@@ -170,19 +221,13 @@ def main():
             print(f"   -> Date {date_str} ignoree, passage a la suivante.\n")
             continue
 
-        # Afficher la sortie du pipeline
-        if result.stdout:
-            print(result.stdout)
-        if result.stderr:
-            print(result.stderr, file=sys.stderr)
-
-        if result.returncode == 0:
+        if returncode == 0:
             restantes = len(missing_dates) - missing_dates.index(d) - 1
             print(f"OK: {date_str} traite avec succes ! {restantes} restante(s).")
             continue
 
         # Échec — vérifier si c'est un problème de tokens
-        error_text = (result.stderr or "") + (result.stdout or "")
+        error_text = (stderr_text or "") + (stdout_text or "")
         if is_token_error(error_text):
             print(f"\nCRISE DE TOKENS sur {date_str} !")
             print(f"Nettoyage des donnees partielles de {date_str}...")
@@ -190,7 +235,7 @@ def main():
             print(f"\nArret propre. {date_str} sera retente au prochain lancement.")
             sys.exit(0)
         else:
-            print(f"\nERREUR: Echec sur {date_str} (non-token, code {result.returncode}).")
+            print(f"\nERREUR: Echec sur {date_str} (non-token, code {returncode}).")
             print("   Date conservee en DB pour investigation. Arret.")
             sys.exit(1)
 

@@ -2,6 +2,21 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.3.0 - "Les Masques du Grimoire 🎭📖"',
+    date: '5 Juin 2026',
+    description: 'Le Grimoire apprend à percer les masques : les contacts peuvent désormais porter plusieurs relations (Allié, Neutre, Famille, Hostile), chacune avec ses sous-catégories libres et son niveau de visibilité (Privé, Cercle, Public). Les Faux-Semblants permettent d\'afficher une façade publique tout en enregistrant la vérité — seul le Docte voit à travers le voile. La localisation s\'enrichit (ville, pays), et une barre de recherche permet de filtrer les Visages Rencontrés par nom, lieu ou catégorie.',
+    changes: [
+      '🎭 **Système de Relations (Nouveau) :** Chaque contact peut avoir plusieurs relations avec des catégories libres (Allié, Neutre, Famille, Hostile) et des sous-catégories à profondeur libre (ex: « Cousin > Germain > Issu de germain »). Les catégories connues sont suggérées mais l\'Héritier peut taper librement.',
+      '📖 **Faux-semblants :** Une section dédiée dans la fiche contact permet d\'activer un faux-semblant — choisir un type de fée (parmi les espèces connues ou en saisie libre), définir les catégories publiées (visibles par les autres) et les catégories réelles (visibles seulement par soi-même et le Docte). Un icône 🎭 signale subtilement les contacts masqués.',
+      '👁️ **Œil du Docte :** Les Doctes disposent d\'un bouton « Voir la réalité » qui révèle les vraies catégories derrière les faux-semblants de tous les contacts du Grimoire.',
+      '🛡️ **Visibilité par relation :** Chaque relation peut être marquée Privée (visible seulement par soi), Cercle (visible par les membres du Cercle), ou Publique (visible par tous via le partage du Grimoire).',
+      '🗺️ **Localisation structurée :** Les contacts disposent désormais d\'une localisation enrichie avec texte libre, ville et pays — en plus du champ localisation simple existant.',
+      '🔍 **Barre de recherche :** Un champ de filtrage en temps réel permet de chercher parmi les contacts par nom, lieu ou catégorie de relation.',
+      '🔄 **Migration automatique :** Les 662 contacts existants avec l\'ancien champ `statut_relation` sont automatiquement convertis au nouveau format au chargement — aucune donnée perdue.',
+      '🧪 **335 Sentinelles (+22) — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.2.11 - "Le Cache du Phénix 🔥📦"',
     date: '4 Juin 2026',
     description: 'Le Nuage Féérique renaît de ses cendres : les tris de données protégés contre les noms manquants, le cache localStorage refuse les données vides, et les Héritiers bloqués depuis deux jours retrouvent l\'accès à leurs personnages sans manipulation manuelle.',

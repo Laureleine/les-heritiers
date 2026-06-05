@@ -10,6 +10,7 @@ import re
 import json
 import subprocess
 import argparse
+import concurrent.futures
 from pathlib import Path
 
 # Configurer la console pour supporter l'UTF-8 sous Windows
@@ -59,8 +60,11 @@ def configure_gemini():
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         print("\n⚠️ La variable d'environnement 'GEMINI_API_KEY' n'est pas définie.")
-        print("Vous pouvez également la saisir manuellement ci-dessous.")
-        api_key = input("Entrez votre clé API Gemini (laisser vide pour annuler) : ").strip()
+        try:
+            api_key = input("Entrez votre clé API Gemini (laisser vide pour annuler) : ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\n❌ Pas de terminal interactif disponible. Clé API manquante.")
+            return False
         
     if not api_key:
         print("❌ Clé API manquante. La phase de restauration par IA sera ignorée.")
@@ -92,12 +96,23 @@ def run_step_1_ocr(date_str):
 
 import time
 
-def call_gemini_with_retry(model, prompt, generation_config=None, max_retries=4):
-    """Effectue un appel à Gemini avec gestion automatique et résiliente des quotas 429."""
+def _call_gemini(model, prompt, generation_config):
+    """Appel synchrone à Gemini (séparé pour pouvoir le timer)."""
+    return model.generate_content(prompt, generation_config=generation_config)
+
+
+def call_gemini_with_retry(model, prompt, generation_config=None, max_retries=4, timeout=180):
+    """Effectue un appel à Gemini avec timeout et gestion automatique des quotas 429."""
     for attempt in range(max_retries):
         try:
-            response = model.generate_content(prompt, generation_config=generation_config)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                future = pool.submit(_call_gemini, model, prompt, generation_config)
+                response = future.result(timeout=timeout)
             return response
+        except concurrent.futures.TimeoutError:
+            print(f"  ⏰ Appel Gemini a expiré après {timeout}s (tentative {attempt+1}/{max_retries})")
+            if attempt == max_retries - 1:
+                raise
         except Exception as e:
             err_str = str(e)
             # Vérification de l'erreur de quota (429)
@@ -122,8 +137,11 @@ def call_gemini_with_retry(model, prompt, generation_config=None, max_retries=4)
                 # Si c'est une autre erreur, on la lève directement
                 raise e
                 
-    # Dernière tentative sans filet
-    return model.generate_content(prompt, generation_config=generation_config)
+    # Dernière tentative sans filet (avec timeout aussi)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+        future = pool.submit(_call_gemini, model, prompt, generation_config)
+        response = future.result(timeout=timeout)
+    return response
 
 def run_step_2_segmentation_ia(date_str):
     """Étape 2 : Découpe toutes les pages en articles de façon résiliente, page par page (évite la troncature)."""
