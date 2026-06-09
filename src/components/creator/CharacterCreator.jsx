@@ -45,26 +45,48 @@ export default function CharacterCreator({ session, userProfile }) {
   const [showJournalAme, setShowJournalAme] = useState(false);
 
   const totalSteps = STEP_CONFIG.length;
-  const canProceedStep1 = character?.nom && character?.sexe && character?.typeFee;
+  const isHumain = character?.typePersonnage === 'humain';
+  const HUMAN_SKIPPED_STEPS = [2, 3, 4];
+
+  const canProceedStep1 = character?.nom && character?.sexe && (
+    isHumain ? !!character?.rangHumain : !!character?.typeFee
+  );
 
   const nextStep = () => {
     if (step === 1 && !canProceedStep1) {
-      showInAppNotification("Les pages suivantes sont scellées. Renseignez d'abord votre Nom, Sexe et Héritage féérique !", "warning");
+      showInAppNotification(
+        isHumain
+          ? "Les pages suivantes sont scellées. Renseignez d'abord votre Nom, Sexe et Rang !"
+          : "Les pages suivantes sont scellées. Renseignez d'abord votre Nom, Sexe et Héritage féérique !",
+        "warning"
+      );
       return;
     }
-    setStep(s => Math.min(totalSteps, s + 1));
+    let next = step + 1;
+    if (isHumain) while (HUMAN_SKIPPED_STEPS.includes(next) && next <= totalSteps) next++;
+    setStep(Math.min(totalSteps, next));
     window.scrollTo(0, 0);
   };
 
   const prevStep = () => {
-    setStep(s => Math.max(1, s - 1));
+    let prev = step - 1;
+    if (isHumain) while (HUMAN_SKIPPED_STEPS.includes(prev) && prev >= 1) prev--;
+    setStep(Math.max(1, prev));
     window.scrollTo(0, 0);
   };
 
   const handleSave = async () => {
     if (isReadOnly) return;
-    if (!character?.nom?.trim() || !character?.sexe || !character?.typeFee) {
-      showInAppNotification("Impossible de sauvegarder : votre Héritier a besoin d'un Nom, d'un Sexe et d'un Héritage (Étape 1) !", "warning");
+    const step1Valid = isHumain
+      ? character?.nom?.trim() && character?.sexe && character?.rangHumain
+      : character?.nom?.trim() && character?.sexe && character?.typeFee;
+    if (!step1Valid) {
+      showInAppNotification(
+        isHumain
+          ? "Impossible de sauvegarder : votre personnage a besoin d'un Nom, d'un Sexe et d'un Rang (Étape 1) !"
+          : "Impossible de sauvegarder : votre Héritier a besoin d'un Nom, d'un Sexe et d'un Héritage (Étape 1) !",
+        "warning"
+      );
       return;
     }
     try {
@@ -166,18 +188,29 @@ export default function CharacterCreator({ session, userProfile }) {
         {STEP_CONFIG.map((s) => {
           const isActive = step === s.id;
           const isPast = step > s.id;
+          const isSkipped = isHumain && HUMAN_SKIPPED_STEPS.includes(s.id);
           return (
             <div key={s.id} className="relative z-10 flex flex-col items-center group">
               <button
                 onClick={() => {
+                  if (isSkipped) return;
                   if (s.id > 1 && !canProceedStep1) {
-                    showInAppNotification("La magie bloque le passage. Terminez l'Étape 1 (Nom, Sexe, Fée) avant de sauter les pages.", "warning");
+                    showInAppNotification("La magie bloque le passage. Terminez l'Étape 1 avant de sauter les pages.", "warning");
                     return;
                   }
                   setStep(s.id);
                   window.scrollTo(0, 0);
                 }}
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${isActive ? 'bg-amber-500 text-white scale-125 ring-4 ring-amber-200' : isPast ? 'bg-amber-100 text-amber-700 border-2 border-amber-300 hover:bg-amber-200' : 'bg-white border-stone-300 text-stone-400 hover:border-amber-300 hover:text-amber-500'}`}
+                disabled={isSkipped}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${
+                  isSkipped
+                    ? 'bg-stone-100 text-stone-300 border-2 border-stone-200 cursor-not-allowed opacity-40'
+                    : isActive
+                    ? 'bg-amber-500 text-white scale-125 ring-4 ring-amber-200'
+                    : isPast
+                    ? 'bg-amber-100 text-amber-700 border-2 border-amber-300 hover:bg-amber-200'
+                    : 'bg-white border-stone-300 text-stone-400 hover:border-amber-300 hover:text-amber-500'
+                }`}
               >
                 {s.icon || s.id}
               </button>

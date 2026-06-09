@@ -5,6 +5,13 @@ import {BookOpen, Sparkles, User, Zap, Star, Activity, Award, Feather, Briefcase
 // ============================================================================
 // 1. LES CONSTANTES ET CARACTÉRISTIQUES (Ancien constants.js)
 // ============================================================================
+export const HUMAIN_RANGS = {
+  larbin:   { label: 'Larbin',   carac: 8,  utiles: 10, futiles: 10 },
+  acolyte:  { label: 'Acolyte',  carac: 10, utiles: 15, futiles: 12 },
+  pointure: { label: 'Pointure', carac: 12, utiles: 20, futiles: 14 },
+  cador:    { label: 'Cador',    carac: 14, utiles: 25, futiles: 16 },
+};
+
 export const CARAC_LIST = [
   { key: 'agilite', label: 'Agilité', icon: '🤸', description: 'Adresse, souplesse, réflexes' },
   { key: 'constitution', label: 'Constitution', icon: '🛡️', description: 'Santé, endurance, résistance' },

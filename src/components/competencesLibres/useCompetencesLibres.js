@@ -8,6 +8,7 @@ import { getUtileCost, FIXED_XP_COSTS } from '../../utils/xpCalculator';
 import { isCharacterScelle } from '../../utils/lockUtils';
 import { parseIfString } from '../../utils/json';
 import { getXpState, XP_CODES } from '../../utils/xpActions';
+import { HUMAIN_RANGS } from '../../data/DictionnaireJeu';
 
 export const POINTS_TOTAUX = 15;
 export const SKILLS_ESPRIT = [
@@ -91,6 +92,10 @@ export function useCompetencesLibres() {
     const bonusEspritMax = Math.max(0, (character.caracteristiques?.esprit || 1) - 3);
 
     // 3. MOTEUR DE BUDGETS (Points Verts & Violets)
+    const pointsTotauxUtiles = character.typePersonnage === 'humain'
+        ? (HUMAIN_RANGS[character.rangHumain]?.utiles ?? POINTS_TOTAUX)
+        : POINTS_TOTAUX;
+
     const budgetsInfo = useMemo(() => {
         let std = 0; let eligible = 0;
         Object.entries(lib.rangs || {}).forEach(([nom, val]) => {
@@ -103,17 +108,17 @@ export function useCompetencesLibres() {
             if (SKILLS_ESPRIT.includes(nom)) eligible += count;
             else std += count;
         });
-        
+
         const pointsVioletsUtilises = Math.min(eligible, bonusEspritMax);
         const debordementEsprit = eligible - pointsVioletsUtilises;
         const totalVertUtilise = std + debordementEsprit;
-        
+
         return {
-            pointsRestantsVerts: POINTS_TOTAUX - totalVertUtilise,
+            pointsRestantsVerts: pointsTotauxUtiles - totalVertUtilise,
             pointsRestantsViolets: bonusEspritMax - pointsVioletsUtilises,
             bonusEspritMax
         };
-    }, [lib.rangs, lib.choixSpecialiteUser, getScoreBase, bonusEspritMax]);
+    }, [lib.rangs, lib.choixSpecialiteUser, getScoreBase, bonusEspritMax, pointsTotauxUtiles]);
 
     // 4. HANDLERS D'ACTION (Mutations)
     const handleRangChange = useCallback((nomComp, delta) => {
