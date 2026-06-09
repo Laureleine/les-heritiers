@@ -4,16 +4,16 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-## 🧠 Session Memory — 17.2.1 "Les Saints du Calendrier" (31 Mai 2026)
+## 🧠 Session Memory — 17.4.3 "L'Humain Parmi les Fées" (9 Juin 2026)
 
-**Tests :** 280 passes / 23 suites / 0 échecs
+**Tests :** 327 passes / 0 échecs
 
 ### Dernières modifications
 
-1. **365 saints du calendrier tridentin français (17.2.1)** — `scripts/saints_data.js` contient nom, domaine, description pour chaque jour de l'année. Insérés par année (×16) dans `journal_holidays`.
-2. **Seed multi-années** — `scripts/seed_all_holidays.js` passe de 752 à 6 595 entrées (saints × 16 ans + fêtes fixes + mobiles + celtiques).
-3. **Ajout de `.neq()` et `.in()` au MockChain des tests** — pour supporter les nouveaux filtres Supabase.
-4. **280 tests verts** — 23 suites, aucune régression.
+1. **Humain pur dans le créateur (17.4.3)** — nouveau `typePersonnage: 'fee' | 'humain'` + `rangHumain: 'larbin' | 'acolyte' | 'pointure' | 'cador'`. Steps 2/3/4 sautés pour les humains. Budgets carac/utiles/futiles depuis `HUMAIN_RANGS`.
+2. **`HUMAIN_RANGS`** dans `DictionnaireJeu.js` — constante exportée, 4 rangs × 3 budgets.
+3. **14 nouveaux tests** dans `src/data/__tests__/humainRangs.test.js` — valeurs des rangs, canProceedStep1, step-skipping.
+4. **CLAUDE.md créé** — pointeur vers AGENTS.md, règle absolue de ne jamais écrire dans CLAUDE.md.
 
 ### Prochaine session
 
@@ -21,7 +21,7 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 - Lancer `node scripts/backup_supabase.js`.
 - Les chantiers de refactoring sont listés ci-dessous (#1-10).
 - Toujours `git pull` avant de commencer.
-- **🔔 Point agenda** : Discuter **Skills**, **Agents**, et **DRY** (chantiers de refactoring DRY_PLAN.md).
+- **🔔 À faire** : Ajouter les colonnes `type_personnage` / `rang_humain` en base Supabase si pas encore fait (migration SQL). Vérifier `CHARACTER_SCHEMA.md`.
 
 ---
 
