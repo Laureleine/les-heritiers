@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.2 - "Le Millésime Exact 📅🔧"',
+    date: '9 Juin 2026',
+    description: 'Le panneau de contrôle affichait "15 Avril 1899" pour un vote sur "15 Avril 1900" — l\'année était codée en dur. Elle est maintenant lue depuis la date réelle du vote. Les tests E2E Playwright sont câblés : config, credentials sécurisés, fixture et script npm.',
+    changes: [
+      '📅 **Fix panneau admin — Année codée en dur :** La colonne des votes de numérisation affichait toujours 1899 comme millésime, quelle que soit l\'année réelle du vote. `dateObj.getFullYear()` remplace le `1899` figé — les votes de 1900 s\'affichent désormais avec le bon millésime.',
+      '🎭 **Tests E2E Playwright câblés :** `playwright.config.js` converti en CommonJS, `baseURL` + `webServer` activés, script `test:e2e` ajouté. Credentials déplacés vers `.env` (`E2E_EMAIL`/`E2E_PASSWORD`). Bug `[#1#]` corrigé dans `clonageDeMasse.spec.js`. Fixture `echantillon_heritiers.json` peuplée avec Marie Josèphe Grobis.',
+      '🧪 **335 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.1 - "Les Points Verts du Grimoire 🟢📆"',
     date: '5 Juin 2026',
     description: 'Le mini calendrier des Actualités retrouve tous ses points verts — la requête était limitée à 3000 lignes, ce qui excluait les 1849 articles les plus récents. Place à une fonction RPC dédiée qui retourne les dates distinctes en un éclair. Les Figures sont désormais opérationnelles avec leur table en base, les données périmées ne s\'affichent plus au changement d\'onglet, et les Gardiens peuvent sceller les entrées des onglets Vie Sociale, Spécialités et Figures.',

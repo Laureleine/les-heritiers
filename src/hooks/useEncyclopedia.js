@@ -122,6 +122,7 @@ export function useEncyclopedia() {
     }, []);
 
     const fetchData = useCallback(async () => {
+        setData([]);
         setLoading(true);
         try {
             if (activeTab === 'specialites') {
@@ -195,7 +196,11 @@ export function useEncyclopedia() {
             setData(results || []);
         } catch (error) {
             console.error("❌ Erreur chargement Encyclopédie:", error);
-            showInAppNotification("Erreur de connexion aux Archives Royales.", "error");
+            if (activeTab === 'figures' && error?.message?.includes('does not exist')) {
+                showInAppNotification("L'onglet Figures n'est pas encore disponible — la table n'existe pas en base.", "warning");
+            } else {
+                showInAppNotification("Erreur de connexion aux Archives Royales.", "error");
+            }
         } finally {
             setLoading(false);
         }
