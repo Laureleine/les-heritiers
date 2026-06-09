@@ -339,6 +339,27 @@ export default function Step1() {
                                     <p className="text-sm text-stone-500">Ni fée, ni demi-sang — un mortel dans un monde de merveilles</p>
                                 </div>
                             </div>
+                            <div>
+                                <label className="font-bold text-xs uppercase text-gray-400 font-sans block mb-2">Sexe</label>
+                                <div className="flex gap-3 font-sans">
+                                    {['Homme', 'Femme'].map((g) => (
+                                        <button
+                                            key={g}
+                                            onClick={() => onSexeChange(g)}
+                                            disabled={isLocked}
+                                            className={`flex-1 py-2 px-4 border rounded-lg font-bold text-sm transition-all ${
+                                                character.sexe === g
+                                                    ? 'border-amber-600 bg-amber-600 text-white shadow-md'
+                                                    : isLocked
+                                                        ? 'border-gray-100 text-gray-300 cursor-not-allowed bg-stone-50'
+                                                        : 'border-gray-300 text-gray-600 hover:border-amber-400 hover:bg-amber-50'
+                                            }`}
+                                        >
+                                            {g}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                             {character.rangHumain ? (
                                 <div className="bg-stone-50 border border-stone-200 rounded-xl p-5">
                                     <h3 className="font-serif font-bold text-stone-800 text-lg mb-4">

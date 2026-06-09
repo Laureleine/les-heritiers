@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.4 - "Le Mortel a un Sexe 🧍⚤"',
+    date: '9 Juin 2026',
+    description: 'Un oubli de taille : le créateur de personnage humain ne proposait aucun moyen de choisir le sexe, alors même que le jeu l\'exige pour valider l\'étape. Le sélecteur Homme / Femme fait désormais son apparition dans le panneau de droite, au même style ambré que pour les fées.',
+    changes: [
+      '⚤ **Sélecteur de sexe pour les humains purs :** Le panneau de création d\'un personnage humain affiche maintenant les boutons Homme / Femme, identiques visuellement à ceux des fées — fond ambré à la sélection, survol ambré au repos. Impossible de passer à l\'étape suivante sans avoir fait son choix.',
+      '🧪 **335 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.3 - "L\'Humain Parmi les Fées 🧍🌿"',
     date: '9 Juin 2026',
     description: 'Le créateur de personnage s\'ouvre aux mortels : un Héritier peut désormais incarner un Humain pur, sans héritage féérique. Quatre rangs déterminent ses capacités — du Larbin qui fait les courses au Cador qui tire les ficelles — et le créateur adapte automatiquement le parcours : les étapes féeriques sont escamotées, les budgets de points recalculés selon la condition humaine.',
