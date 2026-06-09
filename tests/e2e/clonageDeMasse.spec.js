@@ -15,8 +15,8 @@ test.describe('🏭 Usine de Clonage : Tests Data-Driven Intégral', () => {
       
       // 1. CONNEXION ET LANCEMENT
       await page.goto('http://localhost:3000');
-      await page.fill('input[type="email"]', 'ton-compte-test@heritiers.fr');
-      await page.fill('input[type="password"]', 'ton-mot-de-passe-secret');
+      await page.fill('input[type="email"]', process.env.E2E_EMAIL);
+      await page.fill('input[type="password"]', process.env.E2E_PASSWORD);
       await page.click('button:has-text("Se connecter")');
       
       const btnDisclaimer = page.locator('button:has-text("J\'ai compris et j\'accepte")');
@@ -55,7 +55,7 @@ test.describe('🏭 Usine de Clonage : Tests Data-Driven Intégral', () => {
 
         const minText = await caracRow.locator('.text-gray-400').first().innerText();
         const regexMatch = minText.match(/Min\s+(\d+)/);
-        const minGenetique = regexMatch ? parseInt(regexMatch[#1#]) : 1; 
+        const minGenetique = regexMatch ? parseInt(regexMatch[1]) : 1;
 
         const clicsAEffectuer = scoreFinalCible - minGenetique;
 

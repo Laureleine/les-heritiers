@@ -1145,7 +1145,7 @@ export default function Actualite({ onBack, userProfile }) {
                       <tbody className="divide-y divide-stone-200/50 dark:divide-stone-700/50">
                         {votesList.map((vote) => {
                           const dateObj = new Date(vote.date);
-                          const formattedDate = `${dateObj.getDate()} ${MONTHS_FR[String(dateObj.getMonth() + 1).padStart(2, '0')]} 1899`;
+                          const formattedDate = `${dateObj.getDate()} ${MONTHS_FR[String(dateObj.getMonth() + 1).padStart(2, '0')]} ${dateObj.getFullYear()}`;
                           const commandStr = `python pipeline_journalier.py --date ${vote.date}`;
                           return (
                             <tr key={vote.date} className={`hover:bg-stone-50 dark:hover:bg-stone-900/40 transition-colors`}>

@@ -1,0 +1,36 @@
+[
+  {
+    "nom": "Marie Josèphe Grobis",
+    "sexe": "Femme",
+    "typeFee": "Bastet",
+    "caracteristiques": {
+      "force": 3,
+      "esprit": 2,
+      "agilite": 4,
+      "precision": 3,
+      "prestance": 3,
+      "sangFroid": 3,
+      "perception": 5,
+      "constitution": 3
+    },
+    "profils": {
+      "majeur": { "nom": "Aventurier" },
+      "mineur": { "nom": "Roublard" }
+    },
+    "competencesLibres": {
+      "rangs": {
+        "Survie": 1,
+        "Mêlée": 2,
+        "Ressort": 1,
+        "Comédie": 3,
+        "Fortitude": 1,
+        "Mouvement": 1,
+        "Discrétion": 1,
+        "Observation": 1,
+        "Rhétorique": 1,
+        "Sensibilité": 1,
+        "Art de la guerre": 1
+      }
+    }
+  }
+]

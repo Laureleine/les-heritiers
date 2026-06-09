@@ -27,8 +27,8 @@ test('Test E2E : Reconstruction complète et scellage d\'un Léporide', async ({
   console.log("👉 Authentification de l'automate...");
   
   // Le robot remplit le formulaire de ton composant Auth.js
-  await page.fill('input[type="email"]', 'azghal@free.fr');
-  await page.fill('input[type="password"]', 'Testeur01@');
+  await page.fill('input[type="email"]', process.env.E2E_EMAIL);
+  await page.fill('input[type="password"]', process.env.E2E_PASSWORD);
   await page.click('button:has-text("Se connecter")');
 
   // ✨ LA NOUVELLE INCISION : Le Fantôme accepte les Mentions Légales !
