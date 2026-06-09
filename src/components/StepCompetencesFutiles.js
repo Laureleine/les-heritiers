@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from '../config/icons';
 import { addCompetenceFutile } from '../utils/supabaseGameData';
-import { parseCompetencesFutilesPredilection } from '../data/DictionnaireJeu';
+import { parseCompetencesFutilesPredilection, HUMAIN_RANGS } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getFutileCost } from '../utils/xpCalculator';
@@ -52,7 +52,9 @@ export default function StepCompetencesFutiles() {
   // Calcul des points
   const rangsInvestis = character.competencesFutiles?.rangs || {};
   const pointsDepenses = Object.values(rangsInvestis).reduce((sum, rangs) => sum + rangs, 0);
-  const maxPoints = feeData?.pointsFutiles ?? 10;
+  const maxPoints = character.typePersonnage === 'humain'
+    ? (HUMAIN_RANGS[character.rangHumain]?.futiles ?? 10)
+    : (feeData?.pointsFutiles ?? 10);
   const pointsRestants = maxPoints - pointsDepenses;
 
   // Helper de limite (Utilise le score total calculé par App.js)

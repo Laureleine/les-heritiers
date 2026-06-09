@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.3 - "L\'Humain Parmi les Fées 🧍🌿"',
+    date: '9 Juin 2026',
+    description: 'Le créateur de personnage s\'ouvre aux mortels : un Héritier peut désormais incarner un Humain pur, sans héritage féérique. Quatre rangs déterminent ses capacités — du Larbin qui fait les courses au Cador qui tire les ficelles — et le créateur adapte automatiquement le parcours : les étapes féeriques sont escamotées, les budgets de points recalculés selon la condition humaine.',
+    changes: [
+      '🧍 **Humain pur (Nouveau type de personnage) :** Un bouton dédié à l\'Étape 1 permet de créer un personnage entièrement mortel. Le sélecteur de types de fées cède la place au choix du rang, et le panneau de droite affiche le récapitulatif des budgets.',
+      '🎖️ **Quatre rangs de condition humaine :** Larbin (8/10/10), Acolyte (10/15/12), Pointure (12/20/14), Cador (14/25/16) — attributs / compétences utiles / compétences futiles. Les rangs croissent strictement, du menu fretin au notable influent.',
+      '⏭️ **Étapes féeriques escamotées :** Capacités, Pouvoirs et Atouts sont automatiquement sautés pour les humains. Les boutons de navigation les enjambent, et les pastilles de la barre de progression sont grisées.',
+      '📊 **Budgets adaptatifs :** Les attributs, compétences utiles et futiles sont calculés depuis le rang humain. Pas de Féerie, de Masque, ni de Tricherie — juste la chair et l\'ambition.',
+      '🗄️ **Base de données enrichie :** Deux nouvelles colonnes — `type_personnage` (défaut `fee`) et `rang_humain` — enregistrent le choix pour chaque personnage.',
+      '🧪 **327 Sentinelles (+ 14 nouvelles) — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.2 - "Le Millésime Exact 📅🔧"',
     date: '9 Juin 2026',
     description: 'Le panneau de contrôle affichait "15 Avril 1899" pour un vote sur "15 Avril 1900" — l\'année était codée en dur. Elle est maintenant lue depuis la date réelle du vote. Les tests E2E Playwright sont câblés : config, credentials sécurisés, fixture et script npm.',

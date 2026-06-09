@@ -1,6 +1,7 @@
 // src/components/Step1.js
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Crown, CheckCircle, Lock } from '../config/icons';
+import { Crown, CheckCircle, Lock, User } from '../config/icons';
+import { HUMAIN_RANGS } from '../data/DictionnaireJeu';
 import { isAdmin, isSuperAdmin } from '../utils/authRoles';
 import { useCharacter } from '../context/CharacterContext';
 import { supabase } from '../config/supabase';
@@ -79,6 +80,23 @@ export default function Step1() {
     const onCharacterChange = (payload) => {
         if (isLocked) return;
         dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload, gameData });
+    };
+
+    const isHumain = character.typePersonnage === 'humain';
+
+    const onSelectHumain = () => {
+        if (isLocked) return;
+        if (isHumain) {
+            // Désélectionner : retour au mode fée
+            dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { typePersonnage: 'fee', rangHumain: null }, gameData });
+        } else {
+            dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { typePersonnage: 'humain', typeFee: '', rangHumain: null }, gameData });
+        }
+    };
+
+    const onSelectRang = (rang) => {
+        if (isLocked) return;
+        dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { rangHumain: rang }, gameData });
     };
 
     const onTraitsFeeriquesChange = (v) => {
@@ -160,11 +178,29 @@ export default function Step1() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 overflow-hidden">
                 
-                {/* COLONNE DE GAUCHE : ENFOUI + SÉLECTEUR */}
+                {/* COLONNE DE GAUCHE : ENFOUI + HUMAIN PUR + SÉLECTEUR */}
                 <div className="lg:col-span-4 flex flex-col gap-6 h-full overflow-hidden">
 
+                    {/* ENTRÉE SPÉCIALE : HUMAIN PUR */}
+                    <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 shrink-0">
+                        <button
+                            onClick={onSelectHumain}
+                            disabled={isLocked}
+                            className={`w-full text-left px-4 py-3 rounded-lg transition-all flex items-center justify-between disabled:opacity-60 disabled:cursor-not-allowed ${
+                                isHumain
+                                    ? 'bg-stone-200 text-stone-900 border-l-4 border-l-stone-600 pl-3'
+                                    : 'hover:bg-stone-100 text-gray-600'
+                            }`}
+                        >
+                            <span className="font-serif font-medium italic flex items-center gap-2">
+                                <User size={15} /> Humain pur
+                            </span>
+                            {isHumain && <CheckCircle size={16} className="text-green-600"/>}
+                        </button>
+                    </div>
+
                     {/* ENTRÉE SPÉCIALE : FAUX-SEMBLANT ENFOUI */}
-                    {fairyData && Object.entries(fairyData)
+                    {!isHumain && fairyData && Object.entries(fairyData)
                         .filter(([_, data]) => data.isEnfoui)
                         .map(([fairyName]) => (
                             <div key={fairyName} className="bg-amber-50/40 border border-amber-200 rounded-xl p-3 shrink-0">
@@ -190,8 +226,39 @@ export default function Step1() {
                             </div>
                         ))}
 
-                    {/* SÉLECTEUR DE TYPE DE FÉE */}
-                    <div className="flex flex-col flex-1 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                    {/* SÉLECTEUR DE RANG (mode Humain pur) */}
+                    {isHumain && (
+                        <div className="flex flex-col flex-1 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                            <div className="p-4 bg-stone-100 border-b border-stone-200">
+                                <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Choisir un rang</span>
+                            </div>
+                            <div className="flex-1 overflow-y-auto">
+                                {Object.entries(HUMAIN_RANGS).map(([key, rang]) => (
+                                    <button
+                                        key={key}
+                                        onClick={() => onSelectRang(key)}
+                                        disabled={isLocked}
+                                        className={`w-full text-left px-4 py-4 border-b border-gray-50 transition-all flex items-center justify-between disabled:opacity-60 disabled:cursor-not-allowed ${
+                                            character.rangHumain === key
+                                                ? 'bg-stone-100 text-stone-900 border-l-4 border-l-stone-600 pl-3'
+                                                : 'hover:bg-stone-50 text-gray-600'
+                                        }`}
+                                    >
+                                        <div>
+                                            <span className="font-serif font-medium block">{rang.label}</span>
+                                            <span className="text-xs text-gray-400 mt-0.5 block">
+                                                {rang.carac} attr. · {rang.utiles} utiles · {rang.futiles} futiles
+                                            </span>
+                                        </div>
+                                        {character.rangHumain === key && <CheckCircle size={16} className="text-green-600 shrink-0"/>}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* SÉLECTEUR DE TYPE DE FÉE (mode fée) */}
+                    {!isHumain && <div className="flex flex-col flex-1 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
 
                     <div className="flex flex-col gap-2 p-2 bg-gray-100 rounded-xl border border-gray-200">
                             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">Filtrer par origine</span>
@@ -255,21 +322,60 @@ export default function Step1() {
                                 ))
                         )}
                         </div>
-                    </div>
+                    </div>}
+
                 </div>
 
-                {/* PANNEAU DE DROITE : NOTRE NOUVELLE VUE SÉPARÉE ✨ */}
+                {/* PANNEAU DE DROITE */}
                 <div className="lg:col-span-8 h-full">
-                    <FairyDetailsPanel
-                        previewData={previewData}
-                        selectedPreview={selectedPreview}
-                        character={character}
-                        isLocked={isLocked}
-                        isInitiated={isInitiated}
-                        onSexeChange={onSexeChange}
-                        onTraitsFeeriquesChange={onTraitsFeeriquesChange}
-                        onTypeFeeChange={onTypeFeeChange}
-                    />
+                    {isHumain ? (
+                        <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 h-full flex flex-col gap-6">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-stone-100 p-3 rounded-full text-stone-700">
+                                    <User size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="font-serif font-bold text-stone-900 text-xl">Humain pur</h2>
+                                    <p className="text-sm text-stone-500">Ni fée, ni demi-sang — un mortel dans un monde de merveilles</p>
+                                </div>
+                            </div>
+                            {character.rangHumain ? (
+                                <div className="bg-stone-50 border border-stone-200 rounded-xl p-5">
+                                    <h3 className="font-serif font-bold text-stone-800 text-lg mb-4">
+                                        Rang : {HUMAIN_RANGS[character.rangHumain].label}
+                                    </h3>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        {[
+                                            { label: 'Points d\'attributs', value: HUMAIN_RANGS[character.rangHumain].carac },
+                                            { label: 'Points utiles', value: HUMAIN_RANGS[character.rangHumain].utiles },
+                                            { label: 'Points futiles', value: HUMAIN_RANGS[character.rangHumain].futiles },
+                                        ].map(({ label, value }) => (
+                                            <div key={label} className="bg-white border border-stone-200 rounded-lg p-4 text-center">
+                                                <span className="text-3xl font-black font-serif text-stone-800">{value}</span>
+                                                <p className="text-xs text-stone-500 mt-1">{label}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center flex-1 text-stone-400 gap-3">
+                                    <User size={48} className="opacity-20" />
+                                    <p className="font-serif italic text-lg">Choisissez un rang à gauche</p>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <FairyDetailsPanel
+                            previewData={previewData}
+                            selectedPreview={selectedPreview}
+                            character={character}
+                            isLocked={isLocked}
+                            isInitiated={isInitiated}
+                            onSexeChange={onSexeChange}
+                            onTraitsFeeriquesChange={onTraitsFeeriquesChange}
+                            onTypeFeeChange={onTypeFeeChange}
+                        />
+                    )}
                 </div>
             </div>
         </div>

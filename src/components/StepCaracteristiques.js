@@ -1,7 +1,7 @@
 // src/components/StepCaracteristiques.js
 import React, { useState, useMemo } from 'react';
 import { Plus, Minus, RotateCcw } from '../config/icons';
-import { CARAC_LIST } from '../data/DictionnaireJeu';
+import { CARAC_LIST, HUMAIN_RANGS } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getCaracCost } from '../utils/xpCalculator';
@@ -18,6 +18,8 @@ export default function StepCaracteristiques() {
     const [showConfirm, setShowConfirm] = useState(false);
 
     const feeData = fairyData?.[character.typeFee];
+    const isHumain = character.typePersonnage === 'humain';
+    const rangHumainData = isHumain ? HUMAIN_RANGS[character.rangHumain] : null;
 
     // ✨ LE FIX ABSOLU : On mémoïse l'objet pour empêcher la recréation du `{}` à chaque rendu !
     const currentCaracs = useMemo(() => character.caracteristiques || {}, [character.caracteristiques]);
@@ -29,21 +31,24 @@ export default function StepCaracteristiques() {
 
     // ✨ RÈGLE D'OR DE REACT : Le Hook est déclaré AVANT le early return !
     const pointsDepenses = useMemo(() => {
-        // Sécurité interne au Hook
-        if (!feeData?.caracteristiques) return 0;
         return CARAC_LIST.reduce((sum, carac) => {
-            const min = feeData.caracteristiques[carac.key]?.min || 1;
+            const min = isHumain ? 1 : (feeData?.caracteristiques?.[carac.key]?.min || 1);
             const currentBase = currentCaracs[carac.key] || min;
-            return sum + (currentBase - min);
+            return sum + Math.max(0, currentBase - min);
         }, 0);
-    }, [currentCaracs, feeData]); // On a mis feeData au lieu de feeData.caracteristiques pour éviter un crash de dépendance
+    }, [currentCaracs, feeData, isHumain]);
 
-    const POINTS_A_REPARTIR = feeData?.isEnfoui ? 19 : 10;
+    const POINTS_A_REPARTIR = isHumain
+        ? (rangHumainData?.carac ?? 8)
+        : (feeData?.isEnfoui ? 19 : 10);
     const pointsRestants = POINTS_A_REPARTIR - pointsDepenses;
 
     // 🛡️ LA DOUANE EST ICI (Early return) : Placée obligatoirement APRÈS les Hooks !
-    if (!feeData || !feeData.caracteristiques) {
+    if (!isHumain && (!feeData || !feeData.caracteristiques)) {
         return <div className="p-4 text-red-600 font-serif">Données de fée manquantes. Veuillez revenir à l'étape 1.</div>;
+    }
+    if (isHumain && !rangHumainData) {
+        return <div className="p-4 text-red-600 font-serif">Rang non défini. Veuillez revenir à l'étape 1.</div>;
     }
 
     // ========================================================================
@@ -59,7 +64,7 @@ export default function StepCaracteristiques() {
 
         // ✨ FIX 1 : On va chercher le "Plancher de Verre" dans la BONNE archive du Nuage
         // S'il n'y a pas d'archive, on utilise le minimum naturel de l'espèce.
-        const minGenetique = feeData?.caracteristiques?.[key]?.min || 1;
+        const minGenetique = isHumain ? 1 : (feeData?.caracteristiques?.[key]?.min || 1);
         const plancherScelle = character.data?.stats_scellees?.caracteristiques?.[key] || minGenetique;
 
         // On récupère le joli nom de la caractéristique pour le journal
@@ -144,8 +149,8 @@ export default function StepCaracteristiques() {
 
     // 🚦 Le Routeur d'action principal
     const handleChange = (key, delta) => {
-        const minGenetique = feeData.caracteristiques[key]?.min || 1;
-        const maxGenetique = feeData.caracteristiques[key]?.max || 6;
+        const minGenetique = isHumain ? 1 : (feeData?.caracteristiques?.[key]?.min || 1);
+        const maxGenetique = isHumain ? 6 : (feeData?.caracteristiques?.[key]?.max || 6);
         const currentBase = currentCaracs[key] || minGenetique;
         const newValue = currentBase + delta;
 
@@ -182,7 +187,10 @@ export default function StepCaracteristiques() {
                         </p>
                     ) : (
                         <p className="text-sm text-amber-700">
-                            Ajoutez 10 points aux minimums de votre fée. (Investissement max : 5).
+                            {isHumain
+                                ? `Répartissez ${POINTS_A_REPARTIR} points. (Investissement max : 5 par attribut).`
+                                : `Ajoutez ${POINTS_A_REPARTIR} points aux minimums de votre fée. (Investissement max : 5).`
+                            }
                         </p>
                     )}
                 </div>
@@ -215,8 +223,8 @@ export default function StepCaracteristiques() {
             {/* Grille des Caractéristiques */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {CARAC_LIST.map((carac) => {
-                    const minGenetique = feeData.caracteristiques[carac.key]?.min || 1;
-                    const maxGenetique = feeData.caracteristiques[carac.key]?.max || 6;
+                    const minGenetique = isHumain ? 1 : (feeData?.caracteristiques?.[carac.key]?.min || 1);
+                    const maxGenetique = isHumain ? 6 : (feeData?.caracteristiques?.[carac.key]?.max || 6);
                     const current = currentCaracs[carac.key] || minGenetique;
                     const investis = current - minGenetique;
 
