@@ -1,3 +1,24 @@
+# REX — Session du 9 Juin 2026
+
+## Feature : Humain pur dans le créateur (v17.4.3)
+
+### Ce qui a été fait
+- Nouveau champ `typePersonnage: 'fee' | 'humain'` + `rangHumain: 'larbin' | 'acolyte' | 'pointure' | 'cador'` en base et dans l'état du personnage
+- Constante `HUMAIN_RANGS` dans `DictionnaireJeu.js` (4 rangs × 3 budgets : carac/utiles/futiles)
+- Step 1 : bouton "Humain pur" + sélecteur de rang, les fées masquées quand humain sélectionné
+- Steps 2/3/4 (Capacités/Pouvoirs/Atouts) sautés automatiquement via `HUMAN_SKIPPED_STEPS = [2, 3, 4]` avec while-loop dans nextStep/prevStep
+- `StepCaracteristiques.js` : 8 caractéristiques seulement (sans Féerie/Masque/Tricherie), budget `rangHumainData.carac`
+- `useCompetencesLibres.js` : budget utiles depuis `rangHumainData.utiles`
+- `StepCompetencesFutiles.js` : budget futiles depuis `rangHumainData.futiles`
+- 14 tests de non-régression dans `humainRangs.test.js`
+
+### Enseignements
+10. **Champ `typePersonnage` plutôt que polluer `fairy_types`** : quand un nouveau type de personnage ne partage pas les données d'un type existant, créer un champ discriminant séparé. L'hydration de `characterEngine.js` gardait déjà `newState.typeFee` — les humains (typeFee vide) le court-circuitent naturellement.
+11. **`HUMAN_SKIPPED_STEPS` + while-loop** : pattern propre pour sauter plusieurs étapes non-contiguës à la navigation. Tester les 4 cas (next depuis avant, next depuis dernier skippé, prev depuis après, prev depuis premier non-skippé) en tests unitaires — pas besoin de monter le composant.
+12. **Trois budgets dans trois fichiers** : quand une feature touche à un "budget" partagé, chercher tous les endroits où ce budget est consommé (`StepCaracteristiques`, `useCompetencesLibres`, `StepCompetencesFutiles`). Grep sur `POINTS_TOTAUX` / `pointsFutiles` avant de commencer.
+13. **`Edit` tool : toujours lire avant** : l'outil Edit échoue avec "File has not been read yet" si le fichier n'a pas été lu dans la session courante — même si on connaît le contenu. Après une recompaction de contexte, relire les fichiers clés avant d'éditer.
+14. **JSX conditionnel `{!isHumain && <div>...</div>}` : fermer avec `</div>}` pas `</div>\n</div>`** : la balise `}` ferme l'expression JSX et remplace un `</div>` — ne pas doubler.
+
 # REX — Session du 5 Juin 2026
 
 ## Hotfix : Points verts & Corrections (v17.4.1)
