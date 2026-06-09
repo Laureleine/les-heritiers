@@ -541,5 +541,68 @@ export function characterReducer(state, action) {
         };
     }
     
+    // ⚙️ CALCULATEUR HUMAIN PUR (Profils sans Féerie)
+    if (action.gameData && newState.typePersonnage === 'humain') {
+        const isScelle = isCharacterScelle(newState);
+
+        const compsMap = {
+            'Aventurier': ['Conduite', 'Mouvement', 'Ressort', 'Survie'],
+            'Combattant': ['Art de la guerre', 'Autorité', 'Mêlée', 'Tir'],
+            'Érudit': ['Culture', 'Fortitude', 'Occultisme', 'Rhétorique'],
+            'Gentleman': ['Classe', 'Entregent', 'Séduction', 'Sensibilité'],
+            'Roublard': ['Comédie', 'Larcin', 'Discrétion', 'Monde du crime'],
+            'Savant': ['Habiletés', 'Médecine', 'Observation', 'Sciences']
+        };
+
+        const rangsProfils = {};
+        const budgetsPP = {};
+        const competencesBase = {};
+        const competencesTotal = {};
+
+        Object.keys(compsMap).forEach(profilNom => {
+            let sommeActuelle = 0;
+            let sommeBase = 0;
+            const isMajeur = newState.profils?.majeur?.nom === profilNom;
+            const isMineur = newState.profils?.mineur?.nom === profilNom;
+            const bonusProfil = isMajeur ? 2 : isMineur ? 1 : 0;
+
+            compsMap[profilNom].forEach(nomComp => {
+                const investisActuels = newState.competencesLibres?.rangs?.[nomComp] || 0;
+                const investisBase = isScelle
+                    ? (newState.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0)
+                    : investisActuels;
+
+                competencesBase[nomComp] = bonusProfil;
+                competencesTotal[nomComp] = bonusProfil + investisActuels;
+
+                sommeActuelle += bonusProfil + investisActuels;
+                sommeBase += bonusProfil + investisBase;
+            });
+
+            const rangActuel = Math.floor(sommeActuelle / 4);
+            const rangBase = Math.floor(sommeBase / 4);
+            rangsProfils[profilNom] = rangActuel;
+
+            const bonusPP = isMajeur ? 8 : isMineur ? 4 : 0;
+            let budgetTotal = bonusPP + rangBase;
+            if (isScelle && rangActuel > rangBase) {
+                for (let i = rangBase + 1; i <= rangActuel; i++) budgetTotal += i;
+            }
+            budgetsPP[profilNom] = budgetTotal;
+        });
+
+        newState.computedStats = {
+            ...(newState.computedStats || {}),
+            rangsProfils,
+            budgetsPP,
+            competencesBase,
+            competencesTotal,
+            predFinales: [],
+            futilesPredFinales: [],
+            futilesBase: {},
+            futilesTotal: {},
+        };
+    }
+
     return newState;
 }
