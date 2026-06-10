@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.7 - "Le Verrou des Archives 🔒📜"',
+    date: '10 Juin 2026',
+    description: 'L\'Atelier refusait obstinément de se laisser visiter avant d\'avoir tout rangé — mais ses portes s\'ouvraient trop tôt, laissant entrer les Héritiers alors que les grands registres féeriques n\'étaient pas encore déposés sur les pupitres. Désormais le portail reste clos jusqu\'à ce que la dernière archive soit en place. Un chronomètre discret sur l\'écran d\'attente mesure le temps de déchiffrage, pour que l\'on sache combien de secondes le Nuage a besoin de patience.',
+    changes: [
+      '🔒 **App verrouillée pendant le déchiffrage complet :** L\'écran de chargement reste affiché jusqu\'à ce que toutes les données féeriques soient prêtes (types, capacités, pouvoirs, compétences, items sociaux). Sur cache frais (< 10 min), l\'ouverture reste instantanée. Sur cache périmé ou premier démarrage, aucune interaction n\'est possible avant que les archives soient pleinement accessibles.',
+      '⏱️ **Chronomètre de déchiffrage :** Un compteur en secondes s\'affiche sous le message d\'attente uniquement lors du chargement des données lourdes, pour mesurer le temps réel à l\'usage.',
+      '🧪 **345 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.6 - "Les Comptes du Mortel 🧍📊"',
     date: '10 Juin 2026',
     description: 'Un double oubli rattrapé : le calculateur de l\'Humain pur écrasait en silence les rangs de compétences futiles qu\'on lui investissait — le bouton + décomptait bien les points, mais le score restait figé à zéro, comme si la dépense avait été avalée par un gouffre invisible. En parallèle, le tableau de bord des votes de numérisation se dépolluait enfin de ses vieilles demandes déjà honorées, et les portes du Nuage — longtemps verrouillées en production depuis la grande migration — ont été rouverts pour de bon.',
