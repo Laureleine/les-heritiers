@@ -1,10 +1,9 @@
 // src/hooks/useAppInit.js
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../config/supabase';
-import { loadCoreGameData, loadHeavyLoreData } from '../utils/supabaseGameData';
 import { useCharacter } from '../context/CharacterContext';
 import { useAutoUpdate } from './useAutoUpdate';
-import { showInAppNotification } from '../utils/SystemeServices';
+import { useGameData } from './useGameData';
 
 export function useAppInit() {
     const { setGameData } = useCharacter();
@@ -12,23 +11,30 @@ export function useAppInit() {
     const [userProfile, setUserProfile] = useState(null);
     const [globalLoading, setGlobalLoading] = useState(true);
     const [loadingStep, setLoadingStep] = useState('Démarrage...');
-    const [loadingElapsed, setLoadingElapsed] = useState(null);
-    const [isInitialized, setIsInitialized] = useState(false);
-    const loadingTimerRef = useRef(null);
-
-    // La Bougie d'allumage pour redémarrer le Nuage sans F5
+    const [profileLoaded, setProfileLoaded] = useState(false);
     const [initTrigger, setInitTrigger] = useState(0);
     const isInitializingRef = useRef(false);
-    
-    // ✨ NOUVEAU : Le Garde du Corps de la Session (Anti-Amnésie)
     const sessionRef = useRef(null);
 
-    // La mise à jour exposée
     const { updateAvailable, applyUpdate } = useAutoUpdate(60000);
+
+    // React Query: one parallel fetch for all game data (enabled only when session exists)
+    const { data: gameDataResult, isSuccess: gameDataLoaded } = useGameData(!!session);
+
+    // Sync game data to CharacterContext when ready
+    useEffect(() => {
+        if (gameDataLoaded && gameDataResult) setGameData(gameDataResult);
+    }, [gameDataLoaded, gameDataResult, setGameData]);
+
+    // Release globalLoading once profile + game data are both ready
+    useEffect(() => {
+        if (!profileLoaded) return;
+        if (!session || gameDataLoaded) setGlobalLoading(false);
+    }, [profileLoaded, session, gameDataLoaded]);
 
     // --- MOTEUR D'ALLUMAGE DU NUAGE ---
     useEffect(() => {
-        if (isInitialized || isInitializingRef.current) return;
+        if (isInitializingRef.current) return;
         let mounted = true;
         isInitializingRef.current = true;
 
@@ -43,75 +49,44 @@ export function useAppInit() {
             try {
                 setLoadingStep("Vérification connexion...");
                 const { data: { session: activeSession } } = await supabase.auth.getSession();
-                
+
                 if (!activeSession) {
-                    if (mounted) setGlobalLoading(false);
+                    if (mounted) setProfileLoaded(true);
                     isInitializingRef.current = false;
                     return;
                 }
 
                 setLoadingStep("Allumage du Noyau...");
-                const { _cacheStatus, ...coreData } = await loadCoreGameData();
-
-                if (!mounted) { isInitializingRef.current = false; return; }
-
-                setGameData(coreData);
-                setSession(activeSession);
-                sessionRef.current = activeSession;
-
                 const { data: profileData } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', activeSession.user.id)
                     .single();
 
+                if (!mounted) { isInitializingRef.current = false; return; }
+
+                setSession(activeSession);
+                sessionRef.current = activeSession;
+
                 if (profileData) {
-                  setUserProfile({ ...activeSession.user, profile: profileData });
+                    setUserProfile({ ...activeSession.user, profile: profileData });
                 } else {
-                  const username = activeSession.user.user_metadata?.username || 'Héritier';
-                  const { data: newProfile } = await supabase
-                    .from('profiles')
-                    .insert({ id: activeSession.user.id, username, role: 'user' })
-                    .select()
-                    .single();
-                  if (newProfile) setUserProfile({ ...activeSession.user, profile: newProfile });
+                    const username = activeSession.user.user_metadata?.username || 'Héritier';
+                    const { data: newProfile } = await supabase
+                        .from('profiles')
+                        .insert({ id: activeSession.user.id, username, role: 'user' })
+                        .select()
+                        .single();
+                    if (newProfile) setUserProfile({ ...activeSession.user, profile: newProfile });
                 }
 
-                if (_cacheStatus !== 'fresh') {
-                    const t0 = performance.now();
-                    let elapsed = 0;
-                    loadingTimerRef.current = setInterval(() => {
-                        elapsed = Math.round((performance.now() - t0) / 100) / 10;
-                        if (mounted) setLoadingElapsed(elapsed);
-                    }, 100);
-
-                    setLoadingStep("Déchiffrage des archives...");
-                    try {
-                        const heavyData = await loadHeavyLoreData(coreData);
-                        clearInterval(loadingTimerRef.current);
-                        const total = Math.round((performance.now() - t0) / 10) / 100;
-                        console.log(`⏱️ loadHeavyLoreData: ${total}s`);
-                        if (heavyData && mounted) setGameData(heavyData);
-                    } catch (err) {
-                        clearInterval(loadingTimerRef.current);
-                        console.error("Erreur chargement Lore secondaire:", err);
-                        if (mounted) showInAppNotification("Certaines données additionnelles n'ont pas pu être chargées.", "warning");
-                    }
-                }
-
-                if (mounted) {
-                    setLoadingElapsed(null);
-                    setIsInitialized(true);
-                    setGlobalLoading(false);
-                }
+                setLoadingStep("Déchiffrage des archives...");
+                setProfileLoaded(true);
                 isInitializingRef.current = false;
 
             } catch (error) {
                 console.error("❌ Init failed:", error);
-                if (mounted) {
-                    setGlobalLoading(false);
-                    setIsInitialized(false);
-                }
+                if (mounted) setGlobalLoading(false);
                 isInitializingRef.current = false;
             }
         };
@@ -121,35 +96,26 @@ export function useAppInit() {
         return () => {
             mounted = false;
             clearTimeout(safetyTimer);
-            clearInterval(loadingTimerRef.current);
             isInitializingRef.current = false;
         };
-    }, [isInitialized, setGameData, initTrigger]);
+    }, [initTrigger]);
 
     // --- ÉCOUTEUR D'AUTHENTIFICATION ---
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
             if (event === 'SIGNED_IN') {
-                
-                // ✨ LE BOUCLIER ANTI-AMNÉSIE !
-                // Si on revient sur l'onglet, Supabase crie "SIGNED_IN", mais on vérifie si on n'est pas DÉJÀ connecté avec le même compte.
-                if (sessionRef.current?.user?.id === newSession?.user?.id) {
-                    return;
-                }
-
+                if (sessionRef.current?.user?.id === newSession?.user?.id) return;
                 sessionRef.current = newSession;
                 setGlobalLoading(true);
-                setIsInitialized(false);
+                setProfileLoaded(false);
                 setInitTrigger(prev => prev + 1);
-
             } else if (event === 'SIGNED_OUT') {
-                sessionRef.current = null; // On vide le garde du corps
+                sessionRef.current = null;
                 setSession(null);
                 setUserProfile(null);
-                setIsInitialized(false);
+                setProfileLoaded(false);
             }
         });
-
         return () => subscription.unsubscribe();
     }, []);
 
@@ -165,15 +131,15 @@ export function useAppInit() {
                 setTimeout(() => { isThrottled = false; }, 2000);
             }
         };
-        
+
         window.addEventListener('mousemove', handleActivity);
-        
+
         const interval = setInterval(() => {
             if (Date.now() - lastActivity < 300000) {
                 supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', session.user.id).then();
             }
         }, 300000);
-        
+
         return () => {
             window.removeEventListener('mousemove', handleActivity);
             clearInterval(interval);
@@ -186,5 +152,5 @@ export function useAppInit() {
         if (profile) setUserProfile({ ...session.user, profile });
     };
 
-    return { session, setSession, userProfile, refreshUserProfile, globalLoading, loadingStep, loadingElapsed, updateAvailable, applyUpdate };
+    return { session, setSession, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate };
 }

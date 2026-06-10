@@ -4,7 +4,8 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { X, ArrowLeft, Shield } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { isAdmin, isSuperAdmin } from '../utils/authRoles';
-import { invalidateAllCaches, loadCoreGameData, loadHeavyLoreData } from '../utils/supabaseGameData';
+import { invalidateAllCaches } from '../utils/supabaseGameData';
+import { useQueryClient } from '@tanstack/react-query';
 import ConfirmModal from './ConfirmModal';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { useCharacter } from '../context/CharacterContext';
@@ -35,7 +36,8 @@ const notifyEscalation = async (change, errorMsg, currentUserId) => {
 // 🛡️ LE CONSEIL DES GARDIENS (Parent)
 // ======================================================================
 export default function ValidationsPendantes({ session, onBack }) {
-  const { gameData, setGameData } = useCharacter(); 
+  const { gameData } = useCharacter();
+  const queryClient = useQueryClient();
 
   const [pendingChanges, setPendingChanges] = useState([]);
   const [approvedChanges, setApprovedChanges] = useState([]);
@@ -165,13 +167,9 @@ export default function ValidationsPendantes({ session, onBack }) {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      // ✨ LE VACCIN ANTI-F5 : On purge le cache local et on recharge le Cerveau
+      // Purge du cache module + force-refetch React Query
       invalidateAllCaches();
-      const core = await loadCoreGameData();
-      if (core) {
-        const heavy = await loadHeavyLoreData(core);
-        if (heavy) setGameData(heavy);
-      }
+      queryClient.invalidateQueries({ queryKey: ['gameData'] });
       
       loadChanges();
       showInAppNotification("L'archive a été validée et intégrée avec succès !", "success");
@@ -189,7 +187,7 @@ export default function ValidationsPendantes({ session, onBack }) {
       await notifyEscalation(change, error.message, session.user.id);
       loadChanges();
     }
-  }, [session.user.id, loadChanges, setGameData]);
+  }, [session.user.id, loadChanges, queryClient]);
 
   const handleApproveClick = useCallback((change, seal = false) => {
     const isSelfApproval = change.user_id === session.user.id;

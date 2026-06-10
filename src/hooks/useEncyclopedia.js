@@ -5,6 +5,7 @@ import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
+import { useQueryClient } from '@tanstack/react-query';
 import { parseIfString, safeParseArray } from '../utils/json';
 
 const parseToBulletedList = (value) => {
@@ -98,6 +99,7 @@ const buildFairyTypeEditingItem = (item, fairyCloudData) => {
 
 export function useEncyclopedia() {
     const { gameData } = useCharacter();
+    const queryClient = useQueryClient();
     const { encyclopediaRefs, competencesFutiles, fairyData } = gameData || {};
 
     // 🧠 1. ÉTATS DE L'INTERFACE
@@ -306,6 +308,7 @@ export function useEncyclopedia() {
             if (error) throw error;
             showInAppNotification("L'archive a été effacée de la trame temporelle.", "success");
             invalidateAllCaches();
+            queryClient.invalidateQueries({ queryKey: ['gameData'] });
             fetchData();
         } catch (err) {
             console.error("Erreur RPC Destruction:", err);
@@ -336,6 +339,7 @@ export function useEncyclopedia() {
             if (error) throw error;
             showInAppNotification(`Le sceau a été ${item.is_sealed ? 'brisé' : 'apposé'} avec succès !`, "success");
             invalidateAllCaches();
+            queryClient.invalidateQueries({ queryKey: ['gameData'] });
             fetchData();
         } catch (err) {
             console.error("Erreur RPC Sceau:", err);

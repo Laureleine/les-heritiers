@@ -1,6 +1,5 @@
 // src/utils/supabaseGameData.js
 import { supabase } from '../config/supabase';
-import { APP_VERSION } from '../version';
 
 // ============================================================================
 // COMPÉTENCES FUTILES
@@ -336,11 +335,6 @@ export const loadBadges = async () => {
 // CACHE GLOBAL ET ORCHESTRATION (Le Grimoire de Poche)
 // ============================================================================
 
-const LOCAL_CACHE_KEY = 'heritiers_grimoire_cache';
-export const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-export const isCacheFresh = (cacheData) =>
-    !!(cacheData?._loadedAt && Date.now() - cacheData._loadedAt < CACHE_TTL_MS);
-
 export const loadSocialItems = async () => {
     try {
         const { data, error } = await supabase
@@ -371,91 +365,7 @@ export const loadEncyclopediaRefs = async () => {
     }
 };
 
-// ============================================================================
-// CACHE GLOBAL ET ORCHESTRATION (Le Grimoire de Poche Séquentiel)
-// ============================================================================
-
-// 🚀 1. LE NOYAU VITAL (Démarrage ultra-rapide)
-export const loadCoreGameData = async () => {
-    // A. On tente d'abord la lecture instantanée du cache local (Mémoire du navigateur)
-    const localData = localStorage.getItem(LOCAL_CACHE_KEY);
-    if (localData) {
-        try {
-            const parsedData = JSON.parse(localData);
-            // ✨ VÉRIFICATION DE VERSION : Si le cache est d'une version antérieure, on le purge
-            if (parsedData._version !== APP_VERSION) {
-                console.log(`📦 Cache obsolète (${parsedData._version || 'inconnue'} → ${APP_VERSION}), on rafraîchit...`);
-                localStorage.removeItem(LOCAL_CACHE_KEY);
-            } else if (!parsedData.fairyTypes || parsedData.fairyTypes.length === 0) {
-                console.warn('📦 Cache vide (fairyTypes manquant), bug connu du 04/06 — on rafraîchit...');
-                localStorage.removeItem(LOCAL_CACHE_KEY);
-            } else {
-                return { ...parsedData, _cacheStatus: isCacheFresh(parsedData) ? 'fresh' : 'stale' };
-            }
-        } catch (e) {
-            console.warn("Cache corrompu, on purge la poche...");
-            localStorage.removeItem(LOCAL_CACHE_KEY);
-        }
-    }
-
-    // B. Pas de cache (Premier démarrage) ? On télécharge UNIQUEMENT le strict minimum bloquant !
-    console.log("⚡ Allumage du Noyau (Profils & Titres)...");
-    try {
-        const [p, b] = await Promise.all([
-            loadProfils(),
-            typeof loadBadges === 'function' ? loadBadges() : Promise.resolve([]) 
-        ]);
-
-        return {
-            profils: p,
-            badges: b,
-            competences: {}, competencesParProfil: {}, competencesFutiles: [],
-            fairyData: {}, fairyTypes: [], fairyTypesByAge: { enfoui: [], traditionnelles: [], modernes: [] },
-            socialItems: [], encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] },
-            _cacheStatus: 'miss'
-        };
-    } catch (error) {
-        console.error("❌ Erreur fatale du Noyau :", error);
-        return null;
-    }
-};
-
-// 🧠 2. L'ÉRUDITION LOURDE (Téléchargement asynchrone en arrière-plan)
-export const loadHeavyLoreData = async (currentCoreData) => {
-    console.log("☁️ Téléchargement lourd du Lore dans la toile de fond...");
-    try {
-        // On télécharge le mammouth !
-        const [c, f, fut, soc, refs] = await Promise.all([
-            loadCompetences(), loadFairyTypes(), getCompetencesFutiles(true), loadSocialItems(), loadEncyclopediaRefs()
-        ]);
-
-        const completeData = {
-            ...currentCoreData, // On fusionne avec notre noyau déjà affiché (Profils & Badges)
-            competences: c.competences,
-            competencesParProfil: c.competencesParProfil,
-            competencesFutiles: fut,
-            fairyData: f.fairyData,
-            fairyTypes: f.fairyTypes,
-            fairyTypesByAge: f.fairyTypesByAge,
-            socialItems: soc,
-            encyclopediaRefs: refs,
-            _loadedAt: Date.now(),
-            _version: APP_VERSION
-        };
-
-        // 💾 On grave le grand dictionnaire complet et on le retourne
-        if (f.fairyTypes && f.fairyTypes.length > 0) {
-            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(completeData));
-        }
-        return completeData;
-    } catch (error) {
-        console.error("❌ Erreur lors de l'injection du Lore :", error);
-        return null;
-    }
-};
-
-// Le bouton d'urgence (Purge)
+// Le bouton d'urgence (Purge du cache module en mémoire)
 export const invalidateAllCaches = () => {
     invalidateCompetencesFutilesCache();
-    localStorage.removeItem(LOCAL_CACHE_KEY);
 };

@@ -1,4 +1,4 @@
-﻿vi.mock('../../config/supabase', () => ({
+vi.mock('../../config/supabase', () => ({
   supabase: {
     auth: {
       getSession: vi.fn(),
@@ -8,13 +8,8 @@
   },
 }));
 
-vi.mock('../../utils/supabaseGameData', () => ({
-  loadCoreGameData: vi.fn(),
-  loadHeavyLoreData: vi.fn(),
-}));
-
-vi.mock('../../utils/SystemeServices', () => ({
-  showInAppNotification: vi.fn(),
+vi.mock('../useGameData', () => ({
+  useGameData: vi.fn(),
 }));
 
 vi.mock('../../context/CharacterContext', () => ({
@@ -28,7 +23,7 @@ vi.mock('../useAutoUpdate', () => ({
 import { renderHook, waitFor } from '@testing-library/react';
 import { useAppInit } from '../useAppInit';
 import { supabase } from '../../config/supabase';
-import { loadCoreGameData, loadHeavyLoreData } from '../../utils/supabaseGameData';
+import { useGameData } from '../useGameData';
 import { useCharacter } from '../../context/CharacterContext';
 import { useAutoUpdate } from '../useAutoUpdate';
 
@@ -39,11 +34,14 @@ const fakeSession = {
   user: { id: 'user-123', user_metadata: { username: 'TestHeritier' } },
 };
 
+const fakeGameData = { profils: [], fairyTypes: [], competences: {} };
+
 beforeEach(() => {
   vi.clearAllMocks();
 
   useCharacter.mockReturnValue({ setGameData: mockSetGameData });
   useAutoUpdate.mockReturnValue({ updateAvailable: false, applyUpdate: vi.fn() });
+  useGameData.mockReturnValue({ data: fakeGameData, isSuccess: true, isLoading: false });
 
   const chain = {
     select: vi.fn().mockReturnThis(),
@@ -65,9 +63,6 @@ describe('useAppInit — Fallback profil', () => {
       data: { session: fakeSession },
       error: null,
     });
-
-    loadCoreGameData.mockResolvedValue({ some: 'data' });
-    loadHeavyLoreData.mockResolvedValue(Promise.resolve({ some: 'heavy' }));
 
     supabase.from().single
       .mockResolvedValueOnce({ data: null, error: null })
@@ -106,9 +101,6 @@ describe('useAppInit — Fallback profil', () => {
       data: { session: fakeSession },
       error: null,
     });
-
-    loadCoreGameData.mockResolvedValue({ some: 'data' });
-    loadHeavyLoreData.mockResolvedValue(Promise.resolve({ some: 'heavy' }));
 
     supabase.from().single.mockResolvedValue({ data: existingProfile, error: null });
 
