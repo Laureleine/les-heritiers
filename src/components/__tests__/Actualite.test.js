@@ -1,4 +1,4 @@
-jest.mock('../../config/supabase', () => ({
+﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     from: jest.fn(),
     rpc: jest.fn().mockResolvedValue({ data: null, error: null }),
@@ -11,22 +11,16 @@ jest.mock('../../config/supabase', () => ({
   },
 }));
 
-jest.mock('../../utils/SystemeServices', () => ({
+vi.mock('../../utils/SystemeServices', () => ({
   showInAppNotification: jest.fn(),
 }));
 
-jest.mock('../../config/icons', () => ({
-  ArrowLeft: () => null,
-  Sun: () => null,
-  Moon: () => null,
-  Info: () => null,
-  ChevronDown: () => null,
-  ChevronUp: () => null,
-  FileText: () => null,
-  Bug: () => null,
-}));
+vi.mock('../../config/icons', async (importOriginal) => {
+  const actual = await importOriginal();
+  return { ...actual };
+});
 
-jest.mock('../../utils/authRoles', () => ({
+vi.mock('../../utils/authRoles', () => ({
   isSuperAdmin: jest.fn(() => false),
 }));
 

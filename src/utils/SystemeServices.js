@@ -148,7 +148,7 @@ export const sendNotificationEmail = async (email, version, changelog) => {
       .join('');
   };
 
-  const appUrl = process.env.REACT_APP_URL || 'https://heritiers.app';
+  const appUrl = import.meta.env.VITE_APP_URL || 'https://heritiers.app';
 
   const emailBody = `<!DOCTYPE html>
 <html lang="fr">

@@ -1,4 +1,4 @@
-jest.mock('../../config/supabase', () => ({
+﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     auth: {
       getUser: jest.fn(),

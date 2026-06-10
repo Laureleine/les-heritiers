@@ -1,26 +1,23 @@
-// src/components/admin/TabRepairJournaux.test.js
+﻿// src/components/admin/TabRepairJournaux.test.js
 // Tests de non-régression pour la restauration du Plancher de Verre
 //
 // ATTENTION: react-scripts a `resetMocks: true` → les implémentations
 // des mock sont réinitialisées entre chaque test. On doit donc re-définir
 // les mockReturn/mockResolved dans beforeEach().
 
-jest.mock('../../config/supabase', () => ({
+vi.mock('../../config/supabase', () => ({
   supabase: { from: jest.fn() },
 }));
-jest.mock('../../utils/SystemeServices', () => ({
+vi.mock('../../utils/SystemeServices', () => ({
   showInAppNotification: jest.fn(),
 }));
-jest.mock('../../utils/supabaseGameData', () => ({
+vi.mock('../../utils/supabaseGameData', () => ({
   loadFairyTypes: jest.fn(),
   loadSocialItems: jest.fn(),
 }));
-jest.mock('lucide-react', () => {
-  const I = () => null;
-  I.displayName = 'LucideIcon';
-  return {
-    Search: I, Filter: I, X: I, Wrench: I, CheckCircle: I, AlertTriangle: I, MessageCircle: I,
-  };
+vi.mock('lucide-react', async (importOriginal) => {
+  const actual = await importOriginal();
+  return { ...actual };
 });
 
 import React from 'react';
