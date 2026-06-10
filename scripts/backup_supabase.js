@@ -3,11 +3,11 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
 if (!SUPABASE_URL || !SERVICE_KEY) {
-  console.error('❌ Variables SUPABASE_SERVICE_KEY et REACT_APP_SUPABASE_URL requises dans .env');
+  console.error('❌ Variables SUPABASE_SERVICE_KEY et VITE_SUPABASE_URL requises dans .env');
   process.exit(1);
 }
 
