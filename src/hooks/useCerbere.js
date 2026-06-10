@@ -1,6 +1,7 @@
 // src/hooks/useCerbere.js
 import { useState, useCallback, useMemo } from 'react';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { saveCharacterToSupabase } from '../utils/supabaseStorage';
 import { isCharacterScelle } from '../utils/lockUtils';
@@ -11,7 +12,8 @@ import { calculateCharacterStats } from '../utils/bonusCalculator';
 import { validateBeforeSeal } from '../utils/sealValidation';
 
 export function useCerbere() {
-    const { character, gameData, dispatchCharacter } = useCharacter();
+    const { character, dispatchCharacter } = useCharacter();
+    const { gameData } = useGameDataContext();
     const feeData = gameData?.fairyData?.[character.typeFee];
     const isScelle = isCharacterScelle(character);
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Check, Sparkles } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { isCharacterScelle } from '../utils/lockUtils';
 
@@ -9,7 +10,8 @@ import { isCharacterScelle } from '../utils/lockUtils';
 // ============================================================================
 
 export default function StepCapacites() {
-  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const { character, dispatchCharacter, isReadOnly } = useCharacter();
+  const { gameData } = useGameDataContext();
   const fairyData = gameData?.fairyData;
   const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 

@@ -4,6 +4,7 @@ import { Crown, CheckCircle, Lock, User } from '../config/icons';
 import { HUMAIN_RANGS } from '../data/DictionnaireJeu';
 import { isAdmin, isSuperAdmin } from '../utils/authRoles';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { isCharacterScelle, isCharacterLocked } from '../utils/lockUtils';
@@ -11,7 +12,8 @@ import { getCurrentUser } from '../utils/authUtils';
 import FairyDetailsPanel from './FairyDetailsPanel'; // ✨ NOTRE NOUVELLE VUE AUTONOME
 
 export default function Step1() {
-    const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+    const { character, dispatchCharacter, isReadOnly } = useCharacter();
+    const { gameData } = useGameDataContext();
     const [unlockedFairies, setUnlockedFairies] = useState([]);
     const [isUserDocte, setIsUserDocte] = useState(false);
     const [isInitiated, setIsInitiated] = useState(false);

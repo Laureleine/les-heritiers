@@ -2,6 +2,7 @@
 import React from 'react';
 import { Check, Sparkles, Plus, Minus } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getFeerieCost, getCaracCost } from '../utils/xpCalculator';
 import { getXpState, XP_CODES } from '../utils/xpActions';
@@ -11,7 +12,8 @@ import { getMagicBadges } from '../data/DictionnaireJeu';
 import AnomalieFeeriqueWidget from './AnomalieFeeriqueWidget';
 
 export default function StepPouvoirs() {
-    const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+    const { character, dispatchCharacter, isReadOnly } = useCharacter();
+    const { gameData } = useGameDataContext();
 
     const fairyData = gameData.fairyData;
     const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;

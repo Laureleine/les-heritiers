@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Plus, Minus, RotateCcw } from '../config/icons';
 import { CARAC_LIST, HUMAIN_RANGS } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getCaracCost } from '../utils/xpCalculator';
 import { xpTransaction } from '../utils/xpTransaction';
@@ -13,7 +14,8 @@ import ConfirmModal from './ConfirmModal';
 const MAX_SCORE_INVESTISSEMENT = 5;
 
 export default function StepCaracteristiques() {
-    const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+    const { character, dispatchCharacter, isReadOnly } = useCharacter();
+    const { gameData } = useGameDataContext();
     const fairyData = gameData.fairyData;
     const [showConfirm, setShowConfirm] = useState(false);
 

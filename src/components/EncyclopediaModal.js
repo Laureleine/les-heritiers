@@ -10,7 +10,7 @@ import SocialItemForm from './encyclopedia/SocialItemForm';
 import FigureForm from './encyclopedia/FigureForm';
 
 import { logger, showInAppNotification, translateError } from '../utils/SystemeServices';
-import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { submitEncyclopediaProposal } from '../utils/encyclopediaEngine';
 import { supabase } from '../config/supabase';
 import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
@@ -29,7 +29,7 @@ export default function EncyclopediaModal({
     onSuccess,
     onClose
 }) {
-    const { gameData } = useCharacter();
+    const { gameData } = useGameDataContext();
     const isSuperAdmin = checkSuperAdmin(userProfile);
 
     // 🧠 ÉTATS LOCAUX PURIFIÉS (L'autonomie est de retour !)

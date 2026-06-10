@@ -62,9 +62,14 @@ vi.mock('../../context/CharacterContext', () => ({
   useCharacter: vi.fn(),
 }));
 
+vi.mock('../../context/GameDataContext', () => ({
+  useGameDataContext: vi.fn(),
+}));
+
 import { renderHook, act } from '@testing-library/react';
 import { useCerbere } from '../useCerbere';
 import { useCharacter } from '../../context/CharacterContext';
+import { useGameDataContext } from '../../context/GameDataContext';
 import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { validateBeforeSeal } from '../../utils/sealValidation';
@@ -115,9 +120,9 @@ describe('useCerbere', () => {
     vi.clearAllMocks();
     useCharacter.mockReturnValue({
       character: mockCharacter,
-      gameData: mockGameData,
       dispatchCharacter: mockDispatch,
     });
+    useGameDataContext.mockReturnValue({ gameData: mockGameData });
   });
 
   describe('handleSealClick', () => {
@@ -139,7 +144,6 @@ describe('useCerbere', () => {
     it('refuse de sceller un personnage sans id (temp_)', () => {
       useCharacter.mockReturnValue({
         character: { ...mockCharacter, id: 'temp_12345' },
-        gameData: mockGameData,
         dispatchCharacter: mockDispatch,
       });
 

@@ -4,6 +4,7 @@ import { Plus, Minus, Star, Sparkles, PlusCircle, AlertCircle, RotateCcw } from 
 import { addCompetenceFutile } from '../utils/supabaseGameData';
 import { parseCompetencesFutilesPredilection, HUMAIN_RANGS } from '../data/DictionnaireJeu';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getFutileCost } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
@@ -11,7 +12,8 @@ import { getXpState, XP_CODES } from '../utils/xpActions';
 import { xpTransaction } from '../utils/xpTransaction';
 
 export default function StepCompetencesFutiles() {
-  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const { character, dispatchCharacter, isReadOnly } = useCharacter();
+  const { gameData } = useGameDataContext();
   const fairyData = gameData?.fairyData;
 
   // Le remplaçant local :

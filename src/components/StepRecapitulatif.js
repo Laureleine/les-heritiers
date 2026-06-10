@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Printer, ShieldAlert, Camera, Clock, RotateCcw } from '../config/icons';
 import { useCerbere } from '../hooks/useCerbere';
-import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { exportToPDF } from '../utils/pdfGenerator';
 import ConfirmModal from './ConfirmModal';
 import FicheParchemin from './recap/FicheParchemin';
@@ -22,7 +22,7 @@ export default function StepRecapitulatif() {
         handleCloneSnapshot
     } = useCerbere();
 
-    const { gameData } = useCharacter();
+    const { gameData } = useGameDataContext();
     const [detailed, setDetailed] = useState(false);
     const [snapshotTitle, setSnapshotTitle] = useState('');
     const [showSnapshotModal, setShowSnapshotModal] = useState(false);

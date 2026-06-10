@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Printer, List, Save, Sparkles, BookOpen } from '../../config/icons';
 import { exportToPDF } from '../../utils/pdfGenerator';
 import { useCharacter } from '../../context/CharacterContext';
+import { useGameDataContext } from '../../context/GameDataContext';
 import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { flushContactsToGrimoire, clearContactSyncQueue } from '../../utils/contactSyncQueue';
@@ -26,7 +27,8 @@ const StepPersonnalisation = lazy(() => import('../StepPersonnalisation'));
 const StepRecapitulatif = lazy(() => import('../StepRecapitulatif'));
 
 export default function CharacterCreator({ session, userProfile }) {
-  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const { character, dispatchCharacter, isReadOnly } = useCharacter();
+  const { gameData } = useGameDataContext();
   const navigate = useNavigate();
   const location = useLocation();
 

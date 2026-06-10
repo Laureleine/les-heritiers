@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
+import { useGameDataContext } from '../../context/GameDataContext';
 import { addGlobalSpeciality } from '../../utils/supabaseGameData';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { getUtileCost, FIXED_XP_COSTS } from '../../utils/xpCalculator';
@@ -17,7 +18,8 @@ export const SKILLS_ESPRIT = [
 ];
 
 export function useCompetencesLibres() {
-    const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+    const { character, dispatchCharacter, isReadOnly } = useCharacter();
+    const { gameData } = useGameDataContext();
     const { profils, competences, competencesParProfil, fairyData, socialItems } = gameData || {};
 
     const isScelle = isCharacterScelle(character);

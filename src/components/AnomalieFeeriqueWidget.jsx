@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Sparkles, Check } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { FIXED_XP_COSTS } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
@@ -11,7 +12,8 @@ import { getXpState, XP_CODES } from '../utils/xpActions';
 const MAX_ATOUTS_GLOBAL = 2;
 
 export default function AnomalieFeeriqueWidget() {
-  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const { character, dispatchCharacter, isReadOnly } = useCharacter();
+  const { gameData } = useGameDataContext();
   const [showAnomalie, setShowAnomalie] = useState(false);
 
   const fairyData = gameData.fairyData;
