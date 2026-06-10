@@ -1,3 +1,32 @@
+# REX — Session 10 Juin 2026 (v17.4.7)
+
+## Ce qui s'est passé
+
+Le bouton "Nouveau Héritier" était déjà désactivé pendant le chargement (`fairyTypes.length === 0`), mais toutes les autres interactions restaient accessibles — modifier un personnage existant, toucher des items, n'importe quoi — pendant que les archives féeriques se déchiffraient en arrière-plan. Le risque : un `setGameData(heavyData)` qui arrive après une interaction et déclenche des useEffects d'auto-correction avec des données fraîches, potentiellement incohérentes avec ce que l'utilisateur venait de faire.
+
+---
+
+## Analyse du problème
+
+Dans `useAppInit.js`, `setGlobalLoading(false)` était appelé **avant** `loadHeavyLoreData`. Celui-ci partait en `.then()` fire-and-forget. L'app était visible mais incomplète.
+
+Trois cas :
+- **Cache fresh** (< 10 min) : tout est en localStorage, aucun problème.
+- **Cache stale** (> 10 min) : localStorage retourne les données périmées, et `loadHeavyLoreData` recharge en arrière-plan → `setGameData` frappe l'app en pleine session.
+- **Cache miss** (premier chargement) : `loadCoreGameData` ne retourne que profils + badges (`fairyTypes: []`), tout le reste arrive ensuite.
+
+## Fix
+
+`loadHeavyLoreData` est maintenant `await`é dans la séquence d'init, **avant** `setGlobalLoading(false)`. Sur cache fresh, le code ne passe même pas par là — instantané.
+
+Un timer `setInterval` / `performance.now()` met à jour un état `loadingElapsed` toutes les 100ms, affiché à l'écran pendant le chargement pour mesurer le temps réel.
+
+## Leçon clé
+
+**"Fire-and-forget qui appelle `setGameData` = hallucination potentielle."** Même règle que les hallucinations de v17.4.5. La différence ici : on ne voulait pas juste éviter le re-render, on voulait aussi bloquer toute interaction utilisateur le temps que les données soient prêtes. La solution correcte est `await`, pas un flag de garde en aval.
+
+---
+
 # REX — Session 10 Juin 2026 (v17.4.6)
 
 ## Ce qui s'est passé
