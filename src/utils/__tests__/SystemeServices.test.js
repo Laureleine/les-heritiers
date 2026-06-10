@@ -1,9 +1,9 @@
 ﻿vi.mock('../../config/supabase', () => ({
   supabase: {
-    from: jest.fn(),
-    rpc: jest.fn(),
-    functions: { invoke: jest.fn() },
-    auth: { getSession: jest.fn() },
+    from: vi.fn(),
+    rpc: vi.fn(),
+    functions: { invoke: vi.fn() },
+    auth: { getSession: vi.fn() },
   },
 }));
 

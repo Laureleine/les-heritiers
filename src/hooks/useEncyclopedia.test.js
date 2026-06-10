@@ -1,6 +1,6 @@
 ﻿vi.mock('../config/supabase', () => ({
   supabase: {
-    rpc: jest.fn(),
+    rpc: vi.fn(),
   },
 }));
 
@@ -8,7 +8,7 @@ import { supabase } from '../config/supabase';
 
 describe('Encyclopedia RPC calls', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('purge_encyclopedia_entity', () => {

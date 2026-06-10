@@ -1,9 +1,9 @@
 ﻿vi.mock('../historyReconstructor', () => ({
-  reconstructHistory: jest.fn(() => []),
+  reconstructHistory: vi.fn(() => []),
 }));
 
 vi.mock('../bonusCalculator', () => ({
-  calculateCharacterStats: jest.fn(() => ({
+  calculateCharacterStats: vi.fn(() => ({
     caracteristiques: { bonus: {} },
     competences: { bonus: {} },
     specialites: { gratuites: {} },
@@ -11,11 +11,11 @@ vi.mock('../bonusCalculator', () => ({
 }));
 
 vi.mock('../lockUtils', () => ({
-  isCharacterScelle: jest.fn(() => false),
+  isCharacterScelle: vi.fn(() => false),
 }));
 
 vi.mock('../json', () => ({
-  parseIfString: jest.fn(() => ({})),
+  parseIfString: vi.fn(() => ({})),
 }));
 
 vi.mock('../xpActions', () => ({
@@ -87,7 +87,7 @@ const baseCharacter = {
 
 describe('characterReducer', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {

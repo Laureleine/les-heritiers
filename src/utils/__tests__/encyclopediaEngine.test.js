@@ -4,7 +4,7 @@ import { supabase } from '../../config/supabase';
 // Mock minimal de base pour le hoisting
 vi.mock('../../config/supabase', () => ({
     supabase: {
-        from: jest.fn()
+        from: vi.fn()
     }
 }));
 
@@ -19,11 +19,11 @@ describe('encyclopediaEngine - submitEncyclopediaProposal', () => {
     let mockLimit;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         
-        mockLimit = jest.fn().mockResolvedValue({ data: [{ id: 'req-123' }], error: null });
-        mockSelect = jest.fn(() => ({ limit: mockLimit }));
-        mockInsert = jest.fn(() => ({ select: mockSelect }));
+        mockLimit = vi.fn().mockResolvedValue({ data: [{ id: 'req-123' }], error: null });
+        mockSelect = vi.fn(() => ({ limit: mockLimit }));
+        mockInsert = vi.fn(() => ({ select: mockSelect }));
         
         supabase.from.mockReturnValue({
             insert: mockInsert

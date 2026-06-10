@@ -3,19 +3,23 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [
-    // CRA permettait JSX dans les fichiers .js — ce plugin conserve ce comportement
-    // pour Vite (build) et Vitest (SSR transform)
     {
-      name: 'treat-js-files-as-jsx',
-      async transform(code, id) {
-        // Normalise les backslashes Windows avant de tester
+      name: 'jsx-in-js',
+      enforce: 'pre',
+      transform(code, id) {
         const normalized = id.replace(/\\/g, '/');
-        if (!normalized.match(/\/src\/.*\.js$/)) return null;
-        return transformWithEsbuild(code, id, { loader: 'jsx', jsx: 'automatic' });
+        if (/\/src\/.*\.[jt]sx?$/.test(normalized)) {
+          return transformWithEsbuild(code, id, { loader: 'jsx', jsx: 'automatic' });
+        }
       },
     },
     react(),
   ],
+  esbuild: {
+    loader: 'jsx',
+    include: /src\/.*\.js$/,
+    jsx: 'automatic',
+  },
   server: {
     port: 3000,
     open: false,

@@ -1,18 +1,18 @@
 ﻿vi.mock('../../config/supabase', () => ({
   supabase: {
-    from: jest.fn(),
-    rpc: jest.fn().mockResolvedValue({ data: null, error: null }),
-    channel: jest.fn(() => ({
-      on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn().mockResolvedValue({}),
+    from: vi.fn(),
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+    channel: vi.fn(() => ({
+      on: vi.fn().mockReturnThis(),
+      subscribe: vi.fn().mockResolvedValue({}),
     })),
-    removeChannel: jest.fn(),
-    getSession: jest.fn().mockResolvedValue({ data: { session: null }, error: null }),
+    removeChannel: vi.fn(),
+    getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
   },
 }));
 
 vi.mock('../../utils/SystemeServices', () => ({
-  showInAppNotification: jest.fn(),
+  showInAppNotification: vi.fn(),
 }));
 
 vi.mock('../../config/icons', async (importOriginal) => {
@@ -21,7 +21,7 @@ vi.mock('../../config/icons', async (importOriginal) => {
 });
 
 vi.mock('../../utils/authRoles', () => ({
-  isSuperAdmin: jest.fn(() => false),
+  isSuperAdmin: vi.fn(() => false),
 }));
 
 import React from 'react';
@@ -31,27 +31,27 @@ import Actualite from '../Actualite';
 
 function makeChain(returnData = []) {
   const chain = { then: undefined };
-  chain.select = jest.fn(() => chain);
-  chain.eq = jest.fn(() => chain);
-  chain.neq = jest.fn(() => chain);
-  chain.in = jest.fn(() => chain);
-  chain.single = jest.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } }));
-  chain.order = jest.fn(() => chain);
-  chain.insert = jest.fn(() => chain);
-  chain.delete = jest.fn(() => chain);
-  chain.gte = jest.fn(() => chain);
-  chain.limit = jest.fn(() => chain);
-  chain.update = jest.fn(() => Promise.resolve({ data: null, error: null }));
-  chain.then = jest.fn((res) => {
+  chain.select = vi.fn(() => chain);
+  chain.eq = vi.fn(() => chain);
+  chain.neq = vi.fn(() => chain);
+  chain.in = vi.fn(() => chain);
+  chain.single = vi.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } }));
+  chain.order = vi.fn(() => chain);
+  chain.insert = vi.fn(() => chain);
+  chain.delete = vi.fn(() => chain);
+  chain.gte = vi.fn(() => chain);
+  chain.limit = vi.fn(() => chain);
+  chain.update = vi.fn(() => Promise.resolve({ data: null, error: null }));
+  chain.then = vi.fn((res) => {
     res({ data: returnData, error: null });
     return Promise.resolve();
   });
-  chain.catch = jest.fn();
+  chain.catch = vi.fn();
   return chain;
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   localStorage.clear();
   supabase.from.mockReturnValue(makeChain());
 });
@@ -160,7 +160,7 @@ describe('Actualite', () => {
     // Premier appel = journal_articles (vide)
     // Deuxième appel = journal_holidays → retourne les saints
     let holidayCall = false;
-    chain.then = jest.fn((res) => {
+    chain.then = vi.fn((res) => {
       if (!holidayCall) {
         holidayCall = true;
         // second call: journal_daily_info
@@ -170,7 +170,7 @@ describe('Actualite', () => {
       res({ data: mockHolidays, error: null });
       return Promise.resolve();
     });
-    chain.single = jest.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } }));
+    chain.single = vi.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } }));
     supabase.from.mockReturnValue(chain);
 
     const { findByText } = render(
