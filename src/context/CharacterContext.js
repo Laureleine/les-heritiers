@@ -22,26 +22,17 @@ export const initialCharacterState = {
 const CharacterContext = createContext();
 
 export function CharacterProvider({ children }) {
-  // L'état global du jeu (Données Supabase)
-  const [gameData, setGameData] = useState({
-    profils: [], competences: {}, competencesParProfil: {}, competencesFutiles: [],
-    fairyData: {}, fairyTypes: [], fairyTypesByAge: { enfoui: [], traditionnelles: [], modernes: [] },
-    socialItems: [],
-    encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] } // ✨ NOUVEAU
-  });
-  
   // L'état global du personnage en cours de création
   const [character, dispatchCharacter] = useReducer(characterReducer, initialCharacterState);
-  
+
   // L'état global de sécurité (Mode vue seule)
   const [isReadOnly, setIsReadOnly] = useState(false);
 
   const ctxValue = useMemo(() => ({
     character, dispatchCharacter,
-    gameData, setGameData,
     isReadOnly, setIsReadOnly,
     initialCharacterState
-  }), [character, dispatchCharacter, gameData, setGameData, isReadOnly, setIsReadOnly]);
+  }), [character, dispatchCharacter, isReadOnly, setIsReadOnly]);
 
   return (
     <CharacterContext.Provider value={ctxValue}>

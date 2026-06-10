@@ -12,10 +12,6 @@ vi.mock('../useGameData', () => ({
   useGameData: vi.fn(),
 }));
 
-vi.mock('../../context/CharacterContext', () => ({
-  useCharacter: vi.fn(),
-}));
-
 vi.mock('../useAutoUpdate', () => ({
   useAutoUpdate: vi.fn(),
 }));
@@ -24,10 +20,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useAppInit } from '../useAppInit';
 import { supabase } from '../../config/supabase';
 import { useGameData } from '../useGameData';
-import { useCharacter } from '../../context/CharacterContext';
 import { useAutoUpdate } from '../useAutoUpdate';
-
-const mockSetGameData = vi.fn();
 
 const fakeSession = {
   access_token: 'tok',
@@ -39,8 +32,7 @@ const fakeGameData = { profils: [], fairyTypes: [], competences: {} };
 beforeEach(() => {
   vi.clearAllMocks();
 
-  useCharacter.mockReturnValue({ setGameData: mockSetGameData });
-  useAutoUpdate.mockReturnValue({ updateAvailable: false, applyUpdate: vi.fn() });
+useAutoUpdate.mockReturnValue({ updateAvailable: false, applyUpdate: vi.fn() });
   useGameData.mockReturnValue({ data: fakeGameData, isSuccess: true, isLoading: false });
 
   const chain = {

@@ -5,7 +5,8 @@ import { addGlobalSpeciality, addCompetenceFutile } from '../utils/supabaseGameD
 import { CARAC_LIST } from '../data/DictionnaireJeu';
 import { safeParse } from '../utils/json';
 import { showInAppNotification } from '../utils/SystemeServices';
-import { useCharacter } from '../context/CharacterContext'; // ✨ AJOUT DU CERVEAU CENTRAL
+import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 
 const generateId = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substring(2);
 
@@ -14,8 +15,8 @@ export default function BonusBuilder({
     usefulSkills = [], futilesSkills = [], competencesData = [], setCompetencesData = null,
     onPendingChanges
 }) {
-    const { gameData } = useCharacter(); // ✨ CONNEXION AU NUAGE
-    const socialItems = gameData?.socialItems || []; // ✨ EXTRACTION DU CATALOGUE
+    const { gameData } = useGameDataContext();
+    const socialItems = gameData?.socialItems || [];
 
     // ==========================================
     // 1. TOUS LES ÉTATS (DÉCLARATION)

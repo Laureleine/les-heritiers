@@ -1,12 +1,14 @@
 // src/components/personnalisation/usePersonnalisation.js
 import { useCallback, useMemo } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
+import { useGameDataContext } from '../../context/GameDataContext';
 import { supabase } from '../../config/supabase';
 import { requireCurrentUser } from '../../utils/authUtils';
 import { parseIfString } from '../../utils/json';
 
 export function usePersonnalisation() {
-    const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+    const { character, dispatchCharacter, isReadOnly } = useCharacter();
+    const { gameData } = useGameDataContext();
     const { competences, socialItems, fairyData } = gameData;
     const feeData = fairyData?.[character.typeFee];
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../config/supabase';
-import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { useQueryClient } from '@tanstack/react-query';
@@ -98,7 +98,7 @@ const buildFairyTypeEditingItem = (item, fairyCloudData) => {
 };
 
 export function useEncyclopedia() {
-    const { gameData } = useCharacter();
+    const { gameData } = useGameDataContext();
     const queryClient = useQueryClient();
     const { encyclopediaRefs, competencesFutiles, fairyData } = gameData || {};
 

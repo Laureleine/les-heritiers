@@ -2,11 +2,11 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification, requestNotificationPermission, translateError } from '../utils/SystemeServices';
-import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 
 export function useAccountSettings(session, userProfile, onUpdateProfile) {
-    const profile = userProfile?.profile; 
-    const { gameData } = useCharacter();
+    const profile = userProfile?.profile;
+    const { gameData } = useGameDataContext();
 
     // --- 1. ÉTATS DU FORMULAIRE ---
     const [newUsername, setNewUsername] = useState('');

@@ -2,6 +2,7 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useCharacter, initialCharacterState } from './context/CharacterContext';
+import { useGameDataContext } from './context/GameDataContext';
 import { supabase } from './config/supabase';
 import { Lock } from './config/icons';
 import { isCharacterScelle } from './utils/lockUtils';
@@ -20,7 +21,8 @@ const CharacterList = lazy(() => import('./components/CharacterList'));
 const PixieAssistant = lazy(() => import('./components/PixieAssistant'));
 
 export default function AppRouter({ session, userProfile, refreshUserProfile }) {
-  const { character, dispatchCharacter, setIsReadOnly, gameData } = useCharacter();
+  const { character, dispatchCharacter, setIsReadOnly } = useCharacter();
+  const { gameData } = useGameDataContext();
   const navigate = useNavigate();
 
   return (

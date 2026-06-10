@@ -1,6 +1,7 @@
 import React from 'react';
 import { Check, Sparkles } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { FIXED_XP_COSTS } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
@@ -15,7 +16,8 @@ const MAX_ATOUTS_GLOBAL = 2;
 // ============================================================================
 
 export default function StepAtouts() {
-  const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+  const { character, dispatchCharacter, isReadOnly } = useCharacter();
+  const { gameData } = useGameDataContext();
   const fairyData = gameData.fairyData;
   const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 

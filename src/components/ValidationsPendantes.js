@@ -8,7 +8,7 @@ import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { useQueryClient } from '@tanstack/react-query';
 import ConfirmModal from './ConfirmModal';
 import { showInAppNotification } from '../utils/SystemeServices';
-import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import ChangeCard from './admin/ChangeCard';
 
 const TABLE_NAME = 'data_change_requests';
@@ -36,7 +36,7 @@ const notifyEscalation = async (change, errorMsg, currentUserId) => {
 // 🛡️ LE CONSEIL DES GARDIENS (Parent)
 // ======================================================================
 export default function ValidationsPendantes({ session, onBack }) {
-  const { gameData } = useCharacter();
+  const { gameData } = useGameDataContext();
   const queryClient = useQueryClient();
 
   const [pendingChanges, setPendingChanges] = useState([]);

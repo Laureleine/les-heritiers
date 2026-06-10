@@ -1,12 +1,10 @@
 // src/hooks/useAppInit.js
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../config/supabase';
-import { useCharacter } from '../context/CharacterContext';
 import { useAutoUpdate } from './useAutoUpdate';
 import { useGameData } from './useGameData';
 
 export function useAppInit() {
-    const { setGameData } = useCharacter();
     const [session, setSession] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
     const [globalLoading, setGlobalLoading] = useState(true);
@@ -18,13 +16,8 @@ export function useAppInit() {
 
     const { updateAvailable, applyUpdate } = useAutoUpdate(60000);
 
-    // React Query: one parallel fetch for all game data (enabled only when session exists)
-    const { data: gameDataResult, isSuccess: gameDataLoaded } = useGameData(!!session);
-
-    // Sync game data to CharacterContext when ready
-    useEffect(() => {
-        if (gameDataLoaded && gameDataResult) setGameData(gameDataResult);
-    }, [gameDataLoaded, gameDataResult, setGameData]);
+    // React Query: triggers the fetch (GameDataProvider reads from cache)
+    const { isSuccess: gameDataLoaded } = useGameData(!!session);
 
     // Release globalLoading once profile + game data are both ready
     useEffect(() => {

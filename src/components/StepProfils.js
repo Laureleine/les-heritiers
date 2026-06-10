@@ -2,12 +2,14 @@
 import React from 'react';
 import { Info, Star, Award, Lock, CheckCircle } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { accorderTexte } from '../data/DictionnaireJeu';
 import { isCharacterScelle, isCharacterLocked } from '../utils/lockUtils';
 
 export default function StepProfils() {
-    const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+    const { character, dispatchCharacter, isReadOnly } = useCharacter();
+    const { gameData } = useGameDataContext();
     const { profils, competencesParProfil } = gameData;
 
     // ✨ LE BOUCLIER DES PROFILS (Mode XP)

@@ -1,6 +1,7 @@
 // src/components/vieSociale/useVieSociale.js
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
+import { useGameDataContext } from '../../context/GameDataContext';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { getFortuneCost, getFortuneSpecialites } from '../../utils/xpCalculator';
 import { isCharacterScelle } from '../../utils/lockUtils';
@@ -10,7 +11,8 @@ import { xpTransaction } from '../../utils/xpTransaction';
 import { queueContactSync } from '../../utils/contactSyncQueue';
 
 export function useVieSociale() {
-    const { character, dispatchCharacter, gameData, isReadOnly } = useCharacter();
+    const { character, dispatchCharacter, isReadOnly } = useCharacter();
+    const { gameData } = useGameDataContext();
     const isScelle = isCharacterScelle(character);
 
     const { fairyData, socialItems } = gameData;
