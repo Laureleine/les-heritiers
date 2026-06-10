@@ -240,10 +240,10 @@ export const notifyUsers = async (version, changelog) => {
   const users = await getUsersToNotify(versionType);
   console.log(`Envoi notifications ${versionType} v${version} à ${users.length} utilisateurs`);
 
-  for (const user of users) {
+  await Promise.all(users.map(async (user) => {
     const success = await sendNotificationEmail(user.email, version, changelog);
     await logNotification(user.user_id, version, versionType, changelog, success ? 'sent' : 'failed');
-  }
+  }));
   return users.length;
 };
 
