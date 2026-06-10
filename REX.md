@@ -1,3 +1,86 @@
+# REX — Session 10 Juin 2026 (v17.4.6)
+
+## Ce qui s'est passé
+
+Trois bugs corriger dans une même passe : l'infrastructure Vercel était en panne depuis la migration Vite (5 commits d'erreurs), un humain pur ne voyait jamais ses scores de compétences futiles bouger, et les demandes de vote affichaient des journées déjà numérisées.
+
+---
+
+## Bug 1 — Build Vercel en panne depuis la migration Vite
+
+### Cause racine
+
+La migration CRA→Vite (commit `162de80`) avait créé `index.html` et `src/index.jsx` **localement mais sans les committer**. `git status` montrait ces fichiers comme "untracked". Le build local passait (Vite lit le filesystem), Vercel échouait (clone git HEAD, fichiers absents).
+
+### Symptôme trompeur
+
+Le diagnostic initial cherchait dans `vite.config.js`, les variables d'environnement, les settings Vercel — alors que la cause était un simple `git add` manqué. Les logs Vercel étaient expirés, ce qui a ralenti le diagnostic.
+
+### Fix
+
+`git add index.html src/index.jsx && git commit`. Rien d'autre à changer.
+
+### Leçon clé
+
+**Après toute migration, `git status` est la première vérification à faire.** Un fichier présent sur disque mais absent de git = build Vercel mort. Si les logs Vercel sont expirés et qu'on ne comprend pas pourquoi ça échoue, inspecter `git status` avant de toucher quoi que ce soit à la config.
+
+---
+
+## Bug 2 — Humain pur : scores futiles toujours à zéro
+
+### Cause racine
+
+Dans `characterEngine.js`, le bloc de calcul spécifique aux humains purs construisait `computedStats` avec `futilesBase: {}` et `futilesTotal: {}` codés en dur — ignorant complètement `newState.competencesFutiles.rangs`.
+
+### Tromperie
+
+Le bouton + décomptait bien les points (la logique de budget fonctionnait), mais le score affiché venait de `computedStats.futilesTotal` qui était toujours vide. Deux systèmes distincts : le budget (correct) et le score affiché (écrasé).
+
+### Fix
+
+Ajout avant l'affectation de `computedStats` :
+```js
+const futilesBase = {};
+const futilesTotal = {};
+Object.entries(newState.competencesFutiles?.rangs || {}).forEach(([nom, investis]) => {
+  futilesBase[nom] = 0;
+  futilesTotal[nom] = investis;
+});
+```
+
+### Leçon clé
+
+**Chercher les `{}` hardcodés dans les objets de résultat.** Quand un champ reste toujours vide malgré des données en entrée, chercher où ce champ est construit — c'est souvent une copie d'un bloc fée où on a oublié de brancher les données humaines.
+
+---
+
+## Bug 3 — Demandes de vote : journées déjà chargées toujours visibles
+
+### Cause racine
+
+`fetchVotesList()` retournait toutes les demandes de vote. L'affichage utilisait `votesList` directement sans filtrer les dates déjà présentes dans `availableArticleDates`.
+
+### Fix
+
+Un `useMemo` qui calcule `pendingVotes = votesList.filter(vote => !availableArticleDates.has(vote.date))` — la liste filtrée à chaque rafraîchissement de la page (ou changement des articles chargés).
+
+### Leçon clé
+
+**Derived state → `useMemo`, pas un `useEffect` + `setState`.** La liste filtrée se recalcule automatiquement quand ses dépendances changent, sans risque de boucle ni de désynchronisation.
+
+---
+
+## Méthode générale de cette session
+
+1. Identifier le symptôme précis (score ne change pas / build mort / dates fantômes)
+2. Tracer le flux depuis l'événement utilisateur jusqu'au rendu
+3. Chercher l'endroit où la donnée attendue est produite (ou écrasée)
+4. Écrire un test rouge qui fixe le comportement attendu
+5. Appliquer le fix minimal
+6. Vérifier que le test est vert + aucune régression
+
+---
+
 # REX — Session 10 Juin 2026 (v17.4.5)
 
 ## Ce qui s'est passé
