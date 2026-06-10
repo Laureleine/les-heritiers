@@ -132,42 +132,36 @@ export const loadCompetences = async () => {
 
 export const loadFairyTypes = async () => {
     try {
-        // --- ÉTAPE PRÉLIMINAIRE : Dictionnaire des compétences ---
-        const { data: allCompsRef, error: compsRefError } = await supabase.from('competences').select('id, name');
-        if (compsRefError) throw compsRefError;
-
-        const compNameMap = {};
-        allCompsRef.forEach(c => { compNameMap[c.id] = c.name; });
-
-        // 1. Charger les types de fées
-        const { data, error } = await supabase
-            .from('fairy_types')
-            .select(`
+        const [
+            { data: allCompsRef, error: compsRefError },
+            { data, error },
+            { data: allCompPred, error: compPredError },
+            { data: allCompFutPred, error: compFutPredError }
+        ] = await Promise.all([
+            supabase.from('competences').select('id, name'),
+            supabase.from('fairy_types').select(`
                 *,
                 fairy_type_capacites ( capacite_type, capacite:fairy_capacites ( id, nom, description, bonus, is_official ) ),
                 fairy_type_powers ( power:fairy_powers ( id, nom, description, type_pouvoir, is_official ) ),
                 fairy_type_assets ( asset:fairy_assets ( id, nom, description, effets, effets_techniques, is_official ) )
-            `)
-            .order('name');
-        if (error) throw error;
-
-        // 2. Charger les compétences de prédilection (UTILES)
-        const { data: allCompPred, error: compPredError } = await supabase
-            .from('fairy_competences_predilection')
-            .select(`
+            `).order('name'),
+            supabase.from('fairy_competences_predilection').select(`
                 fairy_type_id, specialite, is_choice, is_specialite_choice, choice_ids, choice_options,
                 competence:competences ( name )
-            `);
-        if (compPredError) throw compPredError;
-
-        // 3. Charger les compétences de prédilection (FUTILES)
-        const { data: allCompFutPred, error: compFutPredError } = await supabase
-            .from('fairy_competences_futiles_predilection')
-            .select(`
+            `),
+            supabase.from('fairy_competences_futiles_predilection').select(`
                 fairy_type_id, is_choice, choice_options,
                 competence_futile:competence_futile_id ( name )
-            `);
+            `)
+        ]);
+
+        if (compsRefError) throw compsRefError;
+        if (error) throw error;
+        if (compPredError) throw compPredError;
         if (compFutPredError) throw compFutPredError;
+
+        const compNameMap = {};
+        allCompsRef.forEach(c => { compNameMap[c.id] = c.name; });
 
         // --- Organisation des données ---
         const compPredByFairy = {};
@@ -343,6 +337,9 @@ export const loadBadges = async () => {
 // ============================================================================
 
 const LOCAL_CACHE_KEY = 'heritiers_grimoire_cache';
+export const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+export const isCacheFresh = (cacheData) =>
+    !!(cacheData?._loadedAt && Date.now() - cacheData._loadedAt < CACHE_TTL_MS);
 
 export const loadSocialItems = async () => {
     try {
@@ -393,8 +390,7 @@ export const loadCoreGameData = async () => {
                 console.warn('📦 Cache vide (fairyTypes manquant), bug connu du 04/06 — on rafraîchit...');
                 localStorage.removeItem(LOCAL_CACHE_KEY);
             } else {
-                // Si on a le cache à jour, on retourne TOUT instantanément !
-                return parsedData;
+                return { ...parsedData, _cacheStatus: isCacheFresh(parsedData) ? 'fresh' : 'stale' };
             }
         } catch (e) {
             console.warn("Cache corrompu, on purge la poche...");
@@ -413,10 +409,10 @@ export const loadCoreGameData = async () => {
         return {
             profils: p,
             badges: b,
-            // ✨ LA MAGIE : On renvoie des coquilles vides pour le reste pour ne pas faire crasher l'UI
             competences: {}, competencesParProfil: {}, competencesFutiles: [],
             fairyData: {}, fairyTypes: [], fairyTypesByAge: { enfoui: [], traditionnelles: [], modernes: [] },
-            socialItems: [], encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] }
+            socialItems: [], encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] },
+            _cacheStatus: 'miss'
         };
     } catch (error) {
         console.error("❌ Erreur fatale du Noyau :", error);
@@ -443,7 +439,8 @@ export const loadHeavyLoreData = async (currentCoreData) => {
             fairyTypesByAge: f.fairyTypesByAge,
             socialItems: soc,
             encyclopediaRefs: refs,
-            _version: APP_VERSION  // ✨ Sceau de version pour invalidation future
+            _loadedAt: Date.now(),
+            _version: APP_VERSION
         };
 
         // 💾 On grave le grand dictionnaire complet et on le retourne

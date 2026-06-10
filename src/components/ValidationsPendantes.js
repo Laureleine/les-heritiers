@@ -105,12 +105,13 @@ export default function ValidationsPendantes({ session, onBack }) {
       });
 
       const recordsMap = {};
-      for (const [table, ids] of Object.entries(grouped)) {
-        if (ids.length > 0) {
-          const { data } = await supabase.from(table).select('*').in('id', ids);
-          if (data) data.forEach(item => recordsMap[item.id] = item);
-        }
-      }
+      const tableEntries = Object.entries(grouped).filter(([, ids]) => ids.length > 0);
+      const tableResults = await Promise.all(
+        tableEntries.map(([table, ids]) => supabase.from(table).select('*').in('id', ids))
+      );
+      tableResults.forEach(({ data }) => {
+        if (data) data.forEach(item => { recordsMap[item.id] = item; });
+      });
 
       if (isMounted.current) {
         setOriginalRecords(recordsMap);

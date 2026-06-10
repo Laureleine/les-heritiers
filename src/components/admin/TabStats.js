@@ -24,11 +24,20 @@ function TabStats() {
       const sealedChars = totalsData.total_sealed;
       const totalCercles = totalsData.total_cercles;
 
-      // ── 2. Répartition types de fées ───────────────────────
-      const { data: feeData } = await supabase
-        .from('characters')
-        .select('type_fee')
-        .not('type_fee', 'is', null);
+      // ── 2-4. Toutes les requêtes de détail en parallèle ───
+      const [
+        { data: feeData },
+        { data: profilData },
+        { data: profiles },
+        { data: characters },
+        { data: requests }
+      ] = await Promise.all([
+        supabase.from('characters').select('type_fee').not('type_fee', 'is', null),
+        supabase.from('characters').select('profils').not('profils', 'is', null),
+        supabase.from('profiles').select('created_at').gte('created_at', thirtyDaysAgo).limit(10000),
+        supabase.from('characters').select('created_at, updated_at').or(`created_at.gte.${thirtyDaysAgo},updated_at.gte.${thirtyDaysAgo}`).limit(10000),
+        supabase.from('data_change_requests').select('created_at').gte('created_at', thirtyDaysAgo).limit(10000),
+      ]);
 
       const feeCounts = {};
       if (feeData) {
@@ -37,12 +46,6 @@ function TabStats() {
           feeCounts[t] = (feeCounts[t] || 0) + 1;
         });
       }
-
-      // ── 3. Répartition profils majeurs/mineurs ─────────────
-      const { data: profilData } = await supabase
-        .from('characters')
-        .select('profils')
-        .not('profils', 'is', null);
 
       const majeurCounts = {};
       const mineurCounts = {};
@@ -53,13 +56,6 @@ function TabStats() {
           if (p.mineur?.nom) mineurCounts[p.mineur.nom] = (mineurCounts[p.mineur.nom] || 0) + 1;
         });
       }
-
-      // ── 4. Activité quotidienne (30 derniers jours) ────────
-      const [{ data: profiles }, { data: characters }, { data: requests }] = await Promise.all([
-        supabase.from('profiles').select('created_at').gte('created_at', thirtyDaysAgo).limit(10000),
-        supabase.from('characters').select('created_at, updated_at').or(`created_at.gte.${thirtyDaysAgo},updated_at.gte.${thirtyDaysAgo}`).limit(10000),
-        supabase.from('data_change_requests').select('created_at').gte('created_at', thirtyDaysAgo).limit(10000),
-      ]);
 
       const dailyData = {};
       const addCount = (dateStr, key) => {

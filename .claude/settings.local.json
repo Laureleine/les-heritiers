@@ -53,7 +53,15 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\\\\src\" -Recurse -File)",
       "Bash(Select-Object FullName)",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\\\\src\" -Recurse -File | Where-Object {$_.Extension -in '.tsx', '.ts', '.json'} | Select-Object -First 80 FullName)"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\\\\src\" -Recurse -File | Where-Object {$_.Extension -in '.tsx', '.ts', '.json'} | Select-Object -First 80 FullName)",
+      "Bash(npx playwright *)",
+      "mcp__plugin_vercel_vercel__list_deployments",
+      "mcp__plugin_vercel_vercel__get_project",
+      "Bash(npx skills *)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(Get-Content \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\\\\src\\\\App.js\")",
+      "Bash(Select-Object -First 50)"
     ]
   }
 }

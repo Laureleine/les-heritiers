@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.5 - "Le Nuage Sans Mirage 🌫️⚡"',
+    date: '10 Juin 2026',
+    description: 'Le Nuage souffrait de mirages : au premier démarrage, un Héritier pouvait commencer à forger son identité alors même que les données féeriques n\'étaient pas encore déchiffrées, causant des incohérences spectrales. Le Nuage est désormais discipliné — il attend d\'avoir tout son savoir avant d\'ouvrir les portes du créateur, et les quatre grandes Consultations des types de fées partent maintenant en simultané, trois fois plus vite qu\'auparavant.',
+    changes: [
+      '🌫️ **Plus de mirages au chargement :** Le bouton "Nouveau Héritier" reste voilé tant que les archives féeriques ne sont pas entièrement déchiffrées. Un sceau temporel (TTL 10 min) empêche le Nuage de se re-télécharger inutilement en pleine création, évitant ainsi les perturbations spectrales mid-session.',
+      '⚡ **Déchiffrage des fées 3× plus rapide :** Les quatre Consultations du Nuage (Types, Capacités, Pouvoirs, Prédilections) partent maintenant en simultané au lieu de se succéder patiemment. Le rideau se lève bien plus vite au premier démarrage.',
+      '⚙️ **Rouages de la Chancellerie huilés :** Les envois de notifications aux Héritiers, la validation des archives en attente et les statistiques du tableau de bord fonctionnent désormais en parallèle — plus d\'attente séquentielle.',
+      '🧹 **Ménage de printemps :** Deux parchemins inertes depuis la fondation du projet ont été remis aux archivistes.',
+      '🧪 **342 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.4 - "Le Mortel a un Sexe 🧍⚤"',
     date: '9 Juin 2026',
     description: 'Un oubli de taille : le créateur de personnage humain ne proposait aucun moyen de choisir le sexe, alors même que le jeu l\'exige pour valider l\'étape. Le sélecteur Homme / Femme fait désormais son apparition dans le panneau de droite, au même style ambré que pour les fées.',

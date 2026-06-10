@@ -471,7 +471,12 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
         {/* ─── BARRE DE NAVIGATION ─────────────────────────────────────── */}
         <div className="relative z-50 flex flex-nowrap items-center gap-1 overflow-x-auto hide-scrollbar w-full pb-2">
-          <button onClick={onNewCharacter} className="flex-shrink-0 mr-auto flex items-center space-x-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm">
+          <button
+            onClick={onNewCharacter}
+            disabled={!gameData?.fairyTypes?.length}
+            title={!gameData?.fairyTypes?.length ? "Chargement des données en cours…" : undefined}
+            className={`flex-shrink-0 mr-auto flex items-center space-x-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm ${!gameData?.fairyTypes?.length ? 'opacity-50 cursor-wait' : ''}`}
+          >
             <Plus size={15} /> <span className="hidden lg:inline">Nouveau</span>
           </button>
           <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
@@ -597,7 +602,13 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               myCharacters.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-300">
                   <p className="text-gray-500 font-serif mb-4">Vous n'avez pas encore créé de personnage.</p>
-                  <button onClick={onNewCharacter} className="text-amber-600 font-bold hover:underline">Créer mon premier Héritier</button>
+                  <button
+                    onClick={onNewCharacter}
+                    disabled={!gameData?.fairyTypes?.length}
+                    className="text-amber-600 font-bold hover:underline disabled:opacity-50 disabled:cursor-wait"
+                  >
+                    {gameData?.fairyTypes?.length ? 'Créer mon premier Héritier' : 'Chargement en cours…'}
+                  </button>
                 </div>
               ) : (
                 <div className="text-center py-12 text-stone-400 font-serif italic">

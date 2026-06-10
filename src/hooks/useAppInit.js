@@ -49,7 +49,7 @@ export function useAppInit() {
                 }
 
                 setLoadingStep("Allumage du Noyau...");
-                const coreData = await loadCoreGameData();
+                const { _cacheStatus, ...coreData } = await loadCoreGameData();
 
                 if (mounted) {
                     setGameData(coreData);
@@ -81,12 +81,14 @@ export function useAppInit() {
                     setGlobalLoading(false);
                 }
 
-                loadHeavyLoreData(coreData).then(heavyData => {
-                    if (heavyData && mounted) setGameData(heavyData);
-                }).catch(err => {
-                    console.error("Erreur chargement Lore secondaire:", err);
-                    if (mounted) showInAppNotification("Certaines données additionnelles n'ont pas pu être chargées.", "warning");
-                });
+                if (_cacheStatus !== 'fresh') {
+                    loadHeavyLoreData(coreData).then(heavyData => {
+                        if (heavyData && mounted) setGameData(heavyData);
+                    }).catch(err => {
+                        console.error("Erreur chargement Lore secondaire:", err);
+                        if (mounted) showInAppNotification("Certaines données additionnelles n'ont pas pu être chargées.", "warning");
+                    });
+                }
 
                 isInitializingRef.current = false;
 
