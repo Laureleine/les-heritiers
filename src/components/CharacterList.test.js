@@ -1,44 +1,44 @@
 ﻿vi.mock('../config/supabase', () => ({
   supabase: {
-    from: jest.fn(),
-    rpc: jest.fn().mockResolvedValue({ data: null, error: null }),
-    channel: jest.fn(() => ({
-      on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn().mockResolvedValue({}),
+    from: vi.fn(),
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+    channel: vi.fn(() => ({
+      on: vi.fn().mockReturnThis(),
+      subscribe: vi.fn().mockResolvedValue({}),
     })),
-    removeChannel: jest.fn(),
-    getSession: jest.fn().mockResolvedValue({ data: { session: null }, error: null }),
+    removeChannel: vi.fn(),
+    getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
   },
 }));
 
 vi.mock('../utils/supabaseStorage', () => ({
-  getUserCharacters: jest.fn().mockResolvedValue([]),
-  getPublicCharacters: jest.fn().mockResolvedValue([]),
-  getAllCharactersAdmin: jest.fn().mockResolvedValue([]),
-  deleteCharacterFromSupabase: jest.fn(),
-  toggleCharacterVisibility: jest.fn(),
-  saveCharacterToSupabase: jest.fn(),
-  getFullCharacter: jest.fn(),
+  getUserCharacters: vi.fn().mockResolvedValue([]),
+  getPublicCharacters: vi.fn().mockResolvedValue([]),
+  getAllCharactersAdmin: vi.fn().mockResolvedValue([]),
+  deleteCharacterFromSupabase: vi.fn(),
+  toggleCharacterVisibility: vi.fn(),
+  saveCharacterToSupabase: vi.fn(),
+  getFullCharacter: vi.fn(),
 }));
 
 vi.mock('../utils/SystemeServices', () => ({
-  showInAppNotification: jest.fn(),
-  translateError: jest.fn((e) => e?.message || 'Erreur'),
+  showInAppNotification: vi.fn(),
+  translateError: vi.fn((e) => e?.message || 'Erreur'),
 }));
 
-vi.mock('../utils/pdfGenerator', () => ({ exportToPDF: jest.fn() }));
-vi.mock('../utils/utils', () => ({ exportCharacter: jest.fn() }));
-vi.mock('../utils/lockUtils', () => ({ isCharacterScelle: jest.fn() }));
-vi.mock('../utils/characterEngine', () => ({ characterReducer: jest.fn() }));
+vi.mock('../utils/pdfGenerator', () => ({ exportToPDF: vi.fn() }));
+vi.mock('../utils/utils', () => ({ exportCharacter: vi.fn() }));
+vi.mock('../utils/lockUtils', () => ({ isCharacterScelle: vi.fn() }));
+vi.mock('../utils/characterEngine', () => ({ characterReducer: vi.fn() }));
 vi.mock('../utils/repairJournaux', () => ({
-  mapDbCharForReconstruction: jest.fn(),
-  journalNeedsRepair: jest.fn(),
-  buildRepairedJournal: jest.fn(),
-  computeXpDepenseFromJournal: jest.fn(),
+  mapDbCharForReconstruction: vi.fn(),
+  journalNeedsRepair: vi.fn(),
+  buildRepairedJournal: vi.fn(),
+  computeXpDepenseFromJournal: vi.fn(),
 }));
 vi.mock('../utils/supabaseGameData', () => ({
-  loadFairyTypes: jest.fn(),
-  loadSocialItems: jest.fn(),
+  loadFairyTypes: vi.fn(),
+  loadSocialItems: vi.fn(),
 }));
 vi.mock('./ConfirmModal', () => ({ default: () => null }));
 vi.mock('./cercle/GrimoirePersonnel', () => ({ default: () => null }));
@@ -59,26 +59,26 @@ const mockProfile = { profile: { role: 'user' } };
 
 function makeChain() {
   const chain = { then: undefined };
-  chain.select = jest.fn(() => chain);
-  chain.eq = jest.fn(() => chain);
-  chain.single = jest.fn(() => chain);
-  chain.order = jest.fn(() => chain);
-  chain.insert = jest.fn(() => chain);
-  chain.delete = jest.fn(() => chain);
-  chain.gte = jest.fn(() => chain);
-  chain.limit = jest.fn(() => chain);
-  chain.update = jest.fn(() => Promise.resolve({ data: null, error: null }));
-  chain.then = jest.fn((res) => {
+  chain.select = vi.fn(() => chain);
+  chain.eq = vi.fn(() => chain);
+  chain.single = vi.fn(() => chain);
+  chain.order = vi.fn(() => chain);
+  chain.insert = vi.fn(() => chain);
+  chain.delete = vi.fn(() => chain);
+  chain.gte = vi.fn(() => chain);
+  chain.limit = vi.fn(() => chain);
+  chain.update = vi.fn(() => Promise.resolve({ data: null, error: null }));
+  chain.then = vi.fn((res) => {
     res({ data: [], error: null });
     return Promise.resolve();
   });
-  chain.catch = jest.fn();
+  chain.catch = vi.fn();
   return chain;
 }
 
 describe('CharacterList RPC calls', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     supabase.from.mockReturnValue(makeChain());
   });
 

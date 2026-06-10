@@ -28,38 +28,38 @@
 
 vi.mock('../../config/supabase', () => ({
   supabase: {
-    from: jest.fn(() => new MockChain()),
-    rpc: jest.fn().mockResolvedValue({ data: null, error: null }),
+    from: vi.fn(() => new MockChain()),
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
   },
 }));
 
 vi.mock('../../utils/SystemeServices', () => ({
-  showInAppNotification: jest.fn(),
+  showInAppNotification: vi.fn(),
 }));
 
 vi.mock('../../utils/supabaseStorage', () => ({
-  saveCharacterToSupabase: jest.fn(),
+  saveCharacterToSupabase: vi.fn(),
 }));
 
 vi.mock('../../utils/lockUtils', () => ({
-  isCharacterScelle: jest.fn(() => false),
+  isCharacterScelle: vi.fn(() => false),
 }));
 
 vi.mock('../../utils/json', () => ({
-  parseIfString: jest.fn(() => ({})),
+  parseIfString: vi.fn(() => ({})),
 }));
 
 vi.mock('../../utils/rulesEngine', () => ({
-  calculateFullCombatStats: jest.fn(() => ({})),
-  calculateSkillScore: jest.fn(() => 0),
+  calculateFullCombatStats: vi.fn(() => ({})),
+  calculateSkillScore: vi.fn(() => 0),
 }));
 
 vi.mock('../../utils/sealValidation', () => ({
-  validateBeforeSeal: jest.fn(() => ({ errors: [], warnings: [] })),
+  validateBeforeSeal: vi.fn(() => ({ errors: [], warnings: [] })),
 }));
 
 vi.mock('../../context/CharacterContext', () => ({
-  useCharacter: jest.fn(),
+  useCharacter: vi.fn(),
 }));
 
 import { renderHook, act } from '@testing-library/react';
@@ -69,7 +69,7 @@ import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { validateBeforeSeal } from '../../utils/sealValidation';
 
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
 const mockCharacter = {
   id: 'char-123',
@@ -112,7 +112,7 @@ const mockGameData = {
 
 describe('useCerbere', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     useCharacter.mockReturnValue({
       character: mockCharacter,
       gameData: mockGameData,

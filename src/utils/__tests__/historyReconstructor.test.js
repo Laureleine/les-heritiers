@@ -1,9 +1,9 @@
 ﻿vi.mock('../xpCalculator', () => ({
-  getCaracCost: jest.fn((i) => Math.max(12, (i + 1) * 4)),
-  getUtileCost: jest.fn((i) => (i + 1) * 3),
-  getFutileCost: jest.fn((i) => i + 1),
-  getFortuneCost: jest.fn((i, stats) => Math.max(5, (i + 1) * 2)),
-  getFortuneSpecialites: jest.fn(() => ({})),
+  getCaracCost: vi.fn((i) => Math.max(12, (i + 1) * 4)),
+  getUtileCost: vi.fn((i) => (i + 1) * 3),
+  getFutileCost: vi.fn((i) => i + 1),
+  getFortuneCost: vi.fn((i, stats) => Math.max(5, (i + 1) * 2)),
+  getFortuneSpecialites: vi.fn(() => ({})),
   FIXED_XP_COSTS: { nouvel_atout: 8, specialite_utile: 8 },
 }));
 
@@ -22,7 +22,7 @@ vi.mock('../xpActions', () => ({
 }));
 
 vi.mock('../json', () => ({
-  parseIfString: jest.fn((v) => (typeof v === 'string' ? JSON.parse(v) : v)),
+  parseIfString: vi.fn((v) => (typeof v === 'string' ? JSON.parse(v) : v)),
 }));
 
 import { reconstructHistory } from '../historyReconstructor';

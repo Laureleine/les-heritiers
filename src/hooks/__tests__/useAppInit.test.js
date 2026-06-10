@@ -1,28 +1,28 @@
 ﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     auth: {
-      getSession: jest.fn(),
-      onAuthStateChange: jest.fn(),
+      getSession: vi.fn(),
+      onAuthStateChange: vi.fn(),
     },
-    from: jest.fn(),
+    from: vi.fn(),
   },
 }));
 
 vi.mock('../../utils/supabaseGameData', () => ({
-  loadCoreGameData: jest.fn(),
-  loadHeavyLoreData: jest.fn(),
+  loadCoreGameData: vi.fn(),
+  loadHeavyLoreData: vi.fn(),
 }));
 
 vi.mock('../../utils/SystemeServices', () => ({
-  showInAppNotification: jest.fn(),
+  showInAppNotification: vi.fn(),
 }));
 
 vi.mock('../../context/CharacterContext', () => ({
-  useCharacter: jest.fn(),
+  useCharacter: vi.fn(),
 }));
 
 vi.mock('../useAutoUpdate', () => ({
-  useAutoUpdate: jest.fn(),
+  useAutoUpdate: vi.fn(),
 }));
 
 import { renderHook, waitFor } from '@testing-library/react';
@@ -32,7 +32,7 @@ import { loadCoreGameData, loadHeavyLoreData } from '../../utils/supabaseGameDat
 import { useCharacter } from '../../context/CharacterContext';
 import { useAutoUpdate } from '../useAutoUpdate';
 
-const mockSetGameData = jest.fn();
+const mockSetGameData = vi.fn();
 
 const fakeSession = {
   access_token: 'tok',
@@ -40,22 +40,22 @@ const fakeSession = {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 
   useCharacter.mockReturnValue({ setGameData: mockSetGameData });
-  useAutoUpdate.mockReturnValue({ updateAvailable: false, applyUpdate: jest.fn() });
+  useAutoUpdate.mockReturnValue({ updateAvailable: false, applyUpdate: vi.fn() });
 
   const chain = {
-    select: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    single: jest.fn(),
-    insert: jest.fn().mockReturnThis(),
-    update: jest.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    single: vi.fn(),
+    insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
   };
   supabase.from.mockReturnValue(chain);
 
   supabase.auth.onAuthStateChange.mockReturnValue({
-    data: { subscription: { unsubscribe: jest.fn() } },
+    data: { subscription: { unsubscribe: vi.fn() } },
   });
 });
 

@@ -1,9 +1,9 @@
 ﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     auth: {
-      signUp: jest.fn(),
-      signInWithPassword: jest.fn(),
-      resetPasswordForEmail: jest.fn(),
+      signUp: vi.fn(),
+      signInWithPassword: vi.fn(),
+      resetPasswordForEmail: vi.fn(),
     },
   },
 }));
@@ -12,7 +12,7 @@ vi.mock('../../utils/SystemeServices', async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    showInAppNotification: jest.fn(),
+    showInAppNotification: vi.fn(),
   };
 });
 
@@ -37,7 +37,7 @@ const switchToSignUp = () => {
 
 describe('Auth — Validation mot de passe', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     render(<Auth />);
     switchToSignUp();
   });
@@ -112,7 +112,7 @@ describe('Auth — Validation mot de passe', () => {
 
 describe('Auth — Anti-énumération', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     render(<Auth />);
     switchToSignUp();
   });
@@ -178,7 +178,7 @@ describe('Auth — Anti-énumération', () => {
 
 describe('Auth — Connexion', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     render(<Auth />);
   });
 
@@ -223,7 +223,7 @@ describe('Auth — Connexion', () => {
 
 describe('Auth — Reset password', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     render(<Auth />);
   });
 
@@ -248,7 +248,7 @@ describe('Auth — Reset password', () => {
 
 describe('Auth — Username vide', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     render(<Auth />);
     switchToSignUp();
   });

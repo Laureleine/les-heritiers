@@ -1,7 +1,7 @@
 ﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     auth: {
-      getUser: jest.fn(),
+      getUser: vi.fn(),
     },
   },
 }));
@@ -11,7 +11,7 @@ import { supabase } from '../../config/supabase';
 
 describe('getCurrentUser', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('retourne l\'utilisateur quand connecté', async () => {
@@ -41,7 +41,7 @@ describe('getCurrentUser', () => {
 
 describe('requireCurrentUser', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('retourne l\'utilisateur quand connecté', async () => {
