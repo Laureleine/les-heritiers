@@ -1,3 +1,33 @@
+# REX — Session 10 Juin 2026 (v17.4.8 — L'Archiviste du Nuage)
+
+## Ce qui a été fait
+
+- **Phase B — React Query** : remplacement complet du cache localStorage artisanal (`LOCAL_CACHE_KEY`, `CACHE_TTL_MS`, `isCacheFresh`, `loadCoreGameData`, `loadHeavyLoreData`) par `@tanstack/react-query`. Nouveau hook `useGameData` avec un `Promise.all` unique pour 7 sources. `staleTime: 10 min`, `gcTime: 30 min`. Auth guard : `enabled: !!session`.
+- **Phase C — GameDataContext** : `gameData`/`setGameData` extraits de `CharacterContext` vers un nouveau `GameDataContext`. 26 fichiers migrés de `useCharacter()` vers `useGameDataContext()`. `CharacterContext` ne contient plus que l'état mutable.
+- **Tests** : 336 verts tout au long des deux phases. Suppression de 9 tests `isCacheFresh` (fonction disparue). Mise à jour des mocks `useCerbere.test.js` et `useAppInit.test.js`.
+
+## Règles & enseignements
+
+### Architecture
+- **`GameDataProvider` avec `enabled: false`** est le pattern correct pour "abonner un provider à un cache React Query sans déclencher de fetch". Le fetch reste dans `useAppInit` avec `enabled: !!session`. C'est le seul endroit auth-gatekept.
+- **Deux abonnés React Query au même `queryKey`** partagent automatiquement le cache — pas besoin de prop drilling.
+- Quand on extrait un context, l'ordre des providers dans `index.jsx` compte : `GameDataProvider` doit envelopper `CharacterProvider` si ce dernier en a besoin.
+
+### Mécanique de migration (20+ fichiers)
+- **Lire avant d'éditer** : le tool Edit refuse d'écrire dans un fichier non lu dans la session. Sur une grande migration, lire d'abord tous les fichiers en parallèle (batch de 10), puis éditer en parallèle.
+- **Deux passes** : (1) ajouter l'import `useGameDataContext`, (2) splitter la destructuration `useCharacter()`. Ne pas chercher à faire les deux en une seule Edit — l'old_string doit être unique.
+- **Grep de vérification** après la migration : `pattern: "useCharacter.*gameData|gameData.*useCharacter"` pour s'assurer qu'il ne reste aucun résidu.
+
+### Tests
+- Quand un hook perd une dépendance (`useAppInit` perd `useCharacter`), supprimer proprement le mock, l'import ET la variable associée (`mockSetGameData`) — sinon vitest peut planter silencieusement.
+- Pour un hook splitté (`useCerbere`), les mocks inline `useCharacter.mockReturnValue({ gameData: ... })` doivent aussi être nettoyés.
+
+### Vercel
+- Le bon `teamId` est `team_2JcB6zm6EoWn2MVJjuHA3ORH` (laureleine's projects).
+- Le `projectId` correct est `prj_ubXFEuYEU4TqZGQZYPg5xpeZSRki` (les-heritiers).
+
+---
+
 # REX — Session 10 Juin 2026 (v17.4.7)
 
 ## Ce qui s'est passé
