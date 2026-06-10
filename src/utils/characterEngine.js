@@ -591,6 +591,13 @@ export function characterReducer(state, action) {
             budgetsPP[profilNom] = budgetTotal;
         });
 
+        const futilesBase = {};
+        const futilesTotal = {};
+        Object.entries(newState.competencesFutiles?.rangs || {}).forEach(([nomComp, investis]) => {
+            futilesBase[nomComp] = 0;
+            futilesTotal[nomComp] = investis;
+        });
+
         newState.computedStats = {
             ...(newState.computedStats || {}),
             rangsProfils,
@@ -599,8 +606,8 @@ export function characterReducer(state, action) {
             competencesTotal,
             predFinales: [],
             futilesPredFinales: [],
-            futilesBase: {},
-            futilesTotal: {},
+            futilesBase,
+            futilesTotal,
         };
     }
 

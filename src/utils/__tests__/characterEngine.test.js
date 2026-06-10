@@ -611,4 +611,57 @@ describe('characterReducer', () => {
       expect(result.computedStats).toBeUndefined();
     });
   });
+
+  describe('Humain pur — compétences futiles', () => {
+    const minimalGameData = { fairyData: {}, socialItems: [] };
+
+    const humainAvecFutiles = {
+      typePersonnage: 'humain',
+      typeFee: '',
+      rangHumain: 'larbin',
+      profils: {
+        majeur: { nom: 'Gentleman', trait: 'Élégant', competences: [] },
+        mineur: { nom: 'Savant', trait: 'Cérébral', competences: [] },
+      },
+      competencesLibres: { rangs: {}, choixPredilection: {}, choixSpecialiteUser: {} },
+      competencesFutiles: { rangs: { Escrime: 2, Danse: 1 } },
+      caracteristiques: {},
+      atouts: [],
+      data: {},
+      statut: 'brouillon',
+    };
+
+    it('reflète les rangs investis dans futilesTotal', () => {
+      const result = characterReducer(humainAvecFutiles, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+        gameData: minimalGameData,
+      });
+
+      expect(result.computedStats.futilesTotal['Escrime']).toBe(2);
+      expect(result.computedStats.futilesTotal['Danse']).toBe(1);
+    });
+
+    it('futilesBase vaut 0 (pas de prédilections pour les humains)', () => {
+      const result = characterReducer(humainAvecFutiles, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+        gameData: minimalGameData,
+      });
+
+      expect(result.computedStats.futilesBase['Escrime']).toBe(0);
+      expect(result.computedStats.futilesBase['Danse']).toBe(0);
+    });
+
+    it('futilesTotal vide si aucun rang investi', () => {
+      const humainSansFutiles = { ...humainAvecFutiles, competencesFutiles: { rangs: {} } };
+      const result = characterReducer(humainSansFutiles, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+        gameData: minimalGameData,
+      });
+
+      expect(result.computedStats.futilesTotal).toEqual({});
+    });
+  });
 });
