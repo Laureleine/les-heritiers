@@ -17,7 +17,7 @@
 
 # Tests
 
-- Le projet utilise `react-scripts` (CRA) — toujours lancer les tests avec `npm test`, jamais `npx jest` directement.
+- Le projet utilise **Vite + Vitest** (migration CRA → Vite terminée). Lancer les tests avec `npm test` (`vitest run`). Ne jamais utiliser `npx jest` ni `react-scripts test`.
 
 # Commands
 
