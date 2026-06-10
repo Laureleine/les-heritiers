@@ -1,5 +1,5 @@
 // src/hooks/useAppInit.js
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { loadCoreGameData, loadHeavyLoreData } from '../utils/supabaseGameData';
 import { useCharacter } from '../context/CharacterContext';
@@ -12,7 +12,9 @@ export function useAppInit() {
     const [userProfile, setUserProfile] = useState(null);
     const [globalLoading, setGlobalLoading] = useState(true);
     const [loadingStep, setLoadingStep] = useState('Démarrage...');
+    const [loadingElapsed, setLoadingElapsed] = useState(null);
     const [isInitialized, setIsInitialized] = useState(false);
+    const loadingTimerRef = useRef(null);
 
     // La Bougie d'allumage pour redémarrer le Nuage sans F5
     const [initTrigger, setInitTrigger] = useState(0);
@@ -51,45 +53,57 @@ export function useAppInit() {
                 setLoadingStep("Allumage du Noyau...");
                 const { _cacheStatus, ...coreData } = await loadCoreGameData();
 
-                if (mounted) {
-                    setGameData(coreData);
-                    setSession(activeSession);
-                    
-                    // ✨ On mémorise silencieusement l'identité de l'Héritier
-                    sessionRef.current = activeSession;
+                if (!mounted) { isInitializingRef.current = false; return; }
 
-                    const { data: profileData } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', activeSession.user.id)
-                        .single();
+                setGameData(coreData);
+                setSession(activeSession);
+                sessionRef.current = activeSession;
 
-                    if (profileData) {
-                      setUserProfile({ ...activeSession.user, profile: profileData });
-                    } else {
-                      // ✨ FALLBACK : si le trigger handle_new_user n'a pas créé le profil
-                      const username = activeSession.user.user_metadata?.username || 'Héritier';
-                      const { data: newProfile } = await supabase
-                        .from('profiles')
-                        .insert({ id: activeSession.user.id, username, role: 'user' })
-                        .select()
-                        .single();
-                      if (newProfile) setUserProfile({ ...activeSession.user, profile: newProfile });
-                    }
-                    
-                    setIsInitialized(true);
-                    setGlobalLoading(false);
+                const { data: profileData } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', activeSession.user.id)
+                    .single();
+
+                if (profileData) {
+                  setUserProfile({ ...activeSession.user, profile: profileData });
+                } else {
+                  const username = activeSession.user.user_metadata?.username || 'Héritier';
+                  const { data: newProfile } = await supabase
+                    .from('profiles')
+                    .insert({ id: activeSession.user.id, username, role: 'user' })
+                    .select()
+                    .single();
+                  if (newProfile) setUserProfile({ ...activeSession.user, profile: newProfile });
                 }
 
                 if (_cacheStatus !== 'fresh') {
-                    loadHeavyLoreData(coreData).then(heavyData => {
+                    const t0 = performance.now();
+                    let elapsed = 0;
+                    loadingTimerRef.current = setInterval(() => {
+                        elapsed = Math.round((performance.now() - t0) / 100) / 10;
+                        if (mounted) setLoadingElapsed(elapsed);
+                    }, 100);
+
+                    setLoadingStep("Déchiffrage des archives...");
+                    try {
+                        const heavyData = await loadHeavyLoreData(coreData);
+                        clearInterval(loadingTimerRef.current);
+                        const total = Math.round((performance.now() - t0) / 10) / 100;
+                        console.log(`⏱️ loadHeavyLoreData: ${total}s`);
                         if (heavyData && mounted) setGameData(heavyData);
-                    }).catch(err => {
+                    } catch (err) {
+                        clearInterval(loadingTimerRef.current);
                         console.error("Erreur chargement Lore secondaire:", err);
                         if (mounted) showInAppNotification("Certaines données additionnelles n'ont pas pu être chargées.", "warning");
-                    });
+                    }
                 }
 
+                if (mounted) {
+                    setLoadingElapsed(null);
+                    setIsInitialized(true);
+                    setGlobalLoading(false);
+                }
                 isInitializingRef.current = false;
 
             } catch (error) {
@@ -107,6 +121,7 @@ export function useAppInit() {
         return () => {
             mounted = false;
             clearTimeout(safetyTimer);
+            clearInterval(loadingTimerRef.current);
             isInitializingRef.current = false;
         };
     }, [isInitialized, setGameData, initTrigger]);
@@ -171,5 +186,5 @@ export function useAppInit() {
         if (profile) setUserProfile({ ...session.user, profile });
     };
 
-    return { session, setSession, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate };
+    return { session, setSession, userProfile, refreshUserProfile, globalLoading, loadingStep, loadingElapsed, updateAvailable, applyUpdate };
 }

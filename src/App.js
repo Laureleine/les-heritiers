@@ -18,7 +18,7 @@ import CorrectionRequestModal from './components/CorrectionRequestModal';
 import AdminCorrectionWidget from './components/AdminCorrectionWidget';
 
 export default function App() {
-  const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate } = useAppInit();
+  const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, loadingElapsed, updateAvailable, applyUpdate } = useAppInit();
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [versionHistory, setVersionHistory] = useState(null);
 
@@ -39,6 +39,9 @@ export default function App() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
           <p className="text-lg text-amber-900 font-serif">{loadingStep}</p>
+          {loadingElapsed !== null && (
+            <p className="text-sm text-stone-400 font-mono mt-2">{loadingElapsed}s</p>
+          )}
         </div>
       </div>
     );
