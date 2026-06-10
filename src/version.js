@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.8 - "L\'Archiviste du Nuage 📚⚡"',
+    date: '10 Juin 2026',
+    description: 'Le Nuage opère une grande séparation des charges : les Archives de Référence (types de fées, profils, compétences, items sociaux, encyclopédie) quittent le Contexte du Personnage pour rejoindre leur propre Greffe dédié. React Query devient l\'Archiviste officiel, mémorisant les données pendant dix minutes sans interroger Supabase — la première consultation reste la seule nécessaire. Le Contexte du Personnage, allégé de ce fardeau encyclopédique, ne gouverne plus désormais que l\'état mutable du Héritier en cours de forge.',
+    changes: [
+      '📚 **GameDataContext (Nouveau) :** Les données de jeu statiques — types de fées, profils, compétences, items sociaux, badges, encyclopédie — migrent du CharacterContext vers un contexte dédié. Vingt-six fichiers abandonnent `const { ..., gameData } = useCharacter()` au profit de `const { gameData } = useGameDataContext()` — responsabilités clairement séparées.',
+      '⚡ **React Query remplace le cache localStorage artisanal :** Le système maison (`LOCAL_CACHE_KEY`, `CACHE_TTL_MS`, `isCacheFresh`, `loadCoreGameData`, `loadHeavyLoreData`) cède la place à `@tanstack/react-query`. Un seul `Promise.all` charge les sept sources en parallèle. `staleTime: 10 min`, `gcTime: 30 min` — plus besoin de touches manuelles au localStorage.',
+      '🔒 **Chargement gardé par l\'authentification :** Le fetch des archives de jeu ne démarre qu\'après connexion. `GameDataProvider` lit le cache React Query sans déclencher de requête — aucun appel RLS avant que le Sceau d\'identité ne soit posé.',
+      '🧹 **CharacterContext allégé :** `gameData` et `setGameData` disparaissent entièrement du Contexte du Personnage. Il ne gouverne plus que l\'état mutable : `character`, `dispatchCharacter`, `isReadOnly`.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.7 - "Le Verrou des Archives 🔒📜"',
     date: '10 Juin 2026',
     description: 'L\'Atelier refusait obstinément de se laisser visiter avant d\'avoir tout rangé — mais ses portes s\'ouvraient trop tôt, laissant entrer les Héritiers alors que les grands registres féeriques n\'étaient pas encore déposés sur les pupitres. Désormais le portail reste clos jusqu\'à ce que la dernière archive soit en place. Un chronomètre discret sur l\'écran d\'attente mesure le temps de déchiffrage, pour que l\'on sache combien de secondes le Nuage a besoin de patience.',
