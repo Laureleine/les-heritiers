@@ -388,6 +388,11 @@ export default function Actualite({ onBack, userProfile }) {
     return [];
   }, [articles, activeMenu]);
 
+  const pendingVotes = useMemo(() =>
+    votesList.filter(vote => !availableArticleDates.has(vote.date)),
+    [votesList, availableArticleDates]
+  );
+
   // --- Navigation jour précédent/suivant ---
   const navigateDate = (offset) => {
     const parts = dateStr.split('-');
@@ -1128,9 +1133,9 @@ export default function Actualite({ onBack, userProfile }) {
                   <div className="flex justify-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
                   </div>
-                ) : votesList.length === 0 ? (
+                ) : pendingVotes.length === 0 ? (
                   <p className="text-center font-serif italic py-12 text-stone-500">
-                    Aucun vote enregistré pour le moment.
+                    Toutes les journées demandées ont été numérisées.
                   </p>
                 ) : (
                   <div className="overflow-x-auto">
@@ -1143,7 +1148,7 @@ export default function Actualite({ onBack, userProfile }) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-200/50 dark:divide-stone-700/50">
-                        {votesList.map((vote) => {
+                        {pendingVotes.map((vote) => {
                           const dateObj = new Date(vote.date);
                           const formattedDate = `${dateObj.getDate()} ${MONTHS_FR[String(dateObj.getMonth() + 1).padStart(2, '0')]} ${dateObj.getFullYear()}`;
                           const commandStr = `python pipeline_journalier.py --date ${vote.date}`;
