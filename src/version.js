@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.6 - "Les Comptes du Mortel 🧍📊"',
+    date: '10 Juin 2026',
+    description: 'Un double oubli rattrapé : le calculateur de l\'Humain pur écrasait en silence les rangs de compétences futiles qu\'on lui investissait — le bouton + décomptait bien les points, mais le score restait figé à zéro, comme si la dépense avait été avalée par un gouffre invisible. En parallèle, le tableau de bord des votes de numérisation se dépolluait enfin de ses vieilles demandes déjà honorées, et les portes du Nuage — longtemps verrouillées en production depuis la grande migration — ont été rouverts pour de bon.',
+    changes: [
+      '🧍 **Scores futiles des Humains purs réparés :** Investir des points dans une compétence futile se reflète maintenant dans le score affiché. Le calculateur humain pur écrasait `futilesTotal` avec un objet vide à chaque recalcul — les rangs investis sont désormais lus depuis `competencesFutiles.rangs` et retranscrits fidèlement.',
+      '🗳️ **Demandes de vote filtrées automatiquement :** Les journées déjà numérisées disparaissent d\'elles-mêmes du tableau de bord des votes. À chaque rafraîchissement, les dates présentes dans les archives sont exclues de la liste — seules les demandes encore en attente de numérisation restent visibles.',
+      '🏗️ **Build Vercel rétabli :** La migration CRA → Vite avait oublié de graver `index.html` et `src/index.jsx` dans le dépôt. Les builds locaux fonctionnaient (Vite lisait le disque), mais Vercel clonait depuis git HEAD et échouait silencieusement depuis cinq commits. Les fichiers d\'entrée sont désormais bien inscrits dans les archives.',
+      '🧪 **345 Sentinelles — 3 nouvelles recrues pour les futiles des humains purs.',
+    ]
+  },
+  {
     version: '17.4.5 - "Le Nuage Sans Mirage 🌫️⚡"',
     date: '10 Juin 2026',
     description: 'Le Nuage souffrait de mirages : au premier démarrage, un Héritier pouvait commencer à forger son identité alors même que les données féeriques n\'étaient pas encore déchiffrées, causant des incohérences spectrales. Le Nuage est désormais discipliné — il attend d\'avoir tout son savoir avant d\'ouvrir les portes du créateur, et les quatre grandes Consultations des types de fées partent maintenant en simultané, trois fois plus vite qu\'auparavant.',
