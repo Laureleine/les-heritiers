@@ -522,4 +522,93 @@ describe('characterReducer', () => {
       expect(result.computedStats).toBeDefined();
     });
   });
+
+  describe('Humain pur — calcul des bonus de profils', () => {
+    const minimalGameData = { fairyData: {}, socialItems: [] };
+
+    const humainAvecProfils = {
+      typePersonnage: 'humain',
+      typeFee: '',
+      rangHumain: 'larbin',
+      profils: {
+        majeur: { nom: 'Gentleman', trait: 'Élégant', competences: ['Classe', 'Entregent', 'Séduction', 'Sensibilité'] },
+        mineur: { nom: 'Savant', trait: 'Cérébral', competences: ['Habiletés', 'Médecine', 'Observation', 'Sciences'] },
+      },
+      competencesLibres: { rangs: { Classe: 1 }, choixPredilection: {}, choixSpecialiteUser: {} },
+      caracteristiques: {},
+      atouts: [],
+      data: {},
+      statut: 'brouillon',
+    };
+
+    it('popule computedStats pour un humain pur', () => {
+      const result = characterReducer(humainAvecProfils, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+        gameData: minimalGameData,
+      });
+
+      expect(result.computedStats).toBeDefined();
+      expect(result.computedStats.competencesBase).toBeDefined();
+    });
+
+    it('donne +2 aux compétences du profil majeur', () => {
+      const result = characterReducer(humainAvecProfils, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+        gameData: minimalGameData,
+      });
+
+      expect(result.computedStats.competencesBase['Classe']).toBe(2);
+      expect(result.computedStats.competencesBase['Entregent']).toBe(2);
+      expect(result.computedStats.competencesBase['Séduction']).toBe(2);
+      expect(result.computedStats.competencesBase['Sensibilité']).toBe(2);
+    });
+
+    it('donne +1 aux compétences du profil mineur', () => {
+      const result = characterReducer(humainAvecProfils, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+        gameData: minimalGameData,
+      });
+
+      expect(result.computedStats.competencesBase['Habiletés']).toBe(1);
+      expect(result.computedStats.competencesBase['Médecine']).toBe(1);
+      expect(result.computedStats.competencesBase['Observation']).toBe(1);
+      expect(result.computedStats.competencesBase['Sciences']).toBe(1);
+    });
+
+    it('donne 0 aux compétences hors profil', () => {
+      const result = characterReducer(humainAvecProfils, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+        gameData: minimalGameData,
+      });
+
+      expect(result.computedStats.competencesBase['Conduite']).toBe(0);
+      expect(result.computedStats.competencesBase['Mêlée']).toBe(0);
+    });
+
+    it('totalScore = bonusProfil + rangs investis', () => {
+      const result = characterReducer(humainAvecProfils, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+        gameData: minimalGameData,
+      });
+
+      // Classe : bonusProfil=2, investis=1 → total=3
+      expect(result.computedStats.competencesTotal['Classe']).toBe(3);
+      // Entregent : bonusProfil=2, investis=0 → total=2
+      expect(result.computedStats.competencesTotal['Entregent']).toBe(2);
+    });
+
+    it('ne calcule pas computedStats humain sans gameData', () => {
+      const result = characterReducer(humainAvecProfils, {
+        type: 'UPDATE_MULTIPLE',
+        payload: {},
+      });
+
+      expect(result.computedStats).toBeUndefined();
+    });
+  });
 });
