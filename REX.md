@@ -70,6 +70,25 @@ Un `useMemo` qui calcule `pendingVotes = votesList.filter(vote => !availableArti
 
 ---
 
+## Piège critique : version.js commité ≠ fix déployé
+
+### Ce qui s'est passé
+
+Après la compaction du contexte, le commit `17.4.6` a incrémenté `version.js` mais les vrais fichiers de fix (`Actualite.jsx`, `characterEngine.js`, `characterEngine.test.js`) n'avaient jamais été committés — ils étaient dans le working tree uniquement. Le build Vercel était READY mais servait l'ancienne version.
+
+### Leçon clé
+
+**`git status` avant tout commit de version.** Si des fichiers modifiés apparaissent comme "not staged", le fix n'existe pas en production. `version.js` ne prouve rien — c'est `git log --stat` qui prouve ce qui est réellement parti.
+
+**Séquence correcte :**
+1. `git status` → vérifier que tous les fichiers du fix sont staged
+2. `git add <fichiers de fix>` → puis commit du fix
+3. `git add src/version.js` → puis commit de version séparé (ou groupé)
+
+Ne jamais commiter `version.js` avant d'avoir commité les fichiers qu'il décrit.
+
+---
+
 ## Méthode générale de cette session
 
 1. Identifier le symptôme précis (score ne change pas / build mort / dates fantômes)
