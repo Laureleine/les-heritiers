@@ -1,4 +1,4 @@
-jest.mock('./bonusCalculator', () => ({
+﻿vi.mock('./bonusCalculator', () => ({
   calculateCharacterStats: jest.fn(() => ({
     competences: { bonus: {} },
     caracteristiques: { bonus: {} },

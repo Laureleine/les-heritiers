@@ -1,4 +1,4 @@
-jest.mock('../xpCalculator', () => ({
+﻿vi.mock('../xpCalculator', () => ({
   getCaracCost: jest.fn((i) => Math.max(12, (i + 1) * 4)),
   getUtileCost: jest.fn((i) => (i + 1) * 3),
   getFutileCost: jest.fn((i) => i + 1),
@@ -7,7 +7,7 @@ jest.mock('../xpCalculator', () => ({
   FIXED_XP_COSTS: { nouvel_atout: 8, specialite_utile: 8 },
 }));
 
-jest.mock('../xpActions', () => ({
+vi.mock('../xpActions', () => ({
   XP_CODES: {
     CARAC_AUGMENTATION: 'CARAC_AUGMENTATION',
     MASQUE_EPAISSISSEMENT: 'MASQUE_EPAISSISSEMENT',
@@ -21,7 +21,7 @@ jest.mock('../xpActions', () => ({
   },
 }));
 
-jest.mock('../json', () => ({
+vi.mock('../json', () => ({
   parseIfString: jest.fn((v) => (typeof v === 'string' ? JSON.parse(v) : v)),
 }));
 

@@ -1,4 +1,4 @@
-jest.mock('../../config/supabase', () => ({
+﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     auth: {
       signUp: jest.fn(),
@@ -8,27 +8,23 @@ jest.mock('../../config/supabase', () => ({
   },
 }));
 
-jest.mock('../../utils/SystemeServices', () => {
-  const actual = jest.requireActual('../../utils/SystemeServices');
+vi.mock('../../utils/SystemeServices', async (importOriginal) => {
+  const actual = await importOriginal();
   return {
     ...actual,
     showInAppNotification: jest.fn(),
   };
 });
 
-jest.mock('../../version', () => ({
+vi.mock('../../version', () => ({
   APP_VERSION: '0.1.0',
   BUILD_DATE: '2026-05-25',
 }));
 
-jest.mock('lucide-react', () => ({
-  Mail: () => null,
-  Lock: () => null,
-  User: () => null,
-  AlertCircle: () => null,
-  Eye: () => null,
-  EyeOff: () => null,
-}));
+vi.mock('lucide-react', async (importOriginal) => {
+  const actual = await importOriginal();
+  return { ...actual };
+});
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -265,7 +261,7 @@ describe('Auth — Username vide', () => {
     fireEvent.change(usernameInput, { target: { value: '' } });
     fireEvent.change(emailInput, { target: { value: 'test@test.com' } });
     fireEvent.change(passwordInput, { target: { value: 'ValidP4ss' } });
-    fireEvent.click(screen.getByText('Créer mon compte'));
+    fireEvent.submit(usernameInput.closest('form'));
 
     const errorText = await screen.findByText(/nom d'utilisateur est requis/);
     expect(errorText).toBeInTheDocument();

@@ -1,4 +1,4 @@
-class MockChain {
+﻿class MockChain {
   constructor() {
     this._resolved = false;
     this._resolveValue = { data: [], error: null };
@@ -26,44 +26,48 @@ class MockChain {
   catch(reject) { return Promise.resolve(this._resolveValue).catch(reject); }
 }
 
-jest.mock('../../config/supabase', () => ({
+vi.mock('../../config/supabase', () => ({
   supabase: {
     from: jest.fn(() => new MockChain()),
     rpc: jest.fn().mockResolvedValue({ data: null, error: null }),
   },
 }));
 
-jest.mock('../../utils/SystemeServices', () => ({
+vi.mock('../../utils/SystemeServices', () => ({
   showInAppNotification: jest.fn(),
 }));
 
-jest.mock('../../utils/supabaseStorage', () => ({
+vi.mock('../../utils/supabaseStorage', () => ({
   saveCharacterToSupabase: jest.fn(),
 }));
 
-jest.mock('../../utils/lockUtils', () => ({
+vi.mock('../../utils/lockUtils', () => ({
   isCharacterScelle: jest.fn(() => false),
 }));
 
-jest.mock('../../utils/json', () => ({
+vi.mock('../../utils/json', () => ({
   parseIfString: jest.fn(() => ({})),
 }));
 
-jest.mock('../../utils/rulesEngine', () => ({
+vi.mock('../../utils/rulesEngine', () => ({
   calculateFullCombatStats: jest.fn(() => ({})),
   calculateSkillScore: jest.fn(() => 0),
 }));
 
-jest.mock('../../utils/sealValidation', () => ({
+vi.mock('../../utils/sealValidation', () => ({
   validateBeforeSeal: jest.fn(() => ({ errors: [], warnings: [] })),
 }));
 
-jest.mock('../../context/CharacterContext', () => ({
+vi.mock('../../context/CharacterContext', () => ({
   useCharacter: jest.fn(),
 }));
 
 import { renderHook, act } from '@testing-library/react';
 import { useCerbere } from '../useCerbere';
+import { useCharacter } from '../../context/CharacterContext';
+import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
+import { showInAppNotification } from '../../utils/SystemeServices';
+import { validateBeforeSeal } from '../../utils/sealValidation';
 
 const mockDispatch = jest.fn();
 
@@ -106,14 +110,10 @@ const mockGameData = {
   socialItems: [],
 };
 
-function mockSave() { return require('../../utils/supabaseStorage').saveCharacterToSupabase; }
-function mockNotif() { return require('../../utils/SystemeServices').showInAppNotification; }
-function mockValidate() { return require('../../utils/sealValidation').validateBeforeSeal; }
-
 describe('useCerbere', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    require('../../context/CharacterContext').useCharacter.mockReturnValue({
+    useCharacter.mockReturnValue({
       character: mockCharacter,
       gameData: mockGameData,
       dispatchCharacter: mockDispatch,
@@ -122,7 +122,7 @@ describe('useCerbere', () => {
 
   describe('handleSealClick', () => {
     it('valide le personnage avant d\'ouvrir la modale', () => {
-      mockValidate().mockReturnValue({ errors: [], warnings: ['Points restants'] });
+      validateBeforeSeal.mockReturnValue({ errors: [], warnings: ['Points restants'] });
 
       const { result } = renderHook(() => useCerbere());
 
@@ -130,14 +130,14 @@ describe('useCerbere', () => {
         result.current.handleSealClick();
       });
 
-      expect(mockValidate()).toHaveBeenCalledWith(mockCharacter, mockGameData, mockGameData.fairyData.Lutin);
+      expect(validateBeforeSeal).toHaveBeenCalledWith(mockCharacter, mockGameData, mockGameData.fairyData.Lutin);
       expect(result.current.sealErrors).toEqual([]);
       expect(result.current.sealWarnings).toEqual(['Points restants']);
       expect(result.current.showConfirmSeal).toBe(true);
     });
 
     it('refuse de sceller un personnage sans id (temp_)', () => {
-      require('../../context/CharacterContext').useCharacter.mockReturnValue({
+      useCharacter.mockReturnValue({
         character: { ...mockCharacter, id: 'temp_12345' },
         gameData: mockGameData,
         dispatchCharacter: mockDispatch,
@@ -149,12 +149,12 @@ describe('useCerbere', () => {
         result.current.handleSealClick();
       });
 
-      expect(mockNotif()).toHaveBeenCalledWith('Veuillez sauvegarder avant de sceller.', 'error');
+      expect(showInAppNotification).toHaveBeenCalledWith('Veuillez sauvegarder avant de sceller.', 'error');
       expect(result.current.showConfirmSeal).toBe(false);
     });
 
     it('affiche les erreurs et ouvre la modale (le blocage est visuel)', () => {
-      mockValidate().mockReturnValue({ errors: ['Caractéristiques incomplètes'], warnings: [] });
+      validateBeforeSeal.mockReturnValue({ errors: ['Caractéristiques incomplètes'], warnings: [] });
 
       const { result } = renderHook(() => useCerbere());
 
@@ -169,7 +169,7 @@ describe('useCerbere', () => {
 
   describe('executeSeal', () => {
     it('sauvegarde le personnage avec statut scelle puis dispatch SEAL_CHARACTER', async () => {
-      mockSave().mockResolvedValue({ id: 'char-123' });
+      saveCharacterToSupabase.mockResolvedValue({ id: 'char-123' });
 
       const { result } = renderHook(() => useCerbere());
 
@@ -177,7 +177,7 @@ describe('useCerbere', () => {
         await result.current.executeSeal();
       });
 
-      expect(mockSave()).toHaveBeenCalledWith(expect.objectContaining({
+      expect(saveCharacterToSupabase).toHaveBeenCalledWith(expect.objectContaining({
         statut: 'scelle',
         data: expect.objectContaining({
           stats_scellees: expect.objectContaining({
@@ -188,11 +188,11 @@ describe('useCerbere', () => {
         }),
       }));
       expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'SEAL_CHARACTER' }));
-      expect(mockNotif()).toHaveBeenCalledWith('Sceau apposé !', 'success');
+      expect(showInAppNotification).toHaveBeenCalledWith('Sceau apposé !', 'success');
     });
 
     it('sauvegarde échoue → dispatch local + avertissement', async () => {
-      mockSave().mockRejectedValue(new Error('Réseau indisponible'));
+      saveCharacterToSupabase.mockRejectedValue(new Error('Réseau indisponible'));
 
       const { result } = renderHook(() => useCerbere());
 
@@ -201,11 +201,11 @@ describe('useCerbere', () => {
       });
 
       expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'SEAL_CHARACTER' }));
-      expect(mockNotif()).toHaveBeenCalledWith(expect.stringContaining('Sceau local uniquement'), 'warning');
+      expect(showInAppNotification).toHaveBeenCalledWith(expect.stringContaining('Sceau local uniquement'), 'warning');
     });
 
     it('met à jour l\'id si le retour Supabase a un nouvel id', async () => {
-      mockSave().mockResolvedValue({ id: 'new-id-456' });
+      saveCharacterToSupabase.mockResolvedValue({ id: 'new-id-456' });
 
       const { result } = renderHook(() => useCerbere());
 

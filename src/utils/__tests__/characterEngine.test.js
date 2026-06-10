@@ -1,8 +1,8 @@
-jest.mock('../historyReconstructor', () => ({
+﻿vi.mock('../historyReconstructor', () => ({
   reconstructHistory: jest.fn(() => []),
 }));
 
-jest.mock('../bonusCalculator', () => ({
+vi.mock('../bonusCalculator', () => ({
   calculateCharacterStats: jest.fn(() => ({
     caracteristiques: { bonus: {} },
     competences: { bonus: {} },
@@ -10,15 +10,15 @@ jest.mock('../bonusCalculator', () => ({
   })),
 }));
 
-jest.mock('../lockUtils', () => ({
+vi.mock('../lockUtils', () => ({
   isCharacterScelle: jest.fn(() => false),
 }));
 
-jest.mock('../json', () => ({
+vi.mock('../json', () => ({
   parseIfString: jest.fn(() => ({})),
 }));
 
-jest.mock('../xpActions', () => ({
+vi.mock('../xpActions', () => ({
   XP_CODES: {
     XP_HISTORIQUE: 'XP_HISTORIQUE',
     XP_SOLDE: 'XP_SOLDE',

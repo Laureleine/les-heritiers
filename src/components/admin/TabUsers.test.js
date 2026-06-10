@@ -1,21 +1,17 @@
-jest.mock('../../config/supabase', () => ({
+﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     from: jest.fn(),
     rpc: jest.fn().mockResolvedValue({ data: [], error: null }),
   },
 }));
 
-jest.mock('../../utils/SystemeServices', () => ({
+vi.mock('../../utils/SystemeServices', () => ({
   showInAppNotification: jest.fn(),
 }));
 
-jest.mock('lucide-react', () => {
-  const I = () => null;
-  I.displayName = 'LucideIcon';
-  return {
-    Search: I, Mail: I, Filter: I, CheckCircle: I,
-    MessageCircle: I, Shield: I, User: I, Crown: I, Award: I,
-  };
+vi.mock('lucide-react', async (importOriginal) => {
+  const actual = await importOriginal();
+  return { ...actual };
 });
 
 import React from 'react';

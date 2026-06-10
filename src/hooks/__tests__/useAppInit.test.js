@@ -1,4 +1,4 @@
-jest.mock('../../config/supabase', () => ({
+﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     auth: {
       getSession: jest.fn(),
@@ -8,20 +8,20 @@ jest.mock('../../config/supabase', () => ({
   },
 }));
 
-jest.mock('../../utils/supabaseGameData', () => ({
+vi.mock('../../utils/supabaseGameData', () => ({
   loadCoreGameData: jest.fn(),
   loadHeavyLoreData: jest.fn(),
 }));
 
-jest.mock('../../utils/SystemeServices', () => ({
+vi.mock('../../utils/SystemeServices', () => ({
   showInAppNotification: jest.fn(),
 }));
 
-jest.mock('../../context/CharacterContext', () => ({
+vi.mock('../../context/CharacterContext', () => ({
   useCharacter: jest.fn(),
 }));
 
-jest.mock('../useAutoUpdate', () => ({
+vi.mock('../useAutoUpdate', () => ({
   useAutoUpdate: jest.fn(),
 }));
 

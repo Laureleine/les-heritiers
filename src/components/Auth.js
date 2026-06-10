@@ -18,7 +18,7 @@ export default function Auth() {
   const turnstileRef = useRef(null);
 
   useEffect(() => {
-    const siteKey = process.env.REACT_APP_TURNSTILE_SITE_KEY;
+    const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
     if (!siteKey || typeof window.turnstile === 'undefined') return;
     if (!isSignUp) return;
 
@@ -266,7 +266,7 @@ export default function Auth() {
 				)}
 
         {/* Captcha Turnstile (inscription) */}
-        {isSignUp && process.env.REACT_APP_TURNSTILE_SITE_KEY && (
+        {isSignUp && import.meta.env.VITE_TURNSTILE_SITE_KEY && (
           <div ref={turnstileRef} className="flex justify-center" />
         )}
 

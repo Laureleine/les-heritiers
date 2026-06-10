@@ -1,4 +1,4 @@
-jest.mock('../config/supabase', () => ({
+﻿vi.mock('../config/supabase', () => ({
   supabase: {
     from: jest.fn(),
     rpc: jest.fn().mockResolvedValue({ data: null, error: null }),
@@ -11,7 +11,7 @@ jest.mock('../config/supabase', () => ({
   },
 }));
 
-jest.mock('../utils/supabaseStorage', () => ({
+vi.mock('../utils/supabaseStorage', () => ({
   getUserCharacters: jest.fn().mockResolvedValue([]),
   getPublicCharacters: jest.fn().mockResolvedValue([]),
   getAllCharactersAdmin: jest.fn().mockResolvedValue([]),
@@ -21,38 +21,37 @@ jest.mock('../utils/supabaseStorage', () => ({
   getFullCharacter: jest.fn(),
 }));
 
-jest.mock('../utils/SystemeServices', () => ({
+vi.mock('../utils/SystemeServices', () => ({
   showInAppNotification: jest.fn(),
   translateError: jest.fn((e) => e?.message || 'Erreur'),
 }));
 
-jest.mock('../utils/pdfGenerator', () => ({ exportToPDF: jest.fn() }));
-jest.mock('../utils/utils', () => ({ exportCharacter: jest.fn() }));
-jest.mock('../utils/lockUtils', () => ({ isCharacterScelle: jest.fn() }));
-jest.mock('../utils/characterEngine', () => ({ characterReducer: jest.fn() }));
-jest.mock('../utils/repairJournaux', () => ({
+vi.mock('../utils/pdfGenerator', () => ({ exportToPDF: jest.fn() }));
+vi.mock('../utils/utils', () => ({ exportCharacter: jest.fn() }));
+vi.mock('../utils/lockUtils', () => ({ isCharacterScelle: jest.fn() }));
+vi.mock('../utils/characterEngine', () => ({ characterReducer: jest.fn() }));
+vi.mock('../utils/repairJournaux', () => ({
   mapDbCharForReconstruction: jest.fn(),
   journalNeedsRepair: jest.fn(),
   buildRepairedJournal: jest.fn(),
   computeXpDepenseFromJournal: jest.fn(),
 }));
-jest.mock('../utils/supabaseGameData', () => ({
+vi.mock('../utils/supabaseGameData', () => ({
   loadFairyTypes: jest.fn(),
   loadSocialItems: jest.fn(),
 }));
-jest.mock('./ConfirmModal', () => () => null);
-jest.mock('./cercle/GrimoirePersonnel', () => () => null);
-jest.mock('./CharacterCard', () => () => null);
-jest.mock('../config/icons', () => ({
-  Bug: 'i', Info: 'i', User: 'i', Users: 'i', LogOut: 'i',
-  Globe: 'i', Book: 'i', Crown: 'i', Gift: 'i', Plus: 'i',
-  X: 'i', BarChart2: 'i', Eye: 'i', Search: 'i',
-  AlertTriangle: 'i', CheckCircle: 'i',
-}));
+vi.mock('./ConfirmModal', () => ({ default: () => null }));
+vi.mock('./cercle/GrimoirePersonnel', () => ({ default: () => null }));
+vi.mock('./CharacterCard', () => ({ default: () => null }));
+vi.mock('../config/icons', async (importOriginal) => {
+  const actual = await importOriginal();
+  return { ...actual };
+});
 
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { supabase } from '../config/supabase';
+import { getAllCharactersAdmin } from '../utils/supabaseStorage';
 import CharacterList from './CharacterList';
 
 const mockSession = { user: { id: 'user-1' }, access_token: 'token' };
@@ -96,8 +95,6 @@ describe('CharacterList RPC calls', () => {
   });
 
   it("n'appelle PAS getAllCharactersAdmin pour un simple user", async () => {
-    const { getAllCharactersAdmin } = require('../utils/supabaseStorage');
-
     render(<CharacterList
       session={mockSession}
       userProfile={mockProfile}
@@ -110,8 +107,6 @@ describe('CharacterList RPC calls', () => {
   });
 
   it('appelle getAllCharactersAdmin pour un super_admin', async () => {
-    const { getAllCharactersAdmin } = require('../utils/supabaseStorage');
-
     render(<CharacterList
       session={mockSession}
       userProfile={{ profile: { role: 'super_admin' } }}

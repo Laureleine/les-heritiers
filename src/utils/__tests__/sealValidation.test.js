@@ -1,4 +1,4 @@
-jest.mock('../../components/competencesLibres/useCompetencesLibres', () => ({
+﻿vi.mock('../../components/competencesLibres/useCompetencesLibres', () => ({
   SKILLS_ESPRIT: ['Culture', 'Occultisme', 'Rhétorique', 'Sciences', 'Médecine', 'Observation'],
 }));
 

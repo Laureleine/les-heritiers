@@ -1,8 +1,8 @@
-import { submitEncyclopediaProposal } from '../encyclopediaEngine';
+﻿import { submitEncyclopediaProposal } from '../encyclopediaEngine';
 import { supabase } from '../../config/supabase';
 
 // Mock minimal de base pour le hoisting
-jest.mock('../../config/supabase', () => ({
+vi.mock('../../config/supabase', () => ({
     supabase: {
         from: jest.fn()
     }

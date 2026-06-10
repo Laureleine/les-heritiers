@@ -1,4 +1,4 @@
-jest.mock('../../config/supabase', () => ({
+﻿vi.mock('../../config/supabase', () => ({
   supabase: {
     from: jest.fn(),
     rpc: jest.fn(),
