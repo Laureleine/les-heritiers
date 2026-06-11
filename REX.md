@@ -1,3 +1,99 @@
+# REX — Session 11 Juin 2026 — v17.4.9 "Le Grimoire Sonore 🔊✨"
+
+## Ce qui a été fait
+
+Chantier accessibilité complet (axe-core) : de ~68 violations à 6 (-91%).
+Plus aucune violation CRITICAL ni SERIOUS sur les 13 écrans audités.
+
+---
+
+## Enseignements
+
+### 1. Vite utilise `index.html` à la racine, pas `public/index.html`
+
+`public/` est un résidu CRA qui ne passe PAS dans le build Vite.
+Pour modifier le `<meta viewport>` ou n'importe quelle balise HTML racine → **toujours éditer `index.html` à la racine du projet**.
+
+**Symptôme du piège :** l'audit axe-core signale `meta-viewport` même après correction → c'est que le mauvais fichier a été modifié.
+
+---
+
+### 2. Un composant toujours rendu = violation sur toutes les pages
+
+Le bouton flottant `Telegraphe.js` est rendu dans `App.js` sur tous les écrans.
+Une violation `button-name` sur ce bouton apparaissait donc sur les **11 étapes**.
+Réflexe : si une violation se répète sur chaque écran → chercher un composant global (header, footer, overlay permanent).
+
+---
+
+### 3. Un seul `<main>` par document
+
+En ajoutant `<main>` dans `App.js`, le `<main>` interne de `CharacterCreator.jsx` créait `landmark-no-duplicate-main`.
+Fix : convertir le `<main>` interne en `<section aria-label="...">`.
+
+**À surveiller :** `Actualite.jsx` a peut-être le même problème (non audité cette session).
+
+---
+
+### 4. Fichiers avec tabulations → l'outil Edit échoue silencieusement
+
+`GrimoirePersonnel.js` utilise des `\t` (tabulations réelles) au lieu d'espaces.
+`Edit` ne peut pas matcher les chaînes multi-lignes avec tabulations.
+**Fix :** utiliser PowerShell avec `Get-Content` + `[System.Collections.Generic.List]` + `.Insert()` pour les insertions de lignes, et `-replace` regex pour les remplacements inline.
+
+Détecter les tabs avant d'éditer : `Format-Hex fichier.js | Select-String "09"`.
+
+---
+
+### 5. L'outil Edit exige un Read préalable
+
+Tenter d'éditer un fichier sans l'avoir lu dans la session courante → `"File has not been read yet"`.
+Toujours lire le fichier avant la première Edit, même si on connaît le contenu.
+
+---
+
+### 6. Localiser la source d'une violation CSS
+
+Pour trouver quel composant correspond à `.border-blue-300.text-blue-900` (violation select-name étape 10) :
+utiliser `Grep` avec `border-blue-300` sur `src/components/**/*.{js,jsx}`.
+Ne pas supposer que la violation vient du composant parent — elle peut venir d'un enfant.
+
+---
+
+### 7. `aria-label` dynamique avec nom du personnage/item
+
+Pattern recommandé : `aria-label={\`Supprimer ${char.nom}\`}` pour les boutons dont l'action porte sur un élément nommé.
+Nettement plus utile pour les lecteurs d'écran que `aria-label="Supprimer"` seul.
+
+---
+
+### 8. Stratégie d'audit par vagues
+
+Première passe : corriger toutes les violations CRITICAL et SERIOUS.
+Deuxième passe : relancer l'audit, observer ce qui reste.
+Garder les MODERATE (`heading-order`) pour une session dédiée — leur impact réel est faible.
+
+---
+
+## Score final de la session
+
+| Métrique | Avant | Après |
+|---|---|---|
+| Violations axe-core | ~68 | 6 |
+| Violations CRITICAL | 3 | 0 |
+| Violations SERIOUS | ~40 | 0 |
+| Violations MODERATE | ~25 | 6 |
+| Tests Vitest | 336 | 336 |
+
+---
+
+## Reste pour la prochaine session
+
+- `heading-order` MODERATE : 6 occurrences → voir `TODO.md`
+- Vérifier si `Actualite.jsx` a un `<main>` interne (risque `landmark-no-duplicate-main`)
+
+---
+
 # REX — Session 10 Juin 2026 (v17.4.8 — L'Archiviste du Nuage)
 
 ## Ce qui a été fait
