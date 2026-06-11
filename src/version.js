@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.10 - "La Clé du Casino 🎲🗝️"',
+    date: '11 Juin 2026',
+    description: 'Le lanceur de dés apprend la politesse. Désormais, la touche Échap referme la table de jeu, le focus reste bien enfermé dans la salle tant qu\'on n\'a pas quitté, et retrouve sagement son chemin vers le bouton des dés une fois la séance terminée. Les oreilles électroniques des lecteurs d\'écran peuvent enfin jouer sans se perdre.',
+    changes: [
+      '🎲 **DiceRoller — Esc :** La touche Échap ferme maintenant la modale du lanceur de dés.',
+      '⌨️ **DiceRoller — focus trap :** La navigation clavier (Tab / Shift+Tab) reste confinée dans la modale tant qu\'elle est ouverte.',
+      '🎯 **DiceRoller — retour focus :** À la fermeture, le focus revient automatiquement sur le bouton flottant des dés.',
+      '🏷️ **DiceRoller — sémantique :** La modale reçoit `role="dialog"` et `aria-modal="true"`.',
+      '🔍 **Audit compatibilité :** Nouveau test Playwright `audit-compat.spec.js` — contraste couleur, simulation daltonisme, navigation clavier, zoom 320px, tailles cibles tactiles. Rapport HTML généré automatiquement.',
+    ]
+  },
+  {
     version: '17.4.9 - "Le Grimoire Sonore 🔊✨"',
     date: '11 Juin 2026',
     description: 'Le Grimoire apprend à parler. Un grand chantier d\'accessibilité ouvre les portes de l\'Atelier aux Héritiers qui naviguent au son plutôt qu\'à la vue : balises ARIA sur tous les boutons d\'icône, noms accessibles sur tous les sélecteurs, landmarks HTML structurant la page, et méta-viewport autorisant enfin le zoom. Sur treize écrans audités, onze affichent désormais zéro violation critique — une réduction de 91 % des infractions relevées.',
