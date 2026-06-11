@@ -4,16 +4,25 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-## 🧠 Session Memory — 17.4.3 "L'Humain Parmi les Fées" (9 Juin 2026)
+## 🧠 Session Memory — 17.4.9 "Le Grimoire Sonore" (11 Juin 2026)
 
-**Tests :** 327 passes / 0 échecs
+**Tests :** 336 passes / 0 échecs
 
 ### Dernières modifications
 
-1. **Humain pur dans le créateur (17.4.3)** — nouveau `typePersonnage: 'fee' | 'humain'` + `rangHumain: 'larbin' | 'acolyte' | 'pointure' | 'cador'`. Steps 2/3/4 sautés pour les humains. Budgets carac/utiles/futiles depuis `HUMAIN_RANGS`.
-2. **`HUMAIN_RANGS`** dans `DictionnaireJeu.js` — constante exportée, 4 rangs × 3 budgets.
-3. **14 nouveaux tests** dans `src/data/__tests__/humainRangs.test.js` — valeurs des rangs, canProceedStep1, step-skipping.
-4. **CLAUDE.md créé** — pointeur vers AGENTS.md, règle absolue de ne jamais écrire dans CLAUDE.md.
+1. **Chantier accessibilité (a11y)** — audit axe-core complet sur toutes les pages. Réduction de ~68 → 6 violations (-91%). Plus aucune violation CRITICAL ni SERIOUS.
+   - `index.html` (racine) : meta-viewport corrigé (Vite utilise ce fichier, pas `public/index.html`)
+   - `App.js` : `<header>` + `<main>` structurels, `<main>` sur la page Auth
+   - `CharacterCreator.jsx` : `<main>` interne → `<section aria-label="Corps de l'étape">`
+   - `aria-label` sur 30+ boutons icône (CharacterCard, GrimoirePersonnel, DiceRoller, Telegraphe, ModalShell, etc.)
+   - `aria-label` sur 9 selects sans nom (StepCompetencesLibres, StepCompetencesFutiles, StepPersonnalisation, WidgetLangues)
+   - `aria-label` sur boutons +/− dynamiques (StepCaracteristiques, StepCompetencesLibres, StepVieSociale)
+   - `StepPersonnalisation.js` : input "Nom Humain" — `aria-label` (label-title-only)
+2. **Tests E2E smoke** (`tests/e2e/creation-fee.spec.js`) — test de création complète d'une fée avec scellage et mise en public.
+
+### Reste à faire → voir [TODO.md](TODO.md)
+
+- `heading-order` (MODERATE) : 6 occurrences h3 sans h2 parent (home + étapes 1/2/4/7/11)
 
 ### Prochaine session
 

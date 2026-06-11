@@ -321,6 +321,7 @@ export default function StepCompetencesFutiles() {
                   <select
                     value={choixPredilection[index] || ''}
                     onChange={(e) => handleChoixPredilectionChange(index, e.target.value)}
+                    aria-label={`Prédilection au choix ${index + 1}`}
                     className="w-full p-3 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none font-serif bg-white"
                   >
                     <option value="">-- Sélectionner une compétence --</option>

@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.9 - "Le Grimoire Sonore 🔊✨"',
+    date: '11 Juin 2026',
+    description: 'Le Grimoire apprend à parler. Un grand chantier d\'accessibilité ouvre les portes de l\'Atelier aux Héritiers qui naviguent au son plutôt qu\'à la vue : balises ARIA sur tous les boutons d\'icône, noms accessibles sur tous les sélecteurs, landmarks HTML structurant la page, et méta-viewport autorisant enfin le zoom. Sur treize écrans audités, onze affichent désormais zéro violation critique — une réduction de 91 % des infractions relevées.',
+    changes: [
+      '🔊 **Accessibilité — boutons icône :** Plus de trente boutons ne portant qu\'une icône reçoivent un `aria-label` descriptif — PDF, JSON, visibilité, Grimoire, Dés, Télégraphe, Recadrage portrait, contrôles +/− des caractéristiques et compétences, actions de Vie Sociale.',
+      '🏷️ **Accessibilité — sélecteurs nommés :** Neuf éléments `<select>` sans label formel (Compétences Utiles, Futiles, Personnalisation, Langues) reçoivent un `aria-label` contextualisé.',
+      '🗺️ **Accessibilité — structure de page :** L\'en-tête devient `<header>`, le contenu principal devient `<main>`. La page de connexion obtient son propre `<main>`. Le `<main>` interne de la Forge est converti en `<section>` pour éviter les doublons.',
+      '📐 **Accessibilité — meta-viewport :** Suppression de `maximum-scale=1, user-scalable=no` dans `index.html` — le zoom est désormais libre sur mobile.',
+      '🧪 **Tests E2E smoke :** Un test Playwright crée une fée complète de zéro — héritage, capacités, pouvoirs, atouts, caractéristiques, profils, compétences, vie sociale, personnalisation — puis la scelle et la rend publique.',
+    ]
+  },
+  {
     version: '17.4.8 - "L\'Archiviste du Nuage 📚⚡"',
     date: '10 Juin 2026',
     description: 'Le Nuage opère une grande séparation des charges : les Archives de Référence (types de fées, profils, compétences, items sociaux, encyclopédie) quittent le Contexte du Personnage pour rejoindre leur propre Greffe dédié. React Query devient l\'Archiviste officiel, mémorisant les données pendant dix minutes sans interroger Supabase — la première consultation reste la seule nécessaire. Le Contexte du Personnage, allégé de ce fardeau encyclopédique, ne gouverne plus désormais que l\'état mutable du Héritier en cours de forge.',

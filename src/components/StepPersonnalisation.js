@@ -80,6 +80,7 @@ export default function StepPersonnalisation() {
                   value={character.profils?.activiteDomaine || ''}
                   onChange={(e) => updateActiviteDomaine(e.target.value)}
                   disabled={isReadOnly}
+                  aria-label="Activité de base"
                   className="w-full p-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none font-serif text-emerald-900 shadow-sm bg-white disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Sélectionnez un métier...</option>
@@ -107,6 +108,7 @@ export default function StepPersonnalisation() {
                   value={character.competencesLibres?.specialiteMetier?.comp || ''}
                   onChange={(e) => updateSpecialiteMetier(e.target.value, '')}
                   disabled={isReadOnly}
+                  aria-label="Compétence pour la spécialité offerte"
                   className="w-full p-3 border border-emerald-300 rounded-lg outline-none text-sm bg-white shadow-sm focus:border-emerald-500 disabled:opacity-60 disabled:bg-emerald-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Compétence...</option>
@@ -115,6 +117,7 @@ export default function StepPersonnalisation() {
 
                 <select
                   value={character.competencesLibres?.specialiteMetier?.nom || ''}
+                  aria-label="Spécialité offerte"
                   onChange={(e) => {
                     const specName = e.target.value;
                     if (!specName) { updateSpecialiteMetier(character.competencesLibres?.specialiteMetier?.comp || '', ''); return; }
@@ -165,6 +168,7 @@ export default function StepPersonnalisation() {
 								value={character.data?.choixEquipement?.[choice.predKey] || ''}
 								onChange={e => handleChoixEquipement(choice.predKey, e.target.value)}
 								disabled={isReadOnly}
+								aria-label={choice.isSpecialiteChoix ? "Spécialité au choix" : "Compétence au choix"}
 								className="w-full md:w-1/2 p-3 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm bg-purple-50/50 disabled:opacity-60 disabled:cursor-not-allowed font-bold text-purple-900"
 							>
 								<option value="">-- Faire un choix --</option>
@@ -266,7 +270,7 @@ export default function StepPersonnalisation() {
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nom Humain (Masque)</label>
-              <input type="text" value={character.nom || ''} disabled className="w-full p-2 bg-gray-50 border border-gray-200 rounded text-gray-500 font-serif cursor-not-allowed" title="Modifiable à l'étape 1" />
+              <input type="text" value={character.nom || ''} disabled className="w-full p-2 bg-gray-50 border border-gray-200 rounded text-gray-500 font-serif cursor-not-allowed" title="Modifiable à l'étape 1" aria-label="Nom humain (modifiable à l'étape 1)" />
             </div>
             <div>
               <label className="block text-xs font-bold text-purple-600 uppercase mb-1">Nom Féérique (Vrai Nom)</label>

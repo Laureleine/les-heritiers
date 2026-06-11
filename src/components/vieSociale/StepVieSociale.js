@@ -61,28 +61,31 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
                                     
                                     {isMultiple ? (
                                         <div className="flex items-center gap-1 bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden">
-                                            <button 
-                                                onClick={() => toggleAchat(item, profilNom, 'remove')} 
-                                                disabled={count === 0} 
+                                            <button
+                                                onClick={() => toggleAchat(item, profilNom, 'remove')}
+                                                disabled={count === 0}
                                                 className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-30 transition-colors"
                                                 title="Retirer"
+                                                aria-label={`Retirer ${item.nom}`}
                                             >
                                                 <Minus size={14}/>
                                             </button>
                                             <span className="text-xs font-bold w-4 text-center text-stone-700">{count}</span>
-                                            <button 
-                                                onClick={() => toggleAchat(item, profilNom, 'add')} 
-                                                disabled={!canAfford || isLocked} 
+                                            <button
+                                                onClick={() => toggleAchat(item, profilNom, 'add')}
+                                                disabled={!canAfford || isLocked}
                                                 className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 disabled:opacity-30 transition-colors"
                                                 title="Ajouter"
+                                                aria-label={`Ajouter ${item.nom}`}
                                             >
                                                 <Plus size={14}/>
                                             </button>
                                         </div>
                                     ) : (
-                                        <button 
+                                        <button
                                             onClick={() => toggleAchat(item, profilNom)}
                                             disabled={!hasItem && (!canAfford || isLocked)}
+                                            aria-label={hasItem ? `Retirer ${item.nom}` : `Acquérir ${item.nom}`}
                                             className={`p-1.5 rounded-lg border transition-colors shadow-sm ${hasItem ? 'bg-amber-100 border-amber-300 text-amber-700 hover:bg-amber-200' : 'bg-white border-stone-200 text-stone-400 hover:border-emerald-300 hover:text-emerald-600 disabled:opacity-50'}`}
                                         >
                                             {hasItem ? <Check size={16}/> : <Plus size={16}/>}

@@ -9,7 +9,7 @@ export function ModalHeader({ title, icon, onClose }) {
         {title}
       </h3>
       {onClose && (
-        <button onClick={onClose} className="hover:text-red-400 bg-amber-800/50 p-1.5 rounded-lg transition-colors">
+        <button onClick={onClose} className="hover:text-red-400 bg-amber-800/50 p-1.5 rounded-lg transition-colors" aria-label="Fermer">
           <X size={18} />
         </button>
       )}

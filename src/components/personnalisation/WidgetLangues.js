@@ -200,7 +200,7 @@ export default function WidgetLangues({ character, dispatchCharacter, gameData, 
                                         <button onClick={() => { addLangue(customLang.trim()); setCustomLang(''); setIsAddingCustom(false); }} className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-bold">Valider</button>
                                     </div>
                                 ) : (
-                                    <select onChange={(e) => { addLangue(e.target.value); e.target.value = ''; }} className="w-full p-2 border border-blue-300 rounded outline-none text-sm font-bold text-blue-900 bg-white shadow-sm cursor-pointer" defaultValue="">
+                                    <select onChange={(e) => { addLangue(e.target.value); e.target.value = ''; }} aria-label="Ajouter une langue libre" className="w-full p-2 border border-blue-300 rounded outline-none text-sm font-bold text-blue-900 bg-white shadow-sm cursor-pointer" defaultValue="">
                                         <option value="">+ Utiliser un emplacement libre...</option>
                                         {Object.entries(DICTIONNAIRE_LANGUES).map(([cat, liste]) => {
                                             const dispo = liste.filter(l => !selectedLangues.includes(l));

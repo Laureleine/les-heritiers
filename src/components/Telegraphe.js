@@ -86,6 +86,7 @@ export default function Telegraphe({ session, userProfile }) {
         <button
           onClick={() => setIsOpen(true)}
           className="bg-amber-800 text-amber-50 p-4 rounded-full shadow-2xl hover:bg-amber-700 transition-transform transform hover:scale-110 border-2 border-amber-600 flex items-center gap-2"
+          aria-label="Ouvrir le Télégraphe"
         >
           <MessageCircle size={28} />
           {/* ✨ LE VOYANT ROUGE CHIRURGICAL */}
