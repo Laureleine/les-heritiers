@@ -1,5 +1,5 @@
 // src/components/DiceRoller.js
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Dices, RefreshCcw } from '../config/icons'; // ✨ FIX : On ne garde que les icônes réellement utilisées
 // import dynamique dans le useEffect ci-dessous (économie ~11 MB de bundle)
 
@@ -33,6 +33,8 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
 
     const rollTimerRef = useRef(null);
     const diceBoxRef = useRef(null);
+    const modalRef = useRef(null);
+    const triggerRef = useRef(null);
     const [is3DReady, setIs3DReady] = useState(false);
 
     useEffect(() => {
@@ -93,10 +95,40 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
 
     // ✨ FIX : Suppression de `handleClear` inutile
 
-    const handleCloseAndClear = () => {
+    const handleCloseAndClear = useCallback(() => {
         setResult(null);
         setIsOpen(false);
-    };
+    }, []);
+
+    // Esc pour fermer + focus trap (Tab cycle à l'intérieur de la modale)
+    useEffect(() => {
+        if (!isOpen) return;
+        const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        const getFocusable = () => Array.from(modalRef.current?.querySelectorAll(FOCUSABLE) ?? []);
+
+        getFocusable()[0]?.focus();
+
+        const onKeyDown = (e) => {
+            if (e.key === 'Escape') { handleCloseAndClear(); return; }
+            if (e.key !== 'Tab') return;
+            const focusable = getFocusable();
+            if (focusable.length === 0) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault(); last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault(); first.focus();
+            }
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, [isOpen, handleCloseAndClear]);
+
+    // Retourne le focus au bouton déclencheur après fermeture
+    useEffect(() => {
+        if (!isOpen) triggerRef.current?.focus();
+    }, [isOpen]);
 
     const getGameValue = (type, face) => {
         if (type === 'D10' && face === 1) return -3;
@@ -171,12 +203,12 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
             `}</style>
 
             {!isOpen && (
-                <button onClick={() => setIsOpen(true)} className="fixed bottom-24 right-6 bg-stone-900 text-amber-400 p-4 rounded-full border-2 border-amber-600/50 z-40 shadow-xl active:scale-90" aria-label="Ouvrir le lanceur de dés">
+                <button ref={triggerRef} onClick={() => setIsOpen(true)} className="fixed bottom-24 right-6 bg-stone-900 text-amber-400 p-4 rounded-full border-2 border-amber-600/50 z-40 shadow-xl active:scale-90" aria-label="Ouvrir le lanceur de dés">
                     <Dices size={28} />
                 </button>
             )}
 
-            <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300 p-4 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+            <div ref={modalRef} role="dialog" aria-modal="true" aria-label="Lanceur de dés" className={`fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300 p-4 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="relative w-full max-w-4xl felt-table overflow-hidden shadow-2xl" style={{ height: '85vh', borderRadius: '40px', border: '16px solid #451a03' }}>
                     <button onClick={handleCloseAndClear} className={`absolute top-6 right-6 text-stone-400 hover:text-white z-50 ${isOpen ? 'pointer-events-auto' : ''}`} aria-label="Fermer le lanceur de dés"><X size={32} /></button>
                     
