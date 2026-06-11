@@ -1,3 +1,56 @@
+# REX — Session 11 Juin 2026 — v17.4.10 "La Clé du Casino 🎲🗝️"
+
+## Ce qui a été fait
+
+- Audit de compatibilité multi-typologies (`audit-compat.spec.js`) : contraste, daltonisme, clavier, zoom 320px, touch targets.
+- DiceRoller : Esc, focus trap, retour focus, `role="dialog"`.
+- TODO.md enrichi avec toutes les violations restantes et les pistes de fix.
+
+---
+
+## Enseignements
+
+### 1. `mode: 'serial'` + `expect()` dans des tests d'audit = blocage immédiat
+
+Quand les tests tournent en serial et que le premier échoue avec `expect().toHaveLength(0)`, les tests suivants ne s'exécutent pas. Pour un AUDIT (qui doit toujours aller au bout), ne jamais mettre `expect()` dans les tests de collecte. Mettre les assertions globales dans un test dédié ou en `afterAll`.
+
+### 2. `isHidden()` Playwright ≠ fiable pour les éléments masqués par `opacity-0`
+
+`isHidden()` de Playwright ne détecte pas forcément un parent avec `opacity-0` si la transition CSS est en cours (300ms). Préférer une vérification directe du state CSS synchrone : `classList.contains('pointer-events-none')` ou `classList.contains('opacity-0')`.
+
+### 3. Pattern focus trap dans une modale React
+
+```js
+useEffect(() => {
+  if (!isOpen) return;
+  const getFocusable = () => Array.from(ref.current?.querySelectorAll(SELECTOR) ?? []);
+  getFocusable()[0]?.focus();
+  const onKeyDown = (e) => {
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+    // cycle Tab/Shift+Tab
+  };
+  document.addEventListener('keydown', onKeyDown);
+  return () => document.removeEventListener('keydown', onKeyDown);
+}, [isOpen, close]); // close doit être useCallback([])
+```
+- `close` **doit** être `useCallback` avec `[]` deps pour être stable en dépendance d'effet.
+- Le `ref` va sur l'**overlay** (pas sur le bouton), pour que `querySelectorAll` trouve tous les focusables dedans.
+- Le retour du focus après fermeture → second `useEffect([isOpen])` qui focus le `triggerRef`.
+
+### 4. Violations de contraste récurrentes dans Les Héritiers
+
+- `bg-green-600` (boutons navigation étapes) → remplacer par `bg-green-700` pour passer AA sans changer l'esthétique.
+- `bg-amber-600` (bouton "Se connecter") → `bg-amber-700`.
+- `text-gray-400` porteur d'info → `text-gray-500` ou `text-gray-600`.
+- Ces corrections sont dans `TODO.md` — à valider visuellement avant d'appliquer.
+
+### 5. Rapport HTML auto-généré pour les audits
+
+`generateReport(data)` dans `tests/e2e/helpers/compat-report.js` écrit un fichier HTML autonome (CSS inline, screenshots base64). La sortie va dans `tests/e2e/reports/` (gitignored par `/tests`). Pour commiter de nouveaux fichiers dans `tests/`, utiliser `git add -f`.
+
+---
+
 # REX — Session 11 Juin 2026 — v17.4.9 "Le Grimoire Sonore 🔊✨"
 
 ## Ce qui a été fait
