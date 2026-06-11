@@ -49,7 +49,7 @@ export default function CropPortraitModal({ file, onConfirm, onCancel }) {
           <h3 className="font-bold text-stone-800 flex items-center gap-2">
             <span className="text-lg">🖼️</span> Recadrer le portrait
           </h3>
-          <button onClick={handleCancel} className="text-stone-400 hover:text-red-500"><X size={20} /></button>
+          <button onClick={handleCancel} className="text-stone-400 hover:text-red-500" aria-label="Annuler le recadrage"><X size={20} /></button>
         </div>
 
         <div className="relative w-full h-80 bg-stone-900">
@@ -66,7 +66,7 @@ export default function CropPortraitModal({ file, onConfirm, onCancel }) {
 
         <div className="p-4 space-y-4">
           <div className="flex items-center gap-3">
-            <button type="button" onClick={() => adjustZoom(-zoomStep)} className="p-2 rounded-lg hover:bg-stone-100 text-stone-500 transition-colors"><ZoomOut size={20} /></button>
+            <button type="button" onClick={() => adjustZoom(-zoomStep)} className="p-2 rounded-lg hover:bg-stone-100 text-stone-500 transition-colors" aria-label="Dézoomer"><ZoomOut size={20} /></button>
             <input
               type="range"
               min={zoomMin}
@@ -76,7 +76,7 @@ export default function CropPortraitModal({ file, onConfirm, onCancel }) {
               onChange={(e) => setZoom(Number(e.target.value))}
               className="flex-1 accent-amber-600"
             />
-            <button type="button" onClick={() => adjustZoom(zoomStep)} className="p-2 rounded-lg hover:bg-stone-100 text-stone-500 transition-colors"><ZoomIn size={20} /></button>
+            <button type="button" onClick={() => adjustZoom(zoomStep)} className="p-2 rounded-lg hover:bg-stone-100 text-stone-500 transition-colors" aria-label="Zoomer"><ZoomIn size={20} /></button>
           </div>
 
           <div className="flex gap-3">

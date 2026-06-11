@@ -262,6 +262,7 @@ export default function StepCaracteristiques() {
                                 <button
                                     onClick={() => handleChange(carac.key, -1)}
                                     disabled={isMinusDisabled}
+                                    aria-label={`Réduire ${carac.label}`}
                                     className="h-10 w-10 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-600 rounded-lg disabled:opacity-30 transition-colors text-lg font-bold"
                                 >
                                     <Minus size={18} />
@@ -277,6 +278,7 @@ export default function StepCaracteristiques() {
                                 <button
                                     onClick={() => handleChange(carac.key, 1)}
                                     disabled={isPlusDisabled}
+                                    aria-label={`Augmenter ${carac.label}`}
                                     className="h-10 w-10 flex flex-col items-center justify-center bg-amber-100 hover:bg-green-100 text-amber-800 rounded-lg disabled:opacity-30 transition-colors font-bold"
                                 >
                                     <Plus size={18} />

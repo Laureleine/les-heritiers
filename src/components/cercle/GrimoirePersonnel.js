@@ -1,4 +1,4 @@
-// src/components/cercle/GrimoirePersonnel.js
+﻿// src/components/cercle/GrimoirePersonnel.js
 // 15.17.8
 
 import React, { useState, useMemo } from 'react';
@@ -365,12 +365,14 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 															<button
 																onClick={() => handleOpenModal(contact)}
 																className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+																aria-label="Modifier ce contact"
 															>
 																<Edit size={12} />
 															</button>
 															<button
 																onClick={() => handleDeleteClick(contact, data.nom)}
 																className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+																aria-label="Supprimer ce contact"
 															>
 																<Trash2 size={12} />
 															</button>
@@ -382,6 +384,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 																		? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
 																		: 'bg-white text-stone-500 border-stone-200 hover:bg-stone-50'
 																	}`}
+																aria-label={contact.is_shared ? "Rendre ce contact secret" : "Partager ce contact"}
 															>
 																{contact.is_shared ? <Share2 size={12} /> : <Lock size={12} />}
 															</button>
@@ -420,12 +423,14 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 														<button
 															onClick={() => handleOpenModal(possession)}
 															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+															aria-label="Modifier cette possession"
 														>
 															<Edit size={12} />
 														</button>
 														<button
 															onClick={() => handleDeleteClick(possession, data.nom)}
 															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+															aria-label="Supprimer cette possession"
 														>
 															<Trash2 size={12} />
 														</button>
@@ -454,7 +459,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
                   : (activeTab === 'notes' ? 'Consigner une pensée' : activeTab === 'possessions' ? 'Archiver une possession' : 'Archiver un contact')
                 }
               </h3>
-              <button onClick={handleCloseModal} className="hover:text-red-400 transition-colors"><X size={20}/></button>
+              <button onClick={handleCloseModal} className="hover:text-red-400 transition-colors" aria-label="Fermer la fenêtre"><X size={20}/></button>
             </div>
 
             <div className="p-6 space-y-4">
@@ -546,7 +551,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
                               <option value="public">Public</option>
                             </select>
                           </div>
-                          <button onClick={() => handleRemoveRelation(i)} className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors mt-0.5">
+                          <button onClick={() => handleRemoveRelation(i)} className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors mt-0.5" aria-label="Supprimer cette relation">
                             <X size={14} />
                           </button>
                         </div>
@@ -643,7 +648,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">
                 <AlertTriangle size={20} /> Confirmer la suppression
               </h3>
-              <button onClick={() => setDeleteConfirm(null)} className="hover:text-red-200 transition-colors"><X size={20}/></button>
+              <button onClick={() => setDeleteConfirm(null)} className="hover:text-red-200 transition-colors" aria-label="Annuler la suppression"><X size={20}/></button>
             </div>
 
             <div className="p-6 space-y-4">

@@ -92,8 +92,8 @@ export default function TabForgeTitres({ userProfile }) {
                 {/* ✨ BOUTONS D'ACTION - RÉSERVÉS AU SUPER ADMIN */}
                 {isSuperAdmin && (
                   <div className="flex gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => setForm(b)} className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 rounded-lg transition-colors shadow-sm" title="Modifier le design"><Edit size={16}/></button>
-                    <button onClick={() => triggerDelete(b.id)} className="p-2 text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-800 rounded-lg transition-colors shadow-sm" title="Détruire le titre"><Trash2 size={16}/></button>
+                    <button onClick={() => setForm(b)} className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 rounded-lg transition-colors shadow-sm" title="Modifier le design" aria-label="Modifier le design de ce titre"><Edit size={16}/></button>
+                    <button onClick={() => triggerDelete(b.id)} className="p-2 text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-800 rounded-lg transition-colors shadow-sm" title="Détruire le titre" aria-label="Détruire ce titre"><Trash2 size={16}/></button>
                   </div>
                 )}
               </div>

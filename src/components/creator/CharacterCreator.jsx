@@ -204,6 +204,8 @@ export default function CharacterCreator({ session, userProfile }) {
                   window.scrollTo(0, 0);
                 }}
                 disabled={isSkipped}
+                aria-label={`${s.label}${isActive ? ' (étape en cours)' : isPast ? ' (terminée)' : ''}`}
+                aria-current={isActive ? 'step' : undefined}
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${
                   isSkipped
                     ? 'bg-stone-100 text-stone-300 border-2 border-stone-200 cursor-not-allowed opacity-40'
@@ -251,7 +253,7 @@ export default function CharacterCreator({ session, userProfile }) {
       )}
 
       {/* CORPS DE L'ÉTAPE */}
-      <main className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
+      <section aria-label="Corps de l'étape" className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
         <Suspense fallback={
           <div className="flex flex-col items-center justify-center h-64 animate-pulse">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mb-4"></div>
@@ -260,7 +262,7 @@ export default function CharacterCreator({ session, userProfile }) {
         }>
           {stepComponents[step]}
         </Suspense>
-      </main>
+      </section>
 
       {/* NAVIGATION */}
       <div className="flex justify-between items-center mt-6">

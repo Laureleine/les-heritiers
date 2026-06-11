@@ -725,7 +725,7 @@ export default function BonusBuilder({
                         </>
                     )}
 
-                    <button onClick={() => handleDeleteBlock(block.id)} className="ml-auto p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors opacity-0 group-hover:opacity-100" title="Supprimer">
+                    <button onClick={() => handleDeleteBlock(block.id)} className="ml-auto p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors opacity-0 group-hover:opacity-100" title="Supprimer" aria-label="Supprimer ce bloc">
                         <Trash2 size={16} />
                     </button>
                 </div>

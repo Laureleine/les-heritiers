@@ -73,7 +73,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
             <div className="px-2 py-0.5 text-xs text-stone-400 border-r border-stone-200 bg-stone-50" title="Base calculée">{scoreBase}</div>
             <button onClick={() => handlers.handleRangChange(nomComp, -1)} disabled={isMinusDisabled} className="px-2 py-0.5 hover:bg-red-100 text-amber-800 disabled:opacity-30 border-r border-stone-300 font-bold">-</button>
             <div className="px-3 py-0.5 font-bold text-amber-900 min-w-[28px] text-center bg-amber-50">{totalScore}</div>
-            <button onClick={() => handlers.handleRangChange(nomComp, 1)} disabled={isPlusDisabled} className="p-0.5 px-1 hover:bg-emerald-50 text-emerald-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <button onClick={() => handlers.handleRangChange(nomComp, 1)} disabled={isPlusDisabled} aria-label={`Augmenter ${nomComp}`} className="p-0.5 px-1 hover:bg-emerald-50 text-emerald-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               <div className="flex items-center gap-1">
                 <Plus size={16} />
                 {isScelle && rangEspritGratuitDispo && <span className="text-[10px] font-bold text-purple-600">🧠 Gratuit</span>}
@@ -103,12 +103,13 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
         })}
 
 		{totalScore > 0 && creatingSpecFor !== nomComp && (
-		  <select 
-			onChange={(e) => { 
-			  if (e.target.value === '__CREATE_NEW__') setCreatingSpecFor(nomComp); 
-			  else handlers.handleAddSpecialiteUser(nomComp, e.target.value); 
-			  e.target.value = ''; 
-			}} 
+		  <select
+			onChange={(e) => {
+			  if (e.target.value === '__CREATE_NEW__') setCreatingSpecFor(nomComp);
+			  else handlers.handleAddSpecialiteUser(nomComp, e.target.value);
+			  e.target.value = '';
+			}}
+			aria-label={`Ajouter une spécialité en ${nomComp}`}
 			className="text-[10px] bg-transparent text-gray-400 hover:text-blue-600 outline-none cursor-pointer w-24"
 		  >
 			<option value="">+ Choisir ({nextSpecCost === 0 ? 'Gratuit' : (isScelle ? `${nextSpecCost} XP` : '1 pt')})</option>
@@ -200,7 +201,7 @@ export default function StepCompetencesLibres() {
               if (p.isChoix) return (
                 <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-amber-100 pb-2 last:border-0">
                   <span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">Prédilection au choix :</span>
-                  <select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm" value={lib.choixPredilection?.[i] || ''} onChange={(e) => handlers.handleChoixChange(i, e.target.value, 'competence')}>
+                  <select aria-label="Prédilection au choix" className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm" value={lib.choixPredilection?.[i] || ''} onChange={(e) => handlers.handleChoixChange(i, e.target.value, 'competence')}>
                     <option value="">-- Sélectionner --</option>{p.options?.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
@@ -208,7 +209,7 @@ export default function StepCompetencesLibres() {
 				if (p.isSpecialiteChoix) return (
 					<div key={i} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-amber-100 pb-2 last:border-0">
 						<span className="text-sm font-serif text-amber-900 font-medium whitespace-nowrap">Spécialité au choix :</span>
-						<select className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm" value={lib.choixSpecialite?.[i] || ''} onChange={(e) => handlers.handleChoixChange(i, e.target.value, 'specialite')}>
+						<select aria-label="Spécialité au choix" className="w-full sm:flex-1 p-2 border border-amber-300 rounded font-serif shadow-sm bg-white text-sm" value={lib.choixSpecialite?.[i] || ''} onChange={(e) => handlers.handleChoixChange(i, e.target.value, 'specialite')}>
 							<option value="">-- Sélectionner --</option>{p.options?.map(o => <option key={o} value={o}>{o}</option>)}
 						</select>
 					</div>

@@ -171,14 +171,14 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
             `}</style>
 
             {!isOpen && (
-                <button onClick={() => setIsOpen(true)} className="fixed bottom-24 right-6 bg-stone-900 text-amber-400 p-4 rounded-full border-2 border-amber-600/50 z-40 shadow-xl active:scale-90">
+                <button onClick={() => setIsOpen(true)} className="fixed bottom-24 right-6 bg-stone-900 text-amber-400 p-4 rounded-full border-2 border-amber-600/50 z-40 shadow-xl active:scale-90" aria-label="Ouvrir le lanceur de dés">
                     <Dices size={28} />
                 </button>
             )}
 
             <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-300 p-4 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="relative w-full max-w-4xl felt-table overflow-hidden shadow-2xl" style={{ height: '85vh', borderRadius: '40px', border: '16px solid #451a03' }}>
-                    <button onClick={handleCloseAndClear} className={`absolute top-6 right-6 text-stone-400 hover:text-white z-50 ${isOpen ? 'pointer-events-auto' : ''}`}><X size={32} /></button>
+                    <button onClick={handleCloseAndClear} className={`absolute top-6 right-6 text-stone-400 hover:text-white z-50 ${isOpen ? 'pointer-events-auto' : ''}`} aria-label="Fermer le lanceur de dés"><X size={32} /></button>
                     
                     <div id="casino-dice-canvas" className="absolute inset-0 w-full h-full z-0" style={{ pointerEvents: 'none' }}></div>
                     

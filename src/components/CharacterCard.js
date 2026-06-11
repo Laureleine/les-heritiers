@@ -145,29 +145,29 @@ const CharacterCard = React.memo(({
         <div className="flex items-center gap-0.5 shrink-0 bg-stone-50/50 p-0.5 rounded border border-stone-100">
 
           {/* Boutons Communs (PDF & JSON) */}
-          <button onClick={() => onExportPDF(char)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF">
+          <button onClick={() => onExportPDF(char)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF" aria-label="Exporter en PDF">
             <FileText size={15}/>
           </button>
-          <button onClick={() => onExportJson(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN complet (Format JSON)">
+          <button onClick={() => onExportJson(char)} className="p-1.5 text-stone-400 hover:text-indigo-600 hover:bg-white rounded transition-all" title="Télécharger l'ADN complet (Format JSON)" aria-label="Télécharger l'ADN complet (Format JSON)">
             <Download size={15}/>
           </button>
 
           {/* Boutons Spécifiques selon le propriétaire */}
           {isMyCharacter ? (
             <>
-              <button onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)} className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-white' : 'text-stone-400 hover:text-stone-700 hover:bg-white'}`} title={char.isPublic ? "Rendre privé" : "Rendre public"}>
+              <button onClick={() => onToggleVisibility(char.id, char.isPublic, char.nom)} className={`p-1.5 rounded transition-all ${char.isPublic ? 'text-blue-500 hover:bg-white' : 'text-stone-400 hover:text-stone-700 hover:bg-white'}`} title={char.isPublic ? "Rendre privé" : "Rendre public"} aria-label={char.isPublic ? "Rendre privé" : "Rendre public"}>
                 {char.isPublic ? <Globe size={15}/> : <EyeOff size={15}/>}
               </button>
-              <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-stone-400 hover:text-amber-600 hover:bg-white rounded transition-colors" title="Ouvrir le Grimoire Personnel">
+              <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-stone-400 hover:text-amber-600 hover:bg-white rounded transition-colors" title="Ouvrir le Grimoire Personnel" aria-label="Ouvrir le Grimoire Personnel">
                 <BookOpen size={15}/>
               </button>
-              <button onClick={() => onDuplicate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Dupliquer le personnage">
+              <button onClick={() => onDuplicate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Dupliquer le personnage" aria-label="Dupliquer le personnage">
                 <Copy size={15}/>
               </button>
-              <button onClick={() => onCreateGift(char)} className="p-1.5 text-stone-400 hover:text-purple-600 hover:bg-white rounded transition-colors" title="Offrir ce personnage">
+              <button onClick={() => onCreateGift(char)} className="p-1.5 text-stone-400 hover:text-purple-600 hover:bg-white rounded transition-colors" title="Offrir ce personnage" aria-label="Offrir ce personnage">
                 <Gift size={15}/>
               </button>
-              <button onClick={() => onDeleteClick(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Détruire">
+              <button onClick={() => onDeleteClick(char.id)} className="p-1.5 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors" title="Détruire" aria-label={`Détruire le personnage ${char.nom}`}>
                 <Trash2 size={15}/>
               </button>
             </>
@@ -175,11 +175,11 @@ const CharacterCard = React.memo(({
             <>
               {/* 👁️ Bouton Grimoire pour Admin sur les persos des autres */}
               {isAdmin && (
-                <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-amber-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors" title="Voir le Grimoire Personnel (Admin)">
+                <button onClick={() => onOpenGrimoire(char.id)} className="p-1.5 text-amber-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors" title="Voir le Grimoire Personnel (Admin)" aria-label="Voir le Grimoire Personnel (Admin)">
                   <BookOpen size={15}/>
                 </button>
               )}
-              <button onClick={() => onAppropriate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Adopter cet Héritage (Cloner dans mon Grimoire)">
+              <button onClick={() => onAppropriate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Adopter cet Héritage (Cloner dans mon Grimoire)" aria-label="Adopter cet Héritage">
                 <Copy size={15}/>
               </button>
             </>
@@ -198,6 +198,7 @@ const CharacterCard = React.memo(({
                 onClick={handleTelegraphe}
                 className="p-0.5 text-blue-300 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                 title={`Missive privée à ${char.ownerUsername}`}
+                aria-label={`Envoyer une missive privée à ${char.ownerUsername}`}
               >
                 <MessageCircle size={10} />
               </button>

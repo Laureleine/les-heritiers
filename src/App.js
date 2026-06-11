@@ -47,7 +47,9 @@ export default function App() {
   if (!session || !userProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
-        <Auth />
+        <main>
+          <Auth />
+        </main>
       </div>
     );
   }
@@ -85,7 +87,7 @@ export default function App() {
       />
       <BackgroundDecor />
 
-      <div className="pt-6 pb-4 text-center animate-fade-in relative z-10">
+      <header className="pt-6 pb-4 text-center animate-fade-in relative z-10">
         <div className="flex flex-wrap justify-center items-baseline gap-4">
           <h1
             className="text-5xl font-serif text-amber-900 cursor-pointer hover:text-amber-700 transition-colors m-0"
@@ -97,6 +99,7 @@ export default function App() {
           <button
             onClick={() => setShowVersionModal(true)}
             className="text-xs text-amber-700 bg-amber-100/50 hover:bg-amber-200 hover:text-amber-900 border border-amber-200 px-3 py-1 rounded-full uppercase tracking-widest font-bold transition-all shadow-sm flex items-center gap-2"
+            aria-label={`Journal des mises à jour, version ${APP_VERSION}`}
           >
             Version {APP_VERSION} • {BUILD_DATE} <BookOpen size={12} />
           </button>
@@ -106,11 +109,11 @@ export default function App() {
             <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 shadow-sm">Super Admin</span>
           )}
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-5xl mx-auto px-4 w-full animate-fade-in relative z-10">
+      <main className="max-w-5xl mx-auto px-4 w-full animate-fade-in relative z-10">
         <AppRouter session={session} userProfile={userProfile} refreshUserProfile={refreshUserProfile} />
-      </div>
+      </main>
 
       {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
       {session && <WidgetAnomalie userProfile={userProfile} />}
@@ -124,7 +127,7 @@ export default function App() {
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">
                 <BookOpen size={18} className="text-amber-300" /> Registre des Mises à jour
               </h3>
-              <button onClick={() => setShowVersionModal(false)} className="hover:text-red-400 bg-amber-800/50 p-1.5 rounded-lg transition-colors">
+              <button onClick={() => setShowVersionModal(false)} className="hover:text-red-400 bg-amber-800/50 p-1.5 rounded-lg transition-colors" aria-label="Fermer le registre des mises à jour">
                 <X size={18} />
               </button>
             </div>
