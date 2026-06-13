@@ -4,15 +4,11 @@ import { Globe, Sparkles, Edit, Eye, FileText, Download, EyeOff, BookOpen, Copy,
 
 // ─── Constantes admin (badges de réparation XP) ────────────────────────────
 const REPAIR_BADGE = {
-  pending:  'bg-orange-100 text-orange-700 border-orange-200',
-  ok:       'bg-emerald-100 text-emerald-700 border-emerald-200',
   repaired: 'bg-blue-100 text-blue-700 border-blue-200',
   skipped:  'bg-amber-100 text-amber-700 border-amber-200',
   error:    'bg-red-100 text-red-700 border-red-200',
 };
 const REPAIR_LABEL = {
-  pending:  '⏳ Journal à réparer',
-  ok:       '✅ Journal complet',
   repaired: '✨ Journal réparé',
   skipped:  '⚠️ Sans plancher',
   error:    '❌ Erreur journal',
@@ -34,9 +30,11 @@ const CharacterCard = React.memo(({
   onAppropriate,
   onExportJson,
   onExportPDF,
-  // ✨ Nouvelles props admin (undefined pour les non-admins)
-  repairStatus,    // 'pending'|'ok'|'repaired'|'skipped'|'error'
-  onRepairRequest, // (charId) => void
+  // Props réparation journal XP
+  repairStatus,     // admin: 'pending'|'ok'|'repaired'|'skipped'|'error'
+  onRepairRequest,  // admin: (charId) => void — reconstruit le journal
+  needsRepair,      // joueur: boolean — journal détecté incomplet
+  onRequestRepair,  // joueur: (charId, charNom) => void — demande à l'admin
 }) => {
 
   const getProfilInfo = (nomBrut, sexe) => {
@@ -93,22 +91,37 @@ const CharacterCard = React.memo(({
           })()}
         </div>
 
-        {/* ✨ Badge de réparation XP (admin seulement) — cliquable si réparation possible */}
-        {repairStatus && (
+        {/* Badge journal XP */}
+        {/* Admin : pending/error — gros badge orange pulsant, cliquable pour reconstruire */}
+        {(repairStatus === 'pending' || repairStatus === 'error') && onRepairRequest && (
+          <div className="mt-2">
+            <button
+              onClick={() => onRepairRequest(char.id)}
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border-2 cursor-pointer animate-pulse bg-orange-50 text-orange-700 border-orange-400 hover:bg-orange-100 shadow-sm transition-all active:scale-95"
+              title="Cliquer pour reconstruire le journal XP"
+            >
+              ⚠️ Journal à faire réparer par l'admin
+            </button>
+          </div>
+        )}
+        {/* Admin : repaired/skipped/error sans action — petit badge discret */}
+        {repairStatus && repairStatus !== 'pending' && repairStatus !== 'ok' && !onRepairRequest && (
           <div className="mt-1.5">
-            {(repairStatus === 'pending' || repairStatus === 'error') && onRepairRequest ? (
-              <button
-                onClick={() => onRepairRequest(char.id)}
-                className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer hover:brightness-95 active:scale-95 transition-all ${REPAIR_BADGE[repairStatus]}`}
-                title="Cliquer pour reconstruire le journal XP"
-              >
-                {REPAIR_LABEL[repairStatus]}
-              </button>
-            ) : (
-              <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border ${REPAIR_BADGE[repairStatus] || ''}`}>
-                {REPAIR_LABEL[repairStatus] || repairStatus}
-              </span>
-            )}
+            <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border ${REPAIR_BADGE[repairStatus] || ''}`}>
+              {REPAIR_LABEL[repairStatus] || repairStatus}
+            </span>
+          </div>
+        )}
+        {/* Joueur : journal détecté incomplet — badge rouge pulsant, demande de réparation */}
+        {!repairStatus && needsRepair && isMyCharacter && (
+          <div className="mt-2">
+            <button
+              onClick={() => onRequestRepair?.(char.id, char.nom)}
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border-2 cursor-pointer animate-pulse bg-red-50 text-red-700 border-red-400 hover:bg-red-100 shadow-sm transition-all active:scale-95"
+              title="Votre journal XP est incomplet — cliquer pour demander une réparation"
+            >
+              🔴 Journal à faire réparer par l'admin
+            </button>
           </div>
         )}
       </div>

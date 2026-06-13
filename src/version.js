@@ -2,6 +2,22 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.11 - "Le Plan de Paris 🗺️✨"',
+    date: '14 Juin 2026',
+    description: 'Paris 1900 s\'ouvre sous les yeux des Héritiers : une carte interactive superpose le tracé historique des rues à une lecture moderne, et permet de planter ses propres repères — lieux de rendez-vous, adresses de personnages, cercles secrets, événements marquants. Deux points posés, et un itinéraire à pied ou en fiacre se dessine, chronométré. En parallèle, les Héritiers qui portent un journal d\'XP incomplet peuvent désormais interpeller l\'Administrateur d\'un simple clic — la demande lui parvient aussitôt, signalée par un compteur orange sur le tableau de bord.',
+    changes: [
+      '🗺️ **Carte de Paris 1900 (Nouveau) :** Une page dédiée accessible depuis la barre de navigation. Elle superpose les tuiles historiques OpenHistoricalMap (rues de 1900) sur un fond CartoDB lisible, avec un curseur d\'opacité pour doser entre fidélité historique et repérage contemporain.',
+      '📍 **Points d\'Intérêt (POI) :** Les Héritiers et les Gardiens peuvent placer des marqueurs sur la carte — Lieux (brun), Événements (rouge), Adresses de personnages (bleu), Cercles (violet), Points d\'intérêt (vert). Chaque POI s\'enregistre en base Supabase, avec nom, description, et liens optionnels vers un personnage ou un cercle.',
+      '🧭 **Itinéraires rues à rues :** En mode Itinéraire, deux clics suffisent pour tracer un chemin réel le long des artères parisiennes (OSRM). Le panneau affiche la distance, le temps à pied et le temps en fiacre (12 km/h).',
+      '🔍 **Recherche d\'adresse :** Une barre de recherche Nominatim permet de trouver n\'importe quelle adresse parisienne de 1900 et de centrer la carte dessus.',
+      '🔴 **Badge "Journal à faire réparer par l\'admin" :** Le badge s\'est métamorphosé — plus grand, bordure épaisse, animation pulsante. Il s\'affiche désormais pour les joueurs non-administrateurs dont le journal XP est détecté incomplet, pas seulement pour les Gardiens.',
+      '✉️ **Demande de réparation joueur :** Un clic sur le badge ouvre une modale de confirmation. La demande s\'enregistre en base (`journal_repair_requests`) et déclenche un compteur orange pulsant sur le bouton Communauté du Gardien.',
+      '🔕 **Badge "Journal complet" supprimé :** Il ne s\'affichait que pour les admins et n\'apportait aucune valeur — retiré définitivement.',
+      '⚙️ **Infrastructure :** Deux nouvelles tables Supabase — `map_points` (POIs de la carte) et `journal_repair_requests` (demandes de réparation joueur) — avec RLS en bonne et due forme. Le bouton "Nouveau" a quitté la barre de navigation surchargée pour rejoindre la rangée des onglets.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.10 - "La Clé du Casino 🎲🗝️"',
     date: '11 Juin 2026',
     description: 'Le lanceur de dés apprend la politesse. Désormais, la touche Échap referme la table de jeu, le focus reste bien enfermé dans la salle tant qu\'on n\'a pas quitté, et retrouve sagement son chemin vers le bouton des dés une fois la séance terminée. Les oreilles électroniques des lecteurs d\'écran peuvent enfin jouer sans se perdre.',
