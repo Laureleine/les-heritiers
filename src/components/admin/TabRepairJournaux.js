@@ -9,7 +9,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../config/supabase';
 import { loadFairyTypes, loadSocialItems } from '../../utils/supabaseGameData';
-import { Search, X, AlertTriangle, CheckCircle, Wrench, MessageCircle } from '../../config/icons';
+import { Search, X, AlertTriangle, CheckCircle, Wrench, MessageCircle, Bell } from '../../config/icons';
 import {
     mapDbCharForReconstruction,
     journalNeedsRepair,
@@ -167,8 +167,27 @@ export default function TabRepairJournaux() {
     const [filterMode, setFilterMode]   = useState('all'); // 'all' | 'pending' | 'skipped'
     const [confirmTarget, setConfirmTarget] = useState(null); // { row, idx, preview }
     const [restoreFloorTarget, setRestoreFloorTarget] = useState(null); // { row, idx }
+    const [playerRequests, setPlayerRequests] = useState([]);
 
     const addLog = (msg) => setLog(prev => [`${new Date().toLocaleTimeString('fr-FR')} — ${msg}`, ...prev]);
+
+    // --- Chargement des demandes joueurs ---
+    useEffect(() => {
+        supabase
+            .from('journal_repair_requests')
+            .select('*, profiles:requested_by(username)')
+            .is('resolved_at', null)
+            .order('requested_at', { ascending: false })
+            .then(({ data }) => setPlayerRequests(data || []));
+    }, []);
+
+    const markResolved = useCallback(async (requestId) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase.from('journal_repair_requests')
+            .update({ resolved_at: new Date().toISOString(), resolved_by: user.id })
+            .eq('id', requestId);
+        setPlayerRequests(prev => prev.filter(r => r.id !== requestId));
+    }, []);
 
     // --- Chargement initial ---
     useEffect(() => {
@@ -338,11 +357,15 @@ export default function TabRepairJournaux() {
             const detail = `${preview.length} entrées (${gains} gains + ${deps} dépenses) — ${newXpDepense} XP dépensés`;
             setCharacters(prev => prev.map((r, i) => i === idx ? { ...r, status: STATUS.REPAIRED, detail } : r));
             addLog(`✨ ${row.dbChar.nom} → ${detail}`);
+
+            // Résoudre automatiquement la demande joueur si elle existe
+            const matchingRequest = playerRequests.find(r => r.character_id === row.dbChar.id);
+            if (matchingRequest) await markResolved(matchingRequest.id);
         } catch (e) {
             setCharacters(prev => prev.map((r, i) => i === idx ? { ...r, status: STATUS.ERROR, detail: e.message } : r));
             addLog(`❌ ${row.dbChar.nom} → ${e.message}`);
         }
-    }, [characters]);
+    }, [characters, playerRequests, markResolved]);
 
     // --- Demande de confirmation pour UN personnage ---
     const requestRepairOne = useCallback((idx) => {
@@ -415,6 +438,51 @@ export default function TabRepairJournaux() {
             />
 
             <div className="space-y-5">
+
+                {/* Demandes joueurs en attente */}
+                {playerRequests.length > 0 && (
+                    <div className="bg-orange-50 border-2 border-orange-300 rounded-xl p-4 space-y-3">
+                        <h3 className="font-serif font-bold text-orange-800 flex items-center gap-2 text-sm">
+                            <Bell size={15} className="animate-pulse" />
+                            {playerRequests.length} demande{playerRequests.length > 1 ? 's' : ''} joueur{playerRequests.length > 1 ? 's' : ''} en attente
+                        </h3>
+                        <div className="space-y-2">
+                            {playerRequests.map(req => {
+                                const charIdx = characters.findIndex(r => r.dbChar.id === req.character_id);
+                                const charRow = charIdx >= 0 ? characters[charIdx] : null;
+                                const canRepair = charRow && charRow.status !== STATUS.SKIPPED && charRow.status !== STATUS.OK;
+                                return (
+                                    <div key={req.id} className="bg-white rounded-lg border border-orange-200 p-3 flex items-center gap-3 shadow-sm">
+                                        <div className="flex-1 min-w-0">
+                                            <span className="font-serif font-bold text-amber-900">{req.character_nom}</span>
+                                            <p className="text-[11px] text-stone-400 mt-0.5">
+                                                Demandé par <strong>{req.profiles?.username || '?'}</strong>
+                                                {' · '}{new Date(req.requested_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                                {charRow && <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold border ${STATUS_META[charRow.status]?.badge}`}>{STATUS_META[charRow.status]?.label}</span>}
+                                            </p>
+                                        </div>
+                                        {canRepair && (
+                                            <button
+                                                onClick={() => requestRepairOne(charIdx)}
+                                                disabled={!gameDataReady}
+                                                className="shrink-0 px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 disabled:opacity-40 transition-colors"
+                                            >
+                                                Réparer
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => markResolved(req.id)}
+                                            className="shrink-0 px-3 py-1.5 bg-stone-100 text-stone-600 text-xs font-bold rounded-lg hover:bg-emerald-100 hover:text-emerald-700 transition-colors"
+                                            title="Marquer comme résolu sans réparer"
+                                        >
+                                            ✓ Résolu
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
 
                 {/* Bandeau de stats — sur une ligne */}
                 <div className="grid grid-cols-6 gap-1.5">
