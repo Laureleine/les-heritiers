@@ -1,3 +1,36 @@
+# REX — Session 14 Juin 2026 (suite 3) — v17.4.14 "La Clé Retrouvée 🗝️"
+
+## Ce qui a été livré
+
+- Fix bug "mot de passe oublié" : l'événement `PASSWORD_RECOVERY` de Supabase n'était pas intercepté, ce qui renvoyait l'utilisateur à l'accueil au lieu d'un formulaire de reset.
+- `useAppInit.js` : nouveau state `isRecoveryMode`, géré dans `onAuthStateChange` (événement `PASSWORD_RECOVERY` → `setIsRecoveryMode(true)`, `SIGNED_OUT` → `setIsRecoveryMode(false)`).
+- `App.js` : condition `if (isRecoveryMode)` avant le test `!session || !userProfile`, affiche `<ResetPasswordForm />`.
+- Nouveau composant `src/components/ResetPasswordForm.jsx` : champs nouveau mdp + confirmation, `supabase.auth.updateUser({ password })`, puis `signOut()` automatique après 2 s.
+
+---
+
+## Règles et astuces à retenir
+
+### Supabase Auth — événement PASSWORD_RECOVERY
+
+- **L'événement `PASSWORD_RECOVERY` est distinct de `SIGNED_IN`.** Quand un utilisateur clique le lien de reset, Supabase émet `PASSWORD_RECOVERY` (pas `SIGNED_IN`), avec une session temporaire. Si ce cas n'est pas géré dans `onAuthStateChange`, l'app se comporte comme si rien ne s'était passé et charge l'interface normale.
+- **Flux correct :** `PASSWORD_RECOVERY` → afficher formulaire dédié → `updateUser({ password })` → `signOut()`. Le `SIGNED_OUT` résultant nettoie proprement la session et désactive `isRecoveryMode`.
+- **`detectSessionInUrl: true`** doit être actif dans la config Supabase (c'est le défaut) pour que le token du lien email soit consommé automatiquement.
+
+### Vercel MCP — list_deployments fonctionne en session background
+
+- Le bug 403 observé lors de la session précédente n'était peut-être qu'un aléa. Dans cette session, `list_teams` puis `list_deployments` ont fonctionné sans 403. Tenter d'abord avant de conclure à un problème de scope.
+
+---
+
+## Ce qui reste à faire
+
+- **Affichage des demandes joueurs dans TabRepairJournaux** (laissé de côté en v17.4.11) : la table `journal_repair_requests` existe, mais l'onglet ne la consulte pas encore.
+- **Tests de la carte** : les composants Leaflet ne sont pas testés (dépendance DOM + API géo). Tester manuellement dans le navigateur.
+- **Vérifier OHM en prod** : confirmer visuellement que les tuiles 1900 apparaissent bien.
+
+---
+
 # REX — Session 14 Juin 2026 (suite 2) — v17.4.13 "La Carte Vivante 🗺️🎨"
 
 ## Ce qui a été livré
