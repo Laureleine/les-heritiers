@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.15 - "Le Bon Pas 🚶"',
+    date: '14 Juin 2026',
+    description: 'Les itinéraires retrouvent leurs justes proportions. Le temps de marche était calculé depuis le serveur OSRM avec une vitesse aberrante (~29 km/h) ; il est désormais déduit de la distance route à 5 km/h — comme tous les autres modes. Un promeneur de 1900 met maintenant 2h 38min pour traverser 13 km de Paris, et non 27 minutes.',
+    changes: [
+      '🚶 **Temps à pied corrigé :** La durée de marche était calculée par l\'API OSRM à une vitesse incohérente (~29 km/h). Elle est maintenant calculée sur la distance route à 5 km/h, en cohérence avec les autres modes de transport. Les proportions entre la marche, le fiacre, le cheval et le vélo sont désormais sensées.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.**',
+    ]
+  },
+  {
     version: '17.4.14 - "La Clé Retrouvée 🗝️"',
     date: '14 Juin 2026',
     description: 'Un héritier ne peut plus se retrouver bloqué devant la porte du Manoir faute de se souvenir de sa clé. Le lien "mot de passe oublié" envoyé par courriel mène désormais directement à un formulaire sécurisé pour en choisir un nouveau — et non plus à la page d\'accueil silencieuse.',
