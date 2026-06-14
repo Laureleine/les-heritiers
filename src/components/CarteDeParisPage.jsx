@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ArrowLeft, MapPin, X, Loader, Trash2, Map, Search, Edit, ChevronDown, ChevronUp, Filter } from '../config/icons';
+import { ArrowLeft, MapPin, X, Loader, Trash2, Map, Search, Edit, ChevronDown, ChevronUp, Filter, ExternalLink } from '../config/icons';
 import ModalShell, { ModalHeader } from './ui/ModalShell';
 import { useMapPoints } from '../hooks/useMapPoints';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -53,7 +53,7 @@ const TRANSPORT_MODES = [
   { id: 'moto',   emoji: '🏍️', label: 'Moto',     vitesse_kmh: 20   },
 ];
 
-const EMPTY_FORM = { nom: '', description: '', type: 'lieu', couleur: '#92400e', forme: 'goutte', adresse: '', linked_entity_type: null, linked_entity_id: null, visibilite: 'public', visibilite_cercle_id: null };
+const EMPTY_FORM = { nom: '', description: '', type: 'lieu', couleur: '#92400e', forme: 'goutte', adresse: '', url: '', linked_entity_type: null, linked_entity_id: null, visibilite: 'public', visibilite_cercle_id: null };
 
 // ─── Utilitaires ─────────────────────────────────────────────────────────────
 
@@ -233,6 +233,11 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isS
         placeholder="Description (optionnelle)" value={form.description} rows={2}
         onChange={e => onChange({ ...form, description: e.target.value })}
         className="w-full px-2 py-1.5 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-amber-400 resize-none"
+      />
+      <input
+        type="url" placeholder="URL (optionnelle)" value={form.url || ''}
+        onChange={e => onChange({ ...form, url: e.target.value })}
+        className="w-full px-2 py-1.5 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
       />
       <select
         value={form.type}
@@ -491,6 +496,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         lat: newPoiPos.lat, lng: newPoiPos.lng,
         type: newPoiForm.type, couleur: newPoiForm.couleur, forme: newPoiForm.forme || 'goutte',
         adresse: newPoiForm.adresse?.trim() || null,
+        url: newPoiForm.url?.trim() || null,
         linked_entity_type:   newPoiForm.linked_entity_type   || null,
         linked_entity_id:     newPoiForm.linked_entity_id     || null,
         visibilite:           newPoiForm.visibilite,
@@ -505,7 +511,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
 
   // ── Édition POI ───────────────────────────────────────────────────────────
   const startEdit = useCallback((pt) => {
-    setEditForm({ nom: pt.nom, description: pt.description || '', type: pt.type, couleur: pt.couleur, forme: pt.forme || 'goutte', adresse: pt.adresse || '', lat: pt.lat, lng: pt.lng, linked_entity_type: pt.linked_entity_type, linked_entity_id: pt.linked_entity_id, visibilite: pt.visibilite || 'public', visibilite_cercle_id: pt.visibilite_cercle_id || null });
+    setEditForm({ nom: pt.nom, description: pt.description || '', type: pt.type, couleur: pt.couleur, forme: pt.forme || 'goutte', adresse: pt.adresse || '', url: pt.url || '', lat: pt.lat, lng: pt.lng, linked_entity_type: pt.linked_entity_type, linked_entity_id: pt.linked_entity_id, visibilite: pt.visibilite || 'public', visibilite_cercle_id: pt.visibilite_cercle_id || null });
     setIsEditing(true);
   }, []);
 
@@ -517,6 +523,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         nom: editForm.nom.trim(), description: editForm.description.trim() || null,
         type: editForm.type, couleur: editForm.couleur, forme: editForm.forme || 'goutte',
         adresse: editForm.adresse?.trim() || null,
+        url: editForm.url?.trim() || null,
         lat: editForm.lat, lng: editForm.lng,
         linked_entity_type:   editForm.linked_entity_type   || null,
         linked_entity_id:     editForm.linked_entity_id     || null,
@@ -914,6 +921,17 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                   <p className="text-xs text-amber-800 font-medium mb-2 flex items-center gap-1">
                     <MapPin size={11} className="shrink-0" /> {selectedPt.adresse}
                   </p>
+                )}
+                {selectedPt.url && (
+                  <a
+                    href={selectedPt.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium mb-2 underline underline-offset-2 transition-colors"
+                  >
+                    <ExternalLink size={11} className="shrink-0" />
+                    {(() => { try { return new URL(selectedPt.url).hostname.replace(/^www\./, ''); } catch { return selectedPt.url; } })()}
+                  </a>
                 )}
                 {linkedLabel && (
                   <p className="text-xs text-amber-800 font-semibold mb-2">
