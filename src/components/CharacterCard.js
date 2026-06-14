@@ -79,14 +79,16 @@ const CharacterCard = React.memo(({
           </div>
           {(char.statut === 'scelle' || char.statut === 'scellé') && (() => {
             const total     = char.xp_total || 0;
-            const remaining = total - (char.xp_depense || 0);
+            const depense   = char.xp_depense || 0;
+            const remaining = total - depense;
+            const isDebt    = remaining < 0;
             return (
               <div
-                className="flex items-center gap-1 text-xs font-bold bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200 shadow-sm"
-                title={`${remaining} XP disponibles sur ${total} acquis`}
+                className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm ${isDebt ? 'bg-red-50 border-red-300' : 'bg-stone-50 border-stone-200'}`}
+                title={isDebt ? `Dette XP : ${depense} dépensés pour ${total} acquis` : `${remaining} XP disponibles sur ${total} acquis`}
               >
-                <Sparkles size={12} className="text-amber-500" />
-                <span className="text-amber-700">{remaining}</span>
+                <Sparkles size={12} className={isDebt ? 'text-red-500' : 'text-amber-500'} />
+                <span className={isDebt ? 'text-red-700' : 'text-amber-700'}>{remaining}</span>
                 <span className="text-stone-300">/</span>
                 <span className="text-green-600">{total}</span>
                 <span className="text-stone-400">XP</span>
