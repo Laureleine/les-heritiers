@@ -175,7 +175,7 @@ export default function TabRepairJournaux() {
     useEffect(() => {
         supabase
             .from('journal_repair_requests')
-            .select('*, profiles:requested_by(username)')
+            .select('*')
             .is('resolved_at', null)
             .order('requested_at', { ascending: false })
             .then(({ data }) => setPlayerRequests(data || []));
@@ -456,8 +456,7 @@ export default function TabRepairJournaux() {
                                         <div className="flex-1 min-w-0">
                                             <span className="font-serif font-bold text-amber-900">{req.character_nom}</span>
                                             <p className="text-[11px] text-stone-400 mt-0.5">
-                                                Demandé par <strong>{req.profiles?.username || '?'}</strong>
-                                                {' · '}{new Date(req.requested_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                                {new Date(req.requested_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                                 {charRow && <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold border ${STATUS_META[charRow.status]?.badge}`}>{STATUS_META[charRow.status]?.label}</span>}
                                             </p>
                                         </div>
