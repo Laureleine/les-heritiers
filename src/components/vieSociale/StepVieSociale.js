@@ -275,19 +275,32 @@ export default function StepVieSociale() {
           {tousLesProfils.map(pName => {
             const isActive = activeTab === pName;
             const hasBudget = budgetsInfo.budgets[pName] > 0;
+            const reste = budgetsInfo.rests?.[pName] ?? 0;
+            const budgetTotal = budgetsInfo.budgets?.[pName] ?? 0;
             return (
               <button
                 key={pName}
                 onClick={() => setActiveTab(pName)}
-                className={`w-full text-left p-3 rounded-lg border flex items-center justify-between transition-colors ${
-                  isActive ? 'bg-amber-100 border-amber-400 text-amber-900 shadow-sm' : 
-                  hasBudget ? 'bg-white border-gray-200 text-gray-700 hover:border-amber-300' : 
+                className={`w-full text-left p-3 rounded-lg border flex items-center justify-between gap-2 transition-colors ${
+                  isActive ? 'bg-amber-100 border-amber-400 text-amber-900 shadow-sm' :
+                  hasBudget ? 'bg-white border-gray-200 text-gray-700 hover:border-amber-300' :
                   'bg-gray-50 border-dashed border-gray-200 text-gray-400 opacity-60 hover:opacity-100'
                 }`}
               >
-                <span className="font-serif font-bold">{getProfilDisplayName(pName)}</span>
-                {character.profils?.majeur?.nom === pName && <Star size={16} className="text-amber-500" fill="currentColor"/>}
-                {character.profils?.mineur?.nom === pName && <Award size={16} className="text-blue-500"/>}
+                <span className="font-serif font-bold truncate">{getProfilDisplayName(pName)}</span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {budgetTotal > 0 && (
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${
+                      reste < 0  ? 'bg-red-100 text-red-700 border-red-300' :
+                      reste === 0 ? 'bg-stone-100 text-stone-500 border-stone-200' :
+                                   'bg-amber-50 text-amber-700 border-amber-200'
+                    }`}>
+                      {reste} PP
+                    </span>
+                  )}
+                  {character.profils?.majeur?.nom === pName && <Star size={14} className="text-amber-500" fill="currentColor"/>}
+                  {character.profils?.mineur?.nom === pName && <Award size={14} className="text-blue-500"/>}
+                </div>
               </button>
             );
           })}
