@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.13 - "La Carte Vivante 🗺️🎨"',
+    date: '14 Juin 2026',
+    description: 'La Carte de Paris s\'enrichit dans ses moindres détails. Les épingles parlent désormais d\'elles-mêmes : chaque type de lieu arbore son emoji, sa forme et sa couleur propres — que l\'on peut personnaliser à loisir. Les fiches affichent l\'adresse du lieu, modifiable directement pour déplacer l\'épingle sur la carte. Côté itinéraires, cinq modes de transport de l\'époque s\'offrent en onglets — du promeneur au cavalier, du vélocipédiste au motocycliste — avec la distance à vol d\'oiseau en regard, et la possibilité de définir son propre mode de déplacement.',
+    changes: [
+      '📍 **Épingles expressives :** Chaque type de POI affiche son emoji (🏛️ lieu, 🎭 événement, 👤 personnage, 🔮 cercle, ⭐ point d\'intérêt) dans une épingle dont on peut choisir la forme (goutte, cercle, étoile, diamant, bouclier) et la couleur librement.',
+      '🏠 **Adresse dans la fiche POI :** L\'adresse est affichée dans la carte de détail de chaque lieu. En mode modification, un champ adresse permet de géocoder une nouvelle rue — le résultat déplace automatiquement l\'épingle sur la carte et centre la vue.',
+      '🗺️ **Sélection POI depuis la liste en mode Itinéraire :** Les épingles dans la liste latérale agissent comme points de départ (🟢) ou d\'arrivée (🔴) sans avoir à cliquer sur la carte.',
+      '🔍 **Résultats de recherche lisibles :** La liste des suggestions défile dans une zone contenue, et chaque adresse s\'affiche en entier (plus de troncature).',
+      '🐎 **Cinq modes de transport en onglets :** 🚶 À pied (OSRM) · 🐎 Cheval (17 km/h) · 🐴 Fiacre (12 km/h) · 🚲 Vélo (14 km/h) · 🏍️ Moto (20 km/h, limite Paris 1900). Distance route et distance vol d\'oiseau affichées simultanément.',
+      '⚙️ **Mode de déplacement personnalisé :** Chaque joueur peut définir son propre mode (nom, emoji, vitesse en km/h) avec option "En vol" — la durée est alors calculée sur la distance à vol d\'oiseau, pas sur les rues. Sauvegardé en base par utilisateur.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.**',
+    ]
+  },
+  {
     version: '17.4.12 - "L\'Arpenteur de Paris 📍🔍"',
     date: '14 Juin 2026',
     description: 'La Carte de Paris gagne en précision et en lisibilité. Le glissement du curseur temporel révèle enfin les rues de 1900 telles qu\'elles étaient — l\'image historique s\'impose tandis que les étiquettes modernes s\'effacent. Les Héritiers épinglent leurs lieux d\'un simple nom de rue, voient la liste s\'organiser en accordéons par catégorie et la filtrent en un mot. La modale de détail surgit devant la carte au lieu de se terrer derrière. Et les itinéraires s\'enchaînent en cliquant directement sur les épingles.',

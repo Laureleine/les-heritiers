@@ -23,11 +23,19 @@ const ATTRIBUTION = '© <a href="https://www.openhistoricalmap.org">OpenHistoric
 // ─── Types de POI ────────────────────────────────────────────────────────────
 
 const POI_TYPES = {
-  lieu:               { label: 'Lieu',              couleur: '#92400e', linkedType: null       },
-  evenement:          { label: 'Événement',          couleur: '#dc2626', linkedType: null       },
-  adresse_personnage: { label: 'Adresse personnage', couleur: '#1d4ed8', linkedType: 'character'},
-  cercle:             { label: 'Cercle',             couleur: '#7c3aed', linkedType: 'cercle'   },
-  point_interet:      { label: "Point d'intérêt",   couleur: '#15803d', linkedType: null       },
+  lieu:               { label: 'Lieu',              couleur: '#92400e', linkedType: null,        emoji: '🏛️' },
+  evenement:          { label: 'Événement',          couleur: '#dc2626', linkedType: null,        emoji: '🎭' },
+  adresse_personnage: { label: 'Adresse personnage', couleur: '#1d4ed8', linkedType: 'character', emoji: '👤' },
+  cercle:             { label: 'Cercle',             couleur: '#7c3aed', linkedType: 'cercle',    emoji: '🔮' },
+  point_interet:      { label: "Point d'intérêt",   couleur: '#15803d', linkedType: null,        emoji: '⭐' },
+};
+
+const POI_FORMES = {
+  goutte:   { label: 'Goutte',   symbol: '▾' },
+  cercle:   { label: 'Cercle',   symbol: '●' },
+  etoile:   { label: 'Étoile',   symbol: '★' },
+  diamant:  { label: 'Diamant',  symbol: '◆' },
+  bouclier: { label: 'Bouclier', symbol: '⬟' },
 };
 
 const VISIBILITE = {
@@ -37,7 +45,15 @@ const VISIBILITE = {
   admin:  { label: 'Admin',   emoji: '⚙️'  },
 };
 
-const EMPTY_FORM = { nom: '', description: '', type: 'lieu', couleur: '#92400e', linked_entity_type: null, linked_entity_id: null, visibilite: 'public', visibilite_cercle_id: null };
+const TRANSPORT_MODES = [
+  { id: 'pied',   emoji: '🚶', label: 'À pied',  vitesse_kmh: null }, // durée OSRM native
+  { id: 'cheval', emoji: '🐎', label: 'Cheval',   vitesse_kmh: 17   },
+  { id: 'fiacre', emoji: '🐴', label: 'Fiacre',   vitesse_kmh: 12   },
+  { id: 'velo',   emoji: '🚲', label: 'Vélo',     vitesse_kmh: 14   },
+  { id: 'moto',   emoji: '🏍️', label: 'Moto',     vitesse_kmh: 20   },
+];
+
+const EMPTY_FORM = { nom: '', description: '', type: 'lieu', couleur: '#92400e', forme: 'goutte', adresse: '', linked_entity_type: null, linked_entity_id: null, visibilite: 'public', visibilite_cercle_id: null };
 
 // ─── Utilitaires ─────────────────────────────────────────────────────────────
 
@@ -53,6 +69,27 @@ function formatTime(s) {
   return r > 0 ? `${h}h ${r}min` : `${h}h`;
 }
 
+function haversineM(a, b) {
+  const R = 6371000;
+  const φ1 = a.lat * Math.PI / 180, φ2 = b.lat * Math.PI / 180;
+  const Δφ = (b.lat - a.lat) * Math.PI / 180;
+  const Δλ = (b.lng - a.lng) * Math.PI / 180;
+  const s = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
+}
+
+function modeTime(routeData, modeId, modePerso) {
+  if (!routeData) return null;
+  if (modeId === 'pied') return routeData.walkingS;
+  if (modeId === 'perso') {
+    if (!modePerso) return null;
+    const dist = modePerso.en_vol ? routeData.flyingM : routeData.distanceM;
+    return dist / (modePerso.vitesse_kmh * 1000 / 3600);
+  }
+  const m = TRANSPORT_MODES.find(t => t.id === modeId);
+  return m ? routeData.distanceM / (m.vitesse_kmh * 1000 / 3600) : null;
+}
+
 async function fetchRoute(a, b) {
   const url = `https://router.project-osrm.org/route/v1/foot/${a.lng},${a.lat};${b.lng},${b.lat}?overview=full&geometries=geojson`;
   const res = await fetch(url);
@@ -62,20 +99,38 @@ async function fetchRoute(a, b) {
   const route = data.routes[0];
   return {
     distanceM: route.distance,
+    flyingM:   haversineM(a, b),
     walkingS:  route.duration,
-    fiacreS:   route.distance / (12000 / 3600),
     polyline:  route.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
   };
 }
 
 // ─── Icônes Leaflet ──────────────────────────────────────────────────────────
 
-function makePoiIcon(couleur, size = 22) {
-  return L.divIcon({
-    className: '',
-    html: `<div style="width:${size}px;height:${size}px;background:${couleur};border:2.5px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,0.4)"></div>`,
-    iconSize: [size, size], iconAnchor: [size / 2, size], popupAnchor: [0, -(size + 4)],
-  });
+function makePoiIcon(couleur, forme = 'goutte', emoji = '', size = 28) {
+  const bdr = '2.5px solid rgba(255,255,255,0.92)';
+  const sh  = '0 2px 6px rgba(0,0,0,0.45)';
+  const fs  = Math.round(size * 0.44);
+  let html, iconSize, iconAnchor, popupAnchor;
+
+  if (forme === 'cercle') {
+    html = `<div style="width:${size}px;height:${size}px;background:${couleur};border:${bdr};border-radius:50%;box-shadow:${sh};display:flex;align-items:center;justify-content:center"><span style="font-size:${fs}px;line-height:1">${emoji}</span></div>`;
+    iconSize = [size, size]; iconAnchor = [size/2, size/2]; popupAnchor = [0, -(size/2+4)];
+  } else if (forme === 'etoile') {
+    html = `<div style="width:${size}px;height:${size}px;background:${couleur};clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);display:flex;align-items:center;justify-content:center;padding-top:${Math.round(size*.08)}px"><span style="font-size:${Math.round(fs*.85)}px;line-height:1">${emoji}</span></div>`;
+    iconSize = [size, size]; iconAnchor = [size/2, size*.7]; popupAnchor = [0, -(size*.7+4)];
+  } else if (forme === 'diamant') {
+    html = `<div style="width:${size}px;height:${size}px;background:${couleur};border:${bdr};transform:rotate(45deg);box-shadow:${sh};display:flex;align-items:center;justify-content:center"><span style="transform:rotate(-45deg);font-size:${Math.round(fs*.85)}px;line-height:1">${emoji}</span></div>`;
+    iconSize = [size, size]; iconAnchor = [size/2, size]; popupAnchor = [0, -(size+4)];
+  } else if (forme === 'bouclier') {
+    html = `<div style="width:${size}px;height:${size}px;background:${couleur};clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%);display:flex;align-items:center;justify-content:center;padding-top:${Math.round(size*.1)}px"><span style="font-size:${Math.round(fs*.85)}px;line-height:1">${emoji}</span></div>`;
+    iconSize = [size, size]; iconAnchor = [size/2, size]; popupAnchor = [0, -(size+4)];
+  } else { // goutte (default)
+    html = `<div style="width:${size}px;height:${size}px;background:${couleur};border:${bdr};border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:${sh};display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);font-size:${fs}px;line-height:1;display:block">${emoji}</span></div>`;
+    iconSize = [size, size]; iconAnchor = [size/2, size]; popupAnchor = [0, -(size+4)];
+  }
+
+  return L.divIcon({ className: '', html, iconSize, iconAnchor, popupAnchor });
 }
 
 const ICON_START = L.divIcon({ className: '', html: `<div style="width:14px;height:14px;background:#15803d;border:2.5px solid white;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.4)"></div>`, iconSize: [14,14], iconAnchor: [7,7] });
@@ -102,15 +157,73 @@ function FlyToLocation({ position }) {
 
 // ─── Formulaire POI (ajout + édition) ────────────────────────────────────────
 
-function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isSA, submitLabel = 'Épingler' }) {
+function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isSA, submitLabel = 'Épingler', onPositionChange }) {
   const linkedType = POI_TYPES[form.type]?.linkedType;
   const entityList = linkedType === 'character' ? linkedEntities.characters : linkedType === 'cercle' ? linkedEntities.cercles : [];
   const visibiliteOptions = isSA
     ? Object.entries(VISIBILITE)
     : Object.entries(VISIBILITE).filter(([k]) => k !== 'admin');
 
+  const [adresseResults, setAdresseResults] = useState([]);
+  const [adresseSearching, setAdresseSearching] = useState(false);
+
+  const searchAdresse = useCallback(async () => {
+    if (!form.adresse?.trim()) return;
+    setAdresseSearching(true);
+    try {
+      const q = encodeURIComponent(form.adresse + ', Paris');
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&addressdetails=1&viewbox=2.224,48.902,2.470,48.815&bounded=1&accept-language=fr`,
+        { headers: { 'User-Agent': 'LesHeritiers/1.0' } }
+      );
+      setAdresseResults(await res.json());
+    } catch { /* silent */ }
+    finally { setAdresseSearching(false); }
+  }, [form.adresse]);
+
   return (
     <div className="space-y-2">
+      {/* Adresse avec géocodage */}
+      <div>
+        <div className="flex gap-1.5">
+          <input
+            type="text" placeholder="Adresse (ex: 38 rue Madame)"
+            value={form.adresse || ''}
+            onChange={e => onChange({ ...form, adresse: e.target.value })}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); searchAdresse(); } }}
+            className="flex-1 px-2 py-1.5 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+          />
+          <button onClick={searchAdresse} disabled={adresseSearching} type="button"
+            className="px-2 py-1.5 bg-amber-100 text-amber-900 rounded-lg hover:bg-amber-200 transition-colors disabled:opacity-50 shrink-0"
+          >
+            {adresseSearching ? <Loader size={11} className="animate-spin" /> : <Search size={11} />}
+          </button>
+        </div>
+        {adresseResults.length > 0 && (
+          <div className="mt-1 max-h-28 overflow-y-auto custom-scrollbar border border-amber-100 rounded-lg bg-white">
+            {adresseResults.map((r, i) => {
+              const a = r.address || {};
+              const adresse = [a.house_number, a.road].filter(Boolean).join(' ') || r.display_name.split(',')[0].trim();
+              const label = r.display_name.split(',').slice(0, 2).join(',');
+              return (
+                <button key={i} type="button"
+                  onClick={() => {
+                    const lat = parseFloat(r.lat);
+                    const lng = parseFloat(r.lon);
+                    onChange({ ...form, adresse });
+                    onPositionChange?.(lat, lng);
+                    setAdresseResults([]);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs text-stone-700 hover:bg-amber-50 transition-colors whitespace-normal break-words leading-snug"
+                >
+                  📍 {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      {/* Nom */}
       <input
         type="text" placeholder="Nom du lieu *" value={form.nom}
         onChange={e => onChange({ ...form, nom: e.target.value })}
@@ -129,8 +242,23 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isS
         }}
         className="w-full px-2 py-1.5 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
       >
-        {Object.entries(POI_TYPES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+        {Object.entries(POI_TYPES).map(([k, v]) => <option key={k} value={k}>{v.emoji} {v.label}</option>)}
       </select>
+      {/* Forme + Couleur */}
+      <div className="flex gap-2 items-center">
+        <div className="flex gap-1 flex-1">
+          {Object.entries(POI_FORMES).map(([k, v]) => (
+            <button key={k} type="button" onClick={() => onChange({ ...form, forme: k })} title={v.label}
+              className={`flex-1 py-1 rounded text-base leading-none transition-colors ${form.forme === k ? 'bg-amber-900 text-white shadow-inner' : 'bg-stone-100 text-stone-500 hover:bg-amber-50 hover:text-amber-900'}`}
+            >{v.symbol}</button>
+          ))}
+        </div>
+        <input type="color" value={form.couleur}
+          onChange={e => onChange({ ...form, couleur: e.target.value })}
+          className="w-9 h-8 rounded cursor-pointer border border-amber-200 p-0.5 bg-white shrink-0"
+          title="Couleur de l'épingle"
+        />
+      </div>
       {linkedType && entityList.length > 0 && (
         <select
           value={form.linked_entity_id || ''}
@@ -175,6 +303,45 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isS
   );
 }
 
+// ─── Formulaire mode personnalisé ────────────────────────────────────────────
+
+function ModePersoForm({ form, onChange, onSave, onCancel }) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex gap-1.5">
+        <input type="text" placeholder="🚀" value={form.emoji}
+          onChange={e => onChange({ ...form, emoji: e.target.value })}
+          className="w-10 px-1 py-1 border border-amber-200 rounded text-center text-base bg-white focus:outline-none"
+        />
+        <input type="text" placeholder="Nom du mode *" value={form.nom}
+          onChange={e => onChange({ ...form, nom: e.target.value })}
+          className="flex-1 px-2 py-1 border border-amber-200 rounded text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <input type="number" min={1} max={999} step={1} value={form.vitesse_kmh}
+          onChange={e => onChange({ ...form, vitesse_kmh: e.target.value })}
+          className="w-16 px-2 py-1 border border-amber-200 rounded text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+        />
+        <span className="text-xs text-stone-500">km/h</span>
+        <label className="flex items-center gap-1 ml-auto text-xs text-stone-600 cursor-pointer select-none">
+          <input type="checkbox" checked={form.en_vol}
+            onChange={e => onChange({ ...form, en_vol: e.target.checked })}
+            className="accent-amber-700"
+          />
+          En vol
+        </label>
+      </div>
+      <div className="flex gap-1.5">
+        <button onClick={onSave} disabled={!form.nom?.trim() || !form.vitesse_kmh}
+          className="flex-1 px-2 py-1 bg-amber-900 text-white rounded text-xs font-bold disabled:opacity-50 hover:bg-amber-800 transition-colors"
+        >Enregistrer</button>
+        <button onClick={onCancel} className="px-2 py-1 bg-stone-100 text-stone-500 rounded text-xs hover:bg-stone-200 transition-colors"><X size={11} /></button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Composant principal ─────────────────────────────────────────────────────
 
 export default function CarteDeParisPage({ onBack, userProfile, session }) {
@@ -187,6 +354,12 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
   const [routePts, setRoutePts]   = useState([]);
   const [routeData, setRouteData] = useState(null);
   const [routeLoading, setRouteLoading] = useState(false);
+
+  // ── Itinéraire — modes de transport ───────────────────────────────────────
+  const [activeMode,      setActiveMode]      = useState('pied');
+  const [modePerso,       setModePerso]       = useState(null);
+  const [editModePerso,   setEditModePerso]   = useState(false);
+  const [modePersoForm,   setModePersoForm]   = useState({ nom: '', emoji: '⚙️', vitesse_kmh: 10, en_vol: false });
 
   // ── POI ───────────────────────────────────────────────────────────────────
   const [selectedPt, setSelectedPt] = useState(null);
@@ -232,6 +405,30 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
     });
   }, []);
 
+  // ── Mode personnalisé (chargement + sauvegarde) ───────────────────────────
+  useEffect(() => {
+    if (!userId) return;
+    supabase.from('itineraire_modes_perso').select('*').eq('user_id', userId).maybeSingle()
+      .then(({ data }) => { if (data) { setModePerso(data); setModePersoForm(data); } });
+  }, [userId]);
+
+  const saveModePerso = useCallback(async () => {
+    if (!modePersoForm.nom?.trim() || !modePersoForm.vitesse_kmh) return;
+    try {
+      const payload = {
+        user_id:      userId,
+        nom:          modePersoForm.nom.trim(),
+        emoji:        modePersoForm.emoji || '⚙️',
+        vitesse_kmh:  parseFloat(modePersoForm.vitesse_kmh),
+        en_vol:       !!modePersoForm.en_vol,
+      };
+      await supabase.from('itineraire_modes_perso').upsert(payload, { onConflict: 'user_id' });
+      setModePerso(payload);
+      setEditModePerso(false);
+      showInAppNotification('Mode personnalisé enregistré', 'success');
+    } catch { showInAppNotification('Erreur de sauvegarde', 'error'); }
+  }, [userId, modePersoForm]);
+
   // ── Recherche ─────────────────────────────────────────────────────────────
   const [searchQuery,   setSearchQuery]   = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -263,7 +460,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
   const handleToolChange = useCallback((t) => {
     setTool(t);
     setRoutePts([]); setRouteData(null); setNewPoiPos(null);
-    setSearchResults([]);
+    setSearchResults([]); setEditModePerso(false);
   }, []);
 
   // ── Clic sur la carte ─────────────────────────────────────────────────────
@@ -292,7 +489,8 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
       await addPoint({
         nom: newPoiForm.nom.trim(), description: newPoiForm.description.trim() || null,
         lat: newPoiPos.lat, lng: newPoiPos.lng,
-        type: newPoiForm.type, couleur: newPoiForm.couleur,
+        type: newPoiForm.type, couleur: newPoiForm.couleur, forme: newPoiForm.forme || 'goutte',
+        adresse: newPoiForm.adresse?.trim() || null,
         linked_entity_type:   newPoiForm.linked_entity_type   || null,
         linked_entity_id:     newPoiForm.linked_entity_id     || null,
         visibilite:           newPoiForm.visibilite,
@@ -307,7 +505,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
 
   // ── Édition POI ───────────────────────────────────────────────────────────
   const startEdit = useCallback((pt) => {
-    setEditForm({ nom: pt.nom, description: pt.description || '', type: pt.type, couleur: pt.couleur, linked_entity_type: pt.linked_entity_type, linked_entity_id: pt.linked_entity_id, visibilite: pt.visibilite || 'public', visibilite_cercle_id: pt.visibilite_cercle_id || null });
+    setEditForm({ nom: pt.nom, description: pt.description || '', type: pt.type, couleur: pt.couleur, forme: pt.forme || 'goutte', adresse: pt.adresse || '', lat: pt.lat, lng: pt.lng, linked_entity_type: pt.linked_entity_type, linked_entity_id: pt.linked_entity_id, visibilite: pt.visibilite || 'public', visibilite_cercle_id: pt.visibilite_cercle_id || null });
     setIsEditing(true);
   }, []);
 
@@ -317,13 +515,18 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
     try {
       const updated = await updatePoint(selectedPt.id, {
         nom: editForm.nom.trim(), description: editForm.description.trim() || null,
-        type: editForm.type, couleur: editForm.couleur,
+        type: editForm.type, couleur: editForm.couleur, forme: editForm.forme || 'goutte',
+        adresse: editForm.adresse?.trim() || null,
+        lat: editForm.lat, lng: editForm.lng,
         linked_entity_type:   editForm.linked_entity_type   || null,
         linked_entity_id:     editForm.linked_entity_id     || null,
         visibilite:           editForm.visibilite,
         visibilite_cercle_id: editForm.visibilite_cercle_id || null,
       });
       setSelectedPt(updated); setIsEditing(false);
+      if (editForm.lat !== selectedPt.lat || editForm.lng !== selectedPt.lng) {
+        setFlyTo([editForm.lat, editForm.lng]);
+      }
       showInAppNotification('Lieu mis à jour', 'success');
     } catch { showInAppNotification('Erreur lors de la mise à jour', 'error'); }
     finally  { setSaving(false); }
@@ -342,9 +545,9 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
   const hint =
     tool === 'vue'         ? 'Cliquez sur un épingle pour voir les détails.'
     : tool === 'itineraire'
-      ? routePts.length === 0 ? 'Cliquez sur le point de départ.'
-        : routePts.length === 1 ? "Cliquez sur le point d'arrivée."
-        : 'Résultat ci-dessous. Cliquez pour recommencer.'
+      ? routePts.length === 0 ? 'Cliquez 🟢 sur la carte ou un lieu dans la liste.'
+        : routePts.length === 1 ? "Cliquez 🔴 sur la carte ou un lieu dans la liste."
+        : 'Résultat ci-dessous. Cliquez ↺ pour recommencer.'
     : !newPoiPos ? 'Saisissez une adresse ci-dessus ou cliquez sur la carte.'
     : 'Remplissez les informations ci-dessous.';
 
@@ -402,9 +605,9 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
               </button>
             </div>
             {searchResults.length > 0 && (
-              <div className="mt-1.5 space-y-0.5">
+              <div className="mt-1.5 space-y-0.5 max-h-44 overflow-y-auto custom-scrollbar">
                 {searchResults.map((r, i) => {
-                  const label = r.display_name.split(',').slice(0, 2).join(',');
+                  const label = r.display_name.split(',').slice(0, 3).join(',');
                   return (
                     <button key={i}
                       onClick={() => {
@@ -413,14 +616,14 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                         setFlyTo([lat, lng]);
                         if (tool === 'poi') {
                           const a = r.address || {};
-                          const nom = [a.house_number, a.road].filter(Boolean).join(' ') || label.split(',')[0].trim();
+                          const adresse = [a.house_number, a.road].filter(Boolean).join(' ') || label.split(',')[0].trim();
                           setNewPoiPos({ lat, lng });
-                          setNewPoiForm(f => ({ ...f, nom }));
+                          setNewPoiForm(f => ({ ...f, nom: f.nom || adresse, adresse }));
                         }
                         setSearchResults([]);
                         setSearchQuery('');
                       }}
-                      className="w-full text-left px-2 py-1 rounded-lg hover:bg-amber-50 text-xs text-stone-700 truncate transition-colors"
+                      className="w-full text-left px-2 py-1 rounded-lg hover:bg-amber-50 text-xs text-stone-700 leading-snug transition-colors whitespace-normal break-words"
                     >
                       {tool === 'poi' ? '📍 ' : ''}{label}
                     </button>
@@ -472,6 +675,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                 onSave={handleAddPoi} onCancel={() => setNewPoiPos(null)}
                 saving={saving} linkedEntities={linkedEntities} isSA={isSA}
                 submitLabel="Épingler"
+                onPositionChange={(lat, lng) => { setNewPoiPos({ lat, lng }); setFlyTo([lat, lng]); }}
               />
             </div>
           )}
@@ -530,10 +734,22 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                   <div className="py-0.5">
                     {pts.map(pt => (
                       <button key={pt.id}
-                        onClick={() => { setSelectedPt(pt); setIsEditing(false); setFlyTo([pt.lat, pt.lng]); }}
+                        onClick={() => {
+                          if (tool === 'itineraire') {
+                            handleMapClick({ lat: pt.lat, lng: pt.lng });
+                            setFlyTo([pt.lat, pt.lng]);
+                          } else {
+                            setSelectedPt(pt);
+                            setIsEditing(false);
+                            setFlyTo([pt.lat, pt.lng]);
+                          }
+                        }}
                         className={`w-full text-left px-3 py-1.5 hover:bg-amber-50 transition-colors flex items-center gap-2 ${selectedPt?.id === pt.id ? 'bg-amber-50' : ''}`}
                       >
-                        <MapPin size={11} style={{ color: pt.couleur || POI_TYPES[type].couleur }} className="shrink-0" />
+                        {tool === 'itineraire'
+                          ? <span className="text-[10px] shrink-0">{routePts.length === 0 ? '🟢' : routePts.length === 1 ? '🔴' : '↺'}</span>
+                          : <span className="text-sm shrink-0 leading-none">{POI_TYPES[pt.type]?.emoji || '📍'}</span>
+                        }
                         <span className="text-xs text-stone-800 truncate">{pt.nom}</span>
                       </button>
                     ))}
@@ -562,7 +778,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
 
             {/* POI existants */}
             {points.map(pt => (
-              <Marker key={pt.id} position={[pt.lat, pt.lng]} icon={makePoiIcon(pt.couleur || '#92400e')}
+              <Marker key={pt.id} position={[pt.lat, pt.lng]} icon={makePoiIcon(pt.couleur || POI_TYPES[pt.type]?.couleur || '#92400e', pt.forme || 'goutte', POI_TYPES[pt.type]?.emoji || '')}
                 eventHandlers={{ click: () => {
                   if (tool === 'itineraire') {
                     handleMapClick({ lat: pt.lat, lng: pt.lng });
@@ -575,7 +791,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
               />
             ))}
             {/* Nouveau POI en attente */}
-            {newPoiPos && <Marker position={[newPoiPos.lat, newPoiPos.lng]} icon={makePoiIcon(newPoiForm.couleur, 18)} />}
+            {newPoiPos && <Marker position={[newPoiPos.lat, newPoiPos.lng]} icon={makePoiIcon(newPoiForm.couleur, newPoiForm.forme || 'goutte', POI_TYPES[newPoiForm.type]?.emoji || '', 22)} />}
             {/* Marqueurs itinéraire */}
             {routePts[0] && <Marker position={[routePts[0].lat, routePts[0].lng]} icon={ICON_START} />}
             {routePts[1] && <Marker position={[routePts[1].lat, routePts[1].lng]} icon={ICON_END}   />}
@@ -585,20 +801,76 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
 
           {/* Résultat itinéraire */}
           {tool === 'itineraire' && (routeLoading || routeData) && (
-            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-[#fdfbf7] border-2 border-amber-900/20 rounded-xl shadow-xl px-5 py-3 flex items-center gap-5 font-serif">
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-[#fdfbf7] border-2 border-amber-900/20 rounded-xl shadow-xl font-serif min-w-[300px]">
               {routeLoading ? (
-                <span className="text-amber-900 flex items-center gap-2 text-sm"><Loader size={15} className="animate-spin" /> Calcul…</span>
+                <div className="px-5 py-3">
+                  <span className="text-amber-900 flex items-center gap-2 text-sm"><Loader size={15} className="animate-spin" /> Calcul…</span>
+                </div>
               ) : routeData && (
                 <>
-                  <div className="text-center">
-                    <p className="text-amber-900 font-bold text-xl leading-none">{formatDistance(routeData.distanceM)}</p>
-                    <p className="text-stone-400 text-[10px] uppercase tracking-wider mt-0.5">Distance</p>
+                  {/* Distances */}
+                  <div className="flex items-center gap-3 px-4 pt-3 pb-2 border-b border-amber-100">
+                    <div className="text-center">
+                      <p className="text-amber-900 font-bold text-lg leading-none">{formatDistance(routeData.distanceM)}</p>
+                      <p className="text-stone-400 text-[9px] uppercase tracking-wider mt-0.5">Route</p>
+                    </div>
+                    <div className="text-stone-200 text-lg">·</div>
+                    <div className="text-center">
+                      <p className="text-stone-500 font-bold text-lg leading-none">{formatDistance(routeData.flyingM)}</p>
+                      <p className="text-stone-400 text-[9px] uppercase tracking-wider mt-0.5">Vol d'oiseau</p>
+                    </div>
+                    <button onClick={() => { setRoutePts([]); setRouteData(null); }} className="ml-auto text-stone-300 hover:text-stone-500" aria-label="Effacer"><X size={14} /></button>
                   </div>
-                  <div className="border-l border-amber-200 pl-4 space-y-1 text-sm">
-                    <div className="flex items-center gap-2 text-stone-700">🚶 À pied : <strong>{formatTime(routeData.walkingS)}</strong></div>
-                    <div className="flex items-center gap-2 text-stone-700">🐴 En fiacre : <strong>{formatTime(routeData.fiacreS)}</strong></div>
+
+                  {/* Onglets modes */}
+                  <div className="flex border-b border-amber-100">
+                    {TRANSPORT_MODES.map(m => (
+                      <button key={m.id} onClick={() => setActiveMode(m.id)} title={m.label}
+                        className={`flex-1 py-2 text-base leading-none transition-colors ${activeMode === m.id ? 'bg-amber-50 border-b-2 border-amber-900' : 'hover:bg-amber-50/60'}`}
+                      >{m.emoji}</button>
+                    ))}
+                    <button
+                      onClick={() => { setActiveMode('perso'); if (!modePerso) setEditModePerso(true); }}
+                      title={modePerso?.nom || 'Mode personnalisé'}
+                      className={`flex-1 py-2 text-base leading-none transition-colors ${activeMode === 'perso' ? 'bg-amber-50 border-b-2 border-amber-900' : 'hover:bg-amber-50/60'}`}
+                    >{modePerso?.emoji || '⚙️'}</button>
                   </div>
-                  <button onClick={() => { setRoutePts([]); setRouteData(null); }} className="text-stone-300 hover:text-stone-500" aria-label="Effacer l'itinéraire"><X size={16} /></button>
+
+                  {/* Contenu de l'onglet actif */}
+                  <div className="px-4 py-3">
+                    {activeMode === 'perso' && editModePerso ? (
+                      <ModePersoForm
+                        form={modePersoForm} onChange={setModePersoForm}
+                        onSave={saveModePerso}
+                        onCancel={() => { setEditModePerso(false); if (!modePerso) setActiveMode('pied'); }}
+                      />
+                    ) : activeMode === 'perso' && !modePerso ? (
+                      <button onClick={() => setEditModePerso(true)} className="text-xs text-amber-700 underline hover:text-amber-900">
+                        Configurer mon mode de déplacement…
+                      </button>
+                    ) : (() => {
+                      const t   = modeTime(routeData, activeMode, modePerso);
+                      const m   = activeMode === 'perso' ? modePerso : TRANSPORT_MODES.find(x => x.id === activeMode);
+                      const isVol = activeMode === 'perso' && modePerso?.en_vol;
+                      return (
+                        <div className="flex items-end justify-between">
+                          <div>
+                            <p className="text-xs text-stone-400 mb-0.5">{m?.emoji} {m?.label || m?.nom}</p>
+                            <p className="text-3xl font-bold text-amber-900 leading-none">{t != null ? formatTime(t) : '—'}</p>
+                            {isVol && <p className="text-[10px] text-stone-400 italic mt-0.5">↗ En vol d'oiseau</p>}
+                            {!isVol && activeMode !== 'pied' && m?.vitesse_kmh && (
+                              <p className="text-[10px] text-stone-400 mt-0.5">{m.vitesse_kmh} km/h</p>
+                            )}
+                          </div>
+                          {activeMode === 'perso' && (
+                            <button onClick={() => setEditModePerso(true)} className="text-stone-300 hover:text-stone-500 mb-1" title="Modifier le mode">
+                              <Edit size={13} />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </>
               )}
             </div>
@@ -621,6 +893,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                 onSave={handleEditSave} onCancel={() => setIsEditing(false)}
                 saving={saving} linkedEntities={linkedEntities} isSA={isSA}
                 submitLabel="Enregistrer"
+                onPositionChange={(lat, lng) => { setEditForm(f => ({ ...f, lat, lng })); setFlyTo([lat, lng]); }}
               />
             ) : (
               <>
@@ -635,6 +908,11 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                 {selectedPt.visibilite === 'cercle' && selectedPt.visibilite_cercle_id && (
                   <p className="text-xs text-amber-700 font-semibold mb-2">
                     🔵 {linkedEntities.cercles.find(c => c.id === selectedPt.visibilite_cercle_id)?.nom || '—'}
+                  </p>
+                )}
+                {selectedPt.adresse && (
+                  <p className="text-xs text-amber-800 font-medium mb-2 flex items-center gap-1">
+                    <MapPin size={11} className="shrink-0" /> {selectedPt.adresse}
                   </p>
                 )}
                 {linkedLabel && (
