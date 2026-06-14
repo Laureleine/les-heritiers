@@ -1,6 +1,7 @@
 // src/components/CharacterCard.js
-import React from 'react';
-import { Globe, Sparkles, Edit, Eye, FileText, Download, EyeOff, BookOpen, Copy, Gift, Trash2, User, Calendar, MessageCircle } from '../config/icons';
+import React, { useState } from 'react';
+import { Globe, Sparkles, Edit, Eye, FileText, Download, EyeOff, BookOpen, Copy, Gift, Trash2, User, Calendar, MessageCircle, AlertTriangle } from '../config/icons';
+import { isSuperAdmin } from '../utils/authRoles';
 
 // ─── Constantes admin (badges de réparation XP) ────────────────────────────
 const REPAIR_BADGE = {
@@ -36,6 +37,9 @@ const CharacterCard = React.memo(({
   needsRepair,      // joueur: boolean — journal détecté incomplet
   onRequestRepair,  // joueur: (charId, charNom) => void — demande à l'admin
 }) => {
+
+  const [showSuperAdminModal, setShowSuperAdminModal] = useState(false);
+  const isSA = isSuperAdmin(userProfile);
 
   const getProfilInfo = (nomBrut, sexe) => {
     if (!profils || profils.length === 0 || !nomBrut) return { icon: '👤', text: nomBrut || '-' };
@@ -192,6 +196,12 @@ const CharacterCard = React.memo(({
                   <BookOpen size={15}/>
                 </button>
               )}
+              {/* ✏️ Bouton Modifier (Super Admin uniquement) */}
+              {isSA && (
+                <button onClick={() => setShowSuperAdminModal(true)} className="p-1.5 text-purple-400 hover:text-purple-700 hover:bg-purple-50 rounded transition-colors" title="Modifier ce personnage (Super Admin)" aria-label="Modifier ce personnage (Super Admin)">
+                  <Edit size={15}/>
+                </button>
+              )}
               <button onClick={() => onAppropriate(char)} className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-white rounded transition-colors" title="Adopter cet Héritage (Cloner dans mon Grimoire)" aria-label="Adopter cet Héritage">
                 <Copy size={15}/>
               </button>
@@ -202,6 +212,39 @@ const CharacterCard = React.memo(({
       </div>
 
       {/* 4. FOOTER */}
+      {/* Modale Super Admin */}
+      {showSuperAdminModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-stone-900/70 backdrop-blur-sm p-4" onClick={() => setShowSuperAdminModal(false)}>
+          <div className="bg-[#fdfbf7] rounded-xl shadow-2xl border-2 border-purple-300 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+            <div className="bg-purple-800 text-white px-5 py-3 rounded-t-xl flex items-center gap-3">
+              <AlertTriangle size={20} className="text-yellow-300 shrink-0" />
+              <span className="font-serif font-bold text-base">Mode Super Admin</span>
+            </div>
+            <div className="px-5 py-4 space-y-3">
+              <p className="text-sm text-stone-700 leading-relaxed">
+                Tu t'apprêtes à modifier le personnage <strong className="text-amber-900">{char.nom}</strong>, appartenant à <strong className="text-blue-800">{char.ownerUsername || 'un autre joueur'}</strong>.
+              </p>
+              <p className="text-xs text-stone-500 italic border-l-2 border-purple-200 pl-3">
+                Ce n'est pas ton personnage. Les modifications seront sauvegardées directement en base et visibles par le joueur.
+              </p>
+            </div>
+            <div className="px-5 pb-4 flex gap-2 justify-end">
+              <button
+                onClick={() => setShowSuperAdminModal(false)}
+                className="px-4 py-1.5 text-sm text-stone-600 hover:text-stone-900 border border-stone-200 rounded-lg hover:bg-stone-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => { setShowSuperAdminModal(false); onSelect(char); }}
+                className="px-4 py-1.5 text-sm font-bold bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-colors flex items-center gap-1.5"
+              >
+                <Edit size={13} /> Modifier malgré tout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="bg-stone-50 px-4 py-2 border-t border-stone-100 flex justify-between items-center text-[10px] text-stone-400 mt-auto">
         <div className="flex items-center gap-1.5">
           {!isMyCharacter && (
