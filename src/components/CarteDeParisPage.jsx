@@ -224,7 +224,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
     try {
       const q = encodeURIComponent(searchQuery + ', Paris');
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&viewbox=2.224,48.902,2.470,48.815&bounded=1&accept-language=fr`,
+        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&addressdetails=1&viewbox=2.224,48.902,2.470,48.815&bounded=1&accept-language=fr`,
         { headers: { 'User-Agent': 'LesHeritiers/1.0' } }
       );
       setSearchResults(await res.json());
@@ -324,7 +324,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
       ? routePts.length === 0 ? 'Cliquez sur le point de départ.'
         : routePts.length === 1 ? "Cliquez sur le point d'arrivée."
         : 'Résultat ci-dessous. Cliquez pour recommencer.'
-    : !newPoiPos ? 'Cliquez sur la carte pour placer le lieu.'
+    : !newPoiPos ? 'Saisissez une adresse ci-dessus ou cliquez sur la carte.'
     : 'Remplissez les informations ci-dessous.';
 
   // ── Droits de modification du POI sélectionné ────────────────────────────
@@ -364,10 +364,14 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
 
           {/* Recherche */}
           <div className="p-3 border-b border-amber-100">
-            <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">Recherche</p>
+            <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">
+              {tool === 'poi' ? 'Adresse du lieu' : 'Recherche'}
+            </p>
             <div className="flex gap-1.5">
               <input
-                type="text" placeholder="Rue, quartier…" value={searchQuery}
+                type="text"
+                placeholder={tool === 'poi' ? '38 rue Madame…' : 'Rue, quartier…'}
+                value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 className="flex-1 px-2 py-1.5 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
@@ -378,14 +382,29 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             </div>
             {searchResults.length > 0 && (
               <div className="mt-1.5 space-y-0.5">
-                {searchResults.map((r, i) => (
-                  <button key={i}
-                    onClick={() => { setFlyTo([parseFloat(r.lat), parseFloat(r.lon)]); setSearchResults([]); setSearchQuery(''); }}
-                    className="w-full text-left px-2 py-1 rounded-lg hover:bg-amber-50 text-xs text-stone-700 truncate transition-colors"
-                  >
-                    {r.display_name.split(',').slice(0, 2).join(',')}
-                  </button>
-                ))}
+                {searchResults.map((r, i) => {
+                  const label = r.display_name.split(',').slice(0, 2).join(',');
+                  return (
+                    <button key={i}
+                      onClick={() => {
+                        const lat = parseFloat(r.lat);
+                        const lng = parseFloat(r.lon);
+                        setFlyTo([lat, lng]);
+                        if (tool === 'poi') {
+                          const a = r.address || {};
+                          const nom = [a.house_number, a.road].filter(Boolean).join(' ') || label.split(',')[0].trim();
+                          setNewPoiPos({ lat, lng });
+                          setNewPoiForm(f => ({ ...f, nom }));
+                        }
+                        setSearchResults([]);
+                        setSearchQuery('');
+                      }}
+                      className="w-full text-left px-2 py-1 rounded-lg hover:bg-amber-50 text-xs text-stone-700 truncate transition-colors"
+                    >
+                      {tool === 'poi' ? '📍 ' : ''}{label}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
