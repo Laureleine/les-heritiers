@@ -5,7 +5,12 @@ import { XP_CODES } from './xpActions';
 
 export const reconstructHistory = (character, gameData) => {
   const transactions = [];
-  let timeOffset = 100000; // On recule dans le temps (en millisecondes) pour l'ordre d'affichage
+  // Ancre temporelle : date de création du personnage (ou date de scellage si connue).
+  // On ne doit jamais utiliser Date.now() ici — les dates seraient perdues à chaque re-sauvegarde.
+  const anchor = character.created_at
+    ? new Date(character.created_at).getTime()
+    : new Date('2026-01-01T00:00:00.000Z').getTime();
+  let timeOffset = 0;
 
   const addTx = (label, valeur, rang_final = null, code = XP_CODES.XP_HISTORIQUE) => {
     if (valeur <= 0) return;
@@ -15,10 +20,10 @@ export const reconstructHistory = (character, gameData) => {
       label,
       valeur,
       rang_final,
-      // Chaque transaction est espacée d'une seconde pour garantir un ordre chronologique propre
-      date_mouvement: new Date(Date.now() - timeOffset).toISOString()
+      // Chaque transaction est espacée d'une seconde avant la date d'ancrage
+      date_mouvement: new Date(anchor - timeOffset).toISOString()
     });
-    timeOffset -= 1000;
+    timeOffset += 1000;
   };
 
   const scellees = character.data?.stats_scellees || {};
