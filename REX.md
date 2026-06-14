@@ -1,14 +1,13 @@
-# REX — Session 14 Juin 2026 (suite) — v17.4.12 "L'Arpenteur de Paris 📍🔍"
+# REX — Session 14 Juin 2026 (suite 2) — v17.4.13 "La Carte Vivante 🗺️🎨"
 
 ## Ce qui a été livré
 
-- Fix curseur temporel carte : paramètre `?date=1900-01-01` sur les tuiles OHM + labels inversement proportionnels à l'opacité OHM
-- Fix modale POI derrière la carte : `createPortal` vers `document.body` pour passer au-dessus de Leaflet
-- Visibilité des POI : Public / Cercle / Privé / Admin + migration SQL + RLS + canEdit docte
-- Placement POI par adresse Nominatim (geocoding exact, pré-remplissage du nom)
-- Centrage carte au clic sur un POI (liste ou marqueur)
-- Marqueurs POI utilisables comme points d'itinéraire en mode Itinéraire
-- Accordéons par type + filtre texte + filtre type dans la liste POI
+- Sélection des POI depuis la liste latérale en mode Itinéraire (indicateurs 🟢🔴↺)
+- Résultats de recherche scrollables (max-h + whitespace-normal, plus de troncature)
+- Épingles POI : emoji par type + 5 formes CSS (goutte, cercle, étoile, diamant, bouclier) + color picker
+- Adresse stockée en base, affichée dans la fiche, modifiable avec géocodage (déplace l'épingle)
+- 5 modes de transport en onglets + vol d'oiseau (Haversine) + mode perso Supabase
+- 3 migrations Supabase : `map_points.forme`, `map_points.adresse`, table `itineraire_modes_perso`
 
 ---
 
@@ -17,7 +16,7 @@
 ### Isolation worktree en session background
 
 - **Après compression de contexte, l'isolation worktree est réinitialisée.** Si les premières éditions passent puis les suivantes échouent avec "This background session hasn't isolated its changes yet", c'est que le contexte a été compressé et l'état d'isolation perdu. Solution : relancer `EnterWorktree` avec le chemin du worktree existant — cela re-satisfait le garde sans créer de nouveau worktree.
-- **L'erreur "is the current working directory" est trompeuse** : elle survient quand on est DÉJÀ dans le worktree à l'ouverture de session. Relancer EnterWorktree après compression fonctionne car la condition de garde change.
+- **L'erreur "is the current working directory" est trompeuse** : elle survient quand on est DÉJÀ dans le worktree à l'ouverture de session. La même erreur survient si on est dans le worktree ET que le contexte a été compressé — dans ce cas, relancer EnterWorktree avec le chemin échoue sur "is the current working directory" mais les éditions passent quand même (le garde est satisfait par la position courante).
 
 ### Read avant Edit obligatoire après EnterWorktree
 
@@ -30,27 +29,49 @@
 
 ### OHM (OpenHistoricalMap)
 
-- **Le paramètre `?date=YYYY-MM-DD` est requis** pour obtenir les tuiles historiques. Sans lui, OHM renvoie des tuiles vides ou un état "actuel" (quasi-vide dans OHM). Le slider ne faisait rien parce qu'il changeait l'opacité de tuiles transparentes.
+- **Le paramètre `?date=YYYY-MM-DD` est requis** pour obtenir les tuiles historiques. Sans lui, OHM renvoie des tuiles vides ou un état "actuel" (quasi-vide dans OHM).
 - **Les labels CartoDB doivent être inversés** : `opacity={0.75 * (1 - ohmOpacity)}` — quand la carte 1900 est à fond, les noms de rues modernes disparaissent.
 
 ### Nominatim + adressdetails
 
-- Ajouter `&addressdetails=1` à la requête Nominatim pour obtenir `r.address.house_number` et `r.address.road` — permet de construire un nom propre ("38 Rue Madame") au lieu d'utiliser le `display_name` complet qui contient arrondissement, ville, pays…
-- La construction : `[a.house_number, a.road].filter(Boolean).join(' ')` avec fallback sur `label.split(',')[0].trim()` si address est incomplet.
+- Ajouter `&addressdetails=1` à la requête Nominatim pour obtenir `r.address.house_number` et `r.address.road`.
+- La construction : `[a.house_number, a.road].filter(Boolean).join(' ')` avec fallback sur `label.split(',')[0].trim()`.
 
 ### React-leaflet eventHandlers et state closures
 
-- Les `eventHandlers` des `<Marker>` capturent le state au moment du rendu. Si `tool` change, les handlers des marqueurs déjà rendus ont l'ancienne valeur de `tool`. Pour éviter les closures périmées, utiliser une ref sur `tool` ou s'assurer que le state utilisé dans le handler est bien capturé à chaque re-render.
+- Les `eventHandlers` des `<Marker>` capturent le state au moment du rendu. Si `tool` change, les handlers des marqueurs déjà rendus ont l'ancienne valeur de `tool`.
 
 ### RLS avec conditions multi-tables
 
-- Pour les politiques SELECT impliquant plusieurs tables (ex: `cercle_membres` + `cercles`), chaque branche d'un EXISTS doit être un sous-SELECT indépendant et complet — pas de JOIN dans la clause USING de la politique.
+- Pour les politiques SELECT impliquant plusieurs tables, chaque branche d'un EXISTS doit être un sous-SELECT indépendant et complet.
 - Tester les politiques avec `execute_sql` depuis MCP Supabase avant d'appliquer la migration.
+
+### Haversine vs OSRM
+
+- **Distance OSRM** : suit le réseau routier. Pour la marche, OSRM foot donne la durée native (~5 km/h + pénalités intersection). Pour les autres modes, appliquer `distanceM / (vitesse * 1000 / 3600)`.
+- **Distance Haversine** : droite géographique entre deux points. Formule pure, pas d'appel réseau. Utile pour "vol d'oiseau" ou pour les modes qui ignorent le relief (fées, êtres volants…).
+- Le ratio route/vol d'oiseau à Paris est typiquement 1.1–1.4× (rues ≠ ligne droite).
+
+### Hooks React dans des sous-composants
+
+- `useState` et `useCallback` sont utilisables dans n'importe quel composant fonction React, pas seulement dans le composant principal. `PoiForm` utilise son propre state pour le géocodage d'adresse sans polluer le parent.
+
+### Supabase upsert avec clé primaire
+
+- Pour les tables avec `user_id` en PRIMARY KEY (une ligne par user), utiliser `supabase.from('table').upsert(payload, { onConflict: 'user_id' })` pour créer ou mettre à jour en une seule opération.
+
+### Formes CSS pour icônes Leaflet (divIcon)
+
+- `border-radius: 50% 50% 50% 0; transform: rotate(-45deg)` → goutte (teardrop). L'emoji intérieur doit être `transform: rotate(45deg)` pour rester lisible.
+- `clip-path: polygon(50% 0%, 61% 35%, ...)` → étoile à 5 branches. Pas de box-shadow possible sur clip-path.
+- `clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)` → bouclier/pentagone.
+- Pour chaque forme, l'`iconAnchor` doit pointer le bas de la forme (tip géographique), pas le centre de la bounding box.
 
 ---
 
 ## Ce qui reste à faire
 
 - **Affichage des demandes joueurs dans TabRepairJournaux** (laissé de côté en v17.4.11) : la table `journal_repair_requests` existe, mais l'onglet ne la consulte pas encore.
-- **Tests de la carte** : les composants Leaflet ne sont pas testés (dépendance DOM + API géo). Acceptable — tester manuellement dans le navigateur reste la bonne approche.
-- **Vérifier OHM en prod** : confirmer visuellement que les tuiles 1900 apparaissent bien avec `?date=1900-01-01` sur le déploiement Vercel (possible rate-limiting ou CORS à surveiller).
+- **Tests de la carte** : les composants Leaflet ne sont pas testés (dépendance DOM + API géo). Tester manuellement dans le navigateur.
+- **Vérifier OHM en prod** : confirmer visuellement que les tuiles 1900 apparaissent bien.
+- **Vercel MCP 403** : le token Vercel en session background n'a pas accès au scope team. Vérifier le déploiement directement dans l'interface Vercel ou via le navigateur.
