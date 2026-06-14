@@ -12,7 +12,8 @@ import { supabase } from '../config/supabase';
 // ─── Tuiles ──────────────────────────────────────────────────────────────────
 
 // OpenHistoricalMap : vraies données historiques (rues disparues, noms d'époque…)
-const TILE_OHM    = 'https://tile.openhistoricalmap.org/osmhm/{z}/{x}/{y}.png';
+// Le paramètre date=1900-01-01 est requis pour que OHM renvoie les tuiles historiques
+const TILE_OHM    = 'https://tile.openhistoricalmap.org/osmhm/{z}/{x}/{y}.png?date=1900-01-01';
 // CartoDB Positron : fond de secours + labels modernes en transparence
 const TILE_BASE   = 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
 const TILE_LABELS = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png';
@@ -423,8 +424,8 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             <TileLayer url={TILE_BASE} attribution={ATTRIBUTION} maxZoom={19} subdomains="abcd" />
             {/* Carte historique OpenHistoricalMap par-dessus, opacité réglable */}
             <TileLayer url={TILE_OHM} maxZoom={19} opacity={ohmOpacity} />
-            {/* Labels de rues modernes en transparence */}
-            <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" opacity={0.75} />
+            {/* Labels modernes : s'effacent quand on monte vers 1900 */}
+            <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" opacity={0.75 * (1 - ohmOpacity)} />
 
             <MapClickHandler tool={tool} onMapClick={handleMapClick} />
             {flyTo && <FlyToLocation position={flyTo} />}
