@@ -10,20 +10,10 @@ export const reconstructHistory = (character, gameData) => {
   const anchor = character.created_at
     ? new Date(character.created_at).getTime()
     : new Date('2026-01-01T00:00:00.000Z').getTime();
-  let timeOffset = 0;
-
   const addTx = (label, valeur, rang_final = null, code = XP_CODES.XP_HISTORIQUE) => {
     if (valeur <= 0) return;
-    transactions.push({
-      type: 'DEPENSE',
-      code,
-      label,
-      valeur,
-      rang_final,
-      // Chaque transaction est espacée d'une seconde avant la date d'ancrage
-      date_mouvement: new Date(anchor - timeOffset).toISOString()
-    });
-    timeOffset += 1000;
+    // date_mouvement assignée en fin de fonction (deux passes) pour garantir l'ordre croissant
+    transactions.push({ type: 'DEPENSE', code, label, valeur, rang_final, date_mouvement: null });
   };
 
   const scellees = character.data?.stats_scellees || {};
@@ -168,6 +158,13 @@ export const reconstructHistory = (character, gameData) => {
   for (let i = baseFortune; i < curFortune; i++) {
     addTx(`Élévation Sociale : Fortune`, getFortuneCost(i, fortuneStats, fortuneSpecialites), i + 1, XP_CODES.FORTUNE_ELEVATION);
   }
+
+  // Deux passes : dates assignées ici pour garantir l'ordre chronologique croissant
+  // (1ère tx = plus ancienne, N-ième tx = 1s avant l'ancrage)
+  const N = transactions.length;
+  transactions.forEach((tx, i) => {
+    tx.date_mouvement = new Date(anchor - (N - i) * 1000).toISOString();
+  });
 
   return transactions;
 };
