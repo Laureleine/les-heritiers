@@ -289,7 +289,7 @@ export default function StepVieSociale() {
               >
                 <span className="font-serif font-bold truncate">{getProfilDisplayName(pName)}</span>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  {budgetTotal > 0 && (
+                  {budgetTotal > 0 && reste !== 0 && (
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${
                       reste < 0  ? 'bg-red-100 text-red-700 border-red-300' :
                       reste === 0 ? 'bg-stone-100 text-stone-500 border-stone-200' :
