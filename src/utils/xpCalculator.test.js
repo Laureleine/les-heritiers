@@ -54,34 +54,26 @@ describe('getFutileCost', () => {
 describe('getFortuneCost', () => {
   const baseStats = { competencesTotal: { Classe: 0, Sciences: 0 } };
 
-  it('coût = max(5, (rang suivant x 2) - réduction)', () => {
-    // next=1, raw=2-0=2, max(5,2)=5
+  it('coût = max(5, (rang suivant x 2))', () => {
+    // next=1, raw=2, max(5,2)=5
     expect(getFortuneCost(0, baseStats)).toBe(5);
-    // next=4, raw=8-0=8, max(5,8)=8
+    // next=4, raw=8, max(5,8)=8
     expect(getFortuneCost(3, baseStats)).toBe(8);
   });
 
-  it('applique la réduction de Classe ou Sciences', () => {
+  it('sans spécialité Argent/Finance, le rang ne réduit pas le coût', () => {
     const highClass = { competencesTotal: { Classe: 5, Sciences: 0 } };
-    // next=5, raw=10-5=5, max(5,5)=5
-    const cost5 = getFortuneCost(4, highClass);
-    expect(cost5).toBe(5);
+    // next=5, aucune spé → réduction=0, raw=10
+    expect(getFortuneCost(4, highClass)).toBe(10);
 
     const highSciences = { competencesTotal: { Classe: 0, Sciences: 3 } };
-    // next=6, raw=12-3=9, max(5,9)=9
-    expect(getFortuneCost(5, highSciences)).toBe(9);
+    // next=6, aucune spé → réduction=0, raw=12
+    expect(getFortuneCost(5, highSciences)).toBe(12);
   });
 
-  it('utilise le meilleur entre Classe et Sciences', () => {
-    const both = { competencesTotal: { Classe: 2, Sciences: 4 } };
-    // next=5, raw=10-4=6, max(5,6)=6
-    expect(getFortuneCost(4, both)).toBe(6);
-  });
-
-  it('ne descend pas sous 5 même si la réduction dépasse le coût brut', () => {
-    const highReduction = { competencesTotal: { Classe: 10, Sciences: 0 } };
-    // next=1, raw=2-10=-8, max(5,-8)=5
-    expect(getFortuneCost(0, highReduction)).toBe(5);
+  it('ne descend pas sous 5', () => {
+    // next=1, raw=2, max(5,2)=5
+    expect(getFortuneCost(0, baseStats)).toBe(5);
   });
 
   it('retourne null si le rang suivant dépasse 15', () => {
@@ -90,7 +82,6 @@ describe('getFortuneCost', () => {
   });
 
   it('gère characterStats manquant', () => {
-    // next=1, raw=2-0=2, max(5,2)=5
     expect(getFortuneCost(0, null)).toBe(5);
     expect(getFortuneCost(0, {})).toBe(5);
   });
@@ -99,28 +90,38 @@ describe('getFortuneCost', () => {
 describe('getFortuneCost — spécialités', () => {
   const baseStats = { competencesTotal: { Classe: 0, Sciences: 0 } };
 
-  it('Argent (Classe) ajoute +1 à la réduction', () => {
-    // next=5, sans spé: raw=10-0=10, max(5,10)=10
-    // avec spé Argent: rangClasse=0+1=1, raw=10-1=9, max(5,9)=9
-    expect(getFortuneCost(4, baseStats, { Classe: ['Argent'] })).toBe(9);
+  it('Argent active la réduction par le rang Classe — sans rang, toujours 0', () => {
+    // Classe=0 avec Argent : réduction=0, next=5, raw=10
+    expect(getFortuneCost(4, baseStats, { Classe: ['Argent'] })).toBe(10);
   });
 
-  it('Finance (Sciences) ajoute +1 à la réduction', () => {
-    // next=5, sans spé: raw=10-0=10
-    // avec spé Finance: rangSciences=0+1=1, raw=10-1=9
-    expect(getFortuneCost(4, baseStats, { Sciences: ['Finance'] })).toBe(9);
+  it('Finance active la réduction par le rang Sciences — sans rang, toujours 0', () => {
+    // Sciences=0 avec Finance : réduction=0, next=5, raw=10
+    expect(getFortuneCost(4, baseStats, { Sciences: ['Finance'] })).toBe(10);
   });
 
-  it('Argent et Finance cumulés', () => {
-    // next=5, sans spé: raw=10-0=10
-    // les deux: max(0+1, 0+1)=1, raw=10-1=9
-    expect(getFortuneCost(4, baseStats, { Classe: ['Argent'], Sciences: ['Finance'] })).toBe(9);
-  });
-
-  it('Argent se cumule avec le rang de Classe', () => {
-    // Classe=3 + Argent=1 => reduction=4, next=5, raw=10-4=6
+  it('Argent avec rang Classe réduit le coût', () => {
     const stats = { competencesTotal: { Classe: 3, Sciences: 0 } };
-    expect(getFortuneCost(4, stats, { Classe: ['Argent'] })).toBe(6);
+    // next=5, hasArgent → réduction=3, raw=10-3=7
+    expect(getFortuneCost(4, stats, { Classe: ['Argent'] })).toBe(7);
+  });
+
+  it('Finance avec rang Sciences réduit le coût', () => {
+    const stats = { competencesTotal: { Classe: 0, Sciences: 4 } };
+    // next=5, hasFinance → réduction=4, raw=10-4=6
+    expect(getFortuneCost(4, stats, { Sciences: ['Finance'] })).toBe(6);
+  });
+
+  it('utilise le meilleur rang actif (Argent vs Finance)', () => {
+    const stats = { competencesTotal: { Classe: 2, Sciences: 4 } };
+    // next=5, Argent→2, Finance→4, réduction=max(2,4)=4, raw=10-4=6
+    expect(getFortuneCost(4, stats, { Classe: ['Argent'], Sciences: ['Finance'] })).toBe(6);
+  });
+
+  it('ne descend pas sous 5 même avec forte réduction', () => {
+    const stats = { competencesTotal: { Classe: 10, Sciences: 0 } };
+    // next=1, hasArgent → réduction=10, raw=2-10=-8, max(5,-8)=5
+    expect(getFortuneCost(0, stats, { Classe: ['Argent'] })).toBe(5);
   });
 
   it('specialites null/undefined ne plante pas', () => {

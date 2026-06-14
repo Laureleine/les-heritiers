@@ -42,9 +42,9 @@ export const getFutileCost = (currentRank) => {
 
 /**
  * Calcule le coût en XP pour augmenter la Fortune.
- * Règle : (Rang à atteindre x 2) - (Rang de Classe ou Sciences).
- *   - La spécialité Argent (Classe) ajoute +1 au rang de Classe.
- *   - La spécialité Finance (Sciences) ajoute +1 au rang de Sciences.
+ * Règle : (Rang à atteindre x 2) - réduction sociale.
+ *   - La réduction Classe ne s'applique QUE si le personnage a la spécialité "Argent".
+ *   - La réduction Sciences ne s'applique QUE si le personnage a la spécialité "Finance".
  * Minimum : 5 XP. Maximum absolu de la Fortune : 15.
  *
  * @param {number} currentRank - Rang actuel de Fortune
@@ -55,12 +55,13 @@ export const getFortuneCost = (currentRank, characterStats, specialites) => {
   const nextRank = currentRank + 1;
   if (nextRank > 15) return null;
 
-  const bonusClasse = specialites?.Classe?.includes('Argent') ? 1 : 0;
-  const bonusSciences = specialites?.Sciences?.includes('Finance') ? 1 : 0;
+  // Le rang ne réduit le coût QUE si la spécialité conditionnelle est possédée.
+  const hasArgent  = specialites?.Classe?.includes('Argent');
+  const hasFinance = specialites?.Sciences?.includes('Finance');
 
-  const rangClasse = (characterStats?.competencesTotal?.['Classe'] || 0) + bonusClasse;
-  const rangSciences = (characterStats?.competencesTotal?.['Sciences'] || 0) + bonusSciences;
-  
+  const rangClasse   = hasArgent  ? (characterStats?.competencesTotal?.['Classe']    || 0) : 0;
+  const rangSciences = hasFinance ? (characterStats?.competencesTotal?.['Sciences']   || 0) : 0;
+
   const reduction = Math.max(rangClasse, rangSciences);
 
   const rawCost = (nextRank * 2) - reduction;
