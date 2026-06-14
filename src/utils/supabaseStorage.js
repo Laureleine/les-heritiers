@@ -213,7 +213,7 @@ export const saveCharacterToSupabase = async (character) => {
         };
 
         const characterData = {
-            user_id: user.id,
+            user_id: character.userId || user.id, // préserve le propriétaire original (édition Super Admin)
             nom: cleaned.nom,
             sexe: cleaned.sexe,
             type_fee: cleaned.typeFee,
