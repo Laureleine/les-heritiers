@@ -462,7 +462,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             ) : points.length === 0 ? (
               <p className="text-xs text-stone-400 italic text-center pt-8 px-3 leading-relaxed">Aucun lieu encore épinglé.</p>
             ) : points.map(pt => (
-              <button key={pt.id} onClick={() => { setSelectedPt(pt); setIsEditing(false); }}
+              <button key={pt.id} onClick={() => { setSelectedPt(pt); setIsEditing(false); setFlyTo([pt.lat, pt.lng]); }}
                 className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-amber-50 transition-colors flex items-center gap-2"
               >
                 <span style={{ color: pt.couleur || '#92400e' }} className="shrink-0"><MapPin size={13} /></span>
@@ -494,7 +494,15 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             {/* POI existants */}
             {points.map(pt => (
               <Marker key={pt.id} position={[pt.lat, pt.lng]} icon={makePoiIcon(pt.couleur || '#92400e')}
-                eventHandlers={{ click: () => { setSelectedPt(pt); setIsEditing(false); } }}
+                eventHandlers={{ click: () => {
+                  if (tool === 'itineraire') {
+                    handleMapClick({ lat: pt.lat, lng: pt.lng });
+                  } else {
+                    setSelectedPt(pt);
+                    setIsEditing(false);
+                    setFlyTo([pt.lat, pt.lng]);
+                  }
+                }}}
               />
             ))}
             {/* Nouveau POI en attente */}
