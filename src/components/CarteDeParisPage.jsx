@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ArrowLeft, MapPin, X, Loader, Trash2, Map, Search, Edit } from '../config/icons';
+import { ArrowLeft, MapPin, X, Loader, Trash2, Map, Search, Edit, ChevronDown, ChevronUp, Filter } from '../config/icons';
 import ModalShell, { ModalHeader } from './ui/ModalShell';
 import { useMapPoints } from '../hooks/useMapPoints';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -195,6 +195,27 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
   const [newPoiPos, setNewPoiPos]   = useState(null);
   const [newPoiForm, setNewPoiForm] = useState(EMPTY_FORM);
   const [saving, setSaving]         = useState(false);
+
+  // ── Filtre liste POI ──────────────────────────────────────────────────────
+  const [filterText, setFilterText] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [openGroups, setOpenGroups] = useState(() =>
+    Object.fromEntries(Object.keys(POI_TYPES).map(k => [k, true]))
+  );
+
+  const filteredPoints = points.filter(pt => {
+    if (filterType && pt.type !== filterType) return false;
+    if (filterText && !pt.nom.toLowerCase().includes(filterText.toLowerCase())) return false;
+    return true;
+  });
+
+  const groupedPoints = Object.keys(POI_TYPES).reduce((acc, type) => {
+    const pts = filteredPoints.filter(pt => pt.type === type);
+    if (pts.length > 0) acc[type] = pts;
+    return acc;
+  }, {});
+
+  const toggleGroup = (type) => setOpenGroups(prev => ({ ...prev, [type]: !prev[type] }));
 
   // ── Entités liées ─────────────────────────────────────────────────────────
   const [linkedEntities, setLinkedEntities] = useState({ characters: [], cercles: [] });
@@ -455,22 +476,70 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             </div>
           )}
 
-          {/* Liste des lieux */}
-          <div className="flex-1 p-2 space-y-0.5">
+          {/* Filtre liste */}
+          <div className="p-2 border-b border-amber-100 space-y-1.5">
+            <div className="flex items-center gap-1.5">
+              <Filter size={11} className="text-amber-800/40 shrink-0" />
+              <input
+                type="text" placeholder="Rechercher un lieu…" value={filterText}
+                onChange={e => setFilterText(e.target.value)}
+                className="flex-1 px-2 py-1 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+              />
+              {filterText && (
+                <button onClick={() => setFilterText('')} className="text-stone-300 hover:text-stone-500">
+                  <X size={11} />
+                </button>
+              )}
+            </div>
+            <select
+              value={filterType}
+              onChange={e => setFilterType(e.target.value)}
+              className="w-full px-2 py-1 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+            >
+              <option value="">Tous les types</option>
+              {Object.entries(POI_TYPES).map(([k, v]) => (
+                <option key={k} value={k}>{v.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Liste des lieux — accordéons par type */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
             {loading ? (
               <div className="flex justify-center pt-8 text-amber-600"><Loader size={18} className="animate-spin" /></div>
             ) : points.length === 0 ? (
               <p className="text-xs text-stone-400 italic text-center pt-8 px-3 leading-relaxed">Aucun lieu encore épinglé.</p>
-            ) : points.map(pt => (
-              <button key={pt.id} onClick={() => { setSelectedPt(pt); setIsEditing(false); setFlyTo([pt.lat, pt.lng]); }}
-                className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-amber-50 transition-colors flex items-center gap-2"
-              >
-                <span style={{ color: pt.couleur || '#92400e' }} className="shrink-0"><MapPin size={13} /></span>
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-stone-800 truncate">{pt.nom}</p>
-                  <p className="text-[10px] text-stone-400">{POI_TYPES[pt.type]?.label || pt.type}</p>
-                </div>
-              </button>
+            ) : filteredPoints.length === 0 ? (
+              <p className="text-xs text-stone-400 italic text-center pt-8 px-3 leading-relaxed">Aucun résultat.</p>
+            ) : Object.entries(groupedPoints).map(([type, pts]) => (
+              <div key={type}>
+                {/* En-tête accordéon */}
+                <button
+                  onClick={() => toggleGroup(type)}
+                  className="w-full flex items-center justify-between px-3 py-2 bg-amber-50 hover:bg-amber-100 transition-colors border-b border-amber-100"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: POI_TYPES[type].couleur }} />
+                    <span className="text-xs font-bold text-amber-900">{POI_TYPES[type].label}</span>
+                    <span className="text-[10px] text-amber-700/60 font-mono">({pts.length})</span>
+                  </span>
+                  {openGroups[type] ? <ChevronUp size={12} className="text-amber-700/50" /> : <ChevronDown size={12} className="text-amber-700/50" />}
+                </button>
+                {/* Lieux du groupe */}
+                {openGroups[type] && (
+                  <div className="py-0.5">
+                    {pts.map(pt => (
+                      <button key={pt.id}
+                        onClick={() => { setSelectedPt(pt); setIsEditing(false); setFlyTo([pt.lat, pt.lng]); }}
+                        className={`w-full text-left px-3 py-1.5 hover:bg-amber-50 transition-colors flex items-center gap-2 ${selectedPt?.id === pt.id ? 'bg-amber-50' : ''}`}
+                      >
+                        <MapPin size={11} style={{ color: pt.couleur || POI_TYPES[type].couleur }} className="shrink-0" />
+                        <span className="text-xs text-stone-800 truncate">{pt.nom}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </aside>
