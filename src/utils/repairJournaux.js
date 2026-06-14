@@ -13,7 +13,6 @@
 
 import { reconstructHistory } from './historyReconstructor';
 import { isCharacterScelle } from './lockUtils';
-import { XP_CODES } from './xpActions';
 
 // ============================================================================
 // 🔁 MAPPING DB → FORMAT RECONSTRUCTION
@@ -91,26 +90,6 @@ export function buildRepairedJournal(character, gameData) {
 
     // La reconstruction déduit toutes les DEPENSE depuis stats_scellees vs état actuel
     const reconEntries = reconstructHistory(character, gameData);
-
-    // Réconciliation : si la somme reconstruite ≠ xp_depense en base,
-    // on ajoute un SOLDE pour que computeXpDepenseFromJournal() retombe
-    // exactement sur xp_depense — évite de violer check_xp_coherence (xp_depense ≤ xp_total).
-    const sumReconstructed = reconEntries.reduce((acc, tx) => acc + (tx.valeur || 0), 0);
-    const pastDepense = character.xp_depense || 0;
-    if (sumReconstructed !== pastDepense) {
-        const difference = pastDepense - sumReconstructed;
-        const anchor = character.created_at
-            ? new Date(character.created_at).getTime()
-            : new Date('2026-01-01T00:00:00.000Z').getTime();
-        reconEntries.push({
-            type:           difference > 0 ? 'DEPENSE' : 'REMBOURSEMENT',
-            code:           XP_CODES.XP_SOLDE,
-            label:          difference > 0 ? 'Ajustements manuels antérieurs (Passif)' : 'Remboursements antérieurs (Passif)',
-            valeur:         Math.abs(difference),
-            rang_final:     null,
-            date_mouvement: new Date(anchor - 500).toISOString(),
-        });
-    }
 
     // Fusion et tri chronologique
     const merged = [...gainEntries, ...reconEntries].sort(

@@ -115,6 +115,7 @@ const mapDatabaseToCharacter = (char) => {
         statut: source.statut || 'brouillon',
         xp_total: source.xp_total || 0,
         xp_depense: source.xp_depense || 0,
+        xp_dette: source.xp_dette || false,
         ownerUsername: source.profiles?.username || 'Inconnu',
         data: source.data || {},
         computedStats: source.computed_stats || source.computedStats || {},
@@ -240,6 +241,10 @@ export const saveCharacterToSupabase = async (character) => {
             xp_total: character.xp_total || 0,
             // 🏛️ xp_depense recalculé depuis le journal — jamais copié depuis l'état (qui peut être stale)
             xp_depense: computeXpDepenseFromHistory(cleaned.data?.historique_xp) ?? (character.xp_depense || 0),
+            // xp_dette auto-clear : la dette se résorbe quand xp_total rattrape xp_depense
+            xp_dette: character.xp_dette === true
+                ? (computeXpDepenseFromHistory(cleaned.data?.historique_xp) ?? (character.xp_depense || 0)) > (character.xp_total || 0)
+                : false,
             portrait_masked_url: cleaned.portrait_masked_url || null,
             portrait_unmasked_url: cleaned.portrait_unmasked_url || null,
             is_unmasked_revealed: cleaned.is_unmasked_revealed || false,

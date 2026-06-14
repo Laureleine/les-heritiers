@@ -92,10 +92,19 @@ function ConfirmModal({ target, onConfirm, onCancel }) {
                     </div>
                 </div>
 
-                <p className="text-xs text-stone-500 mb-5">
+                <p className="text-xs text-stone-500 mb-3">
                     Les entrées <strong>GAIN</strong> sont préservées. Les <strong>DÉPENSES</strong> sont recalculées
                     depuis le Plancher de Verre (<code>stats_scellees</code>).
                 </p>
+                {newXpDepense > (row.dbChar.xp_total || 0) && (
+                    <div className="bg-red-50 border border-red-300 rounded-lg p-3 mb-5 flex items-start gap-2">
+                        <AlertTriangle className="text-red-500 shrink-0 mt-0.5" size={15} />
+                        <p className="text-xs text-red-700">
+                            <strong>Dette XP :</strong> les dépenses reconstruites ({newXpDepense}) dépassent le total actuel ({row.dbChar.xp_total || 0}).
+                            Le personnage sera marqué en dette — il ne pourra plus dépenser d'XP tant que son total n'aura pas rattrapé ses dépenses.
+                        </p>
+                    </div>
+                )}
 
                 <div className="flex gap-3">
                     <button onClick={onCancel} className="flex-1 px-4 py-2.5 bg-stone-100 text-stone-700 rounded-lg font-bold hover:bg-stone-200 transition-colors">
@@ -341,11 +350,12 @@ export default function TabRepairJournaux() {
 
         try {
             const newXpDepense = computeXpDepenseFromJournal(preview);
+            const isDebt       = newXpDepense > (row.dbChar.xp_total || 0);
             const updatedData  = { ...row.dbChar.data, historique_xp: preview };
 
             const { data: updateData, error } = await supabase
                 .from('characters')
-                .update({ data: updatedData, xp_depense: newXpDepense })
+                .update({ data: updatedData, xp_depense: newXpDepense, xp_dette: isDebt })
                 .eq('id', row.dbChar.id)
                 .select('id');
 
@@ -354,7 +364,7 @@ export default function TabRepairJournaux() {
 
             const gains = preview.filter(t => t.type === 'GAIN').length;
             const deps  = preview.filter(t => t.type === 'DEPENSE').length;
-            const detail = `${preview.length} entrées (${gains} gains + ${deps} dépenses) — ${newXpDepense} XP dépensés`;
+            const detail = `${preview.length} entrées (${gains} gains + ${deps} dépenses) — ${newXpDepense} XP dépensés${isDebt ? ' ⚠️ Dette XP' : ''}`;
             setCharacters(prev => prev.map((r, i) => i === idx ? { ...r, status: STATUS.REPAIRED, detail } : r));
             addLog(`✨ ${row.dbChar.nom} → ${detail}`);
 
