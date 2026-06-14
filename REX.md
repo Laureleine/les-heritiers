@@ -1,3 +1,21 @@
+# REX — Session 14 Juin 2026 (suite 4) — v17.4.15 "Le Bon Pas 🚶"
+
+## Ce qui a été livré
+
+- Fix bug temps de marche OSRM : le profil `foot` du serveur public renvoyait `route.duration` à ~29 km/h (vraisemblablement une vitesse de voiture ou vélo). Correction : `walkingS = route.distance / (5 * 1000 / 3600)` — calculé en interne comme tous les autres modes.
+
+---
+
+## Règles et astuces à retenir
+
+### OSRM foot — ne pas faire confiance à `route.duration`
+
+- **Le serveur public `router.project-osrm.org` retourne `route.duration` avec une vitesse incohérente pour le profil `foot`** (~29 km/h observé, au lieu des ~5 km/h attendus). La distance (`route.distance`) est fiable, pas la durée.
+- **Solution :** calculer `walkingS = distanceM / (5 * 1000 / 3600)` directement dans le code, comme pour les autres modes. Ne jamais utiliser `route.duration` d'OSRM pour le profil foot.
+- La même logique pourrait s'appliquer au profil `bike` si utilisé un jour.
+
+---
+
 # REX — Session 14 Juin 2026 (suite 3) — v17.4.14 "La Clé Retrouvée 🗝️"
 
 ## Ce qui a été livré
