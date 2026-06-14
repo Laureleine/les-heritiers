@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -468,8 +469,8 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         </div>
       </div>
 
-      {/* ── Modale détail / édition POI ─────────────────────────────────── */}
-      {selectedPt && (
+      {/* ── Modale détail / édition POI — portail hors Leaflet ─────────── */}
+      {selectedPt && createPortal(
         <ModalShell onClose={() => { setSelectedPt(null); setIsEditing(false); }} maxWidth="max-w-sm">
           <ModalHeader
             title={isEditing ? 'Modifier le lieu' : selectedPt.nom}
@@ -511,7 +512,8 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
               </button>
             </div>
           )}
-        </ModalShell>
+        </ModalShell>,
+        document.body
       )}
     </div>
   );
