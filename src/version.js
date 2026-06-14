@@ -2,6 +2,22 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.12 - "L\'Arpenteur de Paris 📍🔍"',
+    date: '14 Juin 2026',
+    description: 'La Carte de Paris gagne en précision et en lisibilité. Le glissement du curseur temporel révèle enfin les rues de 1900 telles qu\'elles étaient — l\'image historique s\'impose tandis que les étiquettes modernes s\'effacent. Les Héritiers épinglent leurs lieux d\'un simple nom de rue, voient la liste s\'organiser en accordéons par catégorie et la filtrent en un mot. La modale de détail surgit devant la carte au lieu de se terrer derrière. Et les itinéraires s\'enchaînent en cliquant directement sur les épingles.',
+    changes: [
+      '🗺️ **Curseur temporel opérationnel :** Le glissement "Moderne → 1900" affiche désormais de vraies tuiles historiques OpenHistoricalMap (paramètre `date=1900-01-01` manquant corrigé). En parallèle, les noms de rues modernes s\'estompent proportionnellement — à fond "1900", seule la carte d\'époque reste visible.',
+      '📍 **Placement POI par adresse :** En mode "Ajouter un lieu", la barre de recherche devient "Adresse du lieu". Taper "38 rue Madame" et cliquer sur le résultat pose l\'épingle aux coordonnées exactes et pré-remplit le nom — numéro + nom de rue extraits automatiquement.',
+      '🔵 **Visibilité des POI :** Chaque lieu porte désormais un niveau de visibilité — Public (visible par tous), Cercle (membres du cercle choisi seulement), Privé (créateur seul), Admin (gardiens seuls). RLS Supabase mis à jour. Les POIs existants passent en Admin par précaution. Les doctes de cercle peuvent modifier les POIs de leur cercle.',
+      '🪟 **Modale POI au premier plan :** La fenêtre de détail s\'affichait derrière les tuiles (z-index Leaflet > z-50 Tailwind). Rendue via `createPortal` directement dans `document.body` — elle passe désormais au-dessus de tout.',
+      '🧭 **Itinéraire via épingles :** En mode Itinéraire, cliquer sur un marqueur existant l\'utilise directement comme point de départ ou d\'arrivée.',
+      '🎯 **Centrage automatique :** Cliquer sur un lieu dans la liste ou sur un marqueur centre et zoome la carte sur ce point.',
+      '📂 **Accordéons par type :** La liste s\'organise en groupes repliables — Lieux, Événements, Adresses personnages, Cercles, Points d\'intérêt — avec pastille colorée et compteur.',
+      '🔍 **Filtre texte + type :** Barre de recherche temps réel sur le nom + sélecteur de type. Les deux filtres se combinent.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.11 - "Le Plan de Paris 🗺️✨"',
     date: '14 Juin 2026',
     description: 'Paris 1900 s\'ouvre sous les yeux des Héritiers : une carte interactive superpose le tracé historique des rues à une lecture moderne, et permet de planter ses propres repères — lieux de rendez-vous, adresses de personnages, cercles secrets, événements marquants. Deux points posés, et un itinéraire à pied ou en fiacre se dessine, chronométré. En parallèle, les Héritiers qui portent un journal d\'XP incomplet peuvent désormais interpeller l\'Administrateur d\'un simple clic — la demande lui parvient aussitôt, signalée par un compteur orange sur le tableau de bord.',
