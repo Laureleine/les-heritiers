@@ -30,7 +30,14 @@ const POI_TYPES = {
   point_interet:      { label: "Point d'intérêt",   couleur: '#15803d', linkedType: null       },
 };
 
-const EMPTY_FORM = { nom: '', description: '', type: 'lieu', couleur: '#92400e', linked_entity_type: null, linked_entity_id: null };
+const VISIBILITE = {
+  public: { label: 'Public',  emoji: '🌍' },
+  cercle: { label: 'Cercle',  emoji: '🔵' },
+  prive:  { label: 'Privé',   emoji: '🔒' },
+  admin:  { label: 'Admin',   emoji: '⚙️'  },
+};
+
+const EMPTY_FORM = { nom: '', description: '', type: 'lieu', couleur: '#92400e', linked_entity_type: null, linked_entity_id: null, visibilite: 'public', visibilite_cercle_id: null };
 
 // ─── Utilitaires ─────────────────────────────────────────────────────────────
 
@@ -95,9 +102,12 @@ function FlyToLocation({ position }) {
 
 // ─── Formulaire POI (ajout + édition) ────────────────────────────────────────
 
-function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, submitLabel = 'Épingler' }) {
+function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isSA, submitLabel = 'Épingler' }) {
   const linkedType = POI_TYPES[form.type]?.linkedType;
   const entityList = linkedType === 'character' ? linkedEntities.characters : linkedType === 'cercle' ? linkedEntities.cercles : [];
+  const visibiliteOptions = isSA
+    ? Object.entries(VISIBILITE)
+    : Object.entries(VISIBILITE).filter(([k]) => k !== 'admin');
 
   return (
     <div className="space-y-2">
@@ -131,9 +141,28 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, sub
           {entityList.map(e => <option key={e.id} value={e.id}>{e.nom}</option>)}
         </select>
       )}
+      {/* Visibilité */}
+      <select
+        value={form.visibilite}
+        onChange={e => onChange({ ...form, visibilite: e.target.value, visibilite_cercle_id: e.target.value !== 'cercle' ? null : form.visibilite_cercle_id })}
+        className="w-full px-2 py-1.5 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+      >
+        {visibiliteOptions.map(([k, v]) => <option key={k} value={k}>{v.emoji} {v.label}</option>)}
+      </select>
+      {form.visibilite === 'cercle' && (
+        <select
+          value={form.visibilite_cercle_id || ''}
+          onChange={e => onChange({ ...form, visibilite_cercle_id: e.target.value || null })}
+          className="w-full px-2 py-1.5 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+        >
+          <option value="">— Choisir un cercle —</option>
+          {linkedEntities.cercles.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
+        </select>
+      )}
       <div className="flex gap-2 pt-1">
         <button
-          onClick={onSave} disabled={!form.nom.trim() || saving}
+          onClick={onSave}
+          disabled={!form.nom.trim() || saving || (form.visibilite === 'cercle' && !form.visibilite_cercle_id)}
           className="flex-1 px-3 py-1.5 bg-amber-900 text-amber-50 rounded-lg text-sm font-bold disabled:opacity-50 hover:bg-amber-800 transition-colors"
         >
           {saving ? '…' : submitLabel}
@@ -173,7 +202,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
   useEffect(() => {
     Promise.all([
       supabase.from('characters').select('id, nom').order('nom'),
-      supabase.from('cercles').select('id, nom').order('nom'),
+      supabase.from('cercles').select('id, nom, docte_id').order('nom'),
     ]).then(([chars, cercs]) => {
       setLinkedEntities({
         characters: chars.data || [],
@@ -243,8 +272,10 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         nom: newPoiForm.nom.trim(), description: newPoiForm.description.trim() || null,
         lat: newPoiPos.lat, lng: newPoiPos.lng,
         type: newPoiForm.type, couleur: newPoiForm.couleur,
-        linked_entity_type: newPoiForm.linked_entity_type || null,
-        linked_entity_id:   newPoiForm.linked_entity_id   || null,
+        linked_entity_type:   newPoiForm.linked_entity_type   || null,
+        linked_entity_id:     newPoiForm.linked_entity_id     || null,
+        visibilite:           newPoiForm.visibilite,
+        visibilite_cercle_id: newPoiForm.visibilite_cercle_id || null,
         created_by: userId,
       });
       showInAppNotification('Lieu ajouté à la carte', 'success');
@@ -255,7 +286,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
 
   // ── Édition POI ───────────────────────────────────────────────────────────
   const startEdit = useCallback((pt) => {
-    setEditForm({ nom: pt.nom, description: pt.description || '', type: pt.type, couleur: pt.couleur, linked_entity_type: pt.linked_entity_type, linked_entity_id: pt.linked_entity_id });
+    setEditForm({ nom: pt.nom, description: pt.description || '', type: pt.type, couleur: pt.couleur, linked_entity_type: pt.linked_entity_type, linked_entity_id: pt.linked_entity_id, visibilite: pt.visibilite || 'public', visibilite_cercle_id: pt.visibilite_cercle_id || null });
     setIsEditing(true);
   }, []);
 
@@ -266,8 +297,10 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
       const updated = await updatePoint(selectedPt.id, {
         nom: editForm.nom.trim(), description: editForm.description.trim() || null,
         type: editForm.type, couleur: editForm.couleur,
-        linked_entity_type: editForm.linked_entity_type || null,
-        linked_entity_id:   editForm.linked_entity_id   || null,
+        linked_entity_type:   editForm.linked_entity_type   || null,
+        linked_entity_id:     editForm.linked_entity_id     || null,
+        visibilite:           editForm.visibilite,
+        visibilite_cercle_id: editForm.visibilite_cercle_id || null,
       });
       setSelectedPt(updated); setIsEditing(false);
       showInAppNotification('Lieu mis à jour', 'success');
@@ -293,6 +326,14 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         : 'Résultat ci-dessous. Cliquez pour recommencer.'
     : !newPoiPos ? 'Cliquez sur la carte pour placer le lieu.'
     : 'Remplissez les informations ci-dessous.';
+
+  // ── Droits de modification du POI sélectionné ────────────────────────────
+  const canEdit = selectedPt && (
+    isSA ||
+    userId === selectedPt.created_by ||
+    (selectedPt.visibilite === 'cercle' &&
+      linkedEntities.cercles.find(c => c.id === selectedPt.visibilite_cercle_id)?.docte_id === userId)
+  );
 
   // ── Entité liée sélectionnée (pour affichage dans la modal) ───────────────
   const linkedLabel = selectedPt?.linked_entity_id
@@ -389,7 +430,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
               <PoiForm
                 form={newPoiForm} onChange={setNewPoiForm}
                 onSave={handleAddPoi} onCancel={() => setNewPoiPos(null)}
-                saving={saving} linkedEntities={linkedEntities}
+                saving={saving} linkedEntities={linkedEntities} isSA={isSA}
                 submitLabel="Épingler"
               />
             </div>
@@ -482,14 +523,24 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
               <PoiForm
                 form={editForm} onChange={setEditForm}
                 onSave={handleEditSave} onCancel={() => setIsEditing(false)}
-                saving={saving} linkedEntities={linkedEntities}
+                saving={saving} linkedEntities={linkedEntities} isSA={isSA}
                 submitLabel="Enregistrer"
               />
             ) : (
               <>
-                <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold text-white mb-3" style={{ background: selectedPt.couleur || '#92400e' }}>
-                  {POI_TYPES[selectedPt.type]?.label || selectedPt.type}
-                </span>
+                <div className="flex items-center gap-2 flex-wrap mb-3">
+                  <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold text-white" style={{ background: selectedPt.couleur || '#92400e' }}>
+                    {POI_TYPES[selectedPt.type]?.label || selectedPt.type}
+                  </span>
+                  <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-500">
+                    {VISIBILITE[selectedPt.visibilite]?.emoji} {VISIBILITE[selectedPt.visibilite]?.label || selectedPt.visibilite}
+                  </span>
+                </div>
+                {selectedPt.visibilite === 'cercle' && selectedPt.visibilite_cercle_id && (
+                  <p className="text-xs text-amber-700 font-semibold mb-2">
+                    🔵 {linkedEntities.cercles.find(c => c.id === selectedPt.visibilite_cercle_id)?.nom || '—'}
+                  </p>
+                )}
                 {linkedLabel && (
                   <p className="text-xs text-amber-800 font-semibold mb-2">
                     {selectedPt.linked_entity_type === 'character' ? '👤' : '🔵'} {linkedLabel}
@@ -502,7 +553,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
               </>
             )}
           </div>
-          {!isEditing && (userId === selectedPt.created_by || isSA) && (
+          {!isEditing && canEdit && (
             <div className="px-5 pb-4 pt-2 border-t border-amber-100 flex items-center justify-between">
               <button onClick={() => startEdit(selectedPt)} className="flex items-center gap-1.5 text-sm text-amber-700 hover:text-amber-900 transition-colors">
                 <Edit size={14} /> Modifier
