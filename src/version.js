@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.14 - "La Clé Retrouvée 🗝️"',
+    date: '14 Juin 2026',
+    description: 'Un héritier ne peut plus se retrouver bloqué devant la porte du Manoir faute de se souvenir de sa clé. Le lien "mot de passe oublié" envoyé par courriel mène désormais directement à un formulaire sécurisé pour en choisir un nouveau — et non plus à la page d\'accueil silencieuse.',
+    changes: [
+      '🗝️ **Réinitialisation de mot de passe fonctionnelle :** Le lien reçu par courriel ouvre désormais un formulaire dédié permettant de saisir et confirmer un nouveau mot de passe. Une fois validé, la session est refermée proprement et l\'Héritier peut se reconnecter.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.**',
+    ]
+  },
+  {
     version: '17.4.13 - "La Carte Vivante 🗺️🎨"',
     date: '14 Juin 2026',
     description: 'La Carte de Paris s\'enrichit dans ses moindres détails. Les épingles parlent désormais d\'elles-mêmes : chaque type de lieu arbore son emoji, sa forme et sa couleur propres — que l\'on peut personnaliser à loisir. Les fiches affichent l\'adresse du lieu, modifiable directement pour déplacer l\'épingle sur la carte. Côté itinéraires, cinq modes de transport de l\'époque s\'offrent en onglets — du promeneur au cavalier, du vélocipédiste au motocycliste — avec la distance à vol d\'oiseau en regard, et la possibilité de définir son propre mode de déplacement.',
