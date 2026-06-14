@@ -100,7 +100,7 @@ async function fetchRoute(a, b) {
   return {
     distanceM: route.distance,
     flyingM:   haversineM(a, b),
-    walkingS:  route.duration,
+    walkingS:  route.distance / (5 * 1000 / 3600), // 5 km/h, indépendant du profil OSRM
     polyline:  route.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
   };
 }
