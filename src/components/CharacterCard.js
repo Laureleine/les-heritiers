@@ -65,12 +65,12 @@ const CharacterCard = React.memo(({
       {/* 1. EN-TÊTE */}
       <div className="p-4 pb-1 border-b border-stone-100">
         <div className="flex justify-between items-start mb-1 gap-2">
-          <h3 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
+          <h2 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
             {char.nom || 'Sans nom'}
             {char.isPublic && (
               <sup className="ml-1 text-blue-500 inline-block" title="Visible par tous"><Globe size={12} /></sup>
             )}
-          </h3>
+          </h2>
         </div>
 
         <div className="flex justify-between items-center">

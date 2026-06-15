@@ -94,7 +94,7 @@ export default function StepAtouts() {
         <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
           <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
           <div>
-            <h3 className="font-serif font-bold text-amber-900">Atouts Féériques</h3>
+            <h2 className="font-serif font-bold text-amber-900">Atouts Féériques</h2>
             <p className="text-sm text-amber-800">
               Le Faux-Semblant enfoui n'a pas d'atouts pour le moment. Ils se révèleront lorsque la Féérie atteindra 3.
             </p>
