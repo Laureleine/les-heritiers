@@ -102,46 +102,35 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-### 3. 🟡 `ModalShell` — Composant modal unifié
+### 3. ✅ `ModalShell` — partiellement migré (session 15 juin 2026)
 
-**Problème :** 7+ instances du même overlay modal avec des variations mineures (opacité, border-radius, backdrop-blur) :
-- `ConfirmModal.js`
-- `App.js` (version history)
-- `SystemeModales.js` (disclaimer)
-- `EncyclopediaModal.js`
-- `EncyclopediaViewModal.js`
-- `GrimoirePersonnel.js` (×2 : create, delete)
-- `RegistrePage.jsx` (detail modal)
+ModalShell existe (`src/components/ui/ModalShell.js`). Les 15 autres fichiers candidats ont été audités : la majorité a des styles trop différents (header non-amber-900, backdrop 80% vs 60%, pas de click-to-close) pour être migrés sans changer le comportement.
 
-**Sous-composants à extraire :**
-- `ModalHeader` — bandeau amber-900 avec titre + bouton X (4+ occurrences)
-- `ModalFooter` — boutons Annuler/Confirmer (4 occurrences)
+**Non migré (intentionnel)** : SystemeModales (disclaimer sans fermeture), ValidationsPendantes (header rouge), EncyclopediaViewModal (header stone-100), GrimoirePersonnel modales (header dynamique, pas de backdrop-close). Continuer seulement si unification visuelle décidée.
 
 ---
 
-### 4. 🟡 `EmptyState` — Composant d'état vide
+### 4. ✅ `EmptyState` — Composant créé (session 15 juin 2026)
 
-**Problème :** 9 instances du même pattern icône + texte centré :
-```jsx
-<div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4">
-  <SomeIcon size={48} className="opacity-20" />
-  <p className="font-serif italic text-lg">...</p>
-</div>
-```
+`src/components/ui/EmptyState.jsx` — Props : `icon`, `message`, `pulse`, `className`.
 
-**Fichiers impactés :** `GrimoirePersonnel.js` (×3), `Encyclopedia.js` (×2), `MesPropositions.js`, `ActiveCercleView.js`, `StepVieSociale.js`, `BonusBuilder.js`
+**Migré :** `GrimoirePersonnel.js` (×4 : loading + 3 onglets vides). Fichiers restants (Encyclopedia ×2, ActiveCercleView, StepVieSociale, BonusBuilder) à traiter si besoin.
 
 ---
 
-### 5. 🟡 `TabBar` — Composant d'onglets
+### 5. ✅ `TabBar` — Composant créé (session 15 juin 2026)
 
-**Problème :** 4 tab bars avec le même pattern actif/inactif :
-```jsx
-<button className={`pb-3 font-bold whitespace-nowrap transition-colors border-b-2
-  ${active === x ? 'text-amber-900 border-amber-600' : 'text-stone-400 border-transparent'}`}>
-```
+`src/components/ui/TabBar.jsx` — Props : `tabs [{ id, label, count?, activeClass? }]`, `activeTab`, `onTabChange`, `className`.
 
-**Fichiers impactés :** `Encyclopedia.js`, `MesPropositions.js`, `GrimoirePersonnel.js`, `Telegraphe.js`
+**Migré :** `Encyclopedia.js`, `MesPropositions.js` (avec `activeClass` par onglet et `count`). `GrimoirePersonnel.js` et `Telegraphe.js` restants.
+
+---
+
+### 5b. ✅ `SearchBar` — Composant créé (session 15 juin 2026)
+
+`src/components/ui/SearchBar.jsx` — Props : `value`, `onChange`, `onClear?`, `placeholder`, `className`, `inputClassName`.
+
+**Migré :** `TabRepairJournaux.js` (avec `onClear`), `TabUsers.js`. Encyclopedia et GrimoirePersonnel ont des styles trop spécifiques.
 
 ---
 

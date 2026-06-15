@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, CheckCircle, XCircle, Archive, MessageCircle, FileText } from '../config/icons';
 import { supabase } from '../config/supabase';
+import { TabBar } from './ui/TabBar';
 
 export default function MesPropositions({ session, onBack }) {
   const [propositions, setPropositions] = useState([]);
@@ -55,21 +56,17 @@ export default function MesPropositions({ session, onBack }) {
         <div className="text-center py-20 text-stone-400 font-serif animate-pulse">Recherche dans vos correspondances...</div>
       ) : (
         <>
-          {/* ✨ NOUVEAU : LA BARRE D'ONGLETS INTELLIGENTE */}
-          <div className="flex gap-6 border-b border-gray-200 mb-6 overflow-x-auto hide-scrollbar">
-            <button onClick={() => setActiveTab('pending')} className={`pb-3 font-bold whitespace-nowrap transition-colors border-b-2 ${activeTab === 'pending' ? 'text-amber-600 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-600'}`}>
-              En attente ({propositions.filter(p => p.status === 'pending').length})
-            </button>
-            <button onClick={() => setActiveTab('approved')} className={`pb-3 font-bold whitespace-nowrap transition-colors border-b-2 ${activeTab === 'approved' ? 'text-blue-600 border-blue-600' : 'text-gray-400 border-transparent hover:text-gray-600'}`}>
-              Pré-validées ({propositions.filter(p => p.status === 'approved').length})
-            </button>
-            <button onClick={() => setActiveTab('archived')} className={`pb-3 font-bold whitespace-nowrap transition-colors border-b-2 ${activeTab === 'archived' ? 'text-emerald-600 border-emerald-600' : 'text-gray-400 border-transparent hover:text-gray-600'}`}>
-              En ligne ({propositions.filter(p => p.status === 'archived').length})
-            </button>
-            <button onClick={() => setActiveTab('rejected')} className={`pb-3 font-bold whitespace-nowrap transition-colors border-b-2 ${activeTab === 'rejected' ? 'text-red-600 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-600'}`}>
-              Rejetées ({propositions.filter(p => p.status === 'rejected').length})
-            </button>
-          </div>
+          <TabBar
+            tabs={[
+              { id: 'pending',  label: 'En attente',   count: propositions.filter(p => p.status === 'pending').length,  activeClass: 'text-amber-600 border-amber-600' },
+              { id: 'approved', label: 'Pré-validées', count: propositions.filter(p => p.status === 'approved').length, activeClass: 'text-blue-600 border-blue-600' },
+              { id: 'archived', label: 'En ligne',     count: propositions.filter(p => p.status === 'archived').length, activeClass: 'text-emerald-600 border-emerald-600' },
+              { id: 'rejected', label: 'Rejetées',     count: propositions.filter(p => p.status === 'rejected').length, activeClass: 'text-red-600 border-red-600' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            className="mb-6 hide-scrollbar"
+          />
 
           {filteredPropositions.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-stone-200 shadow-sm">
