@@ -267,7 +267,9 @@ class GallicaDownloader:
             print(f"ARK résolu avec succès : {ark}")
             return ark
         else:
-            raise ValueError(f"Impossible de résoudre l'ARK pour la date {date_str} (URL finale : {resp.url})")
+            # Exit code 2 = date absente de Gallica (pas une erreur technique)
+            print(f"Date absente de Gallica : {date_str} (URL finale : {resp.url})")
+            sys.exit(2)
 
     def fetch_page_ocr_api(self, issue_ark: str, page: int) -> str:
         """Télécharge l'OCR brut officiel BnF d'une page via l'API AJAX texteImage."""

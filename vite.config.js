@@ -35,7 +35,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/setupTests.js',
-    exclude: ['**/node_modules/**', '**/dist/**', 'tests/e2e/**'],
+    exclude: ['**/node_modules/**', '**/dist/**', 'tests/e2e/**', '.claude/**'],
   },
   define: {
     // Compatibilité pour les libs qui lisent process.env.NODE_ENV

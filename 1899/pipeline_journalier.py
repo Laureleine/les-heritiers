@@ -91,6 +91,9 @@ def run_step_1_ocr(date_str):
         print(f"⏰ Étape 1 a expiré après 180s.")
         return False
     except subprocess.CalledProcessError as e:
+        if e.returncode == 2:
+            print(f"⚠️ Date absente de Gallica : {date_str}")
+            return "not_found"
         print(f"❌ Échec de l'étape 1 : {e}")
         return False
 
@@ -643,6 +646,9 @@ def main():
         
     # Lancement du pipeline
     success = run_step_1_ocr(date_str)
+    if success == "not_found":
+        print("⚠️ Date non disponible sur Gallica, pipeline ignoré.")
+        sys.exit(2)
     if not success:
         print("❌ Le pipeline s'est arrêté à l'Étape 1.")
         sys.exit(1)

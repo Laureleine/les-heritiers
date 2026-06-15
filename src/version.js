@@ -1,6 +1,17 @@
-// src/version.js
+﻿// src/version.js
 
 export const VERSION_HISTORY = [
+  {
+    version: "17.4.16 - \"Le Regard de la Communauté 🌐\"",
+    date: "15 Juin 2026",
+    description: "La page Communauté & Métriques s'ouvre désormais à tous les Héritiers sans restriction. Les distributions de types de fées, de profils et l'activité de la communauté sont calculées sur l'ensemble du corpus — plus seulement sur ce que chacun peut voir. Une seule requête sécurisée côté serveur bypasse les règles de visibilité et renvoie l'image globale du Manoir. Par ailleurs, Vitest n'inspecte plus les chantiers temporaires ouverts en parallèle.",
+    changes: [
+      "🌐 **Métriques globales pour tous :** La page Communauté (types de fées, profils majeurs/mineurs, activité des 30 derniers jours) affiche désormais les données de l'ensemble du Manoir pour tout Héritier connecté — et non plus uniquement les personnages visibles selon les droits de chacun.",
+      "⚙️ **Nouvelle RPC `get_community_stats_detail` :** Fonction SQL SECURITY DEFINER qui court-circuite la RLS et renvoie les statistiques agrégées en une seule passe serveur.",
+      "🧪 **Vitest ne fouille plus les chantiers :** `.claude/**` est exclu de la découverte de tests — plus de faux échecs liés aux worktrees parallèles.",
+      "🧪 **337 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
   {
     version: '17.4.15 - "Le Bon Pas 🚶"',
     date: '14 Juin 2026',
