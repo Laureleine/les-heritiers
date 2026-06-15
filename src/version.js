@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.17 - \"L'Estampe Belle Époque 🗺️🎨\"",
+    date: "15 Juin 2026",
+    description: "La Carte de Paris revêt enfin les couleurs de son époque. Un filtre sépia enveloppe les tuiles cartographiques d'une patine Belle Époque — chaud, légèrement assombri, comme une photographie ancienne. Un bouton permet d'afficher les rues actuelles en surimpression, pour comparer le Paris de 1900 au tracé moderne. La navigation est libre, sans borne géographique. Sous le capot, le premier chantier DRY se referme : un utilitaire commun absorbe les blocs try/catch/finally disséminés dans les hooks de données.",
+    changes: [
+      "🗺️ **Carte Belle Époque :** Les tuiles cartographiques s'enveloppent d'un filtre sépia — l'effet d'une estampe ancienne plutôt que d'une carte en couleur.",
+      "🔀 **Toggle rues actuelles :** Un bouton dans la barre latérale permet d'afficher ou de masquer les noms de rues contemporains en surimpression, pour comparer le Paris de 1900 au tracé d'aujourd'hui.",
+      "🧭 **Navigation libre :** La carte ne se limite plus aux murs de Paris intra-muros — on peut explorer les faubourgs sans être bloqué par une frontière invisible.",
+      "🧹 **DRY Chantier 1 — withLoading :** Utilitaire async partagé qui absorbe le pattern setLoading/try/catch/finally dans 5 fonctions (useSnapshots, useEncyclopedia, useTelegraphe). 5 tests dédiés. Zéro régression.",
+      "🧪 **342 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.16 - \"Le Regard de la Communauté 🌐\"",
     date: "15 Juin 2026",
     description: "La page Communauté & Métriques s'ouvre désormais à tous les Héritiers sans restriction. Les distributions de types de fées, de profils et l'activité de la communauté sont calculées sur l'ensemble du corpus — plus seulement sur ce que chacun peut voir. Une seule requête sécurisée côté serveur bypasse les règles de visibilité et renvoie l'image globale du Manoir. Par ailleurs, Vitest n'inspecte plus les chantiers temporaires ouverts en parallèle.",
