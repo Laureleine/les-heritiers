@@ -11,51 +11,16 @@ function TabStats() {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
-
-      // ── 1. Totaux (via RPC SECURITY DEFINER pour contourner RLS) ───
-      const { data: totalsData, error: totalsError } = await supabase.rpc('get_admin_stats');
-      if (totalsError || !totalsData) {
-        console.error("Erreur get_admin_stats :", totalsError);
-        throw totalsError || new Error('get_admin_stats returned null');
-      }
-      const totalProfiles = totalsData.total_profiles;
-      const totalChars = totalsData.total_characters;
-      const sealedChars = totalsData.total_sealed;
-      const totalCercles = totalsData.total_cercles;
-
-      // ── 2-4. Toutes les requêtes de détail en parallèle ───
       const [
-        { data: feeData },
-        { data: profilData },
-        { data: profiles },
-        { data: characters },
-        { data: requests }
+        { data: totalsData, error: totalsError },
+        { data: detailData, error: detailError },
       ] = await Promise.all([
-        supabase.from('characters').select('type_fee').not('type_fee', 'is', null),
-        supabase.from('characters').select('profils').not('profils', 'is', null),
-        supabase.from('profiles').select('created_at').gte('created_at', thirtyDaysAgo).limit(10000),
-        supabase.from('characters').select('created_at, updated_at').or(`created_at.gte.${thirtyDaysAgo},updated_at.gte.${thirtyDaysAgo}`).limit(10000),
-        supabase.from('data_change_requests').select('created_at').gte('created_at', thirtyDaysAgo).limit(10000),
+        supabase.rpc('get_admin_stats'),
+        supabase.rpc('get_community_stats_detail'),
       ]);
 
-      const feeCounts = {};
-      if (feeData) {
-        feeData.forEach(c => {
-          const t = c.type_fee || 'Inconnu';
-          feeCounts[t] = (feeCounts[t] || 0) + 1;
-        });
-      }
-
-      const majeurCounts = {};
-      const mineurCounts = {};
-      if (profilData) {
-        profilData.forEach(c => {
-          const p = c.profils || {};
-          if (p.majeur?.nom) majeurCounts[p.majeur.nom] = (majeurCounts[p.majeur.nom] || 0) + 1;
-          if (p.mineur?.nom) mineurCounts[p.mineur.nom] = (mineurCounts[p.mineur.nom] || 0) + 1;
-        });
-      }
+      if (totalsError || !totalsData) throw totalsError || new Error('get_admin_stats returned null');
+      if (detailError || !detailData) throw detailError || new Error('get_community_stats_detail returned null');
 
       const dailyData = {};
       const addCount = (dateStr, key) => {
@@ -64,27 +29,25 @@ function TabStats() {
         if (!dailyData[d]) dailyData[d] = { date: d, newUsers: 0, newChars: 0, updatedChars: 0, encyclopedia: 0, sortValue: new Date(dateStr).setHours(0, 0, 0, 0) };
         dailyData[d][key]++;
       };
-      if (profiles) profiles.forEach(p => addCount(p.created_at, 'newUsers'));
-      if (characters) characters.forEach(c => {
+      (detailData.new_profiles || []).forEach(p => addCount(p.created_at, 'newUsers'));
+      (detailData.character_activity || []).forEach(c => {
         addCount(c.created_at, 'newChars');
         if (c.updated_at && c.updated_at !== c.created_at) addCount(c.updated_at, 'updatedChars');
       });
-      if (requests) requests.forEach(r => addCount(r.created_at, 'encyclopedia'));
-
-      const sortedDays = Object.values(dailyData).sort((a, b) => b.sortValue - a.sortValue);
+      (detailData.encyclopedia_requests || []).forEach(r => addCount(r.created_at, 'encyclopedia'));
 
       setStats({
         totals: {
-          profiles: totalProfiles,
-          characters: totalChars,
-          sealed: sealedChars,
-          cercles: totalCercles,
+          profiles: totalsData.total_profiles,
+          characters: totalsData.total_characters,
+          sealed: totalsData.total_sealed,
+          cercles: totalsData.total_cercles,
         },
-        fees: Object.entries(feeCounts).sort((a, b) => b[1] - a[1]),
-        profilsMajeurs: Object.entries(majeurCounts).sort((a, b) => b[1] - a[1]),
-        profilsMineurs: Object.entries(mineurCounts).sort((a, b) => b[1] - a[1]),
-        activity: sortedDays,
-        });
+        fees: (detailData.fees || []).map(({ type_fee, count }) => [type_fee, count]),
+        profilsMajeurs: (detailData.profils_majeurs || []).map(({ nom, count }) => [nom, count]),
+        profilsMineurs: (detailData.profils_mineurs || []).map(({ nom, count }) => [nom, count]),
+        activity: Object.values(dailyData).sort((a, b) => b.sortValue - a.sortValue),
+      });
     } catch (error) {
       console.error("Erreur stats :", error);
     } finally {
