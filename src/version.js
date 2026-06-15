@@ -2,6 +2,70 @@
 
 export const VERSION_HISTORY = [
   {
+    version: '17.4.15 - "Le Bon Pas 🚶"',
+    date: '14 Juin 2026',
+    description: 'Les itinéraires retrouvent leurs justes proportions. Le temps de marche était calculé depuis le serveur OSRM avec une vitesse aberrante (~29 km/h) ; il est désormais déduit de la distance route à 5 km/h — comme tous les autres modes. Un promeneur de 1900 met maintenant 2h 38min pour traverser 13 km de Paris, et non 27 minutes.',
+    changes: [
+      '🚶 **Temps à pied corrigé :** La durée de marche était calculée par l\'API OSRM à une vitesse incohérente (~29 km/h). Elle est maintenant calculée sur la distance route à 5 km/h, en cohérence avec les autres modes de transport. Les proportions entre la marche, le fiacre, le cheval et le vélo sont désormais sensées.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.**',
+    ]
+  },
+  {
+    version: '17.4.14 - "La Clé Retrouvée 🗝️"',
+    date: '14 Juin 2026',
+    description: 'Un héritier ne peut plus se retrouver bloqué devant la porte du Manoir faute de se souvenir de sa clé. Le lien "mot de passe oublié" envoyé par courriel mène désormais directement à un formulaire sécurisé pour en choisir un nouveau — et non plus à la page d\'accueil silencieuse.',
+    changes: [
+      '🗝️ **Réinitialisation de mot de passe fonctionnelle :** Le lien reçu par courriel ouvre désormais un formulaire dédié permettant de saisir et confirmer un nouveau mot de passe. Une fois validé, la session est refermée proprement et l\'Héritier peut se reconnecter.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.**',
+    ]
+  },
+  {
+    version: '17.4.13 - "La Carte Vivante 🗺️🎨"',
+    date: '14 Juin 2026',
+    description: 'La Carte de Paris s\'enrichit dans ses moindres détails. Les épingles parlent désormais d\'elles-mêmes : chaque type de lieu arbore son emoji, sa forme et sa couleur propres — que l\'on peut personnaliser à loisir. Les fiches affichent l\'adresse du lieu, modifiable directement pour déplacer l\'épingle sur la carte. Côté itinéraires, cinq modes de transport de l\'époque s\'offrent en onglets — du promeneur au cavalier, du vélocipédiste au motocycliste — avec la distance à vol d\'oiseau en regard, et la possibilité de définir son propre mode de déplacement.',
+    changes: [
+      '📍 **Épingles expressives :** Chaque type de POI affiche son emoji (🏛️ lieu, 🎭 événement, 👤 personnage, 🔮 cercle, ⭐ point d\'intérêt) dans une épingle dont on peut choisir la forme (goutte, cercle, étoile, diamant, bouclier) et la couleur librement.',
+      '🏠 **Adresse dans la fiche POI :** L\'adresse est affichée dans la carte de détail de chaque lieu. En mode modification, un champ adresse permet de géocoder une nouvelle rue — le résultat déplace automatiquement l\'épingle sur la carte et centre la vue.',
+      '🗺️ **Sélection POI depuis la liste en mode Itinéraire :** Les épingles dans la liste latérale agissent comme points de départ (🟢) ou d\'arrivée (🔴) sans avoir à cliquer sur la carte.',
+      '🔍 **Résultats de recherche lisibles :** La liste des suggestions défile dans une zone contenue, et chaque adresse s\'affiche en entier (plus de troncature).',
+      '🐎 **Cinq modes de transport en onglets :** 🚶 À pied (OSRM) · 🐎 Cheval (17 km/h) · 🐴 Fiacre (12 km/h) · 🚲 Vélo (14 km/h) · 🏍️ Moto (20 km/h, limite Paris 1900). Distance route et distance vol d\'oiseau affichées simultanément.',
+      '⚙️ **Mode de déplacement personnalisé :** Chaque joueur peut définir son propre mode (nom, emoji, vitesse en km/h) avec option "En vol" — la durée est alors calculée sur la distance à vol d\'oiseau, pas sur les rues. Sauvegardé en base par utilisateur.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.**',
+    ]
+  },
+  {
+    version: '17.4.12 - "L\'Arpenteur de Paris 📍🔍"',
+    date: '14 Juin 2026',
+    description: 'La Carte de Paris gagne en précision et en lisibilité. Le glissement du curseur temporel révèle enfin les rues de 1900 telles qu\'elles étaient — l\'image historique s\'impose tandis que les étiquettes modernes s\'effacent. Les Héritiers épinglent leurs lieux d\'un simple nom de rue, voient la liste s\'organiser en accordéons par catégorie et la filtrent en un mot. La modale de détail surgit devant la carte au lieu de se terrer derrière. Et les itinéraires s\'enchaînent en cliquant directement sur les épingles.',
+    changes: [
+      '🗺️ **Curseur temporel opérationnel :** Le glissement "Moderne → 1900" affiche désormais de vraies tuiles historiques OpenHistoricalMap (paramètre `date=1900-01-01` manquant corrigé). En parallèle, les noms de rues modernes s\'estompent proportionnellement — à fond "1900", seule la carte d\'époque reste visible.',
+      '📍 **Placement POI par adresse :** En mode "Ajouter un lieu", la barre de recherche devient "Adresse du lieu". Taper "38 rue Madame" et cliquer sur le résultat pose l\'épingle aux coordonnées exactes et pré-remplit le nom — numéro + nom de rue extraits automatiquement.',
+      '🔵 **Visibilité des POI :** Chaque lieu porte désormais un niveau de visibilité — Public (visible par tous), Cercle (membres du cercle choisi seulement), Privé (créateur seul), Admin (gardiens seuls). RLS Supabase mis à jour. Les POIs existants passent en Admin par précaution. Les doctes de cercle peuvent modifier les POIs de leur cercle.',
+      '🪟 **Modale POI au premier plan :** La fenêtre de détail s\'affichait derrière les tuiles (z-index Leaflet > z-50 Tailwind). Rendue via `createPortal` directement dans `document.body` — elle passe désormais au-dessus de tout.',
+      '🧭 **Itinéraire via épingles :** En mode Itinéraire, cliquer sur un marqueur existant l\'utilise directement comme point de départ ou d\'arrivée.',
+      '🎯 **Centrage automatique :** Cliquer sur un lieu dans la liste ou sur un marqueur centre et zoome la carte sur ce point.',
+      '📂 **Accordéons par type :** La liste s\'organise en groupes repliables — Lieux, Événements, Adresses personnages, Cercles, Points d\'intérêt — avec pastille colorée et compteur.',
+      '🔍 **Filtre texte + type :** Barre de recherche temps réel sur le nom + sélecteur de type. Les deux filtres se combinent.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
+    version: '17.4.11 - "Le Plan de Paris 🗺️✨"',
+    date: '14 Juin 2026',
+    description: 'Paris 1900 s\'ouvre sous les yeux des Héritiers : une carte interactive superpose le tracé historique des rues à une lecture moderne, et permet de planter ses propres repères — lieux de rendez-vous, adresses de personnages, cercles secrets, événements marquants. Deux points posés, et un itinéraire à pied ou en fiacre se dessine, chronométré. En parallèle, les Héritiers qui portent un journal d\'XP incomplet peuvent désormais interpeller l\'Administrateur d\'un simple clic — la demande lui parvient aussitôt, signalée par un compteur orange sur le tableau de bord.',
+    changes: [
+      '🗺️ **Carte de Paris 1900 (Nouveau) :** Une page dédiée accessible depuis la barre de navigation. Elle superpose les tuiles historiques OpenHistoricalMap (rues de 1900) sur un fond CartoDB lisible, avec un curseur d\'opacité pour doser entre fidélité historique et repérage contemporain.',
+      '📍 **Points d\'Intérêt (POI) :** Les Héritiers et les Gardiens peuvent placer des marqueurs sur la carte — Lieux (brun), Événements (rouge), Adresses de personnages (bleu), Cercles (violet), Points d\'intérêt (vert). Chaque POI s\'enregistre en base Supabase, avec nom, description, et liens optionnels vers un personnage ou un cercle.',
+      '🧭 **Itinéraires rues à rues :** En mode Itinéraire, deux clics suffisent pour tracer un chemin réel le long des artères parisiennes (OSRM). Le panneau affiche la distance, le temps à pied et le temps en fiacre (12 km/h).',
+      '🔍 **Recherche d\'adresse :** Une barre de recherche Nominatim permet de trouver n\'importe quelle adresse parisienne de 1900 et de centrer la carte dessus.',
+      '🔴 **Badge "Journal à faire réparer par l\'admin" :** Le badge s\'est métamorphosé — plus grand, bordure épaisse, animation pulsante. Il s\'affiche désormais pour les joueurs non-administrateurs dont le journal XP est détecté incomplet, pas seulement pour les Gardiens.',
+      '✉️ **Demande de réparation joueur :** Un clic sur le badge ouvre une modale de confirmation. La demande s\'enregistre en base (`journal_repair_requests`) et déclenche un compteur orange pulsant sur le bouton Communauté du Gardien.',
+      '🔕 **Badge "Journal complet" supprimé :** Il ne s\'affichait que pour les admins et n\'apportait aucune valeur — retiré définitivement.',
+      '⚙️ **Infrastructure :** Deux nouvelles tables Supabase — `map_points` (POIs de la carte) et `journal_repair_requests` (demandes de réparation joueur) — avec RLS en bonne et due forme. Le bouton "Nouveau" a quitté la barre de navigation surchargée pour rejoindre la rangée des onglets.',
+      '🧪 **336 Sentinelles — toujours en faction, aucune régression.',
+    ]
+  },
+  {
     version: '17.4.10 - "La Clé du Casino 🎲🗝️"',
     date: '11 Juin 2026',
     description: 'Le lanceur de dés apprend la politesse. Désormais, la touche Échap referme la table de jeu, le focus reste bien enfermé dans la salle tant qu\'on n\'a pas quitté, et retrouve sagement son chemin vers le bouton des dés une fois la séance terminée. Les oreilles électroniques des lecteurs d\'écran peuvent enfin jouer sans se perdre.',

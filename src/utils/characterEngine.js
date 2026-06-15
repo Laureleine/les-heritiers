@@ -25,35 +25,27 @@ export function characterReducer(state, action) {
                     
                     if (pastTotal > 0 || pastDepense > 0) {
                         loadedState.data.historique_xp = [];
-                        
-                        // 1. Le Gain Originel
+                        // Ancre temporelle : date de création du personnage, jamais Date.now()
+                        const anchor = loadedState.created_at
+                            ? new Date(loadedState.created_at).getTime()
+                            : new Date('2026-01-01T00:00:00.000Z').getTime();
+
+                        // 1. Le Gain Originel (antérieur à toutes les dépenses)
                         if (pastTotal > 0) {
                             loadedState.data.historique_xp.push({
                                 type: 'GAIN',
                                 code: XP_CODES.XP_HISTORIQUE,
                                 label: 'Expérience acquise avant l\'ouverture du Registre',
                                 valeur: pastTotal,
-                                date_mouvement: new Date(Date.now() - 200000).toISOString()
+                                date_mouvement: new Date(anchor - 200000).toISOString()
                             });
                         }
-                        
-                        // 2. La Fouille Archéologique
+
+                        // 2. La Fouille Archéologique — on injecte la reconstruction telle quelle,
+                        // sans reconciliation. La dette éventuelle est gérée par xp_dette en base.
                         if (pastDepense > 0) {
                             const reconstructedTxs = reconstructHistory(loadedState, action.gameData);
-                            
-                            // 3. L'Intégrité Mathématique (Le Solde de Tout Compte)
-                            const sumReconstructed = reconstructedTxs.reduce((acc, tx) => acc + tx.valeur, 0);
-                            if (sumReconstructed !== pastDepense) {
-                                const difference = pastDepense - sumReconstructed;
-                                reconstructedTxs.push({
-                                    type: difference > 0 ? 'DEPENSE' : 'REMBOURSEMENT',
-                                    code: XP_CODES.XP_SOLDE,
-                                    label: difference > 0 ? 'Ajustements manuels antérieurs (Passif)' : 'Remboursements antérieurs (Passif)',
-                                    valeur: Math.abs(difference),
-                                    date_mouvement: new Date(Date.now() - 1000).toISOString() // La toute dernière ligne du passé
-                                });
-                            }
-                            
+
                             // On injecte les lignes du passé en antéchronologique (les plus récentes d'abord)
                             reconstructedTxs.reverse().forEach(tx => {
                                 loadedState.data.historique_xp.unshift(tx);

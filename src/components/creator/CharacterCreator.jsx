@@ -179,6 +179,20 @@ export default function CharacterCreator({ session, userProfile }) {
         </div>
       </div>
 
+      {/* BANNIÈRE DETTE XP */}
+      {character?.xp_dette === true && !isReadOnly && (
+        <div className="mb-4 bg-red-50 border-2 border-red-300 rounded-xl p-4 flex items-start gap-3">
+          <span className="text-red-500 text-xl shrink-0">⚠️</span>
+          <div>
+            <p className="font-serif font-bold text-red-800 text-sm">Dette en Points d'Expérience</p>
+            <p className="text-red-700 text-xs mt-1">
+              Suite à la reconstruction du journal, les XP dépensés dépassent votre total actuel.
+              Vous ne pourrez pas dépenser de nouveaux XP tant que votre total n'aura pas rattrapé vos dépenses.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* LA BARRE DE PROGRESSION MAGIQUE */}
       <div className="relative flex justify-between items-center w-full max-w-4xl mx-auto py-4 px-2 mb-10 mt-4">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-stone-200 z-0 rounded-full"></div>

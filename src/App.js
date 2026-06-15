@@ -16,9 +16,10 @@ import { APP_VERSION, BUILD_DATE } from './version';
 import { useCorrectionCheck } from './hooks/useCorrectionCheck';
 import CorrectionRequestModal from './components/CorrectionRequestModal';
 import AdminCorrectionWidget from './components/AdminCorrectionWidget';
+import ResetPasswordForm from './components/ResetPasswordForm';
 
 export default function App() {
-  const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate } = useAppInit();
+  const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate, isRecoveryMode } = useAppInit();
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [versionHistory, setVersionHistory] = useState(null);
 
@@ -40,6 +41,16 @@ export default function App() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
           <p className="text-lg text-amber-900 font-serif">{loadingStep}</p>
         </div>
+      </div>
+    );
+  }
+
+  if (isRecoveryMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
+        <main>
+          <ResetPasswordForm />
+        </main>
       </div>
     );
   }

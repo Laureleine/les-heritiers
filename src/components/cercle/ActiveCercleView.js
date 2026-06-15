@@ -135,11 +135,11 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                     {xpState ? (
                       <>
                       <div
-                        className="flex items-center gap-1 text-xs font-bold bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200 shadow-sm"
-                        title={`${xpState.xpDispo} XP disponibles sur ${xpState.xpTotal} acquis`}
+                        className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm ${xpState.xpDispo < 0 ? 'bg-red-50 border-red-300' : 'bg-stone-50 border-stone-200'}`}
+                        title={xpState.xpDispo < 0 ? `Dette XP : ${xpState.xpDepense} dépensés pour ${xpState.xpTotal} acquis` : `${xpState.xpDispo} XP disponibles sur ${xpState.xpTotal} acquis`}
                       >
-                        <Sparkles size={12} className="text-amber-500" />
-                        <span className="text-amber-700">{xpState.xpDispo}</span>
+                        <Sparkles size={12} className={xpState.xpDispo < 0 ? 'text-red-500' : 'text-amber-500'} />
+                        <span className={xpState.xpDispo < 0 ? 'text-red-700' : 'text-amber-700'}>{xpState.xpDispo}</span>
                         <span className="text-stone-300">/</span>
                         <span className="text-green-600">{xpState.xpTotal}</span>
                         <span className="text-stone-400">XP</span>

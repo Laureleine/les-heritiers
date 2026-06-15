@@ -11,6 +11,7 @@ export function useAppInit() {
     const [loadingStep, setLoadingStep] = useState('Démarrage...');
     const [profileLoaded, setProfileLoaded] = useState(false);
     const [initTrigger, setInitTrigger] = useState(0);
+    const [isRecoveryMode, setIsRecoveryMode] = useState(false);
     const isInitializingRef = useRef(false);
     const sessionRef = useRef(null);
 
@@ -96,7 +97,9 @@ export function useAppInit() {
     // --- ÉCOUTEUR D'AUTHENTIFICATION ---
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-            if (event === 'SIGNED_IN') {
+            if (event === 'PASSWORD_RECOVERY') {
+                setIsRecoveryMode(true);
+            } else if (event === 'SIGNED_IN') {
                 if (sessionRef.current?.user?.id === newSession?.user?.id) return;
                 sessionRef.current = newSession;
                 setGlobalLoading(true);
@@ -107,6 +110,7 @@ export function useAppInit() {
                 setSession(null);
                 setUserProfile(null);
                 setProfileLoaded(false);
+                setIsRecoveryMode(false);
             }
         });
         return () => subscription.unsubscribe();
@@ -145,5 +149,5 @@ export function useAppInit() {
         if (profile) setUserProfile({ ...session.user, profile });
     };
 
-    return { session, setSession, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate };
+    return { session, setSession, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate, isRecoveryMode };
 }

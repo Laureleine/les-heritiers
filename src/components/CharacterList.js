@@ -1,7 +1,7 @@
 // src/components/CharacterList.js
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Search, AlertTriangle, CheckCircle } from '../config/icons';
+import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Search, AlertTriangle, CheckCircle, Map } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
@@ -114,7 +114,7 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenActualite, profils = [], userProfile, gameData, session }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenActualite, onOpenCarte, profils = [], userProfile, gameData, session }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
@@ -136,6 +136,11 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const [repairRows, setRepairRows] = useState({});      // { [charId]: { dbChar, mapped, status, detail } }
   const [repairGameData, setRepairGameData] = useState(null);
   const [repairConfirmTarget, setRepairConfirmTarget] = useState(null);
+
+  // ✨ Réparation XP (joueur) — détection locale + demande admin
+  const [playerRepairNeeds, setPlayerRepairNeeds] = useState({});  // { [charId]: boolean }
+  const [playerRepairRequest, setPlayerRepairRequest] = useState(null); // { charId, charNom }
+  const [pendingRepairCount, setPendingRepairCount] = useState(0); // badge admin
 
   // 🧠 FIX : Le "Latest Ref Pattern" pour isoler onSignOut du cycle de dépendances
   const onSignOutRef = useRef(onSignOut);
@@ -232,6 +237,62 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   useEffect(() => {
     if (isAdmin) loadRepairStatuses();
   }, [isAdmin, loadRepairStatuses]);
+
+  // ─── Réparation XP : détection côté joueur (non-admin) ──────────────────
+  useEffect(() => {
+    if (isAdmin || myCharacters.length === 0) return;
+    const sealedIds = myCharacters
+      .filter(c => c.statut === 'scelle' || c.statut === 'scellé')
+      .map(c => c.id);
+    if (sealedIds.length === 0) return;
+
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from('characters')
+          .select('id, xp_depense, statut, data')
+          .in('id', sealedIds);
+        if (!data) return;
+        const needs = {};
+        for (const dbChar of data) {
+          needs[dbChar.id] = journalNeedsRepair(mapDbCharForReconstruction(dbChar));
+        }
+        setPlayerRepairNeeds(needs);
+      } catch { /* silencieux */ }
+    })();
+  }, [isAdmin, myCharacters]);
+
+  // ─── Réparation XP : comptage des demandes en attente (admin) ───────────
+  useEffect(() => {
+    if (!isAdmin) return;
+    (async () => {
+      try {
+        const { count } = await supabase
+          .from('journal_repair_requests')
+          .select('*', { count: 'exact', head: true })
+          .is('resolved_at', null);
+        setPendingRepairCount(count || 0);
+      } catch { /* silencieux */ }
+    })();
+  }, [isAdmin]);
+
+  // ─── Réparation XP : soumission de la demande joueur ────────────────────
+  const submitPlayerRepairRequest = useCallback(async () => {
+    if (!playerRepairRequest) return;
+    const { charId, charNom } = playerRepairRequest;
+    setPlayerRepairRequest(null);
+    try {
+      const { error } = await supabase.from('journal_repair_requests').insert({
+        character_id: charId,
+        character_nom: charNom,
+        requested_by: session?.user?.id,
+      });
+      if (error) throw error;
+      showInAppNotification("Demande envoyée ! L'administrateur va réparer votre journal.", "success");
+    } catch (e) {
+      showInAppNotification("Erreur lors de l'envoi de la demande : " + e.message, "error");
+    }
+  }, [playerRepairRequest, session?.user?.id]);
 
   // ─── Réparation XP : demande de reconstruction pour une carte ────────────
   const requestRepairOne = useCallback(async (charId) => {
@@ -471,25 +532,25 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
         {/* ─── BARRE DE NAVIGATION ─────────────────────────────────────── */}
         <div className="relative z-50 flex flex-nowrap items-center gap-1 overflow-x-auto hide-scrollbar w-full pb-2">
-          <button
-            onClick={onNewCharacter}
-            disabled={!gameData?.fairyTypes?.length}
-            title={!gameData?.fairyTypes?.length ? "Chargement des données en cours…" : undefined}
-            className={`flex-shrink-0 mr-auto flex items-center space-x-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm ${!gameData?.fairyTypes?.length ? 'opacity-50 cursor-wait' : ''}`}
-          >
-            <Plus size={15} /> <span className="hidden lg:inline">Nouveau</span>
-          </button>
           <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={14} /> <span className="hidden lg:inline">Encyclopédie</span>
           </button>
           <button onClick={onOpenActualite} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-emerald-100 text-emerald-950 border-2 border-emerald-200 rounded-lg hover:bg-emerald-200 hover:border-emerald-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Consulter la Gazette de l'époque (1899)">
             <Globe size={14} /> <span className="hidden lg:inline">Actualité</span>
           </button>
+          <button onClick={onOpenCarte} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-stone-100 text-stone-800 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Explorer la carte de Paris 1900">
+            <Map size={14} /> <span className="hidden lg:inline">Carte</span>
+          </button>
           <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
             <Users size={14} /> <span className="hidden lg:inline">Cercles</span>
           </button>
-          <button onClick={onOpenAdmin} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
+          <button onClick={onOpenAdmin} className="relative flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
             <BarChart2 size={14} /> <span className="hidden lg:inline">Communauté</span>
+            {isAdmin && pendingRepairCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center bg-orange-500 text-white text-[10px] font-black rounded-full px-1 animate-pulse shadow">
+                {pendingRepairCount}
+              </span>
+            )}
           </button>
           <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-rose-100 text-rose-800 border-2 border-rose-200 rounded-lg hover:bg-rose-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Signaler une faille dans la matrice">
             <Bug size={14} /> <span className="hidden lg:inline">Anomalies</span>
@@ -503,7 +564,15 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
         </div>
 
         {/* ─── ONGLETS ─────────────────────────────────────────────────── */}
-        <div className="flex gap-8 border-b border-gray-200 overflow-x-auto hide-scrollbar">
+        <div className="flex gap-4 border-b border-gray-200 overflow-x-auto hide-scrollbar items-end">
+          <button
+            onClick={onNewCharacter}
+            disabled={!gameData?.fairyTypes?.length}
+            title={!gameData?.fairyTypes?.length ? "Chargement des données en cours…" : undefined}
+            className={`flex-shrink-0 mr-6 pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 text-green-700 border-transparent hover:text-green-800 hover:border-green-600 ${!gameData?.fairyTypes?.length ? 'opacity-50 cursor-wait' : ''}`}
+          >
+            <Plus size={16} /> Nouveau
+          </button>
           <button onClick={() => handleTabChange('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
             Mes personnages
             <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'my' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600'}`}>
@@ -594,6 +663,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       userProfile={userProfile}
                       repairStatus={isAdmin ? repairRows[char.id]?.status : undefined}
                       onRepairRequest={isAdmin ? requestRepairOne : undefined}
+                      needsRepair={!isAdmin ? playerRepairNeeds[char.id] : undefined}
+                      onRequestRepair={!isAdmin ? (id, nom) => setPlayerRepairRequest({ charId: id, charNom: nom }) : undefined}
                     />
                   </div>
                 ))}
@@ -763,6 +834,36 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               </div>
               <button onClick={() => setPublicInfoModal({ isOpen: false, charName: '' })} className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-transform active:scale-95">
                 J'ai compris !
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✨ MODALE DE DEMANDE DE RÉPARATION (JOUEUR) */}
+      {playerRepairRequest && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setPlayerRepairRequest(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm w-full p-6 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start gap-3 mb-4">
+              <span className="text-2xl">🔴</span>
+              <div>
+                <h3 className="font-serif font-bold text-gray-900 text-lg leading-tight">
+                  Demander une réparation
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Le journal XP de <strong className="text-amber-800">{playerRepairRequest.charNom}</strong> semble incomplet.
+                </p>
+              </div>
+            </div>
+            <p className="text-sm text-stone-600 mb-6">
+              Voulez-vous envoyer une demande à l'administrateur pour qu'il répare votre journal d'expérience ?
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setPlayerRepairRequest(null)} className="flex-1 px-4 py-2.5 bg-stone-100 text-stone-700 rounded-lg font-bold hover:bg-stone-200 transition-colors">
+                Annuler
+              </button>
+              <button onClick={submitPlayerRepairRequest} className="flex-1 px-4 py-2.5 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2">
+                ✉️ Envoyer la demande
               </button>
             </div>
           </div>
