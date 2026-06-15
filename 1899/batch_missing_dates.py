@@ -47,6 +47,23 @@ def get_db_url():
     return os.environ.get("SUPABASE_DB_URL")
 
 
+UNAVAILABLE_FILE = BASE_DIR / "gallica_unavailable.txt"
+
+
+def load_unavailable_dates():
+    """Retourne l'ensemble des dates connues comme absentes de Gallica."""
+    if not UNAVAILABLE_FILE.exists():
+        return set()
+    return {line.strip() for line in UNAVAILABLE_FILE.read_text(encoding="utf-8").splitlines() if line.strip()}
+
+
+def mark_date_unavailable(date_str):
+    """Ajoute une date au fichier des dates indisponibles sur Gallica."""
+    with UNAVAILABLE_FILE.open("a", encoding="utf-8") as f:
+        f.write(date_str + "\n")
+    print(f"   -> {date_str} ajoutee a gallica_unavailable.txt")
+
+
 def get_missing_dates(db_url):
     """Retourne la liste des dates sans articles, triées du plus récent au plus ancien,
     entre la MIN et la MAX des dates existantes dans journal_articles."""
@@ -78,6 +95,13 @@ def get_missing_dates(db_url):
         missing = [r[0] for r in cur.fetchall()]
         cur.close()
         conn.close()
+
+        unavailable = load_unavailable_dates()
+        if unavailable:
+            before = len(missing)
+            missing = [d for d in missing if (d.isoformat() if hasattr(d, 'isoformat') else str(d)) not in unavailable]
+            print(f"Dates ignorees (absentes Gallica) : {before - len(missing)}")
+
         print(f"Dates manquantes trouvees : {len(missing)}")
         return missing
 
@@ -234,6 +258,9 @@ def main():
             delete_date_from_db(db_url, date_str)
             print(f"\nArret propre. {date_str} sera retente au prochain lancement.")
             sys.exit(0)
+        elif returncode == 2:
+            print(f"\nDate absente de Gallica : {date_str}. Ignoree.")
+            mark_date_unavailable(date_str)
         else:
             print(f"\nERREUR: Echec sur {date_str} (non-token, code {returncode}).")
             print("   Date conservee en DB pour investigation. Arret.")

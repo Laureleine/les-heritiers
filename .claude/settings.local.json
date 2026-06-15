@@ -61,7 +61,9 @@
       "WebSearch",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(Get-Content \"C:\\\\Users\\\\amara\\\\-=- Apps -=-\\\\heritiers\\\\src\\\\App.js\")",
-      "Bash(Select-Object -First 50)"
+      "Bash(Select-Object -First 50)",
+      "Bash(npm install *)",
+      "Bash(vercel env *)"
     ]
   }
 }
