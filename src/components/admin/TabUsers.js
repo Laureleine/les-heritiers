@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../config/supabase';
-import { iconMap, Search, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award, Key } from '../../config/icons';
+import { iconMap, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award, Key } from '../../config/icons';
+import { SearchBar } from '../ui/SearchBar';
 import { showInAppNotification } from '../../utils/SystemeServices';
 
 // ============================================================================
@@ -185,16 +186,13 @@ function TabUsers({ session }) {
             {/* 1. EN-TÊTE : RECHERCHE ET FILTRES                              */}
             {/* ============================================================== */}
             <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <div className="relative w-full md:w-1/3 shrink-0">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Chercher un pseudo ou email..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold text-gray-700 shadow-sm"
-                    />
-                </div>
+                <SearchBar
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Chercher un pseudo ou email..."
+                    className="w-full md:w-1/3 shrink-0"
+                    inputClassName="font-bold text-gray-700 shadow-sm focus:ring-2 focus:ring-amber-500"
+                />
 
                 <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                     <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg p-1 shadow-sm">

@@ -9,7 +9,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../config/supabase';
 import { loadFairyTypes, loadSocialItems } from '../../utils/supabaseGameData';
-import { Search, X, AlertTriangle, CheckCircle, Wrench, MessageCircle, Bell } from '../../config/icons';
+import { AlertTriangle, CheckCircle, Wrench, MessageCircle, Bell } from '../../config/icons';
+import { SearchBar } from '../ui/SearchBar';
 import {
     mapDbCharForReconstruction,
     journalNeedsRepair,
@@ -505,21 +506,13 @@ export default function TabRepairJournaux() {
 
                 {/* Barre de recherche + filtres */}
                 <div className="flex flex-col sm:flex-row gap-2">
-                    <div className="relative flex-1">
-                        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                        <input
-                            type="text"
-                            placeholder="Rechercher un personnage…"
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200"
-                        />
-                        {search && (
-                            <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                                <X size={14} />
-                            </button>
-                        )}
-                    </div>
+                    <SearchBar
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        onClear={() => setSearch('')}
+                        placeholder="Rechercher un personnage…"
+                        className="flex-1"
+                    />
                     <div className="flex gap-1 shrink-0">
                         {[
                             ['pending', `⏳ À réparer (${needsRepairCount})`],
