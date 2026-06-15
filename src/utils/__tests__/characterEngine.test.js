@@ -154,7 +154,7 @@ describe('characterReducer', () => {
       expect(result.data?.historique_xp).toBeUndefined();
     });
 
-    it('gère le solde mathématique si reconstruction != depense', () => {
+    it('injecte la reconstruction sans entrée SOLDE même si reconstruction != depense', () => {
       setScelle(true);
       reconstructHistory.mockReturnValue([
         { type: 'DEPENSE', valeur: 10, code: 'CARAC_AUGMENTATION' },
@@ -167,8 +167,11 @@ describe('characterReducer', () => {
       });
 
       const solde = result.data.historique_xp.find(tx => tx.code === 'XP_SOLDE');
-      expect(solde).toBeDefined();
-      expect(solde.valeur).toBe(5);
+      expect(solde).toBeUndefined();
+      // La reconstruction est injectée telle quelle (10 XP), pas réconciliée à 15
+      const depense = result.data.historique_xp.find(tx => tx.code === 'CARAC_AUGMENTATION');
+      expect(depense).toBeDefined();
+      expect(depense.valeur).toBe(10);
     });
 
     it('ne fait rien pour un personnage non scellé', () => {
