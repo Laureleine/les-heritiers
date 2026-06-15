@@ -458,8 +458,8 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
     }
   }, [searchQuery]);
 
-  // ── Opacité carte historique ───────────────────────────────────────────────
-  const [ohmOpacity, setOhmOpacity] = useState(0.85);
+  // ── Overlay rues actuelles ────────────────────────────────────────────────
+  const [showModern, setShowModern] = useState(false);
 
   // ── Changement d'outil ────────────────────────────────────────────────────
   const handleToolChange = useCallback((t) => {
@@ -656,17 +656,16 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             ))}
           </div>
 
-          {/* Opacité carte historique */}
+          {/* Overlay rues actuelles */}
           <div className="p-3 border-b border-amber-100">
-            <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">Carte historique</p>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-stone-400 w-12 shrink-0">Moderne</span>
-              <input type="range" min={0} max={1} step={0.05} value={ohmOpacity}
-                onChange={e => setOhmOpacity(parseFloat(e.target.value))}
-                className="flex-1 accent-amber-700"
-              />
-              <span className="text-[10px] text-stone-400 w-12 text-right shrink-0">1900</span>
-            </div>
+            <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">Fond de carte</p>
+            <button
+              onClick={() => setShowModern(v => !v)}
+              className={`w-full px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2 ${showModern ? 'bg-amber-700 text-amber-50' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}
+            >
+              <Map size={13} />
+              {showModern ? 'Rues actuelles visibles' : 'Afficher les rues actuelles'}
+            </button>
           </div>
 
           {/* Aide contextuelle */}
@@ -771,14 +770,14 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         <div className="flex-1 relative">
           <MapContainer center={[48.8566, 2.3522]} zoom={13}
             className={`w-full h-full${tool !== 'vue' ? ' cursor-crosshair' : ''}`}
+            style={{ background: '#e8dcc8' }}
             zoomControl
           >
-            {/* Fond moderne (toujours visible, garantit toutes les rues) */}
-            <TileLayer url={TILE_BASE} attribution={ATTRIBUTION} maxZoom={19} subdomains="abcd" />
-            {/* Carte historique OpenHistoricalMap par-dessus, opacité réglable */}
-            <TileLayer url={TILE_OHM} maxZoom={19} opacity={ohmOpacity} />
-            {/* Labels modernes : s'effacent quand on monte vers 1900 */}
-            <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" opacity={0.75 * (1 - ohmOpacity)} />
+            {/* Carte historique OpenHistoricalMap — fond principal */}
+            <TileLayer url={TILE_OHM} attribution={ATTRIBUTION} maxZoom={19} opacity={1} />
+            {/* Overlay rues actuelles (optionnel) */}
+            {showModern && <TileLayer url={TILE_BASE} maxZoom={19} subdomains="abcd" opacity={0.35} />}
+            {showModern && <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" opacity={0.6} />}
 
             <MapClickHandler tool={tool} onMapClick={handleMapClick} />
             {flyTo && <FlyToLocation position={flyTo} />}
