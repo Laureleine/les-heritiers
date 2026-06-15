@@ -1,46 +1,36 @@
-# REX — Session 15 Juin 2026 — v17.4.16 "Le Regard de la Communauté 🌐"
+﻿# REX — Session 15 Juin 2026 (suite) — v17.4.17 "L'Estampe Belle Époque 🗺️🎨"
 
 ## Ce qui a été fait
 
-- **Métriques globales pour tous les Héritiers** : la page Communauté & Métriques affichait des données filtrées par la RLS Supabase (chaque utilisateur ne voyait que les personnages accessibles). Désormais, une RPC `get_community_stats_detail()` avec `SECURITY DEFINER` renvoie les statistiques de l'ensemble du corpus à tous les Héritiers connectés.
-- **Correctif Vitest/worktrees** : Vitest découvrait et exécutait les tests des worktrees parallèles (`.claude/worktrees/`), produisant de faux échecs. Ajout de `.claude/**` dans l'`exclude` de `vite.config.js`.
+- **Carte de Paris 1900 — fond CartoDB sépia** : tentative initiale avec OpenHistoricalMap (OHM) abandonnée (tuiles vides pour Paris). Solution retenue : CartoDB `light_nolabels` + `light_only_labels` comme couches distinctes, + filtre CSS `sepia(0.7) brightness(0.88) contrast(1.05) saturate(0.55)` via la classe `.carte-1900` sur le wrapper, activée/désactivée au toggle. Pas de `maxBounds` ni `minZoom` — navigation libre.
+- **DRY Chantier 1 — `withLoading`** : utilitaire async `src/utils/withLoading.js` (11 lignes) qui encapsule `setLoading(true)/try/catch/finally/setLoading(false)`. Appliqué à 5 fonctions dans 3 hooks. Les variantes avec `isSilent` (Telegraphe) et erreurs conditionnelles (Encyclopedia.fetchData) laissées telles quelles — l'abstraction aurait été plus complexe que l'original.
+- **worktree bloqué entre sessions** : `ExitWorktree` ne peut libérer que les worktrees créés dans la session courante. Si une session se compacte en cours de route, le worktree reste actif et on ne peut en créer un nouveau. Solution : `git reset --hard origin/main` depuis le worktree existant pour le recycler.
 
 ---
 
 ## Règles et enseignements
 
-### 1. La RLS Supabase filtre TOUT, y compris les stats
-Les requêtes directes `supabase.from('characters').select(...)` respectent la RLS — un utilisateur ordinaire ne voit que les personnages publics ou les siens. Pour des métriques globales (distributions, totaux), il faut systématiquement une RPC `SECURITY DEFINER`.
+### 1. OHM (OpenHistoricalMap) est inutilisable pour Paris 1900 — les tuiles sont vides
+Les données historiques d'OHM sont très parcellaires pour Paris. L'URL `tile.openhistoricalmap.org/{z}/{x}/{y}.png` renvoie des tuiles transparentes/vides pour la plupart des zooms sur Paris. Ne pas réessayer pour ce projet.
 
-**Règle :** Toute requête de stats/métriques censée être globale = RPC SECURITY DEFINER obligatoire.
+**Règle :** Pour l'effet "carte historique", CartoDB light + filtre CSS sépia est la seule solution fiable. OHM est exclu.
 
-### 2. Vitest découvre les tests des worktrees si `.claude/` n'est pas exclu
-Les worktrees créés sous `.claude/worktrees/` sont dans le dossier du projet. Vitest les parcourt par défaut. Résultat : des tests d'un autre chantier peuvent échouer dans la session principale.
+### 2. Le filtre sépia CSS sur `.leaflet-tile-pane` est propre et non-destructif
+Plutôt que de modifier les tuiles côté serveur ou d'utiliser une superposition d'image, appliquer `filter: sepia(...) brightness(...) contrast(...) saturate(...)` sur `.carte-1900 .leaflet-tile-pane` via `index.css`. La classe est portée par le wrapper du `MapContainer`. Le toggle ajoute/enlève la classe — zéro impact sur les performances.
 
-**Règle :** Ajouter `.claude/**` à `test.exclude` dans `vite.config.js` dès la création du projet (ou dès qu'un premier worktree est créé).
+**Règle :** Pour tinter des tuiles Leaflet, préférer le filtre CSS sur `.leaflet-tile-pane` plutôt que des solutions JS.
 
-### 3. `version.js` a des fins de ligne CRLF sur Windows — gérer l'insertion en conséquence
-Le marker de remplacement `'export const VERSION_HISTORY = [\n'` ne trouve rien si le fichier utilise `\r\n`. Toujours détecter le séparateur de ligne avant d'insérer.
+### 3. `withLoading` n'est pas un hook — c'est une fonction utilitaire
+Si le `loading` state est partagé entre plusieurs fonctions d'un hook, un hook `useQuery` créerait une instance de loading par requête — cassant le loader global. La bonne abstraction est une simple fonction async qui reçoit `setLoading` en paramètre.
 
-**Règle :** Pour modifier `version.js` par script Node.js, détecter `\r\n` vs `\n` et adapter le marker. Ou utiliser PowerShell avec des here-strings qui gèrent les CRLF natifs.
+**Règle :** Quand plusieurs fonctions partagent un seul `loading`, extraire en utilitaire (pas en hook). Un hook gère son propre état — une fonction utilitaire reçoit l'état à gérer.
 
-### 4. Les apostrophes dans les strings JS single-quote doivent être échappées `\'`
-Quand on génère du contenu JS programmatiquement, les apostrophes français (`s'ouvre`, `l'activité`) brisent les single-quoted strings. Préférer les **double-quotes** pour les valeurs de `version.js` qui contiennent du texte français naturel.
+### 4. Le pattern `isSilent` résiste à l'abstraction générique
+Les fonctions qui court-circuitent le loader pour les rafraîchissements silencieux (`fetchChannels(isSilent = false)`) ne bénéficient pas de `withLoading` sans ajouter un 4e paramètre `silent`. Avec ce paramètre, la signature devient `withLoading(setLoading, fn, onError, silent)` — plus complexe que le `if (!isSilent) setLoading(true)` original.
 
-**Règle :** Dans `version.js`, utiliser des double-quotes pour `description` et les entrées `changes[]` (le français est plein d'apostrophes). Réserver les single-quotes aux identifiants/noms sans apostrophes.
+**Règle :** Ne pas forcer l'abstraction quand le pattern a des variantes qui alourdissent l'interface. Laisser ces cas tels quels et documenter pourquoi.
 
-### 5. Merger un worktree depuis le repo principal quand main y est aussi en use
-Git interdit `git checkout main` depuis un worktree quand la branche `main` est déjà checkoutée dans le repo principal. Utiliser `cd <repo-principal> && git merge <branche-worktree>` depuis le répertoire principal, pas depuis le worktree.
+### 5. `ExitWorktree` est limité à la session courante — recycler un worktree avec `git reset`
+Si une session se compacte pendant qu'un worktree est ouvert, la nouvelle session ne peut ni `ExitWorktree` (outil ne connaît pas ce worktree), ni créer un nouveau worktree (déjà dans un worktree). Solution : `git reset --hard origin/main` dans le worktree existant pour le recaler sur main, puis continuer dedans.
 
-### 6. Vérifier `git stash pop` après un merge : des conflits peuvent apparaître
-Le stash pop après un merge peut produire des conflits (ex: `public/version.json` modifié des deux côtés). Toujours vérifier le statut git après un `stash pop` et résoudre avant de continuer.
-
----
-
-## État en fin de session
-
-- **337 tests verts** (25 fichiers)
-- **Vercel** : READY en production (build ~23s)
-- **Supabase** : migration `get_community_stats_detail` appliquée
-- **Aucune modification non commitée** dans le repo principal
-
+**Règle :** En début de session dans un worktree hérité, toujours vérifier avec `git log --oneline -5` que le worktree est à jour. Sinon, `git fetch origin main && git reset --hard origin/main`.
