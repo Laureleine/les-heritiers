@@ -76,40 +76,16 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ## 📋 Chantiers restants (prioritaires)
 
-### 1. 🔴 `useSupabaseQuery` — Hook générique de fetch Supabase
+### 1. ✅ `withLoading` — Utilitaire try/catch/finally (TERMINÉ — session 15 juin 2026)
 
-**Problème :** 7 hooks réimplémentent le même pattern try/catch/finally avec loading state :
-- `useGrimoire.js`
-- `useSnapshots.js`
-- `useForgeTitres.js`
-- `useEncyclopedia.js` (×2 : fetchData + fetchPendingLocks)
-- `ForgeContext.jsx` (fetchForge)
-- `useTelegraphe.js` (×2 : fetchChannels + fetchMessages)
+**Solution retenue :** Fonction utilitaire `src/utils/withLoading.js` (pas un hook — le loading est partagé entre plusieurs fonctions dans chaque hook, une instance par hook briserait ce partage).
 
-**Pattern commun :**
-```js
-const [data, setData] = useState([]);
-const [loading, setLoading] = useState(true);
+**Portée réelle :** Les 7 fichiers du plan utilisent 2 patterns distincts :
+- `useGrimoire`, `useForgeTitres`, `ForgeContext` → pattern `if/else` sans try/catch (déjà minimal, non touché)
+- `useSnapshots`, `useEncyclopedia` (executeDelete), `useTelegraphe` (startPrivateChat, createSupportTicket, sendReply) → try/catch/finally **refactorisés**
+- `fetchChannels` / `fetchMessages` (isSilent) et `fetchData` (erreurs conditionnelles par onglet) → laissés en place
 
-const fetch = useCallback(async () => {
-  setLoading(true);
-  try {
-    let query = supabase.from(table).select('*');
-    query = queryBuilder(query);
-    const { data: result, error } = await query;
-    if (error) throw error;
-    setData(result || []);
-  } catch (err) {
-    showInAppNotification("Erreur de chargement", "error");
-  } finally {
-    setLoading(false);
-  }
-}, [table, ...deps]);
-
-useEffect(() => { fetch(); }, [fetch]);
-```
-
-**Gain estimé :** ~80 lignes économisées.
+**Gain réel :** ~20 lignes, 5 fonctions. **Tests : 342/342**.
 
 ---
 
