@@ -7,6 +7,7 @@ import { showInAppNotification } from '../utils/SystemeServices';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { useQueryClient } from '@tanstack/react-query';
 import { parseIfString, safeParseArray } from '../utils/json';
+import { withLoading } from '../utils/withLoading';
 
 const parseToBulletedList = (value) => {
     if (!value) return '';
@@ -299,8 +300,7 @@ export function useEncyclopedia() {
 
     const executeDelete = useCallback(async (item, tabName) => {
         setConfirmState(prev => ({ ...prev, isOpen: false }));
-        setLoading(true);
-        try {
+        await withLoading(setLoading, async () => {
             const { error } = await supabase.rpc('purge_encyclopedia_entity', {
                 p_table_name: tabName,
                 p_record_id: item.id
@@ -310,12 +310,10 @@ export function useEncyclopedia() {
             invalidateAllCaches();
             queryClient.invalidateQueries({ queryKey: ['gameData'] });
             fetchData();
-        } catch (err) {
+        }, (err) => {
             console.error("Erreur RPC Destruction:", err);
             showInAppNotification("La destruction a échoué : " + err.message, "error");
-        } finally {
-            setLoading(false);
-        }
+        });
     }, [fetchData]);
 
     const triggerDelete = useCallback((item) => {
