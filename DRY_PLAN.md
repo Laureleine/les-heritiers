@@ -114,7 +114,9 @@ ModalShell existe (`src/components/ui/ModalShell.js`). Les 15 autres fichiers ca
 
 `src/components/ui/EmptyState.jsx` — Props : `icon`, `message`, `pulse`, `className`.
 
-**Migré :** `GrimoirePersonnel.js` (×4 : loading + 3 onglets vides). Fichiers restants (Encyclopedia ×2, ActiveCercleView, StepVieSociale, BonusBuilder) à traiter si besoin.
+**Migré :** `GrimoirePersonnel.js` (×4 : loading + 3 onglets vides).
+
+**Non migré (intentionnel — session 16 juin 2026) :** Encyclopedia.js (×2 : texte-only, `col-span-full`, couleur `text-stone-500` ≠ `text-stone-400`), ActiveCercleView.js (`relative z-10`, `w-full`, icon size 32 ≠ 48), StepVieSociale.js et BonusBuilder.js (styles trop spécifiques). Trop de divergences visuelles pour une migration sans régression.
 
 ---
 
@@ -122,7 +124,9 @@ ModalShell existe (`src/components/ui/ModalShell.js`). Les 15 autres fichiers ca
 
 `src/components/ui/TabBar.jsx` — Props : `tabs [{ id, label, count?, activeClass? }]`, `activeTab`, `onTabChange`, `className`.
 
-**Migré :** `Encyclopedia.js`, `MesPropositions.js` (avec `activeClass` par onglet et `count`). `GrimoirePersonnel.js` et `Telegraphe.js` restants.
+**Migré :** `Encyclopedia.js`, `MesPropositions.js` (avec `activeClass` par onglet et `count`).
+
+**Non migré (intentionnel — session 16 juin 2026) :** `GrimoirePersonnel.js` et `Telegraphe.js` ont un fond `bg-amber-900` / `bg-amber-800` avec tabs de style header sombre — incompatible avec le design TabBar (fond blanc, `border-b-2`).
 
 ---
 
@@ -134,39 +138,34 @@ ModalShell existe (`src/components/ui/ModalShell.js`). Les 15 autres fichiers ca
 
 ---
 
-### 6. 🟡 `RangStepper` — Ajusteur +/- de rang
+### 6. ⛔ `RangStepper` — Évalué, non créé (session 16 juin 2026)
 
-**Problème :** 3 implémentations différentes du même pattern +/- pour les rangs de compétences :
-- `StepCaracteristiques.js` (h-10 w-10)
-- `StepCompetencesFutiles.js` (bg-white px-2 py-1)
-- `StepCompetencesLibres.js` (CompetenceRow : bg-white rounded border)
-
----
-
-### 7. 🟡 `SearchBar` — Barre de recherche standardisée
-
-**Problème :** 3 search bars avec icône Search + clear button :
-- `TabUsers.js` (pas de clear button)
-- `TabRepairJournaux.js` (avec X)
-- `RelationSelector.js` (pas de clear button)
+**Décision :** Les 3 implémentations sont trop divergentes (tailles, contextes, XP cost inline différent) pour une abstraction saine sans sur-ingénierie.
+- `StepCaracteristiques.js` (h-10 w-10 avec XP sous le bouton +)
+- `StepCompetencesFutiles.js` (w-8 h-8 avec score/max affiché)
+- `StepCompetencesLibres.js` (compact inline, sans taille fixe)
 
 ---
 
-### 8. 🟢 `BudgetCounter` — Affichage de budget restant
-
-**Fichiers :** `StepCompetencesLibres.js` (ComptoirsBudget), `StepCompetencesFutiles.js` (sticky header), `StepCaracteristiques.js` (header)
+### 7. ✅ `SearchBar` — voir 5b
 
 ---
 
-### 9. 🟢 `ButtonGroup` — Groupes de boutons toggle
+### 8. ⛔ `BudgetCounter` — Évalué, non créé (session 16 juin 2026)
 
-**Fichiers :** `RegistrePage.jsx`, `WidgetAnomalie.jsx`, `TabStats.js`, `TabRepairJournaux.js`, `SocialItemForm.js`
+**Décision :** 3 layouts incompatibles (comptoir 2-colonnes, texte-right, badge coloré). Abstraction inutile.
 
 ---
 
-### 10. 🟢 `Badge` / `Chip` — Badges colorés
+### 9. ⛔ `ButtonGroup` — Reporté
 
-**Fichiers :** `EncyclopediaCard.js`, `EncyclopediaViewModal.js`, `MesPropositions.js`, `CharacterCard.js`, `Encyclopedia.js`
+**Fichiers candidats :** `RegistrePage.jsx`, `WidgetAnomalie.jsx`, `TabStats.js`, `TabRepairJournaux.js`, `SocialItemForm.js`. À évaluer si unification visuelle décidée.
+
+---
+
+### 10. ⛔ `Badge` / `Chip` — Évalué, non créé (session 16 juin 2026)
+
+**Décision :** Trop de variantes (text-[10px] vs text-xs, couleurs sémantiques très différentes, certains avec icône, certains avec border, certains rounded-full vs rounded). Une abstraction nécessiterait plus de props que le JSX inline qu'elle remplacerait.
 
 ---
 
