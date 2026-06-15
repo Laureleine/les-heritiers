@@ -4,23 +4,21 @@ _Référencé depuis `DRY_PLAN.md`. Mettre à jour au fur et à mesure._
 
 ---
 
-## Accessibilité (chantier a11y)
+## ✅ Accessibilité (chantier a11y) — TERMINÉ (16 juin 2026)
 
-Audit axe-core du 11 juin 2026 : tous les CRITICAL et SERIOUS sont résolus.
-Il reste **6 violations MODERATE** (`heading-order`) :
+Audit axe-core 11 juin 2026 : CRITICAL et SERIOUS résolus à 100%.
+6 violations MODERATE `heading-order` corrigées le 16 juin 2026 (h3 → h2, aucun changement visuel) :
 
-| Écran | Élément | Description |
+| Écran | Fichier | Fix |
 |---|---|---|
-| Home (liste personnages) | `h3[title="Vénéra"]` | Cartes personnage : h3 sans h2 parent |
-| Étape 1 — Héritage | `h3` | Titre de section sans h2 au-dessus |
-| Étape 2 — Capacités | `h3` | Titre de section sans h2 au-dessus |
-| Étape 4 — Atouts | `h3` | Titre de section sans h2 au-dessus |
-| Étape 7 — Compétences Utiles | `h3` | Titre de section sans h2 au-dessus |
-| Étape 11 — Bilan | `h3` | Titre de section sans h2 au-dessus |
+| Home | `CharacterCard.js` | nom du personnage h3 → h2 |
+| Étape 1 | `Step1.js` | "Identité Scellée" h3 → h2 |
+| Étape 2 | `StepCapacites.js` | "Capacités Naturelles" h3 → h2 |
+| Étape 4 | `StepAtouts.js` | "Atouts Féériques" h3 → h2 |
+| Étape 7 | `StepCompetencesLibres.js` | "L'Académie"/"Compétences Utiles" h3 → h2 |
+| Étape 11 | `StepRecapitulatif.js` | "Album Photo de l'Héritier" h3 → h2 |
 
-**Fix attendu :** soit promouvoir les h3 en h2, soit ajouter un h2 structurel invisible (sr-only) avant chaque bloc. Impact lecteur d'écran : navigation par titres seulement. Faible priorité.
-
-**Outil d'audit :** `npx playwright test tests/e2e/audit-a11y.spec.js --project=chromium`
+**Vérifier :** `npx playwright test tests/e2e/audit-a11y.spec.js --project=chromium`
 
 ---
 
