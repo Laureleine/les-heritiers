@@ -3,6 +3,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { BookOpen, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Eye, EyeOff, Search } from '../../config/icons';
+import { EmptyState } from '../ui/EmptyState';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
 import { migrateContactContent, getCategoryStyle, getVisibleRelations, hasActiveFauxSemblant, getFauxSemblantTypeFee, CATEGORIES_SUGGESTIONS } from '../../utils/relationsHelper';
@@ -194,19 +195,13 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 		<div className="p-6 flex-1 overflow-y-auto relative min-h-[400px]">
 			{loading ? (
 				// ✨ L'OUBLI RÉPARÉ : L'écran de chargement immersif !
-				<div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4 animate-pulse">
-					<BookOpen size={48} className="opacity-20" />
-					<p className="font-serif italic text-lg">Déchiffrage de l'encre sympathique...</p>
-				</div>
+				<EmptyState icon={BookOpen} message="Déchiffrage de l'encre sympathique..." pulse />
 			) : (
 				<>
 					{/* ONGLET 1 : LES NOTES */}
 					{activeTab === 'notes' && (
 						notes.length === 0 ? (
-							<div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4">
-								<BookOpen size={48} className="opacity-20" />
-								<p className="font-serif italic text-lg">Vos pages sont encore vierges...</p>
-							</div>
+							<EmptyState icon={BookOpen} message="Vos pages sont encore vierges..." />
 						) : (
 							<div className="grid gap-4">
 								{notes.map((note) => {
@@ -306,12 +301,10 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 							</div>
 
 							{filteredContacts.length === 0 ? (
-								<div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4">
-									<Users size={48} className="opacity-20" />
-									<p className="font-serif italic text-lg">
-										{contactFilter ? 'Aucun contact ne correspond à ce filtre.' : 'Aucune rencontre consignée dans ce Cercle.'}
-									</p>
-								</div>
+								<EmptyState
+								icon={Users}
+								message={contactFilter ? 'Aucun contact ne correspond à ce filtre.' : 'Aucune rencontre consignée dans ce Cercle.'}
+							/>
 							) : (
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									{filteredContacts.map((contact) => {
@@ -401,10 +394,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 						{/* ONGLET 3 : LES POSSESSIONS */}
 						{activeTab === 'possessions' && (
 							possessions.length === 0 ? (
-								<div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-4">
-									<Package size={48} className="opacity-20" />
-									<p className="font-serif italic text-lg">Aucune possession consignée.</p>
-								</div>
+								<EmptyState icon={Package} message="Aucune possession consignée." />
 							) : (
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									{possessions.map((possession) => {
