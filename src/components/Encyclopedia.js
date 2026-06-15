@@ -6,6 +6,7 @@ import EncyclopediaViewModal from './EncyclopediaViewModal';
 import EncyclopediaCard from './EncyclopediaCard';
 import ConfirmModal from './ConfirmModal';
 import { useEncyclopedia } from '../hooks/useEncyclopedia';
+import { TabBar } from './ui/TabBar';
 
 export default function Encyclopedia({ userProfile, onBack, onOpenValidations, onOpenMesPropositions }) {
     const { state, setters, handlers } = useEncyclopedia();
@@ -72,22 +73,13 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                 </div>
             </div>
 
-            {/* NAVIGATION DES ONGLETS (Style classique souligné) */}
-            <div className="flex gap-6 border-b border-stone-200 mb-6 overflow-x-auto custom-scrollbar">
-                {tabs.map(t => (
-                    <button
-                        key={t.id}
-                        onClick={() => setters.setActiveTab(t.id)}
-                        className={`pb-3 font-bold text-sm uppercase tracking-wider whitespace-nowrap transition-colors border-b-2 ${
-                            state.activeTab === t.id
-                                ? 'text-amber-900 border-amber-600'
-                                : 'text-stone-400 border-transparent hover:text-stone-700 hover:border-stone-300'
-                        }`}
-                    >
-                        {t.label}
-                    </button>
-                ))}
-            </div>
+            {/* NAVIGATION DES ONGLETS */}
+            <TabBar
+                tabs={tabs}
+                activeTab={state.activeTab}
+                onTabChange={setters.setActiveTab}
+                className="mb-6 custom-scrollbar"
+            />
 
             {/* RECHERCHE ET CRÉATION */}
             <div className="flex flex-col sm:flex-row gap-3 items-center mb-6">
