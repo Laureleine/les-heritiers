@@ -12,13 +12,13 @@ import { supabase } from '../config/supabase';
 
 // ─── Tuiles ──────────────────────────────────────────────────────────────────
 
-// OpenHistoricalMap : vraies données historiques (rues disparues, noms d'époque…)
-// Le paramètre date=1900-01-01 est requis pour que OHM renvoie les tuiles historiques
-const TILE_OHM    = 'https://tile.openhistoricalmap.org/osmhm/{z}/{x}/{y}.png?date=1900-01-01';
-// CartoDB Positron : fond de secours + labels modernes en transparence
+// CartoDB Positron (fiable, charge partout)
 const TILE_BASE   = 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
 const TILE_LABELS = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png';
-const ATTRIBUTION = '© <a href="https://www.openhistoricalmap.org">OpenHistoricalMap</a> © <a href="https://carto.com/attributions">CARTO</a> © <a href="https://openstreetmap.org/copyright">OSM</a>';
+const ATTRIBUTION = '© <a href="https://carto.com/attributions">CARTO</a> © <a href="https://openstreetmap.org/copyright">OSM</a>';
+
+// Limites de Paris intra-muros — empêche de voir le périphérique et les autoroutes
+const PARIS_BOUNDS = [[48.815, 2.224], [48.902, 2.471]];
 
 // ─── Types de POI ────────────────────────────────────────────────────────────
 
@@ -767,17 +767,16 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         </aside>
 
         {/* ── Zone carte ───────────────────────────────────────────────── */}
-        <div className="flex-1 relative">
-          <MapContainer center={[48.8566, 2.3522]} zoom={13}
+        <div className={`flex-1 relative${showModern ? '' : ' carte-1900'}`}>
+          <MapContainer center={[48.8566, 2.3522]} zoom={13} minZoom={12}
+            maxBounds={PARIS_BOUNDS} maxBoundsViscosity={0.85}
             className={`w-full h-full${tool !== 'vue' ? ' cursor-crosshair' : ''}`}
             style={{ background: '#e8dcc8' }}
             zoomControl
           >
-            {/* Carte historique OpenHistoricalMap — fond principal */}
-            <TileLayer url={TILE_OHM} attribution={ATTRIBUTION} maxZoom={19} opacity={1} />
-            {/* Overlay rues actuelles (optionnel) */}
-            {showModern && <TileLayer url={TILE_BASE} maxZoom={19} subdomains="abcd" opacity={0.35} />}
-            {showModern && <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" opacity={0.6} />}
+            {/* Fond CartoDB — fiable, charge partout */}
+            <TileLayer url={TILE_BASE} attribution={ATTRIBUTION} maxZoom={19} subdomains="abcd" />
+            <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" />
 
             <MapClickHandler tool={tool} onMapClick={handleMapClick} />
             {flyTo && <FlyToLocation position={flyTo} />}
