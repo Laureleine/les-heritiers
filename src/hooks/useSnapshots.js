@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { withLoading } from '../utils/withLoading';
 
 export function useSnapshots(characterId, userId) {
     const [snapshots, setSnapshots] = useState([]);
@@ -9,8 +10,7 @@ export function useSnapshots(characterId, userId) {
 
     const fetchSnapshots = useCallback(async () => {
         if (!characterId) return;
-        setLoadingSnapshots(true);
-        try {
+        await withLoading(setLoadingSnapshots, async () => {
             const { data, error } = await supabase
                 .from('character_snapshots')
                 .select('*')
@@ -18,11 +18,7 @@ export function useSnapshots(characterId, userId) {
                 .order('created_at', { ascending: false });
             if (error) throw error;
             setSnapshots(data || []);
-        } catch (err) {
-            console.error("Erreur chargement snapshots:", err);
-        } finally {
-            setLoadingSnapshots(false);
-        }
+        }, (err) => console.error("Erreur chargement snapshots:", err));
     }, [characterId]);
 
     useEffect(() => {

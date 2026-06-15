@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import { isAdmin as checkIsAdmin } from '../utils/authRoles';
+import { withLoading } from '../utils/withLoading';
 
 const chunk = (arr, size) =>
   Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
@@ -210,8 +211,7 @@ export function useTelegraphe(session, userProfile) {
   // ✉️ ACTIONS (NOUVEAU CHAT, TICKET, REPONSE)
   // ==========================================================================
   const startPrivateChat = useCallback(async (targetUser) => {
-    setLoading(true);
-    try {
+    await withLoading(setLoading, async () => {
       const myId = session?.user?.id;
       if (!myId || !targetUser?.id) return;
 
@@ -225,7 +225,7 @@ export function useTelegraphe(session, userProfile) {
 
       // Le respect du Pacte des Crochets pour les tableaux !
       const existing = existingChannels?.[0];
-      
+
       if (existing) {
         fetchMessages(existing);
       } else {
@@ -244,16 +244,11 @@ export function useTelegraphe(session, userProfile) {
           fetchMessages(newChannel);
         }
       }
-    } catch (err) {
-      showInAppNotification("Erreur lors de la création du canal privé : " + translateError(err), "error");
-    } finally {
-      setLoading(false);
-    }
+    }, (err) => showInAppNotification("Erreur lors de la création du canal privé : " + translateError(err), "error"));
   }, [session?.user?.id, fetchChannels, fetchMessages]);
 
   const createSupportTicket = async (newSujet, newMessage) => {
-    setLoading(true);
-    try {
+    return await withLoading(setLoading, async () => {
       const { data: channelData, error: channelError } = await supabase
         .from('chat_channels')
         .insert([{ type: 'support', name: newSujet, participant_1: session.user.id, status: 'nouveau' }])
@@ -272,19 +267,16 @@ export function useTelegraphe(session, userProfile) {
 
       showInAppNotification("Missive de support expédiée au Conseil.", "success");
       fetchChannels(true);
-      return true; 
-    } catch (err) {
+      return true;
+    }, (err) => {
       showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
-      return false; 
-    } finally {
-      setLoading(false);
-    }
+      return false;
+    });
   };
 
   const sendReply = async (newMessage) => {
     if (!activeChannel) return false;
-    setLoading(true);
-    try {
+    return await withLoading(setLoading, async () => {
       let actualChannelId = activeChannel.id;
       let currentChannel = activeChannel;
 
@@ -323,13 +315,11 @@ export function useTelegraphe(session, userProfile) {
 
       fetchMessages(currentChannel, true);
       fetchChannels(true);
-      return true; 
-    } catch (err) {
+      return true;
+    }, (err) => {
       showInAppNotification("Erreur d'expédition : " + translateError(err), "error");
-      return false; 
-    } finally {
-      setLoading(false);
-    }
+      return false;
+    });
   };
 
   // ==========================================================================
