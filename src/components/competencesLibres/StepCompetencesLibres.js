@@ -172,12 +172,12 @@ export default function StepCompetencesLibres() {
           
           {isScelle ? (
             <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
-              <h3 className="font-serif font-bold text-amber-900 text-base flex items-center gap-1.5 leading-none"><Lock size={14} className="text-amber-600"/> L'Académie</h3>
+              <h2 className="font-serif font-bold text-amber-900 text-base flex items-center gap-1.5 leading-none"><Lock size={14} className="text-amber-600"/> L'Académie</h2>
               <p className="text-[10px] text-amber-700 leading-none mt-0.5 sm:mt-0">Améliorez un rang pour <strong>(Rang x 3) XP</strong>. Spécialité : <strong>8 XP</strong>.</p>
             </div>
           ) : (
             <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
-              <h3 className="font-serif font-bold text-amber-900 text-base leading-none">Compétences Utiles</h3>
+              <h2 className="font-serif font-bold text-amber-900 text-base leading-none">Compétences Utiles</h2>
               <p className="text-[10px] text-gray-500 leading-none mt-0.5 sm:mt-0">15 pts à répartir. (Max 4, ou 5 en Prédilection).</p>
             </div>
           )}

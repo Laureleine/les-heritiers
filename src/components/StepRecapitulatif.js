@@ -51,9 +51,9 @@ export default function StepRecapitulatif() {
             {/* ALBUM PHOTO — ARCHIVES TEMPORELLES */}
             <div className="no-print mt-10">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-stone-700 text-lg flex items-center gap-2">
+                    <h2 className="font-bold text-stone-700 text-lg flex items-center gap-2">
                         <Camera size={20} /> Album Photo de l'Héritier
-                    </h3>
+                    </h2>
                     <button
                         onClick={() => setShowSnapshotModal(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-sm font-bold hover:bg-amber-200 transition-all shadow-sm"
