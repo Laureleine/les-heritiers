@@ -17,8 +17,6 @@ const TILE_BASE   = 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y
 const TILE_LABELS = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png';
 const ATTRIBUTION = '© <a href="https://carto.com/attributions">CARTO</a> © <a href="https://openstreetmap.org/copyright">OSM</a>';
 
-// Limites de Paris intra-muros — empêche de voir le périphérique et les autoroutes
-const PARIS_BOUNDS = [[48.815, 2.224], [48.902, 2.471]];
 
 // ─── Types de POI ────────────────────────────────────────────────────────────
 
@@ -768,8 +766,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
 
         {/* ── Zone carte ───────────────────────────────────────────────── */}
         <div className={`flex-1 relative${showModern ? '' : ' carte-1900'}`}>
-          <MapContainer center={[48.8566, 2.3522]} zoom={13} minZoom={12}
-            maxBounds={PARIS_BOUNDS} maxBoundsViscosity={0.85}
+          <MapContainer center={[48.8566, 2.3522]} zoom={13}
             className={`w-full h-full${tool !== 'vue' ? ' cursor-crosshair' : ''}`}
             style={{ background: '#e8dcc8' }}
             zoomControl
