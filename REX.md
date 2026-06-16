@@ -1,4 +1,25 @@
-﻿# REX — Session 16 Juin 2026 (suite) — v17.4.19 "Le Soin du Détail ♿🧹"
+﻿# REX — Session 16 Juin 2026 (suite×2) — Encyclopédie Champs Initiés 🗝️
+
+## Ce qui a été fait
+
+- **Migration Supabase** : 7 colonnes `lore_*` ajoutées à `fairy_types` via MCP. Backfill de 26 espèces officielles depuis `FairyLore.js` via script Node ESM (`scripts/backfill_fairy_lore.mjs`).
+- **FairyTypeForm** : section "🗝️ Fiche du Docte" (édition) en bas du formulaire, gated `isInitiated`. 7 champs : apparence, taille, mode_reproduction, habitat, caractère, personnages_célèbres (array), note_docte.
+- **EncyclopediaViewModal** : même section en lecture, gated `isInitiated`. Rendu conditionnel : n'apparaît que si au moins un champ lore est renseigné.
+- **FairyLoreSection** : source remplacée `getFairyLore()` (FairyLore.js statique) → `useGameDataContext()` → `gameData.fairyTypes.find(f => f.name === fairyName)` + colonnes `lore_*`.
+- **encyclopediaEngine** : les 7 champs participent au diff de `submitEncyclopediaProposal`. Champs texte via forEach, `lore_personnages_celebres` via `arraysEqual`.
+- **Vercel** : READY en 22s.
+
+## Règles apprises
+
+1. **JSX : deux siblings dans `{condition && (...)}` = erreur silencieuse** : `{cond && (<div/><div/>)}` est JSX invalide. Utiliser un Fragment `<>...</>` ou inclure le deuxième élément DANS le premier. Bien vérifier les niveaux d'indentation après un Edit pour détecter les `</div>` orphelins.
+2. **`lore_*` dans `gameData.fairyTypes`** : La requête Supabase utilise `select('*', ...)` — toutes les colonnes sont incluses automatiquement, y compris les nouvelles. Pas besoin de modifier la requête dans `supabaseGameData.js`.
+3. **`isInitiated` dans Encyclopedia** : calculé localement comme `userProfile?.profile?.is_initiated === true || userProfile?.profile?.role === 'super_admin'` — sans importer `isSuperAdmin` d'`authRoles` pour éviter une dépendance inutile dans un composant déjà chargé.
+4. **Backfill ESM + dotenv** : `import 'dotenv/config'` cherche `.env` dans `process.cwd()`. Toujours exécuter le script depuis le répertoire racine du projet, pas depuis le worktree.
+5. **`lore_personnages_celebres` TEXT[]** : dans le formulaire React, afficher via `Array.isArray(val) ? val.join(', ') : val` et setter via `val.split(',').map(s=>s.trim()).filter(Boolean)`. Ne jamais supposer que la DB renvoie un string.
+
+---
+
+# REX — Session 16 Juin 2026 (suite) — v17.4.19 "Le Soin du Détail ♿🧹"
 
 ## Ce qui a été fait
 
