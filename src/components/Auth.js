@@ -239,7 +239,7 @@ export default function Auth() {
 					<button
 					  type="button"
 					  onClick={() => setShowPassword(v => !v)}
-					  className="absolute right-3 top-3 text-gray-400 hover:text-amber-600 transition-colors"
+					  className="absolute right-3 top-2 p-1 text-gray-400 hover:text-amber-600 transition-colors"
 					  tabIndex={-1}
 					  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
 					>
@@ -287,14 +287,14 @@ export default function Auth() {
             {!resetMode ? (
               <button
                 onClick={() => setResetMode(true)}
-                className="text-sm text-gray-500 hover:text-amber-700 underline"
+                className="text-sm text-gray-500 hover:text-amber-700 underline py-1"
               >
                 Mot de passe oublié ?
               </button>
             ) : (
               <button
                 onClick={() => setResetMode(false)}
-                className="text-sm text-gray-500 hover:text-amber-700 underline"
+                className="text-sm text-gray-500 hover:text-amber-700 underline py-1"
               >
                 Retour à la connexion
               </button>

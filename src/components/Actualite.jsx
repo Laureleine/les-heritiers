@@ -475,9 +475,9 @@ export default function Actualite({ onBack, userProfile }) {
             <div className="relative shrink-0" ref={calendarRef}>
               <button
                 onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                className={`px-4 py-2 rounded-lg font-mono text-sm font-bold border transition-all flex items-center gap-2.5 outline-none hover:scale-[1.01] active:scale-[0.99] select-none ${
-                  availableArticleDates.has(dateStr) 
-                    ? 'border-emerald-600 bg-emerald-500/10 text-emerald-950 dark:text-emerald-300 focus:ring-1 focus:ring-emerald-500' 
+                className={`px-4 py-2 rounded-lg font-mono text-sm font-bold border transition-all flex items-center gap-2.5 outline-none focus:ring-1 focus:ring-emerald-500 hover:scale-[1.01] active:scale-[0.99] select-none ${
+                  availableArticleDates.has(dateStr)
+                    ? 'border-emerald-600 bg-emerald-500/10 text-emerald-950 dark:text-emerald-300'
                     : (darkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-stone-50 border-stone-300 text-stone-900')
                 }`}
               >
