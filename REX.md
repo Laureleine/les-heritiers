@@ -1,4 +1,22 @@
-﻿# REX — Session 16 Juin 2026 — v17.4.18 "La Main de l'Artisan 🔧"
+﻿# REX — Session 16 Juin 2026 (suite) — v17.4.19 "Le Soin du Détail ♿🧹"
+
+## Ce qui a été fait
+
+- **DRY Chantier 2 — xpTransaction** : `handleRangChange` dans `useCompetencesLibres.js` migré. Les deux autres handlers (`handleAddSpecialiteUser`, `handleRemoveSpecialiteUser`) intentionnellement non migrés car leur `LOG_XP_TRANSACTION` est conditionnel (absent quand `costXP === 0` pour Conduite gratuite). `xpTransaction` force toujours le LOG → comportement incompatible.
+- **A11y — 4 corrections sans arbitrage** : (1) `Actualite.jsx` : focus ring sorti de la branche conditionnelle ; (2) `StepCompetencesLibres.js` : focus ring sur le `<select>` de tri ; (3) `Auth.js` bouton œil : `p-1` + `top-2` → 28×28px ; (4) `Auth.js` boutons mot de passe oublié/retour : `py-1` → hauteur ≥ 24px.
+- **Worktree** : la branche `worktree-carte-1900-fix` ne peut pas `checkout main` car main est déjà occupé par le dépôt principal. Solution : pousser la branche de travail, puis faire le `merge` depuis `C:\Users\amara\-=- Apps -=-\heritiers` (le dépôt racine).
+
+## Règles apprises
+
+1. **focus:ring conditionnel = piège** : Si le `focus:ring` est dans une branche `condition ? 'ring ...' : 'autre-classe'`, il n'est visible que quand la condition est vraie. Le déplacer dans la classe de base (avant les ternaires) le rend universel.
+2. **Cibles tactiles sans padding = 20×20px** : Les boutons icône sans `p-*` héritent de la taille de l'icône brute (~20px). Ajouter `p-1` donne ~28×28px — suffisant pour WCAG 2.5.8. Ajuster `top-*` en conséquence si positionné en `absolute`.
+3. **xpTransaction et LOG conditionnel** : `xpTransaction` appelle toujours `LOG_XP_TRANSACTION`. Ne pas l'utiliser si le LOG doit être omis selon une condition business (ex: coût nul pour une compétence gratuite).
+4. **PowerShell git commit avec heredoc** : `@' ... '@` (single-quoted here-string). Le `'@` de fermeture doit être en colonne 0. Ne jamais utiliser `$(cat <<'EOF'...EOF)` qui est syntaxe bash uniquement. Si le message contient des apostrophes ou caractères spéciaux, passer par un fichier intermédiaire (`git commit -F <fichier>`).
+5. **Merge depuis le worktree vers main** : impossible de `checkout main` depuis un worktree quand main est déjà utilisé par le repo principal. Solution systématique : pousser la branche, puis merger depuis le repo racine (`C:\Users\amara\-=- Apps -=-\heritiers`).
+
+---
+
+# REX — Session 16 Juin 2026 — v17.4.18 "La Main de l'Artisan 🔧"
 
 ## Ce qui a été fait
 
