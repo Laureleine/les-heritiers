@@ -1,4 +1,19 @@
-﻿# REX — Session 16 Juin 2026 (suite) — v17.4.19 "Le Soin du Détail ♿🧹"
+﻿# REX — Session 16 Juin 2026 (suite 2) — v17.4.20 "La Fiche du Docte 📜🔮"
+
+## Ce qui a été fait
+
+- **Commande `/version` pure** : aucun développement cette session — seulement bump de version, vérification, commit/push. Le feature réel (Encyclopédie Champs Initiés — lore Supabase + Fiche du Docte) avait déjà été codé et committé lors d'une session précédente (commits `1ab42b8` / `3515090`), mais jamais versionné.
+- **Vérification migration avant changelog** : avant d'écrire l'entrée de changelog, vérification directe en base (`information_schema.columns` sur `fairy_types`) que les 7 colonnes `lore_*` existaient bien — confirmé, la migration de la session précédente avait été appliquée correctement.
+- **Worktree → main** : confirmation du pattern déjà documenté (session précédente) — on ne peut pas `checkout main` depuis un worktree tant que main est occupé par le repo principal. Push de la branche de travail, puis merge + push depuis le repo racine.
+
+## Règles apprises
+
+1. **`/version` doit toujours relire le `git log` depuis le dernier bump, pas seulement le dernier commit.** Il peut y avoir des commits de feature non versionnés (ici un commit de feature + son merge, posés après le bump précédent).
+2. **Avant de changelogger un changement de schéma fait par une session précédente, vérifier qu'il a bien été migré en base** (cf. [[pitfalls]] — l'incident `type_personnage`/`rang_humain` de la v17.4.3). Une vérification `information_schema.columns` suffit et coûte une requête.
+
+---
+
+# REX — Session 16 Juin 2026 (suite) — v17.4.19 "Le Soin du Détail ♿🧹"
 
 ## Ce qui a été fait
 
