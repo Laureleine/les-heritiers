@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.20 - \"La Fiche du Docte 📜🔮\"",
+    date: "16 Juin 2026",
+    description: "L'Encyclopédie révèle ses pages les plus secrètes. Chaque espèce féérique gagne désormais sa propre Fiche du Docte — apparence, taille, reproduction, habitat, caractère, personnages célèbres — rédigée dans le Nuage et consultable par les seuls Initiés. Ces savoirs ne dormaient plus dans un parchemin figé : ils vivent maintenant en base, modifiables comme toute autre entrée de l'Encyclopédie, avec leurs propres propositions de correction.",
+    changes: [
+      "📜 **Fiche du Docte par espèce :** Sept champs narratifs (apparence, taille, reproduction, habitat, caractère, personnages célèbres, note du Docte) rejoignent chaque type de fée. Visibles uniquement par les Héritiers Initiés, dans la fiche de consultation comme dans le formulaire d'édition.",
+      "🗄️ **Migration et backfill :** Les 26 espèces déjà décrites dans l'ancien grimoire statique (`FairyLore.js`) sont basculées en base Supabase — plus aucune dépendance à un fichier figé dans le code.",
+      "✍️ **Propositions de correction étendues :** Les sept nouveaux champs lore entrent dans le circuit habituel des propositions de modification de l'Encyclopédie — un Initié qui corrige une Fiche du Docte suit le même chemin de validation que pour les autres savoirs.",
+      "🧪 **348 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.19 - \"Le Soin du Détail ♿🧹\"",
     date: "16 Juin 2026",
     description: "Deux chantiers silencieux mais essentiels. L'Atelier referme le Chantier 2 de son grand plan de rangement : la formule alchimique des échanges d'XP est désormais partagée dans les Compétences Utiles. Côté accessibilité, quatre détails que les doigts et les touches perçoivent avant même les yeux — les boutons qui rétrécissaient jusqu'à l'imperceptible gagnent en substance, et les anneaux de focus reprennent leur place visible dans la navigation au clavier.",
