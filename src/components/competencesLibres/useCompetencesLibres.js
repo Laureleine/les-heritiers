@@ -9,6 +9,7 @@ import { getUtileCost, FIXED_XP_COSTS } from '../../utils/xpCalculator';
 import { isCharacterScelle } from '../../utils/lockUtils';
 import { parseIfString } from '../../utils/json';
 import { getXpState, XP_CODES } from '../../utils/xpActions';
+import { xpTransaction } from '../../utils/xpTransaction';
 import { HUMAIN_RANGS } from '../../data/DictionnaireJeu';
 
 export const POINTS_TOTAUX = 15;
@@ -165,34 +166,22 @@ export function useCompetencesLibres() {
                 return;
             }
 
-            // Mutation
-            dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + delta } } }, gameData });
-
-            // Journal XP (seulement si rang payant)
-            if (!estGratuit) {
-                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: {
+            xpTransaction(dispatchCharacter, {
+                updates: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current + delta } } },
+                transaction: {
                     type: delta > 0 ? 'DEPENSE' : 'REMBOURSEMENT',
-                    code: XP_CODES.COMP_UTILE_RANG,
-                    label: `Perfectionnement : ${nomComp}`,
-                    valeur: costXP, rang_final: totalScore + delta
-                }, gameData });
-                showInAppNotification(
-                    delta > 0 ? `Compétence améliorée pour ${costXP} XP !` : `Amélioration annulée. +${costXP} XP récupérés.`,
-                    delta > 0 ? "success" : "info"
-                );
-            } else {
-                // Rang gratuit — journalisé à valeur 0 pour traçabilité
-                dispatchCharacter({ type: 'LOG_XP_TRANSACTION', transaction: {
-                    type: delta > 0 ? 'DEPENSE' : 'REMBOURSEMENT',
-                    code: XP_CODES.ESPRIT_BONUS_UTILE,
-                    label: `Rang gratuit (bonus Esprit) : ${nomComp}`,
-                    valeur: 0, rang_final: totalScore + delta
-                }, gameData });
-                showInAppNotification(
-                    delta > 0 ? `Rang gratuit ! (bonus Esprit 🧠)` : `Rang gratuit (Esprit) oublié.`,
-                    delta > 0 ? "success" : "info"
-                );
-            }
+                    code: estGratuit ? XP_CODES.ESPRIT_BONUS_UTILE : XP_CODES.COMP_UTILE_RANG,
+                    label: estGratuit ? `Rang gratuit (bonus Esprit) : ${nomComp}` : `Perfectionnement : ${nomComp}`,
+                    valeur: estGratuit ? 0 : costXP,
+                    rang_final: totalScore + delta
+                },
+                notification: {
+                    text: estGratuit
+                        ? (delta > 0 ? `Rang gratuit ! (bonus Esprit 🧠)` : `Rang gratuit (Esprit) oublié.`)
+                        : (delta > 0 ? `Compétence améliorée pour ${costXP} XP !` : `Amélioration annulée. +${costXP} XP récupérés.`),
+                    type: delta > 0 ? 'success' : 'info'
+                }
+            }, gameData);
             return;
         }
 
