@@ -110,7 +110,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
 			  e.target.value = '';
 			}}
 			aria-label={`Ajouter une spécialité en ${nomComp}`}
-			className="text-[10px] bg-transparent text-gray-400 hover:text-blue-600 outline-none cursor-pointer w-24"
+			className="text-[10px] bg-transparent text-gray-400 hover:text-blue-600 outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer w-24"
 		  >
 			<option value="">+ Choisir ({nextSpecCost === 0 ? 'Gratuit' : (isScelle ? `${nextSpecCost} XP` : '1 pt')})</option>
 			<option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
