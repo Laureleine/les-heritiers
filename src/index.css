@@ -11,7 +11,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Filtre sépia Belle Époque sur les tuiles cartographiques */
-.carte-1900 .leaflet-tile-pane {
-  filter: sepia(0.7) brightness(0.88) contrast(1.05) saturate(0.55);
+/* Filtre sépia Belle Époque sur le panneau IGN historique */
+.leaflet-historical-pane {
+  filter: sepia(0.18) brightness(0.9) contrast(1.08);
 }

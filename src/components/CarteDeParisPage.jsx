@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap, Pane } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ArrowLeft, MapPin, X, Loader, Trash2, Map, Search, Edit, ChevronDown, ChevronUp, Filter, ExternalLink } from '../config/icons';
@@ -12,10 +12,14 @@ import { supabase } from '../config/supabase';
 
 // ─── Tuiles ──────────────────────────────────────────────────────────────────
 
-// CartoDB Positron (fiable, charge partout)
+// CartoDB Positron (fiable, charge partout) — fond moderne
 const TILE_BASE   = 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
 const TILE_LABELS = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png';
 const ATTRIBUTION = '© <a href="https://carto.com/attributions">CARTO</a> © <a href="https://openstreetmap.org/copyright">OSM</a>';
+
+// IGN Géoportail — Carte de l'État-Major (~1820-1866), données ouvertes sans clé
+const TILE_IGN = 'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}';
+const TILE_IGN_ATTRIBUTION = '© <a href="https://www.ign.fr/">IGN</a> Géoportail — Carte de l\'État-Major';
 
 
 // ─── Types de POI ────────────────────────────────────────────────────────────
@@ -150,6 +154,34 @@ function FlyToLocation({ position }) {
       map.flyTo(position, 16, { animate: true, duration: 1 });
     }
   }, [position, map]);
+  return null;
+}
+
+function PanesController({ mode, sliderPos }) {
+  const map = useMap();
+  const updateClip = useCallback(() => {
+    const hp = map.getPane('historical');
+    const mp = map.getPane('modern');
+    if (!hp || !mp) return;
+    if (mode === 'historique') {
+      hp.style.display = ''; hp.style.clip = 'auto';
+      mp.style.display = 'none';
+    } else if (mode === 'moderne') {
+      hp.style.display = 'none';
+      mp.style.display = ''; mp.style.clip = 'auto';
+    } else {
+      const sz = map.getSize();
+      const x = Math.round(sz.x * sliderPos / 100);
+      hp.style.display = ''; mp.style.display = '';
+      hp.style.clip = `rect(0px, ${x}px, ${sz.y}px, 0px)`;
+      mp.style.clip = `rect(0px, ${sz.x}px, ${sz.y}px, ${x}px)`;
+    }
+  }, [map, mode, sliderPos]);
+  useEffect(() => { updateClip(); }, [updateClip]);
+  useEffect(() => {
+    map.on('resize', updateClip);
+    return () => map.off('resize', updateClip);
+  }, [map, updateClip]);
   return null;
 }
 
@@ -456,8 +488,42 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
     }
   }, [searchQuery]);
 
-  // ── Overlay rues actuelles ────────────────────────────────────────────────
-  const [showModern, setShowModern] = useState(false);
+  // ── Fond de carte ─────────────────────────────────────────────────────────
+  const [mapMode, setMapMode] = useState('historique'); // 'historique' | 'comparaison' | 'moderne'
+  const [sliderPos, setSliderPos] = useState(50);       // % depuis la gauche (mode comparaison)
+  const isDragging = useRef(false);
+  const mapZoneRef = useRef(null);
+
+  const handleSliderMouseDown = useCallback((e) => {
+    e.preventDefault();
+    isDragging.current = true;
+  }, []);
+
+  const handleSliderTouchStart = useCallback(() => {
+    isDragging.current = true;
+  }, []);
+
+  useEffect(() => {
+    const move = (clientX) => {
+      if (!isDragging.current || !mapZoneRef.current) return;
+      const rect = mapZoneRef.current.getBoundingClientRect();
+      const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+      setSliderPos(Math.round(x / rect.width * 100));
+    };
+    const onMouseMove = (e) => move(e.clientX);
+    const onTouchMove = (e) => move(e.touches[0].clientX);
+    const onUp = () => { isDragging.current = false; };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onUp);
+    };
+  }, []);
 
   // ── Changement d'outil ────────────────────────────────────────────────────
   const handleToolChange = useCallback((t) => {
@@ -654,16 +720,25 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             ))}
           </div>
 
-          {/* Overlay rues actuelles */}
+          {/* Fond de carte */}
           <div className="p-3 border-b border-amber-100">
             <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">Fond de carte</p>
-            <button
-              onClick={() => setShowModern(v => !v)}
-              className={`w-full px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2 ${showModern ? 'bg-amber-700 text-amber-50' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}
-            >
-              <Map size={13} />
-              {showModern ? 'Rues actuelles visibles' : 'Afficher les rues actuelles'}
-            </button>
+            <div className="flex gap-1">
+              {[
+                { id: 'historique',  label: 'Historique', emoji: '🗺️' },
+                { id: 'comparaison', label: 'Comparer',   emoji: '↔' },
+                { id: 'moderne',     label: 'Actuelle',   emoji: '🏙️' },
+              ].map(({ id, label, emoji }) => (
+                <button
+                  key={id}
+                  onClick={() => setMapMode(id)}
+                  className={`flex-1 px-1 py-1.5 rounded-lg text-xs font-bold transition-colors flex flex-col items-center gap-0.5 ${mapMode === id ? 'bg-amber-700 text-amber-50' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}
+                >
+                  <span>{emoji}</span>
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Aide contextuelle */}
@@ -765,15 +840,22 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         </aside>
 
         {/* ── Zone carte ───────────────────────────────────────────────── */}
-        <div className={`flex-1 relative${showModern ? '' : ' carte-1900'}`}>
+        <div ref={mapZoneRef} className="flex-1 relative">
           <MapContainer center={[48.8566, 2.3522]} zoom={13}
             className={`w-full h-full${tool !== 'vue' ? ' cursor-crosshair' : ''}`}
             style={{ background: '#e8dcc8' }}
             zoomControl
           >
-            {/* Fond CartoDB — fiable, charge partout */}
-            <TileLayer url={TILE_BASE} attribution={ATTRIBUTION} maxZoom={19} subdomains="abcd" />
-            <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" />
+            {/* Fond historique — IGN État-Major (~1820-1866) */}
+            <Pane name="historical" style={{ zIndex: 200 }}>
+              <TileLayer url={TILE_IGN} attribution={TILE_IGN_ATTRIBUTION} maxZoom={15} />
+            </Pane>
+            {/* Fond moderne — CartoDB Positron */}
+            <Pane name="modern" style={{ zIndex: 201 }}>
+              <TileLayer url={TILE_BASE} attribution={ATTRIBUTION} maxZoom={19} subdomains="abcd" />
+              <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" />
+            </Pane>
+            <PanesController mode={mapMode} sliderPos={sliderPos} />
 
             <MapClickHandler tool={tool} onMapClick={handleMapClick} />
             {flyTo && <FlyToLocation position={flyTo} />}
@@ -800,6 +882,36 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             {/* Tracé */}
             {routeData && <Polyline positions={routeData.polyline} pathOptions={{ color: '#92400e', weight: 5, opacity: 0.85 }} />}
           </MapContainer>
+
+          {/* Slider de comparaison */}
+          {mapMode === 'comparaison' && (
+            <div className="absolute inset-0 z-[1001] pointer-events-none">
+              {/* Ligne de séparation */}
+              <div
+                className="absolute top-0 bottom-0 w-0.5 bg-white/90 shadow-[0_0_6px_rgba(0,0,0,0.5)]"
+                style={{ left: `${sliderPos}%` }}
+              />
+              {/* Label gauche */}
+              <div
+                className="absolute top-3 text-[10px] font-bold text-white drop-shadow-lg bg-black/30 px-1.5 py-0.5 rounded"
+                style={{ right: `${100 - sliderPos}%`, marginRight: '8px' }}
+              >🗺️ ~1850</div>
+              {/* Label droite */}
+              <div
+                className="absolute top-3 text-[10px] font-bold text-white drop-shadow-lg bg-black/30 px-1.5 py-0.5 rounded"
+                style={{ left: `${sliderPos}%`, marginLeft: '8px' }}
+              >🏙️ Actuel</div>
+              {/* Poignée */}
+              <div
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white shadow-xl border-2 border-amber-300 flex items-center justify-center cursor-ew-resize pointer-events-auto select-none"
+                style={{ left: `${sliderPos}%`, touchAction: 'none' }}
+                onMouseDown={handleSliderMouseDown}
+                onTouchStart={handleSliderTouchStart}
+              >
+                <span className="text-amber-700 text-sm font-bold">↔</span>
+              </div>
+            </div>
+          )}
 
           {/* Résultat itinéraire */}
           {tool === 'itineraire' && (routeLoading || routeData) && (
