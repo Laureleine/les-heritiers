@@ -8,6 +8,7 @@ import ModalShell, { ModalHeader } from './ui/ModalShell';
 import { useMapPoints } from '../hooks/useMapPoints';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { isSuperAdmin } from '../utils/authRoles';
+import { getDocteCircles, getVisiblePoints } from '../utils/mapVisibility';
 import { supabase } from '../config/supabase';
 
 // ─── Tuiles ──────────────────────────────────────────────────────────────────
@@ -404,27 +405,6 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
   const [newPoiForm, setNewPoiForm] = useState(EMPTY_FORM);
   const [saving, setSaving]         = useState(false);
 
-  // ── Filtre liste POI ──────────────────────────────────────────────────────
-  const [filterText, setFilterText] = useState('');
-  const [filterType, setFilterType] = useState('');
-  const [openGroups, setOpenGroups] = useState(() =>
-    Object.fromEntries(Object.keys(POI_TYPES).map(k => [k, true]))
-  );
-
-  const filteredPoints = points.filter(pt => {
-    if (filterType && pt.type !== filterType) return false;
-    if (filterText && !pt.nom.toLowerCase().includes(filterText.toLowerCase())) return false;
-    return true;
-  });
-
-  const groupedPoints = Object.keys(POI_TYPES).reduce((acc, type) => {
-    const pts = filteredPoints.filter(pt => pt.type === type);
-    if (pts.length > 0) acc[type] = pts;
-    return acc;
-  }, {});
-
-  const toggleGroup = (type) => setOpenGroups(prev => ({ ...prev, [type]: !prev[type] }));
-
   // ── Entités liées ─────────────────────────────────────────────────────────
   const [linkedEntities, setLinkedEntities] = useState({ characters: [], cercles: [] });
 
@@ -439,6 +419,42 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
       });
     });
   }, []);
+
+  // ── Vue du Docte (Cercle / Privée) ────────────────────────────────────────
+  const docteCircles = getDocteCircles(linkedEntities.cercles, userId);
+  const isDocte = docteCircles.length > 0;
+  const [docteViewMode, setDocteViewMode] = useState('cercle'); // 'cercle' | 'prive'
+  const [docteSelectedCercleId, setDocteSelectedCercleId] = useState(null);
+
+  useEffect(() => {
+    const owned = getDocteCircles(linkedEntities.cercles, userId);
+    if (owned.length > 0 && !docteSelectedCercleId) {
+      setDocteSelectedCercleId(owned[0].id);
+    }
+  }, [linkedEntities.cercles, userId, docteSelectedCercleId]);
+
+  const visiblePoints = getVisiblePoints(points, { isDocte, docteViewMode, docteSelectedCercleId, userId });
+
+  // ── Filtre liste POI ──────────────────────────────────────────────────────
+  const [filterText, setFilterText] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [openGroups, setOpenGroups] = useState(() =>
+    Object.fromEntries(Object.keys(POI_TYPES).map(k => [k, true]))
+  );
+
+  const filteredPoints = visiblePoints.filter(pt => {
+    if (filterType && pt.type !== filterType) return false;
+    if (filterText && !pt.nom.toLowerCase().includes(filterText.toLowerCase())) return false;
+    return true;
+  });
+
+  const groupedPoints = Object.keys(POI_TYPES).reduce((acc, type) => {
+    const pts = filteredPoints.filter(pt => pt.type === type);
+    if (pts.length > 0) acc[type] = pts;
+    return acc;
+  }, {});
+
+  const toggleGroup = (type) => setOpenGroups(prev => ({ ...prev, [type]: !prev[type] }));
 
   // ── Mode personnalisé (chargement + sauvegarde) ───────────────────────────
   useEffect(() => {
@@ -741,6 +757,35 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             </div>
           </div>
 
+          {/* Vue du Docte */}
+          {isDocte && (
+            <div className="p-3 border-b border-amber-100">
+              <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">Vue du Docte</p>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={docteViewMode === 'prive'}
+                onClick={() => setDocteViewMode(m => m === 'cercle' ? 'prive' : 'cercle')}
+                className="w-full flex items-center justify-between gap-2 px-1 py-1"
+              >
+                <span className={`text-xs font-bold ${docteViewMode === 'cercle' ? 'text-amber-800' : 'text-stone-400'}`}>🔵 Cercle</span>
+                <span className={`relative w-10 h-5 rounded-full transition-colors shrink-0 ${docteViewMode === 'prive' ? 'bg-amber-700' : 'bg-stone-300'}`}>
+                  <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${docteViewMode === 'prive' ? 'translate-x-5' : ''}`} />
+                </span>
+                <span className={`text-xs font-bold ${docteViewMode === 'prive' ? 'text-amber-800' : 'text-stone-400'}`}>🔒 Privée</span>
+              </button>
+              {docteViewMode === 'cercle' && docteCircles.length > 1 && (
+                <select
+                  value={docteSelectedCercleId || ''}
+                  onChange={e => setDocteSelectedCercleId(e.target.value)}
+                  className="w-full mt-2 px-2 py-1 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+                >
+                  {docteCircles.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
+                </select>
+              )}
+            </div>
+          )}
+
           {/* Aide contextuelle */}
           <div className="px-3 py-2 bg-amber-50/60 border-b border-amber-100 text-xs text-amber-800 italic leading-relaxed">
             {hint}
@@ -790,7 +835,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
           <div className="flex-1 overflow-y-auto custom-scrollbar">
             {loading ? (
               <div className="flex justify-center pt-8 text-amber-600"><Loader size={18} className="animate-spin" /></div>
-            ) : points.length === 0 ? (
+            ) : visiblePoints.length === 0 ? (
               <p className="text-xs text-stone-400 italic text-center pt-8 px-3 leading-relaxed">Aucun lieu encore épinglé.</p>
             ) : filteredPoints.length === 0 ? (
               <p className="text-xs text-stone-400 italic text-center pt-8 px-3 leading-relaxed">Aucun résultat.</p>
@@ -861,7 +906,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             {flyTo && <FlyToLocation position={flyTo} />}
 
             {/* POI existants */}
-            {points.map(pt => (
+            {visiblePoints.map(pt => (
               <Marker key={pt.id} position={[pt.lat, pt.lng]} icon={makePoiIcon(pt.couleur || POI_TYPES[pt.type]?.couleur || '#92400e', pt.forme || 'goutte', POI_TYPES[pt.type]?.emoji || '')}
                 eventHandlers={{ click: () => {
                   if (tool === 'itineraire') {
