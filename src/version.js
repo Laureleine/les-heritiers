@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.18 - \"La Main de l'Artisan 🔧\"",
+    date: "16 Juin 2026",
+    description: "Session d'artisanat pur. Trois gabarits réutilisables voient le jour dans les ateliers du Manoir — une barre de recherche, un panneau 'vide' et une barre d'onglets — qui viennent remplacer plus d'une centaine de lignes de boiseries identiques éparpillées d'une pièce à l'autre. Six fautes de protocole dans la hiérarchie des titres sont corrigées : les Héritiers naviguant au lecteur d'écran peuvent désormais traverser le Manoir sans perdre le fil. Dix chantiers de refactoring ont été passés en revue ; sept sont clôturés, trois reportés faute d'une convergence suffisante entre les implémentations.",
+    changes: [
+      "🗃️ **Gabarits UI mutualisés :** Trois composants communs — `SearchBar`, `EmptyState`, `TabBar` — absorbent les duplicatas dans 7 fichiers. Les onglets de l'Encyclopédie et du Suivi de Propositions, les écrans vides du Grimoire et les barres de recherche de l'administration parlent désormais d'une même voix.",
+      "♿ **Accessibilité — Hiérarchie des titres :** 6 violations MODERATE résolues dans CharacterCard, Step1, StepCapacites, StepAtouts, StepCompetencesLibres et StepRecapitulatif. Les balises h3 sans parent h2 sont promues h2 — zéro changement visuel, navigation lecteur d'écran réparée.",
+      "📋 **Audit DRY complet :** Chantiers 1–10 évalués et documentés. RangStepper, BudgetCounter, Badge/Chip et ButtonGroup jugés 'trop divergents' après examen du code réel. Seul ch.2 (xpTransaction) reste actif.",
+      "🧪 **342 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.17 - \"L'Estampe Belle Époque 🗺️🎨\"",
     date: "15 Juin 2026",
     description: "La Carte de Paris revêt enfin les couleurs de son époque. Un filtre sépia enveloppe les tuiles cartographiques d'une patine Belle Époque — chaud, légèrement assombri, comme une photographie ancienne. Un bouton permet d'afficher les rues actuelles en surimpression, pour comparer le Paris de 1900 au tracé moderne. La navigation est libre, sans borne géographique. Sous le capot, le premier chantier DRY se referme : un utilitaire commun absorbe les blocs try/catch/finally disséminés dans les hooks de données.",
@@ -1143,3 +1154,4 @@ export const VERSION_HISTORY = [
 // tout en conservant le nom complet dans la modale des archives.
 export const APP_VERSION = VERSION_HISTORY[0].version.split(' - ')[0] || VERSION_HISTORY[0].version;
 export const BUILD_DATE = VERSION_HISTORY[0].date;
+
