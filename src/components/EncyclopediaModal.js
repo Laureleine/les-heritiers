@@ -31,6 +31,7 @@ export default function EncyclopediaModal({
 }) {
     const { gameData } = useGameDataContext();
     const isSuperAdmin = checkSuperAdmin(userProfile);
+    const isInitiated = userProfile?.profile?.is_initiated === true || isSuperAdmin;
 
     // 🧠 ÉTATS LOCAUX PURIFIÉS (L'autonomie est de retour !)
     const [proposal, setProposal] = useState(() => {
@@ -187,6 +188,7 @@ export default function EncyclopediaModal({
                             competencesData={competencesData} usefulSkills={usefulSkills} allCompFutiles={allCompFutiles}
                             localCapacites={localCapacites} localPouvoirs={localPouvoirs} localAtouts={localAtouts}
                             setHasPendingTech={setHasPendingTech} setQuickForge={setQuickForge}
+                            isInitiated={isInitiated}
                         />
                     ) : activeTab === 'figures' ? (
                         <FigureForm

@@ -16,7 +16,8 @@ const FairyTypeForm = ({
     localPouvoirs,
     localAtouts,
     setHasPendingTech,
-    setQuickForge
+    setQuickForge,
+    isInitiated
 }) => {
     // 🧠 L'AUTO-FORMATEUR UX : Ajoute une puce esthétique magique quand on passe à la ligne
     const handleListKeyDown = useCallback((e, field) => {
@@ -326,6 +327,83 @@ const FairyTypeForm = ({
                     />
                 </div>
             </div>
+
+            {/* 10. FICHE DU DOCTE — Initiés seulement */}
+            {isInitiated && (
+                <div className="bg-amber-100 border-2 border-amber-700 rounded-xl p-4 shadow-md">
+                    <div className="flex items-center gap-2 mb-4">
+                        <span className="text-lg">🗝️</span>
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-amber-900">
+                            Fiche du Docte — Cercle des Initiés
+                        </h3>
+                    </div>
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-bold text-amber-900 mb-1">Apparence</label>
+                                <textarea
+                                    value={proposal.lore_apparence || ''}
+                                    onChange={(e) => setProposal({ ...proposal, lore_apparence: e.target.value })}
+                                    className="w-full p-2 border border-amber-300 rounded-lg text-sm min-h-[80px] outline-none focus:ring-2 focus:ring-amber-600 resize-none bg-amber-50 shadow-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-amber-900 mb-1">Taille & Morphologie</label>
+                                <textarea
+                                    value={proposal.lore_taille || ''}
+                                    onChange={(e) => setProposal({ ...proposal, lore_taille: e.target.value })}
+                                    className="w-full p-2 border border-amber-300 rounded-lg text-sm min-h-[80px] outline-none focus:ring-2 focus:ring-amber-600 resize-none bg-amber-50 shadow-sm"
+                                />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-bold text-amber-900 mb-1">Mode de reproduction</label>
+                                <textarea
+                                    value={proposal.lore_mode_reproduction || ''}
+                                    onChange={(e) => setProposal({ ...proposal, lore_mode_reproduction: e.target.value })}
+                                    className="w-full p-2 border border-amber-300 rounded-lg text-sm min-h-[80px] outline-none focus:ring-2 focus:ring-amber-600 resize-none bg-amber-50 shadow-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-amber-900 mb-1">Habitat</label>
+                                <textarea
+                                    value={proposal.lore_habitat || ''}
+                                    onChange={(e) => setProposal({ ...proposal, lore_habitat: e.target.value })}
+                                    className="w-full p-2 border border-amber-300 rounded-lg text-sm min-h-[80px] outline-none focus:ring-2 focus:ring-amber-600 resize-none bg-amber-50 shadow-sm"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-amber-900 mb-1">Caractère</label>
+                            <textarea
+                                value={proposal.lore_caractere || ''}
+                                onChange={(e) => setProposal({ ...proposal, lore_caractere: e.target.value })}
+                                className="w-full p-2 border border-amber-300 rounded-lg text-sm min-h-[80px] outline-none focus:ring-2 focus:ring-amber-600 resize-none bg-amber-50 shadow-sm"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-amber-900 mb-1">Personnages célèbres (séparés par des virgules)</label>
+                            <input
+                                type="text"
+                                value={Array.isArray(proposal.lore_personnages_celebres) ? proposal.lore_personnages_celebres.join(', ') : (proposal.lore_personnages_celebres || '')}
+                                onChange={(e) => setProposal({ ...proposal, lore_personnages_celebres: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                                className="w-full p-2 border border-amber-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-amber-600 bg-amber-50 shadow-sm"
+                                placeholder="Ex : Marie Curie, Victor Hugo..."
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-amber-900 mb-1">Note du Docte</label>
+                            <textarea
+                                value={proposal.lore_note_docte || ''}
+                                onChange={(e) => setProposal({ ...proposal, lore_note_docte: e.target.value })}
+                                className="w-full p-2 border border-amber-300 rounded-lg font-serif text-sm min-h-[100px] outline-none focus:ring-2 focus:ring-amber-600 resize-none bg-amber-50 shadow-sm italic"
+                                placeholder="Observations personnelles du Docte..."
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

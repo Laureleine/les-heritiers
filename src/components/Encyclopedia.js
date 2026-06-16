@@ -23,6 +23,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
     ];
 
     const isDocte = userProfile?.profile?.is_docte === true;
+    const isInitiated = userProfile?.profile?.is_initiated === true || userProfile?.profile?.role === 'super_admin';
 
     const CATEGORIES = [
         { id: 'metier', label: 'Métier' },
@@ -322,6 +323,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                 <EncyclopediaViewModal
                     item={state.viewingItem}
                     activeTab={state.activeTab}
+                    isInitiated={isInitiated}
                     onClose={() => setters.setViewingItem(null)}
                 />
             )}
