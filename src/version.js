@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.19 - \"Le Soin du Détail ♿🧹\"",
+    date: "16 Juin 2026",
+    description: "Deux chantiers silencieux mais essentiels. L'Atelier referme le Chantier 2 de son grand plan de rangement : la formule alchimique des échanges d'XP est désormais partagée dans les Compétences Utiles. Côté accessibilité, quatre détails que les doigts et les touches perçoivent avant même les yeux — les boutons qui rétrécissaient jusqu'à l'imperceptible gagnent en substance, et les anneaux de focus reprennent leur place visible dans la navigation au clavier.",
+    changes: [
+      "🧹 **DRY Chantier 2 — xpTransaction clôturé :** `handleRangChange` dans les Compétences Utiles migré vers la formule commune. 6 tests unitaires dédiés. Les deux fonctions d'ajout/suppression de spécialité conservent leur LOG conditionnel — intentionnel, incompatible avec `xpTransaction`.",
+      "⌨️ **A11y — Focus clavier (×2) :** Les boutons de navigation par date dans l'Actualité reçoivent un anneau de focus vert visible quel que soit leur état. Le sélecteur de tri des Compétences Utiles reçoit un anneau ambré.",
+      "✋ **A11y — Cibles tactiles (×2) :** Le bouton « afficher/masquer mot de passe » passe de ~20×20px à ~28×28px (ajout de `p-1`). Les boutons « Mot de passe oublié » et « Retour à la connexion » gagnent `py-1` — hauteur minimale WCAG 2.5.8 respectée.",
+      "🧪 **348 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.18 - \"La Main de l'Artisan 🔧\"",
     date: "16 Juin 2026",
     description: "Session d'artisanat pur. Trois gabarits réutilisables voient le jour dans les ateliers du Manoir — une barre de recherche, un panneau 'vide' et une barre d'onglets — qui viennent remplacer plus d'une centaine de lignes de boiseries identiques éparpillées d'une pièce à l'autre. Six fautes de protocole dans la hiérarchie des titres sont corrigées : les Héritiers naviguant au lecteur d'écran peuvent désormais traverser le Manoir sans perdre le fil. Dix chantiers de refactoring ont été passés en revue ; sept sont clôturés, trois reportés faute d'une convergence suffisante entre les implémentations.",
