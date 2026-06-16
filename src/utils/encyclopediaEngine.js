@@ -134,6 +134,19 @@ export const submitEncyclopediaProposal = async ({
             const oldTraits = normalizeCommaListField(editingItem.traits);
             if (!arraysEqual(newTraits, oldTraits)) surgicalData.traits = newTraits;
 
+            // Champs lore (Cercle des Initiés)
+            const loreTextFields = ['lore_apparence', 'lore_taille', 'lore_mode_reproduction', 'lore_habitat', 'lore_caractere', 'lore_note_docte'];
+            loreTextFields.forEach(field => {
+                if ((proposal[field] ?? null) !== (editingItem[field] ?? null)) {
+                    surgicalData[field] = proposal[field] || null;
+                }
+            });
+            const newPersonnages = Array.isArray(proposal.lore_personnages_celebres) ? proposal.lore_personnages_celebres : [];
+            const oldPersonnages = Array.isArray(editingItem.lore_personnages_celebres) ? editingItem.lore_personnages_celebres : [];
+            if (!arraysEqual(newPersonnages, oldPersonnages)) {
+                surgicalData.lore_personnages_celebres = newPersonnages.length > 0 ? newPersonnages : null;
+            }
+
             // 2. Relations (Capacités, Pouvoirs, Atouts)
             const newCapacites = [];
             if (proposal.capaciteFixe1) newCapacites.push({ id: proposal.capaciteFixe1, type: 'fixe1' });

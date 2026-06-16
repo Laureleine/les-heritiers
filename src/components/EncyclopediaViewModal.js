@@ -3,7 +3,7 @@ import React from 'react';
 import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity, Briefcase, Coins, Crown, TrendingUp, Users, VenetianMask } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
 
-export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
+export default function EncyclopediaViewModal({ item, activeTab, isInitiated, onClose }) {
   if (!item) return null;
 
   const title = item.name || item.nom;
@@ -229,6 +229,65 @@ export default function EncyclopediaViewModal({ item, activeTab, onClose }) {
 
                 </div>
               </div>
+
+              {/* 🗝️ FICHE DU DOCTE — Initiés seulement */}
+              {isInitiated && (item.lore_apparence || item.lore_taille || item.lore_mode_reproduction || item.lore_habitat || item.lore_caractere || item.lore_note_docte || item.lore_personnages_celebres?.length > 0) && (
+                <div className="bg-amber-100 border-2 border-amber-700 rounded-xl p-5 shadow-md space-y-4">
+                  <h4 className="text-xs font-bold text-amber-900 uppercase tracking-widest flex items-center gap-2">
+                    🗝️ Fiche du Docte — Cercle des Initiés
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {item.lore_apparence && (
+                      <div>
+                        <h5 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Apparence</h5>
+                        <p className="text-sm text-amber-950 font-serif whitespace-pre-wrap">{item.lore_apparence}</p>
+                      </div>
+                    )}
+                    {item.lore_taille && (
+                      <div>
+                        <h5 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Taille & Morphologie</h5>
+                        <p className="text-sm text-amber-950 font-serif whitespace-pre-wrap">{item.lore_taille}</p>
+                      </div>
+                    )}
+                    {item.lore_mode_reproduction && (
+                      <div>
+                        <h5 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Mode de reproduction</h5>
+                        <p className="text-sm text-amber-950 font-serif whitespace-pre-wrap">{item.lore_mode_reproduction}</p>
+                      </div>
+                    )}
+                    {item.lore_habitat && (
+                      <div>
+                        <h5 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Habitat</h5>
+                        <p className="text-sm text-amber-950 font-serif whitespace-pre-wrap">{item.lore_habitat}</p>
+                      </div>
+                    )}
+                  </div>
+                  {item.lore_caractere && (
+                    <div>
+                      <h5 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Caractère</h5>
+                      <p className="text-sm text-amber-950 font-serif whitespace-pre-wrap">{item.lore_caractere}</p>
+                    </div>
+                  )}
+                  {item.lore_personnages_celebres?.length > 0 && (
+                    <div>
+                      <h5 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">Personnages célèbres</h5>
+                      <div className="flex flex-wrap gap-2">
+                        {item.lore_personnages_celebres.map((p, idx) => (
+                          <span key={idx} className="text-xs font-bold text-amber-900 bg-amber-200 px-2.5 py-1 rounded-md border border-amber-400">
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {item.lore_note_docte && (
+                    <div className="border-t border-amber-300 pt-3">
+                      <h5 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Note du Docte</h5>
+                      <p className="text-sm text-amber-950 font-serif italic whitespace-pre-wrap">{item.lore_note_docte}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
             </div>
           )}
