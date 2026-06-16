@@ -89,16 +89,15 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-### 2. 🔴 Helper `xpTransaction` — Dispatch + LOG_XP + notify
+### 2. ✅ Helper `xpTransaction` — TERMINÉ (session 16 juin 2026)
 
-**Problème :** Le combo `dispatchCharacter(UPDATE_MULTIPLE)` + `dispatchCharacter(LOG_XP_TRANSACTION)` + `showInAppNotification()` est dupliqué **11 fois** dans 5 fichiers :
-- `StepCaracteristiques.js` (×2 : increase, decrease)
-- `StepPouvoirs.js` (×2 : feerie up/down)
-- `StepAtouts.js` (×2 : acheter/rembourser)
-- `StepCompetencesFutiles.js` (×2 : rang up/down)
-- `useCompetencesLibres.js` (×3 : rang, spec achat, spec removal)
+`src/utils/xpTransaction.js` — encapsule `UPDATE_MULTIPLE` + `LOG_XP_TRANSACTION` + `showInAppNotification` en un seul appel.
 
-**Gain estimé :** ~80 lignes économisées.
+**Migré :** `StepCaracteristiques.js` (×2), `StepPouvoirs.js` (×2), `StepAtouts.js` (×2), `StepCompetencesFutiles.js` (×2), `useCompetencesLibres.js` `handleRangChange` (×1).
+
+**Non migré (intentionnel) :** `useCompetencesLibres.js` `handleAddSpecialiteUser` et `handleRemoveSpecialiteUser` — ces handlers ont un `LOG_XP_TRANSACTION` conditionnel (absent quand `costXP === 0` / `refundXP === 0` pour Conduite gratuite). `xpTransaction` force toujours le LOG, ce qui changerait le comportement. Laisser tel quel.
+
+**Tests :** 6 tests unitaires dans `src/utils/__tests__/xpTransaction.test.js`. **348/348 total.**
 
 ---
 
