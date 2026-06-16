@@ -1,3 +1,22 @@
+# REX — Session 16 Juin 2026 — v17.4.18 "La Main de l'Artisan 🔧"
+
+## Ce qui a été fait
+
+- **DRY chantiers 3-5** : Création de `SearchBar.jsx`, `EmptyState.jsx`, `TabBar.jsx` dans `src/components/ui/`. Migration dans 7 fichiers. Pattern : créer le composant, migrer un fichier à la fois, tester après chaque migration.
+- **a11y heading-order** : 6 violations MODERATE résolues en changeant h3 → h2. Avec Tailwind, le changement de tag est visuellement neutre (styles entièrement class-based, Preflight reset les headings). Pas besoin de sr-only si le heading est déjà le premier de la section sémantiquement.
+- **Audit DRY chantiers 6-10** : Les patterns "évidents" sur papier (RangStepper, BudgetCounter, Badge) sont trop divergents dans le code réel. Décisions documentées dans DRY_PLAN.md.
+
+## Règles apprises
+
+1. **Lire avant de décider** : un chantier DRY ne se juge pas sur son nom dans le plan, mais sur la divergence réelle entre les implémentations. Toujours lire les 3+ fichiers avant de créer le composant.
+2. **La couleur du texte compte** : `text-stone-400` vs `text-stone-500` dans EmptyState est une régression visuelle. Ne pas migrer si la différence est visible même minime.
+3. **col-span-full est un piège** : EmptyState ne peut pas être utilisé dans une CSS grid sans passer `col-span-full` en className — vérifier la structure parente avant de migrer.
+4. **heading-order : h3 → h2 est safe avec Tailwind** : Tailwind Preflight reset tous les headings. Changer le tag ne change rien visuellement si les classes sont identiques.
+5. **Fond sombre incompatible avec TabBar** : GrimoirePersonnel et Telegraphe ont `bg-amber-900` — ne pas forcer la migration TabBar qui changerait le visuel.
+6. **Session sur un worktree en cours** : La prochaine session continue dans le même worktree (`carte-1900-fix`). Il faut pusher et merger depuis la branche principale.
+
+---
+
 # REX — Session 15 Juin 2026 — v17.4.16 "Le Regard de la Communauté 🌐"
 
 ## Ce qui a été fait
