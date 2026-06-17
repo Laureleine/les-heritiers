@@ -1,4 +1,21 @@
-﻿# REX — Session 16 Juin 2026 (suite 2) — v17.4.20 "La Fiche du Docte 📜🔮"
+﻿# REX — Session 17 Juin 2026 — v17.4.21 "L'État-Major et le Secret du Docte 🗺️🔐"
+
+## Ce qui a été fait
+
+- **Signalement utilisatrice** : « Je n'ai pas vu passer les modifications sur la carte dans la dernière mise à jour ? » — déclencheur de l'investigation.
+- **Découverte** : deux commits `feat(carte)` (slider comparaison historique/actuelle IGN, Vue du Docte Cercle/Privée) existaient sur la branche `worktree-carte-1900-fix` mais n'avaient **jamais été fusionnés dans `main`** — seulement déployés en preview Vercel (branche feature), jamais en production. Détecté avec `git log origin/main..origin/<branche>` et confirmé par `git diff --stat` entre les deux refs.
+- **Vérification avant action** : `CarteDeParisPage.jsx` n'avait pas changé sur `main` depuis le point de divergence (`git diff origin/main:<f> <merge-base>:<f>` vide) → cherry-pick sans risque de conflit.
+- **Intégration** : `git cherry-pick fd70ab3 77821ea` sur `main` (propre, 0 conflit), tests (359/359, +11 nouveaux pour `mapVisibility`), changelog 17.4.21, commit/push/déploiement.
+
+## Règles apprises
+
+1. **Une branche de travail (`worktree-*`) qui accumule des commits non listés dans `version.js` est un signal d'alerte** : ces commits peuvent avoir été déployés en preview (donc visibles par l'autrice sur une URL de preview) sans jamais atteindre `main`/production. Avant de répondre « ce n'est pas dans le changelog donc ça n'existe pas », vérifier `git log origin/main..origin/<branche-de-travail>` sur TOUTES les branches de travail connues, pas seulement celle de la session en cours.
+2. **Ne jamais agir sur une simple question sans confirmation explicite** : la première tentative de cherry-pick a été bloquée par le classifieur auto — l'utilisatrice demandait une explication, pas une fusion. Présenter le diagnostic et proposer l'action avant de l'exécuter.
+3. **Vérifier l'absence de divergence du fichier cible avant un cherry-pick inter-branches** (`git diff <ref1>:<fichier> <ref2>:<fichier>`) — évite les conflits inutiles et confirme que le merge-base réel du fichier est plus récent que celui du commit.
+
+---
+
+# REX — Session 16 Juin 2026 (suite 2) — v17.4.20 "La Fiche du Docte 📜🔮"
 
 ## Ce qui a été fait
 
