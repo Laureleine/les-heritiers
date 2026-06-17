@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.21 - \"L'État-Major et le Secret du Docte 🗺️🔐\"",
+    date: "17 Juin 2026",
+    description: "La Carte de Paris s'enrichit de deux apports restés trop longtemps dans l'ombre. Un véritable fond historique IGN — la Carte de l'État-Major (1820-1866) — s'ajoute aux tuiles modernes, avec un curseur glissant pour comparer les deux époques d'un geste. Et les Doctes gagnent un secret bien gardé : une bascule entre la vue de leur Cercle (ce que voient leurs joueurs) et leur vue Privée, où ne s'affichent que leurs propres repères confidentiels.",
+    changes: [
+      "🗺️ **Fond historique IGN (Nouveau) :** La Carte de l'État-Major (~1820-1866) de l'IGN Géoportail vient compléter le fond moderne CartoDB — aucune clé API requise. Trois modes : Historique seul, Comparer (slider), Actuelle seule.",
+      "↔️ **Slider de comparaison :** Une poignée glissable (souris et tactile) découpe l'écran entre les deux époques, avec des étiquettes flottantes indiquant chaque côté. Un léger filtre sépia habille le fond historique.",
+      "🔐 **Vue du Docte — Cercle / Privée (Nouveau) :** Les Doctes (propriétaires d'au moins un cercle) disposent d'une bascule dans la barre latérale. Vue Cercle : les repères publics + ceux du cercle choisi — exactement ce que voient leurs joueurs. Vue Privée : uniquement leurs propres repères confidentiels.",
+      "🎯 **Sélecteur de cercle :** Un Docte de plusieurs cercles peut choisir lequel afficher en vue Cercle.",
+      "🧪 **359 Sentinelles (+11) — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.20 - \"La Fiche du Docte 📜🔮\"",
     date: "16 Juin 2026",
     description: "L'Encyclopédie révèle ses pages les plus secrètes. Chaque espèce féérique gagne désormais sa propre Fiche du Docte — apparence, taille, reproduction, habitat, caractère, personnages célèbres — rédigée dans le Nuage et consultable par les seuls Initiés. Ces savoirs ne dormaient plus dans un parchemin figé : ils vivent maintenant en base, modifiables comme toute autre entrée de l'Encyclopédie, avec leurs propres propositions de correction.",
