@@ -13,3 +13,11 @@ export function getVisiblePoints(points, { isDocte, docteViewMode, docteSelected
       : pt.visibilite === 'public' || (pt.visibilite === 'cercle' && pt.visibilite_cercle_id === docteSelectedCercleId)
   );
 }
+
+export function filterPointsByListFilter(points, { filterText, filterType }) {
+  return points.filter(pt => {
+    if (filterType && pt.type !== filterType) return false;
+    if (filterText && !pt.nom.toLowerCase().includes(filterText.toLowerCase())) return false;
+    return true;
+  });
+}
