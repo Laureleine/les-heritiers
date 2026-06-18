@@ -202,9 +202,9 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isS
     if (!form.adresse?.trim()) return;
     setAdresseSearching(true);
     try {
-      const q = encodeURIComponent(form.adresse + ', Paris');
+      const q = encodeURIComponent(form.adresse);
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&addressdetails=1&viewbox=2.224,48.902,2.470,48.815&bounded=1&accept-language=fr`,
+        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&addressdetails=1&viewbox=2.224,48.902,2.470,48.815&accept-language=fr`,
         { headers: { 'User-Agent': 'LesHeritiers/1.0' } }
       );
       setAdresseResults(await res.json());
@@ -491,9 +491,9 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
     setSearching(true);
     setSearchResults([]);
     try {
-      const q = encodeURIComponent(searchQuery + ', Paris');
+      const q = encodeURIComponent(searchQuery);
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&addressdetails=1&viewbox=2.224,48.902,2.470,48.815&bounded=1&accept-language=fr`,
+        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=5&addressdetails=1&viewbox=2.224,48.902,2.470,48.815&accept-language=fr`,
         { headers: { 'User-Agent': 'LesHeritiers/1.0' } }
       );
       setSearchResults(await res.json());
