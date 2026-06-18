@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.20 - \"Les Secrets Dévoilés 🗝️🗺️\"",
+    date: "18 Juin 2026",
+    description: "Deux pans du Manoir s'enrichissent ce jour. Le Cercle des Initiés peut désormais consulter la Fiche du Docte de chaque espèce féerique — apparence, mode de reproduction, personnages célèbres et notes savantes, tirées directement des grimoires de l'Atelier. La Carte de Paris, elle, se dote d'un véritable atlas du temps : un curseur permet de glisser entre le Paris de l'État-Major (~1850) et celui d'aujourd'hui. Les Doctes gagnent une bascule discrète entre la vue partagée avec leur Cercle et leurs repères secrets, la recherche d'adresse s'ouvre enfin au-delà des frontières parisiennes, et une dizaine de détails d'ergonomie rendent la carte plus sûre et plus agréable à parcourir.",
+    changes: [
+      "🗝️ **Encyclopédie — Fiche du Docte :** 7 champs de lore par espèce féerique (apparence, taille, reproduction, habitat, caractère, personnages célèbres, note du Docte), visibles et éditables uniquement par le Cercle des Initiés.",
+      "🗺️ **Carte — Atlas du temps :** fond historique IGN État-Major (~1850) comparable au Paris actuel via un curseur glissant, en plus du fond CartoDB classique.",
+      "🔑 **Carte — Vue du Docte :** bascule entre la vue partagée avec son Cercle et ses repères privés, avec sélecteur si plusieurs Cercles.",
+      "🌍 **Carte — Recherche d'adresse globale :** plus limitée à Paris, avec une préférence parisienne conservée par défaut.",
+      "🧭 **Carte — 9 corrections d'ergonomie :** synchronisation carte/filtre, confirmation avant suppression, découvrabilité du mode de transport personnalisé, dédoublonnage de la recherche d'adresse, pose directe d'un point d'itinéraire, panneau repliable sur mobile, cibles tactiles et contrastes conformes WCAG.",
+      "🧪 **364 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.19 - \"Le Soin du Détail ♿🧹\"",
     date: "16 Juin 2026",
     description: "Deux chantiers silencieux mais essentiels. L'Atelier referme le Chantier 2 de son grand plan de rangement : la formule alchimique des échanges d'XP est désormais partagée dans les Compétences Utiles. Côté accessibilité, quatre détails que les doigts et les touches perçoivent avant même les yeux — les boutons qui rétrécissaient jusqu'à l'imperceptible gagnent en substance, et les anneaux de focus reprennent leur place visible dans la navigation au clavier.",
