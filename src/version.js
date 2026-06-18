@@ -2,6 +2,22 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.22 - \"Le Cartographe Méticuleux 🧭🔍\"",
+    date: "18 Juin 2026",
+    description: "La Carte de Paris s'aventure au-delà de ses propres frontières : chercher une adresse n'oblige plus à rester dans les murs de la capitale, tout en gardant Paris comme terrain de prédilection par défaut. Et puisque le diable se cache dans les détails, une dizaine d'imperfections discrètes ont été polies : la liste des lieux et les épingles de la carte racontent enfin la même histoire, une suppression demande désormais confirmation, le mode de déplacement personnalisé se laisse enfin découvrir, et le panneau latéral se replie élégamment sur les petits écrans.",
+    changes: [
+      "🧭 **Recherche d'adresse libérée :** Elle ne se limite plus à Paris intra-muros — toute adresse peut désormais être trouvée, avec une préférence parisienne conservée par défaut quand la ville n'est pas précisée.",
+      "🗺️ **Carte et liste enfin synchronisées :** Filtrer la liste des lieux par nom ou par type filtre désormais aussi les épingles affichées sur la carte.",
+      "🛑 **Suppression d'un lieu : confirmation requise :** Un second clic est désormais nécessaire pour supprimer un lieu — plus de disparition accidentelle d'un repère précieux.",
+      "🚀 **Mode de déplacement personnalisé mis en lumière :** Une astuce apparaît au bon moment pour découvrir qu'on peut configurer son propre moyen de transport (vitesse, vol d'oiseau ou non) sur la Carte.",
+      "🔍 **Recherche d'adresse dédoublonnée :** Une seule recherche reste affichée une fois le formulaire d'ajout de lieu ouvert, au lieu de deux quasi identiques.",
+      "🧷 **Itinéraire : un clic suffit :** Choisir une adresse dans les résultats de recherche pose désormais directement le point de départ ou d'arrivée d'un itinéraire.",
+      "📱 **Panneau latéral repliable :** Sur mobile et tablette, la barre latérale de la Carte se replie en un panneau accessible d'un tap, laissant la carte respirer.",
+      "♿ **Accessibilité — cibles, étiquettes et contrastes :** Boutons icône agrandis et nommés pour les lecteurs d'écran, textes secondaires remontés à un contraste conforme aux normes d'accessibilité.",
+      "🧪 **364 Sentinelles (+5) — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.21 - \"L'État-Major et le Secret du Docte 🗺️🔐\"",
     date: "17 Juin 2026",
     description: "La Carte de Paris s'enrichit de deux apports restés trop longtemps dans l'ombre. Un véritable fond historique IGN — la Carte de l'État-Major (1820-1866) — s'ajoute aux tuiles modernes, avec un curseur glissant pour comparer les deux époques d'un geste. Et les Doctes gagnent un secret bien gardé : une bascule entre la vue de leur Cercle (ce que voient leurs joueurs) et leur vue Privée, où ne s'affichent que leurs propres repères confidentiels.",
