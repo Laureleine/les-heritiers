@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getDocteCircles, getVisiblePoints } from '../mapVisibility';
+import { getDocteCircles, getVisiblePoints, filterPointsByListFilter } from '../mapVisibility';
 
 describe('getDocteCircles', () => {
   const cercles = [
@@ -68,6 +68,39 @@ describe('getVisiblePoints', () => {
 
   it('Vue Privée : aucun point privé pour cet utilisateur -> tableau vide', () => {
     const result = getVisiblePoints(points, { isDocte: true, docteViewMode: 'prive', docteSelectedCercleId: 'c1', userId: 'u3' });
+    expect(result).toEqual([]);
+  });
+});
+
+describe('filterPointsByListFilter', () => {
+  const points = [
+    { id: 1, nom: 'Café de Flore',     type: 'lieu' },
+    { id: 2, nom: 'Tour Eiffel',       type: 'point_interet' },
+    { id: 3, nom: 'Bal des Confettis', type: 'evenement' },
+    { id: 4, nom: 'Café Procope',      type: 'lieu' },
+  ];
+
+  it('sans filtre, renvoie tous les points', () => {
+    expect(filterPointsByListFilter(points, { filterText: '', filterType: '' })).toEqual(points);
+  });
+
+  it('filtre par type', () => {
+    const result = filterPointsByListFilter(points, { filterText: '', filterType: 'lieu' });
+    expect(result.map(p => p.id)).toEqual([1, 4]);
+  });
+
+  it('filtre par texte, insensible à la casse', () => {
+    const result = filterPointsByListFilter(points, { filterText: 'café', filterType: '' });
+    expect(result.map(p => p.id)).toEqual([1, 4]);
+  });
+
+  it('combine texte et type', () => {
+    const result = filterPointsByListFilter(points, { filterText: 'eiffel', filterType: 'point_interet' });
+    expect(result.map(p => p.id)).toEqual([2]);
+  });
+
+  it('texte et type incompatibles -> tableau vide', () => {
+    const result = filterPointsByListFilter(points, { filterText: 'eiffel', filterType: 'lieu' });
     expect(result).toEqual([]);
   });
 });

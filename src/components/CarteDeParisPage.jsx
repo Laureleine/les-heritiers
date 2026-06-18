@@ -3,12 +3,12 @@ import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap, Pane } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ArrowLeft, MapPin, X, Loader, Trash2, Map, Search, Edit, ChevronDown, ChevronUp, Filter, ExternalLink } from '../config/icons';
+import { ArrowLeft, MapPin, X, Loader, Trash2, Map, Search, Edit, ChevronDown, ChevronUp, Filter, ExternalLink, Menu } from '../config/icons';
 import ModalShell, { ModalHeader } from './ui/ModalShell';
 import { useMapPoints } from '../hooks/useMapPoints';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { isSuperAdmin } from '../utils/authRoles';
-import { getDocteCircles, getVisiblePoints } from '../utils/mapVisibility';
+import { getDocteCircles, getVisiblePoints, filterPointsByListFilter } from '../utils/mapVisibility';
 import { supabase } from '../config/supabase';
 
 // ─── Tuiles ──────────────────────────────────────────────────────────────────
@@ -224,7 +224,7 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isS
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); searchAdresse(); } }}
             className="flex-1 px-2 py-1.5 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
           />
-          <button onClick={searchAdresse} disabled={adresseSearching} type="button"
+          <button onClick={searchAdresse} disabled={adresseSearching} type="button" aria-label="Rechercher l'adresse"
             className="px-2 py-1.5 bg-amber-100 text-amber-900 rounded-lg hover:bg-amber-200 transition-colors disabled:opacity-50 shrink-0"
           >
             {adresseSearching ? <Loader size={11} className="animate-spin" /> : <Search size={11} />}
@@ -331,7 +331,7 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isS
         >
           {saving ? '…' : submitLabel}
         </button>
-        <button onClick={onCancel} className="px-2.5 py-1.5 bg-stone-100 text-stone-500 rounded-lg text-sm hover:bg-stone-200 transition-colors">
+        <button onClick={onCancel} aria-label="Annuler" className="px-2.5 py-1.5 bg-stone-100 text-stone-500 rounded-lg text-sm hover:bg-stone-200 transition-colors">
           <X size={13} />
         </button>
       </div>
@@ -372,7 +372,7 @@ function ModePersoForm({ form, onChange, onSave, onCancel }) {
         <button onClick={onSave} disabled={!form.nom?.trim() || !form.vitesse_kmh}
           className="flex-1 px-2 py-1 bg-amber-900 text-white rounded text-xs font-bold disabled:opacity-50 hover:bg-amber-800 transition-colors"
         >Enregistrer</button>
-        <button onClick={onCancel} className="px-2 py-1 bg-stone-100 text-stone-500 rounded text-xs hover:bg-stone-200 transition-colors"><X size={11} /></button>
+        <button onClick={onCancel} aria-label="Annuler" className="px-2 py-1 bg-stone-100 text-stone-500 rounded text-xs hover:bg-stone-200 transition-colors"><X size={11} /></button>
       </div>
     </div>
   );
@@ -384,6 +384,9 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
   const { points, loading, addPoint, updatePoint, deletePoint } = useMapPoints();
   const isSA   = isSuperAdmin(userProfile);
   const userId = session?.user?.id;
+
+  // ── Panneau latéral (repliable sur mobile) ────────────────────────────────
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // ── Outils ────────────────────────────────────────────────────────────────
   const [tool, setTool]       = useState('vue');
@@ -403,6 +406,9 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
   const [editForm, setEditForm]     = useState(EMPTY_FORM);
   const [newPoiPos, setNewPoiPos]   = useState(null);
   const [newPoiForm, setNewPoiForm] = useState(EMPTY_FORM);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  useEffect(() => { setConfirmDelete(false); }, [selectedPt?.id]);
   const [saving, setSaving]         = useState(false);
 
   // ── Entités liées ─────────────────────────────────────────────────────────
@@ -442,11 +448,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
     Object.fromEntries(Object.keys(POI_TYPES).map(k => [k, true]))
   );
 
-  const filteredPoints = visiblePoints.filter(pt => {
-    if (filterType && pt.type !== filterType) return false;
-    if (filterText && !pt.nom.toLowerCase().includes(filterText.toLowerCase())) return false;
-    return true;
-  });
+  const filteredPoints = filterPointsByListFilter(visiblePoints, { filterText, filterType });
 
   const groupedPoints = Object.keys(POI_TYPES).reduce((acc, type) => {
     const pts = filteredPoints.filter(pt => pt.type === type);
@@ -634,7 +636,8 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
     : tool === 'itineraire'
       ? routePts.length === 0 ? 'Cliquez 🟢 sur la carte ou un lieu dans la liste.'
         : routePts.length === 1 ? "Cliquez 🔴 sur la carte ou un lieu dans la liste."
-        : 'Résultat ci-dessous. Cliquez ↺ pour recommencer.'
+        : modePerso ? 'Résultat ci-dessous. Cliquez ↺ pour recommencer.'
+        : "Résultat ci-dessous. 🚀 Astuce : configurez votre propre moyen de transport via l'onglet ⚙️."
     : !newPoiPos ? 'Saisissez une adresse ci-dessus ou cliquez sur la carte.'
     : 'Remplissez les informations ci-dessous.';
 
@@ -668,57 +671,80 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
       </div>
 
       {/* Layout */}
-      <div className="flex h-[calc(100vh-210px)] min-h-[480px] rounded-xl overflow-hidden border-2 border-amber-200 shadow-xl">
+      <div className="flex h-[calc(100vh-210px)] min-h-[480px] rounded-xl overflow-hidden border-2 border-amber-200 shadow-xl relative">
+
+        {/* Bouton bascule panneau (mobile/tablette uniquement) */}
+        <button
+          onClick={() => setSidebarOpen(o => !o)}
+          aria-label={sidebarOpen ? 'Fermer le panneau' : 'Ouvrir le panneau'}
+          className="md:hidden absolute top-2 left-2 z-[1002] p-2 bg-[#fdfbf7] border border-amber-200 rounded-lg shadow-md text-amber-900"
+        >
+          {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
+
+        {/* Fond occultant (mobile, panneau ouvert) */}
+        {sidebarOpen && (
+          <div
+            className="md:hidden absolute inset-0 z-[1000] bg-black/30"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
         {/* ── Panneau latéral ──────────────────────────────────────────── */}
-        <aside className="w-64 bg-[#fdfbf7] border-r border-amber-200 flex flex-col shrink-0 overflow-y-auto custom-scrollbar">
+        <aside className={`w-64 bg-[#fdfbf7] border-r border-amber-200 flex flex-col shrink-0 overflow-y-auto custom-scrollbar
+          absolute md:relative inset-y-0 left-0 z-[1001] transition-transform duration-200
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
 
-          {/* Recherche */}
-          <div className="p-3 border-b border-amber-100">
-            <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">
-              {tool === 'poi' ? 'Adresse du lieu' : 'Recherche'}
-            </p>
-            <div className="flex gap-1.5">
-              <input
-                type="text"
-                placeholder={tool === 'poi' ? '38 rue Madame…' : 'Rue, quartier…'}
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                className="flex-1 px-2 py-1.5 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
-              />
-              <button onClick={handleSearch} disabled={searching} className="px-2 py-1.5 bg-amber-900 text-amber-50 rounded-lg hover:bg-amber-800 transition-colors disabled:opacity-50">
-                {searching ? <Loader size={13} className="animate-spin" /> : <Search size={13} />}
-              </button>
-            </div>
-            {searchResults.length > 0 && (
-              <div className="mt-1.5 space-y-0.5 max-h-44 overflow-y-auto custom-scrollbar">
-                {searchResults.map((r, i) => {
-                  const label = r.display_name.split(',').slice(0, 3).join(',');
-                  return (
-                    <button key={i}
-                      onClick={() => {
-                        const lat = parseFloat(r.lat);
-                        const lng = parseFloat(r.lon);
-                        setFlyTo([lat, lng]);
-                        if (tool === 'poi') {
-                          const a = r.address || {};
-                          const adresse = [a.house_number, a.road].filter(Boolean).join(' ') || label.split(',')[0].trim();
-                          setNewPoiPos({ lat, lng });
-                          setNewPoiForm(f => ({ ...f, nom: f.nom || adresse, adresse }));
-                        }
-                        setSearchResults([]);
-                        setSearchQuery('');
-                      }}
-                      className="w-full text-left px-2 py-1 rounded-lg hover:bg-amber-50 text-xs text-stone-700 leading-snug transition-colors whitespace-normal break-words"
-                    >
-                      {tool === 'poi' ? '📍 ' : ''}{label}
-                    </button>
-                  );
-                })}
+          {/* Recherche — masquée une fois le formulaire d'ajout de lieu ouvert (son propre champ adresse prend le relais) */}
+          {!(tool === 'poi' && newPoiPos) && (
+            <div className="p-3 border-b border-amber-100">
+              <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">
+                {tool === 'poi' ? 'Adresse du lieu' : 'Recherche'}
+              </p>
+              <div className="flex gap-1.5">
+                <input
+                  type="text"
+                  placeholder={tool === 'poi' ? '38 rue Madame…' : 'Rue, quartier…'}
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                  className="flex-1 px-2 py-1.5 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
+                />
+                <button onClick={handleSearch} disabled={searching} aria-label="Rechercher" className="px-2 py-1.5 bg-amber-900 text-amber-50 rounded-lg hover:bg-amber-800 transition-colors disabled:opacity-50">
+                  {searching ? <Loader size={13} className="animate-spin" /> : <Search size={13} />}
+                </button>
               </div>
-            )}
-          </div>
+              {searchResults.length > 0 && (
+                <div className="mt-1.5 space-y-0.5 max-h-44 overflow-y-auto custom-scrollbar">
+                  {searchResults.map((r, i) => {
+                    const label = r.display_name.split(',').slice(0, 3).join(',');
+                    return (
+                      <button key={i}
+                        onClick={() => {
+                          const lat = parseFloat(r.lat);
+                          const lng = parseFloat(r.lon);
+                          setFlyTo([lat, lng]);
+                          if (tool === 'poi') {
+                            const a = r.address || {};
+                            const adresse = [a.house_number, a.road].filter(Boolean).join(' ') || label.split(',')[0].trim();
+                            setNewPoiPos({ lat, lng });
+                            setNewPoiForm(f => ({ ...f, nom: f.nom || adresse, adresse }));
+                          } else if (tool === 'itineraire') {
+                            handleMapClick({ lat, lng });
+                          }
+                          setSearchResults([]);
+                          setSearchQuery('');
+                        }}
+                        className="w-full text-left px-2 py-1 rounded-lg hover:bg-amber-50 text-xs text-stone-700 leading-snug transition-colors whitespace-normal break-words"
+                      >
+                        {tool === 'poi' ? '📍 ' : ''}{label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Outils */}
           <div className="p-3 border-b border-amber-100 space-y-1">
@@ -768,11 +794,11 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                 onClick={() => setDocteViewMode(m => m === 'cercle' ? 'prive' : 'cercle')}
                 className="w-full flex items-center justify-between gap-2 px-1 py-1"
               >
-                <span className={`text-xs font-bold ${docteViewMode === 'cercle' ? 'text-amber-800' : 'text-stone-400'}`}>🔵 Cercle</span>
+                <span className={`text-xs font-bold ${docteViewMode === 'cercle' ? 'text-amber-800' : 'text-stone-500'}`}>🔵 Cercle</span>
                 <span className={`relative w-10 h-5 rounded-full transition-colors shrink-0 ${docteViewMode === 'prive' ? 'bg-amber-700' : 'bg-stone-300'}`}>
                   <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${docteViewMode === 'prive' ? 'translate-x-5' : ''}`} />
                 </span>
-                <span className={`text-xs font-bold ${docteViewMode === 'prive' ? 'text-amber-800' : 'text-stone-400'}`}>🔒 Privée</span>
+                <span className={`text-xs font-bold ${docteViewMode === 'prive' ? 'text-amber-800' : 'text-stone-500'}`}>🔒 Privée</span>
               </button>
               {docteViewMode === 'cercle' && docteCircles.length > 1 && (
                 <select
@@ -814,7 +840,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                 className="flex-1 px-2 py-1 border border-amber-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
               />
               {filterText && (
-                <button onClick={() => setFilterText('')} className="text-stone-300 hover:text-stone-500">
+                <button onClick={() => setFilterText('')} aria-label="Effacer le filtre" className="p-1 text-stone-500 hover:text-stone-700">
                   <X size={11} />
                 </button>
               )}
@@ -836,9 +862,9 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             {loading ? (
               <div className="flex justify-center pt-8 text-amber-600"><Loader size={18} className="animate-spin" /></div>
             ) : visiblePoints.length === 0 ? (
-              <p className="text-xs text-stone-400 italic text-center pt-8 px-3 leading-relaxed">Aucun lieu encore épinglé.</p>
+              <p className="text-xs text-stone-500 italic text-center pt-8 px-3 leading-relaxed">Aucun lieu encore épinglé.</p>
             ) : filteredPoints.length === 0 ? (
-              <p className="text-xs text-stone-400 italic text-center pt-8 px-3 leading-relaxed">Aucun résultat.</p>
+              <p className="text-xs text-stone-500 italic text-center pt-8 px-3 leading-relaxed">Aucun résultat.</p>
             ) : Object.entries(groupedPoints).map(([type, pts]) => (
               <div key={type}>
                 {/* En-tête accordéon */}
@@ -906,7 +932,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
             {flyTo && <FlyToLocation position={flyTo} />}
 
             {/* POI existants */}
-            {visiblePoints.map(pt => (
+            {filteredPoints.map(pt => (
               <Marker key={pt.id} position={[pt.lat, pt.lng]} icon={makePoiIcon(pt.couleur || POI_TYPES[pt.type]?.couleur || '#92400e', pt.forme || 'goutte', POI_TYPES[pt.type]?.emoji || '')}
                 eventHandlers={{ click: () => {
                   if (tool === 'itineraire') {
@@ -971,14 +997,14 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                   <div className="flex items-center gap-3 px-4 pt-3 pb-2 border-b border-amber-100">
                     <div className="text-center">
                       <p className="text-amber-900 font-bold text-lg leading-none">{formatDistance(routeData.distanceM)}</p>
-                      <p className="text-stone-400 text-[9px] uppercase tracking-wider mt-0.5">Route</p>
+                      <p className="text-stone-500 text-[9px] uppercase tracking-wider mt-0.5">Route</p>
                     </div>
                     <div className="text-stone-200 text-lg">·</div>
                     <div className="text-center">
                       <p className="text-stone-500 font-bold text-lg leading-none">{formatDistance(routeData.flyingM)}</p>
-                      <p className="text-stone-400 text-[9px] uppercase tracking-wider mt-0.5">Vol d'oiseau</p>
+                      <p className="text-stone-500 text-[9px] uppercase tracking-wider mt-0.5">Vol d'oiseau</p>
                     </div>
-                    <button onClick={() => { setRoutePts([]); setRouteData(null); }} className="ml-auto text-stone-300 hover:text-stone-500" aria-label="Effacer"><X size={14} /></button>
+                    <button onClick={() => { setRoutePts([]); setRouteData(null); }} className="ml-auto p-1 text-stone-500 hover:text-stone-700" aria-label="Effacer"><X size={14} /></button>
                   </div>
 
                   {/* Onglets modes */}
@@ -1014,15 +1040,15 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                       return (
                         <div className="flex items-end justify-between">
                           <div>
-                            <p className="text-xs text-stone-400 mb-0.5">{m?.emoji} {m?.label || m?.nom}</p>
+                            <p className="text-xs text-stone-500 mb-0.5">{m?.emoji} {m?.label || m?.nom}</p>
                             <p className="text-3xl font-bold text-amber-900 leading-none">{t != null ? formatTime(t) : '—'}</p>
-                            {isVol && <p className="text-[10px] text-stone-400 italic mt-0.5">↗ En vol d'oiseau</p>}
+                            {isVol && <p className="text-[10px] text-stone-500 italic mt-0.5">↗ En vol d'oiseau</p>}
                             {!isVol && activeMode !== 'pied' && m?.vitesse_kmh && (
-                              <p className="text-[10px] text-stone-400 mt-0.5">{m.vitesse_kmh} km/h</p>
+                              <p className="text-[10px] text-stone-500 mt-0.5">{m.vitesse_kmh} km/h</p>
                             )}
                           </div>
                           {activeMode === 'perso' && (
-                            <button onClick={() => setEditModePerso(true)} className="text-stone-300 hover:text-stone-500 mb-1" title="Modifier le mode">
+                            <button onClick={() => setEditModePerso(true)} aria-label="Modifier le mode" className="p-1 text-stone-500 hover:text-stone-700 mb-1" title="Modifier le mode">
                               <Edit size={13} />
                             </button>
                           )}
@@ -1093,7 +1119,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                 {selectedPt.description && (
                   <p className="text-sm text-stone-700 leading-relaxed italic mb-4">{selectedPt.description}</p>
                 )}
-                <p className="text-[10px] text-stone-300 font-mono">{selectedPt.lat.toFixed(5)}, {selectedPt.lng.toFixed(5)}</p>
+                <p className="text-[10px] text-stone-500 font-mono">{selectedPt.lat.toFixed(5)}, {selectedPt.lng.toFixed(5)}</p>
               </>
             )}
           </div>
@@ -1102,8 +1128,12 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
               <button onClick={() => startEdit(selectedPt)} className="flex items-center gap-1.5 text-sm text-amber-700 hover:text-amber-900 transition-colors">
                 <Edit size={14} /> Modifier
               </button>
-              <button onClick={() => handleDelete(selectedPt.id)} className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
-                <Trash2 size={14} /> Supprimer
+              <button
+                onClick={() => confirmDelete ? handleDelete(selectedPt.id) : setConfirmDelete(true)}
+                onBlur={() => setConfirmDelete(false)}
+                className={`flex items-center gap-1.5 text-sm transition-colors ${confirmDelete ? 'text-red-700 font-bold' : 'text-red-500 hover:text-red-700'}`}
+              >
+                <Trash2 size={14} /> {confirmDelete ? 'Confirmer ?' : 'Supprimer'}
               </button>
             </div>
           )}
