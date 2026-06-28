@@ -14,6 +14,15 @@ import tempfile
 import unicodedata
 import difflib
 from pathlib import Path
+
+# Configurer la console pour supporter l'UTF-8 sous Windows
+if sys.platform.startswith('win'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except AttributeError:
+        pass
+
 import requests
 from PIL import Image
 
@@ -251,14 +260,44 @@ class GallicaDownloader:
         })
         
     def resolve_issue_ark(self, serial_ark: str, date_str: str) -> str:
-        """Trouve l'identifiant (ARK) correspondant à une date donnée."""
+        """Trouve l'identifiant (ARK) correspondant à une date donnée, avec retries."""
         # Format de date : YYYYMMDD ou YYYY-MM-DD
         clean_date = date_str.replace("-", "")
         url = f"https://gallica.bnf.fr/ark:/12148/{serial_ark}/date{clean_date}?mode=1"
         print(f"Résolution de la date sur Gallica: {url}")
-        
-        resp = self.session.get(url, allow_redirects=True, timeout=30)
-        resp.raise_for_status()
+
+        last_exc = None
+        for attempt in range(3):
+            try:
+                resp = self.session.get(url, allow_redirects=True, timeout=60)
+                resp.raise_for_status()
+                last_exc = None
+                break
+            except requests.exceptions.Timeout as e:
+                last_exc = e
+                if attempt < 2:
+                    wait = 5 * (2 ** attempt)
+                    print(f"  ⏳ Tentative {attempt + 1}/3 timeout, nouvelle tentative dans {wait}s...")
+                    time.sleep(wait)
+                continue
+            except requests.exceptions.ConnectionError as e:
+                last_exc = e
+                if attempt < 2:
+                    wait = 5 * (2 ** attempt)
+                    print(f"  ⏳ Tentative {attempt + 1}/3 erreur connexion, nouvelle tentative dans {wait}s...")
+                    time.sleep(wait)
+                continue
+            except requests.exceptions.HTTPError as e:
+                status = e.response.status_code if e.response is not None else 0
+                if status >= 500 and attempt < 2:
+                    last_exc = e
+                    wait = 5 * (2 ** attempt)
+                    print(f"  ⏳ Tentative {attempt + 1}/3 erreur {status}, nouvelle tentative dans {wait}s...")
+                    time.sleep(wait)
+                    continue
+                raise
+        if last_exc:
+            raise last_exc
         
         # Recherche du pattern de l'ARK dans l'URL de redirection
         m = re.search(r'bpt6k[a-z0-9]+', resp.url)
@@ -376,6 +415,12 @@ def main():
     if not issue_ark:
         try:
             issue_ark = downloader.resolve_issue_ark(serial_ark, args.date)
+        except requests.exceptions.Timeout as e:
+            print(f"⚠️ Gallica ne répond pas (timeout) pour le {args.date}. Réessaie plus tard.", file=sys.stderr)
+            sys.exit(3)
+        except requests.exceptions.ConnectionError as e:
+            print(f"⚠️ Gallica injoignable (connexion refusée) pour le {args.date}. Réessaie plus tard.", file=sys.stderr)
+            sys.exit(3)
         except Exception as e:
             print(f"Erreur de résolution de l'ARK pour la date {args.date} : {e}")
             sys.exit(1)
@@ -413,6 +458,12 @@ def main():
                     page_text = downloader.fetch_page_ocr_api(issue_ark, page)
                     txt_cache_file.write_text(page_text, encoding="utf-8")
                     print(f"  [SAUVEGARDE] OCR BnF enregistré : {txt_cache_file.name}")
+                except requests.exceptions.Timeout as e:
+                    print(f"  [RÉSEAU] Timeout Gallica pour la page {page}. Page ignorée.")
+                    continue
+                except requests.exceptions.ConnectionError as e:
+                    print(f"  [RÉSEAU] Connexion Gallica perdue pour la page {page}. Page ignorée.")
+                    continue
                 except Exception as e:
                     print(f"  [ERREUR] Impossible de télécharger l'OCR pour la page {page} : {e}")
                     continue
@@ -429,6 +480,12 @@ def main():
                     image_data = downloader.fetch_page_image(issue_ark, page)
                     img_cache_file.write_bytes(image_data)
                     print(f"  [SAUVEGARDE] Image haute résolution enregistrée : {img_cache_file.name}")
+                except requests.exceptions.Timeout as e:
+                    print(f"  [RÉSEAU] Timeout Gallica pour la page {page}. Page ignorée.")
+                    continue
+                except requests.exceptions.ConnectionError as e:
+                    print(f"  [RÉSEAU] Connexion Gallica perdue pour la page {page}. Page ignorée.")
+                    continue
                 except Exception as e:
                     print(f"  [ERREUR] Impossible de télécharger l'image de la page {page} : {e}")
                     continue
