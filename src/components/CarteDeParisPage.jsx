@@ -638,7 +638,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
         : routePts.length === 1 ? "Cliquez 🔴 sur la carte ou un lieu dans la liste."
         : modePerso ? 'Résultat ci-dessous. Cliquez ↺ pour recommencer.'
         : "Résultat ci-dessous. 🚀 Astuce : configurez votre propre moyen de transport via l'onglet ⚙️."
-    : !newPoiPos ? 'Saisissez une adresse ci-dessus ou cliquez sur la carte.'
+    : !newPoiPos ? ''
     : 'Remplissez les informations ci-dessous.';
 
   // ── Droits de modification du POI sélectionné ────────────────────────────
@@ -812,9 +812,11 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
           )}
 
           {/* Aide contextuelle */}
-          <div className="px-3 py-2 bg-amber-50/60 border-b border-amber-100 text-xs text-amber-800 italic leading-relaxed">
-            {hint}
-          </div>
+          {hint && (
+            <div className="px-3 py-2 bg-amber-50/60 border-b border-amber-100 text-xs text-amber-800 italic leading-relaxed">
+              {hint}
+            </div>
+          )}
 
           {/* Formulaire ajout POI */}
           {tool === 'poi' && newPoiPos && (
