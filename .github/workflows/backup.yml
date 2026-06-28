@@ -33,14 +33,21 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Installer postgresql-client-17
+      - name: Installer postgresql-client (version serveur)
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y wget ca-certificates
+          sudo apt-get install -y postgresql-client wget ca-certificates
+          # Détecter la version majeure du serveur Supabase
+          PG_MAJOR=$(psql "$SUPABASE_DB_URL" -tAc "SELECT current_setting('server_version_num')::int/10000" 2>/dev/null | tr -d ' ')
+          echo "→ PostgreSQL serveur : v${PG_MAJOR}"
+          # Installer le client pgdg correspondant
           wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
           echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update -qq
-          sudo apt-get install -y postgresql-client-17
+          sudo apt-get install -y "postgresql-client-${PG_MAJOR}"
+          pg_dump --version
 
       - name: Installer dépendances Node
         working-directory: main_repo
@@ -55,9 +62,6 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           mkdir -p db-dumps db-schemas
           export PGSSLMODE=require
-          # GitHub Actions n'a pas de route IPv6 vers Supabase — forcer IPv4
-          export PGHOSTADDR=$(getent ahostsv4 db.cijtzdfwrmbftmwookac.supabase.co | awk 'NR==1{print $1}')
-          echo "→ Connexion IPv4 : $PGHOSTADDR"
 
           # pg_dump accepte une URL directement — pas besoin de parser avec sed
           pg_dump --dbname="$SUPABASE_DB_URL" \
