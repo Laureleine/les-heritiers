@@ -166,8 +166,8 @@ export default function StepPouvoirs() {
                                     {currentFeerie > baseFeerie && (
                                         <button onClick={() => handleDowngradeStat('feerie')} className="text-xs text-red-600 hover:bg-red-50 px-2 py-1 rounded border border-red-200 transition-colors flex items-center gap-1"><Minus size={12}/> Annuler</button>
                                     )}
-                                    {currentFeerie < 8 && xpDispo >= getFeerieCost(currentFeerie) && (
-                                        <button onClick={() => handleUpgradeStat('feerie')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2 py-1 rounded border border-indigo-300 font-bold transition-colors flex items-center gap-1"><Plus size={12}/> Améliorer ({getFeerieCost(currentFeerie)} XP)</button>
+                                    {currentFeerie < 8 && (
+                                        <button onClick={() => handleUpgradeStat('feerie')} disabled={xpDispo < getFeerieCost(currentFeerie)} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2 py-1 rounded border border-indigo-300 font-bold transition-colors flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed"><Plus size={12}/> Améliorer ({getFeerieCost(currentFeerie)} XP)</button>
                                     )}
                                 </div>
                             )}
@@ -187,8 +187,8 @@ export default function StepPouvoirs() {
                                     {currentMasque > baseMasque && (
                                         <button onClick={() => handleDowngradeStat('masque')} className="text-xs text-red-600 hover:bg-red-50 px-2 py-1 rounded border border-red-200 transition-colors flex items-center gap-1"><Minus size={12}/> Annuler</button>
                                     )}
-                                    {currentMasque < 10 && xpDispo >= getCaracCost(currentMasque) && (
-                                        <button onClick={() => handleUpgradeStat('masque')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2 py-1 rounded border border-indigo-300 font-bold transition-colors flex items-center gap-1"><Plus size={12}/> Améliorer ({getCaracCost(currentMasque)} XP)</button>
+                                    {currentMasque < 10 && (
+                                        <button onClick={() => handleUpgradeStat('masque')} disabled={xpDispo < getCaracCost(currentMasque)} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-2 py-1 rounded border border-indigo-300 font-bold transition-colors flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed"><Plus size={12}/> Améliorer ({getCaracCost(currentMasque)} XP)</button>
                                     )}
                                 </div>
                             )}
