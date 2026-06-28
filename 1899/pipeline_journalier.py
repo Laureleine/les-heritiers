@@ -84,16 +84,19 @@ def run_step_1_ocr(date_str):
         
     cmd = [sys.executable, str(ocr_script), "--date", date_str, "--method", "api"]
     try:
-        subprocess.run(cmd, check=True, timeout=180)
+        subprocess.run(cmd, check=True, timeout=300)
         print("✅ Étape 1 complétée avec succès.", flush=True)
         return True
     except subprocess.TimeoutExpired:
-        print(f"⏰ Étape 1 a expiré après 180s.")
+        print(f"⏰ Étape 1 a expiré après 300s.")
         return False
     except subprocess.CalledProcessError as e:
         if e.returncode == 2:
             print(f"⚠️ Date absente de Gallica : {date_str}")
             return "not_found"
+        if e.returncode == 3:
+            print(f"⚠️ Gallica injoignable (réseau). Réessaie plus tard.")
+            return "network_error"
         print(f"❌ Échec de l'étape 1 : {e}")
         return False
 
@@ -649,8 +652,11 @@ def main():
     if success == "not_found":
         print("⚠️ Date non disponible sur Gallica, pipeline ignoré.")
         sys.exit(2)
+    if success == "network_error":
+        print("❌ Gallica est momentanément inaccessible. Lance le pipeline plus tard.")
+        sys.exit(3)
     if not success:
-        print("❌ Le pipeline s'est arrêté à l'Étape 1.")
+        print("❌ Le pipeline s'est arrêté à l'Étape 1 (cause inconnue). Réessaie avec --date.")
         sys.exit(1)
         
     # Détermination de la passe courante
@@ -711,7 +717,11 @@ def main():
             pass_count = 0
             force_new_pass = True
             # Relancer l'OCR car cleanup a supprimé les fichiers OCR
-            if not run_step_1_ocr(date_str):
+            ocr_result = run_step_1_ocr(date_str)
+            if ocr_result == "network_error":
+                print("❌ Gallica injoignable après nettoyage. Réessaie plus tard.")
+                sys.exit(3)
+            if ocr_result != True:
                 print("❌ Le pipeline s'est arrêté lors de la reprise de l'Étape 1 après nettoyage.")
                 sys.exit(1)
         else:
