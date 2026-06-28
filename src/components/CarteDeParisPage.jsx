@@ -188,7 +188,7 @@ function PanesController({ mode, sliderPos }) {
 
 // ─── Formulaire POI (ajout + édition) ────────────────────────────────────────
 
-function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isSA, submitLabel = 'Épingler', onPositionChange }) {
+function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isSA, submitLabel = 'Épingler', onPositionChange, showAddress = true }) {
   const linkedType = POI_TYPES[form.type]?.linkedType;
   const entityList = linkedType === 'character' ? linkedEntities.characters : linkedType === 'cercle' ? linkedEntities.cercles : [];
   const visibiliteOptions = isSA
@@ -214,8 +214,8 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isS
 
   return (
     <div className="space-y-2">
-      {/* Adresse avec géocodage */}
-      <div>
+      {/* Adresse avec géocodage — visible uniquement en mode édition */}
+      {showAddress && <div>
         <div className="flex gap-1.5">
           <input
             type="text" placeholder="Adresse (ex: 38 rue Madame)"
@@ -253,7 +253,7 @@ function PoiForm({ form, onChange, onSave, onCancel, saving, linkedEntities, isS
             })}
           </div>
         )}
-      </div>
+      </div>}
       {/* Nom */}
       <input
         type="text" placeholder="Nom du lieu *" value={form.nom}
@@ -825,7 +825,7 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
                 form={newPoiForm} onChange={setNewPoiForm}
                 onSave={handleAddPoi} onCancel={() => setNewPoiPos(null)}
                 saving={saving} linkedEntities={linkedEntities} isSA={isSA}
-                submitLabel="Épingler"
+                submitLabel="Épingler" showAddress={false}
                 onPositionChange={(lat, lng) => { setNewPoiPos({ lat, lng }); setFlyTo([lat, lng]); }}
               />
             </div>
