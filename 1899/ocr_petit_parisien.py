@@ -256,7 +256,10 @@ class GallicaDownloader:
         self.output_dir = output_dir
         self.session = requests.Session()
         self.session.headers.update({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+            "Referer": "https://gallica.bnf.fr/",
         })
         
     def resolve_issue_ark(self, serial_ark: str, date_str: str) -> str:
@@ -289,7 +292,14 @@ class GallicaDownloader:
                 continue
             except requests.exceptions.HTTPError as e:
                 status = e.response.status_code if e.response is not None else 0
-                if status >= 500 and attempt < 2:
+                if status == 403 and attempt < 2:
+                    # 403 peut être un rate-limit temporaire de Gallica
+                    last_exc = e
+                    wait = 30 * (2 ** attempt)
+                    print(f"  ⏳ Gallica 403 (tentative {attempt + 1}/3), attente {wait}s...")
+                    time.sleep(wait)
+                    continue
+                elif status >= 500 and attempt < 2:
                     last_exc = e
                     wait = 5 * (2 ** attempt)
                     print(f"  ⏳ Tentative {attempt + 1}/3 erreur {status}, nouvelle tentative dans {wait}s...")

@@ -309,6 +309,10 @@ def main():
         elif returncode == 2:
             print(f"\nDate absente de Gallica : {date_str}. Ignoree et marquee indisponible.")
             mark_date_unavailable(date_str)
+        elif "403" in error_text or "Forbidden" in error_text:
+            print(f"\n🌐 Gallica bloque l'acces (403) pour {date_str}. Arret du batch.")
+            print("   Lance a nouveau le batch plus tard.")
+            sys.exit(0)
         elif returncode == 3 or ("gallica" in error_text.lower() and ("timeout" in error_text.lower()
                                 or "connexion" in error_text.lower() or "injoignable" in error_text.lower()
                                 or "inaccessible" in error_text.lower())):
