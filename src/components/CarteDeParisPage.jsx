@@ -748,7 +748,6 @@ export default function CarteDeParisPage({ onBack, userProfile, session }) {
 
           {/* Outils */}
           <div className="p-3 border-b border-amber-100 space-y-1">
-            <p className="text-xs font-bold text-amber-800/50 uppercase tracking-widest mb-2">Outils</p>
             {[
               { id: 'vue',        emoji: '🗺️', label: 'Explorer'       },
               { id: 'itineraire', emoji: '🐴', label: 'Itinéraire'      },
