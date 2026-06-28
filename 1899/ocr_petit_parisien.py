@@ -262,6 +262,30 @@ class GallicaDownloader:
             "Referer": "https://gallica.bnf.fr/",
         })
         
+    def _resolve_via_sru(self, serial_ark: str, date_str: str) -> str | None:
+        """Fallback : résout l'ARK via l'API SRU publique de Gallica."""
+        clean_date = date_str.replace("-", "")
+        params = {
+            "operation": "searchRetrieve",
+            "version": "1.2",
+            "query": f'arkPress all "{serial_ark}" and dc.date all "{clean_date}"',
+            "maximumRecords": "1",
+            "recordSchema": "dc",
+        }
+        print(f"  [SRU] Résolution via API SRU ({serial_ark} / {date_str})...")
+        try:
+            resp = self.session.get("https://gallica.bnf.fr/SRU", params=params, timeout=30)
+            resp.raise_for_status()
+            m = re.search(r'bpt6k[a-z0-9]+', resp.text)
+            if m:
+                ark = m.group(0)
+                print(f"  [SRU] ARK trouvé : {ark}")
+                return ark
+            print(f"  [SRU] Aucun ARK dans la réponse (date probablement absente).")
+        except Exception as e:
+            print(f"  [SRU] Échec : {e}")
+        return None
+
     def resolve_issue_ark(self, serial_ark: str, date_str: str) -> str:
         """Trouve l'identifiant (ARK) correspondant à une date donnée, avec retries."""
         # Format de date : YYYYMMDD ou YYYY-MM-DD
@@ -292,13 +316,15 @@ class GallicaDownloader:
                 continue
             except requests.exceptions.HTTPError as e:
                 status = e.response.status_code if e.response is not None else 0
-                if status == 403 and attempt < 2:
-                    # 403 peut être un rate-limit temporaire de Gallica
-                    last_exc = e
-                    wait = 30 * (2 ** attempt)
-                    print(f"  ⏳ Gallica 403 (tentative {attempt + 1}/3), attente {wait}s...")
-                    time.sleep(wait)
-                    continue
+                if status == 403:
+                    # L'URL de navigation retourne 403 — basculer sur l'API SRU
+                    print(f"  ⚠️  403 sur l'URL de navigation, basculement sur l'API SRU...")
+                    ark = self._resolve_via_sru(serial_ark, date_str)
+                    if ark:
+                        return ark
+                    # SRU aussi vide = date absente
+                    print(f"Date absente de Gallica : {date_str} (403 + SRU vide)")
+                    sys.exit(2)
                 elif status >= 500 and attempt < 2:
                     last_exc = e
                     wait = 5 * (2 ** attempt)
@@ -308,7 +334,7 @@ class GallicaDownloader:
                 raise
         if last_exc:
             raise last_exc
-        
+
         # Recherche du pattern de l'ARK dans l'URL de redirection
         m = re.search(r'bpt6k[a-z0-9]+', resp.url)
         if m:
