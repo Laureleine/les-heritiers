@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.23 - \"Le Passeur de Mémoires 📦📊\"",
+    date: "28 Juin 2026",
+    description: "Les souvenirs retrouvent leur demeure. Soixante-huit portraits et captures, bloqués dans l'ancienne salle des archives depuis que l'egress était épuisé, ont été transbahutés jusqu'à la nouvelle demeure de prod — les visages des Héritiers sont de retour. L'onglet Métriques, muet depuis des semaines, reprend la parole : une clause PostgreSQL ambiguë cassait silencieusement les comptages communautaires. La Carte de Paris gagne en légèreté, et la Féérie comme le Masque affichent enfin leurs boutons d'évolution en toutes circonstances.",
+    changes: [
+      "📦 **Migration des archives accomplie :** 48 portraits et 20 captures de bugs, immobilisés dans l'ancienne base de données depuis l'épuisement de l'egress, ont été rapatriés dans la base de prod. Les visages des Héritiers sont de retour sur leurs fiches.",
+      "📊 **Métriques communautaires restaurées :** L'onglet Métriques était silencieux depuis plusieurs semaines. Cause : une mise à jour PostgreSQL avait durci la résolution d'un alias dans un `GROUP BY`, cassant silencieusement la fonction `get_community_stats_detail`. Distribution des fées, profils majeurs/mineurs et activité récente sont de retour.",
+      "🗺️ **Carte de Paris allégée :** Le label « Outils » et le message d'aide ont été supprimés du panneau latéral — moins de bruit visuel, même fonctionnalité.",
+      "📍 **Ajout de lieu sans doublon :** Le champ adresse disparaît du formulaire d'ajout (il doublonnait la barre de recherche du haut). L'adresse géocodée reste disponible en mode édition dans la modale.",
+      "✨ **Féérie & Masque — boutons toujours visibles :** Les boutons « Améliorer » s'affichent désormais en permanence, simplement désactivés quand l'XP est insuffisant — comme tous les autres boutons de caractéristiques.",
+      "🧪 **364 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.22 - \"Le Cartographe Méticuleux 🧭🔍\"",
     date: "18 Juin 2026",
     description: "La Carte de Paris s'aventure au-delà de ses propres frontières : chercher une adresse n'oblige plus à rester dans les murs de la capitale, tout en gardant Paris comme terrain de prédilection par défaut. Et puisque le diable se cache dans les détails, une dizaine d'imperfections discrètes ont été polies : la liste des lieux et les épingles de la carte racontent enfin la même histoire, une suppression demande désormais confirmation, le mode de déplacement personnalisé se laisse enfin découvrir, et le panneau latéral se replie élégamment sur les petits écrans.",
