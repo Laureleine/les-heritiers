@@ -55,6 +55,9 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           mkdir -p db-dumps db-schemas
           export PGSSLMODE=require
+          # GitHub Actions n'a pas de route IPv6 vers Supabase — forcer IPv4
+          export PGHOSTADDR=$(getent ahostsv4 db.cijtzdfwrmbftmwookac.supabase.co | awk 'NR==1{print $1}')
+          echo "→ Connexion IPv4 : $PGHOSTADDR"
 
           # pg_dump accepte une URL directement — pas besoin de parser avec sed
           pg_dump --dbname="$SUPABASE_DB_URL" \
