@@ -54,21 +54,15 @@ jobs:
         run: |
           DATE=$(date +%Y-%m-%d)
           mkdir -p db-dumps db-schemas
+          export PGSSLMODE=require
 
-          USER=$(echo "$SUPABASE_DB_URL" | sed -E 's/postgresql:\/\/([^:]+):.*/\1/')
-          PASS=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*:([^@]*)@.*/\1/')
-          HOST=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*@([^:\/]+).*/\1/')
-          PORT=$(echo "$SUPABASE_DB_URL" | sed -E 's/.*:([0-9]+)\/.*/\1/')
-          DB=$(echo "$SUPABASE_DB_URL"   | sed -E 's/.*\/([^?]*).*/\1/')
-          export PGPASSWORD="$PASS"
-
-          # Dump complet restaurable via pg_restore
-          pg_dump -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" \
+          # pg_dump accepte une URL directement — pas besoin de parser avec sed
+          pg_dump --dbname="$SUPABASE_DB_URL" \
             --no-owner --no-privileges \
             -Fc -f "db-dumps/full_${DATE}.dump"
 
           # Schéma lisible pour audit et diff
-          pg_dump -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" \
+          pg_dump --dbname="$SUPABASE_DB_URL" \
             --schema-only --no-owner --no-privileges \
             -f "db-schemas/schema_${DATE}.sql"
 
