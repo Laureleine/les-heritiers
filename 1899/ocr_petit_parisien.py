@@ -263,7 +263,10 @@ class GallicaDownloader:
         })
         
     def _resolve_via_sru(self, serial_ark: str, date_str: str) -> str | None:
-        """Fallback : résout l'ARK via l'API SRU publique de Gallica."""
+        """Fallback : résout l'ARK via l'API SRU publique de Gallica.
+        Lève requests.exceptions.HTTPError si Gallica bloque (403/5xx).
+        Retourne None uniquement si la réponse est OK mais la date absente.
+        """
         clean_date = date_str.replace("-", "")
         params = {
             "operation": "searchRetrieve",
@@ -273,17 +276,14 @@ class GallicaDownloader:
             "recordSchema": "dc",
         }
         print(f"  [SRU] Résolution via API SRU ({serial_ark} / {date_str})...")
-        try:
-            resp = self.session.get("https://gallica.bnf.fr/SRU", params=params, timeout=30)
-            resp.raise_for_status()
-            m = re.search(r'bpt6k[a-z0-9]+', resp.text)
-            if m:
-                ark = m.group(0)
-                print(f"  [SRU] ARK trouvé : {ark}")
-                return ark
-            print(f"  [SRU] Aucun ARK dans la réponse (date probablement absente).")
-        except Exception as e:
-            print(f"  [SRU] Échec : {e}")
+        resp = self.session.get("https://gallica.bnf.fr/SRU", params=params, timeout=30)
+        resp.raise_for_status()  # propage 403/5xx à l'appelant
+        m = re.search(r'bpt6k[a-z0-9]+', resp.text)
+        if m:
+            ark = m.group(0)
+            print(f"  [SRU] ARK trouvé : {ark}")
+            return ark
+        print(f"  [SRU] Aucun ARK dans la réponse (date absente de Gallica).")
         return None
 
     def resolve_issue_ark(self, serial_ark: str, date_str: str) -> str:
