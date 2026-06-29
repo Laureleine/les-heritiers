@@ -124,7 +124,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
         } />
         <Route path="/actualite" element={<Actualite onBack={() => navigate('/outils')} userProfile={userProfile} />} />
         <Route path="/carte" element={<CarteDeParisPage onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
-        <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} />} />
+        <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
