@@ -21,6 +21,7 @@ const CarteDeParisPage = lazy(() => import('./components/CarteDeParisPage'));
 const CharacterList = lazy(() => import('./components/CharacterList'));
 const PixieAssistant = lazy(() => import('./components/PixieAssistant'));
 const PnjGenerateur = lazy(() => import('./components/PnjGenerateur'));
+const OutilsHub = lazy(() => import('./components/OutilsHub'));
 
 export default function AppRouter({ session, userProfile, refreshUserProfile }) {
   const { character, dispatchCharacter, setIsReadOnly } = useCharacter();
@@ -64,9 +65,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
               onOpenAdmin={() => navigate('/admin_dashboard')}
               onOpenCercles={() => navigate('/cercles')}
               onOpenBureau={() => navigate('/bureau_anomalies')}
-              onOpenActualite={() => navigate('/actualite')}
-              onOpenCarte={() => navigate('/carte')}
-              onOpenGenerateur={() => navigate('/generateur')}
+              onOpenOutils={() => navigate('/outils')}
             />
             {userProfile?.profile?.show_pixie !== false && (
               <PixieAssistant character={character || {}} session={session} fairyData={gameData?.fairyData} />
@@ -115,9 +114,17 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
         <Route path="/mes_propositions" element={<MesPropositions session={session} onBack={() => navigate('/encyclopedia')} />} />
         <Route path="/bureau_anomalies" element={<RegistrePage onBack={() => navigate('/')} userProfile={userProfile} />} />
         <Route path="/creator" element={<CharacterCreator session={session} userProfile={userProfile} />} />
-        <Route path="/actualite" element={<Actualite onBack={() => navigate('/')} userProfile={userProfile} />} />
-        <Route path="/carte" element={<CarteDeParisPage onBack={() => navigate('/')} userProfile={userProfile} session={session} />} />
-        <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/')} userProfile={userProfile} />} />
+        <Route path="/outils" element={
+          <OutilsHub
+            onBack={() => navigate('/')}
+            onOpenActualite={() => navigate('/actualite')}
+            onOpenCarte={() => navigate('/carte')}
+            onOpenGenerateur={() => navigate('/generateur')}
+          />
+        } />
+        <Route path="/actualite" element={<Actualite onBack={() => navigate('/outils')} userProfile={userProfile} />} />
+        <Route path="/carte" element={<CarteDeParisPage onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
+        <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
