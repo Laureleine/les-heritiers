@@ -1,7 +1,7 @@
 // src/components/CharacterList.js
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Search, AlertTriangle, CheckCircle, Map, Dices, Wrench, ChevronDown } from '../config/icons';
+import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Search, AlertTriangle, CheckCircle, Map, Dices, Wrench } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
@@ -111,59 +111,11 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
   );
 }
 
-// ─── MENU DÉROULANT OUTILS ───────────────────────────────────────────────────
-
-function OutilsMenu({ onOpenActualite, onOpenCarte, onOpenGenerateur }) {
-  const [open, setOpen] = React.useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  const items = [
-    { label: 'Actualité',   icon: <Globe size={14} />,  action: onOpenActualite,  title: 'Consulter la Gazette de l\'époque (1899)' },
-    { label: 'Carte',       icon: <Map size={14} />,    action: onOpenCarte,      title: 'Explorer la carte de Paris 1900' },
-    { label: 'Générateur',  icon: <Dices size={14} />,  action: onOpenGenerateur, title: 'Générer un personnage non-joueur aléatoire' },
-  ];
-
-  return (
-    <div ref={ref} className="relative flex-shrink-0">
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-stone-100 text-stone-800 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm"
-        title="Outils"
-      >
-        <Wrench size={14} />
-        <span className="hidden lg:inline">Outils</span>
-        <ChevronDown size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-
-      {open && (
-        <div className="absolute left-0 top-full mt-1 z-50 bg-white border border-stone-200 rounded-xl shadow-lg py-1 min-w-[140px]">
-          {items.map(({ label, icon, action, title }) => (
-            <button
-              key={label}
-              onClick={() => { action(); setOpen(false); }}
-              title={title}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm font-serif font-bold text-stone-700 hover:bg-stone-50 transition-colors"
-            >
-              {icon} {label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenActualite, onOpenCarte, onOpenGenerateur, profils = [], userProfile, gameData, session }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenOutils, profils = [], userProfile, gameData, session }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
@@ -584,11 +536,9 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
           <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={14} /> <span className="hidden lg:inline">Encyclopédie</span>
           </button>
-          <OutilsMenu
-            onOpenActualite={onOpenActualite}
-            onOpenCarte={onOpenCarte}
-            onOpenGenerateur={onOpenGenerateur}
-          />
+          <button onClick={onOpenOutils} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-stone-100 text-stone-800 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Outils du Maître de Jeu">
+            <Wrench size={14} /> <span className="hidden lg:inline">Outils</span>
+          </button>
           <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
             <Users size={14} /> <span className="hidden lg:inline">Cercles</span>
           </button>
