@@ -1,4 +1,35 @@
-﻿# REX — Session 29 Juin 2026 (suite) — v17.4.25 « La Bourse des Silhouettes »
+﻿# REX — Session 29 Juin 2026 (suite) — v17.4.26 « Le Prisme des Âmes »
+
+## Ce qui a été livré
+
+1. **Annotations pnjTables.js** : 85 traits + motivations + secrets + comportements convertis en objets `{m, f?, p}`. Formes féminines ajoutées partout où elles diffèrent. Codes de polarité `l2/l1/n/d1/d2` sur les entrées non-neutres.
+2. **`resolveText(entry, sexe)` + `getPolarity(entry)`** : deux helpers exportés depuis pnjTables.js.
+3. **`pnjGenerator.js` — score** : `computePolariteScore()` calcule la jauge 1-10. Formule `Math.round(5 + (sum / max) * 4.5)`.
+4. **`PnjGenerateur.jsx` — EntryCell** : dots ●/●● émeraude (clair) à gauche, rose (sombre) à droite. Bouton edit au survol.
+5. **`PnjGenerateur.jsx` — AccordionTable** : grille 2 colonnes zèbre, formulaire avec sélecteur de polarité + mode correction pré-rempli.
+6. **`PnjGenerateur.jsx` — TabTables** : slider Masculin/Féminin, `genderView` passé à chaque accordéon.
+7. **`PnjGenerateur.jsx` — jauge** : barre colorée 1-10 sous les attributs du PNJ généré.
+8. **`usePnjTableEntries.js`** : select + insert + groupApproved mis à jour pour le champ `polarity`.
+9. **Migration SQL** : colonne `polarity TEXT DEFAULT 'n' CHECK (...)` ajoutée via `migrate_add_polarity.js`.
+
+## Règles apprises / confirmées
+
+- **Format entrées pnjTables** : 4 formes — `"string"`, `{m}`, `{m, f}`, `{m, f?, p}`. Toujours résoudre via `resolveText()`.
+- **Double-appel de fonction** : `f(g()) ?? g()` appelle `g()` deux fois → valeurs différentes. Pré-calculer dans une variable.
+- **Dédoublonnage objets** : utiliser `findIndex` avec `resolveText` (pas `indexOf` qui compare les références).
+- **`getPolarity()` sur l'objet brut** : utiliser `rawTraits`, `rawMotivation`, etc., pas les strings résolues.
+- **Migration depuis le repo principal** : copier le script ou l'exécuter depuis le repo pour hériter de `.env`.
+- **`git rm` avant merge** : si un fichier untracked dans main a le même chemin qu'un nouveau fichier du worktree, merge échoue.
+- **`Edit` nécessite un `Read` préalable** même si le fichier vient d'être créé dans la session courante.
+
+## Pièges évités
+
+- `pnjVersPayloadFigure` reçoit des strings, pas des objets `{m, f}` → résoudre à la génération, pas à l'affichage.
+- `comportement` pré-calculé avant l'objet pnj pour éviter un double tirage aléatoire.
+
+---
+
+# REX — Session 29 Juin 2026 (suite) — v17.4.25 « La Bourse des Silhouettes »
 
 ## Ce qui a été livré
 
