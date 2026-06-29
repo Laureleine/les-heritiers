@@ -1,6 +1,6 @@
 // src/components/PnjGenerateur.jsx
 import React, { useState, useCallback } from 'react';
-import { ArrowLeft, Dices, Wand2, Save, RotateCcw, ChevronDown } from '../config/icons';
+import { ArrowLeft, Dices, Wand2, Save, RotateCcw, ChevronDown, Plus, Clock, CheckCircle, XCircle } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { genererPnj, rerollChamp, pnjVersPayloadFigure } from '../utils/pnjGenerator';
 import {
@@ -8,6 +8,25 @@ import {
   SITUATIONS_MATRIMONIALES, SITUATIONS_FAMILIALES,
   accordLabel,
 } from '../data/pnjTables';
+import { usePnjTableEntries } from '../hooks/usePnjTableEntries';
+
+const TABLE_LABELS = {
+  traits: 'Trait de caractère',
+  apparences: 'Apparence',
+  motivations: 'Motivation',
+  secrets: 'Secret',
+  phobies: 'Peur / Phobie',
+  hobbies: 'Passion / Passe-temps',
+  comportements: 'Comportement distinctif',
+  metiers: 'Métier',
+};
+
+const TRANCHE_LABELS = {
+  jeune: '18–30 ans',
+  adulte: '31–50 ans',
+  mur: '51–70 ans',
+  age: '71+ ans',
+};
 
 // ─── SOUS-COMPOSANTS ─────────────────────────────────────────────────────────
 
@@ -58,9 +77,160 @@ function ChampPnj({ label, valeur, onReroll, multiline = false, accent = 'stone'
   );
 }
 
+// ─── FORMULAIRE DE PROPOSITION ───────────────────────────────────────────────
+
+function FormulaireProposition({ proposer, submitting, myProposals }) {
+  const [open, setOpen] = useState(false);
+  const [tableName, setTableName] = useState('traits');
+  const [trancheAge, setTrancheAge] = useState('adulte');
+  const [valueM, setValueM] = useState('');
+  const [gendered, setGendered] = useState(false);
+  const [valueF, setValueF] = useState('');
+  const [msg, setMsg] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!valueM.trim()) return;
+    const { error } = await proposer({
+      tableName,
+      trancheAge,
+      valueM: valueM.trim(),
+      valueF: gendered && valueF.trim() ? valueF.trim() : null,
+    });
+    if (error) {
+      setMsg(`Erreur : ${error.message}`);
+    } else {
+      setMsg('Proposition soumise — un Gardien la validera bientôt.');
+      setValueM('');
+      setValueF('');
+      setGendered(false);
+    }
+  };
+
+  const inputCls = 'w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm font-serif text-stone-800 focus:ring-2 focus:ring-amber-200 focus:border-amber-400 outline-none shadow-sm transition-all';
+  const selectCls = `${inputCls} appearance-none`;
+
+  const statusIcon = (status) => {
+    if (status === 'pending') return <Clock size={13} className="text-amber-500" />;
+    if (status === 'rejected') return <XCircle size={13} className="text-red-500" />;
+    return <CheckCircle size={13} className="text-emerald-500" />;
+  };
+
+  return (
+    <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-stone-50 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <Plus size={15} className="text-amber-700" />
+          <span className="text-sm font-bold font-serif text-stone-700">Proposer une entrée de table</span>
+        </div>
+        <ChevronDown size={14} className={`text-stone-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="px-5 pb-5 border-t border-stone-100 pt-4 space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-1">Table</label>
+                <select value={tableName} onChange={e => setTableName(e.target.value)} className={selectCls}>
+                  {Object.entries(TABLE_LABELS).map(([id, label]) => (
+                    <option key={id} value={id}>{label}</option>
+                  ))}
+                </select>
+              </div>
+              {tableName === 'metiers' && (
+                <div>
+                  <label className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-1">Tranche</label>
+                  <select value={trancheAge} onChange={e => setTrancheAge(e.target.value)} className={selectCls}>
+                    {Object.entries(TRANCHE_LABELS).map(([id, label]) => (
+                      <option key={id} value={id}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                {gendered ? 'Forme masculine' : 'Texte de l\'entrée'}
+              </label>
+              <input
+                value={valueM}
+                onChange={e => setValueM(e.target.value)}
+                placeholder={gendered ? 'ex. : détective privé' : 'ex. : collectionneur de fossiles'}
+                className={inputCls}
+                required
+              />
+            </div>
+
+            <label className="flex items-center gap-2 text-sm text-stone-600 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={gendered}
+                onChange={e => setGendered(e.target.checked)}
+                className="rounded border-stone-300 text-amber-600 focus:ring-amber-300"
+              />
+              Forme féminine différente
+            </label>
+
+            {gendered && (
+              <div>
+                <label className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-1">Forme féminine</label>
+                <input
+                  value={valueF}
+                  onChange={e => setValueF(e.target.value)}
+                  placeholder="ex. : détective privée"
+                  className={inputCls}
+                />
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={submitting || !valueM.trim()}
+              className="w-full py-2 px-4 rounded-lg bg-amber-700 hover:bg-amber-800 text-amber-50 font-bold font-serif text-sm transition-all disabled:opacity-60"
+            >
+              {submitting ? 'Envoi…' : 'Proposer cette entrée'}
+            </button>
+
+            {msg && (
+              <p className={`text-sm font-serif text-center ${msg.startsWith('Erreur') ? 'text-red-600' : 'text-emerald-700'}`}>
+                {msg}
+              </p>
+            )}
+          </form>
+
+          {myProposals.length > 0 && (
+            <div className="border-t border-stone-100 pt-4">
+              <p className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Mes propositions</p>
+              <div className="space-y-1.5">
+                {myProposals.map(p => (
+                  <div key={p.id} className="flex items-start gap-2 text-sm">
+                    <span className="mt-0.5 flex-shrink-0">{statusIcon(p.status)}</span>
+                    <div className="flex-1 min-w-0">
+                      <span className="font-serif text-stone-700">{p.value_m}{p.value_f ? ` / ${p.value_f}` : ''}</span>
+                      <span className="ml-2 text-xs text-stone-400">{TABLE_LABELS[p.table_name]}{p.tranche_age ? ` · ${TRANCHE_LABELS[p.tranche_age]}` : ''}</span>
+                      {p.status === 'rejected' && p.reject_reason && (
+                        <p className="text-xs text-red-500 mt-0.5">{p.reject_reason}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── COMPOSANT PRINCIPAL ─────────────────────────────────────────────────────
 
-export default function PnjGenerateur({ onBack, userProfile }) {
+export default function PnjGenerateur({ onBack, userProfile, session }) {
   const [mode, setMode] = useState('reel');
   const [typeFee, setTypeFee] = useState(null);
   const [options, setOptions] = useState({
@@ -73,6 +243,8 @@ export default function PnjGenerateur({ onBack, userProfile }) {
   const [savedMsg, setSavedMsg] = useState(null);
   const [genKey, setGenKey] = useState(0);
 
+  const { dbEntries, myProposals, submitting, proposer } = usePnjTableEntries(session);
+
   // Liste des types de fées depuis la base (chargée une seule fois)
   const [fairyTypes, setFairyTypes] = useState([]);
   React.useEffect(() => {
@@ -82,16 +254,16 @@ export default function PnjGenerateur({ onBack, userProfile }) {
   }, []);
 
   const handleGenerer = useCallback(() => {
-    const nouveau = genererPnj({ mode, typeFee, ...options });
+    const nouveau = genererPnj({ mode, typeFee, ...options }, dbEntries);
     setPnj(nouveau);
     setSavedMsg(null);
     setGenKey(k => k + 1);
-  }, [mode, typeFee, options]);
+  }, [mode, typeFee, options, dbEntries]);
 
   const handleReroll = useCallback((champ) => {
     if (!pnj) return;
-    setPnj(prev => rerollChamp(prev, champ));
-  }, [pnj]);
+    setPnj(prev => rerollChamp(prev, champ, dbEntries));
+  }, [pnj, dbEntries]);
 
   const handleSauvegarder = async () => {
     if (!pnj) return;
@@ -400,6 +572,17 @@ export default function PnjGenerateur({ onBack, userProfile }) {
                 {savedMsg}
               </p>
             )}
+          </div>
+        )}
+
+        {/* Proposer une entrée (utilisateurs connectés, mode réel seulement) */}
+        {session?.user && mode === 'reel' && (
+          <div className="mt-6">
+            <FormulaireProposition
+              proposer={proposer}
+              submitting={submitting}
+              myProposals={myProposals}
+            />
           </div>
         )}
       </div>

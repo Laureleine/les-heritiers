@@ -13,23 +13,31 @@ import {
 } from '../data/pnjTables';
 
 // Tables optionnelles (mode Réel seulement)
-function getPhobie(mode)      { return mode === 'reel' ? tirage(TABLES_REEL.phobies)      : null; }
-function getHobby(mode)       { return mode === 'reel' ? tirage(TABLES_REEL.hobbies)      : null; }
-function getComportement(mode){ return mode === 'reel' ? tirage(TABLES_REEL.comportements): null; }
+function getPhobie(mode, db = {})       { return mode === 'reel' ? tirage(merge(TABLES_REEL.phobies,       db, 'phobies'))       : null; }
+function getHobby(mode, db = {})        { return mode === 'reel' ? tirage(merge(TABLES_REEL.hobbies,       db, 'hobbies'))       : null; }
+function getComportement(mode, db = {}) { return mode === 'reel' ? tirage(merge(TABLES_REEL.comportements, db, 'comportements')) : null; }
 
 // Retourne le pool de secrets adapté au métier (chaînage), ou le pool général en fallback.
-function getSecret(mode, metier) {
-  if (mode !== 'reel' || !metier) return tirage(TABLES_REEL.secrets);
+// generalPool = TABLES_REEL.secrets + entrées DB approuvées
+function getSecret(mode, metier, generalPool) {
+  const pool = generalPool || TABLES_REEL.secrets;
+  if (mode !== 'reel' || !metier) return tirage(pool);
   const m = metier.toLowerCase();
   for (const cat of Object.values(SECRETS_PAR_CATEGORIE)) {
     if (cat.mots.some(mot => m.includes(mot))) {
-      // 60 % chance de piocher dans le pool thématique, 40 % dans le pool général
-      // (évite que le secret soit toujours trop prévisible)
-      const pool = Math.random() < 0.6 ? cat.secrets : TABLES_REEL.secrets;
-      return tirage(pool);
+      const thematic = Math.random() < 0.6 ? cat.secrets : pool;
+      return tirage(thematic);
     }
   }
-  return tirage(TABLES_REEL.secrets);
+  return tirage(pool);
+}
+
+// ─── MERGE DB + HARDCODÉ ─────────────────────────────────────────────────────
+
+// Concatène les entrées Supabase approuvées au pool hardcodé.
+// dbEntries est indexé par 'traits', 'apparences', 'metiers_jeune', etc.
+function merge(hardcoded, dbEntries, key) {
+  return dbEntries && dbEntries[key] ? [...hardcoded, ...dbEntries[key]] : hardcoded;
 }
 
 // ─── HELPERS INTERNES ────────────────────────────────────────────────────────
@@ -56,9 +64,10 @@ function getNom(mode, nationalite, typeFee) {
   return tirage(tableNat.noms);
 }
 
-function getMetier(mode, trancheAge, typeFee, sexe) {
+function getMetier(mode, trancheAge, typeFee, sexe, dbEntries = {}) {
   if (mode === 'merveilleux') return tirage(tableMerveilleux(typeFee, 'metiers'));
-  const table = METIERS_PAR_TRANCHE_AGE[trancheAge] || METIERS_PAR_TRANCHE_AGE.adulte;
+  const hardcoded = METIERS_PAR_TRANCHE_AGE[trancheAge] || METIERS_PAR_TRANCHE_AGE.adulte;
+  const table = merge(hardcoded, dbEntries, `metiers_${trancheAge}`);
   return resolveMetier(tirage(table), sexe);
 }
 
@@ -92,7 +101,7 @@ function corrigerCoherence(pnj) {
  * @param {string|null} options.situationMatrimoniale
  * @param {string|null} options.situationFamiliale
  */
-export function genererPnj(options = {}) {
+export function genererPnj(options = {}, dbEntries = {}) {
   const {
     mode = 'reel',
     typeFee = null,
@@ -111,23 +120,25 @@ export function genererPnj(options = {}) {
 
   const tables = mode === 'merveilleux' ? TABLES_MERVEILLEUX : TABLES_REEL;
 
-  // Motivation : pool enrichi pour les veufs
-  const poolMotivations = (situationMatrimoniale === 'veuf' && mode === 'reel')
+  // Motivation : pool enrichi pour les veufs + entrées DB
+  const baseMotivations = (situationMatrimoniale === 'veuf' && mode === 'reel')
     ? [...TABLES_REEL.motivations, ...TABLES_REEL.motivationsVeuf]
     : tables.motivations;
+  const poolMotivations = merge(baseMotivations, dbEntries, 'motivations');
 
   const prenom  = getPrenom(sexe, mode, nationalite, typeFee);
   const nom     = getNom(mode, nationalite, typeFee);
   const titre   = tirage(mode === 'merveilleux' ? tableMerveilleux(typeFee, 'titres') : TABLES_REEL.titres);
-  const metier  = getMetier(mode, trancheAge, typeFee, sexe);
+  const metier  = getMetier(mode, trancheAge, typeFee, sexe, dbEntries);
   // Distribution en cloche sur les traits (neutre > extrêmes), comme le d4+d10 de CC
-  const traitPool = tableMerveilleux(typeFee, 'traits') || tables.traits;
+  const traitPool = merge(tableMerveilleux(typeFee, 'traits') || tables.traits, dbEntries, 'traits');
   const traits  = [tirageCloche(traitPool), tirageCloche(traitPool)].filter((v, i, a) => a.indexOf(v) === i);
-  const apparence = tirage(tableMerveilleux(typeFee, 'apparences') || tables.apparences);
+  const apparence  = tirage(merge(tableMerveilleux(typeFee, 'apparences') || tables.apparences, dbEntries, 'apparences'));
   const motivation = tirage(poolMotivations);
   const relation   = tirage(tables.relations);
   const lieu       = tirage(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
-  const secret     = mode === 'reel' ? getSecret(mode, metier) : tirage(tables.secrets);
+  const baseSecrets = merge(TABLES_REEL.secrets, dbEntries, 'secrets');
+  const secret     = mode === 'reel' ? getSecret(mode, metier, baseSecrets) : tirage(tables.secrets);
 
   // Champs spécifiques au mode merveilleux
   const apparenceMasquee   = mode === 'merveilleux' ? tirage(TABLES_MERVEILLEUX.apparencesMasquees) : null;
@@ -151,9 +162,9 @@ export function genererPnj(options = {}) {
     relation,
     lieu,
     secret,
-    phobie:       getPhobie(mode),
-    hobby:        getHobby(mode),
-    comportement: getComportement(mode),
+    phobie:       getPhobie(mode, dbEntries),
+    hobby:        getHobby(mode, dbEntries),
+    comportement: getComportement(mode, dbEntries),
     apparenceMasquee,
     apparenceDemasquee,
     sexe,
@@ -173,7 +184,7 @@ export function genererPnj(options = {}) {
  * @param {Object} pnj - PNJ actuel
  * @param {string} champ - Nom du champ à retirer
  */
-export function rerollChamp(pnj, champ) {
+export function rerollChamp(pnj, champ, dbEntries = {}) {
   const { mode, typeFee, trancheAge, situationMatrimoniale, nationalite } = pnj;
   const tables = mode === 'merveilleux' ? TABLES_MERVEILLEUX : TABLES_REEL;
 
@@ -189,21 +200,21 @@ export function rerollChamp(pnj, champ) {
       valeur = tirage(mode === 'merveilleux' ? tableMerveilleux(typeFee, 'titres') : TABLES_REEL.titres);
       break;
     case 'metier':
-      valeur = getMetier(mode, trancheAge, typeFee, pnj.sexe);
+      valeur = getMetier(mode, trancheAge, typeFee, pnj.sexe, dbEntries);
       break;
     case 'traits': {
-      const pool = tableMerveilleux(typeFee, 'traits') || tables.traits;
+      const pool = merge(tableMerveilleux(typeFee, 'traits') || tables.traits, dbEntries, 'traits');
       valeur = [tirageCloche(pool), tirageCloche(pool)].filter((v, i, a) => a.indexOf(v) === i);
       break;
     }
     case 'apparence':
-      valeur = tirage(tableMerveilleux(typeFee, 'apparences') || tables.apparences);
+      valeur = tirage(merge(tableMerveilleux(typeFee, 'apparences') || tables.apparences, dbEntries, 'apparences'));
       break;
     case 'motivation': {
-      const pool = (situationMatrimoniale === 'veuf' && mode === 'reel')
+      const base = (situationMatrimoniale === 'veuf' && mode === 'reel')
         ? [...TABLES_REEL.motivations, ...TABLES_REEL.motivationsVeuf]
         : tables.motivations;
-      valeur = tirage(pool);
+      valeur = tirage(merge(base, dbEntries, 'motivations'));
       break;
     }
     case 'relation':
@@ -213,16 +224,16 @@ export function rerollChamp(pnj, champ) {
       valeur = tirage(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
       break;
     case 'secret':
-      valeur = getSecret(mode, pnj.metier);
+      valeur = getSecret(mode, pnj.metier, merge(TABLES_REEL.secrets, dbEntries, 'secrets'));
       break;
     case 'phobie':
-      valeur = getPhobie(mode);
+      valeur = getPhobie(mode, dbEntries);
       break;
     case 'hobby':
-      valeur = getHobby(mode);
+      valeur = getHobby(mode, dbEntries);
       break;
     case 'comportement':
-      valeur = getComportement(mode);
+      valeur = getComportement(mode, dbEntries);
       break;
     case 'apparenceMasquee':
       valeur = tirage(TABLES_MERVEILLEUX.apparencesMasquees);
@@ -233,7 +244,7 @@ export function rerollChamp(pnj, champ) {
     case 'sexe': {
       const newSexe = tirage(SEXES.map(s => s.id));
       const newPrenom = getPrenom(newSexe, mode, nationalite, typeFee);
-      const newMetier = getMetier(mode, pnj.trancheAge, typeFee, newSexe);
+      const newMetier = getMetier(mode, pnj.trancheAge, typeFee, newSexe, dbEntries);
       return corrigerCoherence({ ...pnj, sexe: newSexe, prenom: newPrenom, metier: newMetier });
     }
     case 'genre':
@@ -241,7 +252,7 @@ export function rerollChamp(pnj, champ) {
       break;
     case 'trancheAge':
       valeur = tirage(TRANCHES_AGE.map(t => t.id));
-      return corrigerCoherence({ ...pnj, trancheAge: valeur, metier: getMetier(mode, valeur, typeFee, pnj.sexe) });
+      return corrigerCoherence({ ...pnj, trancheAge: valeur, metier: getMetier(mode, valeur, typeFee, pnj.sexe, dbEntries) });
     case 'nationalite': {
       const newNat = tirage(['francaise','francaise','francaise','francaise','francaise','francaise','britannique','russe','americaine','italienne','allemande','austro_hongroise']);
       const newPrenom2 = getPrenom(pnj.sexe, mode, newNat, typeFee);

@@ -1,13 +1,14 @@
 // src/components/AdminDashboard.js
 
 import React, { useState } from 'react';
-import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell } from '../config/icons';
+import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell, Dices } from '../config/icons';
 import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
 import TabUsers from './admin/TabUsers';
 import TabStats from './admin/TabStats';
 import TabForgeTitres from './admin/TabForgeTitres';
 import TabRepairJournaux from './admin/TabRepairJournaux';
 import TabNotifications from './admin/TabNotifications';
+import TabPnjPropositions from './admin/TabPnjPropositions';
 
 // ✨ FIX : On récupère userProfile depuis le routeur
 export default function AdminDashboard({ session, userProfile, onBack }) {
@@ -49,6 +50,9 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
                         <Bell size={18} /> Notifications
                     </button>
                 )}
+                <button onClick={() => setActiveTab('pnj')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'pnj' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                    <Dices size={18} /> Tables PNJ
+                </button>
             </div>
 
             {/* Contenu de l'onglet actif */}
@@ -57,6 +61,7 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
             {activeTab === 'titres' && <TabForgeTitres userProfile={userProfile} />}
             {activeTab === 'repair' && isSuperAdmin && <TabRepairJournaux />}
             {activeTab === 'notifications' && isSuperAdmin && <TabNotifications />}
+            {activeTab === 'pnj' && <TabPnjPropositions session={session} />}
         </div>
     );
 }
