@@ -1,4 +1,54 @@
-﻿# REX — Session 28 Juin 2026 — v17.4.23 « Le Passeur de Mémoires »
+﻿# REX — Session 29 Juin 2026 — v17.4.24 « L'Art de la Rencontre »
+
+## Ce qui a été livré
+
+1. **Générateur de PNJ — tables Central Casting** : 85 traits, 40 apparences, 27 motivations, 27 secrets, + phobies/hobbies/comportements (30/25/25 entrées).
+2. **Chaînage secret/métier** : 8 catégories thématiques, pool spécialisé 60% / général 40%.
+3. **tirageCloche()** : distribution triangulaire, traits équilibrés 2-3× plus fréquents que les extrêmes.
+4. **Accord grammatical du genre** : paires `{m, f}` dans les tables de métiers, `resolveMetier()` et `accordLabel()` pour la résolution.
+5. **Page hub /outils** : Gazette + Carte + Générateur regroupés, navigation allégée.
+6. **Fix RLS figures** : policy INSERT manquante bloquait la sauvegarde dans l'Encyclopédie.
+
+---
+
+## Enseignements clés
+
+### Page hub vs dropdown pour les outils
+- L'utilisatrice préfère une vraie sous-page (modèle Encyclopédie) plutôt qu'un menu déroulant pour les outils. Scalable et cohérent.
+- Quand elle dit "ça fait de la place sur la barre" → penser "page dédiée", pas "dropdown".
+
+### Tables genrées
+- Pattern `{m, f}` dans les tableaux + `resolveMetier(entry, sexe)` à la génération = propre et extensible.
+- `accordLabel(item, sexe)` pour les labels de situations : résoudre dans la couche données, pas dans le JSX.
+- Reroll du sexe → reroll automatique du prénom ET du métier (champs dépendants).
+
+### Proportionnalité Central Casting
+- `tirageCloche()` = somme de deux aléatoires divisée par 2 → distribution triangulaire.
+- Appliquer seulement sur les tables longues (traits) ; laisser les autres en uniforme.
+
+### Chaînage CC
+- Ne pas reproduire toutes les cascades — le chaînage secret/métier est le plus narrativement impactant.
+- 60% pool thématique / 40% pool général : cohérence sans prévisibilité.
+
+### RLS Supabase (rappel absolu)
+- Jamais `mcp__claude_ai_Supabase__apply_migration` ni `execute_sql` sur prod (`cijtzdfwrmbftmwookac`).
+- Toujours : script Node + `pg` + `SUPABASE_DB_URL`. Confirmer avec l'utilisatrice avant tout changement de sécurité.
+
+### Worktree
+- Éditer uniquement via le chemin du worktree (`.claude/worktrees/gallica-403-fix/`), jamais via le checkout principal.
+- Faire les merges dans l'ordre : commit worktree → push branch → `git merge --ff-only` sur main → push main.
+
+---
+
+## À surveiller / reporter
+
+- tirageCloche sur les autres tables : à réévaluer à l'usage si les PNJ semblent monotones.
+- Accord des tables Merveilleux : noms féeriques neutres par défaut, ok pour l'instant.
+- Page /outils : prévoir la prochaine feature-outil (générateur de lieux ? rumeurs ? calendrier de session ?).
+
+---
+
+# REX — Session 28 Juin 2026 — v17.4.23 « Le Passeur de Mémoires »
 
 ## Contexte
 
