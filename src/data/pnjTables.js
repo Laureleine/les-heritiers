@@ -592,6 +592,98 @@ export const TABLES_REEL = {
   ],
 };
 
+// ─── SECRETS PAR CATÉGORIE DE MÉTIER ─────────────────────────────────────────
+// Clé = mots-clés présents dans le métier (minuscules). Valeur = pool de secrets thématiques.
+// Si le métier ne correspond à aucune catégorie, on retombe sur TABLES_REEL.secrets.
+
+export const SECRETS_PAR_CATEGORIE = {
+  medical: {
+    mots: ['médecin', 'pharmacien', 'apothicaire', 'chirurgien', 'infirmier', 'sage-femme', 'dentiste', 'aliéniste'],
+    secrets: [
+      'a participé à une expérience sur des patients sans leur consentement — et les résultats ont été publiés sous son nom',
+      'prescrit des substances addictives à des patients vulnérables, en échange de leur silence sur autre chose',
+      'a maquillé en cause naturelle la mort d\'un patient due à une erreur de sa main',
+      'est lui-même dépendant à une substance qu\'il prescrit — laudanum, morphine, chloral',
+      'exerce sous des diplômes qui ne lui appartiennent pas entièrement',
+      'a vendu des informations médicales confidentielles à une compagnie d\'assurances',
+      'a réalisé des expériences sur des cadavres qui ne lui avaient pas été officiellement cédés',
+    ],
+  },
+  juridique: {
+    mots: ['avocat', 'notaire', 'juge', 'magistrat', 'commissaire', 'inspecteur', 'huissier', 'procureur'],
+    secrets: [
+      'détient dans ses archives des documents compromettants pour plusieurs de ses clients — et s\'en sert',
+      'a fait condamner un innocent et n\'a jamais eu le courage de le révéler',
+      'travaille secrètement pour une faction criminelle en leur transmettant les décisions à venir',
+      'a accepté un pot-de-vin qui a changé le cours d\'une affaire célèbre',
+      'connaît l\'identité du vrai coupable d\'un crime non résolu et se tait depuis dix ans',
+      'a détruit des pièces à conviction sur ordre d\'un supérieur — sans en comprendre encore la raison',
+    ],
+  },
+  presse: {
+    mots: ['journaliste', 'rédacteur', 'reporter', 'chroniqueur', 'critique', 'secrétaire de rédaction'],
+    secrets: [
+      'a fabriqué des témoignages pour étoffer un article qui lui a valu la célébrité — et le sait',
+      'est payé secrètement pour orienter sa plume dans un sens politique précis',
+      'a plagié l\'œuvre d\'un mort dont nul ne réclame plus les droits',
+      'possède des photographies compromettantes d\'une personnalité publique, sous clé depuis des années',
+      'son pseudonyme le plus connu cache une double vie que son entourage ne soupçonne pas',
+      'a tenu sous silence un scandale qui aurait changé le cours d\'une élection',
+    ],
+  },
+  arts: {
+    mots: ['peintre', 'sculpteur', 'compositeur', 'acteur', 'actrice', 'musicien', 'dessinateur', 'photographe', 'graveur'],
+    secrets: [
+      'l\'œuvre qui a fondé sa réputation n\'est pas de sa main',
+      'vend en secret des copies de maîtres comme des originaux, à des collectionneurs trop pressés',
+      'son mécène exige une contrepartie dont personne ne doit savoir la nature',
+      'a détruit délibérément l\'œuvre d\'un rival pour s\'assurer d\'une commande',
+      'son style "personnel" est une imitation consciente d\'un artiste mort dans l\'obscurité',
+    ],
+  },
+  occultisme: {
+    mots: ['médium', 'magnétiseur', 'occultiste', 'spiritiste', 'cartomancien', 'astrologue', 'alchimiste'],
+    secrets: [
+      'a réellement contacté quelque chose lors d\'une séance — et ça répond encore quand il ne le cherche pas',
+      'est un charlatan qui commence sincèrement à douter de l\'être',
+      'a signé un accord avec une entité dont il n\'a plus lu les clauses depuis',
+      'détient un objet qui ne devrait pas exister dans le monde matériel — et qui se déplace',
+      'sa voyance est réelle et il en a une terreur absolue',
+      'a fait du mal à quelqu\'un par une expérience dont il n\'a pas su mesurer les conséquences',
+    ],
+  },
+  commerce: {
+    mots: ['agent de change', 'banquier', 'commerçant', 'rentier', 'négociant', 'courtier', 'marchand', 'propriétaire', 'industriel'],
+    secrets: [
+      'a ruiné délibérément une famille concurrente pour racheter ses actifs au prix de la détresse',
+      'cache la faillite imminente de son affaire derrière une façade de prospérité intacte',
+      'blanchit discrètement de l\'argent pour une organisation dont il préfère ignorer la nature',
+      'a détourné des fonds en fiducie confiés par un client maintenant mort',
+      'sa fortune initiale vient d\'une source qu\'il ne pourra jamais révéler sans tout perdre',
+    ],
+  },
+  militaire: {
+    mots: ['capitaine', 'commandant', 'officier', 'général', 'lieutenant', 'sergent', 'soldat', 'militaire', 'gendarme'],
+    secrets: [
+      'a donné un ordre qui a causé des morts civils lors d\'une campagne coloniale — enterré dans les archives',
+      'travaille secrètement pour un cabinet de renseignement étranger depuis la guerre de 70',
+      'a simulé sa mort lors d\'une campagne et pris une nouvelle identité — l\'ancienne réclame',
+      'a couvert des exactions commises par ses hommes en échange de leur loyauté absolue',
+      'possède des documents militaires classifiés qui pourraient faire tomber un général',
+    ],
+  },
+  religion: {
+    mots: ['abbé', 'père', 'sœur', 'prêtre', 'pasteur', 'rabbin', 'imam', 'archiprêtre', 'diacre', 'novice'],
+    secrets: [
+      'a perdu la foi il y a des années et continue par inertie, habitude, et peur du vide',
+      'protège un membre de sa congrégation coupable d\'un crime grave',
+      'a entendu en confession quelque chose qui le ronge — et ne peut pas le dire',
+      'entretient une relation interdite par ses vœux, soigneusement dissimulée',
+      'correspond avec une organisation que sa hiérarchie condamnerait immédiatement',
+    ],
+  },
+};
+
 // ─── TABLES MERVEILLEUX ───────────────────────────────────────────────────────
 
 export const TABLES_MERVEILLEUX = {
@@ -779,6 +871,19 @@ export const SURCHARGES_TYPE_FEE = {
 export function tirage(tableau) {
   if (!tableau || tableau.length === 0) return null;
   return tableau[Math.floor(Math.random() * tableau.length)];
+}
+
+/**
+ * Tirage en cloche (distribution gaussienne approximée par somme de deux aléatoires).
+ * Les entrées au milieu du tableau sont ~2-3× plus probables que les extrêmes.
+ * Imite le d4+d10 de Central Casting.
+ */
+export function tirageCloche(tableau) {
+  if (!tableau || tableau.length === 0) return null;
+  const n = tableau.length;
+  // Somme de deux tirages uniformes → distribution triangulaire centrée
+  const i = Math.floor(((Math.random() + Math.random()) / 2) * n);
+  return tableau[Math.min(i, n - 1)];
 }
 
 /** Tire N éléments distincts dans un tableau (sans remise). */
