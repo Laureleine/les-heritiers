@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.26 - \"Le Prisme des Âmes ⚖️✨\"",
+    date: "29 Juin 2026",
+    description: "Chaque silhouette révèle désormais sa nature profonde. Les tables du Générateur s'ouvrent au masculin comme au féminin d'un simple geste, et chaque entrée porte en secret son poids — lumière ou ombre, d'un point à deux. Au tirage, ces poids se combinent en une jauge de tendance, de 1 à 10 : un personnage tout de bonté frôle le dix, un être de noirceur touche le fond, et la plupart des silhouettes de la Belle Époque se tiennent quelque part entre les deux. Pour affiner le corpus, chaque Héritier peut désormais proposer une correction d'une entrée existante, pré-remplie d'un clic.",
+    changes: [
+      "⚖️ **Polarité de chaque entrée :** Traits, motivations, secrets et comportements sont désormais codés sur une échelle à cinq niveaux — très positif, positif, neutre, négatif, très négatif. Dans les tables, un ou deux points émeraude à gauche signalent le clair, un ou deux points rose à droite le sombre. Les entrées neutres (la majorité) restent sans signe.",
+      "✨ **Jauge de tendance 1-10 :** Après chaque génération, une barre colorée indique la résultante des entrées tirées — du bordeaux sombre au vert lumineux, en passant par l'ambre équilibré. La formule favorise les extrêmes réels : un personnage entièrement positif atteint 10, un personnage entièrement négatif tombe à 1, et le centre (5) correspond à un équilibre parfait.",
+      "🌸 **Slider masculin / féminin :** En tête de l'onglet Tables, deux boutons basculent l'affichage de toutes les entrées entre leur forme masculine et féminine. Les 85 traits de caractère, les motivations, les secrets et les comportements ont reçu leurs formes féminines là où elles diffèrent.",
+      "✏️ **Corriger une entrée existante :** Un petit bouton d'édition apparaît au survol de chaque entrée. D'un clic, le formulaire se pré-remplit avec le texte et la polarité de l'entrée — la correction suit le même circuit de validation Gardien que les nouvelles propositions.",
+      "🎨 **Nouvelle présentation des tables :** La grille numérotée laisse place à deux colonnes avec alternance de fond. Les dots de polarité encadrent chaque entrée, et le survol révèle le bouton de correction.",
+      "🧪 **364 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.25 - \"La Bourse des Silhouettes 📮🗳️\"",
     date: "29 Juin 2026",
     description: "Le Générateur de PNJ ouvre ses archives au public. Tout Héritier initié peut désormais proposer une nouvelle entrée dans n'importe quelle table — un trait de caractère inédit, un secret jamais entendu, un métier oublié de la Belle Époque — et les Gardiens valident depuis leur tableau de bord avant que l'entrée rejoigne le corpus commun. Les formes masculines et féminines s'enregistrent séparément quand elles diffèrent, et les propositions refusées restent conservées avec leur motif. À chaque tirage, le générateur pioche désormais dans le corpus collectif autant que dans le corpus fondateur.",
