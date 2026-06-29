@@ -9,8 +9,22 @@ import {
   TABLES_REEL, TABLES_MERVEILLEUX, SURCHARGES_TYPE_FEE,
   SECRETS_PAR_CATEGORIE,
   tirage, tirageCloche, tirageMultiple,
-  accordLabel, resolveMetier,
+  accordLabel, resolveMetier, resolveText, getPolarity,
 } from '../data/pnjTables';
+
+const POLARITY_SCORES = { l2: 2, l1: 1, n: 0, d1: -1, d2: -2 };
+
+function computePolariteScore(polarites) {
+  const scores = [
+    ...(polarites.traits || []).map(p => POLARITY_SCORES[p] ?? 0),
+    POLARITY_SCORES[polarites.motivation] ?? 0,
+    POLARITY_SCORES[polarites.secret] ?? 0,
+    POLARITY_SCORES[polarites.comportement] ?? 0,
+  ];
+  const sum = scores.reduce((a, b) => a + b, 0);
+  const max = scores.length * 2;
+  return max > 0 ? Math.max(1, Math.min(10, Math.round(5 + (sum / max) * 4.5))) : 5;
+}
 
 // Tables optionnelles (mode Réel seulement)
 function getPhobie(mode, db = {})       { return mode === 'reel' ? tirage(merge(TABLES_REEL.phobies,       db, 'phobies'))       : null; }
@@ -132,13 +146,31 @@ export function genererPnj(options = {}, dbEntries = {}) {
   const metier  = getMetier(mode, trancheAge, typeFee, sexe, dbEntries);
   // Distribution en cloche sur les traits (neutre > extrêmes), comme le d4+d10 de CC
   const traitPool = merge(tableMerveilleux(typeFee, 'traits') || tables.traits, dbEntries, 'traits');
-  const traits  = [tirageCloche(traitPool), tirageCloche(traitPool)].filter((v, i, a) => a.indexOf(v) === i);
-  const apparence  = tirage(merge(tableMerveilleux(typeFee, 'apparences') || tables.apparences, dbEntries, 'apparences'));
-  const motivation = tirage(poolMotivations);
+  const rawTraits = [tirageCloche(traitPool), tirageCloche(traitPool)]
+    .filter((v, i, a) => a.findIndex(t => resolveText(t, sexe) === resolveText(v, sexe)) === i);
+  const traits = rawTraits.map(t => resolveText(t, sexe) || resolveText(t, 'masculin') || '');
+
+  const rawApparence  = tirage(merge(tableMerveilleux(typeFee, 'apparences') || tables.apparences, dbEntries, 'apparences'));
+  const rawMotivation = tirage(poolMotivations);
+  const apparence     = resolveText(rawApparence,  sexe) ?? rawApparence;
+  const motivation    = resolveText(rawMotivation, sexe) ?? rawMotivation;
   const relation   = tirage(tables.relations);
   const lieu       = tirage(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
-  const baseSecrets = merge(TABLES_REEL.secrets, dbEntries, 'secrets');
-  const secret     = mode === 'reel' ? getSecret(mode, metier, baseSecrets) : tirage(tables.secrets);
+  const baseSecrets  = merge(TABLES_REEL.secrets, dbEntries, 'secrets');
+  const rawSecret    = mode === 'reel' ? getSecret(mode, metier, baseSecrets) : tirage(tables.secrets);
+  const secret       = resolveText(rawSecret, sexe) ?? rawSecret;
+
+  const rawComportement = getComportement(mode, dbEntries);
+  const comportement    = resolveText(rawComportement, sexe) ?? rawComportement;
+
+  // Score de polarité (1 = très sombre → 10 = très lumineux)
+  const polarites = {
+    traits:       rawTraits.map(t => getPolarity(t)),
+    motivation:   getPolarity(rawMotivation),
+    secret:       getPolarity(rawSecret),
+    comportement: getPolarity(rawComportement),
+  };
+  const polariteScore = computePolariteScore(polarites);
 
   // Champs spécifiques au mode merveilleux
   const apparenceMasquee   = mode === 'merveilleux' ? tirage(TABLES_MERVEILLEUX.apparencesMasquees) : null;
@@ -164,7 +196,9 @@ export function genererPnj(options = {}, dbEntries = {}) {
     secret,
     phobie:       getPhobie(mode, dbEntries),
     hobby:        getHobby(mode, dbEntries),
-    comportement: getComportement(mode, dbEntries),
+    comportement,
+    polarites,
+    polariteScore,
     apparenceMasquee,
     apparenceDemasquee,
     sexe,

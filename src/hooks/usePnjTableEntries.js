@@ -8,7 +8,12 @@ function groupApproved(rows) {
   for (const row of rows) {
     const key = row.table_name === 'metiers' ? `metiers_${row.tranche_age}` : row.table_name;
     if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(row.value_f ? { m: row.value_m, f: row.value_f } : row.value_m);
+    const pol = row.polarity && row.polarity !== 'n' ? row.polarity : undefined;
+    if (row.value_f) {
+      grouped[key].push(pol ? { m: row.value_m, f: row.value_f, p: pol } : { m: row.value_m, f: row.value_f });
+    } else {
+      grouped[key].push(pol ? { m: row.value_m, p: pol } : row.value_m);
+    }
   }
   return grouped;
 }
@@ -24,11 +29,11 @@ export function usePnjTableEntries(session) {
     const [{ data: approved }, { data: mine }] = await Promise.all([
       supabase
         .from('pnj_table_entries')
-        .select('table_name, tranche_age, value_m, value_f')
+        .select('table_name, tranche_age, value_m, value_f, polarity')
         .eq('status', 'approved'),
       supabase
         .from('pnj_table_entries')
-        .select('id, table_name, tranche_age, value_m, value_f, status, reject_reason, created_at')
+        .select('id, table_name, tranche_age, value_m, value_f, polarity, status, reject_reason, created_at')
         .eq('created_by', session.user.id)
         .neq('status', 'approved')
         .order('created_at', { ascending: false }),
@@ -40,7 +45,7 @@ export function usePnjTableEntries(session) {
 
   useEffect(() => { reload(); }, [reload]);
 
-  const proposer = useCallback(async ({ tableName, trancheAge, valueM, valueF }) => {
+  const proposer = useCallback(async ({ tableName, trancheAge, valueM, valueF, polarity }) => {
     if (!session?.user) return { error: { message: 'Non connecté' } };
     setSubmitting(true);
     const { error } = await supabase.from('pnj_table_entries').insert({
@@ -48,6 +53,7 @@ export function usePnjTableEntries(session) {
       tranche_age: tableName === 'metiers' ? trancheAge : null,
       value_m: valueM,
       value_f: valueF || null,
+      polarity: polarity || 'n',
       created_by: session.user.id,
     });
     setSubmitting(false);

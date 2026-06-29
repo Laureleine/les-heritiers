@@ -1,13 +1,13 @@
 // src/components/PnjGenerateur.jsx
 import React, { useState, useCallback } from 'react';
-import { ArrowLeft, Dices, Wand2, Save, RotateCcw, ChevronDown, Plus, Clock, CheckCircle, XCircle } from '../config/icons';
+import { ArrowLeft, Dices, Wand2, Save, RotateCcw, ChevronDown, Plus, Clock, CheckCircle, XCircle, Edit } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { genererPnj, rerollChamp, pnjVersPayloadFigure } from '../utils/pnjGenerator';
 import {
   TRANCHES_AGE, SEXES, GENRES, NATIONALITES,
   SITUATIONS_MATRIMONIALES, SITUATIONS_FAMILIALES,
   TABLES_REEL, METIERS_PAR_TRANCHE_AGE,
-  accordLabel,
+  accordLabel, resolveText, getPolarity,
 } from '../data/pnjTables';
 import { usePnjTableEntries } from '../hooks/usePnjTableEntries';
 
@@ -32,19 +32,34 @@ function getHardcoded(config) {
   return TABLES_REEL[config.tableName] || [];
 }
 
-// Affiche une entrée de table, avec distinction des formes genrées
-function EntryCell({ entry, isDb }) {
-  const base = isDb ? 'text-amber-900' : 'text-stone-700';
-  if (!entry || typeof entry === 'string') {
-    return <span className={`text-sm font-serif leading-snug ${base}`}>{entry || ''}</span>;
-  }
-  // Entrée genrée {m, f}
+// Dots de polarité : ●/●● à gauche = clair, ●/●● à droite = sombre
+const DOT_LEFT  = { l2: '●●', l1: '●', n: '', d1: '', d2: '' };
+const DOT_RIGHT = { l2: '', l1: '', n: '', d1: '●', d2: '●●' };
+
+function EntryCell({ entry, isDb, genderView = 'm', onEdit }) {
+  const pol  = getPolarity(entry);
+  const sexe = genderView === 'f' ? 'feminin' : 'masculin';
+  const text = resolveText(entry, sexe) ?? (typeof entry === 'string' ? entry : entry?.m ?? '');
+  const base = isDb ? 'text-amber-800' : 'text-stone-700';
   return (
-    <span className="text-sm font-serif leading-snug">
-      <span className={base}>{entry.m}</span>
-      <span className="text-stone-300 mx-1.5">·</span>
-      <span className="text-stone-400 italic">{entry.f} <span className="not-italic text-[10px]">♀</span></span>
-    </span>
+    <div className={`flex items-center gap-1 px-2.5 py-2 group ${isDb ? 'bg-amber-50' : ''}`}>
+      <span className="w-4 flex-shrink-0 text-right text-[9px] font-mono text-emerald-500 leading-none select-none">
+        {DOT_LEFT[pol] || ''}
+      </span>
+      <span className={`flex-1 text-sm font-serif leading-snug ${base}`}>{text}</span>
+      <span className="w-4 flex-shrink-0 text-left text-[9px] font-mono text-rose-500 leading-none select-none">
+        {DOT_RIGHT[pol] || ''}
+      </span>
+      {onEdit && (
+        <button
+          onClick={onEdit}
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 -mr-1 rounded text-stone-300 hover:text-amber-600"
+          title="Proposer une correction"
+        >
+          <Edit size={11} />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -99,11 +114,21 @@ function ChampPnj({ label, valeur, onReroll, multiline = false, accent = 'stone'
 
 // ─── ACCORDION PAR TABLE ─────────────────────────────────────────────────────
 
-function AccordionTable({ config, dbApproved, myProposals, session, proposer, submitting }) {
+const POLARITY_OPTIONS = [
+  { value: 'n',  label: 'Neutre' },
+  { value: 'l1', label: '● Positif' },
+  { value: 'l2', label: '●● Très positif' },
+  { value: 'd1', label: '● Négatif' },
+  { value: 'd2', label: '●● Très négatif' },
+];
+
+function AccordionTable({ config, dbApproved, myProposals, session, proposer, submitting, genderView }) {
   const [open, setOpen] = useState(false);
   const [valueM, setValueM] = useState('');
   const [gendered, setGendered] = useState(false);
   const [valueF, setValueF] = useState('');
+  const [polarity, setPolarity] = useState('n');
+  const [editPreset, setEditPreset] = useState(null);
   const [msg, setMsg] = useState(null);
 
   const hardcoded = getHardcoded(config);
@@ -121,17 +146,34 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
       trancheAge: config.trancheAge,
       valueM: valueM.trim(),
       valueF: gendered && valueF.trim() ? valueF.trim() : null,
+      polarity,
     });
     if (error) {
       setMsg(`Erreur : ${error.message}`);
     } else {
-      setMsg('Soumis !');
-      setValueM(''); setValueF(''); setGendered(false);
+      setMsg(editPreset ? 'Correction soumise !' : 'Soumis !');
+      setValueM(''); setValueF(''); setGendered(false); setPolarity('n'); setEditPreset(null);
       setTimeout(() => setMsg(null), 3000);
     }
   };
 
+  const handleEdit = (entry) => {
+    const text = resolveText(entry, 'masculin') ?? (typeof entry === 'string' ? entry : entry?.m ?? '');
+    const femText = typeof entry === 'object' ? (entry.f ?? '') : '';
+    setValueM(text);
+    setValueF(femText);
+    setGendered(!!femText);
+    setPolarity(getPolarity(entry));
+    setEditPreset(text);
+    setOpen(true);
+  };
+
   const inp = 'flex-1 bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm font-serif text-stone-800 focus:ring-2 focus:ring-amber-200 focus:border-amber-400 outline-none shadow-sm transition-all';
+
+  const allEntries = [
+    ...hardcoded.map(e => ({ e, isDb: false })),
+    ...approved.map(e => ({ e, isDb: true })),
+  ];
 
   return (
     <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
@@ -159,30 +201,31 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
       </button>
 
       {open && (
-        <div className="border-t border-stone-100 px-4 pb-4 pt-3 space-y-4">
-          {/* Liste des entrées — grille numérotée */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-stone-100 rounded-lg overflow-hidden">
-            {[
-              ...hardcoded.map(e => ({ e, isDb: false })),
-              ...approved.map(e => ({ e, isDb: true })),
-            ].map(({ e, isDb }, i) => (
+        <div className="border-t border-stone-100 pb-4 space-y-4">
+          {/* Liste 2 colonnes, zèbre, dots polarité */}
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            {allEntries.map(({ e, isDb }, i) => (
               <div
                 key={i}
-                className={`flex items-baseline gap-2 px-3 py-2 ${isDb ? 'bg-amber-50' : 'bg-white'}`}
+                className={`${isDb ? '' : Math.floor(i / 2) % 2 === 0 ? 'bg-stone-50/60' : 'bg-white'}`}
               >
-                <span className={`text-xs font-mono flex-shrink-0 w-6 text-right ${isDb ? 'text-amber-400' : 'text-stone-300'}`}>
-                  {i + 1}
-                </span>
-                <EntryCell entry={e} isDb={isDb} />
+                <EntryCell
+                  entry={e}
+                  isDb={isDb}
+                  genderView={genderView}
+                  onEdit={session?.user ? () => handleEdit(e) : undefined}
+                />
               </div>
             ))}
           </div>
 
-          {/* Formulaire de proposition (utilisateurs connectés) */}
+          {/* Formulaire de proposition / correction */}
           {session?.user && (
-            <form onSubmit={handleSubmit} className="pt-3 border-t border-stone-100 space-y-2">
-              <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">+ Proposer une entrée</p>
-              <div className="flex gap-2">
+            <form onSubmit={handleSubmit} className="mx-4 pt-3 border-t border-stone-100 space-y-2">
+              <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">
+                {editPreset ? `✏ Corriger : ${editPreset.slice(0, 40)}…` : '+ Proposer une entrée'}
+              </p>
+              <div className="flex gap-2 flex-wrap">
                 <input
                   value={valueM}
                   onChange={e => setValueM(e.target.value)}
@@ -197,23 +240,32 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
                     className={inp}
                   />
                 )}
+              </div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <label className="flex items-center gap-2 text-xs text-stone-500 cursor-pointer select-none">
+                  <input type="checkbox" checked={gendered} onChange={e => setGendered(e.target.checked)} className="rounded border-stone-300 text-amber-600 focus:ring-amber-300" />
+                  Forme féminine différente
+                </label>
+                <select
+                  value={polarity}
+                  onChange={e => setPolarity(e.target.value)}
+                  className="text-xs border border-stone-200 rounded px-2 py-1 font-serif text-stone-700 bg-white outline-none focus:ring-1 focus:ring-amber-200"
+                >
+                  {POLARITY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
                 <button
                   type="submit"
                   disabled={submitting || !valueM.trim()}
-                  className="flex-shrink-0 px-3 py-2 rounded-lg bg-amber-700 hover:bg-amber-800 text-amber-50 font-bold text-xs transition-all disabled:opacity-60"
+                  className="px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-amber-50 font-bold text-xs transition-all disabled:opacity-60"
                 >
-                  {submitting ? '…' : 'Proposer'}
+                  {submitting ? '…' : editPreset ? 'Soumettre correction' : 'Proposer'}
                 </button>
+                {editPreset && (
+                  <button type="button" onClick={() => { setEditPreset(null); setValueM(''); setValueF(''); setPolarity('n'); setGendered(false); }} className="text-xs text-stone-400 hover:text-stone-600">
+                    Annuler
+                  </button>
+                )}
               </div>
-              <label className="flex items-center gap-2 text-xs text-stone-500 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={gendered}
-                  onChange={e => setGendered(e.target.checked)}
-                  className="rounded border-stone-300 text-amber-600 focus:ring-amber-300"
-                />
-                Forme féminine différente
-              </label>
               {msg && (
                 <p className={`text-xs font-serif ${msg.startsWith('Erreur') ? 'text-red-600' : 'text-emerald-600'}`}>{msg}</p>
               )}
@@ -222,7 +274,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
 
           {/* Mes propositions pour cette table */}
           {myPending.length > 0 && (
-            <div className="pt-2 border-t border-stone-100 space-y-1.5">
+            <div className="mx-4 pt-2 border-t border-stone-100 space-y-1.5">
               <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Mes propositions</p>
               {myPending.map(p => (
                 <div key={p.id} className="flex items-start gap-2 text-xs">
@@ -244,8 +296,31 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
 // ─── VUE TABLES & PROPOSITIONS ───────────────────────────────────────────────
 
 function TabTables({ dbEntries, myProposals, session, proposer, submitting }) {
+  const [genderView, setGenderView] = useState('m');
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
+      {/* Slider masculin / féminin */}
+      <div className="flex items-center justify-between">
+        <div className="flex rounded-lg overflow-hidden border border-stone-200 text-xs">
+          <button
+            onClick={() => setGenderView('m')}
+            className={`px-3 py-1.5 font-serif transition-colors ${genderView === 'm' ? 'bg-stone-700 text-stone-50' : 'bg-white text-stone-500 hover:bg-stone-50'}`}
+          >
+            Masculin
+          </button>
+          <button
+            onClick={() => setGenderView('f')}
+            className={`px-3 py-1.5 font-serif transition-colors border-l border-stone-200 ${genderView === 'f' ? 'bg-stone-700 text-stone-50' : 'bg-white text-stone-500 hover:bg-stone-50'}`}
+          >
+            Féminin
+          </button>
+        </div>
+        <p className="text-[10px] text-stone-300 font-serif">
+          <span className="text-emerald-400">●</span> clair&nbsp;&nbsp;<span className="text-rose-400">●</span> sombre
+        </p>
+      </div>
+
       {!session?.user && (
         <p className="text-sm font-serif text-stone-500 text-center py-4">
           Connecte-toi pour proposer des entrées.
@@ -260,6 +335,7 @@ function TabTables({ dbEntries, myProposals, session, proposer, submitting }) {
           session={session}
           proposer={proposer}
           submitting={submitting}
+          genderView={genderView}
         />
       ))}
     </div>
@@ -617,6 +693,31 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
                 ))}
               </div>
             </div>
+
+            {/* Jauge de polarité */}
+            {pnj.polariteScore != null && (
+              <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Tendance</p>
+                  <span className="text-xs font-mono font-bold text-stone-500">{pnj.polariteScore}/10</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-rose-400 font-serif flex-shrink-0">Sombre</span>
+                  <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden relative">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        pnj.polariteScore >= 7 ? 'bg-emerald-400' :
+                        pnj.polariteScore >= 5 ? 'bg-amber-300' :
+                        pnj.polariteScore >= 3 ? 'bg-orange-400' : 'bg-rose-500'
+                      }`}
+                      style={{ width: `${(pnj.polariteScore / 10) * 100}%` }}
+                    />
+                    <div className="absolute inset-y-0 left-1/2 w-px bg-stone-200" />
+                  </div>
+                  <span className="text-[10px] text-emerald-500 font-serif flex-shrink-0">Lumineux</span>
+                </div>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex gap-3">
