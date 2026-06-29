@@ -323,6 +323,25 @@ export default function PnjGenerateur({ onBack, userProfile }) {
               </div>
             </div>
 
+            {/* Phobie / Hobby / Comportement (mode réel uniquement) */}
+            {mode === 'reel' && (pnj.phobie || pnj.hobby || pnj.comportement) && (
+              <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 space-y-3 divide-y divide-stone-100">
+                {pnj.phobie && (
+                  <ChampPnj label="Peur / Phobie" valeur={pnj.phobie} onReroll={() => handleReroll('phobie')} multiline accent="rose" />
+                )}
+                {pnj.hobby && (
+                  <div className={pnj.phobie ? 'pt-3' : ''}>
+                    <ChampPnj label="Passion / Passe-temps" valeur={pnj.hobby} onReroll={() => handleReroll('hobby')} multiline />
+                  </div>
+                )}
+                {pnj.comportement && (
+                  <div className={pnj.phobie || pnj.hobby ? 'pt-3' : ''}>
+                    <ChampPnj label="Comportement distinctif" valeur={pnj.comportement} onReroll={() => handleReroll('comportement')} multiline accent="amber" />
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Mode merveilleux : double apparence */}
             {mode === 'merveilleux' && (
               <div className="bg-white rounded-2xl border border-purple-200 shadow-sm p-5 space-y-3 divide-y divide-purple-100">
