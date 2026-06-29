@@ -1,4 +1,31 @@
-﻿# REX — Session 29 Juin 2026 — v17.4.24 « L'Art de la Rencontre »
+﻿# REX — Session 29 Juin 2026 (suite) — v17.4.25 « La Bourse des Silhouettes »
+
+## Ce qui a été livré
+
+1. **Table Supabase `pnj_table_entries`** : migration Node+pg (pas MCP), 3 policies RLS (SELECT own+approved, INSERT authenticated, UPDATE gardien/super_admin via `role IN ('super_admin','gardien')`).
+2. **Hook `usePnjTableEntries`** : deux requêtes parallèles — approved (pour le générateur) + propres propositions pending/rejected (pour l'UI).
+3. **`pnjGenerator.js` — merge DB** : fonction `merge(hardcoded, dbEntries, key)`, toutes les tables (traits, apparences, motivations, secrets, phobies, hobbies, comportements, métiers par tranche) enrichies dynamiquement.
+4. **Formulaire sur `/generateur`** : sélecteur table + tranche d'âge + champ M + case genrée + champ F conditionnel. Visible uniquement si connecté + mode Réel.
+5. **Onglet admin "Tables PNJ"** : filtre statut, liste avec pseudo proposeur, approuver / refuser avec raison.
+
+## Règles apprises / confirmées
+
+- **Champ admin : `profiles.role`** (pas `is_admin`). Valeurs : `'super_admin'`, `'gardien'`, `'user'`. Toujours utiliser `role IN ('super_admin','gardien')` dans les policies RLS.
+- **Le script de migration doit être dans le worktree** mais lancé depuis le répertoire principal (`node ".claude/worktrees/.../scripts/..."`) pour qu'il hérite du `.env` du projet.
+- **`usePnjTableEntries`** : séparer la requête "approved pour le générateur" de la requête "mes propositions" — deux filtres distincts, pas un SELECT * sur tout.
+- **Icônes** : vérifier `src/config/icons.js` avant d'importer une icône inédite (`Dices`, `Plus`, `Clock`, `XCircle`, `CheckCircle` — toutes présentes).
+- **Worktree + version.js** : l'Edit sur `src/version.js` doit cibler le chemin worktree, pas le chemin principal (le fichier existe aux deux endroits et l'outil rejette l'écriture hors worktree).
+- **Merge --ff-only** : `git merge --ff-only worktree-gallica-403-fix` depuis le repo principal — la branche s'appelle comme le worktree, pas le chemin du répertoire.
+
+## Pièges évités
+
+- **`git merge ".claude/worktrees/..."`** est invalide — il faut passer le **nom de branche**, pas le chemin.
+- **`getSecret(mode, metier)`** avait une signature figée — l'ajouter un 3e paramètre `generalPool` était nécessaire pour lui passer le pool enrichi sans casser l'appel sans DB.
+- **Policy RLS `UPDATE`** : la coder avec `is_admin = true` a échoué immédiatement ; toujours vérifier le vrai schéma de `profiles` avant d'écrire une policy.
+
+---
+
+# REX — Session 29 Juin 2026 — v17.4.24 « L'Art de la Rencontre »
 
 ## Ce qui a été livré
 
