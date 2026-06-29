@@ -20,6 +20,7 @@ const Actualite = lazy(() => import('./components/Actualite'));
 const CarteDeParisPage = lazy(() => import('./components/CarteDeParisPage'));
 const CharacterList = lazy(() => import('./components/CharacterList'));
 const PixieAssistant = lazy(() => import('./components/PixieAssistant'));
+const PnjGenerateur = lazy(() => import('./components/PnjGenerateur'));
 
 export default function AppRouter({ session, userProfile, refreshUserProfile }) {
   const { character, dispatchCharacter, setIsReadOnly } = useCharacter();
@@ -65,6 +66,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
               onOpenBureau={() => navigate('/bureau_anomalies')}
               onOpenActualite={() => navigate('/actualite')}
               onOpenCarte={() => navigate('/carte')}
+              onOpenGenerateur={() => navigate('/generateur')}
             />
             {userProfile?.profile?.show_pixie !== false && (
               <PixieAssistant character={character || {}} session={session} fairyData={gameData?.fairyData} />
@@ -115,6 +117,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
         <Route path="/creator" element={<CharacterCreator session={session} userProfile={userProfile} />} />
         <Route path="/actualite" element={<Actualite onBack={() => navigate('/')} userProfile={userProfile} />} />
         <Route path="/carte" element={<CarteDeParisPage onBack={() => navigate('/')} userProfile={userProfile} session={session} />} />
+        <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/')} userProfile={userProfile} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
