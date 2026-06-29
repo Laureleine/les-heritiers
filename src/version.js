@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.24 - \"L'Art de la Rencontre 🎭🎲\"",
+    date: "29 Juin 2026",
+    description: "Le Générateur de Personnages Non-Joueurs quitte sa chambre d'enfant pour entrer dans la grande salle. Inspiré des tables de Central Casting, il tire ses silhouettes depuis un corpus de 85 traits de caractère, 40 apparences, 27 motivations et 27 secrets — avec une distribution en cloche qui favorise les tempéraments équilibrés sur les extrêmes. Trois nouveaux champs font leur entrée — peur, passion, comportement distinctif — et le secret s'adapte désormais au métier du personnage à travers huit catégories thématiques. Accordé au sexe du PNJ, le générateur ne produira plus jamais un homme nommé \"veuve de haut rang\". La barre de navigation se simplifie : Gazette, Carte et Générateur rejoignent une page hub commune, prête à accueillir de nouveaux outils.",
+    changes: [
+      "🎭 **Générateur de PNJ enrichi (Central Casting) :** Tables réécrites depuis le supplément Central Casting — 85 traits (contre 30), 40 apparences (contre 16), 27 motivations et 27 secrets (contre 14 chacun). Distribution en cloche sur les traits : les tempéraments équilibrés sont 2-3× plus fréquents que les extrêmes.",
+      "🎲 **Trois nouveaux champs :** Peur / Phobie (30 entrées), Passion / Passe-temps (25 entrées), Comportement distinctif (25 entrées) — disponibles en mode Réel, avec reroll individuel pour chacun.",
+      "🔗 **Chaînage secret / métier :** Le secret s'adapte au métier tiré — 8 catégories thématiques (médecin, juridique, presse, arts, occultisme, commerce, militaire, religion) avec un pool spécialisé à 60 %, le pool général à 40 % pour éviter la prévisibilité.",
+      "⚖️ **Accord grammatical du genre :** Métiers, situations matrimoniales et familiales s'accordent automatiquement avec le sexe du PNJ. Les paires {m, f} sont résolues à la génération et au reroll — plus de \"veuve de haut rang\" pour un personnage masculin.",
+      "🗂️ **Page hub Outils :** Gazette, Carte et Générateur PNJ quittent la barre de navigation pour rejoindre une page dédiée /outils — un seul bouton, extensible sans toucher à la barre principale.",
+      "🧪 **364 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.23 - \"Le Passeur de Mémoires 📦📊\"",
     date: "28 Juin 2026",
     description: "Les souvenirs retrouvent leur demeure. Soixante-huit portraits et captures, bloqués dans l'ancienne salle des archives depuis que l'egress était épuisé, ont été transbahutés jusqu'à la nouvelle demeure de prod — les visages des Héritiers sont de retour. L'onglet Métriques, muet depuis des semaines, reprend la parole : une clause PostgreSQL ambiguë cassait silencieusement les comptages communautaires. La Carte de Paris gagne en légèreté, et la Féérie comme le Masque affichent enfin leurs boutons d'évolution en toutes circonstances.",
