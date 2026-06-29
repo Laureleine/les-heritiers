@@ -24,7 +24,15 @@ if sys.platform.startswith('win'):
         pass
 
 import requests
+import xml.etree.ElementTree as ET
+from urllib.parse import quote
 from PIL import Image
+
+try:
+    import cloudscraper as _cloudscraper
+    _HAS_CLOUDSCRAPER = True
+except ImportError:
+    _HAS_CLOUDSCRAPER = False
 
 # Configuration Tesseract
 try:
@@ -252,99 +260,105 @@ def clean_ocr_text(text: str) -> str:
 class GallicaDownloader:
     """Gère le téléchargement et le cache des fichiers Gallica."""
     
+    # Cache local date-ARK (partage entre instances)
+    _ARK_CACHE_FILE = Path(__file__).parent / "petit_parisien_arks.json"
+    _ark_cache: dict[str, str] | None = None
+
     def __init__(self, output_dir: Path):
         self.output_dir = output_dir
-        self.session = requests.Session()
-        self.session.headers.update({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
-            "Referer": "https://gallica.bnf.fr/",
-        })
-        
-    def _resolve_via_sru(self, serial_ark: str, date_str: str) -> str | None:
-        """Fallback : résout l'ARK via l'API SRU publique de Gallica.
-        Lève requests.exceptions.HTTPError si Gallica bloque (403/5xx).
-        Retourne None uniquement si la réponse est OK mais la date absente.
-        """
-        clean_date = date_str.replace("-", "")
-        params = {
-            "operation": "searchRetrieve",
-            "version": "1.2",
-            "query": f'arkPress all "{serial_ark}" and dc.date all "{clean_date}"',
-            "maximumRecords": "1",
-            "recordSchema": "dc",
-        }
-        print(f"  [SRU] Résolution via API SRU ({serial_ark} / {date_str})...")
-        resp = self.session.get("https://gallica.bnf.fr/SRU", params=params, timeout=30)
-        resp.raise_for_status()  # propage 403/5xx à l'appelant
-        m = re.search(r'bpt6k[a-z0-9]+', resp.text)
-        if m:
-            ark = m.group(0)
-            print(f"  [SRU] ARK trouvé : {ark}")
-            return ark
-        print(f"  [SRU] Aucun ARK dans la réponse (date absente de Gallica).")
-        return None
+        if _HAS_CLOUDSCRAPER:
+            self.session = _cloudscraper.create_scraper(
+                browser={"browser": "chrome", "platform": "windows", "mobile": False}
+            )
+        else:
+            print("  AVERTISSEMENT : cloudscraper absent, utilisation de requests (peut echouer sur Cloudflare)")
+            self.session = requests.Session()
+            self.session.headers.update({
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+                "Referer": "https://gallica.bnf.fr/",
+            })
+
+    @classmethod
+    def _load_ark_cache(cls) -> dict[str, str]:
+        if cls._ark_cache is None:
+            if cls._ARK_CACHE_FILE.exists():
+                cls._ark_cache = json.loads(cls._ARK_CACHE_FILE.read_text(encoding="utf-8"))
+            else:
+                cls._ark_cache = {}
+        return cls._ark_cache
+
+    @classmethod
+    def _save_ark_to_cache(cls, date_iso: str, ark: str) -> None:
+        cache = cls._load_ark_cache()
+        cache[date_iso] = ark
+        cls._ARK_CACHE_FILE.write_text(
+            json.dumps(cache, ensure_ascii=False, sort_keys=True, indent=2), encoding="utf-8"
+        )
 
     def resolve_issue_ark(self, serial_ark: str, date_str: str) -> str:
-        """Trouve l'identifiant (ARK) correspondant à une date donnée, avec retries."""
-        # Format de date : YYYYMMDD ou YYYY-MM-DD
-        clean_date = date_str.replace("-", "")
-        url = f"https://gallica.bnf.fr/ark:/12148/{serial_ark}/date{clean_date}?mode=1"
-        print(f"Résolution de la date sur Gallica: {url}")
+        """Trouve l'ARK d'un numero via SRU Gallica (bypasse l'URL de navigation bloquee par Cloudflare)."""
+        date_iso = (
+            date_str if len(date_str) == 10
+            else f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
+        )
+
+        # 1. Cache local
+        cache = self._load_ark_cache()
+        if date_iso in cache:
+            print(f"ARK depuis cache local : {cache[date_iso]}")
+            return cache[date_iso]
+
+        # 2. Requete SRU par date exacte
+        print(f"Resolution via SRU pour {date_iso}...")
+        q = quote(f'dc.title adj "petit parisien" and dc.title all "quotidien" and dc.date all "{date_iso}"')
+        url = (
+            f"https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2"
+            f"&query={q}&maximumRecords=2&recordSchema=dc&collapsing=disabled"
+        )
+        NS_SRU = "http://www.loc.gov/zing/srw/"
+        NS_DC  = "http://purl.org/dc/elements/1.1/"
+        NS_OAI = "http://www.openarchives.org/OAI/2.0/oai_dc/"
 
         last_exc = None
         for attempt in range(3):
             try:
-                resp = self.session.get(url, allow_redirects=True, timeout=60)
+                resp = self.session.get(url, timeout=30)
                 resp.raise_for_status()
                 last_exc = None
                 break
-            except requests.exceptions.Timeout as e:
+            except Exception as e:
                 last_exc = e
                 if attempt < 2:
                     wait = 5 * (2 ** attempt)
-                    print(f"  ⏳ Tentative {attempt + 1}/3 timeout, nouvelle tentative dans {wait}s...")
+                    print(f"  Tentative {attempt + 1}/3 erreur SRU, nouvelle tentative dans {wait}s...")
                     time.sleep(wait)
-                continue
-            except requests.exceptions.ConnectionError as e:
-                last_exc = e
-                if attempt < 2:
-                    wait = 5 * (2 ** attempt)
-                    print(f"  ⏳ Tentative {attempt + 1}/3 erreur connexion, nouvelle tentative dans {wait}s...")
-                    time.sleep(wait)
-                continue
-            except requests.exceptions.HTTPError as e:
-                status = e.response.status_code if e.response is not None else 0
-                if status == 403:
-                    # L'URL de navigation retourne 403 — basculer sur l'API SRU
-                    print(f"  ⚠️  403 sur l'URL de navigation, basculement sur l'API SRU...")
-                    ark = self._resolve_via_sru(serial_ark, date_str)
-                    if ark:
-                        return ark
-                    # SRU aussi vide = date absente
-                    print(f"Date absente de Gallica : {date_str} (403 + SRU vide)")
-                    sys.exit(2)
-                elif status >= 500 and attempt < 2:
-                    last_exc = e
-                    wait = 5 * (2 ** attempt)
-                    print(f"  ⏳ Tentative {attempt + 1}/3 erreur {status}, nouvelle tentative dans {wait}s...")
-                    time.sleep(wait)
-                    continue
-                raise
         if last_exc:
             raise last_exc
 
-        # Recherche du pattern de l'ARK dans l'URL de redirection
-        m = re.search(r'bpt6k[a-z0-9]+', resp.url)
-        if m:
-            ark = m.group(0)
-            print(f"ARK résolu avec succès : {ark}")
-            return ark
-        else:
-            # Exit code 2 = date absente de Gallica (pas une erreur technique)
-            print(f"Date absente de Gallica : {date_str} (URL finale : {resp.url})")
-            sys.exit(2)
+        try:
+            root = ET.fromstring(resp.text)
+        except ET.ParseError:
+            print(f"Erreur : reponse SRU invalide pour {date_iso}")
+            sys.exit(1)
+
+        for rec in root.findall(f".//{{{NS_SRU}}}recordData"):
+            dc = rec.find(f"{{{NS_OAI}}}dc")
+            if dc is None:
+                continue
+            for ident in dc.findall(f"{{{NS_DC}}}identifier"):
+                if ident.text and "bpt6k" in ident.text:
+                    m = re.search(r"bpt6k[a-zA-Z0-9]+", ident.text)
+                    if m:
+                        ark = m.group(0)
+                        print(f"ARK resolu avec succes : {ark}")
+                        self._save_ark_to_cache(date_iso, ark)
+                        return ark
+
+        # Exit code 2 = date absente de Gallica (pas d'erreur technique)
+        print(f"Date absente de Gallica : {date_iso}")
+        sys.exit(2)
 
     def fetch_page_ocr_api(self, issue_ark: str, page: int) -> str:
         """Télécharge l'OCR brut officiel BnF d'une page via l'API AJAX texteImage."""
