@@ -9,6 +9,7 @@ import {
   TABLES_REEL, TABLES_MERVEILLEUX, SURCHARGES_TYPE_FEE,
   SECRETS_PAR_CATEGORIE,
   tirage, tirageCloche, tirageMultiple,
+  accordLabel, resolveMetier,
 } from '../data/pnjTables';
 
 // Tables optionnelles (mode Réel seulement)
@@ -55,10 +56,10 @@ function getNom(mode, nationalite, typeFee) {
   return tirage(tableNat.noms);
 }
 
-function getMetier(mode, trancheAge, typeFee) {
+function getMetier(mode, trancheAge, typeFee, sexe) {
   if (mode === 'merveilleux') return tirage(tableMerveilleux(typeFee, 'metiers'));
   const table = METIERS_PAR_TRANCHE_AGE[trancheAge] || METIERS_PAR_TRANCHE_AGE.adulte;
-  return tirage(table);
+  return resolveMetier(tirage(table), sexe);
 }
 
 // ─── RÈGLES DE COHÉRENCE ─────────────────────────────────────────────────────
@@ -118,7 +119,7 @@ export function genererPnj(options = {}) {
   const prenom  = getPrenom(sexe, mode, nationalite, typeFee);
   const nom     = getNom(mode, nationalite, typeFee);
   const titre   = tirage(mode === 'merveilleux' ? tableMerveilleux(typeFee, 'titres') : TABLES_REEL.titres);
-  const metier  = getMetier(mode, trancheAge, typeFee);
+  const metier  = getMetier(mode, trancheAge, typeFee, sexe);
   // Distribution en cloche sur les traits (neutre > extrêmes), comme le d4+d10 de CC
   const traitPool = tableMerveilleux(typeFee, 'traits') || tables.traits;
   const traits  = [tirageCloche(traitPool), tirageCloche(traitPool)].filter((v, i, a) => a.indexOf(v) === i);
@@ -188,7 +189,7 @@ export function rerollChamp(pnj, champ) {
       valeur = tirage(mode === 'merveilleux' ? tableMerveilleux(typeFee, 'titres') : TABLES_REEL.titres);
       break;
     case 'metier':
-      valeur = getMetier(mode, trancheAge, typeFee);
+      valeur = getMetier(mode, trancheAge, typeFee, pnj.sexe);
       break;
     case 'traits': {
       const pool = tableMerveilleux(typeFee, 'traits') || tables.traits;
@@ -232,14 +233,15 @@ export function rerollChamp(pnj, champ) {
     case 'sexe': {
       const newSexe = tirage(SEXES.map(s => s.id));
       const newPrenom = getPrenom(newSexe, mode, nationalite, typeFee);
-      return corrigerCoherence({ ...pnj, sexe: newSexe, prenom: newPrenom });
+      const newMetier = getMetier(mode, pnj.trancheAge, typeFee, newSexe);
+      return corrigerCoherence({ ...pnj, sexe: newSexe, prenom: newPrenom, metier: newMetier });
     }
     case 'genre':
       valeur = tirage(GENRES.filter(g => mode === 'merveilleux' ? true : g.id !== 'indetermine').map(g => g.id));
       break;
     case 'trancheAge':
       valeur = tirage(TRANCHES_AGE.map(t => t.id));
-      return corrigerCoherence({ ...pnj, trancheAge: valeur, metier: getMetier(mode, valeur, typeFee) });
+      return corrigerCoherence({ ...pnj, trancheAge: valeur, metier: getMetier(mode, valeur, typeFee, pnj.sexe) });
     case 'nationalite': {
       const newNat = tirage(['francaise','francaise','francaise','francaise','francaise','francaise','britannique','russe','americaine','italienne','allemande','austro_hongroise']);
       const newPrenom2 = getPrenom(pnj.sexe, mode, newNat, typeFee);
@@ -273,8 +275,8 @@ export function pnjVersPayloadFigure(pnj) {
   const trancheLabel = TRANCHES_AGE.find(t => t.id === pnj.trancheAge)?.fourchette || '';
   const natLabel     = NATIONALITES.find(n => n.id === pnj.nationalite)?.label || '';
   const genreLabel   = GENRES.find(g => g.id === pnj.genre)?.description || '';
-  const maritalLabel = SITUATIONS_MATRIMONIALES.find(s => s.id === pnj.situationMatrimoniale)?.label || '';
-  const familleLabel = SITUATIONS_FAMILIALES.find(s => s.id === pnj.situationFamiliale)?.label || '';
+  const maritalLabel = accordLabel(SITUATIONS_MATRIMONIALES.find(s => s.id === pnj.situationMatrimoniale), pnj.sexe);
+  const familleLabel = accordLabel(SITUATIONS_FAMILIALES.find(s => s.id === pnj.situationFamiliale), pnj.sexe);
 
   const descriptionBlocs = [
     `${pnj.metier}${trancheLabel ? ` (${trancheLabel})` : ''}`,
