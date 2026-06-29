@@ -1,7 +1,7 @@
 // src/components/CharacterList.js
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Search, AlertTriangle, CheckCircle, Map } from '../config/icons';
+import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Search, AlertTriangle, CheckCircle, Map, Dices } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
@@ -114,7 +114,7 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenActualite, onOpenCarte, profils = [], userProfile, gameData, session }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenActualite, onOpenCarte, onOpenGenerateur, profils = [], userProfile, gameData, session }) {
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
@@ -540,6 +540,9 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
           </button>
           <button onClick={onOpenCarte} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-stone-100 text-stone-800 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Explorer la carte de Paris 1900">
             <Map size={14} /> <span className="hidden lg:inline">Carte</span>
+          </button>
+          <button onClick={onOpenGenerateur} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-teal-100 text-teal-900 border-2 border-teal-200 rounded-lg hover:bg-teal-200 hover:border-teal-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Générer un personnage non-joueur aléatoire">
+            <Dices size={14} /> <span className="hidden lg:inline">PNJ</span>
           </button>
           <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
             <Users size={14} /> <span className="hidden lg:inline">Cercles</span>
