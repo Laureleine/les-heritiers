@@ -6,6 +6,7 @@ import { genererPnj, rerollChamp, pnjVersPayloadFigure } from '../utils/pnjGener
 import {
   TRANCHES_AGE, SEXES, GENRES, NATIONALITES,
   SITUATIONS_MATRIMONIALES, SITUATIONS_FAMILIALES,
+  accordLabel,
 } from '../data/pnjTables';
 
 // ─── SOUS-COMPOSANTS ─────────────────────────────────────────────────────────
@@ -271,12 +272,12 @@ export default function PnjGenerateur({ onBack, userProfile }) {
                     )}
                     {maritalObj && (
                       <span className="text-xs bg-white border border-stone-200 rounded-full px-2 py-0.5 text-stone-600">
-                        {maritalObj.label}
+                        {accordLabel(maritalObj, pnj.sexe)}
                       </span>
                     )}
                     {familleObj && familleObj.id !== 'sans_enfants' && (
                       <span className="text-xs bg-white border border-stone-200 rounded-full px-2 py-0.5 text-stone-600">
-                        {familleObj.label}
+                        {accordLabel(familleObj, pnj.sexe)}
                       </span>
                     )}
                     {genreObj && genreObj.id !== 'conforme' && (
@@ -359,8 +360,8 @@ export default function PnjGenerateur({ onBack, userProfile }) {
                   { champ: 'sexe', label: 'Sexe', valeur: SEXES.find(s => s.id === pnj.sexe)?.label },
                   { champ: 'genre', label: 'Genre', valeur: GENRES.find(g => g.id === pnj.genre)?.label },
                   ...(mode === 'reel' ? [{ champ: 'nationalite', label: 'Nationalité', valeur: natObj ? `${natObj.flag} ${natObj.label}` : null }] : []),
-                  { champ: 'situationMatrimoniale', label: 'Situation', valeur: maritalObj?.label },
-                  { champ: 'situationFamiliale', label: 'Famille', valeur: familleObj?.label },
+                  { champ: 'situationMatrimoniale', label: 'Situation', valeur: accordLabel(maritalObj, pnj.sexe) },
+                  { champ: 'situationFamiliale', label: 'Famille', valeur: accordLabel(familleObj, pnj.sexe) },
                 ].map(({ champ, label, valeur }) => (
                   <div key={champ} className="flex items-center justify-between gap-1 bg-stone-50 rounded-lg px-3 py-2">
                     <div className="min-w-0">

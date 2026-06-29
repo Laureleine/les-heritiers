@@ -37,16 +37,16 @@ export const NATIONALITES = [
 
 export const SITUATIONS_MATRIMONIALES = [
   { id: 'celibataire', label: 'Célibataire' },
-  { id: 'marie',       label: 'Marié(e)' },
-  { id: 'veuf',        label: 'Veuf / Veuve' },
-  { id: 'separe',      label: 'Séparé(e) de fait' },
+  { id: 'marie',       label: 'Marié(e)',        labelM: 'Marié',         labelF: 'Mariée' },
+  { id: 'veuf',        label: 'Veuf / Veuve',    labelM: 'Veuf',          labelF: 'Veuve' },
+  { id: 'separe',      label: 'Séparé(e) de fait', labelM: 'Séparé de fait', labelF: 'Séparée de fait' },
 ];
 
 export const SITUATIONS_FAMILIALES = [
-  { id: 'sans_enfants',        label: 'Sans enfants' },
-  { id: 'enfants_mineurs',     label: 'Parent d\'enfants mineurs' },
-  { id: 'enfants_adultes',     label: 'Parent d\'enfants adultes' },
-  { id: 'orphelin',            label: 'Orphelin(e)' },
+  { id: 'sans_enfants',    label: 'Sans enfants' },
+  { id: 'enfants_mineurs', label: 'Parent d\'enfants mineurs' },
+  { id: 'enfants_adultes', label: 'Parent d\'enfants adultes' },
+  { id: 'orphelin',        label: 'Orphelin(e)', labelM: 'Orphelin', labelF: 'Orpheline' },
 ];
 
 // ─── NOMS PAR NATIONALITÉ ────────────────────────────────────────────────────
@@ -221,40 +221,63 @@ export const NOMS_PAR_NATIONALITE = {
 
 // ─── MÉTIERS PAR TRANCHE D'ÂGE ────────────────────────────────────────────────
 
+// Les entrées genrées sont des objets {m, f} ; les entrées neutres sont des chaînes.
+// resolveMetier(entry, sexe) dans pnjGenerator.js choisit la bonne forme.
 export const METIERS_PAR_TRANCHE_AGE = {
   jeune: [
-    'étudiant en droit', 'étudiant en médecine', 'étudiante aux Beaux-Arts',
-    'apprenti relieur', 'apprentie modiste', 'commis de notaire',
-    'secrétaire de rédaction', 'jeune journaliste', 'vendeur en librairie',
-    'infirmier stagiaire', 'assistante de laboratoire', 'garçon de café',
-    'petite main en atelier de couture', 'aide-pharmacien', 'jeune poète sans le sou',
-    'facteur de la poste', 'commis en épicerie fine', 'précepteur',
+    { m: 'étudiant en droit',      f: 'étudiante en droit' },
+    { m: 'étudiant en médecine',   f: 'étudiante en médecine' },
+    { m: 'étudiant aux Beaux-Arts',f: 'étudiante aux Beaux-Arts' },
+    { m: 'apprenti relieur',       f: 'apprentie relieuse' },
+    { m: 'apprenti chapelier',     f: 'apprentie modiste' },
+    'commis de notaire', 'secrétaire de rédaction', 'jeune journaliste',
+    { m: 'vendeur en librairie',   f: 'vendeuse en librairie' },
+    { m: 'infirmier stagiaire',    f: 'infirmière stagiaire' },
+    { m: 'assistant de laboratoire', f: 'assistante de laboratoire' },
+    { m: 'garçon de café',         f: 'demoiselle de comptoir' },
+    { m: 'coupeur en atelier de couture', f: 'petite main en atelier de couture' },
+    'aide-pharmacien',
+    { m: 'jeune poète sans le sou', f: 'jeune poétesse sans le sou' },
+    'facteur de la poste', 'commis en épicerie fine',
+    { m: 'précepteur',             f: 'préceptrice' },
     'dactylo dans une étude', 'sous-bibliothécaire',
   ],
   adulte: [
     'rentier', 'journaliste', 'médecin de quartier', 'photographe',
     'fleuriste', 'relieur de livres anciens', 'chapelier', 'cocher de fiacre',
-    'modiste établie', 'apothicaire', 'bouquiniste des quais', 'détective privé',
-    'surnuméraire des Postes', 'antiquaire', 'herboriste', 'dessinateur de presse',
-    'avocat', 'notaire', 'instituteur', 'libraire', 'imprimeur', 'horloger',
-    'bijoutier', 'brocanteur', 'médium en vogue', 'magnétiseur', 'occultiste amateur',
-    'agent de change', 'ingénieur des Ponts', 'architecte', 'peintre de salon',
-    'compositeur', 'actrice de boulevard', 'chanteuse de café-concert',
-    'prestidigitateur', 'professeur de langues mortes', 'explorateur',
+    { m: 'chapelier établi',       f: 'modiste établie' },
+    'apothicaire', 'bouquiniste des quais', 'détective privé',
+    'surnuméraire des Postes', 'antiquaire', 'herboriste',
+    { m: 'dessinateur de presse',  f: 'dessinatrice de presse' },
+    'avocat', 'notaire',
+    { m: 'instituteur',            f: 'institutrice' },
+    'libraire', 'imprimeur', 'horloger', 'bijoutier', 'brocanteur',
+    'médium en vogue', 'magnétiseur', 'occultiste amateur',
+    'agent de change', 'ingénieur des Ponts', 'architecte',
+    { m: 'peintre de salon',       f: 'peintre de salon' },
+    { m: 'compositeur',            f: 'compositrice' },
+    { m: 'acteur de boulevard',    f: 'actrice de boulevard' },
+    { m: 'chanteur de café-concert', f: 'chanteuse de café-concert' },
+    'prestidigitateur', 'professeur de langues mortes',
+    { m: 'explorateur',            f: 'exploratrice' },
   ],
   mur: [
     'médecin établi de longue date', 'avocat de renom', 'directeur de journal',
     'professeur de lycée en fin de carrière', 'propriétaire rentier', 'notaire associé',
     'ancien officier reconverti', 'commissaire de police', 'inspecteur des Postes',
     'ancien pharmacien retraité', 'collectionneur', 'académicien local',
-    'ancien explorateur en retraite', 'grand-mère de salon', 'veuve de haut rang',
+    'ancien explorateur en retraite',
+    { m: 'grand-père de salon',    f: 'grand-mère de salon' },
+    { m: 'veuf de haut rang',      f: 'veuve de haut rang' },
     'relieur maître', 'diplomate en semi-retraite', 'abbé de paroisse',
   ],
   age: [
-    'rentier', 'rentière de vieille famille', 'vieille dame de la haute société',
+    { m: 'rentier de vieille famille', f: 'rentière de vieille famille' },
+    { m: 'vieux notable de la haute société', f: 'vieille dame de la haute société' },
     'académicien honoraire', 'médecin honoraire', 'militaire en retraite',
     'ancien magistrat', 'ancien ambassadeur', 'mémorialiste', 'ermite de salon',
-    'grand-père botaniste', 'archiprêtre', 'sage-femme de quartier à la retraite',
+    'grand-père botaniste', 'archiprêtre',
+    { m: 'médecin de quartier en retraite', f: 'sage-femme de quartier à la retraite' },
     'doyen d\'une loge maçonnique', 'antiquaire légendaire du Marais',
   ],
 };
@@ -891,4 +914,24 @@ export function tirageMultiple(tableau, n) {
   if (!tableau || tableau.length === 0) return [];
   const shuffled = [...tableau].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, Math.min(n, shuffled.length));
+}
+
+/**
+ * Résout l'accord d'un item de label selon le sexe du PNJ.
+ * Un item peut avoir labelM / labelF en plus du label par défaut.
+ */
+export function accordLabel(item, sexe) {
+  if (!item) return '';
+  if (sexe === 'feminin' && item.labelF) return item.labelF;
+  if (sexe === 'masculin' && item.labelM) return item.labelM;
+  return item.label;
+}
+
+/**
+ * Résout une entrée de métier (chaîne ou {m, f}) en fonction du sexe.
+ * Pour `indetermine`, utilise la forme masculine (convention grammaticale française).
+ */
+export function resolveMetier(entry, sexe) {
+  if (!entry || typeof entry === 'string') return entry;
+  return sexe === 'feminin' ? entry.f : entry.m;
 }
