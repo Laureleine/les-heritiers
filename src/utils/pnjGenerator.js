@@ -7,13 +7,29 @@ import {
   SITUATIONS_MATRIMONIALES, SITUATIONS_FAMILIALES,
   NOMS_PAR_NATIONALITE, METIERS_PAR_TRANCHE_AGE,
   TABLES_REEL, TABLES_MERVEILLEUX, SURCHARGES_TYPE_FEE,
-  tirage, tirageMultiple,
+  SECRETS_PAR_CATEGORIE,
+  tirage, tirageCloche, tirageMultiple,
 } from '../data/pnjTables';
 
-// Tables optionnelles (existantes côté Réel seulement pour l'instant)
+// Tables optionnelles (mode Réel seulement)
 function getPhobie(mode)      { return mode === 'reel' ? tirage(TABLES_REEL.phobies)      : null; }
 function getHobby(mode)       { return mode === 'reel' ? tirage(TABLES_REEL.hobbies)      : null; }
 function getComportement(mode){ return mode === 'reel' ? tirage(TABLES_REEL.comportements): null; }
+
+// Retourne le pool de secrets adapté au métier (chaînage), ou le pool général en fallback.
+function getSecret(mode, metier) {
+  if (mode !== 'reel' || !metier) return tirage(TABLES_REEL.secrets);
+  const m = metier.toLowerCase();
+  for (const cat of Object.values(SECRETS_PAR_CATEGORIE)) {
+    if (cat.mots.some(mot => m.includes(mot))) {
+      // 60 % chance de piocher dans le pool thématique, 40 % dans le pool général
+      // (évite que le secret soit toujours trop prévisible)
+      const pool = Math.random() < 0.6 ? cat.secrets : TABLES_REEL.secrets;
+      return tirage(pool);
+    }
+  }
+  return tirage(TABLES_REEL.secrets);
+}
 
 // ─── HELPERS INTERNES ────────────────────────────────────────────────────────
 
@@ -103,12 +119,14 @@ export function genererPnj(options = {}) {
   const nom     = getNom(mode, nationalite, typeFee);
   const titre   = tirage(mode === 'merveilleux' ? tableMerveilleux(typeFee, 'titres') : TABLES_REEL.titres);
   const metier  = getMetier(mode, trancheAge, typeFee);
-  const traits  = tirageMultiple(tableMerveilleux(typeFee, 'traits') || tables.traits, 2);
+  // Distribution en cloche sur les traits (neutre > extrêmes), comme le d4+d10 de CC
+  const traitPool = tableMerveilleux(typeFee, 'traits') || tables.traits;
+  const traits  = [tirageCloche(traitPool), tirageCloche(traitPool)].filter((v, i, a) => a.indexOf(v) === i);
   const apparence = tirage(tableMerveilleux(typeFee, 'apparences') || tables.apparences);
   const motivation = tirage(poolMotivations);
   const relation   = tirage(tables.relations);
   const lieu       = tirage(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
-  const secret     = tirage(tables.secrets);
+  const secret     = mode === 'reel' ? getSecret(mode, metier) : tirage(tables.secrets);
 
   // Champs spécifiques au mode merveilleux
   const apparenceMasquee   = mode === 'merveilleux' ? tirage(TABLES_MERVEILLEUX.apparencesMasquees) : null;
@@ -172,9 +190,11 @@ export function rerollChamp(pnj, champ) {
     case 'metier':
       valeur = getMetier(mode, trancheAge, typeFee);
       break;
-    case 'traits':
-      valeur = tirageMultiple(tableMerveilleux(typeFee, 'traits') || tables.traits, 2);
+    case 'traits': {
+      const pool = tableMerveilleux(typeFee, 'traits') || tables.traits;
+      valeur = [tirageCloche(pool), tirageCloche(pool)].filter((v, i, a) => a.indexOf(v) === i);
       break;
+    }
     case 'apparence':
       valeur = tirage(tableMerveilleux(typeFee, 'apparences') || tables.apparences);
       break;
@@ -192,7 +212,7 @@ export function rerollChamp(pnj, champ) {
       valeur = tirage(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
       break;
     case 'secret':
-      valeur = tirage(tables.secrets);
+      valeur = getSecret(mode, pnj.metier);
       break;
     case 'phobie':
       valeur = getPhobie(mode);
