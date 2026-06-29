@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.25 - \"La Bourse des Silhouettes 📮🗳️\"",
+    date: "29 Juin 2026",
+    description: "Le Générateur de PNJ ouvre ses archives au public. Tout Héritier initié peut désormais proposer une nouvelle entrée dans n'importe quelle table — un trait de caractère inédit, un secret jamais entendu, un métier oublié de la Belle Époque — et les Gardiens valident depuis leur tableau de bord avant que l'entrée rejoigne le corpus commun. Les formes masculines et féminines s'enregistrent séparément quand elles diffèrent, et les propositions refusées restent conservées avec leur motif. À chaque tirage, le générateur pioche désormais dans le corpus collectif autant que dans le corpus fondateur.",
+    changes: [
+      "📮 **Propositions communautaires :** Tout utilisateur connecté peut proposer une entrée dans les 8 tables du générateur (traits, apparences, motivations, secrets, phobies, hobbies, comportements, métiers). Le formulaire — directement sur /generateur — accepte une forme masculine et, si nécessaire, une forme féminine distincte.",
+      "🗳️ **Validation Gardien :** Les propositions soumises restent en attente jusqu'à validation. Les Gardiens approuvent ou refusent depuis un nouvel onglet *Tables PNJ* dans le tableau de bord admin, avec possibilité d'indiquer un motif de refus.",
+      "🔀 **Fusion corpus fondateur + corpus communautaire :** À chaque génération ou reroll, les entrées approuvées en base rejoignent le pool hardcodé — pas de remplacement, seulement de l'enrichissement.",
+      "📋 **Suivi personnel :** Chaque Héritier voit ses propres propositions (en attente ou refusées) sous le formulaire, avec leur statut.",
+      "🔒 **Sécurité RLS :** Les entrées approuvées sont visibles de tous les initiés ; les entrées en attente ne sont visibles que par leur auteur. Seuls les Gardiens peuvent modifier le statut.",
+      "🧪 **364 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.24 - \"L'Art de la Rencontre 🎭🎲\"",
     date: "29 Juin 2026",
     description: "Le Générateur de Personnages Non-Joueurs quitte sa chambre d'enfant pour entrer dans la grande salle. Inspiré des tables de Central Casting, il tire ses silhouettes depuis un corpus de 85 traits de caractère, 40 apparences, 27 motivations et 27 secrets — avec une distribution en cloche qui favorise les tempéraments équilibrés sur les extrêmes. Trois nouveaux champs font leur entrée — peur, passion, comportement distinctif — et le secret s'adapte désormais au métier du personnage à travers huit catégories thématiques. Accordé au sexe du PNJ, le générateur ne produira plus jamais un homme nommé \"veuve de haut rang\". La barre de navigation se simplifie : Gazette, Carte et Générateur rejoignent une page hub commune, prête à accueillir de nouveaux outils.",
