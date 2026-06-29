@@ -10,6 +10,11 @@ import {
   tirage, tirageMultiple,
 } from '../data/pnjTables';
 
+// Tables optionnelles (existantes côté Réel seulement pour l'instant)
+function getPhobie(mode)      { return mode === 'reel' ? tirage(TABLES_REEL.phobies)      : null; }
+function getHobby(mode)       { return mode === 'reel' ? tirage(TABLES_REEL.hobbies)      : null; }
+function getComportement(mode){ return mode === 'reel' ? tirage(TABLES_REEL.comportements): null; }
+
 // ─── HELPERS INTERNES ────────────────────────────────────────────────────────
 
 function tableMerveilleux(typeFee, champ) {
@@ -127,6 +132,9 @@ export function genererPnj(options = {}) {
     relation,
     lieu,
     secret,
+    phobie:       getPhobie(mode),
+    hobby:        getHobby(mode),
+    comportement: getComportement(mode),
     apparenceMasquee,
     apparenceDemasquee,
     sexe,
@@ -185,6 +193,15 @@ export function rerollChamp(pnj, champ) {
       break;
     case 'secret':
       valeur = tirage(tables.secrets);
+      break;
+    case 'phobie':
+      valeur = getPhobie(mode);
+      break;
+    case 'hobby':
+      valeur = getHobby(mode);
+      break;
+    case 'comportement':
+      valeur = getComportement(mode);
       break;
     case 'apparenceMasquee':
       valeur = tirage(TABLES_MERVEILLEUX.apparencesMasquees);
