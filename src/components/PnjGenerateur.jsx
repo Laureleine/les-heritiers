@@ -32,9 +32,20 @@ function getHardcoded(config) {
   return TABLES_REEL[config.tableName] || [];
 }
 
-function formatEntry(e) {
-  if (!e || typeof e === 'string') return e || '';
-  return `${e.m} / ${e.f}`;
+// Affiche une entrée de table, avec distinction des formes genrées
+function EntryCell({ entry, isDb }) {
+  const base = isDb ? 'text-amber-900' : 'text-stone-700';
+  if (!entry || typeof entry === 'string') {
+    return <span className={`text-sm font-serif leading-snug ${base}`}>{entry || ''}</span>;
+  }
+  // Entrée genrée {m, f}
+  return (
+    <span className="text-sm font-serif leading-snug">
+      <span className={base}>{entry.m}</span>
+      <span className="text-stone-300 mx-1.5">·</span>
+      <span className="text-stone-400 italic">{entry.f} <span className="not-italic text-[10px]">♀</span></span>
+    </span>
+  );
 }
 
 // ─── SOUS-COMPOSANTS ─────────────────────────────────────────────────────────
@@ -149,17 +160,21 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
 
       {open && (
         <div className="border-t border-stone-100 px-4 pb-4 pt-3 space-y-4">
-          {/* Liste des entrées */}
-          <div className="flex flex-wrap gap-1.5">
-            {hardcoded.map((e, i) => (
-              <span key={i} className="text-xs bg-stone-100 text-stone-700 font-serif px-2 py-1 rounded-md leading-snug">
-                {formatEntry(e)}
-              </span>
-            ))}
-            {approved.map((e, i) => (
-              <span key={`db-${i}`} className="text-xs bg-amber-50 text-amber-800 border border-amber-200 font-serif px-2 py-1 rounded-md leading-snug">
-                {formatEntry(e)}
-              </span>
+          {/* Liste des entrées — grille numérotée */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-stone-100 rounded-lg overflow-hidden">
+            {[
+              ...hardcoded.map(e => ({ e, isDb: false })),
+              ...approved.map(e => ({ e, isDb: true })),
+            ].map(({ e, isDb }, i) => (
+              <div
+                key={i}
+                className={`flex items-baseline gap-2 px-3 py-2 ${isDb ? 'bg-amber-50' : 'bg-white'}`}
+              >
+                <span className={`text-xs font-mono flex-shrink-0 w-6 text-right ${isDb ? 'text-amber-400' : 'text-stone-300'}`}>
+                  {i + 1}
+                </span>
+                <EntryCell entry={e} isDb={isDb} />
+              </div>
             ))}
           </div>
 
@@ -314,36 +329,35 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
     <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
       {/* ─── Header ─────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 bg-[#1a0f0a] border-b border-amber-900/30 shadow-lg">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="p-2 rounded-lg text-amber-200/70 hover:text-amber-100 hover:bg-white/10 transition-all"
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <div className="flex items-center gap-2">
-            <Dices size={20} className="text-amber-400" />
-            <h1 className="font-serif font-bold text-amber-100 text-lg">Générateur de Personnages</h1>
-          </div>
-        </div>
-        {/* Onglets */}
-        <div className="max-w-3xl mx-auto px-4 flex gap-1">
-          {[
-            { id: 'generateur', label: 'Générateur' },
-            { id: 'tables',     label: 'Tables & Propositions' },
-          ].map(tab => (
+        <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 text-sm font-bold font-serif border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'text-amber-300 border-amber-400'
-                  : 'text-amber-200/50 border-transparent hover:text-amber-200/80'
-              }`}
+              onClick={onBack}
+              className="flex-shrink-0 p-1.5 rounded-lg text-amber-200/70 hover:text-amber-100 hover:bg-white/10 transition-all"
             >
-              {tab.label}
+              <ArrowLeft size={18} />
             </button>
-          ))}
+            <Dices size={18} className="flex-shrink-0 text-amber-400" />
+            <h1 className="font-serif font-bold text-amber-100 text-base truncate">Générateur de Personnages</h1>
+          </div>
+          <div className="flex flex-shrink-0 gap-1">
+            {[
+              { id: 'generateur', label: 'Générateur' },
+              { id: 'tables',     label: 'Tables' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3 py-1.5 text-xs font-bold font-serif rounded-lg transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-amber-700/40 text-amber-200'
+                    : 'text-amber-200/50 hover:text-amber-200/80 hover:bg-white/5'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
