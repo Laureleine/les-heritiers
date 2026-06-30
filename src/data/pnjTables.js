@@ -5,48 +5,48 @@
 // ─── IDENTITÉ ────────────────────────────────────────────────────────────────
 
 export const TRANCHES_AGE = [
-  { id: 'jeune',  label: 'Jeune',  fourchette: '18–30 ans' },
-  { id: 'adulte', label: 'Adulte', fourchette: '31–50 ans' },
-  { id: 'mur',    label: 'Mûr',    fourchette: '51–70 ans' },
-  { id: 'age',    label: 'Âgé',   fourchette: '71 ans et plus' },
+  { id: 'jeune',  label: 'Jeune',  fourchette: '18–30 ans', weight: 1 },
+  { id: 'adulte', label: 'Adulte', fourchette: '31–50 ans', weight: 1 },
+  { id: 'mur',    label: 'Mûr',    fourchette: '51–70 ans', weight: 1 },
+  { id: 'age',    label: 'Âgé',   fourchette: '71 ans et plus', weight: 1 },
 ];
 
 export const SEXES = [
-  { id: 'masculin',    label: 'Masculin' },
-  { id: 'feminin',     label: 'Féminin' },
-  { id: 'indetermine', label: 'Indéterminé' },
+  { id: 'masculin',    label: 'Masculin',    weight: 1 },
+  { id: 'feminin',     label: 'Féminin',     weight: 1 },
+  { id: 'indetermine', label: 'Indéterminé', weight: 1 },
 ];
 
 export const GENRES = [
-  { id: 'conforme',            label: 'Conforme',       description: 'présentation conforme aux usages de l\'époque' },
-  { id: 'non_conforme_masc',   label: 'Habit masculin', description: 'femme à l\'habit masculin, dite "vêtue en homme"' },
-  { id: 'non_conforme_fem',    label: 'Allure féminine',description: 'homme aux traits et manières délicatement féminins' },
-  { id: 'androgyne',           label: 'Androgyne',      description: 'présentation androgyne, indéfinissable au premier regard' },
-  { id: 'indetermine',         label: 'Indéterminé',    description: 'les catégories ne s\'appliquent pas (fées)' },
+  { id: 'conforme',            label: 'Conforme',       description: 'présentation conforme aux usages de l\'époque', weight: 1 },
+  { id: 'non_conforme_masc',   label: 'Habit masculin', description: 'femme à l\'habit masculin, dite "vêtue en homme"', weight: 1 },
+  { id: 'non_conforme_fem',    label: 'Allure féminine',description: 'homme aux traits et manières délicatement féminins', weight: 1 },
+  { id: 'androgyne',           label: 'Androgyne',      description: 'présentation androgyne, indéfinissable au premier regard', weight: 1 },
+  { id: 'indetermine',         label: 'Indéterminé',    description: 'les catégories ne s\'appliquent pas (fées)', weight: 1 },
 ];
 
 export const NATIONALITES = [
-  { id: 'francaise',      label: 'Française',       flag: '🇫🇷' },
-  { id: 'britannique',    label: 'Britannique',      flag: '🇬🇧' },
-  { id: 'russe',          label: 'Russe',            flag: '🇷🇺' },
-  { id: 'americaine',     label: 'Américaine',       flag: '🇺🇸' },
-  { id: 'italienne',      label: 'Italienne',        flag: '🇮🇹' },
-  { id: 'allemande',      label: 'Allemande',        flag: '🇩🇪' },
-  { id: 'austro_hongroise', label: 'Austro-Hongroise', flag: '🇦🇹' },
+  { id: 'francaise',      label: 'Française',       flag: '🇫🇷', weight: 6 },
+  { id: 'britannique',    label: 'Britannique',      flag: '🇬🇧', weight: 1 },
+  { id: 'russe',          label: 'Russe',            flag: '🇷🇺', weight: 1 },
+  { id: 'americaine',     label: 'Américaine',       flag: '🇺🇸', weight: 1 },
+  { id: 'italienne',      label: 'Italienne',        flag: '🇮🇹', weight: 1 },
+  { id: 'allemande',      label: 'Allemande',        flag: '🇩🇪', weight: 1 },
+  { id: 'austro_hongroise', label: 'Austro-Hongroise', flag: '🇦🇹', weight: 1 },
 ];
 
 export const SITUATIONS_MATRIMONIALES = [
-  { id: 'celibataire', label: 'Célibataire' },
-  { id: 'marie',       label: 'Marié(e)',        labelM: 'Marié',         labelF: 'Mariée' },
-  { id: 'veuf',        label: 'Veuf / Veuve',    labelM: 'Veuf',          labelF: 'Veuve' },
-  { id: 'separe',      label: 'Séparé(e) de fait', labelM: 'Séparé de fait', labelF: 'Séparée de fait' },
+  { id: 'celibataire', label: 'Célibataire',                                    weight: 1 },
+  { id: 'marie',       label: 'Marié(e)',        labelM: 'Marié',         labelF: 'Mariée',       weight: 1 },
+  { id: 'veuf',        label: 'Veuf / Veuve',    labelM: 'Veuf',          labelF: 'Veuve',        weight: 1 },
+  { id: 'separe',      label: 'Séparé(e) de fait', labelM: 'Séparé de fait', labelF: 'Séparée de fait', weight: 1 },
 ];
 
 export const SITUATIONS_FAMILIALES = [
-  { id: 'sans_enfants',    label: 'Sans enfants' },
-  { id: 'enfants_mineurs', label: 'Parent d\'enfants mineurs' },
-  { id: 'enfants_adultes', label: 'Parent d\'enfants adultes' },
-  { id: 'orphelin',        label: 'Orphelin(e)', labelM: 'Orphelin', labelF: 'Orpheline' },
+  { id: 'sans_enfants',    label: 'Sans enfants',                                                       weight: 1 },
+  { id: 'enfants_mineurs', label: 'Parent d\'enfants mineurs',                                          weight: 1 },
+  { id: 'enfants_adultes', label: 'Parent d\'enfants adultes',                                          weight: 1 },
+  { id: 'orphelin',        label: 'Orphelin(e)', labelM: 'Orphelin', labelF: 'Orpheline',               weight: 1 },
 ];
 
 // ─── NOMS PAR NATIONALITÉ ────────────────────────────────────────────────────
@@ -899,6 +899,21 @@ export const SURCHARGES_TYPE_FEE = {
 export function tirage(tableau) {
   if (!tableau || tableau.length === 0) return null;
   return tableau[Math.floor(Math.random() * tableau.length)];
+}
+
+/**
+ * Tirage pondéré : les entrées avec un weight élevé ont plus de chances.
+ * Chaque objet doit avoir un champ weight (défaut 1 si absent).
+ */
+export function tiragePondere(tableau) {
+  if (!tableau || tableau.length === 0) return null;
+  const total = tableau.reduce((s, item) => s + (item.weight ?? 1), 0);
+  let seuil = Math.random() * total;
+  for (const item of tableau) {
+    seuil -= (item.weight ?? 1);
+    if (seuil <= 0) return item;
+  }
+  return tableau[tableau.length - 1];
 }
 
 /**

@@ -8,7 +8,7 @@ import {
   NOMS_PAR_NATIONALITE, METIERS_PAR_TRANCHE_AGE,
   TABLES_REEL, TABLES_MERVEILLEUX, SURCHARGES_TYPE_FEE,
   SECRETS_PAR_CATEGORIE,
-  tirage, tirageCloche, tirageMultiple,
+  tirage, tiragePondere, tirageCloche, tirageMultiple,
   accordLabel, resolveMetier, resolveText, getPolarity,
 } from '../data/pnjTables';
 
@@ -27,9 +27,9 @@ function computePolariteScore(polarites) {
 }
 
 // Tables optionnelles (mode Réel seulement)
-function getPhobie(mode, db = {})       { return mode === 'reel' ? tirage(merge(TABLES_REEL.phobies,       db, 'phobies'))       : null; }
-function getHobby(mode, db = {})        { return mode === 'reel' ? tirage(merge(TABLES_REEL.hobbies,       db, 'hobbies'))       : null; }
-function getComportement(mode, db = {}) { return mode === 'reel' ? tirage(merge(TABLES_REEL.comportements, db, 'comportements')) : null; }
+function getPhobie(mode, db = {})       { return mode === 'reel' ? tiragePondere(merge(TABLES_REEL.phobies,       db, 'phobies'))       : null; }
+function getHobby(mode, db = {})        { return mode === 'reel' ? tiragePondere(merge(TABLES_REEL.hobbies,       db, 'hobbies'))       : null; }
+function getComportement(mode, db = {}) { return mode === 'reel' ? tiragePondere(merge(TABLES_REEL.comportements, db, 'comportements')) : null; }
 
 // Retourne le pool de secrets adapté au métier (chaînage), ou le pool général en fallback.
 // generalPool = TABLES_REEL.secrets + entrées DB approuvées
@@ -121,16 +121,16 @@ export function genererPnj(options = {}, dbEntries = {}) {
     typeFee = null,
   } = options;
 
-  // Tirer les champs d'identité si non fixés
-  const sexe              = options.sexe              || tirage(SEXES.map(s => s.id));
-  const genre             = options.genre             || tirage(GENRES.filter(g => mode === 'merveilleux' ? true : g.id !== 'indetermine').map(g => g.id));
-  const trancheAge        = options.trancheAge        || tirage(TRANCHES_AGE.map(t => t.id));
-  const nationalite       = options.nationalite       || (mode === 'merveilleux' ? null : tirage([
-    'francaise','francaise','francaise','francaise','francaise','francaise',
-    'britannique','russe','americaine','italienne','allemande','austro_hongroise',
-  ]));
-  const situationMatrimoniale = options.situationMatrimoniale || tirage(SITUATIONS_MATRIMONIALES.map(s => s.id));
-  const situationFamiliale    = options.situationFamiliale    || tirage(SITUATIONS_FAMILIALES.map(s => s.id));
+  // Tirer les champs d'identité si non fixés (tirage pondéré)
+  const sexe              = options.sexe              || tiragePondere(merge(SEXES, dbEntries, 'sexes')).id;
+  const genre             = options.genre             || tiragePondere(merge(
+    GENRES.filter(g => mode === 'merveilleux' ? true : g.id !== 'indetermine'),
+    dbEntries, 'genres'
+  )).id;
+  const trancheAge        = options.trancheAge        || tiragePondere(merge(TRANCHES_AGE, dbEntries, 'tranches_age')).id;
+  const nationalite       = options.nationalite       || (mode === 'merveilleux' ? null : tiragePondere(merge(NATIONALITES, dbEntries, 'nationalites')).id);
+  const situationMatrimoniale = options.situationMatrimoniale || tiragePondere(merge(SITUATIONS_MATRIMONIALES, dbEntries, 'situations_matrimoniales')).id;
+  const situationFamiliale    = options.situationFamiliale    || tiragePondere(merge(SITUATIONS_FAMILIALES, dbEntries, 'situations_familiales')).id;
 
   const tables = mode === 'merveilleux' ? TABLES_MERVEILLEUX : TABLES_REEL;
 
@@ -150,14 +150,14 @@ export function genererPnj(options = {}, dbEntries = {}) {
     .filter((v, i, a) => a.findIndex(t => resolveText(t, sexe) === resolveText(v, sexe)) === i);
   const traits = rawTraits.map(t => resolveText(t, sexe) || resolveText(t, 'masculin') || '');
 
-  const rawApparence  = tirage(merge(tableMerveilleux(typeFee, 'apparences') || tables.apparences, dbEntries, 'apparences'));
-  const rawMotivation = tirage(poolMotivations);
+  const rawApparence  = tiragePondere(merge(tableMerveilleux(typeFee, 'apparences') || tables.apparences, dbEntries, 'apparences'));
+  const rawMotivation = tiragePondere(poolMotivations);
   const apparence     = resolveText(rawApparence,  sexe) ?? rawApparence;
   const motivation    = resolveText(rawMotivation, sexe) ?? rawMotivation;
-  const relation   = tirage(tables.relations);
-  const lieu       = tirage(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
+  const relation   = tiragePondere(tables.relations);
+  const lieu       = tiragePondere(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
   const baseSecrets  = merge(TABLES_REEL.secrets, dbEntries, 'secrets');
-  const rawSecret    = mode === 'reel' ? getSecret(mode, metier, baseSecrets) : tirage(tables.secrets);
+  const rawSecret    = mode === 'reel' ? getSecret(mode, metier, baseSecrets) : tiragePondere(tables.secrets);
   const secret       = resolveText(rawSecret, sexe) ?? rawSecret;
 
   const rawComportement = getComportement(mode, dbEntries);
@@ -242,20 +242,20 @@ export function rerollChamp(pnj, champ, dbEntries = {}) {
       break;
     }
     case 'apparence':
-      valeur = tirage(merge(tableMerveilleux(typeFee, 'apparences') || tables.apparences, dbEntries, 'apparences'));
+      valeur = tiragePondere(merge(tableMerveilleux(typeFee, 'apparences') || tables.apparences, dbEntries, 'apparences'));
       break;
     case 'motivation': {
       const base = (situationMatrimoniale === 'veuf' && mode === 'reel')
         ? [...TABLES_REEL.motivations, ...TABLES_REEL.motivationsVeuf]
         : tables.motivations;
-      valeur = tirage(merge(base, dbEntries, 'motivations'));
+      valeur = tiragePondere(merge(base, dbEntries, 'motivations'));
       break;
     }
     case 'relation':
-      valeur = tirage(tables.relations);
+      valeur = tiragePondere(tables.relations);
       break;
     case 'lieu':
-      valeur = tirage(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
+      valeur = tiragePondere(tableMerveilleux(typeFee, 'lieux') || tables.lieux);
       break;
     case 'secret':
       valeur = getSecret(mode, pnj.metier, merge(TABLES_REEL.secrets, dbEntries, 'secrets'));
@@ -276,29 +276,32 @@ export function rerollChamp(pnj, champ, dbEntries = {}) {
       valeur = tirage(tableMerveilleux(typeFee, 'apparencesDemasquees') || TABLES_MERVEILLEUX.apparencesDemasquees);
       break;
     case 'sexe': {
-      const newSexe = tirage(SEXES.map(s => s.id));
+      const newSexe = tiragePondere(merge(SEXES, dbEntries, 'sexes')).id;
       const newPrenom = getPrenom(newSexe, mode, nationalite, typeFee);
       const newMetier = getMetier(mode, pnj.trancheAge, typeFee, newSexe, dbEntries);
       return corrigerCoherence({ ...pnj, sexe: newSexe, prenom: newPrenom, metier: newMetier });
     }
     case 'genre':
-      valeur = tirage(GENRES.filter(g => mode === 'merveilleux' ? true : g.id !== 'indetermine').map(g => g.id));
+      valeur = tiragePondere(merge(
+        GENRES.filter(g => mode === 'merveilleux' ? true : g.id !== 'indetermine'),
+        dbEntries, 'genres'
+      )).id;
       break;
     case 'trancheAge':
-      valeur = tirage(TRANCHES_AGE.map(t => t.id));
+      valeur = tiragePondere(merge(TRANCHES_AGE, dbEntries, 'tranches_age')).id;
       return corrigerCoherence({ ...pnj, trancheAge: valeur, metier: getMetier(mode, valeur, typeFee, pnj.sexe, dbEntries) });
     case 'nationalite': {
-      const newNat = tirage(['francaise','francaise','francaise','francaise','francaise','francaise','britannique','russe','americaine','italienne','allemande','austro_hongroise']);
+      const newNat = tiragePondere(merge(NATIONALITES, dbEntries, 'nationalites')).id;
       const newPrenom2 = getPrenom(pnj.sexe, mode, newNat, typeFee);
       const newNom = getNom(mode, newNat, typeFee);
       const newRaison = (newNat && newNat !== 'francaise') ? tirage(NOMS_PAR_NATIONALITE[newNat]?.raisonsPresence || []) : null;
       return corrigerCoherence({ ...pnj, nationalite: newNat, prenom: newPrenom2, nom: newNom, raisonPresence: newRaison });
     }
     case 'situationMatrimoniale':
-      valeur = tirage(SITUATIONS_MATRIMONIALES.map(s => s.id));
+      valeur = tiragePondere(merge(SITUATIONS_MATRIMONIALES, dbEntries, 'situations_matrimoniales')).id;
       break;
     case 'situationFamiliale':
-      valeur = tirage(SITUATIONS_FAMILIALES.map(s => s.id));
+      valeur = tiragePondere(merge(SITUATIONS_FAMILIALES, dbEntries, 'situations_familiales')).id;
       return corrigerCoherence({ ...pnj, situationFamiliale: valeur });
     default:
       return pnj;
@@ -323,19 +326,35 @@ export function pnjVersPayloadFigure(pnj) {
   const maritalLabel = accordLabel(SITUATIONS_MATRIMONIALES.find(s => s.id === pnj.situationMatrimoniale), pnj.sexe);
   const familleLabel = accordLabel(SITUATIONS_FAMILIALES.find(s => s.id === pnj.situationFamiliale), pnj.sexe);
 
-  const descriptionBlocs = [
-    `${pnj.metier}${trancheLabel ? ` (${trancheLabel})` : ''}`,
-    natLabel && natLabel !== 'Française' ? `Nationalité : ${natLabel}${pnj.raisonPresence ? ` — ${pnj.raisonPresence}` : ''}` : null,
-    genreLabel !== 'présentation conforme aux usages de l\'époque' ? `Présentation : ${genreLabel}` : null,
-    `${maritalLabel}${familleLabel ? `, ${familleLabel}` : ''}`,
-    '',
-    `Traits : ${pnj.traits.join(', ')}.`,
-    `Motivation : ${pnj.motivation}.`,
-    `Relation aux joueurs : ${pnj.relation}.`,
-    `Lieu de rencontre : ${pnj.lieu}.`,
-    '',
-    `Secret : ${pnj.secret}.`,
-  ].filter(l => l !== null).join('\n');
+  const lignes = [];
+
+  lignes.push(`Métier : ${pnj.metier}${trancheLabel ? ` (${trancheLabel})` : ''}`);
+  if (pnj.typeFee) lignes.push(`Type de fée : ${pnj.typeFee}`);
+  if (natLabel && natLabel !== 'Française') {
+    lignes.push(`Nationalité : ${natLabel}${pnj.raisonPresence ? ` — ${pnj.raisonPresence}` : ''}`);
+  }
+  if (genreLabel !== 'présentation conforme aux usages de l\'époque') {
+    lignes.push(`Présentation : ${genreLabel}`);
+  }
+  lignes.push(`Situation : ${maritalLabel}${familleLabel ? `, ${familleLabel}` : ''}`);
+  lignes.push('');
+
+  lignes.push(`Traits : ${pnj.traits.join(', ')}.`);
+  lignes.push(`Apparence : ${pnj.apparence}.`);
+  lignes.push(`Motivation : ${pnj.motivation}.`);
+  lignes.push(`Relation aux joueurs : ${pnj.relation}.`);
+  lignes.push(`Lieu de rencontre : ${pnj.lieu}.`);
+  lignes.push('');
+
+  if (pnj.phobie) lignes.push(`Peur / Phobie : ${pnj.phobie}.`);
+  if (pnj.hobby) lignes.push(`Passion / Passe-temps : ${pnj.hobby}.`);
+  if (pnj.comportement) lignes.push(`Comportement distinctif : ${pnj.comportement}.`);
+
+  if (pnj.apparenceMasquee) lignes.push(`Apparence masquée : ${pnj.apparenceMasquee}.`);
+  if (pnj.apparenceDemasquee) lignes.push(`Apparence démasquée : ${pnj.apparenceDemasquee}.`);
+
+  lignes.push('');
+  lignes.push(`Secret : ${pnj.secret}.`);
 
   return {
     name: nomComplet,
@@ -344,24 +363,32 @@ export function pnjVersPayloadFigure(pnj) {
     faux_semblant_type_fee: pnj.typeFee || null,
     apparence_masquee: pnj.apparenceMasquee || pnj.apparence,
     apparence_demasquee: pnj.apparenceDemasquee || null,
-    description: descriptionBlocs,
+    description: lignes.join('\n'),
     is_official: false,
     data: {
-      metier:               pnj.metier,
-      tranche_age:          pnj.trancheAge,
-      sexe:                 pnj.sexe,
-      genre:                pnj.genre,
-      nationalite:          pnj.nationalite,
-      raison_presence:      pnj.raisonPresence,
-      traits:               pnj.traits,
-      secret:               pnj.secret,
-      apparence:            pnj.apparence,
-      motivation:           pnj.motivation,
-      relation:             pnj.relation,
-      lieu:                 pnj.lieu,
+      metier:                 pnj.metier,
+      tranche_age:            pnj.trancheAge,
+      sexe:                   pnj.sexe,
+      genre:                  pnj.genre,
+      nationalite:            pnj.nationalite,
+      raison_presence:        pnj.raisonPresence,
+      traits:                 pnj.traits,
+      secret:                 pnj.secret,
+      apparence:              pnj.apparence,
+      motivation:             pnj.motivation,
+      relation:               pnj.relation,
+      lieu:                   pnj.lieu,
       situation_matrimoniale: pnj.situationMatrimoniale,
       situation_familiale:    pnj.situationFamiliale,
-      generated_by:         'random',
+      phobie:                 pnj.phobie,
+      hobby:                  pnj.hobby,
+      comportement:           pnj.comportement,
+      apparence_masquee:      pnj.apparenceMasquee,
+      apparence_demasquee:    pnj.apparenceDemasquee,
+      polarite_score:         pnj.polariteScore,
+      mode:                   pnj.mode,
+      type_fee:               pnj.typeFee,
+      generated_by:           'random',
     },
   };
 }

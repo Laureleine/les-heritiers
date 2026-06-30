@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.27 - \"La Balance des Destins 🎭⚖️\"",
+    date: "30 Juin 2026",
+    description: "Le Générateur de PNJ apprend à peser les âmes. Chaque entrée reçoit un poids secret, de 1 à 10 : une nationalité française croise plus souvent le chemin qu'une nationalité lointaine, un métier courant pèse plus lourd qu'une rareté. Les Héritiers peuvent désormais enrichir les tables d'identité elles-mêmes — âge, sexe, genre, nationalité, situation matrimoniale et familiale — par le même circuit de propositions que les traits et secrets. Et quand un Gardien juge une évidence, un bouton émeraude lui permet d'ajouter ou corriger sans attendre.",
+    changes: [
+      "⚖️ **Poids des entrées :** Chaque ligne des tables porte maintenant un poids de 1 à 10. Le tirage aléatoire favorise les entrées les plus lourdes : un métier banal (poids 6) sortira trois fois plus souvent qu'une rareté (poids 2). Les nationalités aussi : française (6) est plus fréquente que japonaise (1).",
+      "🎭 **Six nouvelles tables proposables :** Tranches d'âge, sexes, genres, nationalités, situations matrimoniales et familiales quittent le code pour rejoindre la base communautaire. Les Héritiers peuvent en proposer de nouvelles entrées, et les Gardiens les valider depuis l'onglet Tables.",
+      "🟢 **Ajout direct des Gardiens :** Les super-administrateurs voient un bouton émeraude ✎ Modifier directement / ✓ Ajouter directement à côté de chaque entrée. Il contourne le circuit de validation et enregistre la modification en un clic dans la base.",
+      "🧚 **Type de fée visible :** Dans le bandeau récapitulatif du Générateur, un badge violet ✦ indique maintenant le type de fée quand le mode Merveilleux est actif.",
+      "📖 **Encyclopédie enrichie :** Les fiches des PNJ aléatoires affichent désormais leurs champs avec des noms soulignés, et les valeurs longues passent sur deux lignes plutôt que d'être tronquées.",
+      "🔤 **Tables triées :** La liste des tables dans l'onglet Tables suit l'ordre alphabétique pour un repérage plus rapide.",
+      "🧪 **364 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.26 - \"Le Prisme des Âmes ⚖️✨\"",
     date: "29 Juin 2026",
     description: "Chaque silhouette révèle désormais sa nature profonde. Les tables du Générateur s'ouvrent au masculin comme au féminin d'un simple geste, et chaque entrée porte en secret son poids — lumière ou ombre, d'un point à deux. Au tirage, ces poids se combinent en une jauge de tendance, de 1 à 10 : un personnage tout de bonté frôle le dix, un être de noirceur touche le fond, et la plupart des silhouettes de la Belle Époque se tiennent quelque part entre les deux. Pour affiner le corpus, chaque Héritier peut désormais proposer une correction d'une entrée existante, pré-remplie d'un clic.",
