@@ -346,3 +346,80 @@ Le stash pop après un merge peut produire des conflits (ex: `public/version.jso
 - **Supabase** : migration `get_community_stats_detail` appliquée
 - **Aucune modification non commitée** dans le repo principal
 
+---
+
+# REX — Session 30 Juin 2026 — v17.4.27 « La Balance des Destins »
+
+## Ce qui a été livré
+
+1. **Système de poids (weight)** sur chaque entrée des tables PNJ. Colonne `weight INTEGER NOT NULL DEFAULT 1` en DB. Fonction `tiragePondere()` dans `pnjTables.js`.
+2. **6 tables d'identité rendues proposables** : `tranche_age`, `sexe`, `genre`, `nationalite`, `situation_matrimoniale`, `situation_familiale`. Extension contrainte `table_name` via migration.
+3. **Passage direct gardien (bypass validation)** : bouton émeraude `✎ Modifier directement` / `✓ Ajouter directement` visible pour `isAdmin()`. UPDATE si `editingDbId` existe, sinon INSERT avec `status:'approved'`.
+4. **Type de fée dans le récap** générateur : badge violet `✦` en mode Merveilleux.
+5. **Encyclopédie enrichie** : champs soulignés dans le rendu PNJ, texte non tronqué (multiline).
+6. **Tri alphabétique** des tables dans `TABLES_CONFIG`.
+7. **Migration DB** `scripts/migrate_pnj_weights.js`.
+
+## Règles et astuces découvertes
+
+- **Préserver `_dbId` dans `groupApproved`** : crucial pour que les gardiens puissent UPDATE une ligne existante. Les entrées identité reçoivent `_dbId: row.id` dans l'objet entry.
+- **`tiragePondere` doit être rétrocompatible** : `item.weight ?? 1` pour ne pas casser les entrées hardcodées sans weight.
+- **IDs des entrées identité** : préfixe `custom_` + UUID pour éviter les conflits avec les IDs hardcodés.
+- **Bouton direct gardien** : tester `userProfile?.role === 'super_admin'` plutôt que `isAdmin` pour être sûr que seuls les super_admins voient le bypass.
+- **Toujours vérifier `npm test` avant `git push`** : 364 tests verts cette session, aucun échec.
+- **Format description version.js** : garder le ton Belle Époque/merveilleux, expliquer la feature en langage métier, pas technique.
+
+## Bugs évités / rencontrés
+
+- **Type de fée non défini** dans `pnjVersPayloadFigure` quand mode Merveilleux + typeFee non sélectionné — corrigé en piochant aléatoirement dans `handleGenerer` avant d'appeler `genererPnj`.
+- **Champs tronqués dans l'encyclopédie** : le CSS `truncate` limitait à 1 ligne. Remplacé par `whitespace-pre-wrap break-words` sur les spans de valeur.
+
+## Temps
+
+- Session ~2h30 : refacto pondération (45min), tables identité proposables (1h), passage direct gardien (30min), corrections affichage (15min), versionning (10min).
+
+## État en fin de session
+
+- **364 tests verts** (28 fichiers)
+- **Vercel** : Site accessible (`les-heritiers.vercel.app`)
+- **Backup** : `backup_2026-06-30T12-20-19.json`
+- **Aucune modification non commitée** dans le repo principal (hors REX.md et message_heritiers)
+
+---
+
+# REX — Session 30 Juin 2026 — v17.4.28 « Le Festin des Belles Heures »
+
+## Ce qui a été livré
+
+1. **Générateur de Menu** complet, sur le modèle du Générateur de PNJ : 3 tables Supabase (`menu_plats`, `menu_structures`, `menu_sauvegardes`) avec RLS, migration idempotente `scripts/migrate_menu.js`.
+2. **Corpus de bootstrap** : 193 plats répartis sur 14 catégories et 43 structures de repas (petit-déjeuner, déjeuner, dîner, souper, goûter, banquet × 4 niveaux financiers × tranches de convives), rédigés en français Belle Époque avec accents complets.
+3. **Logique de génération pure** (`src/utils/menuGenerator.js`) : calcul de tranche de convives, filtrage par catégorie/niveau/saison/bornes de convives, tirage sans remise, reroll à 3 niveaux (global/service/plat), résolution culinaire par dé (1d10 + niveau cuisinier, seuil = 6 + difficulté×2).
+4. **3 hooks** (`useMenuGenerateur`, `useMenuPlats`, `useMenuSauvegardes`) et 6 composants (`GenerateurMenu`, `MenuForm`, `MenuAffichage`, `MenuService`, `MenuPlat`, `MenuDe`, `ProposerPlat`).
+5. **Onglet admin `TabMenuPropositions`** : même pattern que `TabPnjPropositions`, statuts en français (`en_attente`/`approuve`/`refuse`).
+6. **18 tests de non-régression** : logique pure (`menuGenerator.test.js`) et hook avec mock Supabase (`useMenuGenerateur.test.js`).
+
+## Règles et astuces découvertes
+
+- **Reprise de chantier via worktree existant** : une instruction floue de l'utilisateur (« finir le travail sur les menus ») n'avait aucun contexte dans la conversation. La piste a été retrouvée en cherchant les fichiers `docs/design/*.md` non suivis dans les autres worktrees (`.claude/worktrees/*`) — une spec datée du jour était déjà rédigée et validée dans `peppy-skipping-giraffe`, signe qu'une session précédente avait fait le travail de cadrage (questions/alternatives) mais pas l'implémentation.
+- **Un sous-agent peut « terminer » sans avoir rien écrit** : le sous-agent chargé de rédiger le corpus de données (~200 plats) a buté sur une limite de session après ~20 minutes ; sa notification de complétion ne contenait qu'un message système sur la limite, pas le résumé attendu. Toujours vérifier l'existence réelle du fichier produit avant de faire confiance au rapport d'un sous-agent, surtout pour les tâches longues.
+- **`EnterWorktree` (sans `path`) part de `origin/<branche>` par défaut**, pas du `main` local. Un premier worktree de versioning créé après un merge local non poussé ne contenait donc pas le commit du générateur de menu (364 tests au lieu de 382). Solution : `git merge main` (le main local) depuis le nouveau worktree avant de continuer. À surveiller à chaque fois qu'un travail vient d'être mergé localement sans push.
+- **RLS — ne pas copier aveuglément un pattern existant qui a une faille** : la policy INSERT du PNJ (`pnj_table_entries`) ne vérifie que `created_by = auth.uid()`, sans contrôler le `status` — n'importe quel utilisateur authentifié pourrait donc insérer directement une entrée `approved` en RLS (la protection n'est que côté UI). Pour `menu_plats`, la policy INSERT a été durcie : `WITH CHECK (auteur_id = auth.uid() AND (statut = 'en_attente' OR EXISTS (... gardien ...)))`.
+- **`.env` n'est pas copié dans un nouveau worktree** (gitignoré) : copier manuellement le fichier depuis le dépôt principal avant de lancer un script de migration qui dépend de `SUPABASE_DB_URL`.
+- **Erreur SQL « column reference "id" is ambiguous »** : en joignant `auth.users` et `public.profiles` (les deux ont une colonne `id`), toujours préfixer explicitement (`u.id`) même dans un simple `SELECT id FROM ... JOIN ...`.
+
+## Bugs évités / rencontrés
+
+- **`rerollPlat` pouvait retirer le même plat** : la première version excluait seulement les plats déjà choisis dans les *autres* emplacements du service, pas le plat actuel — un reroll avait donc une chance de retomber sur le même plat. Corrigé pour exclure aussi le plat en cours, avec repli sur le pool complet si aucune alternative n'existe.
+- **Worktree « fantôme » après `git worktree remove`** : sur Windows, la suppression a échoué avec *Permission denied* puis laissé un répertoire vide non traqué par git (verrou OS sans processus Node trouvé). `git worktree prune` a suffi à nettoyer l'état git ; le répertoire vide résiduel est sans impact.
+
+## Temps
+
+- Session ~1h45 : exploration/cadrage du chantier existant (15min), patterns PNJ via sous-agent (parallèle), implémentation migration+hooks+composants (45min), corpus de données après échec du sous-agent (35min), migration+tests+build (15min), intégration et merge (10min), versionning (15min).
+
+## État en fin de session
+
+- **382 tests verts** (30 fichiers)
+- **Build** : vert (`npm run build`)
+- **Supabase** : migration `menu_plats`/`menu_structures`/`menu_sauvegardes` appliquée, 43 structures + 193 plats en base
+- **Branche `worktree-peppy-skipping-giraffe`** fusionnée (fast-forward) sur `main` local et supprimée
+
