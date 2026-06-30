@@ -125,6 +125,8 @@ import {
     Navigation,
     Route,
     Menu,
+    UtensilsCrossed,
+    Wine,
 } from 'lucide-react';
 
 export {
@@ -143,7 +145,7 @@ export {
     Scaling, Calendar, Camera,
     Eye, EyeOff, Image,
     ThumbsUp, ThumbsDown, Bug, Bell, BellOff, Smartphone, Palette, Wrench, FolderOpen,
-    Hammer, Map, Navigation, Route, Menu,
+    Hammer, Map, Navigation, Route, Menu, UtensilsCrossed, Wine,
 };
 
 export const iconMap = {
@@ -162,5 +164,5 @@ export const iconMap = {
     Scaling, Calendar, Camera,
     Eye, EyeOff, Image,
     ThumbsUp, ThumbsDown, Bug, Bell, BellOff, Smartphone, Palette, Wrench, FolderOpen,
-    Hammer, Map, Navigation, Route, Menu,
+    Hammer, Map, Navigation, Route, Menu, UtensilsCrossed, Wine,
 };

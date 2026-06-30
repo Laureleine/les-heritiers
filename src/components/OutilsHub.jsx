@@ -1,6 +1,6 @@
 // src/components/OutilsHub.jsx
 import React from 'react';
-import { ArrowLeft, Globe, Map, Dices } from '../config/icons';
+import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed } from '../config/icons';
 
 const OUTILS = [
   {
@@ -36,10 +36,21 @@ const OUTILS = [
     hover: 'hover:bg-teal-100 hover:border-teal-300',
     iconColor: 'text-teal-700',
   },
+  {
+    id: 'menu',
+    titre: 'Générateur de Menu',
+    description: 'Composez un menu de repas 1899 selon la saison, le rang social et la tablée — avec résolution culinaire.',
+    icon: UtensilsCrossed,
+    couleur: 'rose',
+    bg: 'bg-rose-50',
+    border: 'border-rose-200',
+    hover: 'hover:bg-rose-100 hover:border-rose-300',
+    iconColor: 'text-rose-700',
+  },
 ];
 
-export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur }) {
-  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur };
+export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu }) {
+  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu };
 
   return (
     <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
