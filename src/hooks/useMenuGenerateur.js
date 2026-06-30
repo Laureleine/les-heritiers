@@ -36,7 +36,7 @@ export function useMenuGenerateur(platsApprouves) {
     setParametres(params);
     setMenu(genererMenu({
       structure: structureChoisie, plats: platsApprouves,
-      niveauFinancier, saison, nbConvives,
+      niveauFinancier, saison, nbConvives, typeRepas,
     }));
   }, [platsApprouves]);
 
@@ -45,6 +45,7 @@ export function useMenuGenerateur(platsApprouves) {
     setMenu(genererMenu({
       structure, plats: platsApprouves,
       niveauFinancier: parametres.niveauFinancier, saison: parametres.saison, nbConvives: parametres.nbConvives,
+      typeRepas: parametres.typeRepas,
     }));
   }, [structure, parametres, platsApprouves]);
 
@@ -52,6 +53,7 @@ export function useMenuGenerateur(platsApprouves) {
     if (!menu || !structure || !parametres) return;
     setMenu(rerollService(menu, platsApprouves, structure, serviceId, {
       niveauFinancier: parametres.niveauFinancier, saison: parametres.saison, nbConvives: parametres.nbConvives,
+      typeRepas: parametres.typeRepas,
     }));
   }, [menu, structure, parametres, platsApprouves]);
 
@@ -59,6 +61,7 @@ export function useMenuGenerateur(platsApprouves) {
     if (!menu || !structure || !parametres) return;
     setMenu(rerollPlat(menu, platsApprouves, structure, serviceId, platIndex, {
       niveauFinancier: parametres.niveauFinancier, saison: parametres.saison, nbConvives: parametres.nbConvives,
+      typeRepas: parametres.typeRepas,
     }));
   }, [menu, structure, parametres, platsApprouves]);
 
