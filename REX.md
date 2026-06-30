@@ -423,3 +423,48 @@ Le stash pop après un merge peut produire des conflits (ex: `public/version.jso
 - **Supabase** : migration `menu_plats`/`menu_structures`/`menu_sauvegardes` appliquée, 43 structures + 193 plats en base
 - **Branche `worktree-peppy-skipping-giraffe`** fusionnée (fast-forward) sur `main` local et supprimée
 
+---
+
+# REX — Session 1 Juillet 2026 — v17.4.29 « L'Étiquette de la Table »
+
+## Ce qui a été livré
+
+Deux passes successives de raffinement du Générateur de Menu, demandées par l'utilisateur en se positionnant explicitement comme « développeur expert et historien de la gastronomie Belle Époque », avec des règles très précises et des exemples de plats concrets tirés du corpus existant.
+
+**Passe 1 — cohérence de standing social (base) :**
+1. Exclusion par mots-clés des hors-d'œuvre trop simples (jambon, rillettes, crudités, harengs) pour la grande bourgeoisie/aristocratie en dîner/banquet.
+2. Exclusion des légumes rustiques (gratin dauphinois, pot-au-feu, purée simple) pour la grande bourgeoisie/aristocratie.
+3. Exclusion des fromages rustiques (Munster, Livarot, Reblochon) + injection forcée des classiques des salons parisiens (Brie, Roquefort, Camembert) même si leur tag `niveaux` ne couvrait pas le rang demandé.
+4. Règle de non-doublon entremets/dessert : si l'entremets est une pâtisserie lourde, le dessert est restreint aux propositions légères.
+
+**Passe 2 — affinage + bug fix :**
+1. **Bug corrigé** : le service "Légume" pouvait sortir vide (si le tirage de base — niveau+saison+convives — ne trouvait aucun candidat avant même les règles sociales). Ajout d'un garde-fou en cascade : repli sur niveau seul, puis sur tout le corpus légume en dernier recours.
+2. Extension de l'exclusion fromages à Comté/Beaufort (alpage/garde), en plus de Munster/Livarot/Reblochon.
+3. Renforcement du doublon entremets/dessert : ajout de "Pudding" aux pâtisseries lourdes, et surtout **ajout de 4 nouveaux plats en base** (Corbeille de fruits de saison, Assortiment de macarons, Chocolats fins, Petits fours secs) car la catégorie `dessert` n'avait quasiment aucun candidat "léger" réel (seuls Sorbet au cassis et Compote de pommes correspondaient, et Compote n'était même pas tagué pour les hauts niveaux).
+4. Nouvelle règle : un texte d'intro évoquant la haute noblesse (armoiries, lignée, blason, ancienneté) verrouille le niveau financier effectif sur `aristocratie` pour le choix des plats — propagé via `menu.niveauFinancierEffectif`, qui survit aux rerolls de service/plat.
+
+## Règles et astuces découvertes
+
+- **Une règle métier énoncée avec des exemples de plats concrets doit être vérifiée contre le corpus réel** avant d'écrire le code : en croisant chaque exemple cité par l'utilisateur (Jambon de Bayonne, Gratin dauphinois, Munster) avec les tags `niveaux` existants, on découvre vite que le filtrage par mots-clés (sur le nom, accent-insensible) est largement suffisant — pas besoin de migrer les tags `niveaux` en base, une couche de filtrage en code suffit et reste plus générique pour les futurs ajouts communautaires.
+- **Une règle d'allow-list "remplace par X" ne fonctionne que si X existe vraiment dans le pool filtré par catégorie.** La règle « remplace le dessert par une corbeille de fruits/macarons/petits fours » était inopérante en pratique car ces plats n'existaient pas en catégorie `dessert` (macarons existait, mais en catégorie `patisserie`, un service différent). Toujours vérifier qu'un "force vers X" a de vrais candidats dans la bonne catégorie avant de considérer la règle comme implémentée — sinon le garde-fou anti-pool-vide masque silencieusement l'absence de candidats.
+- **Le garde-fou anti-pool-vide doit s'appliquer à chaque étage du pipeline, pas qu'au dernier.** Le premier passage avait un garde-fou dans `exclureMotsCles` (règles sociales) mais pas en amont, au niveau de `filtrerPlatsPourService` lui-même — si le filtre de base renvoyait déjà un pool vide (croisement saison/niveau rare), rien ne le rattrapait. D'où le bug de la case Légume vide signalé par l'utilisateur.
+- **`menu.niveauFinancierEffectif` doit être propagé aux rerolls**, pas seulement à la génération initiale — sinon un reroll de service après verrouillage aristocratie repartirait sur le niveau financier d'origine choisi par l'utilisateur, brisant la cohérence.
+- **Worktrees : toujours vérifier `git log --oneline -3` après `EnterWorktree`** avant de commencer à éditer, pour confirmer que le worktree part bien du `main` local à jour (et pas d'un `origin/main` en retard) — leçon déjà notée la session précédente, reconfirmée ici (le worktree de versioning partait bien du bon point cette fois, car `main` avait déjà été poussé).
+
+## Bugs évités / rencontrés
+
+- **Service Légume vide** (voir ci-dessus) : corrigé par un garde-fou en cascade dans `garantirLegumeNonVide`.
+- **Règle "remplace par des desserts légers" sans candidats réels** : corrigée en ajoutant 4 nouveaux plats `dessert` en base via une migration additive idempotente (`scripts/migrate_menu_desserts_legers.js`), plutôt que de se reposer sur un garde-fou qui aurait laissé passer des desserts lourds par défaut.
+- **`EnterWorktree` refuse de créer un nouveau worktree si la session "pense" être encore dans un ancien** (état persistant même après suppression manuelle réussie du worktree précédent) : toujours faire `ExitWorktree action:"keep"` avant de réessayer `EnterWorktree` si l'outil renvoie "Already in a worktree session".
+
+## Temps
+
+- Session ~1h : passe 1 (analyse + implémentation + tests + merge, ~30min), passe 2 (bug fix + nouvelle règle + migration + tests + merge, ~20min), versionning (~10min).
+
+## État en fin de session
+
+- **396 tests verts** (30 fichiers)
+- **Build** : vert (`npm run build`)
+- **Supabase** : 4 nouveaux plats `dessert` insérés via migration additive
+- **Deux branches** (`worktree-menu-standing-social`, `worktree-menu-standing-social-v2`) fusionnées (fast-forward) sur `main` et poussées sur `origin/main`
+

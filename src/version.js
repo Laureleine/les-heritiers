@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.29 - \"L'Étiquette de la Table 🍽️👑\"",
+    date: "1 Juillet 2026",
+    description: "Le Générateur de Menu apprend les bonnes manières. Un jambon de campagne ou un gratin dauphinois n'ont rien à faire sur la table d'un grand dîner aristocratique — désormais, le tirage en tient compte. Les fromages trop rustiques cèdent leur place aux classiques des salons parisiens, deux grosses pâtisseries ne se bousculent plus dans le même repas, et une table dont l'introduction évoque les armoiries familiales se pare automatiquement des mets les plus nobles. Un détail technique corrigé au passage : le service Légume ne tombe plus jamais vide.",
+    changes: [
+      "🍽️ **Hors-d'œuvre dignes du rang :** Jambon, rillettes, crudités et harengs cèdent la place aux mets cuisinés (escargots, asperges, pâté en croûte...) lors d'un dîner ou d'un banquet de grande bourgeoisie ou d'aristocratie.",
+      "🥔 **Légumes sans rusticité :** Le gratin dauphinois et le pot-au-feu ne sortent plus à une table de haut rang — et le service Légume ne tombe désormais plus jamais vide, quel que soit le croisement saison/niveau demandé.",
+      "🧀 **Le plateau des salons parisiens :** Munster, Livarot, Reblochon, Comté et Beaufort s'effacent devant le Brie de Meaux, le Roquefort, le Camembert et le Mont-d'Or pour les tables de grande bourgeoisie et d'aristocratie.",
+      "🍰 **Jamais deux grosses pâtisseries :** Si l'entremets tiré est déjà généreux (soufflé, riz à l'impératrice, pudding...), le dessert se fait léger — corbeille de fruits de saison, assortiment de macarons, chocolats fins ou petits fours secs, quatre nouvelles propositions rejoignant le répertoire.",
+      "👑 **Le ton donne le rang :** Une introduction évoquant les armoiries ou l'ancienneté de la maison verrouille désormais la table sur l'aristocratie pour le choix des plats, y compris à travers les retirages.",
+      "🧪 **396 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.28 - \"Le Festin des Belles Heures 🍽️🕯️\"",
     date: "30 Juin 2026",
     description: "Les Héritiers reçoivent les clés des cuisines de la Belle Époque. Un nouvel outil compose, sur simple demande, un menu complet et cohérent — du petit-déjeuner populaire au grand banquet aristocratique — selon la saison, l'heure du repas, la bourse de la maisonnée et le nombre de convives attablés. Chaque plat peut être tenté au jeu d'un dé, comme un sort de cuisine : succès éclatant, petit ratage sans gravité, ou catastrophe culinaire. Et comme pour le Générateur de PNJ, la communauté est invitée à enrichir le garde-manger commun de ses propres recettes, sous l'œil des Gardiens.",
