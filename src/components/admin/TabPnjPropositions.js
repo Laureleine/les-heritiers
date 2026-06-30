@@ -12,6 +12,12 @@ const TABLE_LABELS = {
   hobbies: 'Hobby',
   comportements: 'Comportement',
   metiers: 'Métier',
+  tranches_age: 'Âge',
+  sexes: 'Sexe',
+  genres: 'Genre',
+  nationalites: 'Nationalité',
+  situations_matrimoniales: 'Situation matrim.',
+  situations_familiales: 'Situation famil.',
 };
 
 const TRANCHE_LABELS = {
@@ -36,7 +42,7 @@ export default function TabPnjPropositions({ session }) {
     setLoading(true);
     const { data } = await supabase
       .from('pnj_table_entries')
-      .select('id, table_name, tranche_age, value_m, value_f, status, reject_reason, created_by, created_at')
+      .select('id, table_name, tranche_age, value_m, value_f, weight, status, reject_reason, created_by, created_at')
       .eq('status', statusFilter)
       .order('created_at', { ascending: statusFilter === 'pending' });
     setEntries(data || []);
@@ -114,6 +120,9 @@ export default function TabPnjPropositions({ session }) {
                 <p className="font-serif text-stone-800 mt-0.5">
                   {entry.value_m}
                   {entry.value_f && <span className="text-stone-400"> / {entry.value_f}</span>}
+                  {entry.weight && entry.weight !== 1 && (
+                    <span className="text-stone-400 font-mono ml-2">×{entry.weight}</span>
+                  )}
                 </p>
                 {entry.status === 'rejected' && entry.reject_reason && (
                   <p className="text-xs text-red-500 mt-1">{entry.reject_reason}</p>

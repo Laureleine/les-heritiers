@@ -120,9 +120,27 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
           <div>
             <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Savoir & Lore</h4>
             <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-inner">
-              <p className="text-stone-700 leading-relaxed font-serif whitespace-pre-wrap text-base md:text-lg">
-                {desc || <span className="italic text-stone-400">Les archives sont muettes à ce sujet...</span>}
-              </p>
+              {activeTab === 'figures' && item.data?.generated_by === 'random' && desc ? (
+                <div className="text-stone-700 leading-relaxed font-serif whitespace-pre-wrap text-base md:text-lg">
+                  {desc.split('\n').map((line, i) => {
+                    if (!line.trim()) return <br key={i} />;
+                    const sepIdx = line.indexOf(' : ');
+                    if (sepIdx > 0) {
+                      return (
+                        <span key={i} className="block">
+                          <span className="underline decoration-stone-400 underline-offset-2">{line.slice(0, sepIdx)}</span>
+                          {line.slice(sepIdx)}
+                        </span>
+                      );
+                    }
+                    return <span key={i} className="block">{line}</span>;
+                  })}
+                </div>
+              ) : (
+                <p className="text-stone-700 leading-relaxed font-serif whitespace-pre-wrap text-base md:text-lg">
+                  {desc || <span className="italic text-stone-400">Les archives sont muettes à ce sujet...</span>}
+                </p>
+              )}
             </div>
           </div>
 

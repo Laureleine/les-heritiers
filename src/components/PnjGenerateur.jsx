@@ -10,24 +10,41 @@ import {
   accordLabel, resolveText, getPolarity,
 } from '../data/pnjTables';
 import { usePnjTableEntries } from '../hooks/usePnjTableEntries';
+import { isAdmin } from '../utils/authRoles';
 
 // ─── CONFIGURATION DES TABLES ────────────────────────────────────────────────
 
+const IDENTITY_TABLE_MAP = {
+  tranches_age: TRANCHES_AGE,
+  sexes: SEXES,
+  genres: GENRES,
+  nationalites: NATIONALITES,
+  situations_matrimoniales: SITUATIONS_MATRIMONIALES,
+  situations_familiales: SITUATIONS_FAMILIALES,
+};
+
 const TABLES_CONFIG = [
-  { id: 'traits',         label: 'Traits de caractère',      tableName: 'traits',        trancheAge: null },
   { id: 'apparences',     label: 'Apparences',                tableName: 'apparences',    trancheAge: null },
-  { id: 'motivations',    label: 'Motivations',               tableName: 'motivations',   trancheAge: null },
-  { id: 'secrets',        label: 'Secrets & accroches',       tableName: 'secrets',       trancheAge: null },
-  { id: 'phobies',        label: 'Phobies',                   tableName: 'phobies',       trancheAge: null },
-  { id: 'hobbies',        label: 'Passions & passe-temps',    tableName: 'hobbies',       trancheAge: null },
   { id: 'comportements',  label: 'Comportements distinctifs', tableName: 'comportements', trancheAge: null },
+  { id: 'genres',                     label: 'Genres & expressions',          tableName: 'genres',                     isIdentity: true },
   { id: 'metiers_jeune',  label: 'Métiers · 18–30 ans',       tableName: 'metiers',       trancheAge: 'jeune' },
   { id: 'metiers_adulte', label: 'Métiers · 31–50 ans',       tableName: 'metiers',       trancheAge: 'adulte' },
   { id: 'metiers_mur',    label: 'Métiers · 51–70 ans',       tableName: 'metiers',       trancheAge: 'mur' },
   { id: 'metiers_age',    label: 'Métiers · 71+ ans',         tableName: 'metiers',       trancheAge: 'age' },
+  { id: 'motivations',    label: 'Motivations',               tableName: 'motivations',   trancheAge: null },
+  { id: 'nationalites',               label: 'Nationalités',                  tableName: 'nationalites',               isIdentity: true },
+  { id: 'phobies',        label: 'Phobies',                   tableName: 'phobies',       trancheAge: null },
+  { id: 'hobbies',        label: 'Passions & passe-temps',    tableName: 'hobbies',       trancheAge: null },
+  { id: 'secrets',        label: 'Secrets & accroches',       tableName: 'secrets',       trancheAge: null },
+  { id: 'sexes',                      label: 'Sexes',                         tableName: 'sexes',                      isIdentity: true },
+  { id: 'situations_familiales',      label: 'Situations familiales',        tableName: 'situations_familiales',      isIdentity: true },
+  { id: 'situations_matrimoniales',   label: 'Situations matrimoniales',     tableName: 'situations_matrimoniales',   isIdentity: true },
+  { id: 'tranches_age',              label: 'Tranches d\'âge',               tableName: 'tranches_age',              isIdentity: true },
+  { id: 'traits',         label: 'Traits de caractère',      tableName: 'traits',        trancheAge: null },
 ];
 
 function getHardcoded(config) {
+  if (config.isIdentity) return IDENTITY_TABLE_MAP[config.tableName] || [];
   if (config.trancheAge) return METIERS_PAR_TRANCHE_AGE[config.trancheAge] || [];
   return TABLES_REEL[config.tableName] || [];
 }
@@ -36,7 +53,21 @@ function getHardcoded(config) {
 const DOT_LEFT  = { l2: '●●', l1: '●', n: '', d1: '', d2: '' };
 const DOT_RIGHT = { l2: '', l1: '', n: '', d1: '●', d2: '●●' };
 
-function EntryCell({ entry, isDb, genderView = 'm', onEdit }) {
+function EntryCell({ entry, isDb, genderView = 'm', onEdit, isIdentity }) {
+  if (isIdentity) {
+    const weight = entry.weight ?? 1;
+    return (
+      <div className={`flex items-center gap-1 px-2.5 py-2 group ${isDb ? 'bg-amber-50' : ''}`}>
+        <span className="flex-1 text-sm font-serif leading-snug text-stone-700">{entry.label}</span>
+        <span className="text-xs text-stone-400 bg-stone-100 rounded px-1.5 py-0.5 font-mono">×{weight}</span>
+        {onEdit && (
+          <button onClick={onEdit} className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-stone-300 hover:text-amber-600" title="Proposer une correction">
+            <Edit size={11} />
+          </button>
+        )}
+      </div>
+    );
+  }
   const pol  = getPolarity(entry);
   const sexe = genderView === 'f' ? 'feminin' : 'masculin';
   const text = resolveText(entry, sexe) ?? (typeof entry === 'string' ? entry : entry?.m ?? '');
@@ -122,15 +153,19 @@ const POLARITY_OPTIONS = [
   { value: 'd2', label: '●● Très négatif' },
 ];
 
-function AccordionTable({ config, dbApproved, myProposals, session, proposer, submitting, genderView }) {
+function AccordionTable({ config, dbApproved, myProposals, session, proposer, submitting, genderView, userProfile }) {
   const [open, setOpen] = useState(false);
   const [valueM, setValueM] = useState('');
   const [gendered, setGendered] = useState(false);
   const [valueF, setValueF] = useState('');
   const [polarity, setPolarity] = useState('n');
+  const [weight, setWeight] = useState(1);
   const [editPreset, setEditPreset] = useState(null);
+  const [editingDbId, setEditingDbId] = useState(null);
   const [msg, setMsg] = useState(null);
 
+  const isIdentity = !!config.isIdentity;
+  const canDirectSave = !!userProfile && isAdmin(userProfile);
   const hardcoded = getHardcoded(config);
   const approved = dbApproved || [];
   const myPending = myProposals.filter(p =>
@@ -145,34 +180,70 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
       tableName: config.tableName,
       trancheAge: config.trancheAge,
       valueM: valueM.trim(),
-      valueF: gendered && valueF.trim() ? valueF.trim() : null,
-      polarity,
+      valueF: isIdentity ? null : (gendered && valueF.trim() ? valueF.trim() : null),
+      polarity: isIdentity ? 'n' : polarity,
+      weight,
     });
     if (error) {
       setMsg(`Erreur : ${error.message}`);
     } else {
       setMsg(editPreset ? 'Correction soumise !' : 'Soumis !');
-      setValueM(''); setValueF(''); setGendered(false); setPolarity('n'); setEditPreset(null);
+      setValueM(''); setValueF(''); setGendered(false); setPolarity('n'); setWeight(1); setEditPreset(null); setEditingDbId(null);
       setTimeout(() => setMsg(null), 3000);
     }
   };
 
-  const handleEdit = (entry) => {
-    const text = resolveText(entry, 'masculin') ?? (typeof entry === 'string' ? entry : entry?.m ?? '');
-    const femText = typeof entry === 'object' ? (entry.f ?? '') : '';
-    setValueM(text);
-    setValueF(femText);
-    setGendered(!!femText);
-    setPolarity(getPolarity(entry));
-    setEditPreset(text);
+  const handleSaveDirect = async (e) => {
+    e.preventDefault();
+    if (!valueM.trim() || !session?.user) return;
+    setMsg(null);
+    const payload = {
+      table_name: config.tableName,
+      tranche_age: config.tableName === 'metiers' ? config.trancheAge : null,
+      value_m: valueM.trim(),
+      value_f: isIdentity ? null : (gendered && valueF.trim() ? valueF.trim() : null),
+      polarity: isIdentity ? 'n' : polarity,
+      weight,
+      status: 'approved',
+      approved_by: session.user.id,
+      approved_at: new Date().toISOString(),
+    };
+    const { error } = editingDbId
+      ? await supabase.from('pnj_table_entries').update(payload).eq('id', editingDbId)
+      : await supabase.from('pnj_table_entries').insert({ ...payload, created_by: session.user.id });
+    if (error) {
+      setMsg(`Erreur : ${error.message}`);
+    } else {
+      setMsg(editingDbId ? 'Entrée mise à jour !' : 'Entrée créée !');
+      setValueM(''); setValueF(''); setGendered(false); setPolarity('n'); setWeight(1); setEditPreset(null); setEditingDbId(null);
+      setTimeout(() => setMsg(null), 3000);
+    }
+  };
+
+  const handleEdit = (entry, dbId) => {
+    let label;
+    if (isIdentity) {
+      label = entry.label;
+      setValueM(label);
+      setWeight(entry.weight ?? 1);
+    } else {
+      label = resolveText(entry, 'masculin') ?? (typeof entry === 'string' ? entry : entry?.m ?? '');
+      const femText = typeof entry === 'object' ? (entry.f ?? '') : '';
+      setValueM(label);
+      setValueF(femText);
+      setGendered(!!femText);
+      setPolarity(getPolarity(entry));
+    }
+    setEditingDbId(dbId || null);
+    setEditPreset(label || 'entrée');
     setOpen(true);
   };
 
   const inp = 'flex-1 bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm font-serif text-stone-800 focus:ring-2 focus:ring-amber-200 focus:border-amber-400 outline-none shadow-sm transition-all';
 
   const allEntries = [
-    ...hardcoded.map(e => ({ e, isDb: false })),
-    ...approved.map(e => ({ e, isDb: true })),
+    ...hardcoded.map(e => ({ e, isDb: false, dbId: null })),
+    ...approved.map(e => ({ e, isDb: true, dbId: e._dbId || null })),
   ];
 
   return (
@@ -202,9 +273,9 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
 
       {open && (
         <div className="border-t border-stone-100 pb-4 space-y-4">
-          {/* Liste 2 colonnes, zèbre, dots polarité */}
+          {/* Liste 2 colonnes */}
           <div className="grid grid-cols-1 sm:grid-cols-2">
-            {allEntries.map(({ e, isDb }, i) => (
+            {allEntries.map(({ e, isDb, dbId }, i) => (
               <div
                 key={i}
                 className={`${isDb ? '' : Math.floor(i / 2) % 2 === 0 ? 'bg-stone-50/60' : 'bg-white'}`}
@@ -212,8 +283,9 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
                 <EntryCell
                   entry={e}
                   isDb={isDb}
+                  isIdentity={isIdentity}
                   genderView={genderView}
-                  onEdit={session?.user ? () => handleEdit(e) : undefined}
+                  onEdit={session?.user ? () => handleEdit(e, dbId) : undefined}
                 />
               </div>
             ))}
@@ -223,16 +295,16 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
           {session?.user && (
             <form onSubmit={handleSubmit} className="mx-4 pt-3 border-t border-stone-100 space-y-2">
               <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">
-                {editPreset ? `✏ Corriger : ${editPreset.slice(0, 40)}…` : '+ Proposer une entrée'}
+                {editPreset ? `✏ Corriger : ${valueM.slice(0, 40)}…` : '+ Proposer une entrée'}
               </p>
               <div className="flex gap-2 flex-wrap">
                 <input
                   value={valueM}
                   onChange={e => setValueM(e.target.value)}
-                  placeholder={gendered ? 'Forme masculine…' : 'Nouvelle entrée…'}
+                  placeholder={isIdentity ? 'Nouvelle entrée…' : (gendered ? 'Forme masculine…' : 'Nouvelle entrée…')}
                   className={inp}
                 />
-                {gendered && (
+                {!isIdentity && gendered && (
                   <input
                     value={valueF}
                     onChange={e => setValueF(e.target.value)}
@@ -242,17 +314,31 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
                 )}
               </div>
               <div className="flex items-center gap-3 flex-wrap">
-                <label className="flex items-center gap-2 text-xs text-stone-500 cursor-pointer select-none">
-                  <input type="checkbox" checked={gendered} onChange={e => setGendered(e.target.checked)} className="rounded border-stone-300 text-amber-600 focus:ring-amber-300" />
-                  Forme féminine différente
+                {!isIdentity && (
+                  <>
+                    <label className="flex items-center gap-2 text-xs text-stone-500 cursor-pointer select-none">
+                      <input type="checkbox" checked={gendered} onChange={e => setGendered(e.target.checked)} className="rounded border-stone-300 text-amber-600 focus:ring-amber-300" />
+                      Forme féminine différente
+                    </label>
+                    <select
+                      value={polarity}
+                      onChange={e => setPolarity(e.target.value)}
+                      className="text-xs border border-stone-200 rounded px-2 py-1 font-serif text-stone-700 bg-white outline-none focus:ring-1 focus:ring-amber-200"
+                    >
+                      {POLARITY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </>
+                )}
+                {/* Poids */}
+                <label className="flex items-center gap-2 text-xs text-stone-500">
+                  Poids ×
+                  <input
+                    type="number" min="1" max="10" step="1"
+                    value={weight}
+                    onChange={e => setWeight(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                    className="w-12 border border-stone-200 rounded px-1.5 py-1 text-xs font-mono text-stone-700 bg-white text-center outline-none focus:ring-1 focus:ring-amber-200"
+                  />
                 </label>
-                <select
-                  value={polarity}
-                  onChange={e => setPolarity(e.target.value)}
-                  className="text-xs border border-stone-200 rounded px-2 py-1 font-serif text-stone-700 bg-white outline-none focus:ring-1 focus:ring-amber-200"
-                >
-                  {POLARITY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
                 <button
                   type="submit"
                   disabled={submitting || !valueM.trim()}
@@ -260,8 +346,18 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
                 >
                   {submitting ? '…' : editPreset ? 'Soumettre correction' : 'Proposer'}
                 </button>
+                {canDirectSave && (
+                  <button
+                    onClick={handleSaveDirect}
+                    disabled={!valueM.trim()}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-emerald-50 font-bold text-xs transition-all disabled:opacity-60"
+                    title={editingDbId ? "Modifier directement (approuvé)" : "Ajouter directement (approuvé)"}
+                  >
+                    {editingDbId ? '✎ Modifier directement' : '✓ Ajouter directement'}
+                  </button>
+                )}
                 {editPreset && (
-                  <button type="button" onClick={() => { setEditPreset(null); setValueM(''); setValueF(''); setPolarity('n'); setGendered(false); }} className="text-xs text-stone-400 hover:text-stone-600">
+                  <button type="button" onClick={() => { setEditPreset(null); setValueM(''); setValueF(''); setPolarity('n'); setGendered(false); setWeight(1); setEditingDbId(null); }} className="text-xs text-stone-400 hover:text-stone-600">
                     Annuler
                   </button>
                 )}
@@ -272,7 +368,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
             </form>
           )}
 
-          {/* Mes propositions pour cette table */}
+          {/* Mes propositions */}
           {myPending.length > 0 && (
             <div className="mx-4 pt-2 border-t border-stone-100 space-y-1.5">
               <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Mes propositions</p>
@@ -282,6 +378,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
                     ? <Clock size={11} className="mt-0.5 flex-shrink-0 text-amber-500" />
                     : <XCircle size={11} className="mt-0.5 flex-shrink-0 text-red-500" />}
                   <span className="font-serif text-stone-600">{p.value_m}{p.value_f ? ` / ${p.value_f}` : ''}</span>
+                  {p.weight && <span className="text-stone-400 font-mono">×{p.weight}</span>}
                   {p.reject_reason && <span className="text-red-400">— {p.reject_reason}</span>}
                 </div>
               ))}
@@ -295,7 +392,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
 
 // ─── VUE TABLES & PROPOSITIONS ───────────────────────────────────────────────
 
-function TabTables({ dbEntries, myProposals, session, proposer, submitting }) {
+function TabTables({ dbEntries, myProposals, session, proposer, submitting, userProfile }) {
   const [genderView, setGenderView] = useState('m');
 
   return (
@@ -336,6 +433,7 @@ function TabTables({ dbEntries, myProposals, session, proposer, submitting }) {
           proposer={proposer}
           submitting={submitting}
           genderView={genderView}
+          userProfile={userProfile}
         />
       ))}
     </div>
@@ -369,11 +467,14 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
   }, []);
 
   const handleGenerer = useCallback(() => {
-    const nouveau = genererPnj({ mode, typeFee, ...options }, dbEntries);
+    const typeEffectif = mode === 'merveilleux' && !typeFee && fairyTypes.length > 0
+      ? fairyTypes[Math.floor(Math.random() * fairyTypes.length)].name?.toLowerCase().replace(/[- ]/g, '_') || null
+      : typeFee;
+    const nouveau = genererPnj({ mode, typeFee: typeEffectif, ...options }, dbEntries);
     setPnj(nouveau);
     setSavedMsg(null);
     setGenKey(k => k + 1);
-  }, [mode, typeFee, options, dbEntries]);
+  }, [mode, typeFee, options, dbEntries, fairyTypes]);
 
   const handleReroll = useCallback((champ) => {
     if (!pnj) return;
@@ -447,6 +548,7 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
             session={session}
             proposer={proposer}
             submitting={submitting}
+            userProfile={userProfile}
           />
         )}
 
@@ -603,6 +705,11 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
                         {genreObj.description}
                       </span>
                     )}
+                    {mode === 'merveilleux' && pnj.typeFee && (
+                      <span className="text-xs bg-purple-100 border border-purple-200 rounded-full px-2 py-0.5 text-purple-800">
+                        ✦ {fairyTypes.find(f => (f.name?.toLowerCase().replace(/[- ]/g,'_') || f.id) === pnj.typeFee)?.name || pnj.typeFee.replace(/_/g, ' ')}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
@@ -621,12 +728,12 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
 
             {/* Grille des attributs */}
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 space-y-3 divide-y divide-stone-100">
-              <ChampPnj label="Métier / Classe" valeur={pnj.metier}    onReroll={() => handleReroll('metier')} />
-              <div className="pt-3"><ChampPnj label="Traits de personnalité" valeur={pnj.traits} onReroll={() => handleReroll('traits')} accent="amber" /></div>
-              <div className="pt-3"><ChampPnj label="Apparence"         valeur={pnj.apparence}   onReroll={() => handleReroll('apparence')} /></div>
+              <ChampPnj label="Métier / Classe" valeur={pnj.metier}    onReroll={() => handleReroll('metier')} multiline />
+              <div className="pt-3"><ChampPnj label="Traits de personnalité" valeur={pnj.traits} onReroll={() => handleReroll('traits')} multiline accent="amber" /></div>
+              <div className="pt-3"><ChampPnj label="Apparence"         valeur={pnj.apparence}   onReroll={() => handleReroll('apparence')} multiline /></div>
               <div className="pt-3"><ChampPnj label="Motivation"        valeur={pnj.motivation}  onReroll={() => handleReroll('motivation')} multiline accent="amber" /></div>
-              <div className="pt-3"><ChampPnj label="Relation aux joueurs" valeur={pnj.relation} onReroll={() => handleReroll('relation')} /></div>
-              <div className="pt-3"><ChampPnj label="Lieu de rencontre" valeur={pnj.lieu}        onReroll={() => handleReroll('lieu')} /></div>
+              <div className="pt-3"><ChampPnj label="Relation aux joueurs" valeur={pnj.relation} onReroll={() => handleReroll('relation')} multiline /></div>
+              <div className="pt-3"><ChampPnj label="Lieu de rencontre" valeur={pnj.lieu}        onReroll={() => handleReroll('lieu')} multiline /></div>
             </div>
 
             {/* Secret */}
@@ -684,7 +791,7 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
                   <div key={champ} className="flex items-center justify-between gap-1 bg-stone-50 rounded-lg px-3 py-2">
                     <div className="min-w-0">
                       <p className="text-xs text-stone-400 font-bold uppercase tracking-wider">{label}</p>
-                      <p className="text-sm font-serif text-stone-800 truncate">{valeur || '—'}</p>
+                      <p className="text-sm font-serif text-stone-800">{valeur || '—'}</p>
                     </div>
                     <button onClick={() => handleReroll(champ)} className="flex-shrink-0 p-1 rounded text-stone-300 hover:text-stone-600 hover:bg-stone-200 transition-all">
                       <Dices size={13} />
