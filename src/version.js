@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.28 - \"Le Festin des Belles Heures 🍽️🕯️\"",
+    date: "30 Juin 2026",
+    description: "Les Héritiers reçoivent les clés des cuisines de la Belle Époque. Un nouvel outil compose, sur simple demande, un menu complet et cohérent — du petit-déjeuner populaire au grand banquet aristocratique — selon la saison, l'heure du repas, la bourse de la maisonnée et le nombre de convives attablés. Chaque plat peut être tenté au jeu d'un dé, comme un sort de cuisine : succès éclatant, petit ratage sans gravité, ou catastrophe culinaire. Et comme pour le Générateur de PNJ, la communauté est invitée à enrichir le garde-manger commun de ses propres recettes, sous l'œil des Gardiens.",
+    changes: [
+      "🍽️ **Générateur de Menu :** Nouvel outil accessible depuis la page Outils. Cinq critères — saison, type de repas, niveau financier, nombre de convives, niveau du cuisinier — composent un menu complet tiré d'un répertoire de près de 200 plats et de 43 compositions de repas, du déjeuner populaire au grand dîner d'apparat.",
+      "🎲 **Le sort de la cuisine :** Chaque plat peut être soumis à un jet de dé (1d10 + talent du cuisinier) face à sa difficulté. Quatre issues possibles, de la réussite éclatante à la catastrophe en cuisine, chacune contant sa propre petite histoire.",
+      "🔄 **Trois niveaux de hasard :** Un nouveau tirage complet, un service entier qu'on recompose, ou un seul plat qu'on retire au sort — le menu se façonne aussi finement qu'on le souhaite.",
+      "📜 **Quatre habits pour la table :** Le même menu se présente en simple liste, en carte de restaurant Belle Époque, avec les accords de vin suggérés, ou en récit gourmand pour planter le décor d'une scène.",
+      "🖨️ **Copier, imprimer, conserver :** Le menu composé se copie en un clic, s'imprime proprement, ou se range dans ses souvenirs pour le ressortir à l'occasion.",
+      "📮 **Le garde-manger s'ouvre à tous :** Comme pour les PNJ, chaque Héritier peut proposer un nouveau plat au corpus commun ; les Gardiens valident depuis un nouvel onglet *Menus* du tableau de bord, avec la possibilité d'ajouter directement une recette de confiance.",
+      "🧪 **382 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.27 - \"La Balance des Destins 🎭⚖️\"",
     date: "30 Juin 2026",
     description: "Le Générateur de PNJ apprend à peser les âmes. Chaque entrée reçoit un poids secret, de 1 à 10 : une nationalité française croise plus souvent le chemin qu'une nationalité lointaine, un métier courant pèse plus lourd qu'une rareté. Les Héritiers peuvent désormais enrichir les tables d'identité elles-mêmes — âge, sexe, genre, nationalité, situation matrimoniale et familiale — par le même circuit de propositions que les traits et secrets. Et quand un Gardien juge une évidence, un bouton émeraude lui permet d'ajouter ou corriger sans attendre.",
