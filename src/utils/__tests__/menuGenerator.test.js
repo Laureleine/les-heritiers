@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   tirage, tirageMultiple, calculerTranche, seuilDifficulte, resoudrePlat,
   filtrerPlatsPourService, genererMenu, rerollService, rerollPlat, appliquerStandingSocial,
+  determinerNiveauEffectif,
 } from '../menuGenerator';
 
 afterEach(() => {
@@ -143,6 +144,7 @@ describe('appliquerStandingSocial', () => {
     { id: 'dauphinois', nom: 'Gratin dauphinois', categorie: 'legume', niveaux: ['bourgeois', 'grande_bourgeoisie'], saisons: ['hiver'] },
     { id: 'asperges', nom: 'Asperges sauce mousseline', categorie: 'legume', niveaux: ['grande_bourgeoisie', 'aristocratie'], saisons: ['hiver'] },
     { id: 'munster', nom: 'Munster', categorie: 'fromage', niveaux: ['bourgeois', 'grande_bourgeoisie'], saisons: ['hiver'] },
+    { id: 'comte', nom: 'Comté vieux', categorie: 'fromage', niveaux: ['grande_bourgeoisie', 'aristocratie'], saisons: ['hiver'] },
     { id: 'roquefort', nom: 'Roquefort', categorie: 'fromage', niveaux: ['grande_bourgeoisie', 'aristocratie'], saisons: ['hiver'] },
     { id: 'camembert', nom: 'Camembert affiné', categorie: 'fromage', niveaux: ['populaire', 'bourgeois'], saisons: ['hiver'] },
   ];
@@ -179,13 +181,14 @@ describe('appliquerStandingSocial', () => {
     expect(resultat.map((p) => p.id)).toEqual(['asperges']);
   });
 
-  it('exclut les fromages trop rustiques (Munster) et force les classiques des salons parisiens', () => {
+  it('exclut les fromages trop rustiques (Munster, Comté) et force les classiques des salons parisiens', () => {
     const candidats = plats.filter((p) => p.categorie === 'fromage' && p.niveaux.includes('grande_bourgeoisie'));
     const resultat = appliquerStandingSocial(candidats, plats, { categorie: 'fromage' }, {
       niveauFinancier: 'grande_bourgeoisie', typeRepas: 'diner', saison: 'hiver',
     });
     const ids = resultat.map((p) => p.id).sort();
     expect(ids).not.toContain('munster');
+    expect(ids).not.toContain('comte');
     expect(ids).toContain('roquefort');
     // Le camembert est forcé dans le pool bien que son tag `niveaux` ne couvre pas grande_bourgeoisie.
     expect(ids).toContain('camembert');
@@ -228,5 +231,71 @@ describe('genererMenu — règle du doublon entremets/dessert', () => {
     ];
     const menu = genererMenu({ structure, plats, ...criteres });
     expect(menu.services.find((s) => s.id === 'dessert').plats[0].id).toBe('religieuse');
+  });
+
+  it('exclut explicitement Religieuse et Éclair quand l\'entremets (ex: Pudding) est lourd', () => {
+    const plats = [
+      { id: 'pudding', nom: 'Pudding de Noël', categorie: 'entremets', niveaux: ['aristocratie'], saisons: ['hiver'] },
+      { id: 'religieuse', nom: 'Religieuse au chocolat', categorie: 'dessert', niveaux: ['aristocratie'], saisons: ['hiver'] },
+      { id: 'eclair', nom: 'Éclair au café', categorie: 'dessert', niveaux: ['aristocratie'], saisons: ['hiver'] },
+      { id: 'fours', nom: 'Petits fours secs', categorie: 'dessert', niveaux: ['aristocratie'], saisons: ['hiver'] },
+    ];
+    const menu = genererMenu({ structure, plats, ...criteres });
+    expect(menu.services.find((s) => s.id === 'dessert').plats[0].id).toBe('fours');
+  });
+});
+
+describe('genererMenu — garde-fou légume jamais vide', () => {
+  const structure = {
+    textes_intro: ['Le festin commence.'],
+    services: [{ id: 'legume', label: 'Légume', categorie: 'legume', nb_plats: 1 }],
+  };
+
+  it('relâche la saison si aucun légume ne correspond exactement, en gardant le niveau financier', () => {
+    const plats = [
+      { id: 'asperges-ete', nom: 'Asperges sauce mousseline', categorie: 'legume', niveaux: ['grande_bourgeoisie'], saisons: ['ete'] },
+      { id: 'navets-pop', nom: 'Navets glacés', categorie: 'legume', niveaux: ['populaire'], saisons: ['hiver'] },
+    ];
+    const menu = genererMenu({
+      structure, plats, niveauFinancier: 'grande_bourgeoisie', saison: 'hiver', nbConvives: 4, typeRepas: 'diner',
+    });
+    expect(menu.services[0].plats).toHaveLength(1);
+    expect(menu.services[0].plats[0].id).toBe('asperges-ete');
+  });
+
+  it('ne renvoie jamais un service légume vide, même en dernier recours', () => {
+    const plats = [
+      { id: 'navets-pop', nom: 'Navets glacés', categorie: 'legume', niveaux: ['populaire'], saisons: ['hiver'] },
+    ];
+    const menu = genererMenu({
+      structure, plats, niveauFinancier: 'aristocratie', saison: 'ete', nbConvives: 4, typeRepas: 'diner',
+    });
+    expect(menu.services[0].plats).toHaveLength(1);
+    expect(menu.services[0].plats[0].id).toBe('navets-pop');
+  });
+});
+
+describe('determinerNiveauEffectif — verrouillage aristocratie via le texte d\'intro', () => {
+  it('verrouille sur aristocratie quand le texte évoque les armoiries/l\'ancienneté de la maison', () => {
+    expect(determinerNiveauEffectif("Les armoiries brodées sur les serviettes rappellent l'ancienneté de la maison.", 'grande_bourgeoisie')).toBe('aristocratie');
+  });
+
+  it('laisse le niveau financier inchangé pour un texte neutre', () => {
+    expect(determinerNiveauEffectif('Le déjeuner se prend en famille.', 'grande_bourgeoisie')).toBe('grande_bourgeoisie');
+  });
+
+  it('genererMenu utilise le niveau effectif pour sélectionner les plats, pas le niveau demandé', () => {
+    const structure = {
+      textes_intro: ["Les armoiries brodées sur les serviettes rappellent l'ancienneté de la maison."],
+      services: [{ id: 'fromage', label: 'Fromage', categorie: 'fromage', nb_plats: 1 }],
+    };
+    const plats = [
+      { id: 'roquefort', nom: 'Roquefort', categorie: 'fromage', niveaux: ['aristocratie'], saisons: ['hiver'] },
+    ];
+    const menu = genererMenu({
+      structure, plats, niveauFinancier: 'grande_bourgeoisie', saison: 'hiver', nbConvives: 4, typeRepas: 'diner',
+    });
+    expect(menu.niveauFinancierEffectif).toBe('aristocratie');
+    expect(menu.services[0].plats[0].id).toBe('roquefort');
   });
 });
