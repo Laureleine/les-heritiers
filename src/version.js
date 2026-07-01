@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.31 - \"Le Sceau du Daguerréotypiste 📸🔐\"",
+    date: "1 Juillet 2026",
+    description: "Depuis le déménagement des archives vers leur nouveau coffre-fort, le daguerréotypiste refusait obstinément tout nouveau portrait — un garde trop zélé, oublié en chemin lors du déménagement, verrouillait la porte à triple tour sans laisser entrer personne, pas même le propriétaire des lieux. Chaque Héritier peut désormais confier son visage, masqué ou dévoilé, au Grimoire sans se heurter à ce mur invisible.",
+    changes: [
+      "📸 **Le portrait retrouve sa serrure :** Corrigé un verrou de sécurité oublié lors du déménagement des archives vers leur nouveau coffre — plus aucun dépôt de portrait n'était possible depuis le 28 Juin, pour aucun Héritier. Chacun ne peut désormais déposer un portrait que dans son propre coffret, comme prévu à l'origine.",
+      "🐛 **Le greffier des anomalies retrouve sa plume :** Le même verrou bloquait aussi l'envoi de captures d'écran lors d'un signalement de bug au Bureau des Anomalies — réparé du même geste.",
+      "🧪 **396 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.30 - \"Le Premier Numéro 🗞️🔍\"",
     date: "1 Juillet 2026",
     description: "La Gazette ne commençait plus par le 1er Novembre 1899, mais par... rien, puisqu'elle s'ouvrait toujours sur le 26 Novembre. Désormais, le premier numéro que feuillette l'Héritier est celui de la première date réellement disponible en base — que ce soit un 1er Octobre, un 15 Novembre ou un 3 Décembre. Le calendrier et la navigation respectent cette nouvelle borne, et si la base est vide, la Gazette attend patiemment que l'on dépose les premiers articles avant de dérouler ses pages.",

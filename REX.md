@@ -1,4 +1,32 @@
-﻿# REX — Session 29 Juin 2026 (suite) — v17.4.26 « Le Prisme des Âmes »
+﻿# REX — Session 1 Juillet 2026 (suite) — v17.4.31 « Le Sceau du Daguerréotypiste »
+
+## Contexte
+
+Une joueuse signale une erreur "new row violates row-level security policy" au dépôt d'un portrait. Debug systématique avant tout fix.
+
+## Root cause
+
+Lors de la migration des buckets `portraits` et `bug_captures` vers le nouveau projet Supabase (session du 28 juin, voir plus bas), les fichiers ont été copiés via la clé `service_role` — qui contourne la RLS. Les policies RLS de `storage.objects`, elles, n'ont jamais été recréées sur le nouveau projet.
+
+**Diagnostic :** `SELECT * FROM pg_policies WHERE schemaname='storage' AND tablename='objects'` → 0 ligne, alors que `relrowsecurity = true`. RLS actif sans aucune policy = tout refusé par défaut pour le rôle `authenticated`.
+
+**Piège évité :** le bucket est `public`, donc les portraits déjà migrés s'affichaient normalement (lecture via URL publique = chemin qui contourne la RLS). Ça masquait le problème — seul l'INSERT/UPDATE authentifié était cassé, pas le SELECT. **Le bug touchait TOUS les personnages, pas seulement celui signalé** — ne jamais supposer qu'un bug RLS est isolé à un utilisateur sans vérifier l'étendue des policies concernées.
+
+## Fix
+
+Migration `supabase/migrations/20260701_storage_rls_portraits_bugcaptures.sql` :
+- `portraits` : INSERT + UPDATE réservés à l'utilisateur authentifié, restreints à son propre dossier (`(storage.foldername(name))[1] = auth.uid()::text`), conforme au chemin `{user_id}/{character_id}/{type}.{ext}` utilisé par `uploadPortrait`.
+- `bug_captures` : INSERT ouvert à tout authentifié (nom de fichier à plat, sans dossier par utilisateur).
+
+Appliqué via `pg` + `SUPABASE_DB_URL` (jamais MCP sur le projet prod), confirmation demandée à l'utilisatrice avant application (changement de sécurité).
+
+## Leçon
+
+**Migrer des fichiers de bucket ≠ migrer les policies RLS du bucket.** Après toute migration de bucket via `service_role`, vérifier systématiquement `pg_policies` sur `storage.objects` pour le bucket concerné — la copie de fichiers réussit silencieusement même si personne ne pourra plus jamais y écrire derrière.
+
+---
+
+# REX — Session 29 Juin 2026 (suite) — v17.4.26 « Le Prisme des Âmes »
 
 ## Ce qui a été livré
 
