@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.30 - \"Le Premier Numéro 🗞️🔍\"",
+    date: "1 Juillet 2026",
+    description: "La Gazette ne commençait plus par le 1er Novembre 1899, mais par... rien, puisqu'elle s'ouvrait toujours sur le 26 Novembre. Désormais, le premier numéro que feuillette l'Héritier est celui de la première date réellement disponible en base — que ce soit un 1er Octobre, un 15 Novembre ou un 3 Décembre. Le calendrier et la navigation respectent cette nouvelle borne, et si la base est vide, la Gazette attend patiemment que l'on dépose les premiers articles avant de dérouler ses pages.",
+    changes: [
+      "🗞️ **Première date dynamique :** La Gazette ne démarre plus sur le 26 Novembre 1899 figé. Elle interroge la base pour trouver la première date où des articles existent, et pose dessus son regard inaugural.",
+      "📅 **Navigation respectueuse des archives :** Les boutons Jour précédent et le calendrier ne permettent plus de remonter avant la première date disponible — fin du message « Les archives débutent en novembre 1899 » quand on avait déjà des pages bien avant.",
+      "🔄 **Calendrier synchrone :** Le popover calendrier s'ouvre désormais sur le mois de la première date disponible, et non plus systématiquement sur Novembre 1899.",
+      "⏳ **Chargement patient :** Un écran « Chargement de la Gazette... » apparaît le temps d'interroger la base — plus de faux départ sur une date par défaut qui n'existe peut-être pas.",
+      "🧪 **396 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.29 - \"L'Étiquette de la Table 🍽️👑\"",
     date: "1 Juillet 2026",
     description: "Le Générateur de Menu apprend les bonnes manières. Un jambon de campagne ou un gratin dauphinois n'ont rien à faire sur la table d'un grand dîner aristocratique — désormais, le tirage en tient compte. Les fromages trop rustiques cèdent leur place aux classiques des salons parisiens, deux grosses pâtisseries ne se bousculent plus dans le même repas, et une table dont l'introduction évoque les armoiries familiales se pare automatiquement des mets les plus nobles. Un détail technique corrigé au passage : le service Légume ne tombe plus jamais vide.",
