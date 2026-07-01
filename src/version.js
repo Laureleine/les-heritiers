@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.32 - \"Le Cachet du Correspondant 📠✅\"",
+    date: "1 Juillet 2026",
+    description: "Le Télégraphe reconnaît enfin sa propre écriture. Jusqu'ici, envoyer une missive à un correspondant faisait parfois réapparaître, un instant plus tard, la petite pastille du canal comme si un nouveau message était arrivé — alors qu'il ne s'agissait que de la sienne. Le facteur pneumatique sait désormais reconnaître l'encre de son expéditeur : plus aucune correspondance ne se signale non lue à celui qui vient de l'écrire.",
+    changes: [
+      "📠 **Fini la fausse pastille :** Un canal de correspondance privée ne se marque plus comme non lu après l'envoi de son propre message — le curseur de lecture suit désormais correctement la dernière missive, qu'elle vienne de soi ou d'un correspondant.",
+      "🎫 **Même correction pour les tickets de support :** Un nouveau signalement au Bureau des Anomalies n'apparaît plus non lu pour celui qui vient de le rédiger.",
+      "🧪 **397 Sentinelles — toujours en faction, aucune régression (nouveau test de non-régression sur le Télégraphe).**",
+    ]
+  },
+  {
     version: "17.4.31 - \"Le Sceau du Daguerréotypiste 📸🔐\"",
     date: "1 Juillet 2026",
     description: "Depuis le déménagement des archives vers leur nouveau coffre-fort, le daguerréotypiste refusait obstinément tout nouveau portrait — un garde trop zélé, oublié en chemin lors du déménagement, verrouillait la porte à triple tour sans laisser entrer personne, pas même le propriétaire des lieux. Chaque Héritier peut désormais confier son visage, masqué ou dévoilé, au Grimoire sans se heurter à ce mur invisible.",

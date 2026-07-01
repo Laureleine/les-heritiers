@@ -1,4 +1,36 @@
-﻿# REX — Session 1 Juillet 2026 (suite) — v17.4.31 « Le Sceau du Daguerréotypiste »
+﻿# REX — Session 1 Juillet 2026 (suite) — v17.4.32 « Le Cachet du Correspondant »
+
+## Contexte
+
+La joueuse signale : "je reçois toujours les notifications des messages que je poste" sur le Télégraphe. Lecture rapide du code laissait penser que le bug était déjà géré (le toast temps réel a bien un filtre `isMe`) — bonne occasion de ne pas s'arrêter à la première lecture qui "a l'air correcte".
+
+## Root cause
+
+Deux causes distinctes suspectées, une seule confirmée par le questionnement de la joueuse (`AskUserQuestion` avant de coder) : **badge non-lu persistant sur chat privé**, pas le toast.
+
+`fetchChannels` calcule `has_unread` en comparant uniquement `chat_channels.last_message_at` à un curseur "dernière lecture" stocké en `localStorage` (`telegraphe_read_{userId}_{channelId}`) — sans jamais regarder qui a écrit le dernier message. Ce curseur n'est avancé que lors de la lecture des messages **des autres** (`fetchMessages`, `isMe` check dans le listener realtime). Or :
+- `sendReply` appelait `fetchMessages(currentChannel, true)` en fin de fonction avec `currentChannel` = l'ancien `activeChannel`, capturé **avant** l'update de `last_message_at` → le curseur se faisait écraser avec l'**ancienne** date au lieu de la nouvelle.
+- `createSupportTicket` ne posait aucun curseur pour le ticket fraîchement créé, et `chat_channels.last_message_at` a un défaut `now()` en base — confirmé par lecture directe du schéma (`information_schema.columns`), pas une supposition.
+
+Au prochain `fetchChannels` (rechargement, refocus d'onglet), le canal repassait "non lu" pour son propre auteur.
+
+## Piège de test évité
+
+Premier jet de test de non-régression : `activeChannel` et l'objet mocké `chat_channels` en base partageaient la **même référence** JS. Le mock d'`update()` faisait `Object.assign(channelRow, patch)`, ce qui mutait rétroactivement `activeChannel` — le test passait alors même sans le fix, en donnant une fausse confiance. **Toujours découpler l'objet "état React" de l'objet "ligne DB mockée" dans un test (`{ ...channelRow }`), sinon une mutation censée simuler le serveur corrige silencieusement un state local qui ne devrait pas bouger.**
+
+## Fix
+
+- `sendReply` : après la mise à jour de `last_message_at`, rafraîchit `currentChannel` en mémoire avec la nouvelle date avant d'appeler `fetchMessages` — qui pose alors le bon curseur.
+- `createSupportTicket` : pose explicitement le curseur de lecture sur le `last_message_at` réel retourné par l'insert (valeur serveur, pas une date recalculée côté client).
+- Test `useTelegraphe.test.js` : envoi de message + démontage/remontage du hook (simulate reload), vérifie que le canal reste lu.
+
+## Leçon
+
+**Une notification "toast" filtrée correctement ne garantit pas que le badge non-lu l'est aussi** — deux mécanismes séparés (temps réel vs recalcul au chargement) peuvent diverger silencieusement. Face à un rapport de bug ambigu ("je reçois des notifications"), poser des questions à choix multiples (`AskUserQuestion`) sur le TYPE de notification et le TYPE de canal avant de creuser a évité de fixer le mauvais mécanisme.
+
+---
+
+
 
 ## Contexte
 
