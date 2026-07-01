@@ -265,6 +265,12 @@ export function useTelegraphe(session, userProfile) {
 
       if (msgError) throw msgError;
 
+      // On est l'auteur du ticket et de son premier message : jamais "non lu" pour soi-même.
+      localStorage.setItem(
+        `telegraphe_read_${session.user.id}_${channelData.id}`,
+        new Date(new Date(channelData.last_message_at).getTime() + 1).toISOString()
+      );
+
       showInAppNotification("Missive de support expédiée au Conseil.", "success");
       fetchChannels(true);
       return true;
@@ -305,12 +311,18 @@ export function useTelegraphe(session, userProfile) {
       if (msgError) throw msgError;
 
       if (!activeChannel.is_virtual) {
+        const lastMessageAt = new Date().toISOString();
         const newStatus = activeChannel.type === 'support' ? (isAdmin ? 'lu' : 'nouveau') : 'open';
         const { error: updateError } = await supabase.from('chat_channels').update({
-          last_message_at: new Date().toISOString(),
+          last_message_at: lastMessageAt,
           status: newStatus
         }).eq('id', actualChannelId);
         if (updateError) throw updateError;
+        // currentChannel (= activeChannel) date d'avant l'envoi : le rafraîchir avec le
+        // nouveau last_message_at, sinon fetchMessages ci-dessous marque le canal "lu"
+        // jusqu'à l'ANCIEN message, et le message qu'on vient d'écrire soi-même repasse
+        // "non lu" pour soi au prochain fetchChannels.
+        currentChannel = { ...currentChannel, last_message_at: lastMessageAt };
       }
 
       fetchMessages(currentChannel, true);
