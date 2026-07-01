@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.33 - \"Le Second Verrou du Daguerréotypiste 📸🔓\"",
+    date: "1 Juillet 2026",
+    description: "Le verrou du daguerréotypiste cachait un second loquet. Certains Héritiers pouvaient encore se voir refuser leur tout premier portrait, masqué ou non, malgré la réparation précédente — un rouage plus discret de la serrure exigeait lui aussi d'être huilé. C'est désormais chose faite : quiconque dépose un portrait pour la première fois, ou en remplace un déjà en place, y parvient sans encombre.",
+    changes: [
+      "📸 **Le second verrou huilé :** Le remplacement d'un portrait (dépôt par-dessus un ancien, ou tout premier dépôt) pouvait encore être refusé par un rouage de sécurité oublié dans la réparation précédente. Corrigé : l'ajout et le remplacement de portrait, masqué ou dévoilé, fonctionnent désormais dans tous les cas.",
+      "🧪 **397 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.32 - \"Le Cachet du Correspondant 📠✅\"",
     date: "1 Juillet 2026",
     description: "Le Télégraphe reconnaît enfin sa propre écriture. Jusqu'ici, envoyer une missive à un correspondant faisait parfois réapparaître, un instant plus tard, la petite pastille du canal comme si un nouveau message était arrivé — alors qu'il ne s'agissait que de la sienne. Le facteur pneumatique sait désormais reconnaître l'encre de son expéditeur : plus aucune correspondance ne se signale non lue à celui qui vient de l'écrire.",
