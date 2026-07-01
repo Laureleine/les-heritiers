@@ -468,3 +468,30 @@ Deux passes successives de raffinement du Générateur de Menu, demandées par l
 - **Supabase** : 4 nouveaux plats `dessert` insérés via migration additive
 - **Deux branches** (`worktree-menu-standing-social`, `worktree-menu-standing-social-v2`) fusionnées (fast-forward) sur `main` et poussées sur `origin/main`
 
+---
+
+# REX — Session 1 Juillet 2026 — v17.4.30 « Le Premier Numéro 🗞️🔍 »
+
+## Ce qui a été livré
+
+Changement du point de départ de la Gazette : au lieu d'une date codée en dur (`1899-11-26`), la première date est lue dynamiquement depuis la base via `get_article_dates()` RPC.
+
+1. **`dateStr` initialisé à `null`** — plus d'hypothèse sur la date de démarrage. Un spinner "Chargement de la Gazette..." apparaît le temps d'interroger la base.
+2. **`firstAvailableDate` calculé** — les dates disponibles sont triées, la plus ancienne sert de date initiale et de borne minimale.
+3. **`minDateParts` (useMemo)** — remplace les constantes `1899-11-01` dans `navigateDate()` et le calendrier.
+4. **Calendrier synchronisé** — s'ouvre sur le mois de la première date disponible, ses boutons précédent respectent la nouvelle borne.
+5. **Guards `!dateStr`** — ajoutés dans les 3 effets useEffect + 2 useMemo qui dépendaient de `dateStr`, pour éviter le crash à `null`.
+
+## Règles apprises / confirmées
+
+- **Quand on change un state initial en `null`** (loading différé), il faut vérifier TOUS les useMemo, useEffect et useCallback qui l'utilisent, pas seulement le return. Un useMemo s'exécute pendant le render (avant le guard de return), un useEffect s'exécute après (mais doit être protégé pour ne pas faire de requête inutile).
+- **Pas besoin d'un `initialLoading` booléen séparé** : `if (!dateStr) return <Spinner />` suffit quand la donnée est binaire (pas encore chargée / chargée).
+- **`useCallback` avec `[]` deps capture bien `dateStr` initial** (null) dans la closure — utile pour un `fetchAndSetDefault()` qu'on ne veut appeler qu'une fois.
+
+## État en fin de session
+
+- **396 tests verts** (30 fichiers)
+- **Backup DB** : `backup_2026-07-01T08-16-13.json`
+- **Vercel** : build vert (24s), Ready
+- **Commit** : `cfb02a9` sur `origin/main`
+
