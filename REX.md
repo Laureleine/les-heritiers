@@ -1,4 +1,33 @@
-﻿# REX — Session 1 Juillet 2026 (suite) — v17.4.32 « Le Cachet du Correspondant »
+﻿# REX — Session 1 Juillet 2026 (suite) — v17.4.33 « Le Second Verrou du Daguerréotypiste »
+
+## Contexte
+
+Un joueur (Merlin Pellinore) signale, via un ticket du Bureau des Anomalies, exactement la même erreur que celle "corrigée" en v17.4.31 ("new row violates row-level security policy" au dépôt d'un portrait) — mais son ticket est horodaté **après** l'application du premier fix RLS. Ne pas supposer que le fix précédent a réglé le cas juste parce qu'il touche le même message d'erreur : vérifier la fraîcheur du rapport avant de classer sans suite.
+
+## Root cause
+
+`uploadPortrait` (`usePersonnalisation.js`) appelle `.upload(path, file, { upsert: true })`. Côté Postgres, cela devient un `INSERT ... ON CONFLICT (bucket_id, name) DO UPDATE`. **PostgreSQL exige une policy SELECT pour ce type de requête**, même quand aucune ligne ne rentre réellement en conflit — le moteur doit pouvoir vérifier l'absence de conflit, ce qui nécessite une lecture RLS. La migration précédente (20260701) n'avait créé que INSERT + UPDATE, pas SELECT.
+
+**Diagnostic qui a permis de trancher (et non de deviner) :**
+- Simulation directe avec le JWT réel de Merlin (rôle `authenticated`, `request.jwt.claims`) : un `INSERT` simple réussit ; le même `INSERT ... ON CONFLICT DO UPDATE` échoue avec le message exact rapporté.
+- Comparaison bucket à bucket : `bug_captures` (upload SANS `upsert: true`) fonctionnait pour ce même joueur au même moment (sa capture d'écran de ticket est bien arrivée) — seul `portraits` (`upsert: true`) était touché. Ce contraste, plus que la théorie seule, a confirmé que l'upsert était la variable en cause.
+- Personnage de Merlin vérifié en base : `user_id` correct, jamais eu de portrait avant (donc pas un vrai conflit — juste l'exigence Postgres de pouvoir en vérifier l'absence).
+
+## Piège évité (auto-mode / sécurité)
+
+Une tentative de test de confirmation (créer une policy SELECT temporaire dans une transaction annulée par `ROLLBACK`, pour valider l'hypothèse avant de demander confirmation) a été **bloquée par le classifieur auto-mode** : élévation vers le rôle `postgres` + DDL sur une table de prod partagée, même annulée, sort du périmètre d'une action en lecture seule. Bonne réaction : ne pas contourner, expliquer à l'utilisatrice ce qui a été trouvé avec les preuves déjà en main (suffisantes), et demander confirmation avant d'appliquer le vrai fix.
+
+## Fix
+
+Migration `20260701b_storage_portraits_select_policy.sql` : policy SELECT sur `storage.objects` pour `portraits`, restreinte au dossier de l'utilisateur (même condition que INSERT/UPDATE). Revérifié avec la même simulation JWT : l'upsert réussit désormais.
+
+## Leçon
+
+**Un rapport de bug qui ressemble trait pour trait à un bug déjà "corrigé" n'est pas forcément un doublon — vérifier l'horodatage par rapport au fix, et si le rapport est postérieur, rouvrir l'investigation au lieu de le classer.** Par ailleurs : **`upsert: true` sur Supabase Storage change la nature de la requête SQL (INSERT devient INSERT ON CONFLICT DO UPDATE) et donc les policies RLS requises** — une policy INSERT qui suffit pour un upload simple ne suffit plus dès qu'un upsert entre en jeu. Toujours tester le chemin réel du code (avec les mêmes options d'appel), pas seulement l'existence des policies.
+
+---
+
+
 
 ## Contexte
 
