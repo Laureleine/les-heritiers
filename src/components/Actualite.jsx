@@ -16,7 +16,7 @@ const MONTHS_FR = {
 const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 export default function Actualite({ onBack, userProfile }) {
-  const [dateStr, setDateStr] = useState('1899-11-26');
+  const [dateStr, setDateStr] = useState(null);
   const [activeMenu, setActiveMenu] = useState('meteo'); // meteo, lune, chronique, fetes, page1, page2, page3, page4, votes
   const [eventsData, setEventsData] = useState({});
   const [articles, setArticles] = useState([]);
@@ -32,6 +32,7 @@ export default function Actualite({ onBack, userProfile }) {
 
   // --- Dates pour lesquelles des articles existent en BDD ---
   const [availableArticleDates, setAvailableArticleDates] = useState(new Set());
+  const [firstAvailableDate, setFirstAvailableDate] = useState(null);
 
   // --- États et gestion des votes de numérisation ---
   const [hasVoted, setHasVoted] = useState(false);
@@ -45,9 +46,25 @@ export default function Actualite({ onBack, userProfile }) {
   const [calYear, setCalYear] = useState(1899);
   const calendarRef = useRef(null);
 
+  useEffect(() => {
+    if (firstAvailableDate) {
+      const [y, m] = firstAvailableDate.split('-').map(Number);
+      setCalMonth(m - 1);
+      setCalYear(y);
+    }
+  }, [firstAvailableDate]);
+
   const hasAdminRights = useMemo(() => {
     return isSuperAdmin(userProfile);
   }, [userProfile]);
+
+  const minDateParts = useMemo(() => {
+    if (firstAvailableDate) {
+      const [y, m, d] = firstAvailableDate.split('-').map(Number);
+      return { year: y, month: m - 1, day: d };
+    }
+    return { year: 1899, month: 10, day: 1 };
+  }, [firstAvailableDate]);
 
   // --- Rafraîchir les dates disponibles depuis Supabase ---
   const fetchAvailableArticleDates = useCallback(async () => {
@@ -57,12 +74,23 @@ export default function Actualite({ onBack, userProfile }) {
       
       if (error) throw error;
       
-      if (data) {
+      if (data && data.length > 0) {
         const datesSet = new Set(data.map(item => item.date_col));
         setAvailableArticleDates(datesSet);
+
+        const sorted = data.map(item => item.date_col).sort();
+        const first = sorted[0];
+        setFirstAvailableDate(first);
+
+        setDateStr(prev => prev === null ? first : prev);
+      } else {
+        setFirstAvailableDate('1899-11-01');
+        setDateStr(prev => prev === null ? '1899-11-26' : prev);
       }
     } catch (err) {
       console.error("Erreur chargement dates articles :", err);
+      setFirstAvailableDate('1899-11-01');
+      setDateStr(prev => prev === null ? '1899-11-26' : prev);
     }
   }, []);
 
@@ -98,6 +126,7 @@ export default function Actualite({ onBack, userProfile }) {
 
   // --- Chargement des données météo/lune/soleil du jour ---
   useEffect(() => {
+    if (!dateStr) return;
     const fetchDailyInfo = async () => {
       try {
         const { data, error } = await supabase
@@ -180,11 +209,13 @@ export default function Actualite({ onBack, userProfile }) {
   }, []);
 
   useEffect(() => {
+    if (!dateStr) return;
     fetchArticlesForDate(dateStr);
   }, [dateStr, fetchArticlesForDate]);
 
   // --- Récupérer le statut du vote et le total pour la date active ---
   useEffect(() => {
+    if (!dateStr) return;
     setHasVoted(localStorage.getItem(`journal-vote-${dateStr}`) === 'voted');
     
     const fetchVoteCount = async () => {
@@ -272,6 +303,7 @@ export default function Actualite({ onBack, userProfile }) {
 
   // --- Synchroniser le mois/année du calendrier avec dateStr ---
   useEffect(() => {
+    if (!dateStr) return;
     const parts = dateStr.split('-');
     setCalYear(parseInt(parts[0], 10));
     setCalMonth(parseInt(parts[1], 10) - 1);
@@ -327,6 +359,7 @@ export default function Actualite({ onBack, userProfile }) {
 
   // --- Calculs calendaires déterministes ---
   const dateMeta = useMemo(() => {
+    if (!dateStr) return { year: null, monthName: null, dayNum: null, dayOfWeek: null, editionNo: null };
     const parts = dateStr.split('-');
     const year = parts[0];
     const monthCode = parts[1];
@@ -399,8 +432,8 @@ export default function Actualite({ onBack, userProfile }) {
     const dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
     dt.setDate(dt.getDate() + offset);
 
-    // Limiter la navigation du 1er Novembre 1899 au 31 Décembre 1914
-    const minDate = new Date(1899, 10, 1);
+    // Limiter la navigation de la première date disponible au 31 Décembre 1914
+    const minDate = new Date(minDateParts.year, minDateParts.month, minDateParts.day);
     const maxDate = new Date(1914, 11, 31);
 
     if (dt < minDate || dt > maxDate) {
@@ -420,6 +453,17 @@ export default function Actualite({ onBack, userProfile }) {
       [id]: !prev[id]
     }));
   };
+
+  if (!dateStr) {
+    return (
+      <div className="min-h-screen bg-[#FAF6EE] dark:bg-stone-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#92400e] mx-auto mb-4" />
+          <p className="text-stone-500 dark:text-stone-400 font-serif italic">Chargement de la Gazette...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen font-serif transition-colors duration-300 ${darkMode ? 'bg-stone-900 text-stone-200' : 'bg-[#FAF6EE] text-[#2c1b12]'} ${darkMode ? 'dark' : ''}`}>
@@ -493,20 +537,19 @@ export default function Actualite({ onBack, userProfile }) {
                   <div className="flex justify-between items-center mb-3 select-none">
                     <button 
                       onClick={() => {
-                        if (calMonth === 0) {
-                          if (calYear > 1899) {
-                            setCalYear(calYear - 1);
-                            setCalMonth(11);
-                          } else {
-                            showInAppNotification("Date limite atteinte (novembre 1899) !", "warning");
-                          }
+                        const { year: minY, month: minM } = minDateParts;
+                        let newMonth = calMonth - 1;
+                        let newYear = calYear;
+                        if (newMonth < 0) {
+                          newMonth = 11;
+                          newYear = calYear - 1;
+                        }
+                        if (newYear < minY || (newYear === minY && newMonth < minM)) {
+                          const monthLabel = MONTHS_FR[String(minM + 1).padStart(2, '0')];
+                          showInAppNotification(`Les archives débutent en ${monthLabel} ${minY} !`, "warning");
                         } else {
-                          // Bloquer le retour avant novembre 1899
-                          if (calYear === 1899 && calMonth === 10) {
-                            showInAppNotification("Les archives débutent en novembre 1899 !", "warning");
-                          } else {
-                            setCalMonth(calMonth - 1);
-                          }
+                          setCalMonth(newMonth);
+                          setCalYear(newYear);
                         }
                       }}
                       className="p-1.5 rounded hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-bold font-sans"
