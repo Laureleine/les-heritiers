@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.34 - \"Le Fond des Poches 👝🔍\"",
+    date: "2 Juillet 2026",
+    description: "Un nouvel outil rejoint la besace du Maître de Jeu : le Générateur de Poche vide en un clic les poches d'un PNJ fouillé — un mouchoir, une clé, une bourse plus ou moins garnie selon le rang, et parfois un secret qui ne demandait qu'à être découvert. Comme pour les PNJ, chaque objet peut désormais être proposé par la communauté et ajusté par les Gardiens sans jamais toucher au code.",
+    changes: [
+      "👝 **Générateur de Poche :** Nouvel outil accessible depuis la page Outils. Tire au sort le contenu des poches d'un PNJ fouillé selon son sexe, sa classe sociale, sa moralité, la saison et le genre littéraire de la scène (policier, étrange, espionnage, interlope).",
+      "🪙 **La bourse parle du rang :** Quelques sous de bronze pour un gueux, des Francs de germinal pour la bourgeoisie, des Louis d'or pour l'aisance — la monnaie trouvée reflète toujours la condition du fouillé.",
+      "🕵️ **Un secret, parfois :** Selon la moralité du personnage ou sur demande expresse, un objet compromettant peut se glisser dans l'inventaire — billet doux, tract anarchiste, ou pièce plus étrange encore si la scène verse dans le merveilleux.",
+      "📮 **Le contenu des poches s'ouvre à tous :** Comme pour les PNJ, chaque Héritier peut proposer un nouvel objet ; les Gardiens valident, éditent le texte ou le poids d'un objet déjà approuvé, ou en ajoutent un directement depuis un nouvel onglet *Poche* du tableau de bord.",
+      "🧪 **406 Sentinelles — toujours en faction, aucune régression (9 nouvelles sentinelles pour le tirage d'inventaire).**",
+    ]
+  },
+  {
     version: "17.4.33 - \"Le Second Verrou du Daguerréotypiste 📸🔓\"",
     date: "1 Juillet 2026",
     description: "Le verrou du daguerréotypiste cachait un second loquet. Certains Héritiers pouvaient encore se voir refuser leur tout premier portrait, masqué ou non, malgré la réparation précédente — un rouage plus discret de la serrure exigeait lui aussi d'être huilé. C'est désormais chose faite : quiconque dépose un portrait pour la première fois, ou en remplace un déjà en place, y parvient sans encombre.",
