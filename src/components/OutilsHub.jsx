@@ -1,6 +1,6 @@
 // src/components/OutilsHub.jsx
 import React from 'react';
-import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed } from '../config/icons';
+import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package } from '../config/icons';
 
 const OUTILS = [
   {
@@ -47,10 +47,21 @@ const OUTILS = [
     hover: 'hover:bg-rose-100 hover:border-rose-300',
     iconColor: 'text-rose-700',
   },
+  {
+    id: 'poche',
+    titre: 'Générateur de Poche',
+    description: "Tirez au sort le contenu des poches d'un PNJ fouillé — objets, secrets et bourse selon son rang.",
+    icon: Package,
+    couleur: 'amber',
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    hover: 'hover:bg-amber-100 hover:border-amber-300',
+    iconColor: 'text-amber-700',
+  },
 ];
 
-export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu }) {
-  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu };
+export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche }) {
+  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche };
 
   return (
     <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
