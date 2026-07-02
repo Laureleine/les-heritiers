@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.35 - \"Les Rues de la Belle Époque 🌆🚶\"",
+    date: "3 Juillet 2026",
+    description: "Un second outil rejoint la besace du Maître de Jeu : le Générateur d'Ambiance plante en un clic le décor d'une rue, d'une banlieue industrielle ou d'un chemin de campagne — avec sa météo de saison, sa vie de rue et, sur demande, une pointe d'intrigue (étrange, espionnage ou interlope).",
+    changes: [
+      "🌆 **Générateur d'Ambiance :** Nouvel outil accessible depuis la page Outils. Compose une scène de rue selon la zone (Paris populaire, Paris riche, banlieue industrielle, campagne), le moment du jour, la saison et un éventuel genre littéraire.",
+      "🌦️ **Météo de saison :** Chaque scène reçoit sa touche météorologique, du vent glacial d'hiver à l'air lourd d'été.",
+      "🕵️ **Une pointe d'intrigue, sur demande :** Choisir un genre littéraire (étrange, espionnage, interlope) ajoute un détail dramatique à la scène généré.",
+      "📮 **Là aussi, la communauté peut enrichir :** Comme pour la Poche, chaque Héritier peut proposer un nouvel élément de décor, de météo ou d'événement ; les Gardiens valident, éditent ou ajoutent directement depuis un nouvel onglet *Ambiance* du tableau de bord.",
+      "🧪 **414 Sentinelles — toujours en faction, aucune régression (8 nouvelles sentinelles pour le tirage d'ambiance).**",
+    ]
+  },
+  {
     version: "17.4.34 - \"Le Fond des Poches 👝🔍\"",
     date: "2 Juillet 2026",
     description: "Un nouvel outil rejoint la besace du Maître de Jeu : le Générateur de Poche vide en un clic les poches d'un PNJ fouillé — un mouchoir, une clé, une bourse plus ou moins garnie selon le rang, et parfois un secret qui ne demandait qu'à être découvert. Comme pour les PNJ, chaque objet peut désormais être proposé par la communauté et ajusté par les Gardiens sans jamais toucher au code.",

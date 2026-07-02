@@ -23,6 +23,7 @@ const PixieAssistant = lazy(() => import('./components/PixieAssistant'));
 const PnjGenerateur = lazy(() => import('./components/PnjGenerateur'));
 const GenerateurMenu = lazy(() => import('./components/GenerateurMenu'));
 const PocheGenerateur = lazy(() => import('./components/PocheGenerateur'));
+const AmbianceGenerateur = lazy(() => import('./components/AmbianceGenerateur'));
 const OutilsHub = lazy(() => import('./components/OutilsHub'));
 
 export default function AppRouter({ session, userProfile, refreshUserProfile }) {
@@ -124,6 +125,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
             onOpenGenerateur={() => navigate('/generateur')}
             onOpenMenu={() => navigate('/menu')}
             onOpenPoche={() => navigate('/poche')}
+            onOpenAmbiance={() => navigate('/ambiance')}
           />
         } />
         <Route path="/actualite" element={<Actualite onBack={() => navigate('/outils')} userProfile={userProfile} />} />
@@ -131,6 +133,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
         <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
         <Route path="/menu" element={<GenerateurMenu onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
         <Route path="/poche" element={<PocheGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
+        <Route path="/ambiance" element={<AmbianceGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
