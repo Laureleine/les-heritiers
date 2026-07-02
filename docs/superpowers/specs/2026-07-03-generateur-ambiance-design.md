@@ -43,7 +43,7 @@ RLS identique au modèle éprouvé `pnj_table_entries`/`poche_table_entries` : S
 
 ### Seed (46 entrées canon, `is_official=true`, `status='approved'`)
 
-- `decor` : 4 variantes × 4 entrées (poids = largeur d'intervalle d'origine) = 16 lignes.
+- `decor` : 4 variantes (Paris populaire et riche à 4 entrées chacune, banlieue et campagne à 3 entrées chacune — poids = largeur d'intervalle d'origine) = 14 lignes.
 - `evenement` : `paris_jour`/`paris_nuit` (5 entrées pondérées chacun, texte original des tables jour/nuit — Paris populaire et riche partagent ce pool générique) + `banlieue_industrielle_jour`/`_nuit` et `campagne_rurale_jour`/`_nuit` (1 entrée fixe chacune, le texte de surcharge original, poids arbitraire — extensible plus tard sans code) = 14 lignes.
 - `meteo` : 4 variantes (une par saison), 1 entrée chacune (le texte original) = 4 lignes.
 - `intrigue` : 3 variantes (horror/espionage/pulp), 4 entrées pondérées chacune = 12 lignes.
