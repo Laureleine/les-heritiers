@@ -1,4 +1,26 @@
-﻿# REX — Session 1 Juillet 2026 (suite) — v17.4.33 « Le Second Verrou du Daguerréotypiste »
+﻿# REX — Session 2 Juillet 2026 — v17.4.34 « Le Fond des Poches »
+
+## Contexte
+
+Demande initiale volontairement vague : "Nouveau générateur aléatoire... de poche ;)". Brainstorming complet nécessaire avant tout code (conforme à la règle du projet) : trois questions successives ont fait émerger que "de poche" = contenu des poches d'un PNJ fouillé, PAS une version compacte du générateur de PNJ.
+
+## Découverte clé : deux architectures différentes cohabitent déjà
+
+`pnj_table_entries` (hardcodé + surcouche communautaire) et `menu_plats` (table dédiée, mêmes principes) existaient déjà comme précédents. En creusant `usePnjTableEntries.js` / `pnjGenerator.js`, découverte que `pnjTables.js` exporte déjà des utilitaires génériques réutilisables (`tirage`, `tiragePondere`, `resolveText`) — pas la peine de les réécrire pour un nouveau générateur, juste les importer.
+
+**Point de bascule de la conception :** poser la question "pourquoi ne pas tout mettre en base ?" (posée par l'autrice) a fait apparaître une vraie divergence de besoin : elle veut éditer poids/textes **depuis l'app**, sans jamais toucher au code. Ça a fait basculer l'archi de "hardcodé + surcouche" (comme PNJ) vers "100% Supabase avec `is_official`" — et ça a aussi révélé un besoin d'édition en place dans l'onglet admin (pas seulement approuver/refuser, comme c'était le cas pour PNJ/Menu). Voir [[feedback_collaboration]] — cette préférence doit être proposée par défaut pour les prochains générateurs.
+
+## Conflit de règles détecté : commande "version" vs job en arrière-plan
+
+`AGENTS.md` définit "version" comme committant + poussant directement sur `main`. Mais la règle de session (job en arrière-plan, travail isolé dans un worktree) interdit explicitement de merger/pousser sur `main`. Résolu en faisant tout ce qui est sûr (tests, backup, bump de version, message aux Héritiers, REX) sur la branche de la PR, et en demandant explicitement à l'autrice de merger elle-même ou d'autoriser explicitement le dépassement de la règle. **Leçon : quand une règle de projet (AGENTS.md) et une règle de session/harnais se contredisent sur une action à fort impact (push main, déploiement), signaler le conflit et demander plutôt que de trancher silencieusement en faveur de l'une ou l'autre.**
+
+## Piège d'automatisation navigateur
+
+Cliquer par coordonnées (x, y) devient peu fiable dès que la page a scrollé entre deux appels — le clic peut atterrir sur le mauvais champ (texte tapé dans le mauvais input, `Ctrl+A` sélectionnant toute la page au lieu du contenu d'un champ). **Dès qu'un formulaire a plusieurs champs proches, utiliser `find()` pour obtenir une réf d'élément et cliquer/taper via cette réf plutôt que des coordonnées brutes** — beaucoup plus robuste aux petits décalages de mise en page.
+
+---
+
+# REX — Session 1 Juillet 2026 (suite) — v17.4.33 « Le Second Verrou du Daguerréotypiste »
 
 ## Contexte
 
