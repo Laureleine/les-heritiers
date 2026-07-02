@@ -1,4 +1,24 @@
-﻿# REX — Session 2 Juillet 2026 — v17.4.34 « Le Fond des Poches »
+﻿# REX — Session 3 Juillet 2026 — v17.4.35 « Les Rues de la Belle Époque »
+
+## Contexte
+
+Deuxième générateur du même type dans la même session (après Poche). L'autrice a explicitement demandé "implémente et version tout d'un coup sans me poser de question" — moins de questions nécessaires cette fois car l'architecture 100% DB + is_official + édition admin était déjà validée en amont.
+
+## Décision de conception notable
+
+Contrairement à Poche (une seule table sur 7 avait une sous-clé), les 4 tables de ce générateur (décor/événement/météo/intrigue) en ont toutes une — une colonne générique `variante` a donc remplacé les colonnes dédiées (`saison`) du modèle Poche. Généraliser la conception dès qu'une majorité des tables d'un nouveau générateur partage le même besoin est plus propre que de dupliquer le nommage table par table.
+
+## Écart assumé à la convention « poids + masculin/féminin »
+
+Ce contenu (décor, météo) ne décrit jamais une personne — aucune entrée n'a de variante genrée. Une seule colonne `value` remplace `value_m`/`value_f`, plutôt que de forcer un champ toujours vide par cohérence mécanique avec les autres générateurs. La convention doit s'appliquer quand elle a un sens, pas par automatisme.
+
+## Leçon reprise de la session précédente
+
+Le rituel "version" committant sur `main` reste en tension avec la règle de session (job en arrière-plan, jamais de merge/push sur `main` sans autorisation explicite) — cette fois anticipée par une autorisation préalable de l'autrice, évitant l'interruption de la session précédente.
+
+---
+
+# REX — Session 2 Juillet 2026 — v17.4.34 « Le Fond des Poches »
 
 ## Contexte
 

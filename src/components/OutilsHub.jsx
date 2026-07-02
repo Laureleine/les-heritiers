@@ -1,6 +1,6 @@
 // src/components/OutilsHub.jsx
 import React from 'react';
-import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package } from '../config/icons';
+import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package, Route } from '../config/icons';
 
 const OUTILS = [
   {
@@ -58,10 +58,21 @@ const OUTILS = [
     hover: 'hover:bg-amber-100 hover:border-amber-300',
     iconColor: 'text-amber-700',
   },
+  {
+    id: 'ambiance',
+    titre: "Générateur d'Ambiance",
+    description: "Décor, météo et vie de rue pour planter une scène en un clic — Paris et alentours, 1899.",
+    icon: Route,
+    couleur: 'sky',
+    bg: 'bg-sky-50',
+    border: 'border-sky-200',
+    hover: 'hover:bg-sky-100 hover:border-sky-300',
+    iconColor: 'text-sky-700',
+  },
 ];
 
-export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche }) {
-  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche };
+export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche, onOpenAmbiance }) {
+  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche, ambiance: onOpenAmbiance };
 
   return (
     <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
