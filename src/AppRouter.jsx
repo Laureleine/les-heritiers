@@ -22,6 +22,7 @@ const CharacterList = lazy(() => import('./components/CharacterList'));
 const PixieAssistant = lazy(() => import('./components/PixieAssistant'));
 const PnjGenerateur = lazy(() => import('./components/PnjGenerateur'));
 const GenerateurMenu = lazy(() => import('./components/GenerateurMenu'));
+const PocheGenerateur = lazy(() => import('./components/PocheGenerateur'));
 const OutilsHub = lazy(() => import('./components/OutilsHub'));
 
 export default function AppRouter({ session, userProfile, refreshUserProfile }) {
@@ -122,12 +123,14 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
             onOpenCarte={() => navigate('/carte')}
             onOpenGenerateur={() => navigate('/generateur')}
             onOpenMenu={() => navigate('/menu')}
+            onOpenPoche={() => navigate('/poche')}
           />
         } />
         <Route path="/actualite" element={<Actualite onBack={() => navigate('/outils')} userProfile={userProfile} />} />
         <Route path="/carte" element={<CarteDeParisPage onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
         <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
         <Route path="/menu" element={<GenerateurMenu onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
+        <Route path="/poche" element={<PocheGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
