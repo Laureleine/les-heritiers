@@ -37,12 +37,12 @@ export default function TabUsageIA() {
   const groupesParJour = useMemo(() => {
     const parJour = {};
     for (const l of lignes) {
-      const jour = new Date(l.created_at).toLocaleDateString('fr-FR');
-      if (!parJour[jour]) parJour[jour] = {};
-      if (!parJour[jour][l.call_type]) {
-        parJour[jour][l.call_type] = { promptTokens: 0, completionTokens: 0, totalTokens: 0, cout: 0 };
+      const jourKey = l.created_at.slice(0, 10); // YYYY-MM-DD
+      if (!parJour[jourKey]) parJour[jourKey] = {};
+      if (!parJour[jourKey][l.call_type]) {
+        parJour[jourKey][l.call_type] = { promptTokens: 0, completionTokens: 0, totalTokens: 0, cout: 0 };
       }
-      const g = parJour[jour][l.call_type];
+      const g = parJour[jourKey][l.call_type];
       g.promptTokens += l.prompt_tokens;
       g.completionTokens += l.completion_tokens;
       g.totalTokens += l.total_tokens;
@@ -59,16 +59,17 @@ export default function TabUsageIA() {
 
   return (
     <div className="space-y-4">
-      {groupesParJour.map(([jour, parType]) => {
+      {groupesParJour.map(([jourKey, parType]) => {
         const totalJour = Object.values(parType).reduce((acc, g) => ({
           totalTokens: acc.totalTokens + g.totalTokens,
           cout: acc.cout + g.cout,
         }), { totalTokens: 0, cout: 0 });
+        const jourLabel = new Date(jourKey).toLocaleDateString('fr-FR');
 
         return (
-          <div key={jour} className="bg-white border border-stone-200 rounded-xl px-4 py-3">
+          <div key={jourKey} className="bg-white border border-stone-200 rounded-xl px-4 py-3">
             <div className="flex items-center justify-between mb-2">
-              <p className="font-serif font-bold text-stone-800">{jour}</p>
+              <p className="font-serif font-bold text-stone-800">{jourLabel}</p>
               <p className="text-xs font-bold text-stone-500">{totalJour.totalTokens.toLocaleString('fr-FR')} tokens · {totalJour.cout.toFixed(4)} €</p>
             </div>
             <div className="space-y-1">
