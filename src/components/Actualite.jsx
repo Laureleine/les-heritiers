@@ -1,6 +1,6 @@
 // src/components/Actualite.jsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ArrowLeft, Sun, Moon, Info, ChevronDown, ChevronUp, FileText, Bug } from '../config/icons';
+import { ArrowLeft, Sun, Moon, Info, ChevronDown, ChevronUp, FileText, Bug, Copy } from '../config/icons';
 import eclipses from '../data/eclipses_data';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { supabase } from '../config/supabase';
@@ -14,6 +14,25 @@ const MONTHS_FR = {
 };
 
 const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+
+// Reproduit le contenu textuel de la carte météo (titre, champs, chronique), sans la date.
+export function formatMeteoTexte(dailyInfo) {
+  if (!dailyInfo) return '';
+  return [
+    `${dailyInfo.weather_icon} Météo de Paris`,
+    "Reconstitution climatologique d'époque",
+    '',
+    `Condition : ${dailyInfo.weather_condition}`,
+    `Températures : ${dailyInfo.weather_tmin ?? '?'}°C à ${dailyInfo.weather_tmax ?? '?'}°C`,
+    `Précipitations : ${dailyInfo.weather_precip_mm != null ? `${dailyInfo.weather_precip_mm} mm` : '—'}`,
+    `Vents : ${dailyInfo.weather_wind_kmh != null ? `${dailyInfo.weather_wind_kmh} km/h` : '—'}`,
+    `Lever du soleil : ${dailyInfo.sunrise}`,
+    `Coucher du soleil : ${dailyInfo.sunset}`,
+    '',
+    'Chronique Météorologique Réduite :',
+    dailyInfo.weather_desc,
+  ].join('\n');
+}
 
 export default function Actualite({ onBack, userProfile }) {
   const [dateStr, setDateStr] = useState(null);
@@ -39,6 +58,7 @@ export default function Actualite({ onBack, userProfile }) {
   const [voteCount, setVoteCount] = useState(0);
   const [votesList, setVotesList] = useState([]);
   const [loadingVotes, setLoadingVotes] = useState(false);
+  const [copieMeteoMsg, setCopieMeteoMsg] = useState(null);
 
   // --- États du Custom Calendar Popover ---
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -57,6 +77,12 @@ export default function Actualite({ onBack, userProfile }) {
   const hasAdminRights = useMemo(() => {
     return isSuperAdmin(userProfile);
   }, [userProfile]);
+
+  const copierMeteo = async () => {
+    await navigator.clipboard.writeText(formatMeteoTexte(dailyInfo));
+    setCopieMeteoMsg('Copié !');
+    setTimeout(() => setCopieMeteoMsg(null), 2000);
+  };
 
   const minDateParts = useMemo(() => {
     if (firstAvailableDate) {
@@ -773,12 +799,22 @@ export default function Actualite({ onBack, userProfile }) {
               <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 {dailyInfo ? (
                   <>
-                    <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
-                      <span className="text-5xl">{dailyInfo.weather_icon}</span>
-                      <div>
-                        <h2 className="text-2xl font-bold font-serif">Météo de Paris</h2>
-                        <p className="text-xs font-sans italic opacity-75">Reconstitution climatologique d'époque</p>
+                    <div className="flex items-start justify-between gap-4 mb-6 border-b border-current pb-4">
+                      <div className="flex items-center gap-4">
+                        <span className="text-5xl">{dailyInfo.weather_icon}</span>
+                        <div>
+                          <h2 className="text-2xl font-bold font-serif">Météo de Paris</h2>
+                          <p className="text-xs font-sans italic opacity-75">Reconstitution climatologique d'époque</p>
+                        </div>
                       </div>
+                      {hasAdminRights && (
+                        <button
+                          onClick={copierMeteo}
+                          className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-sans font-bold bg-stone-50 hover:bg-stone-100 dark:bg-stone-900 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-lg transition-colors"
+                        >
+                          <Copy size={13} /> {copieMeteoMsg || 'Copier'}
+                        </button>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
