@@ -25,7 +25,7 @@
 - `/version` (ou l'utilisateur dit "version") : Exécuter dans l'ordre :
   1. Vérifier que tous les tests sont verts.
   2. Sauvegarder la base : `node scripts/backup_supabase.js`.
-  3. Incrémenter `src/version.js` (numéro de version, date, description vulgarisée, changelog en langage métier).
+  3. Incrémenter `src/version.js` (numéro de version, date, description vulgarisée, changelog en langage métier) **et** `public/version.json` (`version` + `buildDate`) — ce second fichier pilote la détection de mise à jour côté client (`useAutoUpdate.js`) et a déjà été oublié plusieurs releases de suite.
   4. Rédiger le *Message aux Héritiers* : résumé vulgarisé dans le ton du jeu (Belle Époque, merveilleux, féérique), destiné à être posté sur Discord. Ne jamais mentionner Isabelle.
   5. Commit + push sur `main`.
   6. Vérifier le déploiement Vercel (build vert, site accessible).
