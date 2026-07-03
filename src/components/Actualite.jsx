@@ -58,15 +58,16 @@ export function formatMeteoHtml(dailyInfo) {
   if (!dailyInfo) return '';
   const rangees = chunkerParTrois(getMeteoChamps(dailyInfo));
 
+  const bordure = 'border:none;border-width:0;';
   const lignesTable = rangees.map((rangee) => `
-    <tr>${rangee.map((c) => `<td style="padding:4px 20px 2px 0;"><u>${escapeHtml(c.titre)}</u></td>`).join('')}</tr>
-    <tr>${rangee.map((c) => `<td style="padding:0 20px 14px 0;font-weight:bold;">${escapeHtml(c.valeur)}</td>`).join('')}</tr>`).join('');
+    <tr>${rangee.map((c) => `<td style="${bordure}padding:4px 20px 2px 0;"><u>${escapeHtml(c.titre)}</u></td>`).join('')}</tr>
+    <tr>${rangee.map((c) => `<td style="${bordure}padding:0 20px 14px 0;font-weight:bold;">${escapeHtml(c.valeur)}</td>`).join('')}</tr>`).join('');
 
-  return `<table style="border-collapse:collapse;font-family:Georgia,serif;">
-    <tr><td colspan="3" style="font-size:1.2em;font-weight:bold;padding-bottom:10px;">${escapeHtml(dailyInfo.weather_icon)} Météo de Paris</td></tr>
+  return `<table style="border-collapse:collapse;${bordure}font-family:Georgia,serif;" border="0" cellspacing="0" cellpadding="0">
+    <tr><td colspan="3" style="${bordure}font-size:1.2em;font-weight:bold;padding-bottom:10px;">${escapeHtml(dailyInfo.weather_icon)} Météo de Paris</td></tr>
     ${lignesTable}
-    <tr><td colspan="3" style="padding-top:6px;"><u>Chronique Météorologique Réduite</u></td></tr>
-    <tr><td colspan="3" style="font-style:italic;padding-top:4px;">${escapeHtml(dailyInfo.weather_desc)}</td></tr>
+    <tr><td colspan="3" style="${bordure}padding-top:6px;"><u>Chronique Météorologique Réduite</u></td></tr>
+    <tr><td colspan="3" style="${bordure}font-style:italic;padding-top:4px;">${escapeHtml(dailyInfo.weather_desc)}</td></tr>
   </table>`;
 }
 

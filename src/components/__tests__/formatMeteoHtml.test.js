@@ -33,6 +33,17 @@ describe('formatMeteoHtml', () => {
     expect(html).toContain('</table>');
   });
 
+  it("n'affiche aucune bordure de table, sur la table et sur chaque cellule", () => {
+    const html = formatMeteoHtml(DAILY_INFO);
+    expect(html).toMatch(/<table[^>]*border="0"/);
+    // Chaque <td> doit porter explicitement border:none, pas seulement la table
+    const tdMatches = html.match(/<td[^>]*>/g) || [];
+    expect(tdMatches.length).toBeGreaterThan(0);
+    for (const td of tdMatches) {
+      expect(td).toContain('border:none');
+    }
+  });
+
   it('souligne les titres des champs avec <u>', () => {
     const html = formatMeteoHtml(DAILY_INFO);
     for (const titre of ['Condition', 'Températures', 'Précipitations', 'Vents', 'Lever du soleil', 'Coucher du soleil', 'Chronique Météorologique Réduite']) {
