@@ -16,21 +16,26 @@ const MONTHS_FR = {
 const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 // Reproduit le contenu textuel de la carte météo (titre, champs, chronique), sans la date.
+// Chaque champ tient sur deux lignes (titre souligné en Markdown, puis valeur), comme la carte visuelle.
 export function formatMeteoTexte(dailyInfo) {
   if (!dailyInfo) return '';
+  const champ = (titre, valeur) => [`__${titre}__`, valeur];
   return [
     `${dailyInfo.weather_icon} Météo de Paris`,
-    "Reconstitution climatologique d'époque",
     '',
-    `Condition : ${dailyInfo.weather_condition}`,
-    `Températures : ${dailyInfo.weather_tmin ?? '?'}°C à ${dailyInfo.weather_tmax ?? '?'}°C`,
-    `Précipitations : ${dailyInfo.weather_precip_mm != null ? `${dailyInfo.weather_precip_mm} mm` : '—'}`,
-    `Vents : ${dailyInfo.weather_wind_kmh != null ? `${dailyInfo.weather_wind_kmh} km/h` : '—'}`,
-    `Lever du soleil : ${dailyInfo.sunrise}`,
-    `Coucher du soleil : ${dailyInfo.sunset}`,
+    ...champ('Condition', dailyInfo.weather_condition),
     '',
-    'Chronique Météorologique Réduite :',
-    dailyInfo.weather_desc,
+    ...champ('Températures', `${dailyInfo.weather_tmin ?? '?'}°C à ${dailyInfo.weather_tmax ?? '?'}°C`),
+    '',
+    ...champ('Précipitations', dailyInfo.weather_precip_mm != null ? `${dailyInfo.weather_precip_mm} mm` : '—'),
+    '',
+    ...champ('Vents', dailyInfo.weather_wind_kmh != null ? `${dailyInfo.weather_wind_kmh} km/h` : '—'),
+    '',
+    ...champ('Lever du soleil', dailyInfo.sunrise),
+    '',
+    ...champ('Coucher du soleil', dailyInfo.sunset),
+    '',
+    ...champ('Chronique Météorologique Réduite', dailyInfo.weather_desc),
   ].join('\n');
 }
 
