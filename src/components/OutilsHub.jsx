@@ -1,6 +1,6 @@
 // src/components/OutilsHub.jsx
 import React from 'react';
-import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package, Route } from '../config/icons';
+import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package, Route, Feather } from '../config/icons';
 
 const OUTILS = [
   {
@@ -69,10 +69,21 @@ const OUTILS = [
     hover: 'hover:bg-sky-100 hover:border-sky-300',
     iconColor: 'text-sky-700',
   },
+  {
+    id: 'argot',
+    titre: "Traducteur d'Argot 1899",
+    description: "Réécrivez une phrase dans le parler bourgeois, apache, ouvrier ou louchebem de l'époque.",
+    icon: Feather,
+    couleur: 'violet',
+    bg: 'bg-violet-50',
+    border: 'border-violet-200',
+    hover: 'hover:bg-violet-100 hover:border-violet-300',
+    iconColor: 'text-violet-700',
+  },
 ];
 
-export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche, onOpenAmbiance }) {
-  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche, ambiance: onOpenAmbiance };
+export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche, onOpenAmbiance, onOpenArgot }) {
+  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche, ambiance: onOpenAmbiance, argot: onOpenArgot };
 
   return (
     <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
