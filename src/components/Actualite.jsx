@@ -16,26 +16,32 @@ const MONTHS_FR = {
 const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 // Reproduit le contenu textuel de la carte météo (titre, champs, chronique), sans la date.
-// Chaque champ tient sur deux lignes (titre souligné en Markdown, puis valeur), comme la carte visuelle.
+// Les champs sont regroupés par ligne exactement comme la grille à l'écran (3 par ligne) :
+// une ligne de titres soulignés, puis une ligne de valeurs juste en dessous.
 export function formatMeteoTexte(dailyInfo) {
   if (!dailyInfo) return '';
-  const champ = (titre, valeur) => [`__${titre}__`, valeur];
+  const ligneTitres = (titres) => titres.map((t) => `__${t}__`).join(' · ');
+  const ligneValeurs = (valeurs) => valeurs.join(' · ');
+
   return [
     `${dailyInfo.weather_icon} Météo de Paris`,
     '',
-    ...champ('Condition', dailyInfo.weather_condition),
+    ligneTitres(['Condition', 'Températures', 'Précipitations']),
+    ligneValeurs([
+      dailyInfo.weather_condition,
+      `${dailyInfo.weather_tmin ?? '?'}°C à ${dailyInfo.weather_tmax ?? '?'}°C`,
+      dailyInfo.weather_precip_mm != null ? `${dailyInfo.weather_precip_mm} mm` : '—',
+    ]),
     '',
-    ...champ('Températures', `${dailyInfo.weather_tmin ?? '?'}°C à ${dailyInfo.weather_tmax ?? '?'}°C`),
+    ligneTitres(['Vents', 'Lever du soleil', 'Coucher du soleil']),
+    ligneValeurs([
+      dailyInfo.weather_wind_kmh != null ? `${dailyInfo.weather_wind_kmh} km/h` : '—',
+      dailyInfo.sunrise,
+      dailyInfo.sunset,
+    ]),
     '',
-    ...champ('Précipitations', dailyInfo.weather_precip_mm != null ? `${dailyInfo.weather_precip_mm} mm` : '—'),
-    '',
-    ...champ('Vents', dailyInfo.weather_wind_kmh != null ? `${dailyInfo.weather_wind_kmh} km/h` : '—'),
-    '',
-    ...champ('Lever du soleil', dailyInfo.sunrise),
-    '',
-    ...champ('Coucher du soleil', dailyInfo.sunset),
-    '',
-    ...champ('Chronique Météorologique Réduite', dailyInfo.weather_desc),
+    '__Chronique Météorologique Réduite__',
+    dailyInfo.weather_desc,
   ].join('\n');
 }
 
