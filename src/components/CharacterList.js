@@ -536,7 +536,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
           <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={14} /> <span className="hidden lg:inline">Encyclopédie</span>
           </button>
-          <button onClick={onOpenOutils} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-stone-100 text-stone-800 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Outils du Maître de Jeu">
+          <button onClick={onOpenOutils} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-stone-100 text-stone-800 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Outils pour les Doctes">
             <Wrench size={14} /> <span className="hidden lg:inline">Outils</span>
           </button>
           <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
