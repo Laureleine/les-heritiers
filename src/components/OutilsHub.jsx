@@ -84,7 +84,7 @@ export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpen
           >
             <ArrowLeft size={18} />
           </button>
-          <h1 className="font-serif font-bold text-amber-100 text-lg">Outils du Maître de Jeu</h1>
+          <h1 className="font-serif font-bold text-amber-100 text-lg">Outils pour les Doctes</h1>
         </div>
       </header>
 
