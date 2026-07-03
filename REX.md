@@ -1,4 +1,28 @@
-﻿# REX — Session 3 Juillet 2026 — v17.4.35 « Les Rues de la Belle Époque »
+﻿# REX — Session 3 Juillet 2026 (suite) — v17.4.36 « Le Copiste de la Gazette »
+
+## Contexte
+
+Petite feature (bouton copier sur l'écran météo, super admin) affinée en plusieurs allers-retours avec l'autrice — chaque retour visait à coller toujours plus fidèlement à l'affichage écran. Enchaînement révélateur : "garde le même format" → "deux lignes par champ, titres soulignés" → "regroupées par ligne comme la grille" → "bordures invisibles". Chaque itération était petite et rapide car scoping serré dès le départ (une fonction pure `formatMeteoTexte`/`formatMeteoHtml`, testée à chaque changement).
+
+## Décision : Markdown vs HTML selon la destination
+
+Demande initiale "souligner les titres" réglée en Markdown (`__titre__`, rendu souligné sur Discord). Puis demande d'alignement en colonnes a révélé une incompatibilité : l'alignement fiable n'existe qu'en police monospace (bloc de code Discord), qui casse le Markdown. Plutôt que de choisir un compromis boiteux, copie multi-format via `ClipboardItem` (`text/html` + `text/plain`) : chaque destination reçoit la version qu'elle sait le mieux afficher. Généralisable à d'autres boutons "copier" futurs si le besoin se répète.
+
+## Limite d'automatisation découverte : `navigator.clipboard` exige le focus du document
+
+Impossible de vérifier par clic automatisé qu'un `navigator.clipboard.write()`/`writeText()` fonctionne : Chrome renvoie `NotAllowedError: Document is not focused` (ou reste bloqué indéfiniment si un onglet est dans un état dégradé après de nombreuses interactions). **Ce n'est pas un bug de code** — c'est une limite structurelle de l'automatisation de navigateur à distance pour toute API presse-papier. Prochaine fois : ne pas s'acharner à vérifier visuellement une action de copie via clic simulé, s'appuyer sur les tests unitaires du contenu et demander une vérification manuelle à l'utilisatrice.
+
+## Investigation mot de passe oublié : deux causes distinctes trouvées
+
+Une joueuse bloquée sur "Les rouages du Télégraphe surchauffent" (rate limit) a révélé **deux problèmes indépendants** :
+1. Mailer par défaut de Supabase (sans SMTP personnalisé) limité à 2 emails/heure pour tout le projet — corrigible en branchant Mailjet (déjà utilisé pour les notifs de version) en SMTP custom dans le Dashboard.
+2. **Découverte en générant un lien de récupération admin** : l'URL de redirection Auth (`Site URL`) pointait encore vers `localhost:3000` en production — bug plus large que le cas de cette seule joueuse, aurait cassé la redirection de **tous** les resets de mot de passe réussis. Corrigé côté Dashboard par l'autrice.
+
+**Leçon :** générer un lien de test (`admin.generateLink`) pour une action censée juste débloquer un utilisateur a mis en évidence un bug de configuration bien plus large — vérifier activement la sortie d'une action de contournement plutôt que de supposer qu'elle fonctionne.
+
+---
+
+# REX — Session 3 Juillet 2026 — v17.4.35 « Les Rues de la Belle Époque »
 
 ## Contexte
 

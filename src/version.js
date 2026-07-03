@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.36 - \"Le Copiste de la Gazette 📋🌤️\"",
+    date: "3 Juillet 2026",
+    description: "Un nouveau petit outil discret pour les Gardiens : un bouton permet désormais de copier en un clic le relevé météorologique du jour affiché dans la Gazette, prêt à être partagé — sur le Télégraphe communautaire comme dans une missive plus formelle.",
+    changes: [
+      "📋 **Copie météo (Gardiens uniquement) :** Un bouton discret sur l'écran Météo de la Gazette copie le relevé du jour (conditions, températures, précipitations, vents, lever et coucher du soleil, chronique) exactement dans la mise en forme affichée à l'écran.",
+      "✨ **Une copie qui s'adapte à la destination :** Collée sur le Télégraphe (Discord), la copie reste un texte simple et lisible ; collée dans un courrier ou un document, elle prend la forme d'un tableau proprement aligné, sans bordures parasites.",
+      "🧪 **427 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.35 - \"Les Rues de la Belle Époque 🌆🚶\"",
     date: "3 Juillet 2026",
     description: "Un second outil rejoint la besace du Maître de Jeu : le Générateur d'Ambiance plante en un clic le décor d'une rue, d'une banlieue industrielle ou d'un chemin de campagne — avec sa météo de saison, sa vie de rue et, sur demande, une pointe d'intrigue (étrange, espionnage ou interlope).",
