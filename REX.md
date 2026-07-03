@@ -14,6 +14,12 @@ Une session précédente (probablement pour contourner le problème ci-dessus) a
 
 **Comment appliquer :** Pour tout accès direct à la prod (Edge Functions, SQL), utiliser le CLI officiel en une commande ponctuelle plutôt que de configurer un serveur MCP persistant avec le token réel — et si un `.mcp.json` de ce genre doit exister, le signaler explicitement à l'autrice avant de lui demander de redémarrer, pas après coup.
 
+## `public/version.json` était resté bloqué à 17.4.29 depuis plusieurs releases
+
+Ce fichier pilote la détection de mise à jour côté client (`useAutoUpdate.js` compare `version.json` à `APP_VERSION`). Il était resté à `17.4.29` alors que `src/version.js` était déjà à `17.4.36` — les 7 releases intermédiaires n'avaient pas déclenché l'invite de rechargement chez les Héritiers connectés en continu.
+
+**Comment appliquer :** Ajouter la mise à jour de `public/version.json` (version + buildDate) comme étape systématique du bump de version, pas seulement `src/version.js`.
+
 ## Fusionner un worktree sur `main` sans toucher la copie locale
 
 La copie locale de `main` (dépôt principal, hors worktree) avait du travail en cours non lié (`1899/`, pipeline OCR) qu'il ne fallait pas perturber. Plutôt que `git checkout main && git merge`, un simple `git push origin HEAD:main` depuis la branche du worktree (vérifié fast-forward via `git merge-base HEAD origin/main` d'abord) met à jour la branche distante sans toucher à l'arbre de travail local de `main`.
