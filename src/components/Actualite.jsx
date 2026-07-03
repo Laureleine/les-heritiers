@@ -15,34 +15,59 @@ const MONTHS_FR = {
 
 const DAYS_FR = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
-// Reproduit le contenu textuel de la carte météo (titre, champs, chronique), sans la date.
-// Les champs sont regroupés par ligne exactement comme la grille à l'écran (3 par ligne) :
-// une ligne de titres soulignés, puis une ligne de valeurs juste en dessous.
+// Les 6 champs de la carte météo, dans l'ordre de la grille à l'écran (3 par ligne).
+function getMeteoChamps(dailyInfo) {
+  return [
+    { titre: 'Condition', valeur: dailyInfo.weather_condition },
+    { titre: 'Températures', valeur: `${dailyInfo.weather_tmin ?? '?'}°C à ${dailyInfo.weather_tmax ?? '?'}°C` },
+    { titre: 'Précipitations', valeur: dailyInfo.weather_precip_mm != null ? `${dailyInfo.weather_precip_mm} mm` : '—' },
+    { titre: 'Vents', valeur: dailyInfo.weather_wind_kmh != null ? `${dailyInfo.weather_wind_kmh} km/h` : '—' },
+    { titre: 'Lever du soleil', valeur: dailyInfo.sunrise },
+    { titre: 'Coucher du soleil', valeur: dailyInfo.sunset },
+  ];
+}
+
+function chunkerParTrois(items) {
+  return [items.slice(0, 3), items.slice(3, 6)];
+}
+
+// Repli texte brut (Discord, éditeurs sans rendu HTML) : champs regroupés par ligne
+// comme la grille à l'écran, titres soulignés en Markdown (__titre__).
 export function formatMeteoTexte(dailyInfo) {
   if (!dailyInfo) return '';
-  const ligneTitres = (titres) => titres.map((t) => `__${t}__`).join(' · ');
-  const ligneValeurs = (valeurs) => valeurs.join(' · ');
+  const rangees = chunkerParTrois(getMeteoChamps(dailyInfo));
 
-  return [
-    `${dailyInfo.weather_icon} Météo de Paris`,
-    '',
-    ligneTitres(['Condition', 'Températures', 'Précipitations']),
-    ligneValeurs([
-      dailyInfo.weather_condition,
-      `${dailyInfo.weather_tmin ?? '?'}°C à ${dailyInfo.weather_tmax ?? '?'}°C`,
-      dailyInfo.weather_precip_mm != null ? `${dailyInfo.weather_precip_mm} mm` : '—',
-    ]),
-    '',
-    ligneTitres(['Vents', 'Lever du soleil', 'Coucher du soleil']),
-    ligneValeurs([
-      dailyInfo.weather_wind_kmh != null ? `${dailyInfo.weather_wind_kmh} km/h` : '—',
-      dailyInfo.sunrise,
-      dailyInfo.sunset,
-    ]),
-    '',
-    '__Chronique Météorologique Réduite__',
-    dailyInfo.weather_desc,
-  ].join('\n');
+  const lignes = [`${dailyInfo.weather_icon} Météo de Paris`, ''];
+  for (const rangee of rangees) {
+    lignes.push(rangee.map((c) => `__${c.titre}__`).join(' · '));
+    lignes.push(rangee.map((c) => c.valeur).join(' · '));
+    lignes.push('');
+  }
+  lignes.push('__Chronique Météorologique Réduite__');
+  lignes.push(dailyInfo.weather_desc);
+  return lignes.join('\n');
+}
+
+function escapeHtml(str) {
+  return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// Version riche (email, Google Docs, Notion...) : vraie table HTML, valeurs alignées
+// pile sous leur titre souligné, quelle que soit la police de destination.
+export function formatMeteoHtml(dailyInfo) {
+  if (!dailyInfo) return '';
+  const rangees = chunkerParTrois(getMeteoChamps(dailyInfo));
+
+  const lignesTable = rangees.map((rangee) => `
+    <tr>${rangee.map((c) => `<td style="padding:4px 20px 2px 0;"><u>${escapeHtml(c.titre)}</u></td>`).join('')}</tr>
+    <tr>${rangee.map((c) => `<td style="padding:0 20px 14px 0;font-weight:bold;">${escapeHtml(c.valeur)}</td>`).join('')}</tr>`).join('');
+
+  return `<table style="border-collapse:collapse;font-family:Georgia,serif;">
+    <tr><td colspan="3" style="font-size:1.2em;font-weight:bold;padding-bottom:10px;">${escapeHtml(dailyInfo.weather_icon)} Météo de Paris</td></tr>
+    ${lignesTable}
+    <tr><td colspan="3" style="padding-top:6px;"><u>Chronique Météorologique Réduite</u></td></tr>
+    <tr><td colspan="3" style="font-style:italic;padding-top:4px;">${escapeHtml(dailyInfo.weather_desc)}</td></tr>
+  </table>`;
 }
 
 export default function Actualite({ onBack, userProfile }) {
@@ -90,7 +115,14 @@ export default function Actualite({ onBack, userProfile }) {
   }, [userProfile]);
 
   const copierMeteo = async () => {
-    await navigator.clipboard.writeText(formatMeteoTexte(dailyInfo));
+    // Copie multi-format : les apps qui affichent du HTML (email, Docs, Notion...)
+    // récupèrent la table alignée, les autres (Discord, éditeurs texte) le repli brut.
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/plain': new Blob([formatMeteoTexte(dailyInfo)], { type: 'text/plain' }),
+        'text/html': new Blob([formatMeteoHtml(dailyInfo)], { type: 'text/html' }),
+      }),
+    ]);
     setCopieMeteoMsg('Copié !');
     setTimeout(() => setCopieMeteoMsg(null), 2000);
   };
