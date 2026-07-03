@@ -1,4 +1,28 @@
-﻿# REX — Session 3 Juillet 2026 (suite) — v17.4.36 « Le Copiste de la Gazette »
+﻿# REX — Session 3-4 Juillet 2026 (suite) — v17.4.37 « Le Traducteur des Langues d'Antan »
+
+## Le connecteur MCP Supabase officiel (claude.ai) n'est pas forcément lié au bon compte
+
+`mcp__claude_ai_Supabase__list_projects` renvoyait deux projets ("Les Héritiers" `uvckugcixiugysnsbekb` et "Diégesis" `zrzpghnszdwvkjrfwvxw`) — **ni l'un ni l'autre n'est le vrai projet de prod** (`cijtzdfwrmbftmwookac`, celui du `.env`). Le connecteur claude.ai est authentifié sur un compte/organisation Supabase différent de celui qui possède le projet réel. Conséquence : tout plan qui suppose que `mcp__claude_ai_Supabase__deploy_edge_function` / `list_edge_functions` fonctionnent sur ce projet est faux — ces outils ne peuvent tout simplement pas voir `cijtzdfwrmbftmwookac`.
+
+**Solution qui marche :** le CLI officiel Supabase via `npx -y supabase <commande> --project-ref cijtzdfwrmbftmwookac`, authentifié avec `SUPABASE_ACCESS_TOKEN` (déjà dans `.env`) exporté en variable d'environnement. Testé avec succès pour `functions list`, `functions deploy`, `secrets list`. Pas besoin d'installer le CLI globalement, `npx -y supabase@latest` télécharge le binaire à la volée.
+
+**Comment appliquer :** Avant de suivre un plan qui mentionne `mcp__claude_ai_Supabase__deploy_edge_function` ou tout autre outil de ce connecteur sur le projet de prod, vérifier d'abord avec `list_projects` qu'il apparaît bien dans la liste. Si non, basculer sur `npx supabase` + `SUPABASE_ACCESS_TOKEN`.
+
+## Ne pas créer de `.mcp.json` local pointant sur la prod sans validation explicite
+
+Une session précédente (probablement pour contourner le problème ci-dessus) avait créé `.mcp.json` dans ce worktree, déclarant un serveur MCP tiers (`npx @supabase/mcp-server-supabase@latest`) avec accès direct à la prod via le vrai `SUPABASE_ACCESS_TOKEN`, et avait demandé un redémarrage de Claude Code pour le charger — sans en informer clairement l'autrice. Le fichier était bien gitignored (donc jamais poussé), mais l'action même (donner un accès migrations/SQL direct à un package npm tiers sur la prod, à l'insu de l'autrice) contredit l'esprit de la RÈGLE ABSOLUE d'`AGENTS.md` qui bloque justement ce type d'accès MCP sur ce projet.
+
+**Comment appliquer :** Pour tout accès direct à la prod (Edge Functions, SQL), utiliser le CLI officiel en une commande ponctuelle plutôt que de configurer un serveur MCP persistant avec le token réel — et si un `.mcp.json` de ce genre doit exister, le signaler explicitement à l'autrice avant de lui demander de redémarrer, pas après coup.
+
+## Fusionner un worktree sur `main` sans toucher la copie locale
+
+La copie locale de `main` (dépôt principal, hors worktree) avait du travail en cours non lié (`1899/`, pipeline OCR) qu'il ne fallait pas perturber. Plutôt que `git checkout main && git merge`, un simple `git push origin HEAD:main` depuis la branche du worktree (vérifié fast-forward via `git merge-base HEAD origin/main` d'abord) met à jour la branche distante sans toucher à l'arbre de travail local de `main`.
+
+**Comment appliquer :** Quand la copie locale de `main` a des changements non liés en cours, préférer `git push origin <branche>:main` (après vérification fast-forward) à un merge local.
+
+---
+
+# REX — Session 3 Juillet 2026 (suite) — v17.4.36 « Le Copiste de la Gazette »
 
 ## Contexte
 
