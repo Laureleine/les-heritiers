@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.37 - \"Le Traducteur des Langues d'Antan 🗣️📜\"",
+    date: "3 Juillet 2026",
+    description: "Un nouvel outil rejoint la besace des Doctes (le Hub Outils change d'ailleurs de nom à cette occasion) : le Traducteur d'Argot 1899 réécrit n'importe quelle phrase moderne dans le parler d'époque de votre choix — bourgeois précieux, apache menaçant, ouvrier gouailleur ou louchebem secret des bouchers de la Villette.",
+    changes: [
+      "🗣️ **Traducteur d'Argot 1899 :** Nouvel outil dans les Outils pour les Doctes. Saisissez une phrase, choisissez un registre (bourgeois, apache, ouvrier ou louchebem), et obtenez instantanément sa traduction dans le parler de 1899, prête à copier.",
+      "📜 **Outils pour les Doctes :** Le Hub Outils du Maître de Jeu change de nom pour mieux refléter son public.",
+      "🧪 **430 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.36 - \"Le Copiste de la Gazette 📋🌤️\"",
     date: "3 Juillet 2026",
     description: "Un nouveau petit outil discret pour les Gardiens : un bouton permet désormais de copier en un clic le relevé météorologique du jour affiché dans la Gazette, prêt à être partagé — sur le Télégraphe communautaire comme dans une missive plus formelle.",
