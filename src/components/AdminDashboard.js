@@ -1,17 +1,13 @@
 // src/components/AdminDashboard.js
 
 import React, { useState } from 'react';
-import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell, Dices, UtensilsCrossed, Package, Route, Coins } from '../config/icons';
+import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell, Coins } from '../config/icons';
 import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
 import TabUsers from './admin/TabUsers';
 import TabStats from './admin/TabStats';
 import TabForgeTitres from './admin/TabForgeTitres';
 import TabRepairJournaux from './admin/TabRepairJournaux';
 import TabNotifications from './admin/TabNotifications';
-import TabPnjPropositions from './admin/TabPnjPropositions';
-import TabMenuPropositions from './admin/TabMenuPropositions';
-import TabPochePropositions from './admin/TabPochePropositions';
-import TabAmbiancePropositions from './admin/TabAmbiancePropositions';
 import TabUsageIA from './admin/TabUsageIA';
 
 // ✨ FIX : On récupère userProfile depuis le routeur
@@ -59,18 +55,6 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
                         <Coins size={18} /> Usage IA
                     </button>
                 )}
-                <button onClick={() => setActiveTab('pnj')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'pnj' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
-                    <Dices size={18} /> Tables PNJ
-                </button>
-                <button onClick={() => setActiveTab('menu')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'menu' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
-                    <UtensilsCrossed size={18} /> Menus
-                </button>
-                <button onClick={() => setActiveTab('poche')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'poche' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
-                    <Package size={18} /> Poche
-                </button>
-                <button onClick={() => setActiveTab('ambiance')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'ambiance' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
-                    <Route size={18} /> Ambiance
-                </button>
             </div>
 
             {/* Contenu de l'onglet actif */}
@@ -79,10 +63,6 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
             {activeTab === 'titres' && <TabForgeTitres userProfile={userProfile} />}
             {activeTab === 'repair' && isSuperAdmin && <TabRepairJournaux />}
             {activeTab === 'notifications' && isSuperAdmin && <TabNotifications />}
-            {activeTab === 'pnj' && <TabPnjPropositions session={session} />}
-            {activeTab === 'menu' && <TabMenuPropositions session={session} />}
-            {activeTab === 'poche' && <TabPochePropositions session={session} />}
-            {activeTab === 'ambiance' && <TabAmbiancePropositions session={session} />}
             {activeTab === 'usage_ia' && isSuperAdmin && <TabUsageIA />}
         </div>
     );
