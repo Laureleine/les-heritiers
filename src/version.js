@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.39 - \"Le Bon Sens de la Mesure 🧭💬\"",
+    date: "4 Juillet 2026",
+    description: "Le Traducteur d'Argot 1899, réparé hier, retombait parfois muet en cas d'affluence : le tarif gratuit de son interprète (5 traductions par minute pour tout le site) se voyait vite dépassé, avec le même message d'erreur trompeur qu'un vrai incident. Il sait désormais reconnaître ce cas précis et prévenir clairement, tout en s'appuyant sur un interprète au tarif gratuit plus généreux.",
+    changes: [
+      "🧭 **Un message qui dit la vérité :** Quand le Traducteur est simplement débordé (trop de traductions en même temps), il l'annonce clairement plutôt que de prétendre à une panne — et invite à réessayer dans quelques secondes.",
+      "💬 **Un interprète plus disponible :** Bascule vers un modèle au tarif gratuit plus généreux, tout aussi véloce pour ce genre d'exercice de style.",
+      "🧪 **443 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.38 - \"Le Triptyque des Gardiens 🗝️📖\"",
     date: "4 Juillet 2026",
     description: "Les quatre outils communautaires (Générateur de Personnages, de Poche, d'Ambiance et de Menu) parlent enfin la même langue : chacun propose désormais le même triptyque Générateur / Tables / Validation, les Gardiens pouvant ajouter, corriger ou valider une entrée sans jamais quitter la page de l'outil concerné. Au passage, le Traducteur d'Argot 1899, resté muet depuis son arrivée, retrouve la parole.",
