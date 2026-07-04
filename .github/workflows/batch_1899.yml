@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Installer dépendances Python
-        run: pip install requests Pillow google-generativeai psycopg2-binary beautifulsoup4 astral
+        run: pip install requests Pillow google-generativeai psycopg2-binary beautifulsoup4 astral cloudscraper
 
       - name: Lancer le batch des dates manquantes
         env:
