@@ -71,6 +71,47 @@ export function formatMeteoHtml(dailyInfo) {
   </table>`;
 }
 
+// Les 3 champs de la carte lunaire, dans l'ordre de la grille à l'écran (une seule rangée).
+function getLuneChamps(dailyInfo) {
+  return [
+    { titre: 'Phase Lunaire', valeur: dailyInfo.moon_phase },
+    { titre: 'Surface Visible', valeur: dailyInfo.moon_visible },
+    { titre: 'Aspect Céleste', valeur: dailyInfo.moon_aspect },
+  ];
+}
+
+// Repli texte brut (Discord, éditeurs sans rendu HTML) : mêmes conventions que la météo.
+export function formatLuneTexte(dailyInfo) {
+  if (!dailyInfo) return '';
+  const champs = getLuneChamps(dailyInfo);
+
+  const lignes = [`${dailyInfo.moon_icon} Influence Lunaire`, ''];
+  lignes.push(champs.map((c) => `__${c.titre}__`).join(' · '));
+  lignes.push(champs.map((c) => c.valeur).join(' · '));
+  lignes.push('');
+  lignes.push('__Chronique Lunaire & Influence__');
+  lignes.push(dailyInfo.moon_desc);
+  return lignes.join('\n');
+}
+
+// Version riche (email, Google Docs, Notion...) : même table alignée que la météo.
+export function formatLuneHtml(dailyInfo) {
+  if (!dailyInfo) return '';
+  const champs = getLuneChamps(dailyInfo);
+
+  const bordure = 'border:none;border-width:0;';
+  const ligneTitres = `<tr>${champs.map((c) => `<td style="${bordure}padding:4px 20px 2px 0;"><u>${escapeHtml(c.titre)}</u></td>`).join('')}</tr>`;
+  const ligneValeurs = `<tr>${champs.map((c) => `<td style="${bordure}padding:0 20px 14px 0;font-weight:bold;">${escapeHtml(c.valeur)}</td>`).join('')}</tr>`;
+
+  return `<table style="border-collapse:collapse;${bordure}font-family:Georgia,serif;" border="0" cellspacing="0" cellpadding="0">
+    <tr><td colspan="3" style="${bordure}font-size:1.2em;font-weight:bold;padding-bottom:10px;">${escapeHtml(dailyInfo.moon_icon)} Influence Lunaire</td></tr>
+    ${ligneTitres}
+    ${ligneValeurs}
+    <tr><td colspan="3" style="${bordure}padding-top:6px;"><u>Chronique Lunaire & Influence</u></td></tr>
+    <tr><td colspan="3" style="${bordure}font-style:italic;padding-top:4px;">${escapeHtml(dailyInfo.moon_desc)}</td></tr>
+  </table>`;
+}
+
 export default function Actualite({ onBack, userProfile }) {
   const [dateStr, setDateStr] = useState(null);
   const [activeMenu, setActiveMenu] = useState('meteo'); // meteo, lune, chronique, fetes, page1, page2, page3, page4, votes
@@ -96,6 +137,7 @@ export default function Actualite({ onBack, userProfile }) {
   const [votesList, setVotesList] = useState([]);
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [copieMeteoMsg, setCopieMeteoMsg] = useState(null);
+  const [copieLuneMsg, setCopieLuneMsg] = useState(null);
 
   // --- États du Custom Calendar Popover ---
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -126,6 +168,17 @@ export default function Actualite({ onBack, userProfile }) {
     ]);
     setCopieMeteoMsg('Copié !');
     setTimeout(() => setCopieMeteoMsg(null), 2000);
+  };
+
+  const copierLune = async () => {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/plain': new Blob([formatLuneTexte(dailyInfo)], { type: 'text/plain' }),
+        'text/html': new Blob([formatLuneHtml(dailyInfo)], { type: 'text/html' }),
+      }),
+    ]);
+    setCopieLuneMsg('Copié !');
+    setTimeout(() => setCopieLuneMsg(null), 2000);
   };
 
   const minDateParts = useMemo(() => {
@@ -896,12 +949,22 @@ export default function Actualite({ onBack, userProfile }) {
               <section className={`p-6 rounded-2xl border ${darkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200 shadow-sm'}`}>
                 {dailyInfo ? (
                   <>
-                    <div className="flex items-center gap-4 mb-6 border-b border-current pb-4">
-                      <span className="text-5xl">{dailyInfo.moon_icon}</span>
-                      <div>
-                        <h2 className="text-2xl font-bold font-serif">Influence Lunaire</h2>
-                        <p className="text-xs font-sans italic opacity-75">Calcul astronomique réel pour le bassin céleste parisien</p>
+                    <div className="flex items-start justify-between gap-4 mb-6 border-b border-current pb-4">
+                      <div className="flex items-center gap-4">
+                        <span className="text-5xl">{dailyInfo.moon_icon}</span>
+                        <div>
+                          <h2 className="text-2xl font-bold font-serif">Influence Lunaire</h2>
+                          <p className="text-xs font-sans italic opacity-75">Calcul astronomique réel pour le bassin céleste parisien</p>
+                        </div>
                       </div>
+                      {hasAdminRights && (
+                        <button
+                          onClick={copierLune}
+                          className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-sans font-bold bg-stone-50 hover:bg-stone-100 dark:bg-stone-900 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-lg transition-colors"
+                        >
+                          <Copy size={13} /> {copieLuneMsg || 'Copier'}
+                        </button>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
