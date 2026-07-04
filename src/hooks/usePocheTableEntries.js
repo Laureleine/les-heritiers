@@ -59,5 +59,53 @@ export function usePocheTableEntries(session) {
     return { error };
   }, [session, reload]);
 
-  return { dbEntries, myProposals, loaded, submitting, proposer, reload };
+  const ajouterDirectement = useCallback(async ({ tableName, saison, valueM, valueF, weight }, editingId) => {
+    if (!session?.user) return { error: { message: 'Non connecté' } };
+    setSubmitting(true);
+    let error;
+    if (editingId) {
+      // Édition d'une entrée existante : ne touche pas is_official (déjà posé à la création).
+      ({ error } = await supabase.from('poche_table_entries').update({
+        value_m: valueM,
+        value_f: valueF || null,
+        weight: weight ?? 1,
+      }).eq('id', editingId));
+    } else {
+      ({ error } = await supabase.from('poche_table_entries').insert({
+        table_name: tableName,
+        saison: tableName === 'fouille_saisonniere' ? saison : null,
+        value_m: valueM,
+        value_f: valueF || null,
+        weight: weight ?? 1,
+        is_official: true,
+        status: 'approved',
+        created_by: session.user.id,
+        approved_by: session.user.id,
+        approved_at: new Date().toISOString(),
+      }));
+    }
+    setSubmitting(false);
+    if (!error) await reload();
+    return { error };
+  }, [session, reload]);
+
+  const approuver = useCallback(async (entry) => {
+    const { error } = await supabase
+      .from('poche_table_entries')
+      .update({ status: 'approved', approved_by: session?.user?.id, approved_at: new Date().toISOString() })
+      .eq('id', entry.id);
+    if (!error) await reload();
+    return { error };
+  }, [session, reload]);
+
+  const refuser = useCallback(async (entry, motif) => {
+    const { error } = await supabase
+      .from('poche_table_entries')
+      .update({ status: 'rejected', reject_reason: motif || null })
+      .eq('id', entry.id);
+    if (!error) await reload();
+    return { error };
+  }, [reload]);
+
+  return { dbEntries, myProposals, loaded, submitting, proposer, ajouterDirectement, approuver, refuser, reload };
 }

@@ -61,15 +61,40 @@ const initialForm = {
   description_echec_partiel: '', description_echec_critique: '',
 };
 
-export default function ProposerPlat({ session, userProfile, mesPropositions, proposer, ajouterDirectement, submitting }) {
+export default function ProposerPlat({ session, userProfile, mesPropositions, proposer, ajouterDirectement, submitting, entryToEdit, onCancelEdit }) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [msg, setMsg] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+
+  React.useEffect(() => {
+    if (!entryToEdit) return;
+    setForm({
+      nom: entryToEdit.nom || '',
+      categorie: entryToEdit.categorie || 'potage',
+      niveaux: entryToEdit.niveaux || [],
+      saisons: entryToEdit.saisons || [],
+      difficulte: entryToEdit.difficulte || 1,
+      accord_vin: entryToEdit.accord_vin || '',
+      description_narrative: entryToEdit.description_narrative || '',
+      description_reussite_critique: entryToEdit.description_reussite_critique || '',
+      description_echec_partiel: entryToEdit.description_echec_partiel || '',
+      description_echec_critique: entryToEdit.description_echec_critique || '',
+    });
+    setEditingId(entryToEdit.id);
+    setOpen(true);
+  }, [entryToEdit]);
 
   if (!session?.user) return null;
 
   const canDirectSave = !!userProfile && isAdmin(userProfile);
   const set = (champ) => (valeur) => setForm((f) => ({ ...f, [champ]: valeur }));
+
+  const annulerEdition = () => {
+    setForm(initialForm);
+    setEditingId(null);
+    onCancelEdit?.();
+  };
 
   const champs = () => ({
     nom: form.nom.trim(),
@@ -100,11 +125,13 @@ export default function ProposerPlat({ session, userProfile, mesPropositions, pr
 
   const handleSaveDirect = async () => {
     if (!valide) return;
-    const { error } = await ajouterDirectement(champs());
+    const { error } = await ajouterDirectement(champs(), editingId);
     if (error) setMsg(`Erreur : ${error.message}`);
     else {
-      setMsg('Plat ajouté directement !');
+      setMsg(editingId ? 'Plat modifié directement !' : 'Plat ajouté directement !');
       setForm(initialForm);
+      setEditingId(null);
+      onCancelEdit?.();
       setTimeout(() => setMsg(null), 3000);
     }
   };
@@ -161,7 +188,12 @@ export default function ProposerPlat({ session, userProfile, mesPropositions, pr
             </button>
             {canDirectSave && (
               <button type="button" onClick={handleSaveDirect} disabled={!valide} className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-emerald-50 font-bold text-xs transition-all disabled:opacity-60">
-                ✓ Ajouter directement
+                {editingId ? '✎ Modifier directement' : '✓ Ajouter directement'}
+              </button>
+            )}
+            {editingId && (
+              <button type="button" onClick={annulerEdition} className="text-xs text-stone-400 hover:text-stone-600">
+                Annuler la modification
               </button>
             )}
             {msg && <p className={`text-xs font-serif ${msg.startsWith('Erreur') ? 'text-red-600' : 'text-emerald-600'}`}>{msg}</p>}
@@ -172,13 +204,13 @@ export default function ProposerPlat({ session, userProfile, mesPropositions, pr
               <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Mes propositions</p>
               {mesPropositions.map((p) => (
                 <div key={p.id} className="flex items-start gap-2 text-xs">
-                  {p.statut === 'en_attente'
+                  {p.status === 'pending'
                     ? <Clock size={11} className="mt-0.5 flex-shrink-0 text-amber-500" />
-                    : p.statut === 'refuse'
+                    : p.status === 'rejected'
                       ? <XCircle size={11} className="mt-0.5 flex-shrink-0 text-red-500" />
                       : <CheckCircle size={11} className="mt-0.5 flex-shrink-0 text-emerald-500" />}
                   <span className="font-serif text-stone-600">{p.nom}</span>
-                  {p.motif_refus && <span className="text-red-400">— {p.motif_refus}</span>}
+                  {p.reject_reason && <span className="text-red-400">— {p.reject_reason}</span>}
                 </div>
               ))}
             </div>
