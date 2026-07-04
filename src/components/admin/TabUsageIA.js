@@ -4,7 +4,7 @@ import { supabase } from '../../config/supabase';
 // Tarifs approximatifs (USD par 1M tokens) — à ajuster si la grille Google change.
 // Source de vérité : https://ai.google.dev/gemini-api/docs/pricing
 const TARIFS_USD_PAR_MILLION = {
-  'gemini-1.5-flash': { prompt: 0.075, completion: 0.30 },
+  'gemini-2.5-flash': { prompt: 0.30, completion: 2.50 },
 };
 
 // Taux de conversion approximatif, à ajuster périodiquement.
