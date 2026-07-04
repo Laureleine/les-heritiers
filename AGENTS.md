@@ -26,7 +26,7 @@
   1. Vérifier que tous les tests sont verts.
   2. Sauvegarder la base : `node scripts/backup_supabase.js`.
   3. Incrémenter `src/version.js` (numéro de version, date, description vulgarisée, changelog en langage métier) **et** `public/version.json` (`version` + `buildDate`) — ce second fichier pilote la détection de mise à jour côté client (`useAutoUpdate.js`) et a déjà été oublié plusieurs releases de suite.
-  4. Rédiger le *Message aux Héritiers* : résumé vulgarisé dans le ton du jeu (Belle Époque, merveilleux, féérique), destiné à être posté sur Discord. Ne jamais mentionner Isabelle.
+  4. Rédiger le *Message aux Héritiers* : résumé vulgarisé dans le ton du jeu (Belle Époque, merveilleux, féérique), destiné à être posté sur Discord. Ne jamais mentionner Isabelle. Le consigner **aussi** dans `messages_heritiers.md` à la racine du projet (le plus récent en haut), en plus de l'afficher en chat — l'autrice ne peut pas toujours copier depuis le chat.
   5. Commit + push sur `main`.
   6. Vérifier le déploiement Vercel (build vert, site accessible).
   7. Rédiger un REX (Retour d'EXpérience) de la session dans un fichier dédié (`REX.md` à la racine) : lister les règles, astuces et enseignements pour gagner du temps et être plus efficace lors de la prochaine session.
