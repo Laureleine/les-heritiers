@@ -1,5 +1,22 @@
 ﻿# REX — Session 4 Juillet 2026 — v17.4.38 « Le Triptyque des Gardiens »
 
+## Le CLI `supabase functions deploy` échoue en 403, mais l'API Management brute marche
+
+Après le premier fix Gemini, `supabase functions deploy` échouait systématiquement avec `unexpected list functions status 403` sur ce projet — attribué au départ à un problème de permissions du token. En creusant plus loin (deuxième incident, quota Gemini) : un appel `curl` direct à l'API Management (`GET https://api.supabase.com/v1/projects/{ref}/functions`) avec exactement le même `SUPABASE_ACCESS_TOKEN` répond **200 sans problème**. Le CLI a donc un bug ou fait une vérification supplémentaire qui échoue, indépendamment des vrais droits du token.
+
+**Solution qui marche, à privilégier désormais sur ce projet plutôt que le CLI :** appeler directement l'endpoint de déploiement trouvé dans la spec OpenAPI publique (`curl https://api.supabase.com/api/v1-json`, chercher les chemins contenant `functions`) :
+```bash
+curl -X POST "https://api.supabase.com/v1/projects/{ref}/functions/deploy?slug=<nom>" \
+  -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+  -F "metadata=<chemin_vers_metadata.json;type=application/json" \
+  -F "file=@chemin/vers/index.ts;filename=index.ts"
+```
+avec `metadata.json` = `{"entrypoint_path":"index.ts","verify_jwt":true,"name":"<nom>"}`. Réponse `201` avec le numéro de version incrémenté = succès confirmé (testé et vérifié par une vraie traduction bout en bout après coup).
+
+**Piège annexe :** extraire `SUPABASE_ACCESS_TOKEN` doit se faire depuis le **répertoire du dépôt principal** (qui a le `.env`), jamais depuis un worktree qui n'en a pas — sinon la variable capturée est vide silencieusement et curl échoue avec un message trompeur ("Format is Authorization: Bearer [token]") qui ne dit pas que le token est vide.
+
+**Leçon :** Face à un outil CLI qui échoue de façon opaque sur un projet donné, essayer l'API REST sous-jacente directement (souvent documentée via une spec OpenAPI publique) avant de conclure qu'une action est impossible sans passer par un MCP ou l'interface web.
+
 ## Diagnostic du Traducteur d'Argot muet : l'extension de monitoring réseau peut mentir par omission
 
 Le Traducteur d'Argot 1899 (livré la veille) échouait systématiquement avec "La traduction a échoué". Étapes de diagnostic :
