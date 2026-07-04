@@ -1,4 +1,44 @@
-﻿# REX — Session 3-4 Juillet 2026 (suite) — v17.4.37 « Le Traducteur des Langues d'Antan »
+﻿# REX — Session 4 Juillet 2026 — v17.4.38 « Le Triptyque des Gardiens »
+
+## Diagnostic du Traducteur d'Argot muet : l'extension de monitoring réseau peut mentir par omission
+
+Le Traducteur d'Argot 1899 (livré la veille) échouait systématiquement avec "La traduction a échoué". Étapes de diagnostic :
+1. Confirmé que `GEMINI_API_KEY` était bien configuré (demandé à l'autrice plutôt que de fouiller les secrets Supabase — cf. règle absolue du projet).
+2. `llm_usage_log` : 0 ligne — aucun appel n'avait jamais atteint la journalisation, donc l'échec se produisait avant ou pendant l'appel Gemini.
+3. Vérifié que le déploiement Vercel du commit contenant le Traducteur était bien `READY`/`production` (pas un problème de build).
+4. `mcp__claude-in-chrome__read_network_requests` ne montrait QUE la requête OPTIONS (préflight CORS), jamais le POST réel — alors que la traduction échouait bel et bien à l'écran.
+
+**Piège évité :** ne pas conclure "la requête ne part jamais" sur la seule foi de l'outil de monitoring réseau de l'extension Chrome. Un `fetch` patché directement dans la page (`javascript_tool`, remplacer `window.fetch` par une version qui logge `url`/`status`/`body` dans `window.__debugLog`) a révélé que le POST partait bien et recevait un vrai **500** — l'outil d'extension ne le capturait simplement pas pour une raison non élucidée.
+
+**Cause réelle :** `gemini-1.5-flash`, codé en dur dans la fonction Edge, avait été retiré par Google (`404 models/gemini-1.5-flash is not found`). Fix : bascule vers `gemini-2.5-flash` (côté fonction Edge ET tarifs de l'onglet Usage IA), avec les tarifs à jour récupérés via `WebFetch` sur `ai.google.dev/gemini-api/docs/pricing` plutôt que devinés.
+
+**Leçon :** Face à un échec réseau qui semble "ne jamais partir", patcher `fetch` directement dans la page via `javascript_tool` est plus fiable que l'outil de monitoring réseau de l'extension — celui-ci peut silencieusement rater des requêtes (cross-origin vers une fonction Edge Supabase dans ce cas).
+
+## Le token SUPABASE_ACCESS_TOKEN pollué par la bannière dotenvx sur stdout
+
+`supabase functions list --project-ref ...` échouait avec `Invalid access token format` alors que le token, vérifié caractère par caractère (sans jamais l'afficher), était parfaitement conforme (`sbp_` + 40 hex). Cause : `node -e "...; process.stdout.write(process.env.SUPABASE_ACCESS_TOKEN)"` capturait aussi une bannière dotenvx ("tip: ...") injectée sur stdout selon un mécanisme non identifié (pas systématique), polluant la variable capturée par `$(...)`.
+
+**Fix :** extraire uniquement le motif attendu avec `grep -oE 'sbp_[0-9a-f]{40}'` après capture, plutôt que de faire confiance à `process.stdout.write` seul.
+
+**Leçon :** Quand une valeur capturée via `$(node -e ...)` échoue une validation de format alors qu'elle semble correcte, vérifier sa longueur exacte (`${#VAR}`) avant d'incriminer autre chose — une bannière parasite ajoutée par un outil tiers (ici dotenvx) est plus probable qu'un bug dans le outil qui consomme la valeur.
+
+## Chantier « Triptyque des Gardiens » — uniformisation à 3 onglets des 4 générateurs
+
+Demande initiale volontairement large ("pour tous les générateurs, la logique doit être la même") — 4 questions ciblées (`AskUserQuestion`) ont permis de trancher en un aller-retour : périmètre (les 4 générateurs), emplacement de la validation (remplace l'Admin Dashboard, ne coexiste pas), PNJ (garde son hybride hardcodé+DB), Menu (harmonise son schéma).
+
+**Découverte clé en cartographiant l'existant (délégué à un agent Explore) :** PNJ avait déjà 2 des 3 onglets (Générateur/Tables avec ajout direct gardien `canDirectSave`/`editingDbId`) — c'est ce pattern déjà éprouvé qui a servi de référence à répliquer sur Poche/Ambiance/Menu, plutôt que d'inventer une nouvelle convention. Menu avait déjà `ajouterDirectement(champs, editingId)` avec support édition dans le hook, mais pas dans le composant `ProposerPlat` — Poche/Ambiance n'avaient ni l'un ni l'autre (juste `proposer`, tout le CRUD gardien étant codé en dur dans les Tabs Admin séparés).
+
+**Découverte utile :** `is_official` ne doit être forcé à `true` qu'à la CRÉATION directe par un gardien, jamais lors d'une simple édition d'une entrée déjà approuvée (vérifié dans `TabPochePropositions.enregistrerEdition` avant d'écrire l'équivalent dans le hook enrichi) — un piège facile si on généralise trop vite le payload insert/update.
+
+**Migration Menu :** renommage `statut/motif_refus/auteur_id/validateur_id` → `status/reject_reason/created_by/approved_by` (valeurs `en_attente/approuve/refuse` → `pending/approved/rejected`). Piège d'ordre des opérations : poser la nouvelle contrainte CHECK (valeurs anglaises) AVANT de migrer les données existantes fait échouer la migration (`violated by some row`) — toujours migrer les valeurs d'abord, contraindre ensuite.
+
+**Serveur de dev local dans un worktree :** `npm start` (Vite) échoue avec "Variables Supabase manquantes" si le worktree n'a pas son propre `.env` — copier celui du dépôt principal avant de lancer, le supprimer ensuite avant de committer (déjà documenté pour les scripts Node, s'applique aussi à Vite).
+
+**Leçon générale :** Face à une demande de refactor transversal vague mais avec un périmètre large (4 générateurs, migration SQL, suppression de code), déléguer la cartographie factuelle de l'existant à un agent Explore avant d'écrire le moindre code a évité de découvrir les pièges (is_official, ordre de migration, colonnes manquantes) en cours de route plutôt qu'avant.
+
+---
+
+# REX — Session 3-4 Juillet 2026 (suite) — v17.4.37 « Le Traducteur des Langues d'Antan »
 
 ## Le connecteur MCP Supabase officiel (claude.ai) n'est pas forcément lié au bon compte
 
