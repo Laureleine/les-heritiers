@@ -1,0 +1,37 @@
+name: Batch journal 1899 - dates manquantes
+
+on:
+  schedule:
+    - cron: '0 */8 * * *'   # Toutes les 8h (UTC)
+  workflow_dispatch:          # Déclenchement manuel possible
+
+jobs:
+  batch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer dépendances Node
+        run: npm ci
+
+      - name: Installer dépendances Python
+        run: pip install requests Pillow google-generativeai psycopg2-binary beautifulsoup4 astral
+
+      - name: Lancer le batch des dates manquantes
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: python 1899/batch_missing_dates.py
