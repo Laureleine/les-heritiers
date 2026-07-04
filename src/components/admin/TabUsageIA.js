@@ -5,6 +5,7 @@ import { supabase } from '../../config/supabase';
 // Source de vérité : https://ai.google.dev/gemini-api/docs/pricing
 const TARIFS_USD_PAR_MILLION = {
   'gemini-2.5-flash': { prompt: 0.30, completion: 2.50 },
+  'gemini-2.5-flash-lite': { prompt: 0.10, completion: 0.40 },
 };
 
 // Taux de conversion approximatif, à ajuster périodiquement.

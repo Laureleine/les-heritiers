@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform',
 }
 
-const MODEL = 'gemini-2.5-flash'
+const MODEL = 'gemini-2.5-flash-lite'
 
 const PROMPTS_LANGAGE: Record<string, string> = {
   bourgeois:
@@ -99,6 +99,25 @@ Deno.serve(async (req) => {
     })
 
   } catch (error) {
+    // Le SDK @google/genai encode l'erreur Gemini en JSON dans error.message —
+    // on la déchiffre pour distinguer un vrai quota dépassé (429) d'une autre panne.
+    let quotaExceeded = false
+    try {
+      const parsed = JSON.parse(error.message)
+      quotaExceeded = parsed?.error?.status === 'RESOURCE_EXHAUSTED' || parsed?.error?.code === 429
+    } catch (_parseError) {
+      // error.message n'est pas du JSON exploitable, on retombe sur le message générique
+    }
+
+    if (quotaExceeded) {
+      return new Response(JSON.stringify({
+        error: "Trop de traductions en même temps — le quota du service est momentanément dépassé. Réessaie dans quelques secondes.",
+        code: 'QUOTA_EXCEEDED',
+      }), {
+        status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })

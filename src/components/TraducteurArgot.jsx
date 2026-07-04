@@ -27,7 +27,19 @@ export default function TraducteurArgot({ onBack }) {
       const { data, error } = await supabase.functions.invoke('translate-argot', {
         body: { texte: texte.trim(), style },
       });
-      if (error) throw error;
+      if (error) {
+        // Les erreurs HTTP (ex: 429 quota) n'exposent le corps JSON que via error.context.
+        let body = null;
+        if (error?.context && typeof error.context.json === 'function') {
+          try { body = await error.context.json(); } catch (_parseError) { /* corps non-JSON */ }
+        }
+        if (body?.code === 'QUOTA_EXCEEDED' && body?.error) {
+          setErreur(body.error);
+        } else {
+          setErreur("La traduction a échoué. Réessayez dans un instant.");
+        }
+        return;
+      }
       if (data?.error) throw new Error(data.error);
       setResultat(data.traduction);
     } catch (e) {
