@@ -1,0 +1,29 @@
+# Messages aux Héritiers
+
+Historique des messages rédigés pour Discord à chaque version, du plus récent au plus ancien.
+
+---
+
+## v17.4.39 « Le Bon Sens de la Mesure 🧭💬 »
+
+📜 **Mise à jour — v17.4.39 « Le Bon Sens de la Mesure »** 🧭💬
+
+Chers Héritiers,
+
+Le Traducteur d'Argot 1899, tout juste réparé hier, retombait parfois muet aux heures d'affluence — son interprète, généreux mais pas illimité, se retrouvait vite débordé quand plusieurs plumes s'activaient en même temps. Il sait désormais reconnaître ce cas précis et le dire clairement plutôt que de feindre la panne : *"trop de traductions à la fois, patientez quelques instants"*. Un interprète plus disponible a également été engagé pour limiter ces débordements.
+
+🧪 443 Sentinelles veillent toujours, sans la moindre faille.
+
+---
+
+## v17.4.38 « Le Triptyque des Gardiens 🗝️📖 »
+
+📜 **Nouvelle mise à jour — v17.4.38 « Le Triptyque des Gardiens »** 🗝️📖
+
+Chers Héritiers,
+
+Les quatre ateliers de la maison — le Générateur de Personnages, celui de Poche, celui d'Ambiance et celui de Menu — viennent de recevoir la même réforme : chacun s'organise désormais en trois pièces bien distinctes. La **Salle du Générateur**, où l'on tire au sort. Le **Cabinet des Tables**, où l'on parcourt ce qui existe et où l'on peut proposer une nouveauté — les Gardiens y ajoutant ou corrigeant directement, sans détour. Et le **Bureau de Validation**, réservé aux Gardiens, où l'on approuve ou refuse les propositions de la communauté sans plus jamais devoir traverser tout le manoir jusqu'au tableau de bord.
+
+Et pour couronner le tout : le Traducteur d'Argot 1899, resté muet depuis son inauguration, retrouve enfin la voix. Il vous attend, prêt à réciter vos phrases dans le parler bourgeois, apache, ouvrier ou louchebem de 1899.
+
+🧪 443 Sentinelles veillent toujours, sans la moindre faille.
