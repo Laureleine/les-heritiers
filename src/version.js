@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.38 - \"Le Triptyque des Gardiens 🗝️📖\"",
+    date: "4 Juillet 2026",
+    description: "Les quatre outils communautaires (Générateur de Personnages, de Poche, d'Ambiance et de Menu) parlent enfin la même langue : chacun propose désormais le même triptyque Générateur / Tables / Validation, les Gardiens pouvant ajouter, corriger ou valider une entrée sans jamais quitter la page de l'outil concerné. Au passage, le Traducteur d'Argot 1899, resté muet depuis son arrivée, retrouve la parole.",
+    changes: [
+      "🗝️ **Un même triptyque pour les quatre outils :** PNJ, Poche, Ambiance et Menu affichent désormais chacun trois onglets — Générateur (le tirage), Tables (parcourir, proposer, et pour les Gardiens ajouter ou corriger directement) et Validation (réservé aux Gardiens, pour approuver ou refuser les propositions de la communauté).",
+      "📖 **La validation rejoint l'outil qu'elle concerne :** Les quatre anciens onglets du tableau de bord (Tables PNJ, Menus, Poche, Ambiance) disparaissent — la modération de chaque outil se fait désormais directement dans sa propre page, plus besoin d'aller-retour vers le tableau de bord.",
+      "🗣️ **Le Traducteur d'Argot retrouve la voix :** Resté silencieux depuis son inauguration (le modèle de langage qu'il invoquait avait été discrètement retiré par son fournisseur), il traduit de nouveau vos phrases dans le parler bourgeois, apache, ouvrier ou louchebem de 1899.",
+      "🧪 **443 Sentinelles — toujours en faction, aucune régression (13 nouvelles sentinelles pour les outils enrichis).**",
+    ]
+  },
+  {
     version: "17.4.37 - \"Le Traducteur des Langues d'Antan 🗣️📜\"",
     date: "3 Juillet 2026",
     description: "Un nouvel outil rejoint la besace des Doctes (le Hub Outils change d'ailleurs de nom à cette occasion) : le Traducteur d'Argot 1899 réécrit n'importe quelle phrase moderne dans le parler d'époque de votre choix — bourgeois précieux, apache menaçant, ouvrier gouailleur ou louchebem secret des bouchers de la Villette.",
