@@ -4,6 +4,20 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.40 « Le Sang des Deux Rives 🧬✨ »
+
+📜 **Mise à jour — v17.4.40 « Le Sang des Deux Rives »** 🧬✨
+
+Chers Héritiers,
+
+L'Anomalie féérique — ce don rare qui permet à un Faux-Semblant d'accueillir en lui un pouvoir venu d'une autre espèce — révèle aujourd'hui deux paliers qui dormaient dans l'ombre du grand manuscrit. Ceux qui portent déjà cette anomalie peuvent, en progressant, y ajouter un **second pouvoir** de cette même espèce lointaine : on appelle cela le **Sang-mêlé**. Plus rares encore sont ceux qui vont jusqu'au bout du chemin, les **Hybrides** : un troisième pouvoir de cette seconde nature, et surtout l'échange — définitif — d'une Capacité naturelle de leur espèce d'origine contre une de leur nature d'emprunt.
+
+Ce chemin a un prix. Un Hybride qui atteint le sommet de sa Féérie ne connaîtra jamais le Pouvoir légendaire, ni de l'une ni de l'autre de ses deux natures — mais recevra à la place le Pouvoir profond de sa seconde espèce, une consolation à sa mesure.
+
+🧪 472 Sentinelles veillent toujours, sans la moindre faille (17 nouvelles recrues pour ce chantier).
+
+---
+
 ## v17.4.39 « Le Bon Sens de la Mesure 🧭💬 »
 
 📜 **Mise à jour — v17.4.39 « Le Bon Sens de la Mesure »** 🧭💬

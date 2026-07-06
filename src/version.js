@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.40 - \"Le Sang des Deux Rives 🧬✨\"",
+    date: "6 Juillet 2026",
+    description: "L'Anomalie féérique révèle ses deux paliers cachés. Un Faux-Semblant qui a déjà accueilli en lui un pouvoir d'une autre espèce peut désormais aller plus loin : un second pouvoir de cette même espèce lointaine (le Sang-mêlé), puis, plus rare encore, un troisième — et l'échange définitif d'une Capacité naturelle contre celle de cette seconde nature (l'Hybride). Ces âmes composites payent un prix particulier au sommet de leur Féérie : jamais elles n'atteignent le Pouvoir légendaire, ni de l'une ni de l'autre espèce, mais reçoivent à la place le Pouvoir profond de leur seconde nature.",
+    changes: [
+      "🧬 **Sang-mêlé (Nouveau palier) :** Un Héritier ayant déjà l'Anomalie féérique peut, en évolution, acquérir un second pouvoir de la même espèce étrangère pour 8 points d'Expérience.",
+      "🦋 **Hybride (Nouveau palier) :** Au prix de 8 points d'Expérience supplémentaires, un troisième pouvoir de cette seconde espèce peut être acquis — et surtout, une Capacité naturelle de l'espèce d'origine peut être échangée, définitivement, contre une de la seconde nature.",
+      "⚖️ **Le prix de la nature mixte :** Un Hybride qui atteint le sommet de sa Féérie (rang 8) n'aura jamais accès au Pouvoir légendaire — ni celui de son espèce d'origine, ni celui de sa seconde nature. À la place, il reçoit le Pouvoir profond de cette seconde espèce.",
+      "🔒 **Un choix qui se referme dans l'ordre :** L'espèce étrangère se verrouille dès le premier pouvoir assimilé, et les trois paliers ne peuvent être défaits que dans l'ordre inverse de leur acquisition — chaque abandon remboursant fidèlement les points d'Expérience dépensés.",
+      "🧪 **472 Sentinelles — toujours en faction, aucune régression (17 nouvelles sentinelles pour les paliers Sang-mêlé et Hybride).**",
+    ]
+  },
+  {
     version: "17.4.39 - \"Le Bon Sens de la Mesure 🧭💬\"",
     date: "4 Juillet 2026",
     description: "Le Traducteur d'Argot 1899, réparé hier, retombait parfois muet en cas d'affluence : le tarif gratuit de son interprète (5 traductions par minute pour tout le site) se voyait vite dépassé, avec le même message d'erreur trompeur qu'un vrai incident. Il sait désormais reconnaître ce cas précis et prévenir clairement, tout en s'appuyant sur un interprète au tarif gratuit plus généreux.",
