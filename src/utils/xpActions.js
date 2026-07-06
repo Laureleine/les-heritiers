@@ -18,6 +18,8 @@ export const XP_CODES = {
     // --- Atouts & Pouvoirs ---
     ATOUT_ACQUISITION:     'ATOUT_ACQUISITION',      // Atout acquis/désappris
     ANOMALIE_FEERIQUE:     'ANOMALIE_FEERIQUE',      // Anomalie Féérique activée/purgée
+    ANOMALIE_SANG_MELE:    'ANOMALIE_SANG_MELE',     // Sang-mêlé activé/purgé
+    ANOMALIE_HYBRIDE:      'ANOMALIE_HYBRIDE',       // Hybride activé/purgé
     // --- Compétences ---
     COMP_UTILE_RANG:         'COMP_UTILE_RANG',          // Compétence utile ↑↓
     COMP_UTILE_SPECIALITE:   'COMP_UTILE_SPECIALITE',    // Spécialité utile acquise/oubliée
