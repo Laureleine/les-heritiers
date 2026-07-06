@@ -11,6 +11,10 @@ import { xpTransaction } from '../utils/xpTransaction';
 // 🛡️ Constante requise pour les Atouts
 const MAX_ATOUTS_GLOBAL = 2;
 
+// Atouts gérés exclusivement depuis le widget de l'Étape 3 (Pouvoirs) —
+// jamais togglables directement dans cette grille.
+const CHAINED_ATOUTS = ['Anomalie féérique', 'Sang-mêlé', 'Hybride'];
+
 // ============================================================================
 // --- ÉTAPE 4 : ATOUTS --- (Garder ton code actuel pour StepAtouts ci-dessous !)
 // ============================================================================
@@ -134,7 +138,7 @@ export default function StepAtouts() {
         {data.atouts.map((atout, idx) => {
           const isSelected = character.atouts?.includes(atout.nom) || character.atouts?.includes(atout.id);
           const isDisabled = isReadOnly || (!isScelle && !isSelected && countSelected >= MAX_ATOUTS_GLOBAL);
-          const isAnomalie = atout.nom === 'Anomalie féérique';
+          const isAnomalie = CHAINED_ATOUTS.includes(atout.nom);
           
           // 🛡️ Détection visuelle du Plancher de Verre
           const innateAtouts = character.data?.stats_scellees?.atouts || [];
