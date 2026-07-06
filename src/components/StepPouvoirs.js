@@ -10,6 +10,13 @@ import { xpTransaction } from '../utils/xpTransaction';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getMagicBadges } from '../data/DictionnaireJeu';
 import AnomalieFeeriqueWidget from './AnomalieFeeriqueWidget';
+import {
+    computeExteriorPowers,
+    deriveEspeceSeconde,
+    hasHybrideActive,
+    isOwnSpeciesPowerAvailable,
+    isSecondSpeciesProfondPowerAvailable,
+} from '../utils/anomalieChaining';
 
 export default function StepPouvoirs() {
     const { character, dispatchCharacter, isReadOnly } = useCharacter();
@@ -117,15 +124,26 @@ export default function StepPouvoirs() {
         dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'pouvoirs', value: pouvoirNom, max: maxPouvoirs, gameData });
     };
 
+    const isHybride = hasHybrideActive(character);
+    const exteriorPowers = fairyData && character.typeFee
+        ? computeExteriorPowers(fairyData, character.typeFee)
+        : [];
+    const especeSeconde = isHybride ? deriveEspeceSeconde(character, exteriorPowers) : null;
+
     const getAvailablePowers = () => {
         if (!data?.pouvoirs) return [];
-        return data.pouvoirs.filter(p => {
-            const type = p.type_pouvoir || '';
-            // Déblocage progressif selon la Féérie
-            if (type.includes('profond')) return currentFeerie >= 7;
-            if (type.includes('legendaire') || type.includes('légendaire')) return currentFeerie >= 8;
-            return type === 'masque' || type === 'demasque';
-        });
+        const ownSpecies = data.pouvoirs.filter(p =>
+            isOwnSpeciesPowerAvailable(p.type_pouvoir, currentFeerie, { isHybride })
+        );
+        if (!isHybride || !especeSeconde) return ownSpecies;
+
+        const secondSpeciesData = fairyData[especeSeconde];
+        const secondSpeciesPowers = (secondSpeciesData?.pouvoirs || [])
+            .filter(p => isSecondSpeciesProfondPowerAvailable(p.type_pouvoir, currentFeerie))
+            .filter(p => !ownSpecies.some(op => op.nom === p.nom))
+            .map(p => ({ ...p, origineSeconde: especeSeconde }));
+
+        return [...ownSpecies, ...secondSpeciesPowers];
     };
 
     if (data?.isEnfoui && currentFeerie < 3) {
@@ -254,6 +272,11 @@ export default function StepPouvoirs() {
                                             {badge.label}
                                         </span>
                                     ))}
+                                    {pouvoir.origineSeconde && (
+                                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full shadow-sm border bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300">
+                                            {pouvoir.origineSeconde}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <div className="text-sm text-gray-600 leading-relaxed mt-2">

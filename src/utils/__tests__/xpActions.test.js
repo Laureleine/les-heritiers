@@ -131,3 +131,13 @@ describe('XP_CODES', () => {
     expect(XP_CODES.XP_SOLDE).toBe('XP_SOLDE');
   });
 });
+
+describe('XP_CODES — paliers Anomalie féérique', () => {
+  it('expose des codes distincts pour Anomalie féérique, Sang-mêlé et Hybride', () => {
+    expect(XP_CODES.ANOMALIE_FEERIQUE).toBe('ANOMALIE_FEERIQUE');
+    expect(XP_CODES.ANOMALIE_SANG_MELE).toBe('ANOMALIE_SANG_MELE');
+    expect(XP_CODES.ANOMALIE_HYBRIDE).toBe('ANOMALIE_HYBRIDE');
+    const codes = [XP_CODES.ANOMALIE_FEERIQUE, XP_CODES.ANOMALIE_SANG_MELE, XP_CODES.ANOMALIE_HYBRIDE];
+    expect(new Set(codes).size).toBe(3);
+  });
+});
