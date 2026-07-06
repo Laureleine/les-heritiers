@@ -65,11 +65,27 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           mkdir -p db-dumps db-schemas
           export PGSSLMODE=require
+          # Le rôle postgres a un statement_timeout de 2 min côté Supabase : un COPY
+          # qui dépasse ce délai fait tomber la connexion SSL (pg_dump le rapporte comme
+          # "SSL connection has been closed unexpectedly" au lieu d'un vrai timeout).
+          # On le désactive pour la session du dump.
+          export PGOPTIONS="--statement-timeout=0"
 
           # pg_dump accepte une URL directement — pas besoin de parser avec sed
-          pg_dump --dbname="$SUPABASE_DB_URL" \
-            --no-owner --no-privileges \
-            -Fc -f "db-dumps/full_${DATE}.dump"
+          # Retry car une coupure SSL transitoire (réseau runner ↔ Supabase) peut survenir
+          for attempt in 1 2 3; do
+            if pg_dump --dbname="$SUPABASE_DB_URL" \
+              --no-owner --no-privileges \
+              -Fc -f "db-dumps/full_${DATE}.dump"; then
+              break
+            fi
+            echo "⚠ pg_dump a échoué (tentative ${attempt}/3)"
+            if [ "$attempt" = 3 ]; then
+              echo "❌ Échec du dump après 3 tentatives"
+              exit 1
+            fi
+            sleep 10
+          done
 
           # Schéma lisible pour audit et diff
           pg_dump --dbname="$SUPABASE_DB_URL" \
