@@ -1,4 +1,46 @@
-﻿# REX — Session 4 Juillet 2026 — v17.4.38 « Le Triptyque des Gardiens »
+﻿# REX — Session 6 Juillet 2026 — v17.4.40 « Le Sang des Deux Rives »
+
+## Le backup Supabase échouait à cause du `statement_timeout`, pas du volume de données
+
+Un run GitHub Actions du backup quotidien échouait sur `pg_dump` avec `SSL connection has been closed unexpectedly` pendant le `COPY` de `journal_articles`. Réflexe à éviter : soupçonner un problème de volume ou de réseau. Vérification en base (`pg_settings`) : le rôle `postgres` a un `statement_timeout` de 2 min côté Supabase — dépassé, le serveur tue la requête et `pg_dump` rapporte une coupure SSL générique au lieu d'un vrai message de timeout. La table ne faisait pourtant que 14 Mo / 17 700 lignes.
+
+**Fix :** `export PGOPTIONS="--statement-timeout=0"` avant les appels `pg_dump`, plus un retry (3 tentatives) en défense contre une vraie coupure réseau transitoire runner ↔ Supabase.
+
+**Leçon :** Sur Supabase, une coupure SSL en plein `pg_dump`/`COPY` évoque d'abord le `statement_timeout` du rôle de connexion (souvent 2 min par défaut) avant un problème de volume de données — vérifier `pg_settings` plutôt que de supposer.
+
+## Le bandeau promotionnel de `dotenv` v17 n'est pas une compromission de la chaîne d'approvisionnement
+
+`node -e "require('dotenv').config()"` affichait `◇ injected env (12) from .env // tip: ⌁ auth for agents [www.vestauth.com]` — à première vue, ça ressemble à un package compromis qui exfiltre ou fait de la pub malveillante. Vérification dans `node_modules/dotenv/lib/main.js` : c'est une fonctionnalité officielle du mainteneur (tableau `TIPS`, affiché aléatoirement, faisant la promotion de ses propres produits `dotenvx.com`/`vestauth.com`). Rien de malveillant, juste agaçant. (Un angle différent du même bandeau — pollution de stdout capturé — était déjà documenté le 3-4 juillet, cf. plus bas.)
+
+**Leçon :** Avant de crier à la compromission de dépendance sur un message de log inhabituel, lire le code source du package concerné (souvent une seule fonction à chercher) plutôt que de supposer — beaucoup de mainteneurs ajoutent désormais des messages promotionnels volontaires dans leurs CLI/librairies.
+
+## Le cwd d'un worktree peut dériver silencieusement vers le dépôt principal en cours de session
+
+Après plusieurs `cd "chemin/du/dépôt/principal" && ...` dans des commandes Bash successives (pour des vérifications en lecture seule), un `git checkout -b` a été lancé par erreur dans le **dépôt principal** au lieu du worktree isolé — `pwd` le confirmait, alors qu'`EnterWorktree` avait pourtant réussi en début de session. Heureusement la commande a échoué (fichiers non commités en conflit) avant de rien casser. Signal utile : `EnterWorktree` refuse ensuite avec « Already in a worktree session » — preuve que le harnais garde un état logique différent du `pwd` réel du shell.
+
+**Leçon :** Avant toute commande git à fort impact (checkout, merge, reset) en session de worktree, vérifier explicitement `pwd` ET `git branch --show-current` juste avant — ne jamais supposer que le shell est resté où `EnterWorktree` l'avait placé, surtout après des `cd` explicites vers d'autres chemins dans des commandes précédentes.
+
+## Fast-forward de `main` en collision avec un fichier non suivi créé par une session parallèle
+
+En resynchronisant le dépôt principal vers `origin/main`, le fast-forward a été refusé : un fichier non suivi (`1899/run_batch_scheduled.bat`, laissé par une session parallèle sur le batch scheduler 1899) portait le même chemin qu'un fichier entrant. Un `diff` a confirmé un contenu strictement identique — mouvement sans risque plutôt que suppression aveugle (`mv` vers un `.bak`, fast-forward, puis suppression du `.bak` une fois le fichier réel restauré par le merge). Le classificateur auto-mode a d'ailleurs bloqué une première tentative de `rm` direct malgré la vérification — juste, une suppression ne devrait jamais être le premier réflexe.
+
+**Leçon :** Un fast-forward refusé pour cause de fichier non suivi en collision n'est pas forcément une vraie perte de travail — vérifier l'identité du contenu avant toute suppression, et préférer un déplacement réversible (`mv`) à un `rm` même quand on est sûr.
+
+## Le rituel `/version` depuis un worktree isolé, quand `main` est déjà occupé ailleurs
+
+Le rituel `/version` (commit + push sur `main`) tombe une nouvelle fois en tension avec l'isolement de session : `main` était déjà checkout dans le dépôt principal, donc impossible de le checkout aussi dans le worktree. Solution (déjà documentée le 3-4 juillet, reconfirmée ici) : créer une branche courte depuis `origin/main` à jour dans le worktree, y committer le bump de version, puis `git push origin <branche>:main` — met à jour `main` distant sans jamais checkout la branche localement dans le worktree ni toucher à l'arbre de travail du dépôt principal.
+
+**Comment appliquer :** Ce pattern est maintenant récurrent sur ce projet (3 occurrences documentées) — l'appliquer directement dès qu'un `/version` doit s'exécuter depuis une session en worktree, sans re-découvrir le problème à chaque fois.
+
+## D'autres sessions parallèles peuvent merger sur `main` pendant qu'on travaille ailleurs
+
+Au moment de fusionner cette session, `origin/main` avait déjà avancé de plusieurs commits non liés (Traducteur d'Argot, générateurs Menu/Poche/PNJ/Ambiance, batch scheduler 1899) fusionnés par d'autres sessions/worktrees en parallèle — le fast-forward local a ramené 52 fichiers, pas seulement les miens. Rien d'anormal ni de bloquant (fast-forward propre), mais `git log --oneline -1 HEAD` avant de commencer un rituel `/version` aurait pu laisser croire à tort que `main` n'avait pas bougé depuis le début de la session.
+
+**Leçon :** Toujours `git fetch origin main` et comparer avec `HEAD` local juste avant un rituel `/version` ou tout merge — plusieurs sessions en worktree tournent en parallèle sur ce projet, `main` distant peut avoir avancé sans lien avec le travail en cours.
+
+---
+
+# REX — Session 4 Juillet 2026 — v17.4.38 « Le Triptyque des Gardiens »
 
 ## Le CLI `supabase functions deploy` échoue en 403, mais l'API Management brute marche
 
