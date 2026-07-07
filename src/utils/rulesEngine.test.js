@@ -5,7 +5,7 @@
   })),
 }));
 
-import { calculateSkillScore, calculateFullCombatStats } from './rulesEngine';
+import { calculateSkillScore, calculateFullCombatStats, calculatePvSeuils } from './rulesEngine';
 import { calculateCharacterStats } from './bonusCalculator';
 
 const baseCharacter = {
@@ -190,5 +190,22 @@ describe('calculateFullCombatStats', () => {
 
   it('retourne un objet vide si character est null', () => {
     expect(calculateFullCombatStats(null, baseGameData)).toEqual({});
+  });
+});
+
+describe('calculatePvSeuils', () => {
+  it('calcule les seuils pour un PV Max multiple exact de 6 (moitié entière)', () => {
+    // CON=3 -> pvMax = 18, moitié = 9
+    expect(calculatePvSeuils(18)).toEqual({ malus1: 9, moribonde: -3 });
+  });
+
+  it("calcule les seuils pour l'exemple du manuel (CON=4, mort à -5 PV)", () => {
+    // CON=4 -> pvMax = 21, moitié = 10.5, moribonde de 0 à -4 (mort en dessous de -4, ex: -5)
+    expect(calculatePvSeuils(21)).toEqual({ malus1: 10.5, moribonde: -4 });
+  });
+
+  it('calcule les seuils pour une petite Constitution', () => {
+    // CON=1 -> pvMax = 12, moitié = 6
+    expect(calculatePvSeuils(12)).toEqual({ malus1: 6, moribonde: -1 });
   });
 });
