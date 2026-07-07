@@ -133,3 +133,13 @@ export const calculateFullCombatStats = (character, gameData) => {
         tricherie: Math.floor((getCarac('feerie') + masque) / 2)
     };
 };
+
+/**
+ * Seuils de blessure d'après un PV Max (manuel p.170, pvMax = 3×CON + 9) :
+ * malus -1 en dessous de la moitié du PV Max, malus -2 en dessous de 5,
+ * moribonde de 0 à -CON (mort en dessous).
+ */
+export const calculatePvSeuils = (pvMax) => {
+    const con = (pvMax - 9) / 3;
+    return { malus1: pvMax / 2, moribonde: -con };
+};

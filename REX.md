@@ -1,4 +1,28 @@
-﻿# REX — Session 6 Juillet 2026 — v17.4.40 « Le Sang des Deux Rives »
+﻿# REX — Session 7 Juillet 2026 — v17.4.41 « Le Souffle qui Vacille »
+
+## Le `.env` (gitignoré) est absent d'un worktree fraîchement créé — le backup Supabase échoue silencieusement
+
+`node scripts/backup_supabase.js` lancé depuis le worktree isolé échouait avec « Variables SUPABASE_SERVICE_KEY et VITE_SUPABASE_URL requises dans .env », alors que le même script tournait sans problème quelques minutes plus tôt dans le dépôt principal. Cause simple : `.env` est gitignoré, donc un `git worktree add` ne le copie jamais — chaque nouveau worktree en est totalement dépourvu tant qu'on ne le fait pas soi-même.
+
+**Fix :** `cp "<dépôt principal>/.env" "<worktree>/.env"` avant tout script qui a besoin des clés Supabase (backup, migrations, etc.).
+
+**Leçon :** Dans ce projet, `EnterWorktree` isole le code mais jamais les secrets — copier explicitement `.env` depuis le dépôt principal dès qu'un script en dépend, plutôt que de déboguer une erreur de credentials qui n'en est pas une.
+
+## Le rituel `/version` depuis un worktree isolé de session en arrière-plan : jamais de push direct sur `main`
+
+Contrairement aux sessions précédentes (cf. plus bas) où le contournement du rituel `/version` en worktree consistait à pousser directement sur `main` via `git push origin <branche>:main`, cette session tourne en **session d'arrière-plan** avec une règle absolue et non négociable : ne jamais pousser sur `main` ni fusionner soi-même, seulement ouvrir des PR en brouillon. Le bump de version, le Message aux Héritiers et ce REX ont donc été ajoutés comme commits supplémentaires sur la branche de la PR déjà ouverte (#9) plutôt que poussés sur `main` — au choix explicite de l'autrice, interrogée sur ce point via une question de clarification.
+
+**Leçon :** Le pattern « push direct sur main depuis un worktree » documenté plus bas ne s'applique **pas** aux sessions d'arrière-plan — vérifier d'abord si la session est isolée avec une contrainte de non-push-sur-main avant de le réappliquer aveuglément ; dans ce cas, regrouper le versioning dans la PR en cours et laisser l'autrice merger.
+
+## Un composant sans aucun test existant : extraire la logique pure plutôt que d'inventer une infra de test de rendu
+
+`FicheParchemin.jsx` (la fiche de personnage / PDF) n'a jamais eu le moindre test — composant énorme, fortement couplé au CSS d'impression. Pour respecter la règle « créer des tests de non-régression à chaque modification significative » sans construire un premier test de rendu complet pour tout le composant (hors périmètre de la demande), la logique de calcul des seuils de PV a été extraite en fonction pure exportée (`calculatePvSeuils` dans `rulesEngine.js`, qui a déjà ses tests) plutôt que laissée inline dans le composant.
+
+**Leçon :** Face à un composant non testé et complexe, chercher si le calcul ajouté peut être extrait en fonction pure vers un module déjà testé (ici `rulesEngine.js`) — cela permet de respecter la règle de non-régression sans se lancer dans une infra de test de rendu hors-scope.
+
+---
+
+# REX — Session 6 Juillet 2026 — v17.4.40 « Le Sang des Deux Rives »
 
 ## Le backup Supabase échouait à cause du `statement_timeout`, pas du volume de données
 

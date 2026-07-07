@@ -4,6 +4,18 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.41 « Le Souffle qui Vacille 🕯️💔 »
+
+📜 **Mise à jour — v17.4.41 « Le Souffle qui Vacille »** 🕯️💔
+
+Chers Héritiers,
+
+La fiche de personnage parle désormais plus clairement du souffle vital. Sous le bloc Combat & Santé, trois seuils apparaissent, calculés pour chaque Héritier à partir de ses propres Points de Vie et de sa Constitution : le point où la blessure devient **grave** (malus -1, sous la moitié des PV Max), celui où elle devient **très grave** (malus -2, sous 5 PV), et l'antichambre de la mort, la zone **moribonde** (de 0 jusqu'à moins sa Constitution). Fini les formules abstraites de la fiche papier — chacun voit désormais ses propres chiffres, sur la fiche comme sur le PDF.
+
+🧪 475 Sentinelles veillent toujours, sans la moindre faille (3 nouvelles recrues pour ce chantier).
+
+---
+
 ## v17.4.40 « Le Sang des Deux Rives 🧬✨ »
 
 📜 **Mise à jour — v17.4.40 « Le Sang des Deux Rives »** 🧬✨

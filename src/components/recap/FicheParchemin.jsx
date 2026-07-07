@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { CARAC_LIST, accorderTexte } from '../../data/DictionnaireJeu';
 import { calculateCharacterStats } from '../../utils/bonusCalculator';
-import { calculateFullCombatStats } from '../../utils/rulesEngine';
+import { calculateFullCombatStats, calculatePvSeuils } from '../../utils/rulesEngine';
 import { isCharacterScelle } from '../../utils/lockUtils';
 
 export default function FicheParchemin({ character, gameData, detailed = false }) {
@@ -196,6 +196,18 @@ export default function FicheParchemin({ character, gameData, detailed = false }
 
     // ✨ CALCUL LIVE — même fonction que useCerbere (DRY, jamais de données périmées)
     const liveCombatStats = useMemo(() => calculateFullCombatStats(character, gameData), [character, gameData]);
+
+    // 🩹 Seuils de PV (Malus -1 / -2 / Moribonde) — cf. manuel p.170
+    const pvSeuils = useMemo(() => {
+        const formatSeuil = (n) => Number.isInteger(n) ? n : n.toFixed(1).replace('.', ',');
+        const { pvMax, pvMaxDemasquee } = liveCombatStats;
+        const masquee = calculatePvSeuils(pvMax);
+        const demasquee = calculatePvSeuils(pvMaxDemasquee);
+        return {
+            masquee: { malus1: formatSeuil(masquee.malus1), moribonde: masquee.moribonde },
+            demasquee: { malus1: formatSeuil(demasquee.malus1), moribonde: demasquee.moribonde },
+        };
+    }, [liveCombatStats]);
 
     // allSpecialties → map<comp, {nom, origine}[]>
     // origine : 'Créa' | 'XP' | 'Inné' | 'Métier' | '✨ Source'
@@ -478,6 +490,18 @@ export default function FicheParchemin({ character, gameData, detailed = false }
 						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.resPhysDemasquee ?? liveCombatStats.resPhys}</div><div className="combat-label" style={{color: '#b91c1c'}}>Rés. Phys. Dém.</div></div>
 						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.resPsychDemasquee ?? liveCombatStats.resPsych}</div><div className="combat-label" style={{color: '#b91c1c'}}>Rés. Psych. Dém.</div></div>
 						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.pvMaxDemasquee ?? liveCombatStats.pvMax}</div><div className="combat-label" style={{color: '#b91c1c'}}>PV Max Dém.</div></div>
+					</div>
+					<div style={{fontSize: '8px', color: '#4a3b2c', textAlign: 'center', marginTop: '4px', lineHeight: 1.5}}>
+						<div>
+							<strong>Seuils PV{liveCombatStats.pvMaxDemasquee !== liveCombatStats.pvMax ? ' (masquée)' : ''} :</strong>{' '}
+							Malus -1 en dessous de {pvSeuils.masquee.malus1} · Malus -2 en dessous de 5 · Moribonde de 0 à {pvSeuils.masquee.moribonde}
+						</div>
+						{liveCombatStats.pvMaxDemasquee !== liveCombatStats.pvMax && (
+							<div style={{color: '#b91c1c'}}>
+								<strong>Seuils PV (démasquée) :</strong>{' '}
+								Malus -1 en dessous de {pvSeuils.demasquee.malus1} · Malus -2 en dessous de 5 · Moribonde de 0 à {pvSeuils.demasquee.moribonde}
+							</div>
+						)}
 					</div>
 				</div>
             </div>
