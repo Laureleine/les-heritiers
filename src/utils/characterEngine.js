@@ -314,6 +314,7 @@ export function characterReducer(state, action) {
             'Savant': ['Habiletés', 'Médecine', 'Observation', 'Sciences']
         };
 
+        const eubage = newState.data?.eubage;
         const rangsProfils = {};
         const budgetsPP = {};
         const competencesBase = {};
@@ -332,40 +333,52 @@ export function characterReducer(state, action) {
                 const investisBase = isScelle ? (newState.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0) : investisActuels;
 
                 const bonusPred = predFinales.includes(nomComp) ? 2 : 0;
-                
+
                 const bonusAtoutActuel = atoutsRangs[nomComp] || 0;
                 const bonusAtoutBase = isScelle ? (atoutsRangsBase[nomComp] || 0) : bonusAtoutActuel;
 
-                const baseScoreActuel = bonusProfil + bonusPred + bonusAtoutActuel;
-                const baseScoreBase = bonusProfil + bonusPred + bonusAtoutBase;
+                // Transfert Eubage : la comp source cède son bonusProfil (2 rangs automatiques) à Druidisme
+                const bonusProfilEffectif = (eubage?.actif && isMajeur && nomComp === eubage.source_competence)
+                    ? 0 : bonusProfil;
+
+                const baseScoreActuel = bonusProfilEffectif + bonusPred + bonusAtoutActuel;
+                const baseScoreBase = bonusProfilEffectif + bonusPred + bonusAtoutBase;
 
                 const totalScoreActuel = baseScoreActuel + investisActuels;
                 const totalScoreBase = baseScoreBase + investisBase;
 
                 competencesBase[nomComp] = baseScoreActuel;
                 competencesTotal[nomComp] = totalScoreActuel;
-                
+
                 sommeActuelle += totalScoreActuel;
                 sommeBase += totalScoreBase;
             });
 
             const rangActuel = Math.floor(sommeActuelle / 4);
             const rangBase = Math.floor(sommeBase / 4);
-            
+
             rangsProfils[profilNom] = rangActuel;
             const bonusPP = isMajeur ? 8 : isMineur ? 4 : 0;
-            
+
             let budgetTotal = bonusPP + rangBase;
-            
+
             // ✨ LA RÈGLE D'ÉVOLUTION : Chaque nouveau rang R franchi donne R points de PP supplémentaires
             if (isScelle && rangActuel > rangBase) {
                 for (let i = rangBase + 1; i <= rangActuel; i++) {
                     budgetTotal += i;
                 }
             }
-            
+
             budgetsPP[profilNom] = budgetTotal;
         });
+
+        // Druidisme (Eubage) — compétence hors profil alimentée par le transfert
+        if (eubage?.actif && eubage.source_competence) {
+            const rangsTransferes = eubage.rangs_transferes || 2;
+            const investisDruidisme = newState.competencesLibres?.rangs?.['Druidisme'] || 0;
+            competencesBase['Druidisme'] = rangsTransferes;
+            competencesTotal['Druidisme'] = rangsTransferes + investisDruidisme;
+        }
 
         // --- E. CALCUL DES COMPÉTENCES FUTILES (DRY) ---
         const futilesPredFinales = [];
@@ -546,6 +559,7 @@ export function characterReducer(state, action) {
             'Savant': ['Habiletés', 'Médecine', 'Observation', 'Sciences']
         };
 
+        const eubageH = newState.data?.eubage;
         const rangsProfils = {};
         const budgetsPP = {};
         const competencesBase = {};
@@ -564,11 +578,14 @@ export function characterReducer(state, action) {
                     ? (newState.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0)
                     : investisActuels;
 
-                competencesBase[nomComp] = bonusProfil;
-                competencesTotal[nomComp] = bonusProfil + investisActuels;
+                const bonusProfilEffectif = (eubageH?.actif && isMajeur && nomComp === eubageH.source_competence)
+                    ? 0 : bonusProfil;
 
-                sommeActuelle += bonusProfil + investisActuels;
-                sommeBase += bonusProfil + investisBase;
+                competencesBase[nomComp] = bonusProfilEffectif;
+                competencesTotal[nomComp] = bonusProfilEffectif + investisActuels;
+
+                sommeActuelle += bonusProfilEffectif + investisActuels;
+                sommeBase += bonusProfilEffectif + investisBase;
             });
 
             const rangActuel = Math.floor(sommeActuelle / 4);
@@ -582,6 +599,14 @@ export function characterReducer(state, action) {
             }
             budgetsPP[profilNom] = budgetTotal;
         });
+
+        // Druidisme (Eubage) — compétence hors profil
+        if (eubageH?.actif && eubageH.source_competence) {
+            const rangsTransferes = eubageH.rangs_transferes || 2;
+            const investisDruidisme = newState.competencesLibres?.rangs?.['Druidisme'] || 0;
+            competencesBase['Druidisme'] = rangsTransferes;
+            competencesTotal['Druidisme'] = rangsTransferes + investisDruidisme;
+        }
 
         const futilesBase = {};
         const futilesTotal = {};

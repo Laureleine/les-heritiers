@@ -4,6 +4,24 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.42 « L'Appel de la Forêt 🌿🔮 »
+
+📜 **Mise à jour — v17.4.42 « L'Appel de la Forêt »** 🌿🔮
+
+Chers Héritiers,
+
+Certains personnages entendent, depuis toujours, un murmure venu de plus loin que la ville — le bruissement des chênes anciens, l'odeur de la terre après la pluie, une langue que personne n'a apprise mais que quelques-uns reconnaissent. Pour eux, l'Atelier ouvre aujourd'hui une nouvelle voie : l'**Initiation Druidique**.
+
+Un Érudit ou un Aventurier dont le regard s'est affûté sur la Survie et l'Occultisme peut désormais se présenter aux Cercles Druidiques et en sortir **Eubage** — Druide novice. L'initiation a un prix : cinq Points de Profil, et surtout un **transfert**. L'une des quatre grandes compétences du profil majeur — celle que l'on juge la plus proche de la nature — cède ses deux rangs automatiques à une compétence entièrement nouvelle : **Druidisme**. Ce don ne se reprend pas ; il marque le personnage à jamais.
+
+En échange, l'Eubage reçoit gratuitement la spécialité **Connaissance du druidisme** et accède à un nouveau chapitre de la Forge, situé juste après la Vie Sociale, où il consacre ce choix et peut, après le scellage, continuer d'approfondir son art avec de l'Expérience.
+
+Les sorts du premier cercle, eux, attendent encore dans l'ombre — leur heure viendra.
+
+🧪 475 Sentinelles veillent toujours, sans la moindre faille.
+
+---
+
 ## v17.4.41 « Le Souffle qui Vacille 🕯️💔 »
 
 📜 **Mise à jour — v17.4.41 « Le Souffle qui Vacille »** 🕯️💔

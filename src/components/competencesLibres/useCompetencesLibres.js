@@ -341,10 +341,13 @@ export function useCompetencesLibres() {
         };
     }, [lib, getScoreBase, predFinales, isScelle, character.data, character.caracteristiques?.esprit, feeData, atoutsBonuses, character.competencesLibres, competences, isReadOnly, budgetsInfo]);
 
+    const isDruidisme = isScelle && !!character.data?.eubage?.actif;
+
     return {
         character, isScelle, isReadOnly, feeData, profils, competencesParProfil,
         lib, budgetsInfo, creatingSpecFor, setCreatingSpecFor,
         rangsProfils, budgetsPP,
+        isDruidisme,
         handlers: { handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality, handleChoixChange, handleReset },
         getCompRowData
     };

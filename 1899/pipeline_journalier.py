@@ -639,8 +639,15 @@ def main():
     
     date_str = args.date
     if not date_str:
+        if not sys.stdin.isatty():
+            print("❌ Date non spécifiée et terminal non-interactif. Utilisez --date AAAA-MM-JJ.")
+            sys.exit(1)
         print("=== 📅 PIPELINE JOURNALIER D'ARCHIVAGE & RESTAURATION ===")
-        date_str = input("Entrez la date souhaitée (format AAAA-MM-JJ, ex: 1899-11-26) : ").strip()
+        try:
+            date_str = input("Entrez la date souhaitée (format AAAA-MM-JJ, ex: 1899-11-26) : ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("❌ Saisie annulée.")
+            sys.exit(1)
         
     # Validation basique du format de date
     if not re.match(r'^\d{4}-\d{2}-\d{2}$', date_str):
@@ -678,7 +685,14 @@ def main():
         print("2. Forcer une passe de restauration supplémentaire par l'IA (Passe 3 et +)")
         print("3. ❌ Annuler et tout refaire depuis le début (supprime les données en base + fichiers)")
         print("4. 📰 Régénérer uniquement le résumé global (Flash-info)")
-        choix = input("Fais ton choix (1, 2, 3 ou 4) : ").strip()
+        if not sys.stdin.isatty():
+            print("🤖 Script non-interactif. Choix par défaut : 1 (Téléversement direct)")
+            choix = '1'
+        else:
+            try:
+                choix = input("Fais ton choix (1, 2, 3 ou 4) : ").strip()
+            except (EOFError, KeyboardInterrupt):
+                choix = '1'
         if choix == '1':
             print("🚀 Option 1 sélectionnée : Régénération des événements et injection directe Supabase...")
             run_step_5_export_events_json(date_str)
@@ -709,7 +723,13 @@ def main():
             sys.exit(0)
         elif choix == '3':
             print("💥 Option 3 sélectionnée : Annulation et reprise complète...")
-            confirm = input("Es-tu sûr de vouloir supprimer toutes les données de cette journée et repartir de zéro ? (oui/non) : ").strip().lower()
+            if not sys.stdin.isatty():
+                confirm = 'oui'
+            else:
+                try:
+                    confirm = input("Es-tu sûr de vouloir supprimer toutes les données de cette journée et repartir de zéro ? (oui/non) : ").strip().lower()
+                except (EOFError, KeyboardInterrupt):
+                    confirm = 'non'
             if confirm != 'oui':
                 print("Opération annulée. Les données sont préservées.")
                 sys.exit(0)
@@ -726,7 +746,13 @@ def main():
                 sys.exit(1)
         else:
             print("⚠️ Option 2 sélectionnée : Préparation d'une passe supplémentaire IA...")
-            confirm = input("Es-tu sûr de vouloir forcer cette passe ? Une accumulation de passes peut créer des hallucinations IA. (oui/non) : ").strip().lower()
+            if not sys.stdin.isatty():
+                confirm = 'oui'
+            else:
+                try:
+                    confirm = input("Es-tu sûr de vouloir forcer cette passe ? Une accumulation de passes peut créer des hallucinations IA. (oui/non) : ").strip().lower()
+                except (EOFError, KeyboardInterrupt):
+                    confirm = 'non'
             if confirm != 'oui':
                 print("Opération annulée. Le fichier existant est préservé.")
                 sys.exit(0)

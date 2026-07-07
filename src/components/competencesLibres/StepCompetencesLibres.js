@@ -151,7 +151,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
 export default function StepCompetencesLibres() {
   const {
     character, isScelle, feeData, profils, competencesParProfil, lib, budgetsInfo,
-    creatingSpecFor, setCreatingSpecFor, rangsProfils, budgetsPP, handlers, getCompRowData
+    creatingSpecFor, setCreatingSpecFor, rangsProfils, budgetsPP, isDruidisme, handlers, getCompRowData
   } = useCompetencesLibres();
 
   return (
@@ -266,6 +266,28 @@ export default function StepCompetencesLibres() {
           );
         })}
       </div>
+
+      {/* DRUIDISME (section séparée, hors profil, uniquement Eubage scellé) */}
+      {isDruidisme && (
+        <div className="bg-white rounded-xl border border-emerald-200 shadow-sm overflow-hidden">
+          <div className="flex justify-between items-center px-3 py-2 bg-emerald-50 border-b border-emerald-200">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-emerald-900 font-serif">Druidisme</span>
+              <span className="text-[10px] bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Eubage</span>
+            </div>
+          </div>
+          <div className="divide-y divide-gray-50">
+            <CompetenceRow
+              data={getCompRowData('Druidisme')}
+              handlers={handlers}
+              isScelle={isScelle}
+              creatingSpecFor={creatingSpecFor}
+              setCreatingSpecFor={setCreatingSpecFor}
+              character={character}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -92,6 +92,14 @@ data: {
     '[itemId]_[idx]': string  // valeur choisie pour la prédilection idx de l'item itemId
   },
 
+  // Initiation druidique (Eubage)
+  // Posé par StepDruidisme ; exploité par characterEngine + bonusCalculator
+  eubage: {
+    actif:             boolean,  // true si l'item "Eubage (Druide novice)" a été acheté ET la comp source choisie
+    source_competence: string,   // Nom de la compétence du profil majeur qui cède ses 2 rangs automatiques
+    rangs_transferes:  number,   // Toujours 2 (la règle n'autorise pas d'autre valeur)
+  },
+
   // Champs hérités (avant colonnes dédiées) — maintenus pour compatibilité
   avantages:              array,
   desavantages:           array,

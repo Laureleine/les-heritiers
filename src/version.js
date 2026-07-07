@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.42 - \"L'Appel de la Forêt 🌿🔮\"",
+    date: "7 Juillet 2026",
+    description: "Une nouvelle voie s'ouvre dans la Forge : l'Initiation Druidique. Un Érudit ou un Aventurier ayant développé sa Survie et son Occultisme peut désormais devenir Eubage — Druide novice. Il transfère les deux rangs automatiques de l'une de ses compétences de profil vers la toute nouvelle compétence Druidisme, et reçoit gratuitement la spécialité Connaissance du druidisme. Un nouveau chapitre de la Forge, conditionnel, guide ce choix.",
+    changes: [
+      "🌿 **Eubage (Druide novice) — Nouveau titre social :** Accessible aux personnages dont le profil majeur est Érudit ou Aventurier, avec Survie ≥ 4 et Occultisme ≥ 4. Coûte 5 PP du profil majeur.",
+      "🔮 **Druidisme — Nouvelle compétence :** Hors profil, elle reçoit 2 rangs automatiques transférés depuis l'une des 4 compétences du profil majeur. Ce choix est définitif au scellage. Des rangs supplémentaires s'achètent avec des XP après le scellage.",
+      "📜 **Spécialité gratuite :** L'Eubage reçoit automatiquement la spécialité « Connaissance du druidisme ».",
+      "⚗️ **Nouveau chapitre de la Forge — Druide :** Situé juste après la Vie Sociale, ce chapitre n'apparaît que pour les personnages ayant acquis l'Eubage. Il permet de choisir la compétence source du transfert et visualiser le résultat.",
+      "🧪 **475 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.41 - \"Le Souffle qui Vacille 🕯️💔\"",
     date: "7 Juillet 2026",
     description: "La fiche de personnage révèle désormais les trois seuils du souffle vital : le point où la blessure devient grave, celui où elle devient très grave, et l'antichambre de la mort. Calculés directement à partir des Points de Vie et de la Constitution de chaque Héritier, ces repères apparaissent aussi bien sur la fiche affichée en fin de création que sur le PDF à imprimer.",

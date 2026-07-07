@@ -23,6 +23,7 @@ const StepProfils = lazy(() => import('../StepProfils'));
 const StepCompetencesLibres = lazy(() => import('../competencesLibres/StepCompetencesLibres'));
 const StepCompetencesFutiles = lazy(() => import('../StepCompetencesFutiles'));
 const StepVieSociale = lazy(() => import('../vieSociale/StepVieSociale'));
+const StepDruidisme = lazy(() => import('../StepDruidisme'));
 const StepPersonnalisation = lazy(() => import('../StepPersonnalisation'));
 const StepRecapitulatif = lazy(() => import('../StepRecapitulatif'));
 
@@ -41,7 +42,7 @@ export default function CharacterCreator({ session, userProfile }) {
   }, [location.state, navigate]);
 
   const [step, setStep] = useState(() => {
-    return (character?.statut === 'scelle' || character?.statut === 'scellé') ? 11 : 1;
+    return (character?.statut === 'scelle' || character?.statut === 'scellé') ? STEP_CONFIG.length : 1;
   });
 
   const [showJournalAme, setShowJournalAme] = useState(false);
@@ -49,6 +50,11 @@ export default function CharacterCreator({ session, userProfile }) {
   const totalSteps = STEP_CONFIG.length;
   const isHumain = character?.typePersonnage === 'humain';
   const HUMAN_SKIPPED_STEPS = [2, 3, 4];
+
+  const isEubage = !!character?.data?.eubage?.actif ||
+    Object.values(character?.vieSociale || {}).flat().some(id =>
+      (gameData.socialItems || []).find(i => i.id === id && i.nom?.includes('Eubage'))
+    );
 
   const canProceedStep1 = character?.nom && character?.sexe && (
     isHumain ? !!character?.rangHumain : !!character?.typeFee
@@ -66,6 +72,7 @@ export default function CharacterCreator({ session, userProfile }) {
     }
     let next = step + 1;
     if (isHumain) while (HUMAN_SKIPPED_STEPS.includes(next) && next <= totalSteps) next++;
+    if (next === 10 && !isEubage) next++;
     setStep(Math.min(totalSteps, next));
     window.scrollTo(0, 0);
   };
@@ -73,6 +80,7 @@ export default function CharacterCreator({ session, userProfile }) {
   const prevStep = () => {
     let prev = step - 1;
     if (isHumain) while (HUMAN_SKIPPED_STEPS.includes(prev) && prev >= 1) prev--;
+    if (prev === 10 && !isEubage) prev--;
     setStep(Math.max(1, prev));
     window.scrollTo(0, 0);
   };
@@ -143,8 +151,8 @@ export default function CharacterCreator({ session, userProfile }) {
   const stepComponents = useMemo(() => ({
     1: <Step1 />, 2: <StepCapacites />, 3: <StepPouvoirs />, 4: <StepAtouts />,
     5: <StepCaracteristiques />, 6: <StepProfils />, 7: <StepCompetencesLibres />,
-    8: <StepCompetencesFutiles />, 9: <StepVieSociale />, 10: <StepPersonnalisation />,
-    11: <StepRecapitulatif />
+    8: <StepCompetencesFutiles />, 9: <StepVieSociale />, 10: <StepDruidisme />,
+    11: <StepPersonnalisation />, 12: <StepRecapitulatif />
   }), []);
 
   return (

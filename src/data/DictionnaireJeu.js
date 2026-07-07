@@ -1,6 +1,6 @@
 // src/data/DictionnaireJeu.js
 import React from 'react';
-import {BookOpen, Sparkles, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle } from '../config/icons';
+import {BookOpen, Sparkles, User, Zap, Star, Activity, Award, Feather, Briefcase, VenetianMask, CheckCircle, Wand2 } from '../config/icons';
 
 // ============================================================================
 // 1. LES CONSTANTES ET CARACTÉRISTIQUES (Ancien constants.js)
@@ -103,8 +103,9 @@ export const STEP_CONFIG = [
   { id: 7, label: "Utiles", icon: <BookOpen size={18} /> },
   { id: 8, label: "Futiles", icon: <Feather size={18} /> },
   { id: 9, label: "Social & Richesse", icon: <Briefcase size={18} /> },
-  { id: 10, label: "Masque", icon: <VenetianMask size={18} /> },
-  { id: 11, label: "Bilan", icon: <CheckCircle size={18} /> }
+  { id: 10, label: "Druide", icon: <Wand2 size={18} /> },
+  { id: 11, label: "Masque", icon: <VenetianMask size={18} /> },
+  { id: 12, label: "Bilan", icon: <CheckCircle size={18} /> }
 ];
 
 // ============================================================================

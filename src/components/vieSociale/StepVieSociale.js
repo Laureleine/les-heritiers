@@ -40,6 +40,25 @@ const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, pr
                                         lockMessage = `Exige le profil : ${reqs.profils.join(' ou ')}`;
                                     }
                                 }
+                                if (!isLocked && reqs.profil_majeur_requis?.length > 0) {
+                                    const monMajeur = character.profils?.majeur?.nom;
+                                    if (!reqs.profil_majeur_requis.includes(monMajeur)) {
+                                        isLocked = true;
+                                        lockMessage = `Exige le profil majeur : ${reqs.profil_majeur_requis.join(' ou ')}`;
+                                    }
+                                }
+                                if (!isLocked && reqs.prereqs_competences) {
+                                    const compsBase = character.computedStats?.competencesBase || {};
+                                    const compsRangs = character.competencesLibres?.rangs || {};
+                                    for (const [comp, minRang] of Object.entries(reqs.prereqs_competences)) {
+                                        const total = (compsBase[comp] || 0) + (compsRangs[comp] || 0);
+                                        if (total < minRang) {
+                                            isLocked = true;
+                                            lockMessage = `Exige ${comp} ≥ ${minRang} (actuel : ${total})`;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         } catch(e) {}
                         

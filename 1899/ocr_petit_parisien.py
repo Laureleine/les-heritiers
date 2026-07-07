@@ -557,8 +557,9 @@ def main():
         pages_content[page] = page_text
 
     # Nettoyage et Assemblage des résultats
-    if not pages_content:
-        print("\n[ERREUR] Aucun contenu OCR n'a pu être récupéré.")
+    missing_pages = [p for p in pages_to_process if p not in pages_content]
+    if missing_pages:
+        print(f"\n[ERREUR] Impossible de récupérer l'OCR pour les pages suivantes : {missing_pages}", file=sys.stderr)
         sys.exit(1)
         
     print("\n--- Assemblage et Nettoyage de l'OCR Complet ---")

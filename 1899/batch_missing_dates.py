@@ -258,7 +258,14 @@ def main():
         for d in partial_dates:
             date_str = d.isoformat() if hasattr(d, 'isoformat') else str(d)
             print(f"     - {date_str}")
-        answer = input("Que faire ? [n]ettoyer et retraiter, [i]gnorer, [a]border : ").strip().lower()
+        if not sys.stdin.isatty():
+            print("🤖 Script non-interactif. Choix par défaut : n (nettoyer et retraiter)")
+            answer = 'n'
+        else:
+            try:
+                answer = input("Que faire ? [n]ettoyer et retraiter, [i]gnorer, [a]border : ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                answer = 'n'
         if answer.startswith("n"):
             print("\nNettoyage des dates partielles...")
             for d in partial_dates:

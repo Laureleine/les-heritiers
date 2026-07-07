@@ -115,6 +115,17 @@ export const calculateCharacterStats = (character, gameData) => {
         }
     });
 
+    // Spécialité Eubage : "Connaissance du druidisme" offerte automatiquement
+    if (character.data?.eubage?.actif) {
+        if (!result.specialites.gratuites['Druidisme']) {
+            result.specialites.gratuites['Druidisme'] = [];
+        }
+        result.specialites.gratuites['Druidisme'].push({
+            source: 'Eubage',
+            specialite: 'Connaissance du druidisme'
+        });
+    }
+
     return result;
 };
 
