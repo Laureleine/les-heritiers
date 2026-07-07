@@ -1,4 +1,32 @@
-﻿# REX — Session 7 Juillet 2026 — v17.4.41 « Le Souffle qui Vacille »
+﻿# REX — Session 7 Juillet 2026 — v17.4.42 « L'Appel de la Forêt »
+
+## Toujours vérifier l'état de `origin/main` avant de bumper la version
+
+La v17.4.41 avait déjà été poussée par une autre session (`worktree-pv-seuils-fiche`) pendant que cette session travaillait hors ligne. Au moment du `git stash + pull + stash pop`, trois conflits ont éclaté simultanément sur `src/version.js`, `public/version.json` et `messages_heritiers.md`. La résolution était simple (passer ma version de 41 à 42), mais le diagnostic a pris du temps.
+
+**Fix :** Avant d'éditer `version.js` ou `public/version.json`, toujours lancer `git fetch && git log origin/main --oneline -3` pour voir si quelqu'un a avancé. Ça prend 2 secondes et ça évite 100 % des conflits de version.
+
+**Leçon :** Dans un projet à plusieurs sessions parallèles (worktrees), le numéro de version est la ressource la plus disputée. Ne jamais l'écrire avant d'avoir vu l'état du remote.
+
+---
+
+## La migration DB doit tourner avant les tests, pas après
+
+`scripts/migrate_eubage.js` a été committé et pushé en même temps que le code applicatif. Si quelqu'un d'autre lance les tests avant d'avoir fait tourner la migration, les social_items ne contiendront pas "Eubage" et les vérifications dans `StepDruidisme` seront silencieusement fausses (le step s'affiche vide plutôt que de planter).
+
+**Fix :** Pour toute feature qui ajoute des données de référence en base, documenter dans le commit message ou le PR body : « Lancer `node scripts/migrate_eubage.js` avant de tester ». L'idéal serait que le script soit idempotent (il l'est) et lancé automatiquement en CI — mais ce n'est pas le cas aujourd'hui.
+
+---
+
+## `eubage.actif` ne doit être `true` que si `source_competence` est aussi renseigné
+
+Le flag `actif` est posé à `true` dans `StepDruidisme` uniquement après le choix de la comp source — c'est correct. Mais rien n'empêche un personnage d'avoir l'item Eubage en `vieSociale` sans avoir encore ouvert le step. Dans ce cas, `characterEngine` ne trouvera pas `eubage` dans `data` et Druidisme n'apparaîtra pas.
+
+**Design décidé :** C'est intentionnel — tant que le step Druide n'est pas complété, Druidisme n'existe pas. Le step n'est pas skippable depuis la navigation (le skip ne s'active que si `isEubage` est faux, et `isEubage` détecte l'item acheté, donc le step s'affiche). Acceptable pour l'instant, à surveiller.
+
+---
+
+# REX — Session 7 Juillet 2026 — v17.4.41 « Le Souffle qui Vacille »
 
 ## Le `.env` (gitignoré) est absent d'un worktree fraîchement créé — le backup Supabase échoue silencieusement
 
