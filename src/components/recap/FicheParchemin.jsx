@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { CARAC_LIST, accorderTexte } from '../../data/DictionnaireJeu';
 import { calculateCharacterStats } from '../../utils/bonusCalculator';
-import { calculateFullCombatStats } from '../../utils/rulesEngine';
+import { calculateFullCombatStats, calculatePvSeuils } from '../../utils/rulesEngine';
 import { isCharacterScelle } from '../../utils/lockUtils';
 
 export default function FicheParchemin({ character, gameData, detailed = false }) {
@@ -197,15 +197,15 @@ export default function FicheParchemin({ character, gameData, detailed = false }
     // ✨ CALCUL LIVE — même fonction que useCerbere (DRY, jamais de données périmées)
     const liveCombatStats = useMemo(() => calculateFullCombatStats(character, gameData), [character, gameData]);
 
-    // 🩹 Seuils de PV (Malus -1 / -2 / Moribonde) — cf. manuel p.170 : pvMax = 3×CON + 9
+    // 🩹 Seuils de PV (Malus -1 / -2 / Moribonde) — cf. manuel p.170
     const pvSeuils = useMemo(() => {
         const formatSeuil = (n) => Number.isInteger(n) ? n : n.toFixed(1).replace('.', ',');
         const { pvMax, pvMaxDemasquee } = liveCombatStats;
-        const conMasquee = (pvMax - 9) / 3;
-        const conDemasquee = (pvMaxDemasquee - 9) / 3;
+        const masquee = calculatePvSeuils(pvMax);
+        const demasquee = calculatePvSeuils(pvMaxDemasquee);
         return {
-            masquee: { malus1: formatSeuil(pvMax / 2), moribonde: -conMasquee },
-            demasquee: { malus1: formatSeuil(pvMaxDemasquee / 2), moribonde: -conDemasquee },
+            masquee: { malus1: formatSeuil(masquee.malus1), moribonde: masquee.moribonde },
+            demasquee: { malus1: formatSeuil(demasquee.malus1), moribonde: demasquee.moribonde },
         };
     }, [liveCombatStats]);
 

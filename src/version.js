@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.41 - \"Le Souffle qui Vacille 🕯️💔\"",
+    date: "7 Juillet 2026",
+    description: "La fiche de personnage révèle désormais les trois seuils du souffle vital : le point où la blessure devient grave, celui où elle devient très grave, et l'antichambre de la mort. Calculés directement à partir des Points de Vie et de la Constitution de chaque Héritier, ces repères apparaissent aussi bien sur la fiche affichée en fin de création que sur le PDF à imprimer.",
+    changes: [
+      "🕯️ **Les seuils du souffle affichés sur la fiche :** Sous le bloc Combat & Santé, chaque personnage voit désormais où commence le malus -1 (blessure grave, sous la moitié de ses PV Max), le malus -2 (blessure très grave, sous 5 PV) et la zone moribonde (de 0 à -Constitution, la mort survenant au-delà).",
+      "💔 **Des seuils calculés, pas génériques :** Contrairement à la fiche papier qui affiche des formules abstraites, l'application calcule les vraies valeurs pour chaque Héritier — et affiche une seconde ligne pour la forme démasquée quand ses seuils diffèrent de la forme masquée.",
+      "🧪 **475 Sentinelles — toujours en faction, aucune régression (3 nouvelles sentinelles pour les seuils de PV).**",
+    ]
+  },
+  {
     version: "17.4.40 - \"Le Sang des Deux Rives 🧬✨\"",
     date: "6 Juillet 2026",
     description: "L'Anomalie féérique révèle ses deux paliers cachés. Un Faux-Semblant qui a déjà accueilli en lui un pouvoir d'une autre espèce peut désormais aller plus loin : un second pouvoir de cette même espèce lointaine (le Sang-mêlé), puis, plus rare encore, un troisième — et l'échange définitif d'une Capacité naturelle contre celle de cette seconde nature (l'Hybride). Ces âmes composites payent un prix particulier au sommet de leur Féérie : jamais elles n'atteignent le Pouvoir légendaire, ni de l'une ni de l'autre espèce, mais reçoivent à la place le Pouvoir profond de leur seconde nature.",
