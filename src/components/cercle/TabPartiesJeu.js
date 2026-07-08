@@ -4,6 +4,9 @@ import { BookOpen, Plus, Edit, Trash2, Sparkles, Globe, EyeOff, Calendar, Users,
 import { useSessionsJeu } from '../../hooks/useSessionsJeu';
 import SessionForm from './SessionForm';
 import ConfirmModal from '../ConfirmModal';
+import OmbrePanel from './OmbrePanel';
+import { supabase } from '../../config/supabase';
+import { showInAppNotification, translateError } from '../../utils/SystemeServices';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -18,6 +21,74 @@ export default function TabPartiesJeu({ cercleId, userId, isDocte, activeMembers
   const [editSession, setEditSession]   = useState(null);
   const [expandedId, setExpandedId]     = useState(null);
   const [confirmDel, setConfirmDel]     = useState(null);
+  const [ombrePanel, setOmbrePanel]     = useState(null); // { characterId, characterNom, sessionId, sessionTitre }
+  const [currentOmbre, setCurrentOmbre] = useState(null);
+
+  const openOmbrePanel = async (characterId, characterNom, sessionId, sessionTitre) => {
+    setOmbrePanel({ characterId, characterNom, sessionId, sessionTitre });
+    const { data } = await supabase
+      .from('ombre_consequences')
+      .select('*')
+      .eq('character_id', characterId)
+      .eq('session_id', sessionId)
+      .maybeSingle();
+    setCurrentOmbre(data || null);
+  };
+
+  const closeOmbrePanel = () => { setOmbrePanel(null); setCurrentOmbre(null); };
+
+  const handleAddOmbre = async (contenu) => {
+    if (!ombrePanel) return false;
+    try {
+      const { data, error } = await supabase
+        .from('ombre_consequences')
+        .insert([{ character_id: ombrePanel.characterId, cercle_id: cercleId, session_id: ombrePanel.sessionId, contenu }])
+        .select().single();
+      if (error) throw error;
+      setCurrentOmbre(data);
+      showInAppNotification('Conséquence de l\'Ombre consignée.', 'success');
+      return true;
+    } catch (err) {
+      showInAppNotification('Erreur : ' + translateError(err), 'error');
+      return false;
+    }
+  };
+
+  const handleUpdateOmbre = async (id, contenu) => {
+    try {
+      const { data, error } = await supabase.from('ombre_consequences').update({ contenu }).eq('id', id).select().single();
+      if (error) throw error;
+      setCurrentOmbre(data);
+      showInAppNotification('Conséquence mise à jour.', 'success');
+      return true;
+    } catch (err) {
+      showInAppNotification('Erreur : ' + translateError(err), 'error');
+      return false;
+    }
+  };
+
+  const handleRevealOmbre = async (id) => {
+    try {
+      const { error } = await supabase.rpc('reveal_ombre_consequence', { p_consequence_id: id });
+      if (error) throw error;
+      setCurrentOmbre(prev => ({ ...prev, est_revelee: true }));
+      showInAppNotification('Conséquence révélée — le Joueur en est informé via le Télégraphe.', 'success');
+      return true;
+    } catch (err) {
+      showInAppNotification('Erreur : ' + translateError(err), 'error');
+      return false;
+    }
+  };
+
+  const handleDeleteOmbre = async (id) => {
+    try {
+      const { error } = await supabase.from('ombre_consequences').delete().eq('id', id);
+      if (error) throw error;
+      setCurrentOmbre(null);
+    } catch (err) {
+      showInAppNotification('Erreur : ' + translateError(err), 'error');
+    }
+  };
 
   // Lookup character_id → { nom, username, portraitUrl }
   const charById = useMemo(() => {
@@ -154,6 +225,30 @@ export default function TabPartiesJeu({ cercleId, userId, isDocte, activeMembers
                         </span>
                       </div>
                     )}
+
+                    {/* ── Zone Ombre (Docte only) ── */}
+                    {isDocte && presentsOui.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-stone-100">
+                        <p className="text-[10px] text-stone-400 uppercase tracking-wider font-bold mb-1.5">
+                          🌑 Conséquences de l'Ombre
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {presentsOui.map(p => {
+                            const info = charById[p.character_id];
+                            if (!info) return null;
+                            return (
+                              <button
+                                key={p.character_id}
+                                onClick={() => openOmbrePanel(p.character_id, info.nom, s.id, s.titre)}
+                                className="text-[10px] px-2 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold transition-colors"
+                              >
+                                🌑 {info.nom || info.username}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* ── Actions ── */}
@@ -219,6 +314,20 @@ export default function TabPartiesJeu({ cercleId, userId, isDocte, activeMembers
         onConfirm={() => { deleteSession(confirmDel.id); setConfirmDel(null); }}
         onCancel={() => setConfirmDel(null)}
       />
+
+      {/* ── OmbrePanel ── */}
+      {ombrePanel && (
+        <OmbrePanel
+          characterNom={ombrePanel.characterNom}
+          sessionTitre={ombrePanel.sessionTitre}
+          existingOmbre={currentOmbre}
+          onAdd={handleAddOmbre}
+          onUpdate={handleUpdateOmbre}
+          onReveal={handleRevealOmbre}
+          onDelete={handleDeleteOmbre}
+          onClose={closeOmbrePanel}
+        />
+      )}
     </div>
   );
 }

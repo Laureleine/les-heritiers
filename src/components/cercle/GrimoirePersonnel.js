@@ -2,10 +2,11 @@
 // 15.17.8
 
 import React, { useState, useMemo } from 'react';
-import { BookOpen, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Eye, EyeOff, Search } from '../../config/icons';
+import { BookOpen, BookMarked, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Eye, EyeOff, Search } from '../../config/icons';
 import { EmptyState } from '../ui/EmptyState';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
+import TabChroniques from './TabChroniques';
 import { migrateContactContent, getCategoryStyle, getVisibleRelations, hasActiveFauxSemblant, getFauxSemblantTypeFee, CATEGORIES_SUGGESTIONS } from '../../utils/relationsHelper';
 
 const FAIRY_TYPES = [
@@ -28,7 +29,7 @@ function formatLocalisation(loc) {
   return p.texte || [p.ville, p.pays].filter(Boolean).join(', ') || 'Lieu inconnu';
 }
 
-export default function GrimoirePersonnel({ characterId, cercleId, playerId, isAdmin = false, userProfile }) {
+export default function GrimoirePersonnel({ characterId, cercleId, playerId, isAdmin = false, userProfile, characterNom = '' }) {
   const [activeTab, setActiveTab] = useState('notes');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -162,12 +163,14 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
           <BookOpen className="text-amber-300" />
           Mon Grimoire Personnel
         </h2>
-        <button 
-          onClick={() => handleOpenModal()}
-          className="bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-transform active:scale-95 shadow-sm"
-        >
-          <Plus size={18} /> Écrire une pensée
-        </button>
+        {activeTab !== 'chroniques' && (
+          <button
+            onClick={() => handleOpenModal()}
+            className="bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-transform active:scale-95 shadow-sm"
+          >
+            <Plus size={18} /> Écrire une pensée
+          </button>
+        )}
       </div>
 
       <div className="flex border-b border-amber-200 bg-amber-50">
@@ -188,6 +191,12 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
           className={`flex-1 py-3 font-serif font-bold flex items-center justify-center gap-2 transition-colors ${activeTab === 'possessions' ? 'bg-white text-amber-900 border-t-2 border-t-amber-600' : 'text-amber-700 hover:bg-amber-100'}`}
         >
           <Package size={18} /> Trésors & Possessions
+        </button>
+        <button
+          onClick={() => setActiveTab('chroniques')}
+          className={`flex-1 py-3 font-serif font-bold flex items-center justify-center gap-2 transition-colors ${activeTab === 'chroniques' ? 'bg-white text-amber-900 border-t-2 border-t-amber-600' : 'text-amber-700 hover:bg-amber-100'}`}
+        >
+          <BookMarked size={18} /> Chroniques
         </button>
       </div>
 
@@ -391,6 +400,17 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 							)}
 						</>
 					)}
+						{/* ONGLET 4 : CHRONIQUES D'HÉRITAGE */}
+						{activeTab === 'chroniques' && (
+							<TabChroniques
+								characterId={characterId}
+								characterNom={characterNom}
+								cercleId={cercleId}
+								isOwner={!isAdmin}
+								isDocte={isDocte}
+							/>
+						)}
+
 						{/* ONGLET 3 : LES POSSESSIONS */}
 						{activeTab === 'possessions' && (
 							possessions.length === 0 ? (
