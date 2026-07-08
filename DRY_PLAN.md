@@ -4,33 +4,81 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-## 🧠 Session Memory — 17.4.9 "Le Grimoire Sonore" (11 Juin 2026)
+## 🧠 Session Memory — v17.4.48 "Les Portes Ouvertes" (8 Juillet 2026)
 
-**Tests :** 336 passes / 0 échecs
+**Tests :** 475 passes / 0 échecs
 
 ### Dernières modifications
 
-1. **Chantier accessibilité (a11y)** — audit axe-core complet sur toutes les pages. Réduction de ~68 → 6 violations (-91%). Plus aucune violation CRITICAL ni SERIOUS.
-   - `index.html` (racine) : meta-viewport corrigé (Vite utilise ce fichier, pas `public/index.html`)
-   - `App.js` : `<header>` + `<main>` structurels, `<main>` sur la page Auth
-   - `CharacterCreator.jsx` : `<main>` interne → `<section aria-label="Corps de l'étape">`
-   - `aria-label` sur 30+ boutons icône (CharacterCard, GrimoirePersonnel, DiceRoller, Telegraphe, ModalShell, etc.)
-   - `aria-label` sur 9 selects sans nom (StepCompetencesLibres, StepCompetencesFutiles, StepPersonnalisation, WidgetLangues)
-   - `aria-label` sur boutons +/− dynamiques (StepCaracteristiques, StepCompetencesLibres, StepVieSociale)
-   - `StepPersonnalisation.js` : input "Nom Humain" — `aria-label` (label-title-only)
-2. **Tests E2E smoke** (`tests/e2e/creation-fee.spec.js`) — test de création complète d'une fée avec scellage et mise en public.
-
-### Reste à faire → voir [TODO.md](TODO.md)
-
-- `heading-order` (MODERATE) : 6 occurrences h3 sans h2 parent (home + étapes 1/2/4/7/11)
+1. **Audit WCAG 2.2 AA complet** — score estimé 52/100 → 76/100 (bloquants critiques corrigés).
+   - `public/index.html` : skip link + région `aria-live#a11y-live` + classes `sr-only`/`skip-link`
+   - `src/hooks/useFocusTrap.js` : nouveau hook focus trap (WCAG 2.1.1)
+   - `src/utils/SystemeServices.js` : `showInAppNotification` annonce via `#a11y-live` (WCAG 4.1.3)
+   - `src/components/SystemeModales.js` : `role="alert"` toasts + `aria-label` bouton Fermer
+   - `src/App.js` : `id="main-content"` sur `<main>` pour le skip link
+   - `src/AppRouter.jsx` : `RouteAnnouncer` — annonce les changements de page (WCAG 2.4.2)
+   - `src/components/EncyclopediaModal.js` : `role="dialog"` + `aria-modal` + `useFocusTrap` + `aria-labelledby`
+   - `src/components/cercle/GrimoirePersonnel.js` : ARIA Tabs complet (tablist/tab/tabpanel, navigation flèches)
+   - `src/components/cercle/ActiveCercleView.js` : ARIA Tabs La Table / Parties
 
 ### Prochaine session
 
 - Lire `DRY_PLAN.md` (ce fichier) en premier.
 - Lancer `node scripts/backup_supabase.js`.
-- Les chantiers de refactoring sont listés ci-dessous (#1-10).
-- Toujours `git pull` avant de commencer.
-- **🔔 À faire** : Ajouter les colonnes `type_personnage` / `rang_humain` en base Supabase si pas encore fait (migration SQL). Vérifier `CHARACTER_SCHEMA.md`.
+- Chantier a11y 100% : voir section ♿ ci-dessous (A1 → A7).
+
+---
+
+---
+
+## ♿ Chantier A11y — Vers le 100% WCAG 2.2 AA (lancé v17.4.48)
+
+_Score estimé : 76/100 après session du 8 juillet 2026. Objectif : 100%._
+
+### A1. 🔲 Focus trap sur toutes les modales restantes
+
+Appliquer `useFocusTrap` + `role="dialog"` + `aria-modal="true"` + `aria-labelledby` sur :
+- **`src/components/ui/ModalShell.js`** — composant générique (priorité 1 : corrige toutes ses instances d'un coup)
+- `src/components/CropPortraitModal.jsx` — modal de recadrage de portrait
+- `src/components/QuickForgeModal.js` — modale Quick Forge
+- Modales inline dans `GrimoirePersonnel.js` (notes, contacts, possessions)
+- `src/components/EncyclopediaViewModal.js` si elle existe
+
+### A2. 🔲 ARIA Tabs sur les composants restants
+
+- **`src/components/ui/TabBar.jsx`** — composant réutilisable sans `role=tablist/tab/tabpanel` ni navigation clavier ; migrer ici = tout Encyclopedia et MesPropositions corrigés
+- `src/components/Telegraphe.js` — vérifier si des onglets internes existent
+- `src/components/AdminDashboard.js` — onglets admin (TabStats, TabUsers, TabForgeTitres, etc.)
+
+### A3. 🔲 heading-order — 6 occurrences MODERATE (axe-core)
+
+`h3` sans `h2` parent sur :
+- Home (titres des cartes personnage)
+- Étapes 1 (Héritage), 2 (Capacités), 4 (Atouts), 7 (Compétences Utiles), 11 (Bilan)
+Fix : promouvoir en `h2` ou ajouter un `h2` structurel visuellement masqué (`sr-only`).
+
+### A4. 🔲 autocomplete sur le formulaire d'authentification
+
+`src/components/Auth.js` — inputs email + password sans attribut `autocomplete`.
+Fix : `autocomplete="email"` et `autocomplete="current-password"`.
+
+### A5. 🔲 aria-describedby — lier les erreurs aux inputs
+
+Partout où un message d'erreur s'affiche conditionnellement sous un input sans y être lié.
+Approche : `aria-describedby="err-{id}"` sur l'input, `id="err-{id}"` sur le message d'erreur.
+
+### A6. 🔲 Émojis — wrapping aria-hidden / sr-only
+
+Les émojis décoratifs (✅, 🔴, ⚔️…) doivent avoir `aria-hidden="true"`.
+Les émojis porteurs de sens doivent être accompagnés d'un `<span class="sr-only">` avec le texte équivalent.
+Périmètre : très répandu dans l'app — attaquer composant par composant, à commencer par les toasts et les titres de sections.
+
+### A7. 🔲 Landmarks dans les sous-composants majeurs
+
+Vérifier la présence cohérente de `<nav>`, `<aside>`, `<section aria-label>` dans :
+- La navigation latérale (barre de gauche / menu)
+- Les panneaux d'administration
+- Les sections répétitives de la Forge
 
 ---
 
