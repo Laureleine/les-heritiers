@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.47 « Le Grand Ménage 🧹✨ »
+
+📜 **Mise à jour — v17.4.47 « Le Grand Ménage »** 🧹✨
+
+Chers Héritiers,
+
+Certaines sessions ne font pas briller de nouvelles fonctionnalités — elles frottent, grattent, et remettent de l'ordre dans ce qu'on ne voit pas.
+
+Cent quarante-neuf effets d'apparition dormaient dans le code depuis des mois, promesses d'animations jamais tenues : le navigateur les ignorait en silence. Ils ont été retirés. Les couleurs qui ne respectaient pas tout à fait les standards de lisibilité ont été ajustées d'un souffle — un ton plus sombre ici, un ton plus lisible là. Et pour ceux qui naviguent sans souris, quelques éléments interactifs qui restaient muets au passage du clavier savent désormais se signaler.
+
+Rien de spectaculaire. Tout de plus propre.
+
+✨ v17.4.47
+
+---
+
 ## v17.4.46 « L'Œil du Docte 🔍📜 »
 
 📜 **Mise à jour — v17.4.46 « L'Œil du Docte »** 🔍📜

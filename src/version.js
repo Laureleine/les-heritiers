@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.47 - \"Le Grand Ménage 🧹✨\"",
+    date: "8 Juillet 2026",
+    description: "Session de nettoyage et de consolidation : suppression des classes CSS fantômes, corrections d'accessibilité sur les couleurs et la navigation clavier. Rien de visible — tout de plus solide.",
+    changes: [
+      "🧹 **149 classes CSS fantômes supprimées :** Des effets d'apparition (`animate-fade-in`, `animate-fade-in-up`, `animate-fade-in-down`) étaient présents dans 61 fichiers sans jamais avoir été définis — le navigateur les ignorait silencieusement. Retirés.",
+      "🎨 **Contraste renforcé (WCAG AA) :** Les fonds verts et ambrés légèrement trop clairs ont été assombris d'un cran (600 → 700). Les textes gris porteurs d'information sont un ton plus lisibles (400 → 500). Imperceptible visuellement, conforme aux standards.",
+      "⌨️ **Navigation clavier complète :** Trois boutons-bascule et un champ de saisie n'affichaient pas d'indicateur de focus au clavier. Corrigé — tous les éléments interactifs sont maintenant visibles lors d'une navigation sans souris.",
+      "🧪 **475 Sentinelles — toujours en faction, aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.46 - \"L'Œil du Docte 🔍📜\"",
     date: "8 Juillet 2026",
     description: "Le Docte peut désormais consulter les Chroniques d'un Héritier directement depuis la fiche en lecture seule. Un bouton « Chroniques » apparaît dans l'en-tête de la fiche consultée, ouvrant les Chroniques d'Héritage du joueur — avec accès complet à la gestion des Conséquences de l'Ombre.",
