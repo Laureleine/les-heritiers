@@ -1,4 +1,34 @@
-﻿# REX — Session 8 Juillet 2026 — v17.4.45 « Les Chroniques de l'Ombre »
+﻿# REX — Session 8 Juillet 2026 — v17.4.47 « Le Grand Ménage »
+
+## Toujours vérifier le code avant d'agir sur une note mémoire
+
+Le ticket #9 (Items communautaires) décrivait un flux "joueur → liste communautaire → possession" avec `source_social_item_id`. Lecture du code réel : les possessions sont de la saisie libre, ce champ n'est jamais renseigné par l'UI. La mémoire reflétait une intention de design passée, pas une implémentation. Règle : avant de coder autour d'une feature décrite en mémoire, vérifier dans le code que cette feature existe effectivement.
+
+## Nettoyer le backlog = poser la question "est-ce que ça existe ?"
+
+Sur 10 tickets de backlog, 5 étaient déjà résolus ou caducs (#2-#5 déjà faits, #9 feature inexistante, #10 doublon). Présenter les tickets un par un avec vérification du code avant de coder évite de partir dans de fausses directions.
+
+## Classes CSS absentes = inertes, pas d'erreur
+
+Tailwind ne génère que les classes présentes dans le `content` et définies dans la config. Des classes comme `animate-fade-in-up` non définies ne produisent pas d'erreur — elles sont silencieusement ignorées. La seule façon de les détecter est un grep sur les classes utilisées vs les classes générées dans le bundle CSS final.
+
+---
+
+# REX — Session 8 Juillet 2026 — v17.4.46 « L'Œil du Docte »
+
+## Passer un paramètre à travers une chaîne de navigation : ajouter le param à chaque maillon
+
+Pour passer `cercleId` de `CerclesDashboard` jusqu'à `CharacterCreator`, il a fallu modifier trois fichiers dans l'ordre : le producteur (`handleInspectCharacter` → ajoute l'arg), le relais (`AppRouter.jsx` → reçoit l'arg et l'injecte dans navigate state), puis le consommateur (`CharacterCreator` → lit `location.state?.cercleId`). Identifier les trois maillons en amont évite de n'oublier le relais intermédiaire.
+
+## `isDocteConsulting` — condition précise pour un bouton Docte dans un composant générique
+
+La condition `isReadOnly && character?.userId !== session?.user?.id` identifie exactement "quelqu'un d'autre consulte la fiche en lecture seule". Sans le `userId !== session.user.id`, le propriétaire verrouillé verrait aussi le bouton. La condition est directement calculable sans prop supplémentaire.
+
+## `lazy()` dans CharacterCreator nécessite un `<Suspense>` local dans la modal
+
+`TabChroniques` est chargé en lazy. Dans la modal fixe, j'ai encapsulé l'import avec un `<Suspense>` local plutôt que de compter sur le Suspense parent — celui-ci enveloppe le Creator entier et ne se déclenche plus une fois le Creator monté. Sans Suspense local, le lazy component en erreur silencieuse.
+
+# REX — Session 8 Juillet 2026 — v17.4.45 « Les Chroniques de l'Ombre »
 
 ## Apostrophe dans une string JS entre guillemets simples = erreur de build
 
