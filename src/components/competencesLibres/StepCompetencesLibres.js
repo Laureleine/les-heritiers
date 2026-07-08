@@ -87,7 +87,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
         <div className="flex flex-wrap items-center gap-1 pl-4 border-l-2 border-stone-200 ml-1 min-h-[24px]">
           {fairySpecActuelle && <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded border border-amber-200 flex items-center" title="Héritage">🔒 {fairySpecActuelle}</span>}
           {specsFromAtouts.map((spec, idx) => (
-			<span key={`atout-${idx}`} className="text-[10px] px-2 py-1 bg-yellow-100 text-yellow-900 border border-yellow-300 ring-1 ring-yellow-200 rounded flex items-center gap-1 shadow-sm">✨ {spec.nom}</span>
+			<span key={`atout-${idx}`} className="text-[10px] px-2 py-1 bg-yellow-100 text-yellow-900 border border-yellow-300 ring-1 ring-yellow-200 rounded flex items-center gap-1 shadow-sm"><span aria-hidden="true">✨</span> {spec.nom}</span>
         ))}
         {hasJobSpecHere && (
           <span className="text-[10px] px-2 py-1 bg-emerald-100 text-emerald-900 border border-emerald-300 ring-1 ring-emerald-200 rounded flex items-center gap-1 shadow-sm">💼 {jobSpec.nom} {isScelle ? '🔒' : ''}</span>
@@ -195,7 +195,7 @@ export default function StepCompetencesLibres() {
       {/* PRÉDILECTIONS AU CHOIX */}
       {!isScelle && feeData?.competencesPredilection?.some(p => p.isChoix || p.isSpecialiteChoix) && (
         <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6 shadow-sm">
-          <h4 className="font-bold text-amber-800 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide"><Star size={16} className="fill-amber-600 text-amber-600"/> Héritage Féérique : Choix requis</h4>
+          <h3 className="font-bold text-amber-800 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide"><Star size={16} className="fill-amber-600 text-amber-600"/> Héritage Féérique : Choix requis</h3>
           <div className="space-y-3">
             {feeData.competencesPredilection.map((p, i) => {
               if (p.isChoix) return (
@@ -235,7 +235,7 @@ export default function StepCompetencesLibres() {
                   
                   {/* ✨ FIX : Le nom et les badges sont alignés sur le même axe, enveloppés de manière fluide ! */}
                   <div className="flex flex-wrap items-center gap-2">
-                    <h4 className="font-serif font-bold text-amber-900 leading-tight">{nomAffiche}</h4>
+                    <h3 className="font-serif font-bold text-amber-900 leading-tight">{nomAffiche}</h3>
                     {character.profils?.majeur?.nom === profil.nom && <span className="text-[10px] bg-amber-700 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shrink-0 shadow-sm">Majeur</span>}
                     {character.profils?.mineur?.nom === profil.nom && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shrink-0 shadow-sm">Mineur</span>}
                   </div>

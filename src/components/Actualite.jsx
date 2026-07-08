@@ -781,31 +781,31 @@ export default function Actualite({ onBack, userProfile }) {
                   onClick={() => setActiveMenu('meteo')} 
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'meteo' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
                 >
-                  <span className="text-base">🌤️</span> <span>Météo de Paris</span>
+                  <span className="text-base" aria-hidden="true">🌤️</span> <span>Météo de Paris</span>
                 </button>
                 <button 
                   onClick={() => setActiveMenu('lune')} 
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'lune' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
                 >
-                  <span className="text-base">🌙</span> <span>Influence Lunaire</span>
+                  <span className="text-base" aria-hidden="true">🌙</span> <span>Influence Lunaire</span>
                 </button>
                 <button 
                   onClick={() => setActiveMenu('resume')} 
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'resume' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
                 >
-                  <span className="text-base">📰</span> <span>Résumé du Jour</span>
+                  <span className="text-base" aria-hidden="true">📰</span> <span>Résumé du Jour</span>
                 </button>
                 <button 
                   onClick={() => setActiveMenu('chronique')} 
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'chronique' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
                 >
-                  <span className="text-base">🏛️</span> <span>Chronique Historique</span>
+                  <span className="text-base" aria-hidden="true">🏛️</span> <span>Chronique Historique</span>
                 </button>
                 <button 
                   onClick={() => setActiveMenu('fetes')} 
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'fetes' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}
                 >
-                  <span className="text-base">✨</span> <span>Fêtes & Traditions</span>
+                  <span className="text-base" aria-hidden="true">✨</span> <span>Fêtes & Traditions</span>
                 </button>
                 
                 <hr className={`my-2 ${darkMode ? 'border-stone-700' : 'border-stone-200'}`} />
@@ -833,7 +833,7 @@ export default function Actualite({ onBack, userProfile }) {
                       onClick={() => setActiveMenu('votes')} 
                       className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'votes' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400 font-bold' : 'bg-white border-[#2c1b12]/30 text-[#92400e] font-bold') : 'border-transparent opacity-75 hover:opacity-100'}`}
                     >
-                      <span className="text-base">🗳️</span> <span>Demandes de votes</span>
+                      <span className="text-base" aria-hidden="true">🗳️</span> <span>Demandes de votes</span>
                     </button>
                   </>
                 )}

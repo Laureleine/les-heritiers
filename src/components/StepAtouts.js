@@ -115,7 +115,7 @@ export default function StepAtouts() {
       <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
         <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
         <div>
-          <h3 className="font-serif font-bold text-amber-900">Atouts Féériques</h3>
+          <h2 className="font-serif font-bold text-amber-900">Atouts Féériques</h2>
           {isScelle ? (
             <p className="text-sm text-amber-800">
               Dépensez votre Expérience ({FIXED_XP_COSTS.nouvel_atout} XP) pour acquérir de nouveaux Atouts. Vous pouvez librement cliquer sur un Atout acquis pour le désapprendre et récupérer vos points.
@@ -176,12 +176,12 @@ export default function StepAtouts() {
                 </div>
                 {isAnomalie && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-fuchsia-200 text-fuchsia-800 uppercase flex items-center gap-1">
-                    🔒 Géré à l'Étape 3
+                    <span aria-hidden="true">🔒</span> Géré à l'Étape 3
                   </span>
                 )}
                 {isInnate && !isAnomalie && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 uppercase" title="Sceau de Création (Plancher de Verre)">
-                    🔒 Inné
+                    <span aria-hidden="true">🔒</span> Inné
                   </span>
                 )}
               </div>

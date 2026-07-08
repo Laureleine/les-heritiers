@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { APP_VERSION, BUILD_DATE } from '../version';
 import { Mail, Lock, User, AlertCircle, Eye, EyeOff } from '../config/icons';
@@ -219,7 +219,8 @@ export default function Auth() {
 					className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
 					required
 					// ✨ FIX : Ouvert en connexion, fermé en inscription
-					autoComplete={isSignUp ? "off" : "email"} 
+					autoComplete={isSignUp ? "off" : "email"}
+					aria-describedby={error ? "auth-error" : undefined}
 				  />
 				</div>
 
@@ -250,7 +251,7 @@ export default function Auth() {
 
 				{/* L'Encart d'Erreur "Sceau Brisé" */}
 				{error && (
-				  <div className="relative overflow-hidden bg-[#2a1313] text-red-100 p-4 rounded-xl border border-red-900/50 shadow-[0_0_15px_rgba(153,27,27,0.4)]">
+				  <div id="auth-error" role="alert" className="relative overflow-hidden bg-[#2a1313] text-red-100 p-4 rounded-xl border border-red-900/50 shadow-[0_0_15px_rgba(153,27,27,0.4)]">
 					<div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
 					<div className="flex items-start gap-3 relative z-10">
 					  <div className="bg-red-950/50 p-1.5 rounded-lg border border-red-800/50 shrink-0">

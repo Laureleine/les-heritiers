@@ -37,7 +37,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                             <label className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${state.isDocte ? 'border-purple-500 bg-purple-50' : 'border-stone-200 bg-stone-50 hover:bg-stone-100'}`}>
                                 <input type="checkbox" checked={state.isDocte} onChange={(e) => setters.setIsDocte(e.target.checked)} className="mt-1 w-4 h-4 text-purple-600" />
                                 <div>
-                                    <div className="font-bold font-serif text-purple-900 flex items-center gap-2">👁️ La Voie du Docte (Meneur)</div>
+                                    <div className="font-bold font-serif text-purple-900 flex items-center gap-2"><span aria-hidden="true">👁️</span> La Voie du Docte (Meneur)</div>
                                     <p className="text-xs text-stone-600 mt-1 leading-relaxed">Vous tirez les ficelles. Brisez les sceaux et obtenez un accès absolu à l'Encyclopédie et aux futurs secrets.</p>
                                 </div>
                             </label>
@@ -113,7 +113,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                                     </div>
                                     <div className="text-xs text-stone-500 leading-tight mt-1">
                                         Remplace l'illusion visuelle par un véritable moteur physique 3D pour le lancer de dés. <br/>
-                                        <span className="text-amber-600 font-bold">⚠️ Attention :</span> Peut ralentir considérablement les anciens téléphones.
+                                        <span className="text-amber-600 font-bold"><span aria-hidden="true">⚠️</span> Attention :</span> Peut ralentir considérablement les anciens téléphones.
                                     </div>
                                 </div>
                             </label>

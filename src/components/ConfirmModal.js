@@ -28,7 +28,7 @@ export default function ConfirmModal({
     const hasWarnings = warnings.length > 0;
 
     return (
-        <ModalShell maxWidth="max-w-md" compact>
+        <ModalShell maxWidth="max-w-md" compact labelledBy="modal-title">
 
                 {/* En-tête */}
                 <div className={`text-amber-50 p-4 flex items-center gap-3 border-b-4 ${hasErrors ? 'bg-red-800 border-red-700' : 'bg-amber-900 border-amber-700'}`}>
@@ -36,7 +36,7 @@ export default function ConfirmModal({
                         ? <AlertCircle size={24} className="text-red-300" />
                         : <HelpCircle size={24} className="text-amber-300" />
                     }
-                    <h3 className="font-serif font-bold text-lg">{title || "Requête des Gardiens"}</h3>
+                    <h3 id="modal-title" className="font-serif font-bold text-lg">{title || "Requête des Gardiens"}</h3>
                 </div>
 
                 <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">

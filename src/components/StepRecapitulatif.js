@@ -41,7 +41,7 @@ export default function StepRecapitulatif() {
                             : 'bg-stone-100 text-stone-600 border-stone-300 hover:bg-stone-200'
                     }`}
                 >
-                    {detailed ? '🔍 Mode Détaillé — Actif' : '🔍 Mode Détaillé'}
+                    <span aria-hidden="true">🔍</span> {detailed ? 'Mode Détaillé — Actif' : 'Mode Détaillé'}
                 </button>
             </div>
 

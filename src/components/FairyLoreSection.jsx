@@ -45,7 +45,7 @@ export default function FairyLoreSection({ fairyName }) {
     return (
         <div className="mt-4 border-t-2 border-amber-300 pt-4">
             <div className="flex items-center gap-2 mb-3">
-                <span className="text-amber-500">🗝️</span>
+                <span className="text-amber-500" aria-hidden="true">🗝️</span>
                 <h4 className="text-xs font-bold uppercase tracking-widest text-amber-700">
                     Fiche du Docte — Cercle des Initiés
                 </h4>

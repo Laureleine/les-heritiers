@@ -104,7 +104,7 @@ export default function StepCapacites() {
       <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
         <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
         <div>
-          <h3 className="font-serif font-bold text-amber-900">Capacités Naturelles</h3>
+          <h2 className="font-serif font-bold text-amber-900">Capacités Naturelles</h2>
           <p className="text-sm text-amber-800">
             Voici les capacités inhérentes à votre nature. Vous devez choisir une 3ème capacité spécifique.
             {isScelle && " (Choix scellé)"}
@@ -131,7 +131,7 @@ export default function StepCapacites() {
                 </div>
                 {isSwapped ? (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-fuchsia-200 text-fuchsia-800 uppercase" title="Échange Hybride">
-                    🧬 Hybride — {especeSeconde}
+                    <span aria-hidden="true">🧬</span> Hybride — {especeSeconde}
                   </span>
                 ) : (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200/50 text-amber-800 uppercase">
@@ -177,11 +177,11 @@ export default function StepCapacites() {
                   </div>
                   {isSwapped ? (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-fuchsia-200 text-fuchsia-800 uppercase" title="Échange Hybride">
-                      🧬 Hybride — {especeSeconde}
+                      <span aria-hidden="true">🧬</span> Hybride — {especeSeconde}
                     </span>
                   ) : isSelected && isScelle && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 uppercase" title="Sceau de Création">
-                      🔒 Inné
+                      <span aria-hidden="true">🔒</span> Inné
                     </span>
                   )}
                 </div>

@@ -58,7 +58,7 @@ export default function FairyDetailsPanel({
             
             {/* EN-TÊTE : NOM ET ÈRE */}
             <div className="flex justify-between items-start mb-4">
-                <h3 className="text-2xl font-serif font-bold text-amber-900">{selectedPreview}</h3>
+                <h2 className="text-2xl font-serif font-bold text-amber-900">{selectedPreview}</h2>
                 <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                     previewData?.anciennete === 'traditionnelle'
                         ? 'bg-amber-100 text-amber-800 border-amber-200'
@@ -86,9 +86,9 @@ export default function FairyDetailsPanel({
                 </div>
 
                 <div className="mb-6">
-                    <h4 className="flex items-center gap-2 font-bold text-amber-900 mb-3 border-b border-amber-100 pb-1">
+                    <h3 className="flex items-center gap-2 font-bold text-amber-900 mb-3 border-b border-amber-100 pb-1">
                         <Activity size={16} /> Potentiel Naturel
-                    </h4>
+                    </h3>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                         {Object.entries(previewData?.caracteristiques || {}).map(([key, range]) => {
                             const min = typeof range === 'object' ? (range.min || 1) : 1;
@@ -106,9 +106,9 @@ export default function FairyDetailsPanel({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-xs">
                     <div className="h-40 overflow-y-auto custom-scrollbar p-2 border border-green-100 rounded bg-green-50/30">
-                        <h4 className="font-bold text-green-700 mb-1 flex items-center gap-1 sticky top-0 bg-green-50/90 w-full pb-1 border-b border-green-200">
+                        <h3 className="font-bold text-green-700 mb-1 flex items-center gap-1 sticky top-0 bg-green-50/90 w-full pb-1 border-b border-green-200">
                             <ThumbsUp size={12}/> Avantages
-                        </h4>
+                        </h3>
                         <ul className="list-disc list-inside text-gray-600 space-y-1 mt-1">
                             {previewData?.avantages && previewData.avantages.length > 0 ? (
                                 previewData.avantages.map((adv, i) => <li key={i}>{adv}</li>)
@@ -116,9 +116,9 @@ export default function FairyDetailsPanel({
                         </ul>
                     </div>
                     <div className="h-40 overflow-y-auto custom-scrollbar p-2 border border-red-100 rounded bg-red-50/30">
-                        <h4 className="font-bold text-red-700 mb-1 flex items-center gap-1 sticky top-0 bg-red-50/90 w-full pb-1 border-b border-red-200">
+                        <h3 className="font-bold text-red-700 mb-1 flex items-center gap-1 sticky top-0 bg-red-50/90 w-full pb-1 border-b border-red-200">
                             <ThumbsDown size={12}/> Désavantages
-                        </h4>
+                        </h3>
                         <ul className="list-disc list-inside text-gray-600 space-y-1 mt-1">
                             {previewData?.desavantages && previewData.desavantages.length > 0 ? (
                                 previewData.desavantages.map((dis, i) => <li key={i}>{dis}</li>)

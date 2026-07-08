@@ -861,7 +861,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                 Annuler
               </button>
               <button onClick={submitPlayerRepairRequest} className="flex-1 px-4 py-2.5 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2">
-                ✉️ Envoyer la demande
+                <span aria-hidden="true">✉️</span> Envoyer la demande
               </button>
             </div>
           </div>
