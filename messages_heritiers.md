@@ -4,6 +4,30 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.43 « Les Cinq Chemins de l'Invisible ✨🌙 »
+
+📜 **Mise à jour — v17.4.43 « Les Cinq Chemins de l'Invisible »** ✨🌙
+
+Chers Héritiers,
+
+Cinq voies nouvelles s'ouvrent dans la Forge pour ceux qui ont su cultiver l'art de l'Occultisme.
+
+Jusqu'à présent, seul le Druide novice pouvait s'aventurer dans les territoires de la magie organisée. Désormais, cinq autres pratiques attendent ceux qui ont acquis les savoirs requis :
+
+🌸 **La Faëomancie** — pour qui connaît la nature et ses soins, et possède la Connaissance de la faëomancie dans son Occultisme.
+🌬️ **Le Souffle** — pour qui maîtrise son corps et sa vitalité, et possède la Connaissance du Souffle.
+💀 **La Nécromancie** — pour les esprits les plus rigoureux, versés dans les Sciences et la Médecine jusqu'à la Chirurgie, et initiés à la Connaissance de la nécromancie.
+🕊️ **La Théurgie** — pour les âmes les plus sensibles et ouvertes aux entités supérieures, avec la Connaissance de la théurgie.
+📖 **Le Grand Langage** — réservé aux Érudits de rang 4 qui portent la Connaissance du Grand Langage.
+
+Ces pratiques ne s'acquièrent qu'après le scellage du personnage, pour **5 XP** chacune. La section « Pratiques Magiques » demeure voilée jusqu'à ce qu'Occultisme ≥ 4 soit atteint — à ce moment, un rideau se lève, et les chemins possibles ou encore inaccessibles se révèlent.
+
+*Que les plus érudits d'entre vous trouvent leur voie.*
+
+✨ v17.4.43
+
+---
+
 ## v17.4.42 « L'Appel de la Forêt 🌿🔮 »
 
 📜 **Mise à jour — v17.4.42 « L'Appel de la Forêt »** 🌿🔮

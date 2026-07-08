@@ -1,4 +1,30 @@
-﻿# REX — Session 7 Juillet 2026 — v17.4.42 « L'Appel de la Forêt »
+﻿# REX — Session 8 Juillet 2026 — v17.4.43 « Les Cinq Chemins de l'Invisible »
+
+## Prérequis vs cadeau — une distinction qui change toute l'architecture
+
+Pour les 5 nouvelles magies, le réflexe initial était de les traiter comme Druidisme (accorder automatiquement la spécialité "Connaissance de X" au déblocage). L'utilisatrice a corrigé : "c'est le contraire. Connaissance de xxx est un prérequis !" — la spécialité doit déjà exister dans Occultisme avant de pouvoir débloquer la magie. Ce changement de direction affecte bonusCalculator (rien à accorder), la migration DB (créer les spécialités en Occultisme, pas dans la compétence magique), et la logique de `checkPrereqs` dans le hook (vérifier la spécialité, pas la poser).
+
+**Règle :** Avant de coder un système de prérequis/récompenses, clarifier explicitement si la chose vérifiée est accordée automatiquement (Eubage) ou doit être acquise séparément (autres magies). Ce n'est pas une nuance — c'est la différence entre écrire dans `bonusCalculator` ou simplement lire dans `choixSpecialiteUser`.
+
+---
+
+## `checkPrereqs` avec des closures dans `useMemo` — pattern propre
+
+Plutôt que de passer `character` aux fonctions `checkPrereqs` via un 4e paramètre verbeux ou d'utiliser `useCallback` pour chaque vérification, la closure dans `useMemo` capture `character` directement. Le helper `hasSpec` est défini localement dans le memo. Ce pattern est lisible, sans risque de stale closure (le memo se recalcule quand `character` change), et évite de multiplier les `useCallback` pour des fonctions purement dérivées.
+
+**Règle :** Pour des fonctions de vérification pures qui ne font que lire l'état, les définir comme closures dans le `useMemo` qui en dépend — pas besoin de `useCallback` si elles ne sont jamais passées en prop à un enfant.
+
+---
+
+## Grand Langage — prérequis sur `rangsProfils`, pas sur une compétence
+
+Grand Langage requiert un rang de Profil Érudit ≥ 4, pas une valeur de compétence. `rangsProfils` est dans `character.computedStats?.rangsProfils`, déjà calculé par `characterEngine`. Il suffisait de le passer en argument à `checkPrereqs`. Pas de nouveau calcul, pas de nouvelle colonne.
+
+**Règle :** Avant d'inventer un nouveau calcul pour un prérequis inhabituel, vérifier ce qui est déjà dans `computedStats` — rangsProfils, budgetsPP, etc. Tout ce que characterEngine calcule est disponible.
+
+---
+
+# REX — Session 7 Juillet 2026 — v17.4.42 « L'Appel de la Forêt »
 
 ## Toujours vérifier l'état de `origin/main` avant de bumper la version
 

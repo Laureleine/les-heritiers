@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.43 - \"Les Cinq Chemins de l'Invisible ✨🌙\"",
+    date: "8 Juillet 2026",
+    description: "Cinq nouvelles pratiques magiques s'ouvrent aux Héritiers les plus chevronnés. Faëomancie, Souffle, Nécromancie, Théurgie et Grand Langage sont désormais des compétences déblocables après le scellage, pour ceux qui ont acquis les savoirs et les prérequis nécessaires. La section Pratiques Magiques n'apparaît qu'une fois Occultisme ≥ 4 atteint — un voile se lève alors, révélant les voies accessibles et celles qui demandent encore du travail.",
+    changes: [
+      "✨ **Faëomancie — Nouvelle compétence magique :** Accessible aux personnages avec Occultisme ≥ 4, la spécialité « Connaissance de la faëomancie » et Médecine, Survie ou Cuisine ≥ 4. Se débloque pour 5 XP.",
+      "🌬️ **Souffle — Nouvelle compétence magique :** Requiert Occultisme ≥ 4, « Connaissance du Souffle » et Fortitude ≥ 4. Se débloque pour 5 XP.",
+      "💀 **Nécromancie — Nouvelle compétence magique :** Requiert Occultisme ≥ 4, « Connaissance de la nécromancie », Sciences ≥ 4, Médecine ≥ 4 et la spécialité Chirurgie. Se débloque pour 5 XP.",
+      "🕊️ **Théurgie — Nouvelle compétence magique :** Requiert Occultisme ≥ 4, « Connaissance de la théurgie » et Sensibilité ≥ 4. Se débloque pour 5 XP.",
+      "📖 **Grand Langage — Nouvelle compétence magique :** Requiert Occultisme ≥ 4, « Connaissance du Grand Langage » et Rang 4 dans le Profil Érudit. Se débloque pour 5 XP.",
+      "🔮 **Section Pratiques Magiques :** Masquée par défaut, elle se révèle dès qu'Occultisme ≥ 4, affichant les cinq voies avec leur statut (prérequis remplis ou manquants). Une fois débloquée, chaque magie devient investissable avec des XP comme toute compétence utile.",
+      "🧪 **475 Sentinelles — toujours en faction, aucune régression.**",
+    ]
+  },
+  {
     version: "17.4.42 - \"L'Appel de la Forêt 🌿🔮\"",
     date: "7 Juillet 2026",
     description: "Une nouvelle voie s'ouvre dans la Forge : l'Initiation Druidique. Un Érudit ou un Aventurier ayant développé sa Survie et son Occultisme peut désormais devenir Eubage — Druide novice. Il transfère les deux rangs automatiques de l'une de ses compétences de profil vers la toute nouvelle compétence Druidisme, et reçoit gratuitement la spécialité Connaissance du druidisme. Un nouveau chapitre de la Forge, conditionnel, guide ce choix.",
