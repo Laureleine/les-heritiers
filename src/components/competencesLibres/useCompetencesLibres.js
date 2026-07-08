@@ -13,6 +13,62 @@ import { xpTransaction } from '../../utils/xpTransaction';
 import { HUMAIN_RANGS } from '../../data/DictionnaireJeu';
 
 export const POINTS_TOTAUX = 15;
+
+// Config statique des 5 magies XP (hors Druidisme géré par Eubage)
+export const MAGIES_CONFIG = [
+    {
+        nom: 'Faëomancie',
+        xpCode: XP_CODES.FAEOMANCIE_DEBLOCAGE,
+        specNom: 'Connaissance de la faëomancie',
+        prereqsLabel: 'Occultisme ≥ 4 + Connaissance de la faëomancie + Médecine, Survie ou Cuisine ≥ 4',
+        checkPrereqs: (ct, ft, hasSpec) =>
+            (ct['Occultisme'] || 0) >= 4 &&
+            hasSpec('Occultisme', 'Connaissance de la faëomancie') &&
+            ((ct['Médecine'] || 0) >= 4 || (ct['Survie'] || 0) >= 4 || Math.max(ct['Cuisine'] || 0, ft['Cuisine'] || 0) >= 4),
+    },
+    {
+        nom: 'Souffle',
+        xpCode: XP_CODES.SOUFFLE_DEBLOCAGE,
+        specNom: 'Connaissance du Souffle',
+        prereqsLabel: 'Occultisme ≥ 4 + Connaissance du Souffle + Fortitude ≥ 4',
+        checkPrereqs: (ct, ft, hasSpec) =>
+            (ct['Occultisme'] || 0) >= 4 &&
+            hasSpec('Occultisme', 'Connaissance du Souffle') &&
+            (ct['Fortitude'] || 0) >= 4,
+    },
+    {
+        nom: 'Nécromancie',
+        xpCode: XP_CODES.NECROMANCIE_DEBLOCAGE,
+        specNom: 'Connaissance de la nécromancie',
+        prereqsLabel: 'Occultisme ≥ 4 + Connaissance de la nécromancie + Sciences ≥ 4 + Médecine ≥ 4 + Spécialité Chirurgie',
+        checkPrereqs: (ct, ft, hasSpec) =>
+            (ct['Occultisme'] || 0) >= 4 &&
+            hasSpec('Occultisme', 'Connaissance de la nécromancie') &&
+            (ct['Sciences'] || 0) >= 4 &&
+            (ct['Médecine'] || 0) >= 4 &&
+            hasSpec('Médecine', 'Chirurgie'),
+    },
+    {
+        nom: 'Théurgie',
+        xpCode: XP_CODES.THEURGIE_DEBLOCAGE,
+        specNom: 'Connaissance de la théurgie',
+        prereqsLabel: 'Occultisme ≥ 4 + Connaissance de la théurgie + Sensibilité ≥ 4',
+        checkPrereqs: (ct, ft, hasSpec) =>
+            (ct['Occultisme'] || 0) >= 4 &&
+            hasSpec('Occultisme', 'Connaissance de la théurgie') &&
+            (ct['Sensibilité'] || 0) >= 4,
+    },
+    {
+        nom: 'Grand Langage',
+        xpCode: XP_CODES.GRAND_LANGAGE_DEBLOCAGE,
+        specNom: 'Connaissance du Grand Langage',
+        prereqsLabel: 'Occultisme ≥ 4 + Connaissance du Grand Langage + Rang Érudit ≥ 4',
+        checkPrereqs: (ct, ft, hasSpec, rangsProfils) =>
+            (ct['Occultisme'] || 0) >= 4 &&
+            hasSpec('Occultisme', 'Connaissance du Grand Langage') &&
+            (rangsProfils?.['Érudit'] || 0) >= 4,
+    },
+];
 export const SKILLS_ESPRIT = [
     'Culture', 'Occultisme', 'Fortitude', 'Rhétorique',
     'Habiletés', 'Médecine', 'Observation', 'Sciences'
@@ -343,12 +399,63 @@ export function useCompetencesLibres() {
 
     const isDruidisme = isScelle && !!character.data?.eubage?.actif;
 
+    // --- MAGIES XP (post-scellage) ---
+    const magiesEtat = useMemo(() => {
+        if (!isScelle) return [];
+        const ct = character.computedStats?.competencesTotal || {};
+        const ft = character.computedStats?.futilesTotal || {};
+        const rp = character.computedStats?.rangsProfils || {};
+        const magiesActives = character.data?.magies || {};
+        const hasActiveMagie = Object.values(magiesActives).some(m => m?.actif);
+
+        if ((ct['Occultisme'] || 0) < 4 && !hasActiveMagie) return [];
+
+        const hasSpec = (comp, specName) => {
+            if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
+            if (character.computedStats?.specialites?.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+            const metier = character.competencesLibres?.specialiteMetier;
+            if (metier?.comp === comp && metier?.nom === specName) return true;
+            return false;
+        };
+
+        return MAGIES_CONFIG.map(config => ({
+            ...config,
+            actif: !!magiesActives[config.nom]?.actif,
+            prereqsOk: config.checkPrereqs(ct, ft, hasSpec, rp),
+        }));
+    }, [isScelle, character.computedStats, character.data?.magies, character.competencesLibres]);
+
+    const handleDebloquerMagie = useCallback((nomMagie) => {
+        if (isReadOnly || !isScelle) return;
+        const COUT = 5;
+        if (xpDispo < COUT) {
+            showInAppNotification(`Il vous faut ${COUT} XP pour débloquer ${nomMagie}.`, 'error');
+            return;
+        }
+        const magiesActuelles = character.data?.magies || {};
+        if (magiesActuelles[nomMagie]?.actif) return;
+        const config = MAGIES_CONFIG.find(c => c.nom === nomMagie);
+        xpTransaction(dispatchCharacter, {
+            updates: {
+                data: { ...(character.data || {}), magies: { ...magiesActuelles, [nomMagie]: { actif: true } } }
+            },
+            transaction: {
+                type: 'DEPENSE',
+                code: config?.xpCode || 'MAGIE_DEBLOCAGE',
+                label: `Magie débloquée : ${nomMagie}`,
+                valeur: COUT,
+            },
+            notification: { text: `${nomMagie} débloquée pour ${COUT} XP !`, type: 'success' },
+        }, gameData);
+    }, [isReadOnly, isScelle, xpDispo, character.data, dispatchCharacter, gameData]);
+
     return {
         character, isScelle, isReadOnly, feeData, profils, competencesParProfil,
         lib, budgetsInfo, creatingSpecFor, setCreatingSpecFor,
         rangsProfils, budgetsPP,
         isDruidisme,
-        handlers: { handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality, handleChoixChange, handleReset },
+        magiesEtat,
+        handlers: { handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality, handleChoixChange, handleReset, handleDebloquerMagie },
         getCompRowData
     };
 }

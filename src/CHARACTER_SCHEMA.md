@@ -100,6 +100,22 @@ data: {
     rangs_transferes:  number,   // Toujours 2 (la règle n'autorise pas d'autre valeur)
   },
 
+  // Magies XP (post-scellage uniquement)
+  // Posé par handleDebloquerMagie (useCompetencesLibres) ; exploité par characterEngine
+  // La "Connaissance de X" dans Occultisme est un PRÉREQUIS à posséder avant déblocage (≠ Eubage qui la confère)
+  magies: {
+    // Chaque clé est le nom exact de la magie (ex. "Faëomancie", "Grand Langage")
+    [nomMagie]: { actif: boolean },  // true = débloquée pour 5 XP
+    // Les rangs investis post-déblocage vivent dans competencesLibres.rangs[nomMagie]
+    // Prérequis communs : Occultisme ≥ 4 + "Connaissance de [magie]" (spécialité d'Occultisme)
+    // Prérequis spécifiques :
+    //   Faëomancie      → Médecine OU Survie OU Cuisine ≥ 4
+    //   Souffle         → Fortitude ≥ 4
+    //   Nécromancie     → Sciences ≥ 4 + Médecine ≥ 4 + Spécialité Chirurgie
+    //   Théurgie        → Sensibilité ≥ 4
+    //   Grand Langage   → Rang Profil Érudit ≥ 4
+  },
+
   // Champs hérités (avant colonnes dédiées) — maintenus pour compatibilité
   avantages:              array,
   desavantages:           array,

@@ -380,6 +380,15 @@ export function characterReducer(state, action) {
             competencesTotal['Druidisme'] = rangsTransferes + investisDruidisme;
         }
 
+        // Magies XP — compétences hors profil débloquées post-scellage
+        Object.entries(newState.data?.magies || {}).forEach(([nomMagie, info]) => {
+            if (info?.actif) {
+                const investis = newState.competencesLibres?.rangs?.[nomMagie] || 0;
+                competencesBase[nomMagie] = 0;
+                competencesTotal[nomMagie] = investis;
+            }
+        });
+
         // --- E. CALCUL DES COMPÉTENCES FUTILES (DRY) ---
         const futilesPredFinales = [];
         (feeData?.competencesFutilesPredilection || []).forEach((p, i) => {
@@ -607,6 +616,15 @@ export function characterReducer(state, action) {
             competencesBase['Druidisme'] = rangsTransferes;
             competencesTotal['Druidisme'] = rangsTransferes + investisDruidisme;
         }
+
+        // Magies XP — compétences hors profil débloquées post-scellage
+        Object.entries(newState.data?.magies || {}).forEach(([nomMagie, info]) => {
+            if (info?.actif) {
+                const investis = newState.competencesLibres?.rangs?.[nomMagie] || 0;
+                competencesBase[nomMagie] = 0;
+                competencesTotal[nomMagie] = investis;
+            }
+        });
 
         const futilesBase = {};
         const futilesTotal = {};

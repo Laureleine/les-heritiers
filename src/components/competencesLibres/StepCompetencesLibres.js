@@ -1,6 +1,6 @@
 // src/components/competencesLibres/StepCompetencesLibres.js
 import React from 'react';
-import { Plus, Star, Brain, RotateCcw, Info, Lock } from '../../config/icons';
+import { Plus, Star, Brain, RotateCcw, Info, Lock, Sparkles } from '../../config/icons';
 import { useCompetencesLibres } from './useCompetencesLibres';
 
 // ============================================================================
@@ -151,7 +151,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
 export default function StepCompetencesLibres() {
   const {
     character, isScelle, feeData, profils, competencesParProfil, lib, budgetsInfo,
-    creatingSpecFor, setCreatingSpecFor, rangsProfils, budgetsPP, isDruidisme, handlers, getCompRowData
+    creatingSpecFor, setCreatingSpecFor, rangsProfils, budgetsPP, isDruidisme, magiesEtat, handlers, getCompRowData
   } = useCompetencesLibres();
 
   return (
@@ -285,6 +285,53 @@ export default function StepCompetencesLibres() {
               setCreatingSpecFor={setCreatingSpecFor}
               character={character}
             />
+          </div>
+        </div>
+      )}
+
+      {/* PRATIQUES MAGIQUES (post-scellage, Occultisme ≥ 4) */}
+      {magiesEtat.length > 0 && (
+        <div className="bg-white rounded-xl border border-violet-200 shadow-sm overflow-hidden">
+          <div className="flex items-center gap-2 px-3 py-2 bg-violet-50 border-b border-violet-200">
+            <Sparkles size={15} className="text-violet-600 shrink-0" />
+            <span className="text-sm font-bold text-violet-900 font-serif">Pratiques Magiques</span>
+            <span className="text-[10px] bg-violet-200 text-violet-800 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">XP</span>
+          </div>
+          <div className="divide-y divide-violet-50">
+            {magiesEtat.map(magie =>
+              magie.actif ? (
+                <CompetenceRow
+                  key={magie.nom}
+                  data={getCompRowData(magie.nom)}
+                  handlers={handlers}
+                  isScelle={isScelle}
+                  creatingSpecFor={creatingSpecFor}
+                  setCreatingSpecFor={setCreatingSpecFor}
+                  character={character}
+                />
+              ) : (
+                <div key={magie.nom} className={`px-4 py-3 flex justify-between items-center gap-3 ${magie.prereqsOk ? 'bg-violet-50/40' : ''}`}>
+                  <div className="min-w-0">
+                    <span className={`font-medium text-sm ${magie.prereqsOk ? 'text-violet-900' : 'text-stone-400'}`}>
+                      {magie.nom}
+                    </span>
+                    <p className="text-[11px] text-stone-400 mt-0.5 leading-tight">{magie.prereqsLabel}</p>
+                  </div>
+                  {magie.prereqsOk ? (
+                    <button
+                      onClick={() => handlers.handleDebloquerMagie(magie.nom)}
+                      className="shrink-0 text-xs bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-lg font-bold transition-colors"
+                    >
+                      Débloquer — 5 XP
+                    </button>
+                  ) : (
+                    <span className="shrink-0 text-[10px] text-stone-400 bg-stone-100 px-2 py-1 rounded-full">
+                      Prérequis manquants
+                    </span>
+                  )}
+                </div>
+              )
+            )}
           </div>
         </div>
       )}

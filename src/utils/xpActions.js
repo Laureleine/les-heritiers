@@ -25,6 +25,12 @@ export const XP_CODES = {
     COMP_UTILE_SPECIALITE:   'COMP_UTILE_SPECIALITE',    // Spécialité utile acquise/oubliée
     COMP_FUTILE_RANG:        'COMP_FUTILE_RANG',         // Loisir (compétence futile) ↑↓
     ESPRIT_BONUS_UTILE:      'ESPRIT_BONUS_UTILE',       // Rang gratuit Érudit/Savant (bonus Esprit, valeur=0)
+    // --- Magies ---
+    FAEOMANCIE_DEBLOCAGE:    'FAEOMANCIE_DEBLOCAGE',    // Faëomancie débloquée
+    SOUFFLE_DEBLOCAGE:       'SOUFFLE_DEBLOCAGE',        // Souffle débloqué
+    NECROMANCIE_DEBLOCAGE:   'NECROMANCIE_DEBLOCAGE',   // Nécromancie débloquée
+    THEURGIE_DEBLOCAGE:      'THEURGIE_DEBLOCAGE',       // Théurgie débloquée
+    GRAND_LANGAGE_DEBLOCAGE: 'GRAND_LANGAGE_DEBLOCAGE',  // Grand Langage débloqué
     // --- Vie Sociale ---
     FORTUNE_ELEVATION:     'FORTUNE_ELEVATION',      // Fortune ↑↓
     // --- Entrées Système ---
