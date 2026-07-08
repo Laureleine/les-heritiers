@@ -103,14 +103,14 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
           <CerclesDashboard
             session={session}
             onBack={() => navigate('/')}
-            onViewCharacter={(c) => {
+            onViewCharacter={(c, cercleId) => {
               // ✨ Idem : force la reconstruction du journal pour les fiches scellées en lecture seule.
               const charToLoad = (isCharacterScelle(c) && gameData)
                   ? { ...c, data: { ...c.data, historique_xp: [] } }
                   : c;
               dispatchCharacter({ type: 'LOAD_CHARACTER', payload: charToLoad, gameData });
               setIsReadOnly(true);
-              navigate('/creator', { state: { legitAccess: true, from: '/cercles' } });
+              navigate('/creator', { state: { legitAccess: true, from: '/cercles', cercleId } });
             }}
           />
         } />

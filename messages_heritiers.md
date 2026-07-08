@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.46 « L'Œil du Docte 🔍📜 »
+
+📜 **Mise à jour — v17.4.46 « L'Œil du Docte »** 🔍📜
+
+Chers Héritiers,
+
+Jusqu'à présent, pour gérer les Conséquences de l'Ombre, le Docte devait passer par l'onglet Parties de son Cercle. Une voie unique, et parfois laborieuse quand on voulait simplement consulter la fiche d'un Héritier avant de décider.
+
+Désormais, quand le Docte ouvre la fiche d'un personnage en lecture — ce regard posé sur l'Héritier, discret, respectueux — un bouton **Chroniques** apparaît dans l'en-tête, à côté du parchemin PDF. Un seul clic, et s'ouvrent les Chroniques de l'Héritier en question : les aventures consignées, les cicatrices, et surtout — les Ombres. Le Docte peut y sceller une Conséquence, la modifier, ou choisir le moment de la révéler, sans quitter la fiche.
+
+L'Œil du Docte se pose là où il doit.
+
+✨ v17.4.46
+
+---
+
 ## v17.4.45 « Les Chroniques de l'Ombre 📜🌑 »
 
 📜 **Mise à jour — v17.4.45 « Les Chroniques de l'Ombre »** 📜🌑

@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.46 - \"L'Œil du Docte 🔍📜\"",
+    date: "8 Juillet 2026",
+    description: "Le Docte peut désormais consulter les Chroniques d'un Héritier directement depuis la fiche en lecture seule. Un bouton « Chroniques » apparaît dans l'en-tête de la fiche consultée, ouvrant les Chroniques d'Héritage du joueur — avec accès complet à la gestion des Conséquences de l'Ombre.",
+    changes: [
+      "🔍 **Chroniques depuis « Consulter » :** Quand le Docte ouvre la fiche d'un Héritier via le bouton Consulter, un bouton « Chroniques » apparaît dans la barre d'actions. Il ouvre les Chroniques du joueur en mode Docte.",
+      "🌑 **Gestion des Ombres intégrée :** Depuis cette vue, le Docte peut sceller, modifier ou révéler une Conséquence de l'Ombre — avec le Cercle d'origine correctement transmis à travers la navigation.",
+      "🧪 **475 Sentinelles — toujours en faction, aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.45 - \"Les Chroniques de l'Ombre 📜🌑\"",
     date: "8 Juillet 2026",
     description: "Chaque Héritier dispose désormais d'un registre personnel de ses aventures : les Chroniques d'Héritage, quatrième onglet du Grimoire. Mémoire des faits, cicatrices et honneurs, rappel d'XP — chaque session peut être consignée librement ou rattachée à l'historique d'un Cercle. Et dans l'ombre de ces chroniques, les Doctes peuvent sceller une Conséquence de l'Ombre, note secrète révélée en son temps via le Télégraphe.",

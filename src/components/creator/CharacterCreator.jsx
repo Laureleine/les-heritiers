@@ -1,7 +1,7 @@
 // src/components/creator/CharacterCreator.jsx
 import React, { useState, useMemo, useCallback, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Printer, List, Save, Sparkles, BookOpen } from '../../config/icons';
+import { Printer, List, Save, Sparkles, BookOpen, BookMarked } from '../../config/icons';
 import { exportToPDF } from '../../utils/pdfGenerator';
 import { useCharacter } from '../../context/CharacterContext';
 import { useGameDataContext } from '../../context/GameDataContext';
@@ -26,6 +26,7 @@ const StepVieSociale = lazy(() => import('../vieSociale/StepVieSociale'));
 const StepDruidisme = lazy(() => import('../StepDruidisme'));
 const StepPersonnalisation = lazy(() => import('../StepPersonnalisation'));
 const StepRecapitulatif = lazy(() => import('../StepRecapitulatif'));
+const TabChroniques = lazy(() => import('../cercle/TabChroniques'));
 
 export default function CharacterCreator({ session, userProfile }) {
   const { character, dispatchCharacter, isReadOnly } = useCharacter();
@@ -46,6 +47,10 @@ export default function CharacterCreator({ session, userProfile }) {
   });
 
   const [showJournalAme, setShowJournalAme] = useState(false);
+  const [showChroniques, setShowChroniques] = useState(false);
+
+  const cercleId = location.state?.cercleId;
+  const isDocteConsulting = isReadOnly && character?.userId !== session?.user?.id;
 
   const totalSteps = STEP_CONFIG.length;
   const isHumain = character?.typePersonnage === 'humain';
@@ -178,6 +183,18 @@ export default function CharacterCreator({ session, userProfile }) {
             <span className="hidden sm:inline">Imprimer</span>
           </button>
 
+          {/* BOUTON CHRONIQUES (Docte en consultation) */}
+          {isDocteConsulting && (
+            <button
+              onClick={() => setShowChroniques(true)}
+              className="flex items-center gap-1.5 px-4 py-2 bg-stone-700 hover:bg-stone-600 text-amber-100 rounded-lg transition-colors text-sm font-bold shadow-sm border border-stone-600"
+              title="Chroniques d'Héritage"
+            >
+              <BookMarked size={18} />
+              <span className="hidden sm:inline">Chroniques</span>
+            </button>
+          )}
+
           {/* BOUTON SAUVEGARDER */}
           {!isReadOnly && (
             <button onClick={handleSave} className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
@@ -300,6 +317,27 @@ export default function CharacterCreator({ session, userProfile }) {
       </div>
 
       <JournalAmeModal isOpen={showJournalAme} onClose={() => setShowJournalAme(false)} historiqueXp={character?.data?.historique_xp || []} />
+
+      {showChroniques && isDocteConsulting && (
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-start justify-center pt-6 overflow-y-auto">
+          <div className="relative w-full max-w-3xl mx-4 mb-8">
+            <button
+              onClick={() => setShowChroniques(false)}
+              className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-stone-800 text-stone-300 hover:text-white hover:bg-stone-700 transition-colors text-lg leading-none"
+              aria-label="Fermer les Chroniques"
+            >✕</button>
+            <Suspense fallback={<div className="p-8 text-center text-stone-400">Chargement des chroniques…</div>}>
+              <TabChroniques
+                characterId={character?.id}
+                characterNom={character?.nom || ''}
+                isOwner={false}
+                isDocte={true}
+                cercleId={cercleId}
+              />
+            </Suspense>
+          </div>
+        </div>
+      )}
       
       {userProfile?.profile?.show_pixie !== false && (
         <PixieAssistant

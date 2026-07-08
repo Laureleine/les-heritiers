@@ -224,7 +224,7 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
       // On télécharge la fiche complète (pouvoirs, XP, atouts...)
       const fullChar = await getFullCharacter(lightChar.id);
       // On passe la vraie fiche complète à App.js !
-      onViewCharacter(fullChar);
+      onViewCharacter(fullChar, activeCercleObj?.id);
     } catch (error) {
       showInAppNotification("Le parchemin est illisible : " + error.message, "error");
     }
