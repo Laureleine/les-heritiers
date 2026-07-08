@@ -776,7 +776,7 @@ export default function Actualite({ onBack, userProfile }) {
                 Sommaire
               </h2>
               
-              <nav className="flex flex-col gap-2 font-sans font-bold text-xs uppercase tracking-wider">
+              <nav aria-label="Sections de l'Actualité" className="flex flex-col gap-2 font-sans font-bold text-xs uppercase tracking-wider">
                 <button 
                   onClick={() => setActiveMenu('meteo')} 
                   className={`w-full text-left p-3 rounded-lg flex items-center gap-2.5 transition-all border ${activeMenu === 'meteo' ? (darkMode ? 'bg-stone-800 border-amber-600 text-amber-400' : 'bg-white border-[#2c1b12]/30 text-[#92400e]') : 'border-transparent opacity-75 hover:opacity-100'}`}

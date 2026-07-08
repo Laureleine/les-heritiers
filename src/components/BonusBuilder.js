@@ -212,7 +212,7 @@ export default function BonusBuilder({
     ];
 
     return (
-        <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 shadow-inner relative pb-4">
+        <section aria-label="Forge de personnage" className="bg-stone-50 border border-stone-200 rounded-xl p-4 shadow-inner relative pb-4">
             
             {hasUnsavedChanges && (
                 <div className="p-3 mb-4 bg-amber-50 border border-amber-400 rounded-lg flex justify-between items-center shadow-sm sticky top-0 z-10">
@@ -730,6 +730,6 @@ export default function BonusBuilder({
                     </button>
                 </div>
             ))}
-        </div>
+        </section>
     );
 }

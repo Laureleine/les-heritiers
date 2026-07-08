@@ -92,7 +92,7 @@ export default function Telegraphe({ session, userProfile }) {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <aside aria-label="Télégraphe — messagerie" className="fixed bottom-6 right-6 z-50">
       
       {/* BOUTON FLOTTANT */}
       {!isOpen && (
@@ -382,6 +382,6 @@ export default function Telegraphe({ session, userProfile }) {
           )}
         </div>
       )}
-    </div>
+    </aside>
   );
 }
