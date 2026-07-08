@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.45 - \"Les Chroniques de l'Ombre 📜🌑\"",
+    date: "8 Juillet 2026",
+    description: "Chaque Héritier dispose désormais d'un registre personnel de ses aventures : les Chroniques d'Héritage, quatrième onglet du Grimoire. Mémoire des faits, cicatrices et honneurs, rappel d'XP — chaque session peut être consignée librement ou rattachée à l'historique d'un Cercle. Et dans l'ombre de ces chroniques, les Doctes peuvent sceller une Conséquence de l'Ombre, note secrète révélée en son temps via le Télégraphe.",
+    changes: [
+      "📜 **Chroniques d'Héritage — nouvel onglet du Grimoire :** Chaque personnage possède désormais un quatrième onglet dans son Grimoire : ses Chroniques. Un registre personnel d'aventures, indépendant du reste.",
+      "✍️ **Création de chroniques :** Le joueur saisit titre, date, mémoire des faits et cicatrices & honneurs. Un champ XP (mémo uniquement) rappelle ce qui a été distribué à cette occasion. Chaque chronique est libre ou liée à une session de Cercle.",
+      "📖 **Sous-onglets :** Chaque chronique se déplie en trois volets — Mémoire des faits, Cicatrices & Honneurs, et Indices & Vérités (réservé à une prochaine mise à jour).",
+      "🌑 **Conséquences de l'Ombre :** Depuis l'onglet Parties de chaque Cercle, le Docte peut sceller une Conséquence secrète pour chaque Héritier présent. Le joueur voit qu'une Ombre existe — mais pas son contenu, jusqu'à révélation.",
+      "📡 **Révélation via le Télégraphe :** Quand le Docte choisit de révéler une Conséquence de l'Ombre, un message automatique est envoyé au joueur concerné par le Télégraphe. Le contenu de l'Ombre devient alors lisible dans ses Chroniques.",
+      "🧪 **475 Sentinelles — toujours en faction, aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.44 - \"Les Annales des Tables 📖🎲\"",
     date: "8 Juillet 2026",
     description: "Chaque Cercle de Jeu dispose désormais d'un registre vivant : l'onglet Parties. Les membres consignent leurs sessions — titre, date, présents, résumé — et le Docte (ou n'importe quel membre) peut y associer des Points d'Expérience distribués automatiquement aux Héritiers présents. Les archives s'étalent en ordre anti-chronologique, les XP sont tracés, les absences notées. La mémoire collective de la table prend enfin forme.",

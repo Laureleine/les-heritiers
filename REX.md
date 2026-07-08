@@ -1,4 +1,18 @@
-﻿# REX — Session 8 Juillet 2026 — v17.4.44 « Les Annales des Tables »
+﻿# REX — Session 8 Juillet 2026 — v17.4.45 « Les Chroniques de l'Ombre »
+
+## Apostrophe dans une string JS entre guillemets simples = erreur de build
+
+Dans un attribut JSX, `message={'d'être consigné'}` coupe la string sur l'apostrophe. Toujours utiliser des guillemets doubles (`"d'être consigné"`) ou des backticks pour les chaînes françaises contenant des apostrophes. Le compilateur Vite (esbuild) l'attrape proprement, mais c'est silencieux en développement si le fichier n'est pas analysé.
+
+## La zone Ombre dans TabPartiesJeu doit être DANS le div `min-w-0 flex-1`, pas après
+
+J'ai inséré la zone `🌑 Conséquences de l'Ombre` après le `</div>` qui fermait `min-w-0 flex-1`, créant un div orphelin qui fermait le conteneur parent `flex items-start justify-between`. Règle : toujours compter mentalement les niveaux d'imbrication JSX avant d'insérer une zone dans un composant de carte déjà structuré. L'Edit ciblé sur `{/* ── Actions ── */}` avait injecté un `</div>` surnuméraire dans la new_string.
+
+## Ombre sans `chronique_id` — schéma sans FK sur la chronique
+
+Plutôt que de forcer un lien `chronique_id` (qui n'existe pas au moment où le Docte scelle l'Ombre), la table `ombre_consequences` lie Ombre à `character_id + session_id`. L'affichage côté joueur fait la jointure en client : ombres dont `session_id` correspond à la session de la chronique. Les Ombres orphelines (session sans chronique correspondante) s'affichent en bandeau en haut de TabChroniques.
+
+# REX — Session 8 Juillet 2026 — v17.4.44 « Les Annales des Tables »
 
 ## `getXpState` utilise `xp_total` (colonne DB), pas le journal `historique_xp`, pour le total
 

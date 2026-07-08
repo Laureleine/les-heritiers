@@ -4,6 +4,28 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.45 « Les Chroniques de l'Ombre 📜🌑 »
+
+📜 **Mise à jour — v17.4.45 « Les Chroniques de l'Ombre »** 📜🌑
+
+Chers Héritiers,
+
+Certains souvenirs méritent d'être couchés sur le papier. Pas pour les autres — pour soi. Pour ne pas oublier ce que l'on a traversé.
+
+Chaque Héritier dispose désormais, dans son Grimoire Personnel, d'un quatrième onglet : les **Chroniques d'Héritage**. Un registre intime où consigner les aventures vécues, une par une. Titre, date, mémoire des faits, cicatrices et honneurs — chaque session peut laisser une trace écrite, rattachée ou non à l'historique d'un Cercle. Les Points d'Expérience reçus y figurent en rappel, à titre de mémoire.
+
+Mais certains souvenirs ne vous appartiennent pas tout à fait.
+
+Les Doctes ont désormais accès, pour chaque session consignée, à une zone discrète : la **Conséquence de l'Ombre**. Pour chaque Héritier présent à la table, le Docte peut y sceller une note secrète — une vérité que le personnage porte sans le savoir, une marque invisible, quelque chose que l'histoire n'a pas encore dit.
+
+Le Joueur voit qu'une Ombre existe. Scellée. Silencieuse.
+
+Quand le moment sera venu — quand le Docte l'estimera juste — il peut choisir de révéler. Un message part alors automatiquement par le Télégraphe. L'Ombre parle enfin.
+
+✨ v17.4.45
+
+---
+
 ## v17.4.44 « Les Annales des Tables 📖🎲 »
 
 📜 **Mise à jour — v17.4.44 « Les Annales des Tables »** 📖🎲
