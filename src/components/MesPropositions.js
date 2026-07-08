@@ -42,7 +42,7 @@ export default function MesPropositions({ session, onBack }) {
   const filteredPropositions = propositions.filter(p => p.status === activeTab);
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24 animate-fade-in">
+    <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 border-b border-gray-200 pb-6">
         <h2 className="text-3xl font-serif font-bold text-blue-900 flex items-center gap-3">
           <FileText className="text-blue-600" /> Suivi de mes Propositions
@@ -76,7 +76,7 @@ export default function MesPropositions({ session, onBack }) {
           ) : (
             <div className="space-y-4">
               {filteredPropositions.map(prop => (
-                <div key={prop.id} className="bg-white p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow animate-fade-in-up">
+                <div key={prop.id} className="bg-white p-5 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                     <div>
                       <h3 className="font-serif font-bold text-lg text-stone-800">{prop.record_name || 'Élément inconnu'}</h3>

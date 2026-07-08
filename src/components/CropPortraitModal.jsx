@@ -43,7 +43,7 @@ export default function CropPortraitModal({ file, onConfirm, onCancel }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
       <div className="bg-[#fdfbf7] w-full max-w-lg rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden">
         <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center">
           <h3 className="font-bold text-stone-800 flex items-center gap-2">
@@ -86,7 +86,7 @@ export default function CropPortraitModal({ file, onConfirm, onCancel }) {
             <button
               onClick={handleConfirm}
               disabled={isProcessing || !croppedAreaPixels}
-              className="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 py-2.5 bg-amber-700 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isProcessing ? <Loader size={18} className="animate-spin" /> : <Check size={18} />}
               {isProcessing ? 'Recadrage...' : 'Appliquer'}

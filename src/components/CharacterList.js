@@ -41,7 +41,7 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onCancel}>
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
         <div className="flex items-start gap-3 mb-4">
           <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={22} />
           <div>
@@ -528,7 +528,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   };
 
   return (
-    <div className="animate-fade-in w-full">
+    <div className="w-full">
       <div className="flex flex-col gap-6 mb-8 mt-2">
 
         {/* ─── BARRE DE NAVIGATION ─────────────────────────────────────── */}
@@ -571,20 +571,20 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
           >
             <Plus size={16} /> Nouveau
           </button>
-          <button onClick={() => handleTabChange('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+          <button onClick={() => handleTabChange('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
             Mes personnages
             <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'my' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600'}`}>
               {activeCount.my}
             </span>
           </button>
-          <button onClick={() => handleTabChange('public')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'public' ? 'text-blue-900 border-blue-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+          <button onClick={() => handleTabChange('public')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'public' ? 'text-blue-900 border-blue-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
             <Globe size={16} /> Publics
             <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'public' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
               {activeCount.public}
             </span>
           </button>
           {isAdmin && (
-            <button onClick={() => handleTabChange('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-red-900 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+            <button onClick={() => handleTabChange('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-red-900 border-red-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
               <Crown size={16} /> Admin
               <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'admin' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
                 {activeCount.admin}
@@ -764,8 +764,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       />
 
       {showClaimModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-emerald-900/20 overflow-hidden transform animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
+          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-emerald-900/20 overflow-hidden transform">
             <div className="p-4 bg-emerald-50 border-b border-emerald-200 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg text-emerald-900 flex items-center gap-2"><Gift size={20}/> Adopter un Héritier</h3>
               <button onClick={() => setShowClaimModal(false)} className="text-emerald-400 hover:text-emerald-700"><X size={20}/></button>
@@ -789,8 +789,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       )}
 
       {giftCodeToShow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-purple-900/20 overflow-hidden transform animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
+          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-purple-900/20 overflow-hidden transform">
             <div className="p-4 bg-purple-50 border-b border-purple-200 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg text-purple-900 flex items-center gap-2"><Gift size={20}/> Parchemin Scellé</h3>
               <button onClick={() => setGiftCodeToShow(null)} className="text-purple-400 hover:text-purple-700"><X size={20}/></button>
@@ -810,8 +810,8 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
       {/* ✨ MODALE D'INFORMATION PUBLIQUE */}
       {publicInfoModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-blue-900/20 overflow-hidden transform animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
+          <div className="bg-[#fdfbf7] max-w-md w-full rounded-xl shadow-2xl border-2 border-blue-900/20 overflow-hidden transform">
             <div className="p-4 bg-blue-50 border-b border-blue-200 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg text-blue-900 flex items-center gap-2">
                 <Globe size={20} className="text-blue-600"/> Révélation Publique
@@ -841,7 +841,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       {/* ✨ MODALE DE DEMANDE DE RÉPARATION (JOUEUR) */}
       {playerRepairRequest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setPlayerRepairRequest(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm w-full p-6 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm w-full p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-start gap-3 mb-4">
               <span className="text-2xl">🔴</span>
               <div>
@@ -870,7 +870,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
       {/* ✨ LA MODALE IMMERSIVE DU GRIMOIRE PERSONNEL (SOLO) ✨ */}
       {activeGrimoireCharId && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-stone-900/90 backdrop-blur-sm p-4 md:p-8 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex flex-col bg-stone-900/90 backdrop-blur-sm p-4 md:p-8">
           <div className="flex justify-end mb-4">
             <button
               onClick={() => setActiveGrimoireCharId(null)}

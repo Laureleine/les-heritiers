@@ -48,8 +48,8 @@ export default function OmbrePanel({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/70 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-[#0e0e0e] max-w-lg w-full rounded-2xl shadow-2xl border-2 border-stone-700 overflow-hidden animate-fade-in-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/70 backdrop-blur-sm p-4">
+      <div className="bg-[#0e0e0e] max-w-lg w-full rounded-2xl shadow-2xl border-2 border-stone-700 overflow-hidden">
 
         {/* En-tête sombre */}
         <div className="px-5 py-4 border-b border-stone-700 flex items-center justify-between">
@@ -108,7 +108,7 @@ export default function OmbrePanel({
                 <button
                   onClick={handleReveal}
                   disabled={saving}
-                  className="flex-1 py-2 text-sm bg-amber-700 hover:bg-amber-600 text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 py-2 text-sm bg-amber-700 hover:bg-amber-700 text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {saving ? <Loader size={14} className="animate-spin" /> : <Eye size={14} />}
                   Oui, révéler
@@ -171,7 +171,7 @@ export default function OmbrePanel({
                 <button
                   onClick={() => setConfirmReveal(true)}
                   disabled={saving}
-                  className="flex-1 py-2 text-sm bg-amber-700 hover:bg-amber-600 text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 py-2 text-sm bg-amber-700 hover:bg-amber-700 text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Eye size={14} /> Révéler au Joueur
                 </button>

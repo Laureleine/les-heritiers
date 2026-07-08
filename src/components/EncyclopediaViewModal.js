@@ -33,8 +33,8 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in" onClick={onClose}>
-      <div className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4" onClick={onClose}>
+      <div className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
         
         {/* HEADER */}
         <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center shrink-0">
@@ -146,7 +146,7 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
 
           {/* ✨ SPÉCIFIQUE AUX FÉES : Le scanner biométrique et magique */}
           {activeTab === 'fairy_types' && (
-            <div className="space-y-6 animate-fade-in">
+            <div className="space-y-6">
               
               {/* Le Potentiel Naturel (Statistiques) */}
               <div>
@@ -312,7 +312,7 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
 
           {/* ✨ SPÉCIFIQUE AUX ÉLÉMENTS DE VIE SOCIALE */}
           {activeTab === 'social_items' && (
-            <div className="space-y-4 animate-fade-in">
+            <div className="space-y-4">
               {/* Coûts et Économie */}
               <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 shadow-sm">
                 <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-widest mb-3 flex items-center gap-2">
@@ -388,7 +388,7 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
 
           {/* 🎭 SPÉCIFIQUE AUX FIGURES */}
           {activeTab === 'figures' && (
-            <div className="space-y-4 animate-fade-in">
+            <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {item.titre && (
                   <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm">

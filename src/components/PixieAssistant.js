@@ -166,7 +166,7 @@ export default function PixieAssistant({ character, step, session, onSleep, fair
                 }}
             >
                 {isTalking && (
-                    <div className={`absolute bottom-full mb-4 -left-32 w-64 p-3 rounded-2xl shadow-xl border-2 pointer-events-auto animate-fade-in-up ${getBubbleColors(message.mood)}`}>
+                    <div className={`absolute bottom-full mb-4 -left-32 w-64 p-3 rounded-2xl shadow-xl border-2 pointer-events-auto ${getBubbleColors(message.mood)}`}>
                         <div className="absolute -top-3 -right-2 flex gap-1">
                             <button onClick={handleSleep} className="bg-indigo-800 text-indigo-100 w-6 h-6 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors shadow-md" title="Renvoyer Pixie dormir (Désactiver l'assistant)">
                                 <Moon size={12} />

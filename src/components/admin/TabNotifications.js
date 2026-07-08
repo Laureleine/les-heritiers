@@ -59,7 +59,7 @@ export default function TabNotifications() {
     };
 
     return (
-        <div className="space-y-8 animate-fade-in">
+        <div className="space-y-8">
 
             {/* Stats abonnés */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -124,7 +124,7 @@ export default function TabNotifications() {
                         <button
                             onClick={handleSend}
                             disabled={sending || !version.trim() || !changelog.trim() || targetCount === 0}
-                            className="flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors shadow-sm"
+                            className="flex items-center gap-2 px-6 py-3 bg-amber-700 hover:bg-amber-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors shadow-sm"
                         >
                             {sending ? (
                                 <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Envoi...</>

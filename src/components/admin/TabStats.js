@@ -62,13 +62,13 @@ function TabStats() {
   const maxMin = useMemo(() => Math.max(...(stats?.profilsMineurs?.map(([, c]) => c) || [1]), 1), [stats?.profilsMineurs]);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* BARRE DE CONTRÔLE */}
       <div className="flex flex-wrap items-center justify-end gap-3">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-xl p-1 shadow-sm">
-            <button onClick={() => setViewMode('table')} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${viewMode === 'table' ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-500 hover:bg-stone-100'}`}><List size={14} /> Tableau</button>
-            <button onClick={() => setViewMode('chart')} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${viewMode === 'chart' ? 'bg-amber-600 text-white shadow-sm' : 'text-stone-500 hover:bg-stone-100'}`}><BarChart2 size={14} /> Graphiques</button>
+            <button onClick={() => setViewMode('table')} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${viewMode === 'table' ? 'bg-amber-700 text-white shadow-sm' : 'text-stone-500 hover:bg-stone-100'}`}><List size={14} /> Tableau</button>
+            <button onClick={() => setViewMode('chart')} className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${viewMode === 'chart' ? 'bg-amber-700 text-white shadow-sm' : 'text-stone-500 hover:bg-stone-100'}`}><BarChart2 size={14} /> Graphiques</button>
           </div>
           <button onClick={fetchStats} className="p-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 shadow-sm">
             <RefreshCcw size={16} className={loading ? "animate-spin text-blue-600" : "text-stone-500"} />

@@ -69,10 +69,10 @@ export default function App() {
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
       
       {updateAvailable && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in-down w-11/12 max-w-md">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-md">
           <button
             onClick={applyUpdate}
-            className="w-full bg-amber-600 text-white px-4 py-3 rounded-xl shadow-2xl font-serif font-bold flex items-center justify-center gap-3 hover:bg-amber-700 transition-all border-2 border-amber-300"
+            className="w-full bg-amber-700 text-white px-4 py-3 rounded-xl shadow-2xl font-serif font-bold flex items-center justify-center gap-3 hover:bg-amber-700 transition-all border-2 border-amber-300"
           >
             <Sparkles size={20} /> Savoir mis à jour ! Cliquez ici pour recharger le Grimoire.
           </button>
@@ -98,7 +98,7 @@ export default function App() {
       />
       <BackgroundDecor />
 
-      <header className="pt-6 pb-4 text-center animate-fade-in relative z-10">
+      <header className="pt-6 pb-4 text-center relative z-10">
         <div className="flex flex-wrap justify-center items-baseline gap-4">
           <h1
             className="text-5xl font-serif text-amber-900 cursor-pointer hover:text-amber-700 transition-colors m-0"
@@ -122,7 +122,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 w-full animate-fade-in relative z-10">
+      <main className="max-w-5xl mx-auto px-4 w-full relative z-10">
         <AppRouter session={session} userProfile={userProfile} refreshUserProfile={refreshUserProfile} />
       </main>
 
@@ -132,8 +132,8 @@ export default function App() {
 
       {/* 4. MODALE DU JOURNAL DES VERSIONS */}
       {showVersionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#fdfbf7] max-w-2xl w-full max-h-[80vh] rounded-xl shadow-2xl border-2 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
+          <div className="bg-[#fdfbf7] max-w-2xl w-full max-h-[80vh] rounded-xl shadow-2xl border-2 border-amber-900/20 flex flex-col overflow-hidden">
             <div className="bg-amber-900 text-amber-50 p-4 flex justify-between items-center shadow-md z-10 shrink-0">
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">
                 <BookOpen size={18} className="text-amber-300" /> Registre des Mises à jour

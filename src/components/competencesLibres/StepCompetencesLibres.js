@@ -33,7 +33,7 @@ const ComptoirsBudget = ({ budgetsInfo }) => (
       {budgetsInfo.bonusEspritMax > 0 ? (
         <span className="text-[9px] text-purple-600 mt-0.5 font-bold text-center leading-none">Réservé (violettes)</span>
       ) : (
-        <span className="text-[9px] text-gray-400 mt-0.5 font-bold leading-none">Esprit insuffisant</span>
+        <span className="text-[9px] text-gray-500 mt-0.5 font-bold leading-none">Esprit insuffisant</span>
       )}
     </div>
   </div>
@@ -110,7 +110,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
 			  e.target.value = '';
 			}}
 			aria-label={`Ajouter une spécialité en ${nomComp}`}
-			className="text-[10px] bg-transparent text-gray-400 hover:text-blue-600 outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer w-24"
+			className="text-[10px] bg-transparent text-gray-500 hover:text-blue-600 outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer w-24"
 		  >
 			<option value="">+ Choisir ({nextSpecCost === 0 ? 'Gratuit' : (isScelle ? `${nextSpecCost} XP` : '1 pt')})</option>
 			<option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
@@ -134,7 +134,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
 		)}
 
         {creatingSpecFor === nomComp && (
-          <div className="flex gap-1 items-center animate-fade-in">
+          <div className="flex gap-1 items-center">
             <input id={`input-spec-${nomComp}`} type="text" autoFocus placeholder="Nom..." className="flex-1 text-[11px] p-1 border border-blue-300 rounded focus:outline-none focus:border-blue-500" onKeyDown={(e) => { if (e.key === 'Enter' && e.currentTarget.value.trim()) handlers.handleCreateGlobalSpeciality(nomComp, e.currentTarget.value.trim()); if (e.key === 'Escape') setCreatingSpecFor(null); }}/>
             <button onClick={() => { const input = document.getElementById(`input-spec-${nomComp}`); if (input && input.value.trim()) handlers.handleCreateGlobalSpeciality(nomComp, input.value.trim()); }} className="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">Créer</button>
             <button onClick={() => setCreatingSpecFor(null)} className="bg-gray-200 text-gray-600 px-2 py-1 rounded text-[10px] font-bold">X</button>
@@ -155,11 +155,11 @@ export default function StepCompetencesLibres() {
   } = useCompetencesLibres();
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* ✨ FIX : On a pulvérisé le 'pb-20' qui créait 80px de vide mort ! */}
       
       {!isScelle && (
-        <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-start gap-3 shadow-sm animate-fade-in">
+        <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-start gap-3 shadow-sm">
           <Info size={20} className="text-blue-600 shrink-0 mt-0.5" />
           <p className="text-sm text-blue-800 leading-relaxed">
             <strong>Note :</strong> Vous pourrez choisir une Spécialité supplémentaire gratuite lors du choix d'un métier à l'étape de personnalisation.
@@ -236,14 +236,14 @@ export default function StepCompetencesLibres() {
                   {/* ✨ FIX : Le nom et les badges sont alignés sur le même axe, enveloppés de manière fluide ! */}
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="font-serif font-bold text-amber-900 leading-tight">{nomAffiche}</h4>
-                    {character.profils?.majeur?.nom === profil.nom && <span className="text-[10px] bg-amber-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shrink-0 shadow-sm">Majeur</span>}
+                    {character.profils?.majeur?.nom === profil.nom && <span className="text-[10px] bg-amber-700 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shrink-0 shadow-sm">Majeur</span>}
                     {character.profils?.mineur?.nom === profil.nom && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shrink-0 shadow-sm">Mineur</span>}
                   </div>
                 </div>
 
                 <div className="text-right shrink-0 ml-2 mt-1 sm:mt-0">
                   <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Rang {rangsProfils?.[profil.nom] || 0}</div>
-                  <div className="text-[10px] text-gray-400">
+                  <div className="text-[10px] text-gray-500">
                     +{character.profils?.majeur?.nom === profil.nom ? 8 : character.profils?.mineur?.nom === profil.nom ? 4 : 0} = <span className="font-bold text-gray-600">{budgetsPP?.[profil.nom] || 0} PP</span>
                   </div>
                 </div>

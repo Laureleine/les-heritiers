@@ -382,7 +382,7 @@ export default function PocheGenerateur({ onBack, userProfile, session }) {
   const estGardien = !!userProfile && isAdmin(userProfile);
 
   return (
-    <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
+    <div className="min-h-screen bg-[#f5f0e8]">
       <header className="sticky top-0 z-40 bg-[#1a0f0a] border-b border-amber-900/30 shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">

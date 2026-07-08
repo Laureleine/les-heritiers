@@ -262,7 +262,7 @@ export default function TabChroniques({ characterId, characterNom, isOwner, isDo
 
       {/* Modal suppression */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
           <div className="bg-[#fdfbf7] max-w-sm w-full rounded-2xl shadow-2xl border-4 border-red-200 overflow-hidden">
             <div className="bg-red-700 text-white p-4 flex justify-between items-center">
               <h3 className="font-serif font-bold flex items-center gap-2"><AlertTriangle size={18} /> Confirmer</h3>
@@ -309,7 +309,7 @@ function ChroniqueForm({ form, setForm, saving, onSave, onCancel, isEdit }) {
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
   return (
-    <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 space-y-3 animate-fade-in">
+    <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 space-y-3">
       <h4 className="font-serif font-bold text-amber-900 text-sm">
         {isEdit ? 'Modifier la chronique' : 'Nouvelle chronique'}
       </h4>

@@ -98,7 +98,7 @@ export default function BureauAnomalies({ onBack }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24 font-serif animate-fade-in">
+    <div className="max-w-4xl mx-auto p-4 md:p-6 pb-24 font-serif">
       
       {/* ✨ NOUVEAU HEADER DE NAVIGATION */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 border-b border-stone-200 pb-6">

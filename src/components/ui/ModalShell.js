@@ -19,9 +19,9 @@ export function ModalHeader({ title, icon, onClose }) {
 
 export default function ModalShell({ children, onClose, maxWidth = 'max-w-2xl', compact = false, className = '' }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4" onClick={onClose}>
       <div
-        className={`bg-[#fdfbf7] w-full ${maxWidth} ${compact ? '' : 'max-h-[85vh]'} rounded-2xl shadow-2xl border-2 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up transform ${className}`}
+        className={`bg-[#fdfbf7] w-full ${maxWidth} ${compact ? '' : 'max-h-[85vh]'} rounded-2xl shadow-2xl border-2 border-amber-900/20 flex flex-col overflow-hidden transform ${className}`}
         onClick={e => e.stopPropagation()}
       >
         {children}

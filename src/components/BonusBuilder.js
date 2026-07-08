@@ -215,13 +215,13 @@ export default function BonusBuilder({
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 shadow-inner relative pb-4">
             
             {hasUnsavedChanges && (
-                <div className="p-3 mb-4 bg-amber-50 border border-amber-400 rounded-lg flex justify-between items-center animate-fade-in shadow-sm sticky top-0 z-10">
+                <div className="p-3 mb-4 bg-amber-50 border border-amber-400 rounded-lg flex justify-between items-center shadow-sm sticky top-0 z-10">
                     <span className="text-sm text-amber-800 font-bold flex items-center gap-2">
                         <AlertCircle size={16}/> Modifications en attente de compilation
                     </span>
                     <button
                         onClick={handleValidateBlocks}
-                        className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold shadow-sm transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-amber-700 hover:bg-amber-700 text-white rounded-lg font-bold shadow-sm transition-colors flex items-center gap-2"
                     >
                         <GitMerge size={16}/> Compiler les Effets
                     </button>
@@ -245,7 +245,7 @@ export default function BonusBuilder({
                     {showMenu && (
                         <>
                             <div className="fixed inset-0 z-20" onClick={() => setShowMenu(false)}></div>
-                            <div className="absolute right-0 top-10 w-64 bg-white border border-stone-200 rounded-lg shadow-xl z-30 py-2 animate-fade-in-up">
+                            <div className="absolute right-0 top-10 w-64 bg-white border border-stone-200 rounded-lg shadow-xl z-30 py-2">
                                 {BLOCK_TYPES.map(bt => (
                                     <button
                                         key={bt.id}
@@ -292,7 +292,7 @@ export default function BonusBuilder({
             </datalist>
 
             {blocks.map(block => (
-                <div key={block.id} className="flex items-center gap-3 bg-white p-2 rounded-lg shadow-sm border border-stone-200 animate-fade-in group mb-2 last:mb-0">
+                <div key={block.id} className="flex items-center gap-3 bg-white p-2 rounded-lg shadow-sm border border-stone-200 group mb-2 last:mb-0">
                     
                     {/* ✨ LA BRIQUE PRÉREQUIS */}
                     {block.type === 'prerequis' && (
@@ -404,7 +404,7 @@ export default function BonusBuilder({
                                 {!block.comp ? (
                                     <span className="text-sm italic text-stone-400 flex-1">Sélectionnez d'abord la compétence...</span>
                                 ) : isCreating ? (
-                                    <div className="flex gap-1 flex-1 animate-fade-in">
+                                    <div className="flex gap-1 flex-1">
                                         <input type="text" autoFocus placeholder="Nouvelle spécialité..." value={newSpecName} onChange={e => setNewSpecName(e.target.value)} className="p-1 border border-stone-300 rounded text-xs flex-1 outline-none focus:border-amber-500" />
                                         <button 
                                             onClick={async () => {
@@ -422,7 +422,7 @@ export default function BonusBuilder({
                                                     setNewSpecName('');
                                                 }
                                             }}
-                                            className="bg-amber-600 text-white px-2 py-1 rounded text-[10px] font-bold shadow-sm"
+                                            className="bg-amber-700 text-white px-2 py-1 rounded text-[10px] font-bold shadow-sm"
                                         >Créer</button>
                                         <button onClick={() => { setCreatingSpecFor(null); setNewSpecName(''); }} className="bg-stone-200 text-stone-600 px-2 py-1 rounded text-[10px] font-bold">X</button>
                                     </div>
@@ -463,7 +463,7 @@ export default function BonusBuilder({
                             <span className="text-sm font-bold text-purple-900">Choix (Utiles) :</span>
                             <div className="flex flex-wrap gap-1 flex-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[42px] shadow-inner">
                                 {(block.options || []).map(opt => (
-                                    <span key={opt} className="bg-purple-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm animate-fade-in">
+                                    <span key={opt} className="bg-purple-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm">
                                         {opt}
                                         <button onClick={() => {
                                             const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
@@ -505,7 +505,7 @@ export default function BonusBuilder({
                                 <div className="flex-1 flex flex-col gap-1">
                                     <div className="flex flex-wrap gap-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[32px] shadow-inner">
                                         {(block.options || []).map(opt => (
-                                            <span key={opt} className="bg-pink-600 text-white text-[10px] px-2 py-0.5 rounded flex items-center gap-1 font-bold shadow-sm animate-fade-in">
+                                            <span key={opt} className="bg-pink-600 text-white text-[10px] px-2 py-0.5 rounded flex items-center gap-1 font-bold shadow-sm">
                                                 {opt}
                                                 <button onClick={() => {
                                                     const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
@@ -592,7 +592,7 @@ export default function BonusBuilder({
                                 {!block.key ? (
                                     <span className="text-sm italic text-stone-400 flex-1">En attente...</span>
                                 ) : isCreating ? (
-                                    <div className="flex gap-1 flex-1 animate-fade-in">
+                                    <div className="flex gap-1 flex-1">
                                         <input type="text" autoFocus placeholder="Nouvelle..." value={newSpecName} onChange={e => setNewSpecName(e.target.value)} className="p-1 border border-stone-300 rounded text-xs flex-1 outline-none focus:border-fuchsia-500" />
                                         <button 
                                             onClick={async () => {
@@ -649,7 +649,7 @@ export default function BonusBuilder({
                             <span className="text-sm font-bold text-teal-900">Choix (Futiles) :</span>
                             <div className="flex flex-wrap gap-1 flex-1 items-center border border-stone-200 p-1.5 rounded-lg bg-stone-50 min-h-[42px] shadow-inner">
                                 {(block.options || []).map(opt => (
-                                    <span key={opt} className="bg-teal-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm animate-fade-in">
+                                    <span key={opt} className="bg-teal-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 font-bold shadow-sm">
                                         {opt}
                                         <button onClick={() => {
                                             const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: b.options.filter(o => o !== opt) } : b);
@@ -659,7 +659,7 @@ export default function BonusBuilder({
                                     </span>
                                 ))}
                                 {creatingFutileId === block.id ? (
-                                    <div className="flex gap-1 animate-fade-in">
+                                    <div className="flex gap-1">
                                         <input autoFocus type="text" placeholder="Nom..." value={newFutileName} onChange={e => setNewFutileName(e.target.value)} className="w-24 p-1 border border-teal-300 rounded text-xs outline-none focus:ring-1 focus:ring-teal-500" />
                                         <button onClick={async () => {
                                             if (!newFutileName.trim()) return;
@@ -703,7 +703,7 @@ export default function BonusBuilder({
                             <div className="bg-cyan-100 text-cyan-800 p-2 rounded border border-cyan-200"><Sparkles size={18}/></div>
                             <span className="text-sm font-bold text-cyan-900">Futile imposée :</span>
                             {creatingFutileId === block.id ? (
-                                <div className="flex gap-1 flex-1 animate-fade-in">
+                                <div className="flex gap-1 flex-1">
                                     <input autoFocus type="text" placeholder="Nouvelle futile..." value={newFutileName} onChange={e => setNewFutileName(e.target.value)} className="flex-1 p-1.5 border border-cyan-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-cyan-500" />
                                     <button onClick={() => handleCreateFutile(block.id)} className="bg-cyan-600 text-white rounded px-2 py-1 text-xs font-bold shadow-sm hover:bg-cyan-700 transition-colors">Créer</button>
                                     <button onClick={() => { setCreatingFutileId(null); setNewFutileName(''); }} className="bg-gray-200 text-gray-600 rounded px-2 py-1 text-xs font-bold hover:bg-gray-300 transition-colors">Annuler</button>

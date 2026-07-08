@@ -130,7 +130,7 @@ export default function WidgetLangues({ character, dispatchCharacter, gameData, 
     // ==========================================================================
 
     return (
-        <div className="bg-white rounded-xl shadow-md border-2 border-blue-300 overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 mb-8 animate-fade-in-up">
+        <div className="bg-white rounded-xl shadow-md border-2 border-blue-300 overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 mb-8">
             <div className="flex items-center justify-between mb-4 p-4 border-b border-blue-200">
                 <div className="flex items-center gap-2">
                     <Globe className="text-blue-600" size={24} />

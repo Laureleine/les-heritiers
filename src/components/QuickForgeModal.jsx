@@ -90,8 +90,8 @@ export default function QuickForgeModal({ isOpen, onClose, type, onSuccess }) {
 
   return (
     // ✨ FIX : z-[1] pour surpasser la modale parente !
-    <div className="fixed inset-0 z-[1] flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in" onClick={onClose}>
-      <div className={`bg-white max-w-lg w-full rounded-2xl shadow-2xl border-4 border-${config.color}-200 flex flex-col overflow-hidden animate-fade-in-up`} onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[1] flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4" onClick={onClose}>
+      <div className={`bg-white max-w-lg w-full rounded-2xl shadow-2xl border-4 border-${config.color}-200 flex flex-col overflow-hidden`} onClick={e => e.stopPropagation()}>
         
         <div className={`bg-${config.color}-50 p-4 border-b border-${config.color}-100 flex justify-between items-center`}>
           <h3 className={`font-serif font-bold text-lg text-${config.color}-900 flex items-center gap-2`}>
@@ -130,7 +130,7 @@ export default function QuickForgeModal({ isOpen, onClose, type, onSuccess }) {
 
         <div className="bg-stone-50 p-4 border-t border-stone-200 flex justify-end gap-3">
           <button onClick={onClose} className="px-4 py-2 font-bold text-stone-600 hover:bg-stone-200 rounded-lg transition-colors">Annuler</button>
-          <button onClick={handleSave} disabled={loading || !nom.trim()} className="px-4 py-2 font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-lg flex items-center gap-2 transition-all shadow-md disabled:opacity-50">
+          <button onClick={handleSave} disabled={loading || !nom.trim()} className="px-4 py-2 font-bold text-white bg-amber-700 hover:bg-amber-700 rounded-lg flex items-center gap-2 transition-all shadow-md disabled:opacity-50">
             <Save size={16} /> {loading ? 'Forge en cours...' : 'Graver rapidement'}
           </button>
         </div>

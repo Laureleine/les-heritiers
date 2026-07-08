@@ -243,7 +243,7 @@ export default function GenerateurMenu({ onBack, userProfile, session }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
+    <div className="min-h-screen bg-[#f5f0e8]">
       <header className="sticky top-0 z-40 bg-[#1a0f0a] border-b border-amber-900/30 shadow-lg print:hidden">
         <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2 min-w-0">
           <div className="flex items-center gap-2 min-w-0">

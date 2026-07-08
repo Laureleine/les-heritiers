@@ -30,8 +30,8 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in" onClick={onClose}>
-      <div className="bg-[#fdfbf7] max-w-2xl w-full max-h-[85vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4" onClick={onClose}>
+      <div className="bg-[#fdfbf7] max-w-2xl w-full max-h-[85vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
         
         {/* En-tête du Livre de Comptes */}
         <div className="bg-stone-950 p-4 border-b border-amber-900/50 flex justify-between items-center shrink-0">

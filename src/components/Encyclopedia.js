@@ -52,7 +52,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
     }, [state.activeTab, state.filteredData]);
 
     return (
-        <div className="max-w-6xl mx-auto p-4 animate-fade-in pb-20">
+        <div className="max-w-6xl mx-auto p-4 pb-20">
             
             {/* L'ENTÊTE SIMPLE ET ÉPURÉ */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
@@ -64,7 +64,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                         <FileText size={16} /> Mes Propositions
                     </button>
                     {isDocte && (
-                        <button onClick={onOpenValidations} className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors font-bold text-sm shadow-md flex items-center gap-2">
+                        <button onClick={onOpenValidations} className="px-4 py-2 bg-amber-700 hover:bg-amber-700 text-white rounded-lg transition-colors font-bold text-sm shadow-md flex items-center gap-2">
                             <Shield size={16} /> Conseil des Gardiens
                         </button>
                     )}
@@ -95,7 +95,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                     />
                 </div>
                 {isDocte && state.activeTab !== 'specialites' && state.activeTab !== 'figures' && (
-                    <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
+                    <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-amber-700 text-white font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
                         <Plus size={20} /> Forger une Entité
                     </button>
                 )}
@@ -108,7 +108,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
             {/* LES JOLIES PUCES DE FILTRAGE (FÉES) */}
             {['fairy_capacites', 'fairy_powers', 'fairy_assets'].includes(state.activeTab) && (
-                <div className="flex flex-wrap gap-2 items-center mb-6 animate-fade-in">
+                <div className="flex flex-wrap gap-2 items-center mb-6">
                     <button
                         onClick={() => setters.setSelectedFairyFilter('')}
                         className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
@@ -147,7 +147,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
 
             {/* LES JOLIES PUCES DE FILTRAGE (VIE SOCIALE) */}
             {state.activeTab === 'social_items' && (
-                <div className="flex flex-col gap-3 mb-6 animate-fade-in">
+                <div className="flex flex-col gap-3 mb-6">
                     {/* LIGNE 1 : PROFILS */}
                     <div className="flex flex-wrap gap-2 items-center bg-stone-50 p-2 rounded-xl border border-stone-200">
                         <span className="text-xs font-bold text-stone-400 uppercase tracking-widest px-2">Profils :</span>
@@ -218,13 +218,13 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
             )}
 
             {state.activeTab === 'specialites' && (
-                <div className="flex items-center justify-end gap-2 mb-6 animate-fade-in">
+                <div className="flex items-center justify-end gap-2 mb-6">
                     <span className="text-xs font-bold uppercase tracking-wider text-stone-500">Vue groupée</span>
                     <button
                         role="switch"
                         aria-checked={groupSpecialitesByCompetence}
                         onClick={() => setGroupSpecialitesByCompetence(prev => !prev)}
-                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 focus:outline-none ${
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                             groupSpecialitesByCompetence ? 'bg-indigo-600 border-indigo-700' : 'bg-stone-200 border-stone-300'
                         }`}
                     >
@@ -241,7 +241,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
                 </div>
             ) : (state.activeTab === 'specialites' && groupSpecialitesByCompetence) ? (
-                <div className="space-y-8 animate-fade-in">
+                <div className="space-y-8">
                     {groupedSpecialites.map(group => (
                         <section key={group.competence}>
                             <h3 className="text-sm font-bold uppercase tracking-wider text-indigo-800 mb-3">
@@ -271,7 +271,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                     )}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {state.filteredData.map(item => (
                         <EncyclopediaCard
                             key={item.id}

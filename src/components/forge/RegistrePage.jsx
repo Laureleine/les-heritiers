@@ -124,7 +124,7 @@ export default function RegistrePage({ onBack, userProfile }) {
         <div className="flex gap-3 items-center flex-wrap justify-end">
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-forge-widget', { detail: { type: filtreType } }))}
-            className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-transform active:scale-95"
+            className="px-4 py-1.5 bg-amber-700 hover:bg-amber-700 text-white rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-transform active:scale-95"
           >
             <Plus size={18} /> Nouvelle Entrée
           </button>
@@ -263,8 +263,8 @@ export default function RegistrePage({ onBack, userProfile }) {
 
       {/* LA MODALE IMMERSIVE */}
       {carteSelectionnee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setCarteSelectionnee(null)}>
-          <div className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden animate-fade-in-up" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4" onClick={() => setCarteSelectionnee(null)}>
+          <div className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
             
             {/* En-tête de la Modale */}
             <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center shrink-0">
@@ -387,7 +387,7 @@ export default function RegistrePage({ onBack, userProfile }) {
 
               {/* ✨ LE FORMULAIRE DE SAISIE DE REJET */}
               {rejetState.isOpen && (
-                <div className="mt-6 pt-4 border-t border-stone-200 bg-red-50 p-4 rounded-xl shadow-inner animate-fade-in">
+                <div className="mt-6 pt-4 border-t border-stone-200 bg-red-50 p-4 rounded-xl shadow-inner">
                   <label className="block text-sm font-bold text-red-900 mb-2">Motif du rejet (Visible par l'auteur) :</label>
                   <textarea
                     value={rejetState.raison}

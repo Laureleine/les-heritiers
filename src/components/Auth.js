@@ -141,7 +141,7 @@ export default function Auth() {
         {/* Header */}
         <div className="bg-amber-50 p-8 text-center border-b border-amber-100">
           <h1 className="text-4xl font-serif text-amber-900 mb-2">Les Héritiers</h1>
-          <div className="text-[10px] text-gray-400 uppercase tracking-widest">
+          <div className="text-[10px] text-gray-500 uppercase tracking-widest">
             v{APP_VERSION} • {BUILD_DATE}
           </div>
         </div>
@@ -172,7 +172,7 @@ export default function Auth() {
 
           {emailSent ? (
             /* ✨ NOUVEL ÉCRAN : Attente de la validation par email */
-            <div className="text-center py-8 animate-fade-in">
+            <div className="text-center py-8">
               <div className="bg-amber-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-amber-200">
                 <Mail size={40} className="text-amber-600" />
               </div>
@@ -195,7 +195,7 @@ export default function Auth() {
 				{/* Username (inscription seulement) */}
 				{isSignUp && !resetMode && (
 				  <div className="relative">
-					<User className="absolute left-3 top-3 text-gray-400" size={20} />
+					<User className="absolute left-3 top-3 text-gray-500" size={20} />
 					<input
 					  type="text"
 					  placeholder="Nom d'utilisateur"
@@ -210,7 +210,7 @@ export default function Auth() {
 
 				{/* Email */}
 				<div className="relative">
-				  <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+				  <Mail className="absolute left-3 top-3 text-gray-500" size={20} />
 				  <input
 					type="email"
 					placeholder="Votre email"
@@ -226,7 +226,7 @@ export default function Auth() {
 				{/* Password */}
 				{!resetMode && (
 				  <div className="relative">
-					<Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+					<Lock className="absolute left-3 top-3 text-gray-500" size={20} />
 					<input
 					  type={showPassword ? "text" : "password"}
 					  placeholder="Mot de passe"
@@ -239,7 +239,7 @@ export default function Auth() {
 					<button
 					  type="button"
 					  onClick={() => setShowPassword(v => !v)}
-					  className="absolute right-3 top-2 p-1 text-gray-400 hover:text-amber-600 transition-colors"
+					  className="absolute right-3 top-2 p-1 text-gray-500 hover:text-amber-600 transition-colors"
 					  tabIndex={-1}
 					  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
 					>
@@ -250,7 +250,7 @@ export default function Auth() {
 
 				{/* L'Encart d'Erreur "Sceau Brisé" */}
 				{error && (
-				  <div className="relative overflow-hidden bg-[#2a1313] text-red-100 p-4 rounded-xl border border-red-900/50 shadow-[0_0_15px_rgba(153,27,27,0.4)] animate-fade-in-up">
+				  <div className="relative overflow-hidden bg-[#2a1313] text-red-100 p-4 rounded-xl border border-red-900/50 shadow-[0_0_15px_rgba(153,27,27,0.4)]">
 					<div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent pointer-events-none"></div>
 					<div className="flex items-start gap-3 relative z-10">
 					  <div className="bg-red-950/50 p-1.5 rounded-lg border border-red-800/50 shrink-0">
@@ -275,7 +275,7 @@ export default function Auth() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-amber-600 text-white py-3 rounded-lg font-serif font-bold hover:bg-amber-700 transition-all shadow-md transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-amber-700 text-white py-3 rounded-lg font-serif font-bold hover:bg-amber-700 transition-all shadow-md transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {getButtonText()}
         </button>

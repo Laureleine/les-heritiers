@@ -141,10 +141,10 @@ export default function Step1() {
     }, [previewData, character.sexe, isLocked, onSexeChange]);
 
     return (
-        <div className="flex flex-col gap-6 h-full min-h-[600px] pb-12 animate-fade-in">
+        <div className="flex flex-col gap-6 h-full min-h-[600px] pb-12">
 
             {isScelle && (
-                <div className="bg-amber-50 border border-amber-200 p-4 md:p-5 rounded-xl flex items-start gap-4 shadow-sm animate-fade-in-up">
+                <div className="bg-amber-50 border border-amber-200 p-4 md:p-5 rounded-xl flex items-start gap-4 shadow-sm">
                     <div className="bg-amber-200/50 p-2 rounded-lg shrink-0 text-amber-700 mt-0.5">
                         <Lock size={24} />
                     </div>
@@ -248,7 +248,7 @@ export default function Step1() {
                                     >
                                         <div>
                                             <span className="font-serif font-medium block">{rang.label}</span>
-                                            <span className="text-xs text-gray-400 mt-0.5 block">
+                                            <span className="text-xs text-gray-500 mt-0.5 block">
                                                 {rang.carac} attr. · {rang.utiles} utiles · {rang.futiles} futiles
                                             </span>
                                         </div>
@@ -263,7 +263,7 @@ export default function Step1() {
                     {!isHumain && <div className="flex flex-col flex-1 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
 
                     <div className="flex flex-col gap-2 p-2 bg-gray-100 rounded-xl border border-gray-200">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">Filtrer par origine</span>
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider px-1">Filtrer par origine</span>
                             {categories.map(cat => (
                                 <button
                                     key={cat}
@@ -342,7 +342,7 @@ export default function Step1() {
                                 </div>
                             </div>
                             <div>
-                                <label className="font-bold text-xs uppercase text-gray-400 font-sans block mb-2">Sexe</label>
+                                <label className="font-bold text-xs uppercase text-gray-500 font-sans block mb-2">Sexe</label>
                                 <div className="flex gap-3 font-sans">
                                     {['Homme', 'Femme'].map((g) => (
                                         <button
@@ -351,7 +351,7 @@ export default function Step1() {
                                             disabled={isLocked}
                                             className={`flex-1 py-2 px-4 border rounded-lg font-bold text-sm transition-all ${
                                                 character.sexe === g
-                                                    ? 'border-amber-600 bg-amber-600 text-white shadow-md'
+                                                    ? 'border-amber-600 bg-amber-700 text-white shadow-md'
                                                     : isLocked
                                                         ? 'border-gray-100 text-gray-300 cursor-not-allowed bg-stone-50'
                                                         : 'border-gray-300 text-gray-600 hover:border-amber-400 hover:bg-amber-50'

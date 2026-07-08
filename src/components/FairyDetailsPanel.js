@@ -17,7 +17,7 @@ export default function FairyDetailsPanel({
 
     // Si aucune fée n'est sélectionnée (État initial)
     if (!previewData) return (
-        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+        <div className="flex flex-col items-center justify-center h-full text-gray-500">
             <Crown size={48} className="mb-4 opacity-50" />
             <p>Sélectionnez un héritage à gauche</p>
         </div>
@@ -138,7 +138,7 @@ export default function FairyDetailsPanel({
             <div className="mt-6 pt-4 border-t border-gray-100 space-y-5">
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                        <label className="font-bold text-xs uppercase text-gray-400 font-sans">Sexe Féérique (Biologique)</label>
+                        <label className="font-bold text-xs uppercase text-gray-500 font-sans">Sexe Féérique (Biologique)</label>
                         {!isGenderAllowed('Homme') && <span className="text-xs text-amber-600 italic flex items-center gap-1"><Info size={10}/> Femelle uniquement</span>}
                         {!isGenderAllowed('Femme') && <span className="text-xs text-amber-600 italic flex items-center gap-1"><Info size={10}/> Mâle uniquement</span>}
                     </div>
@@ -152,7 +152,7 @@ export default function FairyDetailsPanel({
                                     disabled={!allowed || isLocked}
                                     className={`flex-1 py-2 px-4 border rounded-lg font-bold text-sm transition-all ${
                                         character.sexe === g
-                                            ? 'border-amber-600 bg-amber-600 text-white shadow-md'
+                                            ? 'border-amber-600 bg-amber-700 text-white shadow-md'
                                             : allowed && !isLocked
                                                 ? 'border-gray-300 text-gray-600 hover:border-amber-400 hover:bg-amber-50'
                                                 : 'border-gray-100 text-gray-300 cursor-not-allowed bg-stone-50'
@@ -167,7 +167,7 @@ export default function FairyDetailsPanel({
 
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                        <label className="font-bold text-xs uppercase text-gray-400 font-sans flex items-center gap-1">
+                        <label className="font-bold text-xs uppercase text-gray-500 font-sans flex items-center gap-1">
                             <Heart size={12} /> Traits Dominants (1 ou 2 max)
                         </label>
                         <span className={`text-xs font-bold ${traitsCount > 0 ? 'text-green-600' : 'text-amber-600'}`}>
@@ -201,7 +201,7 @@ export default function FairyDetailsPanel({
                                         isSelected
                                             ? 'border-purple-500 bg-purple-50 text-purple-900 font-bold shadow-sm'
                                             : isDisabled
-                                                ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                                                ? 'border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed'
                                                 : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
                                     }`}
                                 >
@@ -219,9 +219,9 @@ export default function FairyDetailsPanel({
                         disabled={isLocked || character.typeFee === selectedPreview || !character.sexe}
                         className={`w-full py-3 rounded-xl text-lg font-bold transition-all flex justify-center items-center gap-2 ${
                             character.typeFee === selectedPreview
-                                ? 'bg-green-600 text-white cursor-default shadow-inner'
+                                ? 'bg-green-700 text-white cursor-default shadow-inner'
                                 : character.sexe && !isLocked
-                                    ? 'bg-amber-600 text-white hover:bg-amber-700 shadow-md hover:-translate-y-0.5'
+                                    ? 'bg-amber-700 text-white hover:bg-amber-700 shadow-md hover:-translate-y-0.5'
                                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                     >

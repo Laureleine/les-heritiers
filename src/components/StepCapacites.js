@@ -41,7 +41,7 @@ export default function StepCapacites() {
 
   if (data.isEnfoui && (character.caracteristiques?.feerie || 3) < 3) {
     return (
-      <div className="space-y-6 animate-fade-in">
+      <div className="space-y-6">
         <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
           <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
           <div>
@@ -100,7 +100,7 @@ export default function StepCapacites() {
     : [];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
         <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
         <div>

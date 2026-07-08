@@ -135,7 +135,7 @@ export default function WidgetAnomalie({ userProfile }) {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
           <div className="bg-[#fdfbf7] w-full max-w-lg rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden">
             
             <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center">
@@ -181,7 +181,7 @@ export default function WidgetAnomalie({ userProfile }) {
 
               {/* ✨ LA CASE SECRÈTE (Invisible pour les simples joueurs) */}
               {isInitiated && (
-                <label className="flex items-center gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg cursor-pointer transition-colors hover:bg-purple-100 shadow-sm animate-fade-in">
+                <label className="flex items-center gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg cursor-pointer transition-colors hover:bg-purple-100 shadow-sm">
                   <input
                     type="checkbox"
                     checked={isInitieOnly}
@@ -220,7 +220,7 @@ export default function WidgetAnomalie({ userProfile }) {
               )}
               {fileError && <p className="text-xs text-red-600 mt-1">⚠️ {fileError}</p>}
 
-              <button type="submit" disabled={isSubmitting || !titre} className="w-full mt-4 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2 disabled:opacity-50">
+              <button type="submit" disabled={isSubmitting || !titre} className="w-full mt-4 py-3 bg-amber-700 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition-colors flex justify-center items-center gap-2 disabled:opacity-50">
                 <Send size={18} /> {isSubmitting ? 'Transmission...' : 'Graver dans le Registre'}
               </button>
             </form>

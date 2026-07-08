@@ -58,7 +58,7 @@ export default function SessionForm({ onClose, onSave, activeMembers, editSessio
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
       <div className="bg-[#fdfbf7] w-full max-w-xl rounded-xl shadow-2xl border-2 border-amber-900/20 overflow-hidden max-h-[90vh] flex flex-col">
 
         {/* ── En-tête ── */}

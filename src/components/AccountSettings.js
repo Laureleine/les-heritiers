@@ -7,7 +7,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
     const { state, setters, computed, handlers } = useAccountSettings(session, userProfile, onUpdateProfile);
 
     return (
-        <div className="max-w-4xl mx-auto p-4 animate-fade-in pb-12">
+        <div className="max-w-4xl mx-auto p-4 pb-12">
             <div className="flex items-center gap-4 mb-8 border-b border-stone-200 pb-4">
                 <button onClick={onBack} className="p-2 bg-white border border-stone-300 text-stone-600 rounded-lg hover:bg-stone-50 transition-colors">
                     <ArrowLeft size={20} />
@@ -72,7 +72,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                                                     onClick={() => setters.setActiveBadge(badge.id)}
                                                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 border ${
                                                         state.activeBadge === badge.id
-                                                            ? (isLegacy ? 'bg-amber-600 text-white border-amber-700 shadow-md transform scale-105' : badge.color_classes + ' shadow-md transform scale-105 ring-2 ring-offset-1 ring-amber-400')
+                                                            ? (isLegacy ? 'bg-amber-700 text-white border-amber-700 shadow-md transform scale-105' : badge.color_classes + ' shadow-md transform scale-105 ring-2 ring-offset-1 ring-amber-400')
                                                             : 'bg-stone-50 text-stone-500 border-stone-200 hover:bg-stone-100 opacity-60 hover:opacity-100'
                                                     }`}
                                                 >
@@ -157,7 +157,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
                             <div className="bg-white/60 p-3 rounded-lg border border-amber-200 mb-4 text-xs text-amber-900 font-bold">
                                 🎁 Indiquez le pseudo "{userProfile?.profile?.username || "VotrePseudo"}" lors de votre don pour débloquer de nouveaux thèmes de dés et recevoir le titre exclusif de "Mécène" !
                             </div>
-                            <a href="https://ko-fi.com/azghal" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-colors text-sm">
+                            <a href="https://ko-fi.com/azghal" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full gap-2 bg-amber-700 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-colors text-sm">
                                 Soutenir le projet sur Ko-Fi <ExternalLink size={16} />
                             </a>
                         </div>
@@ -212,7 +212,7 @@ export default function AccountSettings({ session, userProfile, onBack, onUpdate
 // ============================================================================
 const NotificationPreferences = ({ userEmail, preferences, onTogglePush, onToggleField, pushSupported }) => {
     return (
-        <div className="animate-fade-in">
+        <div className="">
             <div className="flex items-center gap-3 mb-4 border-b border-blue-100 pb-3">
                 <div className="p-2 bg-blue-100 text-blue-700 rounded-lg">
                     <Bell size={24} />
@@ -248,7 +248,7 @@ const NotificationPreferences = ({ userEmail, preferences, onTogglePush, onToggl
                 </div>
 
                 {preferences.subscribe_to_updates && (
-                    <div className="bg-white p-4 rounded-lg border border-indigo-200 shadow-sm animate-fade-in">
+                    <div className="bg-white p-4 rounded-lg border border-indigo-200 shadow-sm">
                         <h4 className="font-serif font-bold text-indigo-900 mb-3 flex items-center gap-2">
                             <Mail size={18} /> Types de mises à jour
                         </h4>
@@ -272,7 +272,7 @@ const NotificationPreferences = ({ userEmail, preferences, onTogglePush, onToggl
                 )}
 
                 {pushSupported && preferences.subscribe_to_updates && (
-                    <div className="bg-white p-4 rounded-lg border border-purple-200 shadow-sm animate-fade-in">
+                    <div className="bg-white p-4 rounded-lg border border-purple-200 shadow-sm">
                         <h4 className="font-serif font-bold text-purple-900 mb-3 flex items-center gap-2">
                             <Smartphone size={18} /> Notifications dans l'application
                         </h4>

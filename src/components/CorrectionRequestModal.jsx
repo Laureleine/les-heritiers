@@ -23,8 +23,8 @@ export default function CorrectionRequestModal({ corrections, onRespond }) {
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-stone-900/70 backdrop-blur-sm p-4 animate-fade-in">
-            <div className="bg-[#fdfbf7] max-w-lg w-full rounded-2xl shadow-2xl border-2 border-amber-800/30 overflow-hidden animate-fade-in-up">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-stone-900/70 backdrop-blur-sm p-4">
+            <div className="bg-[#fdfbf7] max-w-lg w-full rounded-2xl shadow-2xl border-2 border-amber-800/30 overflow-hidden">
 
                 {/* En-tête */}
                 <div className="bg-amber-900 text-amber-50 px-6 py-4 flex items-center gap-3">

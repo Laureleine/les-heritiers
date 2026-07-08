@@ -164,8 +164,8 @@ export function PWAPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:-translate-x-0 md:right-6 w-[90vw] md:w-80 bg-white p-5 rounded-2xl shadow-2xl border-2 border-amber-400 z-50 animate-fade-in-up">
-      <button onClick={handleDismiss} className="absolute top-2 right-2 text-gray-400 hover:text-red-500 bg-gray-50 rounded-full p-1" title="Fermer">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:-translate-x-0 md:right-6 w-[90vw] md:w-80 bg-white p-5 rounded-2xl shadow-2xl border-2 border-amber-400 z-50">
+      <button onClick={handleDismiss} className="absolute top-2 right-2 text-gray-500 hover:text-red-500 bg-gray-50 rounded-full p-1" title="Fermer">
         <X size={16} />
       </button>
       <div className="flex items-start gap-4">
@@ -180,7 +180,7 @@ export function PWAPrompt() {
               Pour installer sur iPhone/iPad, touchez l'icône <Share size={12} className="inline mx-0.5"/> <b>Partager</b> puis sélectionnez <b>"Sur l'écran d'accueil"</b>.
             </div>
           ) : (
-            <button onClick={handleInstallClick} className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm shadow-sm">
+            <button onClick={handleInstallClick} className="w-full bg-amber-700 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm shadow-sm">
               <Download size={16} /> Installer l'application
             </button>
           )}
@@ -209,7 +209,7 @@ export function DisclaimerModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-stone-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-stone-900/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border-2 border-amber-400">
         <div className="bg-amber-50 p-6 border-b border-amber-100 text-center">
           <BookOpen className="mx-auto text-amber-600 mb-3" size={32} />
@@ -222,7 +222,7 @@ export function DisclaimerModal() {
               https://les-heritiers.metaplot.fr/
             </a>"
           </p>
-          <button onClick={handleAccept} className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md transform active:scale-95">
+          <button onClick={handleAccept} className="w-full bg-amber-700 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md transform active:scale-95">
             <Check size={20} /> J'ai compris et j'accepte
           </button>
         </div>

@@ -86,11 +86,11 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
               )}
             </>
           ) : (
-            <div className="max-w-2xl mx-auto p-8 mt-12 bg-[#2a1313] rounded-2xl border-2 border-red-900/50 shadow-2xl text-center animate-fade-in-up">
+            <div className="max-w-2xl mx-auto p-8 mt-12 bg-[#2a1313] rounded-2xl border-2 border-red-900/50 shadow-2xl text-center">
               <Lock size={64} className="text-red-500 mb-6 mx-auto" />
               <h2 className="text-3xl font-serif text-red-100 mb-4">Savoir sous le Sceau du Silence</h2>
               <p className="text-red-200/80 mb-8 italic">Seul un Docte peut vous y initier.</p>
-              <button onClick={() => navigate('/')} className="text-gray-400 hover:text-white">Retourner à l'accueil</button>
+              <button onClick={() => navigate('/')} className="text-gray-500 hover:text-white">Retourner à l'accueil</button>
             </div>
           )
         } />

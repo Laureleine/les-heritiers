@@ -18,7 +18,7 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
     const isSuperAdmin = checkSuperAdmin(userProfile);
 
     return (
-        <div className="max-w-5xl mx-auto p-4 md:p-6 pb-24 animate-fade-in">
+        <div className="max-w-5xl mx-auto p-4 md:p-6 pb-24">
             {/* En-tête */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                 <h2 className="text-2xl font-serif font-bold text-amber-900 flex items-center gap-2 whitespace-nowrap">
@@ -31,27 +31,27 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
 
             {/* Onglets de navigation */}
             <div className="flex gap-6 border-b border-gray-200 mb-6 overflow-x-auto hide-scrollbar">
-                <button onClick={() => setActiveTab('users')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'users' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                <button onClick={() => setActiveTab('users')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'users' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                     <Crown size={18} /> Utilisateurs
                 </button>
-                <button onClick={() => setActiveTab('stats')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'stats' ? 'text-blue-900 border-blue-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                <button onClick={() => setActiveTab('stats')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'stats' ? 'text-blue-900 border-blue-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                     <BarChart2 size={18} /> Métriques
                 </button>
-                <button onClick={() => setActiveTab('titres')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'titres' ? 'text-purple-900 border-purple-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                <button onClick={() => setActiveTab('titres')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'titres' ? 'text-purple-900 border-purple-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                     <Award size={18} /> {isSuperAdmin ? 'Forge des Titres' : 'Titres Honorifiques'}
                 </button>
                 {isSuperAdmin && (
-                    <button onClick={() => setActiveTab('repair')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'repair' ? 'text-red-900 border-red-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                    <button onClick={() => setActiveTab('repair')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'repair' ? 'text-red-900 border-red-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                         <Wrench size={18} /> Reconstruction XP
                     </button>
                 )}
                 {isSuperAdmin && (
-                    <button onClick={() => setActiveTab('notifications')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notifications' ? 'text-green-900 border-green-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                    <button onClick={() => setActiveTab('notifications')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notifications' ? 'text-green-900 border-green-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                         <Bell size={18} /> Notifications
                     </button>
                 )}
                 {isSuperAdmin && (
-                    <button onClick={() => setActiveTab('usage_ia')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'usage_ia' ? 'text-amber-900 border-amber-600' : 'text-gray-400 border-transparent hover:text-gray-700'}`}>
+                    <button onClick={() => setActiveTab('usage_ia')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'usage_ia' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                         <Coins size={18} /> Usage IA
                     </button>
                 )}

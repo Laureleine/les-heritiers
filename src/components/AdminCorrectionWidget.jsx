@@ -13,7 +13,7 @@ export default function AdminCorrectionWidget({ adminQueue, onMarkCorrected }) {
             {/* Bouton flottant avec badge */}
             <button
                 onClick={() => setOpen(true)}
-                className="fixed bottom-24 right-4 z-[100] bg-amber-700 hover:bg-amber-800 text-white rounded-2xl shadow-xl px-4 py-3 flex items-center gap-2 transition-all border-2 border-amber-500 animate-fade-in"
+                className="fixed bottom-24 right-4 z-[100] bg-amber-700 hover:bg-amber-800 text-white rounded-2xl shadow-xl px-4 py-3 flex items-center gap-2 transition-all border-2 border-amber-500"
                 title="Corrections autorisées en attente"
             >
                 <Crown size={18} className="text-amber-200" />
@@ -25,8 +25,8 @@ export default function AdminCorrectionWidget({ adminQueue, onMarkCorrected }) {
 
             {/* Panneau détail */}
             {open && (
-                <div className="fixed inset-0 z-[150] flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
-                    <div className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-2 border-amber-800/30 overflow-hidden animate-fade-in-up">
+                <div className="fixed inset-0 z-[150] flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
+                    <div className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-2 border-amber-800/30 overflow-hidden">
 
                         {/* En-tête */}
                         <div className="bg-amber-900 text-amber-50 px-5 py-4 flex items-center justify-between">

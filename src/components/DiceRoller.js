@@ -217,7 +217,7 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
                     <div className="relative z-10 w-full h-full flex flex-col items-center p-8 pointer-events-none">
                         <div className={`h-20 flex gap-4 ${isOpen ? 'pointer-events-auto' : ''}`}>
                             {['D8', 'D10', 'D12'].map(t => (
-                                <button key={t} onClick={() => { setDiceType(t); setResult(null); }} className={`px-6 py-2 rounded-full font-serif font-bold border-2 transition-all ${diceType === t ? 'bg-amber-600 border-amber-400 text-white shadow-lg scale-105' : 'bg-stone-800 text-stone-400'}`}>{t}</button>
+                                <button key={t} onClick={() => { setDiceType(t); setResult(null); }} className={`px-6 py-2 rounded-full font-serif font-bold border-2 transition-all ${diceType === t ? 'bg-amber-700 border-amber-400 text-white shadow-lg scale-105' : 'bg-stone-800 text-stone-400'}`}>{t}</button>
                             ))}
                         </div>
 

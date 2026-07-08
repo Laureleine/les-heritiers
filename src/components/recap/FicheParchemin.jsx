@@ -601,7 +601,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                                     <span key={k}>{k} ({v}){i < Object.keys(futilesMerged).length - 1 ? ' • ' : ''}</span>
                                 ))
                             ) : (
-                                <span className="italic text-gray-400">Aucune compétence futile acquise.</span>
+                                <span className="italic text-gray-500">Aucune compétence futile acquise.</span>
                             )}
                         </div>
                     ) : (
@@ -627,7 +627,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                                     );
                                 })
                             ) : (
-                                <span className="italic text-gray-400">Aucune compétence futile acquise.</span>
+                                <span className="italic text-gray-500">Aucune compétence futile acquise.</span>
                             )}
                         </div>
                     )}
@@ -653,7 +653,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     <div className="text-sm font-serif space-y-1">
                         {equipements.length > 0 ? equipements.map((e, idx) => (
                             <div key={idx}>- {e}</div>
-                        )) : <div className="italic text-gray-400">Aucun équipement.</div>}
+                        )) : <div className="italic text-gray-500">Aucun équipement.</div>}
                     </div>
                 </div>
 
@@ -663,7 +663,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     <div className="text-sm font-serif space-y-1">
                         {contacts.length > 0 ? contacts.map((c, idx) => (
                             <div key={idx}>- {c}</div>
-                        )) : <div className="italic text-gray-400">Aucun contact.</div>}
+                        )) : <div className="italic text-gray-500">Aucun contact.</div>}
                     </div>
                 </div>
 

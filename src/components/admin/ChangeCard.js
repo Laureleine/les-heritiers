@@ -38,7 +38,7 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
 
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-2">
-          <User size={16} className="text-gray-400" />
+          <User size={16} className="text-gray-500" />
           <span className="text-sm font-bold text-gray-700">
             {change.profiles?.username || 'Héritier Anonyme'}
           </span>
@@ -243,7 +243,7 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
             <button onClick={() => onReject(change)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
               <X size={18} /> Rejeter
             </button>
-            <button onClick={() => onApprove(change, false)} className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
+            <button onClick={() => onApprove(change, false)} className="px-4 py-2 bg-green-700 text-white hover:bg-green-700 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm ml-auto">
               <Check size={18} /> Valider
             </button>
             <button onClick={() => onApprove(change, true)} className="flex items-center gap-2 px-4 py-2 bg-amber-700 text-white hover:bg-amber-800 font-bold rounded-lg transition-colors shadow-[0_0_15px_rgba(180,83,9,0.4)] border border-amber-900 group">

@@ -100,7 +100,7 @@ export default function Telegraphe({ session, userProfile }) {
 
       {/* FENÊTRE PRINCIPALE */}
       {isOpen && (
-        <div className="w-96 max-w-[90vw] h-[32rem] max-h-[80vh] bg-[#fdfbf7] border-4 border-amber-900 rounded-lg shadow-2xl flex flex-col overflow-hidden font-serif animate-fade-in-up">
+        <div className="w-96 max-w-[90vw] h-[32rem] max-h-[80vh] bg-[#fdfbf7] border-4 border-amber-900 rounded-lg shadow-2xl flex flex-col overflow-hidden font-serif">
           
           <div className="bg-amber-900 text-amber-50 p-3 flex justify-between items-center border-b-4 border-amber-700 shrink-0">
             <h3 className="font-bold flex items-center gap-2">
@@ -273,7 +273,7 @@ export default function Telegraphe({ session, userProfile }) {
                       
                       <div className={`p-3 rounded-xl max-w-[85%] text-sm shadow-sm whitespace-pre-wrap break-words ${
                         isMe 
-                          ? 'bg-amber-600 text-white rounded-tr-none' 
+                          ? 'bg-amber-700 text-white rounded-tr-none' 
                           : m.is_admin 
                             ? 'bg-amber-100 text-amber-900 border border-amber-300 rounded-tl-none font-bold' 
                             : 'bg-white text-stone-800 border border-stone-200 rounded-tl-none'

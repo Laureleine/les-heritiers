@@ -164,12 +164,12 @@ function TabUsers({ session }) {
     };
 
     const renderStatus = (lastSeen) => {
-        if (!lastSeen) return <span className="text-gray-400 text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-300"></span> Jamais connecté</span>;
+        if (!lastSeen) return <span className="text-gray-500 text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-300"></span> Jamais connecté</span>;
         const thirtyMinsAgo = new Date(Date.now() - 30 * 60000);
         if (new Date(lastSeen) > thirtyMinsAgo) return <span className="text-emerald-600 text-xs font-bold flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> En ligne</span>;
         else {
             const dateStr = new Date(lastSeen).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-            return <span className="text-gray-400 text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400"></span> Vu le {dateStr.replaceAll(':', 'h')}</span>;
+            return <span className="text-gray-500 text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400"></span> Vu le {dateStr.replaceAll(':', 'h')}</span>;
         }
     };
 
@@ -181,7 +181,7 @@ function TabUsers({ session }) {
     if (loading) return <div className="p-8 text-center text-gray-500 font-serif animate-pulse">Chargement des registres...</div>;
 
     return (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-6">
             {/* ============================================================== */}
             {/* 1. EN-TÊTE : RECHERCHE ET FILTRES                              */}
             {/* ============================================================== */}
@@ -196,7 +196,7 @@ function TabUsers({ session }) {
 
                 <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                     <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg p-1 shadow-sm">
-                        <Filter size={14} className="text-gray-400 ml-2" />
+                        <Filter size={14} className="text-gray-500 ml-2" />
                         <select
                             value={filterMode || 'all'}
                             onChange={(e) => setFilterMode(e.target.value)}
@@ -233,7 +233,7 @@ function TabUsers({ session }) {
                     <tbody className="divide-y divide-gray-100">
                         {filteredAndSortedUsers.length === 0 ? (
                             <tr>
-                                <td colSpan={myRole === 'super_admin' ? 3 : 2} className="p-8 text-center text-gray-400 italic">
+                                <td colSpan={myRole === 'super_admin' ? 3 : 2} className="p-8 text-center text-gray-500 italic">
                                     Aucun Héritier ne correspond à cette recherche.
                                 </td>
                             </tr>
@@ -252,7 +252,7 @@ function TabUsers({ session }) {
                                                 {u.id !== session.user.id && (
                                                     <button
                                                         onClick={() => handleContactUser(u)}
-                                                        className="p-1 text-gray-400 hover:text-amber-600 bg-gray-100 hover:bg-amber-50 rounded transition-colors"
+                                                        className="p-1 text-gray-500 hover:text-amber-600 bg-gray-100 hover:bg-amber-50 rounded transition-colors"
                                                         title={`Envoyer une missive à ${u.username}`}
                                                     >
                                                         <MessageCircle size={14} />
@@ -369,8 +369,8 @@ function TabUsers({ session }) {
                                                         {editingBadgesFor === u.id && (
                                                             <>
                                                                 <div className="fixed inset-0 z-10" onClick={() => setEditingBadgesFor(null)}></div>
-                                                                <div className="absolute right-0 top-8 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-20 p-2 text-left animate-fade-in">
-                                                                    <div className="text-[10px] font-bold text-gray-400 uppercase mb-2 px-1 border-b border-gray-100 pb-1">Attribuer / Retirer</div>
+                                                                <div className="absolute right-0 top-8 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-20 p-2 text-left">
+                                                                    <div className="text-[10px] font-bold text-gray-500 uppercase mb-2 px-1 border-b border-gray-100 pb-1">Attribuer / Retirer</div>
                                                                     <div className="space-y-1 max-h-48 overflow-y-auto custom-scrollbar pr-1">
                                                                         {(dbBadges?.length ? dbBadges : typeof allBadgesToAssign !== 'undefined' ? allBadgesToAssign : []).map(badge => {
                                                                             const hasBadge = userBadges.includes(badge.id);
@@ -383,7 +383,7 @@ function TabUsers({ session }) {
                                                                                     className="w-full text-left px-2 py-1.5 text-xs font-bold rounded hover:bg-gray-100 flex items-center justify-between group transition-colors"
                                                                                 >
                                                                                     <div className="flex items-center gap-1.5">
-                                                                                        <IconComp size={14} className={hasBadge ? 'text-amber-500' : 'text-gray-400'} />
+                                                                                        <IconComp size={14} className={hasBadge ? 'text-amber-500' : 'text-gray-500'} />
                                                                                         <span className={hasBadge ? 'text-gray-900' : 'text-gray-500'}>{badge.label}</span>
                                                                                     </div>
                                                                                     {hasBadge && <CheckCircle size={14} className="text-emerald-500" />}

@@ -57,7 +57,7 @@ export default function TraducteurArgot({ onBack }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
+    <div className="min-h-screen bg-[#f5f0e8]">
       <header className="sticky top-0 z-40 bg-[#1a0f0a] border-b border-amber-900/30 shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={onBack} className="p-2 rounded-lg text-amber-200/70 hover:text-amber-100 hover:bg-white/10 transition-all">

@@ -148,7 +148,7 @@ export default function StepPouvoirs() {
 
     if (data?.isEnfoui && currentFeerie < 3) {
         return (
-            <div className="space-y-6 animate-fade-in">
+            <div className="space-y-6">
                 <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
                     <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
                     <div>
@@ -166,7 +166,7 @@ export default function StepPouvoirs() {
     if (!data) return null;
 
         return (
-            <div className="space-y-8 animate-fade-in">
+            <div className="space-y-8">
                 
                 {/* ✨ LE FIX 1 : EN-TÊTE FÉÉRIE & MASQUE */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">

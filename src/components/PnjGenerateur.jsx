@@ -676,7 +676,7 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
   const familleObj   = pnj ? SITUATIONS_FAMILIALES.find(s => s.id === pnj.situationFamiliale) : null;
 
   return (
-    <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
+    <div className="min-h-screen bg-[#f5f0e8]">
       {/* ─── Header ─────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 bg-[#1a0f0a] border-b border-amber-900/30 shadow-lg">
         <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
@@ -758,7 +758,7 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
 
           {/* Type de fée (mode merveilleux) */}
           {mode === 'merveilleux' && (
-            <div className="animate-fade-in bg-purple-50 rounded-xl border border-purple-200 p-4">
+            <div className="bg-purple-50 rounded-xl border border-purple-200 p-4">
               <p className="text-xs font-bold text-purple-700 uppercase tracking-wider mb-2">Type de fée</p>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -841,7 +841,7 @@ export default function PnjGenerateur({ onBack, userProfile, session }) {
 
         {/* ─── Résultat ──────────────────────────────────────────────── */}
         {pnj && (
-          <div key={genKey} className="animate-fade-in-up space-y-4">
+          <div key={genKey} className="space-y-4">
 
             {/* Bandeau nom */}
             <div className={`rounded-2xl border-2 p-5 ${mode === 'merveilleux' ? 'bg-purple-50 border-purple-200' : 'bg-amber-50 border-amber-200'}`}>

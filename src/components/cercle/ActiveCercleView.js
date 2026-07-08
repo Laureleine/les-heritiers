@@ -41,7 +41,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200 animate-fade-in">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
       <div className="flex justify-between items-start mb-6 border-b border-stone-100 pb-4">
         <div>
           <h2 className="text-3xl font-serif text-amber-900 font-bold">{cercle.nom}</h2>

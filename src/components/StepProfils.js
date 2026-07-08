@@ -153,7 +153,7 @@ export default function StepProfils() {
     const genreActuel = character.genreHumain || character.sexe;
 
     return (
-        <div className="space-y-8 animate-fade-in pb-12">
+        <div className="space-y-8 pb-12">
             {/* ✨ LE BANDEAU DE SCELLAGE */}
             {isScelle && (
                 <div className="bg-amber-50 border border-amber-200 p-4 md:p-5 rounded-xl flex items-start gap-4 shadow-sm">
@@ -195,7 +195,7 @@ export default function StepProfils() {
                     <h3 className="text-2xl font-serif text-amber-900 font-bold">
                         Profil Majeur
                     </h3>
-                    <span className="ml-auto text-sm bg-amber-600 text-white px-3 py-1 rounded-full font-semibold">
+                    <span className="ml-auto text-sm bg-amber-700 text-white px-3 py-1 rounded-full font-semibold">
                         +2 aux compétences
                     </span>
                 </div>
@@ -223,7 +223,7 @@ export default function StepProfils() {
                                             isSelected
                                                 ? 'border-amber-600 bg-amber-100 text-amber-900 font-semibold shadow-sm'
                                                 : isLocked
-                                                    ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                                                    ? 'border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed'
                                                     : 'border-amber-200 bg-white text-amber-800 hover:border-amber-400'
                                         }`}
                                     >
@@ -273,7 +273,7 @@ export default function StepProfils() {
                                             isSelected
                                                 ? 'border-blue-600 bg-blue-100 text-blue-900 font-semibold shadow-sm'
                                                 : isLocked
-                                                    ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                                                    ? 'border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed'
                                                     : 'border-blue-200 bg-white text-blue-800 hover:border-blue-400'
                                         }`}
                                     >

@@ -32,7 +32,7 @@ export default function SocialItemForm({
     };
 
     return (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-6">
             {/* 1. IDENTITÉ */}
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
@@ -98,7 +98,7 @@ export default function SocialItemForm({
 
             {/* 2b. FORTUNE (Spécifique aux Métiers) */}
             {proposal.categorie === 'metier' && (
-                <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm animate-fade-in">
+                <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm">
                     <div className="flex flex-col md:flex-row gap-4">
                         {/* Toggle Métier Principal / Secondaire */}
                         <div className="flex-1">
@@ -111,7 +111,7 @@ export default function SocialItemForm({
                                     onClick={() => setProposal({ ...proposal, is_secondaire: false })}
                                     className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-all border ${
                                         !proposal.is_secondaire
-                                            ? 'bg-amber-600 text-white border-amber-700 shadow-md'
+                                            ? 'bg-amber-700 text-white border-amber-700 shadow-md'
                                             : 'bg-white text-amber-600 border-amber-300 hover:bg-amber-100'
                                     }`}
                                 >
@@ -122,7 +122,7 @@ export default function SocialItemForm({
                                     onClick={() => setProposal({ ...proposal, is_secondaire: true })}
                                     className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-all border ${
                                         proposal.is_secondaire
-                                            ? 'bg-amber-600 text-white border-amber-700 shadow-md'
+                                            ? 'bg-amber-700 text-white border-amber-700 shadow-md'
                                             : 'bg-white text-amber-600 border-amber-300 hover:bg-amber-100'
                                     }`}
                                 >
@@ -133,7 +133,7 @@ export default function SocialItemForm({
 
                         {/* Fortune Score (Métier Principal) */}
                         {!proposal.is_secondaire && (
-                            <div className="flex-1 animate-fade-in">
+                            <div className="flex-1">
                                 <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-2">
                                     <Coins size={14} /> Rang de Fortune (Base)
                                 </label>
@@ -150,7 +150,7 @@ export default function SocialItemForm({
 
                         {/* Fortune Bonus (Métier Secondaire) */}
                         {proposal.is_secondaire && (
-                            <div className="flex-1 animate-fade-in">
+                            <div className="flex-1">
                                 <label className="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-2">
                                     <TrendingUp size={14} /> Bonus Fortune
                                 </label>

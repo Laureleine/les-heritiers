@@ -71,7 +71,7 @@ const FairyTypeForm = ({
     }, [setProposal]);
 
     return (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-6">
             {/* 1. NOM ET DESCRIPTION */}
             <div>
                 <label className="block text-sm font-bold text-amber-900 mb-1">Nom de la Fée</label>
@@ -313,7 +313,7 @@ const FairyTypeForm = ({
                     <label className="block text-sm font-bold text-amber-900 flex items-center gap-2">
                         <Star size={16} /> Atouts féériques
                     </label>
-                    <button type="button" onClick={() => setQuickForge({ isOpen: true, type: 'fairy_assets' })} className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded flex items-center gap-1 shadow-sm transition-colors shrink-0">
+                    <button type="button" onClick={() => setQuickForge({ isOpen: true, type: 'fairy_assets' })} className="px-3 py-1 bg-amber-700 hover:bg-amber-700 text-white text-xs font-bold rounded flex items-center gap-1 shadow-sm transition-colors shrink-0">
                         <Plus size={14} /> Créer à la volée
                     </button>
                 </div>

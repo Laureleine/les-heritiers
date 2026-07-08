@@ -155,7 +155,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
   };
 
   return (
-    <div className="bg-[#fdfbf7] rounded-xl shadow-md border-2 border-amber-900/20 overflow-hidden flex flex-col h-full animate-fade-in">
+    <div className="bg-[#fdfbf7] rounded-xl shadow-md border-2 border-amber-900/20 overflow-hidden flex flex-col h-full">
       
       {/* 1. L'EN-TÊTE ET LES ONGLETS */}
       <div className="bg-amber-900 p-4 text-amber-50 flex justify-between items-center">
@@ -166,7 +166,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
         {activeTab !== 'chroniques' && (
           <button
             onClick={() => handleOpenModal()}
-            className="bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-transform active:scale-95 shadow-sm"
+            className="bg-amber-700 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-transform active:scale-95 shadow-sm"
           >
             <Plus size={18} /> Écrire une pensée
           </button>
@@ -458,8 +458,8 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
       {/* 3. MODALE IMMERSIVE DE CRÉATION/ÉDITION (DYNAMIQUE) */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#fdfbf7] max-w-lg w-full rounded-2xl shadow-2xl border-4 border-amber-900/20 overflow-hidden transform animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
+          <div className="bg-[#fdfbf7] max-w-lg w-full rounded-2xl shadow-2xl border-4 border-amber-900/20 overflow-hidden transform">
 
             <div className="bg-amber-900 text-amber-50 p-4 border-b-4 border-amber-700 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">
@@ -651,8 +651,8 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
       {/* 4. MODALE DE CONFIRMATION DE SUPPRESSION */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-4 border-red-200 overflow-hidden transform animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
+          <div className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-4 border-red-200 overflow-hidden transform">
 
             <div className="bg-red-700 text-red-50 p-4 border-b-4 border-red-800 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">

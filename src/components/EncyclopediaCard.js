@@ -76,7 +76,7 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
             </div>
 
             <div className="text-sm text-gray-600 line-clamp-3 mb-4 leading-relaxed font-serif flex-1">
-                {desc || <span className="italic text-gray-400">Aucune description disponible...</span>}
+                {desc || <span className="italic text-gray-500">Aucune description disponible...</span>}
             </div>
 
             {/* 🌟 LISTE DES FÉES COMPATIBLES (Capacités, Pouvoirs, Atouts) */}

@@ -152,7 +152,7 @@ export default function EncyclopediaModal({
 
     return (
         <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-fade-in">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
                 
                 {/* EN-TÊTE */}
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-stone-50 shrink-0">
@@ -162,7 +162,7 @@ export default function EncyclopediaModal({
                         </h2>
                         {!isCreating && <p className="text-sm text-gray-500 mt-1">Élément : <span className="font-bold text-gray-800">{editingItem?.name || editingItem?.nom}</span></p>}
                     </div>
-                    <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 transition-colors p-2 bg-white rounded-full shadow-sm">
+                    <button onClick={handleClose} className="text-gray-500 hover:text-gray-600 transition-colors p-2 bg-white rounded-full shadow-sm">
                         <X size={20} />
                     </button>
                 </div>
@@ -228,7 +228,7 @@ export default function EncyclopediaModal({
                                     }
                                     setProposal({ ...proposal, is_official: !proposal.is_official });
                                 }}
-                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 focus:outline-none ${
+                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 ${
                                     proposal.is_official ? 'bg-emerald-600 border-emerald-700' : 'bg-stone-200 border-stone-300'
                                 }`}
                             >
@@ -259,7 +259,7 @@ export default function EncyclopediaModal({
                     <button onClick={handleClose} className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-200 rounded-lg transition-colors">
                         Annuler
                     </button>
-                    <button onClick={handleSubmitProposal} className="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-md flex items-center gap-2 transition-all active:scale-95">
+                    <button onClick={handleSubmitProposal} className="px-6 py-2 bg-amber-700 hover:bg-amber-700 text-white font-bold rounded-lg shadow-md flex items-center gap-2 transition-all active:scale-95">
                         <Save size={18} /> {isSuperAdmin ? 'Appliquer' : 'Soumettre'}
                     </button>
                 </div>

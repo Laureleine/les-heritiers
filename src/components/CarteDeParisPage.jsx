@@ -347,7 +347,7 @@ function ModePersoForm({ form, onChange, onSave, onCancel }) {
       <div className="flex gap-1.5">
         <input type="text" placeholder="🚀" value={form.emoji}
           onChange={e => onChange({ ...form, emoji: e.target.value })}
-          className="w-10 px-1 py-1 border border-amber-200 rounded text-center text-base bg-white focus:outline-none"
+          className="w-10 px-1 py-1 border border-amber-200 rounded text-center text-base bg-white focus:outline-none focus:ring-1 focus:ring-amber-400"
         />
         <input type="text" placeholder="Nom du mode *" value={form.nom}
           onChange={e => onChange({ ...form, nom: e.target.value })}

@@ -35,7 +35,7 @@ export default function StepDruidisme() {
 
     if (!hasEubageItem && !eubage.actif) {
         return (
-            <div className="space-y-4 animate-fade-in">
+            <div className="space-y-4">
                 <div className="bg-stone-50 border border-stone-200 rounded-xl p-6 text-center">
                     <Wand2 size={32} className="mx-auto text-stone-400 mb-3" />
                     <p className="text-stone-600 font-serif">
@@ -75,7 +75,7 @@ export default function StepDruidisme() {
         : null;
 
     return (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-6">
 
             {/* EN-TÊTE */}
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">

@@ -254,7 +254,7 @@ export default function AnomalieFeeriqueWidget() {
           </div>
 
           {chosenPouvoir && (
-            <div className="mt-4 p-4 bg-white rounded-xl border border-fuchsia-300 shadow-inner flex items-start gap-3 animate-fade-in">
+            <div className="mt-4 p-4 bg-white rounded-xl border border-fuchsia-300 shadow-inner flex items-start gap-3">
               <div className="bg-fuchsia-100 p-2 rounded-lg text-fuchsia-600 shrink-0"><Check size={20} /></div>
               <div>
                 <div className="font-bold text-fuchsia-900 text-lg">{chosenPouvoir}</div>
@@ -267,7 +267,7 @@ export default function AnomalieFeeriqueWidget() {
           )}
 
           {showCatalog === catalogKey && !chosenPouvoir && (
-            <div className="mt-4 max-h-80 overflow-y-auto custom-scrollbar bg-white/60 rounded-xl border border-fuchsia-200 p-2 grid grid-cols-1 md:grid-cols-2 gap-3 shadow-inner animate-fade-in-up">
+            <div className="mt-4 max-h-80 overflow-y-auto custom-scrollbar bg-white/60 rounded-xl border border-fuchsia-200 p-2 grid grid-cols-1 md:grid-cols-2 gap-3 shadow-inner">
               {choices.map((pow, idx) => (
                 <div
                   key={idx}
@@ -336,19 +336,19 @@ export default function AnomalieFeeriqueWidget() {
         </div>
 
         {!tier1Pouvoir && !hasAnomalie && !isScelle && countAtouts >= MAX_ATOUTS_GLOBAL && (
-          <div className="text-xs text-red-600 font-bold mt-3 bg-red-50 p-2 rounded border border-red-100 animate-fade-in">
+          <div className="text-xs text-red-600 font-bold mt-3 bg-red-50 p-2 rounded border border-red-100">
             Vous avez déjà sélectionné tous vos Atouts ({MAX_ATOUTS_GLOBAL}/{MAX_ATOUTS_GLOBAL}) à l'étape suivante. Libérez de la place pour pouvoir déclencher cette anomalie !
           </div>
         )}
 
         {!tier1Pouvoir && !hasAnomalie && isScelle && (
-          <div className="text-xs text-fuchsia-800 font-bold mt-3 bg-fuchsia-50 p-2 rounded border border-fuchsia-200 animate-fade-in">
+          <div className="text-xs text-fuchsia-800 font-bold mt-3 bg-fuchsia-50 p-2 rounded border border-fuchsia-200">
             🪄 L'activation de l'Anomalie consommera un nouvel emplacement d'Atout et coûtera {FIXED_XP_COSTS.nouvel_atout} XP.
           </div>
         )}
 
         {tier1Pouvoir && (
-          <div className="mt-4 p-4 bg-white rounded-xl border border-fuchsia-300 shadow-inner flex items-start gap-3 animate-fade-in">
+          <div className="mt-4 p-4 bg-white rounded-xl border border-fuchsia-300 shadow-inner flex items-start gap-3">
             <div className="bg-fuchsia-100 p-2 rounded-lg text-fuchsia-600 shrink-0"><Check size={20} /></div>
             <div>
               <div className="font-bold text-fuchsia-900 text-lg flex items-center gap-2">
@@ -366,7 +366,7 @@ export default function AnomalieFeeriqueWidget() {
         )}
 
         {showCatalog === 'anomalie' && !tier1Pouvoir && !draftEspece && (
-          <div className="mt-4 bg-white/60 rounded-xl border border-fuchsia-200 p-3 shadow-inner animate-fade-in-up">
+          <div className="mt-4 bg-white/60 rounded-xl border border-fuchsia-200 p-3 shadow-inner">
             <div className="text-xs font-bold text-fuchsia-900 uppercase tracking-wider mb-2">
               Choisissez d'abord l'espèce féérique étrangère (ce choix sera verrouillé pour les pouvoirs suivants) :
             </div>
@@ -385,7 +385,7 @@ export default function AnomalieFeeriqueWidget() {
         )}
 
         {showCatalog === 'anomalie' && !tier1Pouvoir && draftEspece && (
-          <div className="mt-4 max-h-80 overflow-y-auto custom-scrollbar bg-white/60 rounded-xl border border-fuchsia-200 p-2 grid grid-cols-1 md:grid-cols-2 gap-3 shadow-inner animate-fade-in-up">
+          <div className="mt-4 max-h-80 overflow-y-auto custom-scrollbar bg-white/60 rounded-xl border border-fuchsia-200 p-2 grid grid-cols-1 md:grid-cols-2 gap-3 shadow-inner">
             {speciesPowerChoices.map((pow, idx) => (
               <div
                 key={idx}

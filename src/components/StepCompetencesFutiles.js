@@ -254,7 +254,7 @@ export default function StepCompetencesFutiles() {
 
         </div>        
         {comp.nom.toLowerCase().includes('au choix') && (isPredilection || (rangsInvestis[comp.nom] > 0)) && (
-          <div className="mt-3 pl-3 ml-1 border-l-2 border-amber-400 animate-fade-in w-full">
+          <div className="mt-3 pl-3 ml-1 border-l-2 border-amber-400 w-full">
             <label className="block text-xs font-bold text-amber-800 mb-1">
               Précisez l'intitulé de votre choix :
             </label>
@@ -273,7 +273,7 @@ export default function StepCompetencesFutiles() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8">
       {/* En-tête Sticky */}
       <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 flex flex-col md:flex-row justify-between items-center sticky top-20 z-20 shadow-sm">
         <div>
@@ -358,7 +358,7 @@ export default function StepCompetencesFutiles() {
           <div className="mt-8">
             <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2 flex justify-between items-end">
               <span>Compétences Disponibles</span>
-              <span className="text-xs font-sans text-gray-400 font-normal">Classées par ordre alphabétique</span>
+              <span className="text-xs font-sans text-gray-500 font-normal">Classées par ordre alphabétique</span>
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

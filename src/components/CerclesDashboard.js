@@ -341,7 +341,7 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
             <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-stone-300">
               <Shield size={48} className="mx-auto text-stone-300 mb-4" />
               <p className="text-stone-500 font-serif mb-4 text-lg">Vous n'avez pas encore fondé ou rejoint de Cercle.</p>
-              <button onClick={() => setShowAddModal(true)} className="px-6 py-3 bg-amber-600 text-white rounded-xl font-bold shadow-md hover:bg-amber-700 transition-transform active:scale-95">
+              <button onClick={() => setShowAddModal(true)} className="px-6 py-3 bg-amber-700 text-white rounded-xl font-bold shadow-md hover:bg-amber-700 transition-transform active:scale-95">
                 Rejoindre ou Fonder une Table
               </button>
             </div>
@@ -364,8 +364,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
 
       {/* ✨ LA MODALE D'AJOUT ✨ */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#fdfbf7] max-w-2xl w-full rounded-xl shadow-2xl border-2 border-amber-900/20 overflow-hidden transform animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
+          <div className="bg-[#fdfbf7] max-w-2xl w-full rounded-xl shadow-2xl border-2 border-amber-900/20 overflow-hidden transform">
             <div className="p-4 bg-stone-100 border-b border-stone-200 flex justify-between items-center">
               <h3 className="font-serif font-bold text-lg text-stone-800">Les Tables du Grimoire</h3>
               <button onClick={() => setShowAddModal(false)} className="text-stone-400 hover:text-red-500"><X size={20}/></button>

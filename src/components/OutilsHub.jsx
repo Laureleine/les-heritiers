@@ -86,7 +86,7 @@ export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpen
   const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche, ambiance: onOpenAmbiance, argot: onOpenArgot };
 
   return (
-    <div className="min-h-screen bg-[#f5f0e8] animate-fade-in">
+    <div className="min-h-screen bg-[#f5f0e8]">
       <header className="sticky top-0 z-40 bg-[#1a0f0a] border-b border-amber-900/30 shadow-lg">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
           <button

@@ -197,7 +197,7 @@ export default function CharacterCreator({ session, userProfile }) {
 
           {/* BOUTON SAUVEGARDER */}
           {!isReadOnly && (
-            <button onClick={handleSave} className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
+            <button onClick={handleSave} className="flex items-center space-x-2 px-6 py-2 bg-green-700 text-white rounded-lg hover:bg-green-700 transition-all font-serif font-bold shadow-sm">
               <Save size={18} /> <span className="hidden sm:inline">Sauvegarder</span>
             </button>
           )}
@@ -267,7 +267,7 @@ export default function CharacterCreator({ session, userProfile }) {
 
       {/* RUBAN DU PUITS DES ÂMES */}
       {(character?.statut === 'scelle' || character?.statut === 'scellé') && (
-        <div className="mb-4 bg-gradient-to-r from-stone-900 to-stone-800 rounded-lg px-3 py-2 shadow-md border border-amber-700 flex flex-col md:flex-row justify-between items-center gap-3 text-amber-50 animate-fade-in">
+        <div className="mb-4 bg-gradient-to-r from-stone-900 to-stone-800 rounded-lg px-3 py-2 shadow-md border border-amber-700 flex flex-col md:flex-row justify-between items-center gap-3 text-amber-50">
           <div className="flex items-center gap-2">
             <Sparkles className="text-amber-400 animate-pulse" size={18} />
             <span className="font-serif font-bold text-amber-500">
@@ -308,10 +308,10 @@ export default function CharacterCreator({ session, userProfile }) {
         <button onClick={prevStep} disabled={step === 1} className="px-6 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-bold disabled:opacity-50 shadow-sm">
           Précédent
         </button>
-        <div className="text-sm font-bold text-gray-400 uppercase tracking-widest hidden sm:block">
+        <div className="text-sm font-bold text-gray-500 uppercase tracking-widest hidden sm:block">
           Étape {step} sur {totalSteps}
         </div>
-        <button onClick={nextStep} disabled={step === totalSteps} className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all font-bold shadow-md disabled:opacity-50">
+        <button onClick={nextStep} disabled={step === totalSteps} className="px-6 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-700 transition-all font-bold shadow-md disabled:opacity-50">
           Suivant
         </button>
       </div>

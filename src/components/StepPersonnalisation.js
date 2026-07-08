@@ -50,7 +50,7 @@ export default function StepPersonnalisation() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in max-w-4xl mx-auto pb-12">
+    <div className="space-y-8 max-w-4xl mx-auto pb-12">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-serif text-amber-900 flex items-center justify-center gap-3">
           <Feather className="text-amber-600" /> Personnalisation du Masque
@@ -145,7 +145,7 @@ export default function StepPersonnalisation() {
 
 		{/* ✨ LE GUICHET DES BÉNÉFICES (Ordre de Marie Cha') */}
 		{pendingEquipementChoices.length > 0 && (
-			<div className="bg-white rounded-xl shadow-md border-2 border-purple-300 overflow-hidden bg-gradient-to-br from-purple-50 to-fuchsia-50 mb-8 animate-fade-in-up">
+			<div className="bg-white rounded-xl shadow-md border-2 border-purple-300 overflow-hidden bg-gradient-to-br from-purple-50 to-fuchsia-50 mb-8">
 				<div className="flex items-center gap-2 mb-4 p-4 border-b border-purple-200">
 					<Gift className="text-purple-600" size={24} />
 					<h3 className="text-xl font-serif text-purple-900 font-bold">
@@ -280,7 +280,7 @@ export default function StepPersonnalisation() {
               <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Apparence Sociale (Genre)</label>
               <div className="flex rounded-md shadow-sm">
                 {['Masculin', 'Féminin', 'Androgyne'].map(genre => (
-                  <button key={genre} onClick={() => updateField('genreHumain', genre)} disabled={isReadOnly} className={`flex-1 py-2 text-xs font-bold border first:rounded-l-md last:rounded-r-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${character.genreHumain === genre ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}`}>
+                  <button key={genre} onClick={() => updateField('genreHumain', genre)} disabled={isReadOnly} className={`flex-1 py-2 text-xs font-bold border first:rounded-l-md last:rounded-r-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${character.genreHumain === genre ? 'bg-amber-700 text-white border-amber-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}`}>
                     {genre}
                   </button>
                 ))}

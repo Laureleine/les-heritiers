@@ -653,7 +653,7 @@ export default function Actualite({ onBack, userProfile }) {
               </button>
 
               {isCalendarOpen && (
-                <div className={`absolute top-full left-0 mt-2 p-4 rounded-xl border shadow-2xl z-50 w-72 font-sans transition-all border-[#92400e]/25 animate-fade-in ${
+                <div className={`absolute top-full left-0 mt-2 p-4 rounded-xl border shadow-2xl z-50 w-72 font-sans transition-all border-[#92400e]/25 ${
                   darkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-200 text-stone-900 shadow-amber-900/5'
                 }`}>
                   {/* Navigation mois et année */}
@@ -742,7 +742,7 @@ export default function Actualite({ onBack, userProfile }) {
             
             {/* Indicateur visuel "Gazette en base" discret à côté du datepicker */}
             {availableArticleDates.has(dateStr) && (
-              <span className="text-emerald-700 dark:text-emerald-400 text-xs font-serif font-bold flex items-center gap-1.5 shrink-0 select-none animate-fade-in" title="Gazette numérisée chargée en base !">
+              <span className="text-emerald-700 dark:text-emerald-400 text-xs font-serif font-bold flex items-center gap-1.5 shrink-0 select-none" title="Gazette numérisée chargée en base !">
                 <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm animate-pulse"></span>
                 <span>Gazette en base</span>
               </span>
@@ -1050,8 +1050,8 @@ export default function Actualite({ onBack, userProfile }) {
                     { cat: "République Française", icon: "🇫🇷", title: "Actualité Nationale", desc: dailyEvents.france },
                     { cat: "Actualité Mondiale", icon: "🌍", title: "Événements du Globe", desc: dailyEvents.monde }
                   ].map((ev, i) => (
-                    <div key={i} className="relative group animate-fade-in">
-                      <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-amber-600 border-2 border-white dark:border-stone-800 group-hover:scale-125 transition-transform" />
+                    <div key={i} className="relative group">
+                      <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-amber-700 border-2 border-white dark:border-stone-800 group-hover:scale-125 transition-transform" />
                       <div className={`p-4 rounded-xl border transition-all ${darkMode ? 'bg-stone-900 border-stone-600 hover:bg-stone-800' : 'bg-stone-50 border-stone-200 hover:bg-stone-100 shadow-sm'}`}>
                         <span className="text-[10px] font-sans font-bold text-[#92400e] dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5 mb-1">
                           <span>{ev.icon}</span> {ev.cat}
@@ -1122,7 +1122,7 @@ export default function Actualite({ onBack, userProfile }) {
                     {dailyHolidays.map((h, i) => (
                       <div
                         key={`${h.date}-${h.name}`}
-                        className={`p-4 rounded-xl border transition-all animate-fade-in ${
+                        className={`p-4 rounded-xl border transition-all ${
                           darkMode
                             ? 'bg-stone-900 border-stone-700 hover:border-stone-600'
                             : 'bg-stone-50 border-stone-200 hover:border-stone-300'
@@ -1179,7 +1179,7 @@ export default function Actualite({ onBack, userProfile }) {
 
             {/* 📄 VIEW 5: PAGES DE JOURNAL DYNAMIQUES */}
             {activeMenu.startsWith('page') && (
-              <section className="animate-fade-in">
+              <section className="">
                 
                 {loadingArticles ? (
                   <div className="flex flex-col items-center justify-center py-24 animate-pulse text-stone-500">
@@ -1223,7 +1223,7 @@ export default function Actualite({ onBack, userProfile }) {
                           className={`w-full py-3 px-6 rounded-xl font-sans font-bold text-sm transition-all border shadow-sm ${
                             hasVoted
                               ? 'bg-stone-200 dark:bg-stone-700 text-stone-400 dark:text-stone-300 border-transparent cursor-not-allowed'
-                              : 'bg-amber-600 hover:bg-amber-700 text-white border-amber-700 hover:scale-[1.02] active:scale-[0.98]'
+                              : 'bg-amber-700 hover:bg-amber-700 text-white border-amber-700 hover:scale-[1.02] active:scale-[0.98]'
                           }`}
                         >
                           {hasVoted ? '✓ A voté pour la numérisation' : `🗳️ Voter pour charger ce jour (${voteCount} ${voteCount === 1 ? 'vote' : 'votes'})`}
@@ -1274,7 +1274,7 @@ export default function Actualite({ onBack, userProfile }) {
 
                           {/* Détails paragraphe pliables */}
                           {isExpanded && (
-                            <div className="mt-4 border-t border-dashed border-stone-300 dark:border-stone-600 pt-4 leading-relaxed text-sm md:text-base text-stone-800 dark:text-stone-100 flex flex-col gap-4 animate-fade-in font-serif font-normal">
+                            <div className="mt-4 border-t border-dashed border-stone-300 dark:border-stone-600 pt-4 leading-relaxed text-sm md:text-base text-stone-800 dark:text-stone-100 flex flex-col gap-4 font-serif font-normal">
                               {article.paragraphs.map((p, idx) => (
                                 <p key={idx}>{p}</p>
                               ))}

@@ -252,7 +252,7 @@ export default function StepCaracteristiques() {
                                     <div className="font-bold text-gray-800 flex items-center gap-2">
                                         {carac.label}
                                     </div>
-                                    <div className="text-xs font-bold text-gray-400">
+                                    <div className="text-xs font-bold text-gray-500">
                                         Min {minGenetique} <span className="text-gray-300 font-normal">/</span> Max {maxGenetique}
                                     </div>
                                 </div>

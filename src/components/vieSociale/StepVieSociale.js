@@ -137,7 +137,7 @@ export default function StepVieSociale() {
     if (!budgetsInfo.rests || !budgetsInfo.budgets) return null;
     
     const itemsDuProfil = catalogueParProfil[profilNom] || [];
-    if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-400 italic">Aucun équipement disponible pour ce profil.</div>;
+    if (itemsDuProfil.length === 0) return <div className="p-8 text-center text-gray-500 italic">Aucun équipement disponible pour ce profil.</div>;
 
     const reste = budgetsInfo.rests[profilNom];
 
@@ -161,7 +161,7 @@ export default function StepVieSociale() {
         <div className="mb-4 flex flex-wrap justify-between items-center bg-stone-100 p-3 rounded-xl border border-stone-200 gap-2">
           <h3 className="font-serif font-bold text-stone-800 flex items-center gap-2">
             {getProfilDisplayName(profilNom)}
-            {character.profils?.majeur?.nom === profilNom && <span className="text-[10px] bg-amber-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Majeur</span>}
+            {character.profils?.majeur?.nom === profilNom && <span className="text-[10px] bg-amber-700 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Majeur</span>}
             {character.profils?.mineur?.nom === profilNom && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Mineur</span>}
           </h3>
           <div className="flex gap-3">
@@ -227,7 +227,7 @@ export default function StepVieSociale() {
   if (!budgetsInfo) return null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
+    <div className="max-w-6xl mx-auto space-y-6">
       <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
           <h2 className="text-xl font-serif font-bold text-amber-900 flex items-center gap-2">
@@ -289,7 +289,7 @@ export default function StepVieSociale() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* COLONNE GAUCHE : LES BOUTIQUES */}
         <div className="lg:col-span-3 space-y-2">
-          <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider mb-3">Vos Boutiques</h3>
+          <h3 className="font-bold text-sm text-gray-500 uppercase tracking-wider mb-3">Vos Boutiques</h3>
           
           {tousLesProfils.map(pName => {
             const isActive = activeTab === pName;
@@ -303,7 +303,7 @@ export default function StepVieSociale() {
                 className={`w-full text-left p-3 rounded-lg border flex items-center justify-between gap-2 transition-colors ${
                   isActive ? 'bg-amber-100 border-amber-400 text-amber-900 shadow-sm' :
                   hasBudget ? 'bg-white border-gray-200 text-gray-700 hover:border-amber-300' :
-                  'bg-gray-50 border-dashed border-gray-200 text-gray-400 opacity-60 hover:opacity-100'
+                  'bg-gray-50 border-dashed border-gray-200 text-gray-500 opacity-60 hover:opacity-100'
                 }`}
               >
                 <span className="font-serif font-bold truncate">{getProfilDisplayName(pName)}</span>
@@ -326,7 +326,7 @@ export default function StepVieSociale() {
 
 {/* ✨ LE NOUVEAU WIDGET DE RÉPARTITION DES CONTACTS ✨ */}
           {budgetsInfo.freeContactsTotal > 0 && (
-            <div className="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-xl shadow-sm animate-fade-in">
+            <div className="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-xl shadow-sm">
               <h4 className="text-sm font-bold text-indigo-900 mb-2 flex items-center gap-2">
                  <Users size={16} className="text-indigo-600" /> Contacts Gratuits
               </h4>

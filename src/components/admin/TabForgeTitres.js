@@ -21,7 +21,7 @@ export default function TabForgeTitres({ userProfile }) {
   const PreviewIcon = iconMap[form.icon_name] || HelpCircle;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       {/* L'Atelier (Formulaire) - ✨ RÉSERVÉ AU SUPER ADMIN */}
       {isSuperAdmin && (
@@ -64,7 +64,7 @@ export default function TabForgeTitres({ userProfile }) {
             </div>
           </div>
 
-          <button onClick={handleSave} className="mt-2 w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-md transition-colors flex justify-center items-center gap-2">
+          <button onClick={handleSave} className="mt-2 w-full py-3 bg-amber-700 hover:bg-amber-700 text-white font-bold rounded-lg shadow-md transition-colors flex justify-center items-center gap-2">
             <Save size={18} /> Forger le Titre
           </button>
         </div>

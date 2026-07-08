@@ -55,7 +55,7 @@ function ConfirmModal({ target, onConfirm, onCancel }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onCancel}>
-            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
                 <div className="flex items-start gap-3 mb-4">
                     <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={22} />
                     <div>
@@ -129,7 +129,7 @@ function RestoreFloorModal({ target, onConfirm, onCancel }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onCancel}>
-            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6 animate-fade-in-up" onClick={e => e.stopPropagation()}>
+            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
                 <div className="flex items-start gap-3 mb-4">
                     <Wrench className="text-indigo-500 shrink-0 mt-0.5" size={22} />
                     <div>
@@ -532,7 +532,7 @@ export default function TabRepairJournaux() {
 
                 {/* Liste des personnages */}
                 {filtered.length === 0 ? (
-                    <div className="text-center py-12 text-gray-400 font-serif italic">
+                    <div className="text-center py-12 text-gray-500 font-serif italic">
                         {search ? `Aucun personnage trouvé pour « ${search} »` : 'Aucun personnage à réparer 🎉'}
                     </div>
                 ) : (
@@ -559,7 +559,7 @@ export default function TabRepairJournaux() {
                                         {row.detail ? (
                                             <p className="text-[11px] text-gray-500 mt-0.5">{row.detail}</p>
                                         ) : (
-                                            <p className="text-[11px] text-gray-400 mt-0.5">
+                                            <p className="text-[11px] text-gray-500 mt-0.5">
                                                 XP : {row.dbChar.xp_total} total / {row.dbChar.xp_depense} dépensé
                                                 {' · '}Journal : {journal.length} entrée{journal.length > 1 ? 's' : ''}
                                                 {journal.length > 0 && ` (${gains} gain${gains > 1 ? 's' : ''}, ${deps} dépense${deps > 1 ? 's' : ''})`}

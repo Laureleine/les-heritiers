@@ -32,7 +32,7 @@ const EntityForm = ({
   }, [setProposal]);
 
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-4">
       
       {/* 1. NOM DE L'ÉLÉMENT */}
       <div>
@@ -48,7 +48,7 @@ const EntityForm = ({
 
       {/* 2. TYPE DE POUVOIR (Spécifique aux Pouvoirs) */}
       {activeTab === 'fairy_powers' && (isCreating || editingItem?.type_pouvoir) && (
-        <div className="animate-fade-in">
+        <div className="">
           <label className="block text-xs font-bold text-rose-800 uppercase tracking-wider mb-1">Type de Pouvoir</label>
           <select
             value={proposal.type_pouvoir || 'masque'}
@@ -80,7 +80,7 @@ const EntityForm = ({
 
       {/* 4. EFFETS EN JEU (Spécifique aux Atouts) */}
       {activeTab === 'fairy_assets' && (
-        <div className="mt-4 animate-fade-in">
+        <div className="mt-4">
           <label className="block text-sm font-bold text-amber-800 mb-2 flex items-center gap-2">
             <Star size={16} /> Effets en jeu (Texte affiché au joueur)
           </label>
@@ -95,7 +95,7 @@ const EntityForm = ({
 
       {/* 5. COMPÉTENCE PARENTE (Spécialités uniquement) */}
       {activeTab === 'specialites' && (
-        <div className="animate-fade-in">
+        <div className="">
           <label className="block text-sm font-bold text-indigo-800 mb-1">Compétence parente</label>
           <select
             value={proposal.competence_id || ''}
@@ -127,7 +127,7 @@ const EntityForm = ({
 
       {/* 6. RELATION INVERSÉE : FÉES COMPATIBLES (hors Spécialités) */}
       {activeTab !== 'specialites' && (
-        <div className="mt-6 h-[250px] animate-fade-in-up">
+        <div className="mt-6 h-[250px]">
           <RelationSelector
             title={<span className="flex items-center gap-2 text-sm"><Sparkles size={16} className="text-indigo-500" /> Fées possédant cet élément (Optionnel)</span>}
             items={allFairyTypes || []}

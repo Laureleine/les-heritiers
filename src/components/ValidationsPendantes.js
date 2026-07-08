@@ -298,14 +298,14 @@ export default function ValidationsPendantes({ session, onBack }) {
       </div>
 
       <div className="flex gap-6 border-b border-gray-200 mb-6 overflow-x-auto hide-scrollbar">
-        <button onClick={() => setActiveTab('pending')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'pending' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-400 hover:text-gray-600'}`}>
+        <button onClick={() => setActiveTab('pending')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'pending' ? 'text-amber-600 border-b-2 border-amber-600' : 'text-gray-500 hover:text-gray-600'}`}>
           1. En attente ({pendingChanges.length})
         </button>
-        <button onClick={() => setActiveTab('approved')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'approved' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
+        <button onClick={() => setActiveTab('approved')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'approved' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-600'}`}>
           3. Historique ({historyChanges.length})
         </button>
         {isSuperAdmin(myRole) && (
-          <button onClick={() => setActiveTab('escalated')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'escalated' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-400 hover:text-gray-600'}`}>
+          <button onClick={() => setActiveTab('escalated')} className={`pb-3 font-bold whitespace-nowrap transition-colors ${activeTab === 'escalated' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-500 hover:text-gray-600'}`}>
             🚨 Escalades ({escalatedChanges.length})
           </button>
         )}
@@ -336,8 +336,8 @@ export default function ValidationsPendantes({ session, onBack }) {
 
       {/* Modale de REJET */}
       {rejectState.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 animate-fade-in-up border-2 border-red-900/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border-2 border-red-900/20">
             <h3 className="text-xl font-serif font-bold text-red-900 mb-4 flex items-center gap-2">
               <X size={24} /> Rejeter la proposition
             </h3>
