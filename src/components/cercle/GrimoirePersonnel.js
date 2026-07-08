@@ -39,6 +39,17 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
   const [contactFilter, setContactFilter] = useState('');
   const [showReality, setShowReality] = useState(false);
 
+  const GRIMOIRE_TABS = ['notes', 'contacts', 'possessions', 'chroniques'];
+  const handleTabKeyDown = (e) => {
+    const idx = GRIMOIRE_TABS.indexOf(activeTab);
+    let next = null;
+    if (e.key === 'ArrowRight') { e.preventDefault(); next = GRIMOIRE_TABS[(idx + 1) % GRIMOIRE_TABS.length]; }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); next = GRIMOIRE_TABS[(idx - 1 + GRIMOIRE_TABS.length) % GRIMOIRE_TABS.length]; }
+    else if (e.key === 'Home') { e.preventDefault(); next = GRIMOIRE_TABS[0]; }
+    else if (e.key === 'End') { e.preventDefault(); next = GRIMOIRE_TABS[GRIMOIRE_TABS.length - 1]; }
+    if (next) { setActiveTab(next); setTimeout(() => document.getElementById(`tab-grimoire-${next}`)?.focus(), 0); }
+  };
+
   const isDocte = userProfile?.profile?.is_docte === true || isAdmin;
 
   const { notes, contacts, possessions, loading, toggleShare, createEntry, updateEntry, deleteEntry } = useGrimoire(characterId, cercleId, playerId, isAdmin);
@@ -173,26 +184,46 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
         )}
       </div>
 
-      <div className="flex border-b border-amber-200 bg-amber-50">
-        <button 
+      <div role="tablist" aria-label="Sections du Grimoire" className="flex border-b border-amber-200 bg-amber-50" onKeyDown={handleTabKeyDown}>
+        <button
+          role="tab"
+          id="tab-grimoire-notes"
+          aria-selected={activeTab === 'notes'}
+          aria-controls="panel-grimoire"
+          tabIndex={activeTab === 'notes' ? 0 : -1}
           onClick={() => setActiveTab('notes')}
           className={`flex-1 py-3 font-serif font-bold transition-colors ${activeTab === 'notes' ? 'bg-white text-amber-900 border-t-2 border-t-amber-600' : 'text-amber-700 hover:bg-amber-100'}`}
         >
           Notes Narratives
         </button>
         <button
+          role="tab"
+          id="tab-grimoire-contacts"
+          aria-selected={activeTab === 'contacts'}
+          aria-controls="panel-grimoire"
+          tabIndex={activeTab === 'contacts' ? 0 : -1}
           onClick={() => setActiveTab('contacts')}
           className={`flex-1 py-3 font-serif font-bold flex items-center justify-center gap-2 transition-colors ${activeTab === 'contacts' ? 'bg-white text-amber-900 border-t-2 border-t-amber-600' : 'text-amber-700 hover:bg-amber-100'}`}
         >
           <Users size={18} /> Visages Rencontrés
         </button>
         <button
+          role="tab"
+          id="tab-grimoire-possessions"
+          aria-selected={activeTab === 'possessions'}
+          aria-controls="panel-grimoire"
+          tabIndex={activeTab === 'possessions' ? 0 : -1}
           onClick={() => setActiveTab('possessions')}
           className={`flex-1 py-3 font-serif font-bold flex items-center justify-center gap-2 transition-colors ${activeTab === 'possessions' ? 'bg-white text-amber-900 border-t-2 border-t-amber-600' : 'text-amber-700 hover:bg-amber-100'}`}
         >
           <Package size={18} /> Trésors & Possessions
         </button>
         <button
+          role="tab"
+          id="tab-grimoire-chroniques"
+          aria-selected={activeTab === 'chroniques'}
+          aria-controls="panel-grimoire"
+          tabIndex={activeTab === 'chroniques' ? 0 : -1}
           onClick={() => setActiveTab('chroniques')}
           className={`flex-1 py-3 font-serif font-bold flex items-center justify-center gap-2 transition-colors ${activeTab === 'chroniques' ? 'bg-white text-amber-900 border-t-2 border-t-amber-600' : 'text-amber-700 hover:bg-amber-100'}`}
         >
@@ -201,7 +232,12 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
       </div>
 
 		{/* 2. LA ZONE DE CONTENU */}
-		<div className="p-6 flex-1 overflow-y-auto relative min-h-[400px]">
+		<div
+          id="panel-grimoire"
+          role="tabpanel"
+          aria-labelledby={`tab-grimoire-${activeTab}`}
+          className="p-6 flex-1 overflow-y-auto relative min-h-[400px]"
+        >
 			{loading ? (
 				// ✨ L'OUBLI RÉPARÉ : L'écran de chargement immersif !
 				<EmptyState icon={BookOpen} message="Déchiffrage de l'encre sympathique..." pulse />

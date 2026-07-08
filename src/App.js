@@ -122,7 +122,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 w-full relative z-10">
+      <main id="main-content" className="max-w-5xl mx-auto px-4 w-full relative z-10">
         <AppRouter session={session} userProfile={userProfile} refreshUserProfile={refreshUserProfile} />
       </main>
 

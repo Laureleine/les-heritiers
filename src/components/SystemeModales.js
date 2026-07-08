@@ -103,11 +103,11 @@ export function InAppNotification() {
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2 max-w-md">
       {notifications.map(notif => (
-        <div key={notif.id} className={`pointer-events-auto p-4 rounded-lg border-2 shadow-lg animate-slide-in ${getColors(notif.type)}`}>
+        <div key={notif.id} role="alert" className={`pointer-events-auto p-4 rounded-lg border-2 shadow-lg animate-slide-in ${getColors(notif.type)}`}>
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0">{getIcon(notif.type)}</div>
+            <div className="flex-shrink-0" aria-hidden="true">{getIcon(notif.type)}</div>
             <div className="flex-1 font-serif">{notif.message}</div>
-            <button onClick={() => removeNotification(notif.id)} className="flex-shrink-0 hover:opacity-70 transition-opacity">
+            <button onClick={() => removeNotification(notif.id)} aria-label="Fermer la notification" className="flex-shrink-0 hover:opacity-70 transition-opacity">
               <X size={18} />
             </button>
           </div>

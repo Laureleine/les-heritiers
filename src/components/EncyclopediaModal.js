@@ -1,5 +1,6 @@
 // src/components/EncyclopediaModal.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { X, Sparkles, Save } from '../config/icons';
 
 import QuickForgeModal from './QuickForgeModal';
@@ -94,6 +95,9 @@ export default function EncyclopediaModal({
         }
     };
 
+    const modalRef = useRef(null);
+    useFocusTrap(modalRef, true);
+
     const handleClose = () => {
         if (onClose) onClose();
         else setEditingItem(null);
@@ -152,17 +156,23 @@ export default function EncyclopediaModal({
 
     return (
         <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="enc-modal-title"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+        >
                 
                 {/* EN-TÊTE */}
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-stone-50 shrink-0">
                     <div>
-                        <h2 className="text-xl font-serif font-bold text-amber-900">
+                        <h2 id="enc-modal-title" className="text-xl font-serif font-bold text-amber-900">
                             {isCreating ? 'Proposition de création' : 'Proposition de modification'}
                         </h2>
                         {!isCreating && <p className="text-sm text-gray-500 mt-1">Élément : <span className="font-bold text-gray-800">{editingItem?.name || editingItem?.nom}</span></p>}
                     </div>
-                    <button onClick={handleClose} className="text-gray-500 hover:text-gray-600 transition-colors p-2 bg-white rounded-full shadow-sm">
+                    <button onClick={handleClose} aria-label="Fermer" className="text-gray-500 hover:text-gray-600 transition-colors p-2 bg-white rounded-full shadow-sm">
                         <X size={20} />
                     </button>
                 </div>

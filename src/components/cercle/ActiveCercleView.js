@@ -87,14 +87,36 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
       </div>
 
       {/* ── Onglets ── */}
-      <div className="flex gap-1 border-b border-stone-100 mb-5 -mt-1">
+      <div
+        role="tablist"
+        aria-label="Sections du Cercle"
+        className="flex gap-1 border-b border-stone-100 mb-5 -mt-1"
+        onKeyDown={(e) => {
+          const tabs = ['table', 'parties'];
+          const idx = tabs.indexOf(subTab);
+          let next = null;
+          if (e.key === 'ArrowRight') { e.preventDefault(); next = tabs[(idx + 1) % tabs.length]; }
+          else if (e.key === 'ArrowLeft') { e.preventDefault(); next = tabs[(idx - 1 + tabs.length) % tabs.length]; }
+          if (next) { setSubTab(next); setTimeout(() => document.getElementById(`tab-cercle-${next}`)?.focus(), 0); }
+        }}
+      >
         <button
+          role="tab"
+          id="tab-cercle-table"
+          aria-selected={subTab === 'table'}
+          aria-controls="panel-cercle"
+          tabIndex={subTab === 'table' ? 0 : -1}
           onClick={() => setSubTab('table')}
           className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'table' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
         >
           <Users size={14} /> La Table
         </button>
         <button
+          role="tab"
+          id="tab-cercle-parties"
+          aria-selected={subTab === 'parties'}
+          aria-controls="panel-cercle"
+          tabIndex={subTab === 'parties' ? 0 : -1}
           onClick={() => setSubTab('parties')}
           className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'parties' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
         >
@@ -102,6 +124,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         </button>
       </div>
 
+      <div id="panel-cercle" role="tabpanel" aria-labelledby={`tab-cercle-${subTab}`}>
       {/* ── Onglet Parties ── */}
       {subTab === 'parties' && (
         <TabPartiesJeu
@@ -381,6 +404,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         </div>
       </div>
     </>}
+      </div>
   </div>
   );
 });

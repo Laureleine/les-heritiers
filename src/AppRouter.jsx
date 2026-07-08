@@ -1,6 +1,18 @@
 // src/AppRouter.jsx
-import React, { Suspense, lazy } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+
+function RouteAnnouncer() {
+  const location = useLocation();
+  useEffect(() => {
+    const live = document.getElementById('a11y-live');
+    if (!live) return;
+    const title = document.title || 'Les Héritiers';
+    live.textContent = '';
+    requestAnimationFrame(() => { live.textContent = `Page : ${title}`; });
+  }, [location.pathname]);
+  return null;
+}
 import { useCharacter, initialCharacterState } from './context/CharacterContext';
 import { useGameDataContext } from './context/GameDataContext';
 import { supabase } from './config/supabase';
@@ -33,6 +45,8 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
   const navigate = useNavigate();
 
   return (
+    <>
+    <RouteAnnouncer />
     <Suspense fallback={
       <div className="flex flex-col items-center justify-center py-32 animate-pulse">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-600 mb-4"></div>
@@ -141,5 +155,6 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>
+    </>
   );
 }

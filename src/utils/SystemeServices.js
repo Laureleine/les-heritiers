@@ -80,6 +80,12 @@ export const sendLocalNotification = (title, options = {}) => {
 export const showInAppNotification = (message, type = 'info') => {
   const event = new CustomEvent('app-notification', { detail: { message, type } });
   window.dispatchEvent(event);
+  // Annonce via aria-live pour les lecteurs d'écran (WCAG 4.1.3)
+  const live = document.getElementById('a11y-live');
+  if (live) {
+    live.textContent = '';
+    requestAnimationFrame(() => { live.textContent = message; });
+  }
 };
 
 export const notifyNewVersion = (version, changelog) => {
