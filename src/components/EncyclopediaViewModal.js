@@ -1,9 +1,13 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity, Briefcase, Coins, Crown, TrendingUp, Users, VenetianMask } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
 
 export default function EncyclopediaViewModal({ item, activeTab, isInitiated, onClose }) {
+  const modalRef = useRef(null);
+  useFocusTrap(modalRef, !!item);
+
   if (!item) return null;
 
   const title = item.name || item.nom;
@@ -34,11 +38,11 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
-        
+      <div ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="enc-view-modal-title" className="bg-[#fdfbf7] max-w-3xl w-full max-h-[90vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
+
         {/* HEADER */}
         <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center shrink-0">
-          <h2 className="text-2xl font-serif font-bold text-stone-800 flex items-center gap-3">
+          <h2 id="enc-view-modal-title" className="text-2xl font-serif font-bold text-stone-800 flex items-center gap-3">
             <Icon className="text-amber-600" size={24} />
             {title}
           </h2>

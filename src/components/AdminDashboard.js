@@ -1,6 +1,6 @@
 // src/components/AdminDashboard.js
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell, Coins } from '../config/icons';
 import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
 import TabUsers from './admin/TabUsers';
@@ -13,9 +13,22 @@ import TabUsageIA from './admin/TabUsageIA';
 // ✨ FIX : On récupère userProfile depuis le routeur
 export default function AdminDashboard({ session, userProfile, onBack }) {
     const [activeTab, setActiveTab] = useState('users');
-    
+    const tablistRef = useRef(null);
+
     // ✨ L'œil de l'Architecte
     const isSuperAdmin = checkSuperAdmin(userProfile);
+
+    const handleTablistKeyDown = (e) => {
+      const tabs = Array.from(tablistRef.current?.querySelectorAll('[role=tab]') || []);
+      const idx = tabs.findIndex(t => t === document.activeElement);
+      if (idx === -1) return;
+      let next = null;
+      if (e.key === 'ArrowRight') { e.preventDefault(); next = tabs[(idx + 1) % tabs.length]; }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); next = tabs[(idx - 1 + tabs.length) % tabs.length]; }
+      else if (e.key === 'Home') { e.preventDefault(); next = tabs[0]; }
+      else if (e.key === 'End') { e.preventDefault(); next = tabs[tabs.length - 1]; }
+      if (next) { next.click(); next.focus(); }
+    };
 
     return (
         <div className="max-w-5xl mx-auto p-4 md:p-6 pb-24">
@@ -30,40 +43,42 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
             </div>
 
             {/* Onglets de navigation */}
-            <div className="flex gap-6 border-b border-gray-200 mb-6 overflow-x-auto hide-scrollbar">
-                <button onClick={() => setActiveTab('users')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'users' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
+            <div ref={tablistRef} role="tablist" aria-label="Administration" onKeyDown={handleTablistKeyDown} className="flex gap-6 border-b border-gray-200 mb-6 overflow-x-auto hide-scrollbar">
+                <button id="admin-tab-users" role="tab" aria-selected={activeTab === 'users'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'users' ? 0 : -1} onClick={() => setActiveTab('users')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'users' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                     <Crown size={18} /> Utilisateurs
                 </button>
-                <button onClick={() => setActiveTab('stats')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'stats' ? 'text-blue-900 border-blue-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
+                <button id="admin-tab-stats" role="tab" aria-selected={activeTab === 'stats'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'stats' ? 0 : -1} onClick={() => setActiveTab('stats')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'stats' ? 'text-blue-900 border-blue-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                     <BarChart2 size={18} /> Métriques
                 </button>
-                <button onClick={() => setActiveTab('titres')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'titres' ? 'text-purple-900 border-purple-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
+                <button id="admin-tab-titres" role="tab" aria-selected={activeTab === 'titres'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'titres' ? 0 : -1} onClick={() => setActiveTab('titres')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'titres' ? 'text-purple-900 border-purple-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                     <Award size={18} /> {isSuperAdmin ? 'Forge des Titres' : 'Titres Honorifiques'}
                 </button>
                 {isSuperAdmin && (
-                    <button onClick={() => setActiveTab('repair')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'repair' ? 'text-red-900 border-red-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
+                    <button id="admin-tab-repair" role="tab" aria-selected={activeTab === 'repair'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'repair' ? 0 : -1} onClick={() => setActiveTab('repair')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'repair' ? 'text-red-900 border-red-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                         <Wrench size={18} /> Reconstruction XP
                     </button>
                 )}
                 {isSuperAdmin && (
-                    <button onClick={() => setActiveTab('notifications')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notifications' ? 'text-green-900 border-green-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
+                    <button id="admin-tab-notifications" role="tab" aria-selected={activeTab === 'notifications'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'notifications' ? 0 : -1} onClick={() => setActiveTab('notifications')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notifications' ? 'text-green-900 border-green-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                         <Bell size={18} /> Notifications
                     </button>
                 )}
                 {isSuperAdmin && (
-                    <button onClick={() => setActiveTab('usage_ia')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'usage_ia' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
+                    <button id="admin-tab-usage_ia" role="tab" aria-selected={activeTab === 'usage_ia'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'usage_ia' ? 0 : -1} onClick={() => setActiveTab('usage_ia')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'usage_ia' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                         <Coins size={18} /> Usage IA
                     </button>
                 )}
             </div>
 
             {/* Contenu de l'onglet actif */}
+            <div id="admin-tabpanel" role="tabpanel" aria-labelledby={`admin-tab-${activeTab}`}>
             {activeTab === 'users' && <TabUsers session={session} />}
             {activeTab === 'stats' && <TabStats />}
             {activeTab === 'titres' && <TabForgeTitres userProfile={userProfile} />}
             {activeTab === 'repair' && isSuperAdmin && <TabRepairJournaux />}
             {activeTab === 'notifications' && isSuperAdmin && <TabNotifications />}
             {activeTab === 'usage_ia' && isSuperAdmin && <TabUsageIA />}
+            </div>
         </div>
     );
 }

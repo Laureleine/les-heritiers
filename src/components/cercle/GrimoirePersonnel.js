@@ -1,7 +1,8 @@
 ﻿// src/components/cercle/GrimoirePersonnel.js
 // 15.17.8
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { BookOpen, BookMarked, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Eye, EyeOff, Search } from '../../config/icons';
 import { EmptyState } from '../ui/EmptyState';
 import { showInAppNotification } from '../../utils/SystemeServices';
@@ -36,6 +37,10 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
   const [formData, setFormData] = useState({});
   const [editingEntry, setEditingEntry] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const editModalRef = useRef(null);
+  const deleteModalRef = useRef(null);
+  useFocusTrap(editModalRef, isModalOpen);
+  useFocusTrap(deleteModalRef, !!deleteConfirm);
   const [contactFilter, setContactFilter] = useState('');
   const [showReality, setShowReality] = useState(false);
 
@@ -495,10 +500,10 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
       {/* 3. MODALE IMMERSIVE DE CRÉATION/ÉDITION (DYNAMIQUE) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
-          <div className="bg-[#fdfbf7] max-w-lg w-full rounded-2xl shadow-2xl border-4 border-amber-900/20 overflow-hidden transform">
+          <div ref={editModalRef} role="dialog" aria-modal="true" aria-labelledby="grimoire-edit-title" className="bg-[#fdfbf7] max-w-lg w-full rounded-2xl shadow-2xl border-4 border-amber-900/20 overflow-hidden transform">
 
             <div className="bg-amber-900 text-amber-50 p-4 border-b-4 border-amber-700 flex justify-between items-center">
-              <h3 className="font-serif font-bold text-lg flex items-center gap-2">
+              <h3 id="grimoire-edit-title" className="font-serif font-bold text-lg flex items-center gap-2">
                 {(editingEntry?.type === 'note' || (!editingEntry && activeTab === 'notes')) ? <BookOpen size={20}/> : (editingEntry?.type === 'possession' || (!editingEntry && activeTab === 'possessions')) ? <Package size={20}/> : <Users size={20}/>}
                 {editingEntry
                   ? (editingEntry.type === 'note' ? 'Modifier la note' : editingEntry.type === 'possession' ? 'Modifier la possession' : 'Modifier le contact')
@@ -688,10 +693,10 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
       {/* 4. MODALE DE CONFIRMATION DE SUPPRESSION */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
-          <div className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-4 border-red-200 overflow-hidden transform">
+          <div ref={deleteModalRef} role="dialog" aria-modal="true" aria-labelledby="grimoire-delete-title" className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-4 border-red-200 overflow-hidden transform">
 
             <div className="bg-red-700 text-red-50 p-4 border-b-4 border-red-800 flex justify-between items-center">
-              <h3 className="font-serif font-bold text-lg flex items-center gap-2">
+              <h3 id="grimoire-delete-title" className="font-serif font-bold text-lg flex items-center gap-2">
                 <AlertTriangle size={20} /> Confirmer la suppression
               </h3>
               <button onClick={() => setDeleteConfirm(null)} className="hover:text-red-200 transition-colors" aria-label="Annuler la suppression"><X size={20}/></button>

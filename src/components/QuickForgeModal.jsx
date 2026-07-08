@@ -1,6 +1,7 @@
 // src/components/QuickForgeModal.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { X, Save, Sparkles, Star, Wand2 } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
@@ -11,6 +12,8 @@ export default function QuickForgeModal({ isOpen, onClose, type, onSuccess }) {
   const [description, setDescription] = useState('');
   const [typePouvoir, setTypePouvoir] = useState('masque');
   const [loading, setLoading] = useState(false);
+  const modalRef = useRef(null);
+  useFocusTrap(modalRef, isOpen);
 
   if (!isOpen) return null;
 
@@ -91,10 +94,10 @@ export default function QuickForgeModal({ isOpen, onClose, type, onSuccess }) {
   return (
     // ✨ FIX : z-[1] pour surpasser la modale parente !
     <div className="fixed inset-0 z-[1] flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className={`bg-white max-w-lg w-full rounded-2xl shadow-2xl border-4 border-${config.color}-200 flex flex-col overflow-hidden`} onClick={e => e.stopPropagation()}>
-        
+      <div ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="quick-forge-title" className={`bg-white max-w-lg w-full rounded-2xl shadow-2xl border-4 border-${config.color}-200 flex flex-col overflow-hidden`} onClick={e => e.stopPropagation()}>
+
         <div className={`bg-${config.color}-50 p-4 border-b border-${config.color}-100 flex justify-between items-center`}>
-          <h3 className={`font-serif font-bold text-lg text-${config.color}-900 flex items-center gap-2`}>
+          <h3 id="quick-forge-title" className={`font-serif font-bold text-lg text-${config.color}-900 flex items-center gap-2`}>
             {config.icon} {config.titre} à la volée
           </h3>
           <button onClick={onClose} className="text-stone-400 hover:text-red-500 transition-colors">

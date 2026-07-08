@@ -1,13 +1,16 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import Cropper from 'react-easy-crop';
 import { X, ZoomIn, ZoomOut, Check, Loader } from '../config/icons';
 import { getCroppedBlob } from '../utils/cropImage';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export default function CropPortraitModal({ file, onConfirm, onCancel }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const modalRef = useRef(null);
+  useFocusTrap(modalRef, true);
 
   const imageSrc = URL.createObjectURL(file);
 
@@ -44,9 +47,9 @@ export default function CropPortraitModal({ file, onConfirm, onCancel }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
-      <div className="bg-[#fdfbf7] w-full max-w-lg rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden">
+      <div ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="crop-modal-title" className="bg-[#fdfbf7] w-full max-w-lg rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden">
         <div className="bg-stone-100 p-4 border-b border-stone-200 flex justify-between items-center">
-          <h3 className="font-bold text-stone-800 flex items-center gap-2">
+          <h3 id="crop-modal-title" className="font-bold text-stone-800 flex items-center gap-2">
             <span className="text-lg">🖼️</span> Recadrer le portrait
           </h3>
           <button onClick={handleCancel} className="text-stone-400 hover:text-red-500" aria-label="Annuler le recadrage"><X size={20} /></button>

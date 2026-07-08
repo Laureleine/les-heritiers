@@ -16,6 +16,19 @@ export default function Telegraphe({ session, userProfile }) {
   const [uiMode, setUiMode] = useState(getSafeUiMode());
   const [activeTab, setActiveTab] = useState('global');
   const messagesEndRef = useRef(null);
+  const tablistRef = useRef(null);
+
+  const handleTablistKeyDown = (e) => {
+    const tabs = Array.from(tablistRef.current?.querySelectorAll('[role=tab]') || []);
+    const idx = tabs.findIndex(t => t === document.activeElement);
+    if (idx === -1) return;
+    let next = null;
+    if (e.key === 'ArrowRight') { e.preventDefault(); next = tabs[(idx + 1) % tabs.length]; }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); next = tabs[(idx - 1 + tabs.length) % tabs.length]; }
+    else if (e.key === 'Home') { e.preventDefault(); next = tabs[0]; }
+    else if (e.key === 'End') { e.preventDefault(); next = tabs[tabs.length - 1]; }
+    if (next) { next.click(); next.focus(); }
+  };
 
   const {
     channels, messages, activeChannel, setActiveChannel,
@@ -122,32 +135,32 @@ export default function Telegraphe({ session, userProfile }) {
             <div className="flex-1 flex flex-col min-h-0 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
               
               {uiMode === 'tabs' && (
-                <div className="flex bg-amber-800 text-amber-100 text-xs font-bold uppercase tracking-wider shrink-0 overflow-x-auto hide-scrollbar">
-                  <button onClick={() => setActiveTab('global')} className={`px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'global' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                <div ref={tablistRef} role="tablist" aria-label="Canaux du Télégraphe" onKeyDown={handleTablistKeyDown} className="flex bg-amber-800 text-amber-100 text-xs font-bold uppercase tracking-wider shrink-0 overflow-x-auto hide-scrollbar">
+                  <button id="tg-tab-global" role="tab" aria-selected={activeTab === 'global'} aria-controls="tg-tabpanel" tabIndex={activeTab === 'global' ? 0 : -1} onClick={() => setActiveTab('global')} className={`px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'global' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
                     <Globe size={14} /> Public
                   </button>
-                  <button onClick={() => setActiveTab('private')} className={`relative px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'private' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                  <button id="tg-tab-private" role="tab" aria-selected={activeTab === 'private'} aria-controls="tg-tabpanel" tabIndex={activeTab === 'private' ? 0 : -1} onClick={() => setActiveTab('private')} className={`relative px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'private' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
                     <User size={14} /> Privé
-                    {channels.some(c => c.type === 'private' && c.has_unread) && <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                    {channels.some(c => c.type === 'private' && c.has_unread) && <span aria-hidden="true" className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                   </button>
-                  <button onClick={() => setActiveTab('cercle')} className={`relative px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'cercle' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                  <button id="tg-tab-cercle" role="tab" aria-selected={activeTab === 'cercle'} aria-controls="tg-tabpanel" tabIndex={activeTab === 'cercle' ? 0 : -1} onClick={() => setActiveTab('cercle')} className={`relative px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'cercle' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
                     <Users size={14} /> Cercles
-                    {channels.some(c => c.type === 'cercle' && c.has_unread) && <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                    {channels.some(c => c.type === 'cercle' && c.has_unread) && <span aria-hidden="true" className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                   </button>
-                  <button onClick={() => setActiveTab('support')} className={`relative px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'support' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
-                    {isAdmin ? <Shield size={14} /> : <ShieldAlert size={14} />} 
-                    Conseil {((isAdmin && channels.some(c => c.type === 'support' && c.status === 'nouveau')) || channels.some(c => c.type === 'support' && c.has_unread)) && <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                  <button id="tg-tab-support" role="tab" aria-selected={activeTab === 'support'} aria-controls="tg-tabpanel" tabIndex={activeTab === 'support' ? 0 : -1} onClick={() => setActiveTab('support')} className={`relative px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'support' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                    {isAdmin ? <Shield size={14} /> : <ShieldAlert size={14} />}
+                    Conseil {((isAdmin && channels.some(c => c.type === 'support' && c.status === 'nouveau')) || channels.some(c => c.type === 'support' && c.has_unread)) && <span aria-hidden="true" className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                   </button>
                   {isInitiated && (
-                    <button onClick={() => setActiveTab('initie')} className={`relative px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'initie' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
+                    <button id="tg-tab-initie" role="tab" aria-selected={activeTab === 'initie'} aria-controls="tg-tabpanel" tabIndex={activeTab === 'initie' ? 0 : -1} onClick={() => setActiveTab('initie')} className={`relative px-4 py-3 border-b-4 transition-colors whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'initie' ? 'border-amber-400 text-white bg-amber-900/50' : 'border-transparent hover:bg-amber-700/50'}`}>
                       <Key size={14} /> Initiés
-                      {channels.some(c => c.type === 'initie' && c.has_unread) && <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                      {channels.some(c => c.type === 'initie' && c.has_unread) && <span aria-hidden="true" className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                     </button>
                   )}
                 </div>
               )}
 
-              <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+              <div id="tg-tabpanel" role="tabpanel" aria-labelledby={`tg-tab-${activeTab}`} className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
                 
                 {!isAdmin && (uiMode === 'unified' || activeTab === 'support') && (
                   <button onClick={() => setView('new')} className="w-full mb-3 p-3 border-2 border-dashed border-amber-400 text-amber-700 hover:bg-amber-100 rounded-lg flex items-center justify-center gap-2 font-bold transition-colors shadow-sm">

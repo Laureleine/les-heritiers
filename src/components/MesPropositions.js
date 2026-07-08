@@ -66,8 +66,12 @@ export default function MesPropositions({ session, onBack }) {
             activeTab={activeTab}
             onTabChange={setActiveTab}
             className="mb-6 hide-scrollbar"
+            label="Statut des propositions"
+            panelId="prop-tabpanel"
+            tabIdPrefix="prop-tab"
           />
 
+          <div id="prop-tabpanel" role="tabpanel" aria-labelledby={`prop-tab-${activeTab}`}>
           {filteredPropositions.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-stone-200 shadow-sm">
               <FileText size={48} className="mx-auto text-stone-300 mb-4" />
@@ -106,6 +110,7 @@ export default function MesPropositions({ session, onBack }) {
               ))}
             </div>
           )}
+          </div>
         </>
       )}
     </div>

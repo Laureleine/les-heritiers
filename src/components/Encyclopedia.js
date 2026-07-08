@@ -80,6 +80,9 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                 activeTab={state.activeTab}
                 onTabChange={setters.setActiveTab}
                 className="mb-6 custom-scrollbar"
+                label="Catégories de l'Encyclopédie"
+                panelId="enc-tabpanel"
+                tabIdPrefix="enc-tab"
             />
 
             {/* RECHERCHE ET CRÉATION */}
@@ -236,6 +239,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
             )}
 
             {/* CONTENU (GRILLE DES CARTES) */}
+            <div id="enc-tabpanel" role="tabpanel" aria-labelledby={`enc-tab-${state.activeTab}`}>
             {state.loading ? (
                 <div className="flex justify-center items-center py-20">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
@@ -292,6 +296,7 @@ export default function Encyclopedia({ userProfile, onBack, onOpenValidations, o
                     )}
                 </div>
             )}
+            </div>
 
             {/* MODALES D'ÉDITION ET DE LECTURE */}
             {(state.isCreating || state.editingItem) && (
