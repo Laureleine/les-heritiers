@@ -1,4 +1,24 @@
-﻿# REX — Session 8 Juillet 2026 — v17.4.47 « Le Grand Ménage »
+﻿# REX — Session 8 Juillet 2026 — v17.4.48 « Les Portes Ouvertes »
+
+## Un hook useFocusTrap écrit une fois, utilisé partout
+
+La même logique de piège de focus (trouver les éléments focusables, écouter Tab/Shift+Tab, restaurer le focus au démontage) s'applique à toutes les modales. Écrire le hook une seule fois dans `useFocusTrap.js` et l'appeler dans chaque modale est la bonne architecture — au lieu de dupliquer la logique ou d'utiliser une librairie externe.
+
+## L'aria-live region doit être dans le HTML statique, pas dans React
+
+La région `#a11y-live` est dans `index.html` et non dans un composant React, car elle doit exister avant le premier rendu de l'app. Si elle était dans un composant, elle pourrait manquer au moment d'une notification très précoce (chargement, erreur réseau). Même raisonnement pour le skip link.
+
+## ARIA Tabs : un seul panneau avec id dynamique est valide
+
+Pour les onglets avec rendu conditionnel (un seul contenu visible à la fois), mettre `role="tabpanel"` + `id` dynamique sur le conteneur commun est plus simple et tout aussi valide que créer des panneaux individuels masqués. Le `aria-controls` des onglets peut pointer vers cet id unique.
+
+## Lucide React >= 0.293 : aria-hidden déjà géré par la lib
+
+Avant d'ajouter `aria-hidden="true"` sur chaque icône, vérifier la version de `lucide-react`. Depuis la v0.293, toutes les icônes ont `aria-hidden="true"` par défaut — le problème est donc déjà résolu par la dépendance.
+
+---
+
+# REX — Session 8 Juillet 2026 — v17.4.47 « Le Grand Ménage »
 
 ## Toujours vérifier le code avant d'agir sur une note mémoire
 

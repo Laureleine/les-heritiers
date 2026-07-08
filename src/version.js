@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.48 - \"Les Portes Ouvertes ♿🔑\"",
+    date: "8 Juillet 2026",
+    description: "Grande session d'accessibilité : l'application parle désormais aux lecteurs d'écran, piège correctement le focus dans les modales, annonce les changements de page et les notifications aux technologies d'assistance.",
+    changes: [
+      "♿ **Notifications annoncées aux lecteurs d'écran :** Les messages de succès, erreur et information (toasts) sont désormais lus par VoiceOver et NVDA. Fini le silence radio après une action importante.",
+      "⌨️ **Focus piégé dans les modales :** Un utilisateur naviguant au clavier ne peut plus se retrouver derrière une fenêtre modale ouverte. Le focus reste dans la modale jusqu'à sa fermeture.",
+      "📢 **Changements de page annoncés :** Les navigations dans l'application (qui ne rechargent pas la page) sont désormais signalées aux lecteurs d'écran.",
+      "🔗 **Lien « Aller au contenu » :** Appuyer sur Tab dès l'ouverture affiche un lien permettant de sauter la navigation répétée — standard pour les utilisateurs de clavier.",
+      "🗂️ **Onglets du Grimoire et du Cercle conformes ARIA :** Les onglets Notes / Contacts / Possessions / Chroniques et La Table / Parties sont maintenant reconnus comme tels par les technologies d'assistance. Navigation clavier par flèches directionnelles.",
+      "🧪 **475 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.47 - \"Le Grand Ménage 🧹✨\"",
     date: "8 Juillet 2026",
     description: "Session de nettoyage et de consolidation : suppression des classes CSS fantômes, corrections d'accessibilité sur les couleurs et la navigation clavier. Rien de visible — tout de plus solide.",

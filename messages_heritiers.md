@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.48 « Les Portes Ouvertes ♿🔑 »
+
+📜 **Mise à jour — v17.4.48 « Les Portes Ouvertes »** ♿🔑
+
+Chers Héritiers,
+
+Certaines portes dans l'application ne s'ouvraient que pour une partie des visiteurs.
+
+Cette session a été consacrée à l'accessibilité numérique : les messages de succès et d'erreur sont désormais lus à voix haute par les technologies d'assistance. Les fenêtres modales retiennent correctement le focus clavier. Les changements de page sont annoncés. Les onglets du Grimoire et du Cercle — Notes, Contacts, Possessions, Chroniques, La Table, Parties — sont maintenant reconnus comme tels et navigables à la flèche directionnelle. Un lien « Aller au contenu » attend au premier appui sur Tab pour ceux qui naviguent sans souris.
+
+Rien de visible pour ceux qui voient. Tout de changé pour ceux qui ne voient pas.
+
+✨ v17.4.48
+
+---
+
 ## v17.4.47 « Le Grand Ménage 🧹✨ »
 
 📜 **Mise à jour — v17.4.47 « Le Grand Ménage »** 🧹✨
