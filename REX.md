@@ -1,4 +1,20 @@
-﻿# REX — Session 8 Juillet 2026 — v17.4.43 « Les Cinq Chemins de l'Invisible »
+﻿# REX — Session 8 Juillet 2026 — v17.4.44 « Les Annales des Tables »
+
+## `getXpState` utilise `xp_total` (colonne DB), pas le journal `historique_xp`, pour le total
+
+La source de vérité pour `xpTotal` est `character.xp_total` (colonne DB), et non une somme des entrées GAIN dans `historique_xp`. `historique_xp` sert uniquement à calculer `xpDepense` (somme des DEPENSE). Donc pour la distribution XP depuis une session, il suffit de bumper `xp_total` via la RPC — pas besoin de toucher `historique_xp`. Le `distribute_session_xp` RPC reste propre et les corrections (delta) s'appliquent par appel récursif à la même fonction. Pas de chirurgie JSONB.
+
+## Le pattern "Edit sans Read préalable" — toujours lire d'abord même si le fichier est en contexte
+
+Après un compactage de conversation, le fichier `ActiveCercleView.js` était en mémoire du résumé mais le tool Edit refusait l'opération ("File has not been read yet"). Règle : toujours faire un Read (même `limit: 5`) avant tout Edit sur un fichier non lu dans la session courante, même s'il est mentionné dans le résumé. Coût : une requête. Économie : un cycle d'erreur.
+
+## Inspecter la fermeture JSX lors de l'injection d'un fragment conditionnel dans une structure de divs existante
+
+Quand on enveloppe un bloc HTML existant dans `{condition && <> ... </>}`, le risque est de mal placer le `</>}` par rapport aux divs de fermeture. Ici, l'outer `</div>` s'est retrouvé DANS le fragment, ce qui compilait sans erreur syntaxique mais créait un DOM invalide. Solution : vérifier la fin du fichier après l'edit (lire les 20 dernières lignes) et lancer `vite build` pour confirmer que React ne lève pas d'avertissement.
+
+---
+
+# REX — Session 8 Juillet 2026 — v17.4.43 « Les Cinq Chemins de l'Invisible »
 
 ## Prérequis vs cadeau — une distinction qui change toute l'architecture
 

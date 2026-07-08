@@ -4,6 +4,26 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.44 « Les Annales des Tables 📖🎲 »
+
+📜 **Mise à jour — v17.4.44 « Les Annales des Tables »** 📖🎲
+
+Chers Héritiers,
+
+La mémoire d'une table de jeu est précieuse. Les soirées passées, les révélations, les scènes inoubliables — tout cela méritait un endroit où poser sa plume.
+
+Désormais, chaque Cercle dispose d'un second onglet : **Parties**. C'est là que s'écrivent les annales.
+
+N'importe quel membre peut consigner une session : un titre, une date, la liste des Héritiers présents (tous cochés par défaut, un clic suffit pour noter une absence), et un résumé libre de ce qui s'est passé. Si des Points d'Expérience ont été accordés ce soir-là, ils peuvent être saisis directement et distribués automatiquement — aux présents, à tous les membres, au choix. Si le montant est corrigé plus tard, un ajustement est appliqué sans toucher à ce qui a déjà été dépensé.
+
+Les sessions s'étalent du plus récent au plus ancien. Chaque carte peut être dépliée pour lire le récit. Le Docte peut rendre une session publique, visible de tous sans connexion, ou la garder dans l'ombre du Cercle.
+
+Les chroniques de vos aventures ont trouvé leur demeure.
+
+✨ v17.4.44
+
+---
+
 ## v17.4.43 « Les Cinq Chemins de l'Invisible ✨🌙 »
 
 📜 **Mise à jour — v17.4.43 « Les Cinq Chemins de l'Invisible »** ✨🌙

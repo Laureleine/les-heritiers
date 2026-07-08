@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.44 - \"Les Annales des Tables 📖🎲\"",
+    date: "8 Juillet 2026",
+    description: "Chaque Cercle de Jeu dispose désormais d'un registre vivant : l'onglet Parties. Les membres consignent leurs sessions — titre, date, présents, résumé — et le Docte (ou n'importe quel membre) peut y associer des Points d'Expérience distribués automatiquement aux Héritiers présents. Les archives s'étalent en ordre anti-chronologique, les XP sont tracés, les absences notées. La mémoire collective de la table prend enfin forme.",
+    changes: [
+      "📖 **Onglet Parties dans les Cercles :** Chaque Cercle a désormais deux onglets — « La Table » (comme avant) et « Parties » (nouveau). L'historique des sessions y est consigné en ordre anti-chronologique.",
+      "✍️ **Création de session :** Tous les membres du Cercle peuvent enregistrer une partie — titre, date, résumé narratif, et liste des Héritiers présents (cochés par défaut, décochables pour les absents).",
+      "✨ **Distribution d'XP intégrée :** Un champ XP dans le formulaire, avec checkbox d'attribution automatique. Si quelqu'un est absent, une deuxième option permet de distribuer aux présents seulement (ou à tous les membres malgré tout).",
+      "⚖️ **Correction post-attribution :** Si le montant XP est modifié après coup, un delta est appliqué automatiquement à chaque Héritier concerné. Une dette d'XP peut en résulter si le montant descend.",
+      "🌐 **Visibilité par session :** Le Docte peut rendre chaque session publique (visible sans connexion) ou privée (membres du Cercle seulement), via un bouton bascule sur chaque carte.",
+      "🗑️ **Édition et suppression :** Le créateur de la session ou le Docte peut modifier ou supprimer une session. La suppression n'annule pas les XP déjà distribués.",
+      "🧪 **475 Sentinelles — toujours en faction, aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.43 - \"Les Cinq Chemins de l'Invisible ✨🌙\"",
     date: "8 Juillet 2026",
     description: "Cinq nouvelles pratiques magiques s'ouvrent aux Héritiers les plus chevronnés. Faëomancie, Souffle, Nécromancie, Théurgie et Grand Langage sont désormais des compétences déblocables après le scellage, pour ceux qui ont acquis les savoirs et les prérequis nécessaires. La section Pratiques Magiques n'apparaît qu'une fois Occultisme ≥ 4 atteint — un voile se lève alors, révélant les voies accessibles et celles qui demandent encore du travail.",
