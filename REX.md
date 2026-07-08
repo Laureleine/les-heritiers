@@ -1,4 +1,16 @@
-﻿# REX — Session 8 Juillet 2026 — v17.4.49 « Les Petits Tracas du Quotidien »
+﻿# REX — Session 8 Juillet 2026 — v17.4.50 « La Table Bien Dressée »
+
+## Quand on expose un calcul interne en paramètre, retirer l'import de la fonction de calcul
+
+`calculerTranche` était importée dans `useMenuGenerateur` uniquement pour être appelée ligne 16. Dès qu'on remplace ce calcul par un paramètre fourni par l'UI, l'import devient mort. Supprimer l'import immédiatement évite un warning bundler et du code trompeur.
+
+## Toujours ajouter la nouvelle clé dans PARAMS_INITIAUX
+
+Le `ToggleGroup` était lié à `params.trancheConvives` — si `PARAMS_INITIAUX` ne contient pas `trancheConvives`, le bouton démarre sans valeur sélectionnée. La valeur par défaut dans le formulaire et la valeur initiale dans le parent doivent être ajoutées ensemble.
+
+---
+
+# REX — Session 8 Juillet 2026 — v17.4.49 « Les Petits Tracas du Quotidien »
 
 ## La règle de nommage des colonnes est cruciale entre générateurs
 

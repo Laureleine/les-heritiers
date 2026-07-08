@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.50 - \"La Table Bien Dressée 🍽️🎚️\"",
+    date: "8 Juillet 2026",
+    description: "Le générateur de menus gagne un contrôle manuel sur le contexte de la tablée — intime, ordinaire ou grande réception. Le Docte n'est plus contraint par le calcul automatique.",
+    changes: [
+      "🎚️ **Contrôle manuel de la tranche de convives :** Trois boutons — Intime (quotidien), Tablée (ordinaire), Banquet (réception) — permettent de forcer le contexte indépendamment du nombre de convives. Plus besoin de bricoler le nombre pour tomber sur la bonne structure de repas.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.49 - \"Les Petits Tracas du Quotidien 😤🗞️\"",
     date: "8 Juillet 2026",
     description: "Nouveau générateur : tirez au sort les ennuis ordinaires qui empoisonnent la vie d'un personnage en 1899 — santé, budget, réputation, modernité. Avec sous-générateurs et système communautaire complet.",

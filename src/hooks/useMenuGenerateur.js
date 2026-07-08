@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../config/supabase';
-import { calculerTranche, genererMenu, rerollService, rerollPlat, resoudrePlat } from '../utils/menuGenerator';
+import { genererMenu, rerollService, rerollPlat, resoudrePlat } from '../utils/menuGenerator';
 
 export function useMenuGenerateur(platsApprouves) {
   const [menu, setMenu] = useState(null);
@@ -9,11 +9,9 @@ export function useMenuGenerateur(platsApprouves) {
   const [loading, setLoading] = useState(false);
   const [erreur, setErreur] = useState(null);
 
-  const generer = useCallback(async ({ saison, typeRepas, niveauFinancier, nbConvives, niveauCuisinier }) => {
+  const generer = useCallback(async ({ saison, typeRepas, niveauFinancier, trancheConvives, nbConvives, niveauCuisinier }) => {
     setLoading(true);
     setErreur(null);
-
-    const trancheConvives = calculerTranche(typeRepas, nbConvives);
 
     const { data: structuresPossibles } = await supabase
       .from('menu_structures')

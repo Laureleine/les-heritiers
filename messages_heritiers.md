@@ -4,6 +4,20 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.50 « La Table Bien Dressée 🍽️🎚️ »
+
+📜 **Mise à jour — v17.4.50 « La Table Bien Dressée »** 🍽️🎚️
+
+Chers Doctes,
+
+Un raffinement discret pour le Générateur de Menu : vous pouvez désormais choisir vous-même le contexte de la tablée, sans que le calcul automatique ne vous y contraigne.
+
+Trois boutons suffisent — **Intime** (le repas de tous les jours, en famille ou en tête-à-tête), **Tablée** (une réunion ordinaire, quelques convives autour d'une table), **Banquet** (la grande réception, l'apparat, les services qui s'enchaînent). Inutile désormais de tripoter le nombre de convives pour forcer telle ou telle structure : le Docte commande, la cuisine obéit.
+
+*— Les Archives de la Société des Héritiers*
+
+---
+
 ## v17.4.49 « Les Petits Tracas du Quotidien 😤🗞️ »
 
 📜 **Mise à jour — v17.4.49 « Les Petits Tracas du Quotidien »** 😤🗞️

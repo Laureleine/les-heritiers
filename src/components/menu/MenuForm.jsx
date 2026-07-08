@@ -24,6 +24,12 @@ const NIVEAUX_FINANCIERS = [
   { id: 'aristocratie', label: 'Aristocratie' },
 ];
 
+const TRANCHES_CONVIVES = [
+  { id: 'intime', label: 'Intime (Tous les jours)' },
+  { id: 'tablee', label: 'Tablée (Ordinaire)' },
+  { id: 'banquet', label: 'Banquet (Réception)' },
+];
+
 const NIVEAUX_CUISINIER = [
   '1 — Marmiton débutant', '2', '3', '4 — Cuisinier compétent', '5', '6', '7 — Chef confirmé',
   '8', '9', '10 — Maître queux', '11', '12', '13', '14 — Toque légendaire',
@@ -61,9 +67,10 @@ export default function MenuForm({ params, onChange, onGenerer, loading }) {
       <ToggleGroup label="Saison" options={SAISONS} value={params.saison} onChange={set('saison')} />
       <ToggleGroup label="Type de repas" options={TYPES_REPAS} value={params.typeRepas} onChange={set('typeRepas')} />
       <ToggleGroup label="Niveau financier" options={NIVEAUX_FINANCIERS} value={params.niveauFinancier} onChange={set('niveauFinancier')} />
+      <ToggleGroup label="Contexte / Tranche" options={TRANCHES_CONVIVES} value={params.trancheConvives} onChange={set('trancheConvives')} />
 
       <div>
-        <span className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1.5">Nombre de convives</span>
+        <span className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1.5">Nombre exact de convives</span>
         <input
           type="number"
           min={1}

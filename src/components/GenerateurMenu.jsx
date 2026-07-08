@@ -13,6 +13,7 @@ const PARAMS_INITIAUX = {
   saison: 'automne',
   typeRepas: 'diner',
   niveauFinancier: 'bourgeois',
+  trancheConvives: 'tablee',
   nbConvives: 6,
   niveauCuisinier: 4,
 };
