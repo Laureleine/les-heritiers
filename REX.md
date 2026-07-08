@@ -1,4 +1,24 @@
-﻿# REX — Session 8 Juillet 2026 — v17.4.48 « Les Portes Ouvertes »
+﻿# REX — Session 8 Juillet 2026 — v17.4.49 « Les Petits Tracas du Quotidien »
+
+## La règle de nommage des colonnes est cruciale entre générateurs
+
+Le générateur de Poche utilise `value_m` / `value_f` / `saison`. Le Tracas utilise `titre` / `description` / `exemple_key`. Ces différences de schéma cassent silencieusement le hook et le composant si on copie-colle sans adapter. Vérifier le schéma de la table **avant** de copier le code du hook.
+
+## Les sous-générateurs s'enchaînent via exemple_key → ex_{key}
+
+La convention `exemple_key = 'lettre_anonyme'` → table `ex_lettre_anonyme` permet d'enchaîner un tirage secondaire sans colonne dédiée pour chaque sous-générateur. La clé est convertie en préfixe `ex_` dans `genererTracas`. Simple et extensible.
+
+## Les CHECK constraints sur table_name sont à mettre à jour à chaque nouveau sous-générateur
+
+Le script de migration liste explicitement les 11 valeurs autorisées. Si on ajoute un 8e sous-générateur plus tard, il faut modifier le CHECK et relancer une migration d'ALTER TABLE. Ne pas oublier.
+
+## Le ValidationTab doit pointer sur la bonne table (pas copier-coller de poche)
+
+Dans `PocheGenerateur.jsx`, `ValidationTab` fait une requête sur `poche_table_entries`. En copiant pour le Tracas, il faut corriger en `tracas_table_entries` — c'est l'erreur silencieuse la plus probable dans ce pattern.
+
+---
+
+# REX — Session 8 Juillet 2026 — v17.4.48 « Les Portes Ouvertes »
 
 ## Un hook useFocusTrap écrit une fois, utilisé partout
 

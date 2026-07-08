@@ -4,6 +4,26 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.49 « Les Petits Tracas du Quotidien 😤🗞️ »
+
+📜 **Mise à jour — v17.4.49 « Les Petits Tracas du Quotidien »** 😤🗞️
+
+Chers Doctes, Héritiers et âmes en peine de la Belle Époque,
+
+Paris, 1899. La vie n'est pas qu'intrigues de salon et secrets de famille — elle est aussi rhume qui traîne, loyer en retard, voisin rancunier et gaz qui refuse de s'allumer. C'est précisément pour donner chair à cet ordinaire accablant que les Archives de la Société ont été enrichies d'un nouvel outil.
+
+**Le Générateur de Tracas** vient de rejoindre la boîte à outils des Doctes.
+
+En un clic, tirez au sort les ennuis du quotidien qui empoisonnent l'existence de vos personnages : soixante tracas pondérés par fréquence, répartis en quatre domaines — **Santé & Corps**, **Logistique & Budget**, **Social & Réputation** et **Modernité & Technique**. Certains tracas entraînent un second tirage pour vous préciser le détail : qui vous a écrit cette lettre anonyme ? Quel fâcheur a encore semé la zizanie ? Quelle erreur de livraison vient compliquer la semaine ?
+
+Les tables sont vivantes : si vous pensez à un tracas oublié, proposez-le. Les Gardiens trancheront.
+
+Que vos personnages souffrent avec élégance — c'est tout ce qu'on leur demande.
+
+*— Les Archives de la Société des Héritiers*
+
+---
+
 ## v17.4.48 « Les Portes Ouvertes ♿🔑 »
 
 📜 **Mise à jour — v17.4.48 « Les Portes Ouvertes »** ♿🔑

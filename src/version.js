@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.49 - \"Les Petits Tracas du Quotidien 😤🗞️\"",
+    date: "8 Juillet 2026",
+    description: "Nouveau générateur : tirez au sort les ennuis ordinaires qui empoisonnent la vie d'un personnage en 1899 — santé, budget, réputation, modernité. Avec sous-générateurs et système communautaire complet.",
+    changes: [
+      "😤 **Générateur de Tracas :** 60 tracas pondérés répartis en quatre catégories (Santé & Corps, Logistique & Budget, Social & Réputation, Modernité & Technique) — du rhume tenace à la grève du gaz en passant par la rumeur venimeuse.",
+      "🎲 **Sous-générateurs enchaînés :** Certains tracas déclenchent un second tirage pour préciser le détail — une lettre anonyme, un parent éloigné, un fâcheur, une erreur de livraison, etc.",
+      "🏛️ **100 % base de données :** Les tables sont éditables sans redéploiement. La communauté peut proposer de nouveaux tracas ; les Gardiens les approuvent ou les refusent depuis l'onglet Validation.",
+      "🃏 **Cartes colorées par catégorie :** Rose pour la santé, pierre pour la logistique, ambre pour le social, bleu ciel pour la technologie.",
+      "🧪 **483 Sentinelles — aucune régression, 8 nouvelles gardes.**",
+    ],
+  },
+  {
     version: "17.4.48 - \"Les Portes Ouvertes ♿🔑\"",
     date: "8 Juillet 2026",
     description: "Grande session d'accessibilité : l'application parle désormais aux lecteurs d'écran, piège correctement le focus dans les modales, annonce les changements de page et les notifications aux technologies d'assistance.",
