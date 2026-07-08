@@ -1,6 +1,6 @@
 // src/components/OutilsHub.jsx
 import React from 'react';
-import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package, Route, Feather } from '../config/icons';
+import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package, Route, Feather, AlertTriangle } from '../config/icons';
 
 const OUTILS = [
   {
@@ -80,10 +80,21 @@ const OUTILS = [
     hover: 'hover:bg-violet-100 hover:border-violet-300',
     iconColor: 'text-violet-700',
   },
+  {
+    id: 'tracas',
+    titre: 'Générateur de Tracas',
+    description: "Tirez au sort les ennuis du quotidien qui empoisonnent la vie de vos personnages — Paris, 1899.",
+    icon: AlertTriangle,
+    couleur: 'orange',
+    bg: 'bg-orange-50',
+    border: 'border-orange-200',
+    hover: 'hover:bg-orange-100 hover:border-orange-300',
+    iconColor: 'text-orange-700',
+  },
 ];
 
-export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche, onOpenAmbiance, onOpenArgot }) {
-  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche, ambiance: onOpenAmbiance, argot: onOpenArgot };
+export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche, onOpenAmbiance, onOpenArgot, onOpenTracas }) {
+  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche, ambiance: onOpenAmbiance, argot: onOpenArgot, tracas: onOpenTracas };
 
   return (
     <div className="min-h-screen bg-[#f5f0e8]">
