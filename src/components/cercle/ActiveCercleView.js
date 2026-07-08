@@ -1,15 +1,18 @@
 // src/components/cercle/ActiveCercleView.js
 import React, { useState } from 'react';
-import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles } from '../../config/icons';
+import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles, BookOpen } from '../../config/icons';
 import { getXpState } from '../../utils/xpActions';
+import TabPartiesJeu from './TabPartiesJeu';
 
 const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
   const [xpDefault, setXpDefault] = useState(0);
   const [xpAmounts, setXpAmounts] = useState({});
   const [xpMotif, setXpMotif] = useState('');
+  const [subTab, setSubTab] = useState('table');
 
   if (!cercle) return null;
   const isDocte = cercle.docte_id === session.user.id;
+  const userId  = session.user.id;
 
   const handleXpPreset = (amount) => {
     setXpDefault(amount);
@@ -58,9 +61,6 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
             </button>
           </div>
 
-          <h3 className="font-serif font-bold text-stone-500 mt-4 text-sm flex items-center gap-2 uppercase tracking-widest">
-            <Users size={14} /> Héritiers à la table ({activeMembers.length})
-          </h3>
         </div>
 
         {isDocte ? (
@@ -85,6 +85,34 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           </button>
         )}
       </div>
+
+      {/* ── Onglets ── */}
+      <div className="flex gap-1 border-b border-stone-100 mb-5 -mt-1">
+        <button
+          onClick={() => setSubTab('table')}
+          className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'table' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
+        >
+          <Users size={14} /> La Table
+        </button>
+        <button
+          onClick={() => setSubTab('parties')}
+          className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'parties' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
+        >
+          <BookOpen size={14} /> Parties
+        </button>
+      </div>
+
+      {/* ── Onglet Parties ── */}
+      {subTab === 'parties' && (
+        <TabPartiesJeu
+          cercleId={cercle.id}
+          userId={userId}
+          isDocte={isDocte}
+          activeMembers={activeMembers}
+        />
+      )}
+
+      {subTab === 'table' && <>
 
       {/* 🎁 PANNEAU D'ATTRIBUTION D'XP (Docte seulement) */}
       {isDocte && activeMembers.length > 0 && (
@@ -352,7 +380,8 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           )}
         </div>
       </div>
-    </div>
+    </>}
+  </div>
   );
 });
 

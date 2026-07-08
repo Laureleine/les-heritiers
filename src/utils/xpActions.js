@@ -33,6 +33,9 @@ export const XP_CODES = {
     GRAND_LANGAGE_DEBLOCAGE: 'GRAND_LANGAGE_DEBLOCAGE',  // Grand Langage débloqué
     // --- Vie Sociale ---
     FORTUNE_ELEVATION:     'FORTUNE_ELEVATION',      // Fortune ↑↓
+    // --- Sessions de jeu ---
+    SESSION_XP:            'SESSION_XP',            // XP attribué depuis une session de cercle
+    SESSION_XP_CORRECTION: 'SESSION_XP_CORRECTION', // Correction delta suite à modification d'une session
     // --- Entrées Système ---
     XP_GAIN:               'XP_GAIN',               // Gain d'XP par le MJ ou ajustement
     XP_AJUSTEMENT:         'XP_AJUSTEMENT',         // Correction manuelle (retrait)
