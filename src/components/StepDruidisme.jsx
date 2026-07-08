@@ -176,7 +176,7 @@ export default function StepDruidisme() {
                         <div className="flex items-center gap-2 bg-emerald-50 rounded-lg px-3 py-2 border border-emerald-200">
                             <CheckCircle size={14} className="text-emerald-600 shrink-0" />
                             <span className="text-sm text-emerald-800">
-                                <strong>Spécialité gratuite :</strong> Connaissance du druidisme
+                                <strong>Spécialité d'Occultisme gratuite :</strong> Connaissance du druidisme
                             </span>
                         </div>
 

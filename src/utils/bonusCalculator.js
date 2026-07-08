@@ -115,12 +115,12 @@ export const calculateCharacterStats = (character, gameData) => {
         }
     });
 
-    // Spécialité Eubage : "Connaissance du druidisme" offerte automatiquement
+    // Spécialité Eubage : "Connaissance du druidisme" est une spécialité d'Occultisme (règle p.6)
     if (character.data?.eubage?.actif) {
-        if (!result.specialites.gratuites['Druidisme']) {
-            result.specialites.gratuites['Druidisme'] = [];
+        if (!result.specialites.gratuites['Occultisme']) {
+            result.specialites.gratuites['Occultisme'] = [];
         }
-        result.specialites.gratuites['Druidisme'].push({
+        result.specialites.gratuites['Occultisme'].push({
             source: 'Eubage',
             specialite: 'Connaissance du druidisme'
         });
