@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.54 - \"L'Œil du Scrutateur 🔍✨\"",
+    date: "9 Juillet 2026",
+    description: "Les Pratiques Magiques dévoilent enfin leurs secrets. Là où un simple «Prérequis manquants» laissait les Héritiers dans l'obscurité, chaque condition s'affiche maintenant en vert ou en rouge — avec la valeur actuelle face à celle requise. Fini de chercher à tâtons ce qui manque pour débloquer une voie mystique.",
+    changes: [
+      "🔍 **Diagnostique des Pratiques Magiques :** Chaque prérequis (Occultisme, spécialité de Connaissance, statistique secondaire) affiche désormais un ✓ vert si rempli ou un ✗ rouge avec la valeur actuelle entre parenthèses si insuffisant — plus aucune surprise.",
+      "🐛 **Correction du hasSpec :** La vérification des spécialités issues des prédilections de fée et des atouts était silencieusement ignorée dans le calcul des magies — corrigé.",
+      "🗄️ **specialites dans computedStats :** Les spécialités gratuites (atouts, vie sociale) sont maintenant accessibles par le moteur de vérification des magies pour les fées comme pour les humains.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.53 - \"Le Barème du Sort ⚖️🎲\"",
     date: "9 Juillet 2026",
     description: "Les dés du destin ont désormais un langage. Dans les ateliers communautaires des Générateurs, les poids numériques abstraits ont cédé la place à cinq degrés de probabilité en français — d'Extrêmement rare à Très fréquent — pour que chaque Héritier comprenne d'un regard à quelle cadence les fées et les tracas se manifestent.",

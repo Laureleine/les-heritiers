@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.54 — L'Œil du Scrutateur 🔍✨ (9 juillet 2026)
+
+Chers Héritiers,
+
+Un rapport de terrain est parvenu aux ateliers de l'Invisible : certains d'entre vous, ayant atteint le rang 4 ou 5 en Occultisme et acquis les Connaissances correspondantes, se voyaient opposer un laconique *Prérequis manquants* — sans que la Porte daigne préciser laquelle des conditions lui faisait défaut.
+
+L'œil du Scrutateur veille désormais sur vous. **Chaque prérequis des Pratiques Magiques s'affiche en détail** : un ✓ vert pour les conditions remplies, un ✗ rouge accompagné de votre valeur actuelle face à celle requise pour celles qui restent à atteindre. Si votre Fortitude est à 3 alors qu'il en faut 4 pour maîtriser le Souffle, vous le saurez d'un regard — et vous saurez vers quoi orienter vos prochains points d'expérience.
+
+En parallèle, quelques vérifications internes ont été renforcées : les spécialités accordées par les atouts et les prédilections de fée sont désormais correctement reconnues par le moteur des magies.
+
+Que la lumière des signes vous guide,
+*Les artisans de l'Invisible*
+
+---
+
 ## v17.4.53 — Le Barème du Sort ⚖️🎲 (9 juillet 2026)
 
 Chers Héritiers,

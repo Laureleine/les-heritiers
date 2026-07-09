@@ -1,4 +1,28 @@
-﻿# REX — Session 9 Juillet 2026 — v17.4.53 « Le Barème du Sort »
+﻿# REX — Session 9 Juillet 2026 — v17.4.54 « L'Œil du Scrutateur »
+
+## Diagnostiquer un bug « comportement correct, UX fautive »
+
+Quand un bug est signalé et que le code semble correct, interroger la base de données réelle avant de chercher une erreur logique. Ici : extraction du backup JSON via PowerShell pour inspecter les stats du personnage (Occultisme 5, Fortitude 3, sans Chirurgie) — ce qui a immédiatement révélé que le comportement était correct et que le problème était purement UX.
+
+## Le backup JSON comme base de débogage terrain
+
+Les backups Supabase en JSON contiennent toutes les données joueurs. Un script PowerShell `ConvertFrom-Json` + filtrage par `user_id` ou `fairy_type_id` permet d'inspecter directement les données en production sans passer par l'interface Supabase. Garder ce réflexe pour tous les bugs « le joueur dit X mais le code dit Y ».
+
+## Code mort silencieux : toujours vérifier que les clés de computedStats existent
+
+`character.computedStats?.specialites?.gratuites` était une vérification morte depuis l'origine — `specialites` n'était jamais ajouté à `computedStats`. Ce genre de bug ne génère aucune erreur : l'expression renvoie juste `undefined` et continue. Leçon : avant d'écrire une vérification sur un sous-objet de `computedStats`, confirmer que la clé est effectivement peuplée dans `characterEngine.js`.
+
+## Refactoriser un prédicat monolithique en tableau de détails
+
+Remplacer `checkPrereqs: (ct, ft, hasSpec) => condA && condB && condC` par `getDetails: (...) => [{ label, met }, ...]` permet simultanément d'avoir la liste des conditions remplies/manquantes pour l'UX ET de conserver `prereqsOk = details.every(d => d.met)`. Un seul refactor, deux bénéfices.
+
+## Ajouter `val` et `need` aux détails de prérequis numériques
+
+Pour les prérequis de type « stat ≥ N », stocker `val` (valeur actuelle) et `need` (valeur requise) dans le détail permet d'afficher « (3/4) » directement dans le UI sans recalcul. Pour les prérequis booléens (spécialité présente ou non), `val`/`need` restent absents — la distinction est naturelle.
+
+---
+
+# REX — Session 9 Juillet 2026 — v17.4.53 « Le Barème du Sort »
 
 ## Une migration de type sur colonne existante : ne jamais passer par NULL
 
