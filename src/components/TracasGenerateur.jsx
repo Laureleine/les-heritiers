@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, AlertTriangle, RotateCcw, ChevronDown, Clock, CheckCircle, XCircle, Edit } from '../config/icons';
 import { useTracasTableEntries } from '../hooks/useTracasTableEntries';
 import { genererTracas } from '../utils/tracasGenerator';
+import { WEIGHT_LABELS, weightLabel } from '../data/pnjTables';
 import { isAdmin } from '../utils/authRoles';
 import { supabase } from '../config/supabase';
 
@@ -19,11 +20,7 @@ const NOMBRE_OPTIONS = [
   { id: '3', label: '3 tracas' },
 ];
 
-const POIDS_OPTIONS = [
-  { id: '50', label: 'Fréquent (50)' },
-  { id: '25', label: 'Modéré (25)' },
-  { id: '5', label: 'Rare (5)' },
-];
+const POIDS_OPTIONS = WEIGHT_LABELS.map((w) => ({ id: w.key, label: w.label }));
 
 const TABLE_LABELS = {
   sante: 'Santé & Corps',
@@ -74,7 +71,7 @@ function ProposerTracas({ session, userProfile, proposer, ajouterDirectement, my
   const [titre, setTitre] = useState('');
   const [description, setDescription] = useState('');
   const [exempleKey, setExempleKey] = useState('');
-  const [weight, setWeight] = useState('25');
+  const [weight, setWeight] = useState('frequent');
   const [msg, setMsg] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
@@ -86,7 +83,7 @@ function ProposerTracas({ session, userProfile, proposer, ajouterDirectement, my
     setTitre(entryToEdit.titre || '');
     setDescription(entryToEdit.description || '');
     setExempleKey(entryToEdit.exemple_key || '');
-    setWeight(String(entryToEdit.weight ?? 25));
+    setWeight(entryToEdit.weight ?? 'frequent');
     setEditingId(entryToEdit._dbId);
     setOpen(true);
   }, [entryToEdit]);
@@ -94,14 +91,14 @@ function ProposerTracas({ session, userProfile, proposer, ajouterDirectement, my
   if (!session?.user) return null;
 
   const annulerEdition = () => {
-    setTitre(''); setDescription(''); setExempleKey(''); setWeight('25'); setEditingId(null);
+    setTitre(''); setDescription(''); setExempleKey(''); setWeight('frequent'); setEditingId(null);
     onCancelEdit?.();
   };
 
   const submit = async (e) => {
     e.preventDefault();
     if (!titre.trim()) return;
-    const { error } = await proposer({ tableName, titre: titre.trim(), description: description.trim(), exempleKey: exempleKey || null, weight: Number(weight) });
+    const { error } = await proposer({ tableName, titre: titre.trim(), description: description.trim(), exempleKey: exempleKey || null, weight });
     if (error) {
       setMsg({ type: 'error', text: error.message });
     } else {
@@ -112,12 +109,12 @@ function ProposerTracas({ session, userProfile, proposer, ajouterDirectement, my
 
   const handleSaveDirect = async () => {
     if (!titre.trim()) return;
-    const { error } = await ajouterDirectement({ tableName, titre: titre.trim(), description: description.trim(), exempleKey: exempleKey || null, weight: Number(weight) }, editingId);
+    const { error } = await ajouterDirectement({ tableName, titre: titre.trim(), description: description.trim(), exempleKey: exempleKey || null, weight }, editingId);
     if (error) {
       setMsg({ type: 'error', text: error.message });
     } else {
       setMsg({ type: 'success', text: editingId ? 'Tracas modifié !' : 'Tracas ajouté directement !' });
-      setTitre(''); setDescription(''); setExempleKey(''); setWeight('25'); setEditingId(null);
+      setTitre(''); setDescription(''); setExempleKey(''); setWeight('frequent'); setEditingId(null);
       onCancelEdit?.();
     }
   };
@@ -273,7 +270,7 @@ function ValidationTab({ session, approuver, refuser, ajouterDirectement }) {
   const [rejectReasonFor, setRejectReasonFor] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ titre: '', description: '', weight: 25 });
+  const [editForm, setEditForm] = useState({ titre: '', description: '', weight: 'frequent' });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -297,7 +294,7 @@ function ValidationTab({ session, approuver, refuser, ajouterDirectement }) {
   };
 
   const enregistrerEdition = async (entry) => {
-    await ajouterDirectement({ tableName: entry.table_name, titre: editForm.titre.trim(), description: editForm.description.trim(), exempleKey: entry.exemple_key || null, weight: Number(editForm.weight) || 1 }, entry.id);
+    await ajouterDirectement({ tableName: entry.table_name, titre: editForm.titre.trim(), description: editForm.description.trim(), exempleKey: entry.exemple_key || null, weight: editForm.weight }, entry.id);
     setEditingId(null);
     load();
   };
@@ -327,7 +324,9 @@ function ValidationTab({ session, approuver, refuser, ajouterDirectement }) {
                 <div className="grid gap-2 sm:grid-cols-2">
                   <input value={editForm.titre} onChange={(e) => setEditForm((f) => ({ ...f, titre: e.target.value }))} className="border border-stone-200 rounded-lg px-2 py-1 text-sm sm:col-span-2" placeholder="Titre" />
                   <textarea rows={2} value={editForm.description} onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description (optionnel)" className="border border-stone-200 rounded-lg px-2 py-1 text-sm sm:col-span-2 resize-none" />
-                  <input type="number" min="1" value={editForm.weight} onChange={(e) => setEditForm((f) => ({ ...f, weight: e.target.value }))} className="border border-stone-200 rounded-lg px-2 py-1 text-sm" />
+                  <select value={editForm.weight} onChange={(e) => setEditForm((f) => ({ ...f, weight: e.target.value }))} className="border border-stone-200 rounded-lg px-2 py-1 text-sm bg-white">
+                    {WEIGHT_LABELS.map((w) => <option key={w.key} value={w.key}>{w.label}</option>)}
+                  </select>
                   <div className="flex gap-2">
                     <button onClick={() => enregistrerEdition(entry)} className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded px-3 py-1.5">Enregistrer</button>
                     <button onClick={() => setEditingId(null)} className="text-xs text-stone-400 hover:text-stone-600 px-2">Annuler</button>
@@ -338,7 +337,7 @@ function ValidationTab({ session, approuver, refuser, ajouterDirectement }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">
-                        {TABLE_LABELS[entry.table_name] || entry.table_name} · poids {entry.weight}
+                        {TABLE_LABELS[entry.table_name] || entry.table_name} · {weightLabel(entry.weight)}
                       </span>
                       {entry.is_official && <span className="text-xs text-orange-600 font-bold">Canon</span>}
                     </div>

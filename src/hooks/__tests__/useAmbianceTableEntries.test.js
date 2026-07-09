@@ -45,7 +45,7 @@ describe('useAmbianceTableEntries — ajouterDirectement/approuver/refuser', () 
     await waitFor(() => expect(result.current.loaded).toBe(true));
 
     await act(async () => {
-      await result.current.ajouterDirectement({ tableName: 'decor', variante: 'paris_populaire', value: 'Une charrette renversée', weight: 20 });
+      await result.current.ajouterDirectement({ tableName: 'decor', variante: 'paris_populaire', value: 'Une charrette renversée', weight: 'peu_frequent' });
     });
 
     expect(insertSpy).toHaveBeenCalledWith(expect.objectContaining({
@@ -68,10 +68,10 @@ describe('useAmbianceTableEntries — ajouterDirectement/approuver/refuser', () 
     await waitFor(() => expect(result.current.loaded).toBe(true));
 
     await act(async () => {
-      await result.current.ajouterDirectement({ tableName: 'decor', variante: 'paris_populaire', value: 'Corrigé', weight: 30 }, 'entry-42');
+      await result.current.ajouterDirectement({ tableName: 'decor', variante: 'paris_populaire', value: 'Corrigé', weight: 'frequent' }, 'entry-42');
     });
 
-    expect(updateSpy).toHaveBeenCalledWith({ value: 'Corrigé', weight: 30 }, 'entry-42');
+    expect(updateSpy).toHaveBeenCalledWith({ value: 'Corrigé', weight: 'frequent' }, 'entry-42');
   });
 
   it('approuver passe le statut à approved avec approved_by', async () => {

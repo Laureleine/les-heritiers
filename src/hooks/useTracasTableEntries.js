@@ -12,7 +12,7 @@ function groupEntries(rows) {
       titre: row.titre,
       description: row.description || null,
       exemple_key: row.exemple_key || null,
-      weight: row.weight ?? 10,
+      weight: row.weight ?? 'frequent',
     });
   }
   return grouped;
@@ -55,7 +55,7 @@ export function useTracasTableEntries(session) {
       titre: titre.trim(),
       description: description?.trim() || null,
       exemple_key: exempleKey || null,
-      weight: weight ?? 10,
+      weight: weight ?? 'frequent',
       created_by: session.user.id,
     });
     setSubmitting(false);
@@ -72,7 +72,7 @@ export function useTracasTableEntries(session) {
         titre: titre.trim(),
         description: description?.trim() || null,
         exemple_key: exempleKey || null,
-        weight: weight ?? 10,
+        weight: weight ?? 'frequent',
       }).eq('id', editingId));
     } else {
       ({ error } = await supabase.from('tracas_table_entries').insert({
@@ -80,7 +80,7 @@ export function useTracasTableEntries(session) {
         titre: titre.trim(),
         description: description?.trim() || null,
         exemple_key: exempleKey || null,
-        weight: weight ?? 10,
+        weight: weight ?? 'frequent',
         is_official: true,
         status: 'approved',
         created_by: session.user.id,

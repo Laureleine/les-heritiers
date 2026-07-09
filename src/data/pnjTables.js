@@ -893,6 +893,19 @@ export const SURCHARGES_TYPE_FEE = {
   },
 };
 
+// ─── POIDS ───────────────────────────────────────────────────────────────────
+
+export const WEIGHT_LABELS = [
+  { key: 'extremement_rare', label: 'Extrêmement rare', value: 1  },
+  { key: 'rare',             label: 'Rare',             value: 3  },
+  { key: 'peu_frequent',     label: 'Peu fréquent',     value: 5  },
+  { key: 'frequent',         label: 'Fréquent',         value: 10 },
+  { key: 'tres_frequent',    label: 'Très fréquent',    value: 20 },
+];
+
+export const labelToWeight = (label) => WEIGHT_LABELS.find(w => w.key === label)?.value ?? 10;
+export const weightLabel   = (key)   => WEIGHT_LABELS.find(w => w.key === key)?.label   ?? key;
+
 // ─── UTILITAIRE ──────────────────────────────────────────────────────────────
 
 /** Tire un élément aléatoire dans un tableau. */
@@ -903,14 +916,15 @@ export function tirage(tableau) {
 
 /**
  * Tirage pondéré : les entrées avec un weight élevé ont plus de chances.
- * Chaque objet doit avoir un champ weight (défaut 1 si absent).
+ * Accepte weight numérique (tables hardcodées PNJ) ou label texte (tables DB).
  */
 export function tiragePondere(tableau) {
   if (!tableau || tableau.length === 0) return null;
-  const total = tableau.reduce((s, item) => s + (item.weight ?? 1), 0);
+  const w = (item) => typeof item.weight === 'string' ? labelToWeight(item.weight) : (item.weight ?? 1);
+  const total = tableau.reduce((s, item) => s + w(item), 0);
   let seuil = Math.random() * total;
   for (const item of tableau) {
-    seuil -= (item.weight ?? 1);
+    seuil -= w(item);
     if (seuil <= 0) return item;
   }
   return tableau[tableau.length - 1];

@@ -7,6 +7,7 @@ import {
   TRANCHES_AGE, SEXES, GENRES, NATIONALITES,
   SITUATIONS_MATRIMONIALES, SITUATIONS_FAMILIALES,
   TABLES_REEL, METIERS_PAR_TRANCHE_AGE,
+  WEIGHT_LABELS, weightLabel,
   accordLabel, resolveText, getPolarity,
 } from '../data/pnjTables';
 import { usePnjTableEntries } from '../hooks/usePnjTableEntries';
@@ -55,11 +56,12 @@ const DOT_RIGHT = { l2: '', l1: '', n: '', d1: '●', d2: '●●' };
 
 function EntryCell({ entry, isDb, genderView = 'm', onEdit, isIdentity }) {
   if (isIdentity) {
-    const weight = entry.weight ?? 1;
+    const weight = entry.weight ?? 'frequent';
+    const weightDisplay = typeof weight === 'string' ? weightLabel(weight) : `×${weight}`;
     return (
       <div className={`flex items-center gap-1 px-2.5 py-2 group ${isDb ? 'bg-amber-50' : ''}`}>
         <span className="flex-1 text-sm font-serif leading-snug text-stone-700">{entry.label}</span>
-        <span className="text-xs text-stone-400 bg-stone-100 rounded px-1.5 py-0.5 font-mono">×{weight}</span>
+        <span className="text-xs text-stone-400 bg-stone-100 rounded px-1.5 py-0.5 font-mono">{weightDisplay}</span>
         {onEdit && (
           <button onClick={onEdit} className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-stone-300 hover:text-amber-600" title="Proposer une correction">
             <Edit size={11} />
@@ -159,7 +161,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
   const [gendered, setGendered] = useState(false);
   const [valueF, setValueF] = useState('');
   const [polarity, setPolarity] = useState('n');
-  const [weight, setWeight] = useState(1);
+  const [weight, setWeight] = useState('frequent');
   const [editPreset, setEditPreset] = useState(null);
   const [editingDbId, setEditingDbId] = useState(null);
   const [msg, setMsg] = useState(null);
@@ -188,7 +190,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
       setMsg(`Erreur : ${error.message}`);
     } else {
       setMsg(editPreset ? 'Correction soumise !' : 'Soumis !');
-      setValueM(''); setValueF(''); setGendered(false); setPolarity('n'); setWeight(1); setEditPreset(null); setEditingDbId(null);
+      setValueM(''); setValueF(''); setGendered(false); setPolarity('n'); setWeight('frequent'); setEditPreset(null); setEditingDbId(null);
       setTimeout(() => setMsg(null), 3000);
     }
   };
@@ -215,7 +217,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
       setMsg(`Erreur : ${error.message}`);
     } else {
       setMsg(editingDbId ? 'Entrée mise à jour !' : 'Entrée créée !');
-      setValueM(''); setValueF(''); setGendered(false); setPolarity('n'); setWeight(1); setEditPreset(null); setEditingDbId(null);
+      setValueM(''); setValueF(''); setGendered(false); setPolarity('n'); setWeight('frequent'); setEditPreset(null); setEditingDbId(null);
       setTimeout(() => setMsg(null), 3000);
     }
   };
@@ -225,7 +227,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
     if (isIdentity) {
       label = entry.label;
       setValueM(label);
-      setWeight(entry.weight ?? 1);
+      setWeight(entry.weight ?? 'frequent');
     } else {
       label = resolveText(entry, 'masculin') ?? (typeof entry === 'string' ? entry : entry?.m ?? '');
       const femText = typeof entry === 'object' ? (entry.f ?? '') : '';
@@ -329,16 +331,14 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
                     </select>
                   </>
                 )}
-                {/* Poids */}
-                <label className="flex items-center gap-2 text-xs text-stone-500">
-                  Poids ×
-                  <input
-                    type="number" min="1" max="10" step="1"
-                    value={weight}
-                    onChange={e => setWeight(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
-                    className="w-12 border border-stone-200 rounded px-1.5 py-1 text-xs font-mono text-stone-700 bg-white text-center outline-none focus:ring-1 focus:ring-amber-200"
-                  />
-                </label>
+                {/* Fréquence */}
+                <select
+                  value={weight}
+                  onChange={e => setWeight(e.target.value)}
+                  className="text-xs border border-stone-200 rounded px-2 py-1 font-serif text-stone-700 bg-white outline-none focus:ring-1 focus:ring-amber-200"
+                >
+                  {WEIGHT_LABELS.map(w => <option key={w.key} value={w.key}>{w.label}</option>)}
+                </select>
                 <button
                   type="submit"
                   disabled={submitting || !valueM.trim()}
@@ -357,7 +357,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
                   </button>
                 )}
                 {editPreset && (
-                  <button type="button" onClick={() => { setEditPreset(null); setValueM(''); setValueF(''); setPolarity('n'); setGendered(false); setWeight(1); setEditingDbId(null); }} className="text-xs text-stone-400 hover:text-stone-600">
+                  <button type="button" onClick={() => { setEditPreset(null); setValueM(''); setValueF(''); setPolarity('n'); setGendered(false); setWeight('frequent'); setEditingDbId(null); }} className="text-xs text-stone-400 hover:text-stone-600">
                     Annuler
                   </button>
                 )}
@@ -378,7 +378,7 @@ function AccordionTable({ config, dbApproved, myProposals, session, proposer, su
                     ? <Clock size={11} className="mt-0.5 flex-shrink-0 text-amber-500" />
                     : <XCircle size={11} className="mt-0.5 flex-shrink-0 text-red-500" />}
                   <span className="font-serif text-stone-600">{p.value_m}{p.value_f ? ` / ${p.value_f}` : ''}</span>
-                  {p.weight && <span className="text-stone-400 font-mono">×{p.weight}</span>}
+                  {p.weight && p.weight !== 'frequent' && <span className="text-stone-400 font-mono">{weightLabel(p.weight)}</span>}
                   {p.reject_reason && <span className="text-red-400">— {p.reject_reason}</span>}
                 </div>
               ))}
@@ -491,8 +491,8 @@ function TabValidation({ session }) {
                 <p className="font-serif text-stone-800 mt-0.5">
                   {entry.value_m}
                   {entry.value_f && <span className="text-stone-400"> / {entry.value_f}</span>}
-                  {entry.weight && entry.weight !== 1 && (
-                    <span className="text-stone-400 font-mono ml-2">×{entry.weight}</span>
+                  {entry.weight && entry.weight !== 'frequent' && (
+                    <span className="text-stone-400 font-mono ml-2">{weightLabel(entry.weight)}</span>
                   )}
                 </p>
                 {entry.status === 'rejected' && entry.reject_reason && (

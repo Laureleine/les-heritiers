@@ -7,7 +7,7 @@ function groupApproved(rows) {
   for (const row of rows) {
     const key = `${row.table_name}_${row.variante}`;
     if (!grouped[key]) grouped[key] = [];
-    grouped[key].push({ _dbId: row.id, weight: row.weight ?? 1, value: row.value });
+    grouped[key].push({ _dbId: row.id, weight: row.weight ?? 'frequent', value: row.value });
   }
   return grouped;
 }
@@ -48,7 +48,7 @@ export function useAmbianceTableEntries(session) {
       table_name: tableName,
       variante,
       value,
-      weight: weight ?? 1,
+      weight: weight ?? 'frequent',
       created_by: session.user.id,
     });
     setSubmitting(false);
@@ -64,14 +64,14 @@ export function useAmbianceTableEntries(session) {
       // Édition d'une entrée existante : ne touche pas is_official (déjà posé à la création).
       ({ error } = await supabase.from('ambiance_table_entries').update({
         value,
-        weight: weight ?? 1,
+        weight: weight ?? 'frequent',
       }).eq('id', editingId));
     } else {
       ({ error } = await supabase.from('ambiance_table_entries').insert({
         table_name: tableName,
         variante,
         value,
-        weight: weight ?? 1,
+        weight: weight ?? 'frequent',
         is_official: true,
         status: 'approved',
         created_by: session.user.id,

@@ -21,11 +21,11 @@ function groupApproved(rows) {
         id: `custom_${row.id}`,
         _dbId: row.id,
         label: row.value_m,
-        weight: row.weight ?? 1,
+        weight: row.weight ?? 'frequent',
       });
     } else {
       const pol = row.polarity && row.polarity !== 'n' ? row.polarity : undefined;
-      const entry = { _dbId: row.id, weight: row.weight ?? 1 };
+      const entry = { _dbId: row.id, weight: row.weight ?? 'frequent' };
       if (row.value_f) {
         entry.m = row.value_m;
         entry.f = row.value_f;
@@ -76,7 +76,7 @@ export function usePnjTableEntries(session) {
       value_m: valueM,
       value_f: valueF || null,
       polarity: polarity || 'n',
-      weight: weight ?? 1,
+      weight: weight ?? 'frequent',
       created_by: session.user.id,
     });
     setSubmitting(false);

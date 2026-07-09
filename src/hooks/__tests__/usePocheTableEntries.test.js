@@ -45,7 +45,7 @@ describe('usePocheTableEntries — ajouterDirectement/approuver/refuser', () => 
     await waitFor(() => expect(result.current.loaded).toBe(true));
 
     await act(async () => {
-      await result.current.ajouterDirectement({ tableName: 'fouille_ordinaire', valueM: 'Un mouchoir', valueF: '', weight: 5 });
+      await result.current.ajouterDirectement({ tableName: 'fouille_ordinaire', valueM: 'Un mouchoir', valueF: '', weight: 'rare' });
     });
 
     expect(insertSpy).toHaveBeenCalledWith(expect.objectContaining({
@@ -67,11 +67,11 @@ describe('usePocheTableEntries — ajouterDirectement/approuver/refuser', () => 
     await waitFor(() => expect(result.current.loaded).toBe(true));
 
     await act(async () => {
-      await result.current.ajouterDirectement({ tableName: 'fouille_ordinaire', valueM: 'Corrigé', valueF: '', weight: 8 }, 'entry-42');
+      await result.current.ajouterDirectement({ tableName: 'fouille_ordinaire', valueM: 'Corrigé', valueF: '', weight: 'tres_frequent' }, 'entry-42');
     });
 
     expect(updateSpy).toHaveBeenCalledWith(
-      { value_m: 'Corrigé', value_f: null, weight: 8 },
+      { value_m: 'Corrigé', value_f: null, weight: 'tres_frequent' },
       'entry-42',
     );
     const [payload] = updateSpy.mock.calls[0];
