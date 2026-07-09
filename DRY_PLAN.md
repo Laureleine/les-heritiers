@@ -23,7 +23,7 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 - Lire `DRY_PLAN.md` (ce fichier) en premier.
 - Lancer `node scripts/backup_supabase.js`.
-- Re-lancer l'audit axe-core (`npx playwright test tests/e2e/audit-a11y.spec.js`) pour mesurer le score final et trouver les violations résiduelles.
+- Aucun chantier technique en backlog. Attendre les demandes fonctionnelles.
 
 ---
 
@@ -215,31 +215,4 @@ ModalShell existe (`src/components/ui/ModalShell.js`). Les 15 autres fichiers ca
 - Pour lancer en batch : `for d in 1899-12-{03..31}; do python 1899/pipeline_journalier.py --date "$d"; done`
 
 ---
-
-## 📖 Encyclopédie — Champs Initiés (session 2026-05-26)
-
-### Objectif
-Ajouter les champs narratifs de la Fiche du Docte (`FairyLoreSection`) comme champs modifiables dans l'encyclopédie, visibles uniquement pour les initiés.
-
-### Questions en suspens (première question demain)
-Voir `.opencode/plans/add-lore-to-encyclopedia.md` pour le détail.
-
----
-
-## 🏗️ Chantier — Performance Audit (31 Mai 2026)
-
-Un audit performance complet a été réalisé. Voir `.opencode/plans/perf-audit.md` pour le détail.
-
-**Résumé Top 5 :**
-1. `animate-fade-in*` — 124 occurrences inertes (undefined dans Tailwind)
-2. `CharacterContext` / `ForgeContext` — providers sans `useMemo` → re-rendus cascade
-3. 4 imports `* as LucideIcons` → 43 MB inutiles dans le bundle
-4. `CharacterList.js` — `commonCardProps` brise `React.memo` sur les cartes
-5. PixieAssistant — ailes à 20 Hz continu (batterie)
-
-**À attaquer en premier lors de la prochaine session.**
-
-1. **Périmètre** — Tout le narratif (apparence, taille, reproduction, habitat, caractère, personnages célèbres, note du Docte) OU seulement Note + Caractère ?
-2. **Migration** — Backfill des données de `FairyLore.js` vers Supabase OU partir de zéro ?
-3. **Source de vérité** — La création du personnage doit-elle lire la DB (remplace FairyLore.js) ou garder les deux indépendants ?
 
