@@ -70,7 +70,7 @@ export function useAccountSettings(session, userProfile, onUpdateProfile) {
         const loadNotifPrefs = async () => {
             const { data, error } = await supabase
                 .from('user_notification_preferences')
-                .select('*')
+                .select('subscribe_to_updates, notify_major_versions, notify_minor_versions, enable_push_notifications')
                 .eq('user_id', session.user.id)
                 .maybeSingle();
 

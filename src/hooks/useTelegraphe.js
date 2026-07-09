@@ -159,11 +159,12 @@ export function useTelegraphe(session, userProfile) {
         .from('chat_messages')
         .select('*, profiles(username)')
         .eq('channel_id', channel.id)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false })
+        .limit(200);
 
       if (error) throw error;
       if (data) {
-        setMessages(data);
+        setMessages([...data].reverse());
 
         if (channel.type !== 'global' && data.length > 0) {
           const toMark = data

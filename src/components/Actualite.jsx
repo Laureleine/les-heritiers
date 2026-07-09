@@ -223,7 +223,7 @@ export default function Actualite({ onBack, userProfile }) {
       try {
         const { data, error } = await supabase
           .from('historical_events')
-          .select('*');
+          .select('date, paris, france, monde');
         
         if (error) throw error;
         
@@ -294,7 +294,7 @@ export default function Actualite({ onBack, userProfile }) {
     try {
       const { data, error } = await supabase
         .from('journal_articles')
-        .select('*')
+        .select('article_index, page, category, title, summary, paragraphs')
         .eq('date', targetDate)
         .order('article_index', { ascending: true });
 
@@ -365,7 +365,7 @@ export default function Actualite({ onBack, userProfile }) {
     try {
       const { data } = await supabase
         .from('journal_votes')
-        .select('*')
+        .select('votes_count')
         .eq('date', dateStr);
       
       let currentVotes = 0;
