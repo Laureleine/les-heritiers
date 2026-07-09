@@ -112,7 +112,7 @@ export default function StepCapacites() {
         </div>
       </div>
 
-      <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacités Innées (Acquises)</h4>
+      <h3 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacités Innées (Acquises)</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[
           { slot: 'fixe1', cap: data.capacites?.fixe1 },
@@ -147,7 +147,7 @@ export default function StepCapacites() {
         })}
       </div>
 
-      <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacité Optionnelle (À choisir)</h4>
+      <h3 className="text-sm font-bold text-amber-900 uppercase tracking-wider mt-6 mb-2">Capacité Optionnelle (À choisir)</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {data.capacites?.choix?.map((cap, idx) => {
           const isSelected = character.capaciteChoisie === cap.nom;
@@ -197,10 +197,10 @@ export default function StepCapacites() {
       {isHybride && (
         <div className="mt-8 border-t-2 border-dashed border-fuchsia-200 pt-6">
           <div className="bg-gradient-to-r from-fuchsia-50 to-purple-50 border border-fuchsia-200 p-5 rounded-xl shadow-sm">
-            <h4 className="font-serif font-bold text-fuchsia-900 flex items-center gap-2 text-lg">
+            <h3 className="font-serif font-bold text-fuchsia-900 flex items-center gap-2 text-lg">
               <Sparkles size={20} className="text-fuchsia-600" />
               Échange Hybride — Capacité naturelle
-            </h4>
+            </h3>
             <p className="text-sm text-fuchsia-800 mt-1">
               Choisissez la Capacité naturelle de votre espèce d'origine à remplacer, puis celle de{' '}
               <strong>{especeSeconde || 'votre seconde espèce'}</strong> qui la remplace.
