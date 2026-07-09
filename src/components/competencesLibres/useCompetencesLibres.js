@@ -68,6 +68,20 @@ export const MAGIES_CONFIG = [
             { label: 'Rang Érudit ≥ 4', val: rp?.['Érudit'] || 0, need: 4, met: (rp?.['Érudit'] || 0) >= 4 },
         ],
     },
+    {
+        nom: 'Voie des Chimères',
+        xpCode: XP_CODES.VOIE_CHIMERES_DEBLOCAGE,
+        specNom: null,
+        getDetails: () => [],
+    },
+    {
+        nom: 'Spiritisme',
+        xpCode: XP_CODES.SPIRITISME_DEBLOCAGE,
+        specNom: 'Spiritisme*',
+        getDetails: (ct, ft, hasSpec) => [
+            { label: 'Spécialité Spiritisme (Occultisme)', met: hasSpec('Occultisme', 'Spiritisme*') },
+        ],
+    },
 ];
 export const SKILLS_ESPRIT = [
     'Culture', 'Occultisme', 'Fortitude', 'Rhétorique',
@@ -407,8 +421,9 @@ export function useCompetencesLibres() {
         const rp = character.computedStats?.rangsProfils || {};
         const magiesActives = character.data?.magies || {};
         const hasActiveMagie = Object.values(magiesActives).some(m => m?.actif);
+        const hasNoPrereqMagie = MAGIES_CONFIG.some(c => c.getDetails({}, {}, () => false, {}).length === 0);
 
-        if ((ct['Occultisme'] || 0) < 4 && !hasActiveMagie) return [];
+        if ((ct['Occultisme'] || 0) < 4 && !hasActiveMagie && !hasNoPrereqMagie) return [];
 
         const hasSpec = (comp, specName) => {
             if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;

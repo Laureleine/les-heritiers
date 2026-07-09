@@ -30,7 +30,9 @@ export const XP_CODES = {
     SOUFFLE_DEBLOCAGE:       'SOUFFLE_DEBLOCAGE',        // Souffle débloqué
     NECROMANCIE_DEBLOCAGE:   'NECROMANCIE_DEBLOCAGE',   // Nécromancie débloquée
     THEURGIE_DEBLOCAGE:      'THEURGIE_DEBLOCAGE',       // Théurgie débloquée
-    GRAND_LANGAGE_DEBLOCAGE: 'GRAND_LANGAGE_DEBLOCAGE',  // Grand Langage débloqué
+    GRAND_LANGAGE_DEBLOCAGE:  'GRAND_LANGAGE_DEBLOCAGE',   // Grand Langage débloqué
+    VOIE_CHIMERES_DEBLOCAGE:  'VOIE_CHIMERES_DEBLOCAGE',   // Voie des Chimères débloquée
+    SPIRITISME_DEBLOCAGE:     'SPIRITISME_DEBLOCAGE',       // Spiritisme débloqué
     // --- Vie Sociale ---
     FORTUNE_ELEVATION:     'FORTUNE_ELEVATION',      // Fortune ↑↓
     // --- Sessions de jeu ---

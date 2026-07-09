@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.55 - \"Les Nouvelles Voies 🌀👻\"",
+    date: "10 Juillet 2026",
+    description: "Deux nouvelles pratiques magiques font leur entrée dans les Compétences Libres : la Voie des Chimères, accessible à tout Héritier scellé sans condition particulière, et le Spiritisme, réservé à ceux qui maîtrisent déjà la spécialité Spiritisme en Occultisme.",
+    changes: [
+      "🌀 **Voie des Chimères :** Nouvelle pratique magique sans prérequis — tout Héritier scellé peut l'acquérir pour 5 XP.",
+      "👻 **Spiritisme :** Nouvelle pratique magique nécessitant la spécialité Spiritisme* en Occultisme.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.54 - \"L'Œil du Scrutateur 🔍✨\"",
     date: "9 Juillet 2026",
     description: "Les Pratiques Magiques dévoilent enfin leurs secrets. Là où un simple «Prérequis manquants» laissait les Héritiers dans l'obscurité, chaque condition s'affiche maintenant en vert ou en rouge — avec la valeur actuelle face à celle requise. Fini de chercher à tâtons ce qui manque pour débloquer une voie mystique.",

@@ -113,7 +113,9 @@ data: {
     //   Souffle         → Fortitude ≥ 4
     //   Nécromancie     → Sciences ≥ 4 + Médecine ≥ 4 + Spécialité Chirurgie
     //   Théurgie        → Sensibilité ≥ 4
-    //   Grand Langage   → Rang Profil Érudit ≥ 4
+    //   Grand Langage     → Rang Profil Érudit ≥ 4
+    //   Voie des Chimères → (aucun prérequis)
+    //   Spiritisme        → Spécialité Spiritisme* (Occultisme) — pas de prérequis Occultisme ≥ 4
   },
 
   // Champs hérités (avant colonnes dédiées) — maintenus pour compatibilité

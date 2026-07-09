@@ -1,4 +1,20 @@
-﻿# REX — Session 9 Juillet 2026 — v17.4.54 « L'Œil du Scrutateur »
+﻿# REX — Session 10 Juillet 2026 — v17.4.55 « Les Nouvelles Voies »
+
+## Vérifier les données réelles en base avant de définir les prérequis
+
+Quand on ajoute une nouvelle pratique magique, la première étape est de chercher si la spécialité correspondante existe déjà en base (`backup.tables.competences` → `specialites[]`). Ici : "Spiritisme*" était déjà dans `competences.specialites` pour Occultisme — aucune migration nécessaire. Toujours vérifier avant d'écrire un script de migration.
+
+## Pattern `getDetails: () => []` pour les magies sans prérequis
+
+Une magie sans aucun prérequis retourne simplement un tableau vide depuis `getDetails`. `[].every(d => d.met)` retourne `true` → `prereqsOk = true` → bouton "Débloquer" toujours visible. Propre et cohérent avec le pattern existant.
+
+## Attention au early-return du `magiesEtat` useMemo
+
+La garde `if (occultisme < 4 && !hasActiveMagie) return []` optimise l'affichage en masquant la section pour les personnages sans magie et sans Occultisme suffisant. Dès qu'une magie n'a aucun prérequis, cette garde doit être court-circuitée — sinon la magie "sans prérequis" ne s'affiche jamais pour la plupart des personnages. Solution : `MAGIES_CONFIG.some(c => c.getDetails({}, {}, () => false, {}).length === 0)`.
+
+---
+
+# REX — Session 9 Juillet 2026 — v17.4.54 « L'Œil du Scrutateur »
 
 ## Diagnostiquer un bug « comportement correct, UX fautive »
 

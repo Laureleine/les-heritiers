@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.55 — Les Nouvelles Voies 🌀👻 (10 juillet 2026)
+
+Chers Héritiers,
+
+Les mystères de la Belle Époque s'étendent encore. Deux nouvelles voies s'ouvrent désormais aux âmes scellées qui osent regarder au-delà du voile.
+
+🌀 **La Voie des Chimères** — une pratique magique ouverte à tout Héritier scellé, sans condition ni prérequis. Elle n'attend que votre courage et cinq points d'expérience.
+
+👻 **Le Spiritisme** — pour ceux qui ont déjà consacré leur étude à cette spécialité secrète de l'Occultisme. Les portes du monde des esprits s'entrouvrent pour eux.
+
+Ces deux arts s'ajoutent aux cinq voies déjà connues dans la section Compétences Libres. Puissent-ils enrichir vos quêtes et vos mystères.
+
+*Les archives de la Forge*
+
+---
+
 ## v17.4.54 — L'Œil du Scrutateur 🔍✨ (9 juillet 2026)
 
 Chers Héritiers,
