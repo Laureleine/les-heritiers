@@ -4,6 +4,32 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.52 « Les Sceaux Vérifiés 🔏🛡️ »
+
+📜 **Mise à jour — v17.4.52 « Les Sceaux Vérifiés »** 🔏🛡️
+
+Chers Héritiers,
+
+Certaines sessions ne posent aucune pierre nouvelle sur l'édifice. Elles le visitent silencieusement, lampe à la main, et vérifient que les serrures tiennent, que les voûtes ne fuient pas, que personne ne pourrait s'introduire dans une aile réservée en prononçant le bon mot à la mauvaise personne.
+
+Cette session-ci était de ce type.
+
+🔏 **Les fonctions de correction de personnage** ont été consolidées. Un joueur ne peut désormais répondre qu'en son propre nom — un verrou supplémentaire s'est refermé sur ce passage. Les Doctes qui marquent ou signalent un personnage font l'objet de la même vérification côté code, avant même que la base de données ait son mot à dire.
+
+🛡️ **Les fonctions statistiques du tableau de bord** — celles qui compilent les chiffres de la communauté — vérifiaient la légitimité de leur appelant uniquement en apparence. Le contrôle a été renforcé directement en base, là où il ne peut être contourné.
+
+🚪 **Le tableau de bord administratif** est désormais inaccessible par URL directe à quiconque n'a pas les autorisations requises. Auparavant, la porte était simplement cachée — elle est maintenant verrouillée.
+
+🧹 **Deux protections de robustesse** ont été posées en silence : le cache hors-ligne résiste maintenant à une corruption inattendue du navigateur, et l'Encyclopédie ne se bloque plus sur un champ mal formé.
+
+⚡ **Des ajustements discrets** ont allégé les échanges avec les serveurs : moins de données inutilement demandées, une limite raisonnable sur les messages du Télégraphe chargés d'un coup, et un chronomètre de développement retiré du démarrage de l'application.
+
+Rien de visible. Tout de plus solide.
+
+*— Les Archives de la Société des Héritiers*
+
+---
+
 ## v17.4.51 « Le Grimoire s'Ouvre à Tous 🔮♿ »
 
 📜 **Mise à jour — v17.4.51 « Le Grimoire s'Ouvre à Tous »** 🔮♿

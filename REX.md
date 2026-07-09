@@ -1,4 +1,34 @@
-﻿# REX — Session 9 Juillet 2026 — v17.4.51 « Le Grimoire s'Ouvre à Tous »
+﻿# REX — Session 9 Juillet 2026 — v17.4.52 « Les Sceaux Vérifiés »
+
+## Une revue de code impitoyable révèle des problèmes de sécurité même dans un projet bien maintenu
+
+La revue complète (5 axes : sécurité, qualité, architecture, robustesse, tests) a trouvé de vraies vulnérabilités non détectées : RPCs sans vérification de rôle en base, route admin sans garde, mutation possible sur les personnages d'autres joueurs via `respondToCorrection`. Ces bugs existaient silencieusement — pas de message d'erreur, pas de test rouge.
+
+**Règle :** Prévoir une revue de code structurée (par catégories, par criticité) toutes les ~10 versions, même en l'absence de signalement.
+
+## Méthode de revue : lire les callers avant de fixer
+
+Pour S6 (`useGrimoire` sans filtre `player_id` en mode admin), la première lecture semblait indiquer un bug. Tracer les callers (`GrimoirePersonnel` → `CharacterList`) a révélé que `isAdmin` venait toujours de `isSuperAdmin(userProfile)` — source fiable. Sans cette vérification, un faux positif aurait généré un fix inutile.
+
+**Règle :** Avant de corriger un hook qui reçoit un flag booléen suspect, tracer le chemin depuis l'appelant jusqu'à la source du flag.
+
+## JSON.parse dans le JSX : extraire en helper, pas en IIFE
+
+R2 (`EncyclopediaViewModal`) avait un `JSON.parse` inline dans le `.map()` du JSX. La tentation de faire un IIFE `(() => { try { return JSON.parse(v) } catch { return [] } })()` est laide. Meilleure approche : déclarer `const safeParseArray = (v) => {...}` au début du composant et l'appeler proprement dans le JSX.
+
+**Règle :** Un JSON.parse risqué dans le JSX = une fonction locale au composant, pas un IIFE inline.
+
+## `isMounted` guard : utile surtout si le composant peut se démonter pendant un long fetch
+
+Le pattern `let mounted = true; return () => { mounted = false; }` vaut surtout pour les opérations longues (upload, batch, LLM). Les hooks Supabase rapides (< 200ms) ont peu de risque de setState after unmount. Ne pas l'ajouter partout mécaniquement.
+
+## Les scripts Node doivent être dans `scripts/` et lancés depuis la racine du projet
+
+Les scripts qui appellent `require('pg')` ou `dotenv` échouent si lancés depuis le scratchpad — la résolution de modules cherche `node_modules/` depuis le `cwd`. Toujours écrire dans `scripts/` du projet et lancer avec `node scripts/mon_script.js` depuis la racine.
+
+---
+
+# REX — Session 9 Juillet 2026 — v17.4.51 « Le Grimoire s'Ouvre à Tous »
 
 ## Travailler sur une session compactée : vérifier le HEAD git avant de coder
 

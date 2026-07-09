@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.52 - \"Les Sceaux Vérifiés 🔏🛡️\"",
+    date: "9 Juillet 2026",
+    description: "Session de rigueur invisible : les sceaux de sécurité ont été contrôlés, renforcés et gravés plus profond. Aucune nouvelle fonctionnalité — mais le coffre-fort est désormais mieux verrouillé.",
+    changes: [
+      "🔏 **Correction de personnage restreinte au propriétaire :** Il n'était théoriquement possible qu'à un joueur de répondre à la place d'un autre lors d'une demande de correction — un verrou `user_id` consolide ce passage.",
+      "🛡️ **Actions de Docte protégées côté code :** Les fonctions de marquage et de signalement sont maintenant gardées par une vérification de rôle explicite, en plus de la protection serveur.",
+      "🗄️ **Sécurité des fonctions statistiques (base de données) :** Deux fonctions d'administration exposaient leurs données sans vérifier si l'appelant était bien Gardien ou Docte — corrigé directement en base.",
+      "🚪 **Tableau de bord admin inaccessible aux non-admins par URL directe :** La route `/admin_dashboard` redirige désormais silencieusement vers l'accueil si le visiteur n'a pas les autorisations.",
+      "🧹 **Nettoyage de robustesse :** Le cache hors-ligne résiste maintenant à une corruption du `localStorage` ; le modal Encyclopédie ne plante plus si un champ JSON est malformé.",
+      "⚡ **Optimisations silencieuses :** Requêtes Supabase ciblées (moins de colonnes inutiles), limite de 200 messages dans le Télégraphe, log de performance retiré du chargement principal.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.51 - \"Le Grimoire s'Ouvre à Tous 🔮♿\"",
     date: "9 Juillet 2026",
     description: "Fin du grand chantier d'accessibilité : les sept tickets WCAG 2.2 AA sont complétés. L'application est désormais pleinement navigable au clavier et aux lecteurs d'écran — modales, onglets, titres, formulaires, émojis et repères structurels.",
