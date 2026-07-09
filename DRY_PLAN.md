@@ -23,7 +23,76 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 - Lire `DRY_PLAN.md` (ce fichier) en premier.
 - Lancer `node scripts/backup_supabase.js`.
-- Aucun chantier technique en backlog. Attendre les demandes fonctionnelles.
+- Backlog actif : voir section **Revue de code — items restants** ci-dessous.
+
+---
+
+## 🔍 Revue de code — items restants (post-session 9 juillet 2026)
+
+Revue impitoyable complète. Items critiques (S1–S5, R1–R2) corrigés et commités.
+Ce qui reste, à traiter au fil des sessions.
+
+### 🟡 Sévère
+
+**A1 — Props drilling `userProfile` / `session`**
+- `userProfile` descend sur 4+ niveaux (`App → AppRouter → CharacterList → GrimoirePersonnel → useGrimoire`)
+- Solution : React Context ou React Query + hook centralisé
+- Fichiers : `App.js`, `AppRouter.jsx`, `CharacterList.js`, `GrimoirePersonnel.js`, `useCorrectionCheck.js`, tous les composants Étape
+
+**A2 — Props drilling `gameData`**
+- `gameData` passé en prop à travers `AppRouter` → `CharacterList` → chaque Step
+- Solution : `GameDataContext` existe déjà (`useGameDataContext`) — vérifier quels composants ne l'utilisent pas encore et migrer
+
+**A3 — `CharacterList.js` monolithique (~900 lignes)**
+- Mélange liste, sélection, Grimoire, admin panel, réparation
+- Solution : extraire `AdminPanel`, `GrimoireDrawer` en composants dédiés
+
+**A4 — `AdminDashboard.js` couplé aux onglets**
+- État d'onglet global dans le composant parent → re-render complet sur chaque tab switch
+- Solution : lazy tab mounting ou sous-routes
+
+**A5 — `ForgeContext` god object**
+- Trop de responsabilités (état créateur + XP + validation + sauvegarde)
+- Solution : scinder en `CharacterStateContext` + `CharacterActionsContext`
+
+**T4 — Tests manquants sur `useCorrectionCheck`**
+- Les nouvelles vérifications de sécurité (S4/S5) n'ont pas de tests
+- Écrire : `respondToCorrection` filtre bien `user_id`, `markCorrected` refuse si `!isAdmin`
+
+**T5 — Tests manquants sur `useGrimoire`**
+- `createEntry`, `updateEntry`, `deleteEntry`, `toggleShare` : aucun test
+- Mock Supabase + tester les filtres `player_id`
+
+**T6 — Tests manquants sur `supabaseStorage`**
+- `getOfflineMirror` : tester le fallback JSON corrompu
+- `saveCharacterToSupabase` : tester le mode offline (rejet réseau → cache local)
+
+**T7 — Tests manquants sur `AppRouter`**
+- Route `/admin_dashboard` : tester que non-admin est redirigé vers `/`
+- Route `/encyclopedia` : tester que non-docte voit l'écran de refus
+
+### 🟢 Mineur
+
+**R3 — `useGrimoire` : pas de guard `isMounted` dans `fetchGrimoire`**
+- Async sans vérification montage → setState potentiel après unmount
+- Ajouter `let mounted = true` + cleanup `return () => { mounted = false; }`
+
+**R4 — `useCorrectionCheck` : même pattern**
+- `checkCorrections()` async dans `useEffect` sans guard `isMounted`
+
+**R5 — `useAccountSettings` : à vérifier**
+- Idem — charger le fichier et auditer
+
+**R6 — `useTelegraphe` : fetchMessages / fetchChannels**
+- Déjà partiellement protégé (réf `isMounted` ?) — vérifier
+
+**S7 — `getAllCharactersAdmin` sans vérification de rôle côté client**
+- Appelé directement depuis `CharacterList.js` sans guard `isAdmin` supplémentaire
+- Le RLS Supabase protège la donnée, mais ajouter un early-return client comme filet
+
+**Dead code**
+- `src/components/nouveau 1.txt` — liste de fichiers, inutile
+- Vérifier si `src/version.legacy.js` est bien absent (supprimé session précédente)
 
 ---
 
