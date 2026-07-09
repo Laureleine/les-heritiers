@@ -315,7 +315,15 @@ export default function StepCompetencesLibres() {
                     <span className={`font-medium text-sm ${magie.prereqsOk ? 'text-violet-900' : 'text-stone-400'}`}>
                       {magie.nom}
                     </span>
-                    <p className="text-[11px] text-stone-400 mt-0.5 leading-tight">{magie.prereqsLabel}</p>
+                    <ul className="mt-1 space-y-0.5">
+                      {magie.prereqsDetails.map((d, i) => (
+                        <li key={i} className={`flex items-center gap-1 text-[11px] ${d.met ? 'text-emerald-600' : 'text-red-500'}`}>
+                          <span className="shrink-0">{d.met ? '✓' : '✗'}</span>
+                          <span>{d.label}</span>
+                          {!d.met && d.val !== undefined && <span className="text-stone-400 ml-0.5">({d.val}/{d.need})</span>}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                   {magie.prereqsOk ? (
                     <button

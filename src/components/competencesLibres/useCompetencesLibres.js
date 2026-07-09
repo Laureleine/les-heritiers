@@ -20,53 +20,53 @@ export const MAGIES_CONFIG = [
         nom: 'Faëomancie',
         xpCode: XP_CODES.FAEOMANCIE_DEBLOCAGE,
         specNom: 'Connaissance de la faëomancie',
-        prereqsLabel: 'Occultisme ≥ 4 + Connaissance de la faëomancie + Médecine, Survie ou Cuisine ≥ 4',
-        checkPrereqs: (ct, ft, hasSpec) =>
-            (ct['Occultisme'] || 0) >= 4 &&
-            hasSpec('Occultisme', 'Connaissance de la faëomancie') &&
-            ((ct['Médecine'] || 0) >= 4 || (ct['Survie'] || 0) >= 4 || Math.max(ct['Cuisine'] || 0, ft['Cuisine'] || 0) >= 4),
+        getDetails: (ct, ft, hasSpec) => [
+            { label: 'Occultisme ≥ 4', val: ct['Occultisme'] || 0, need: 4, met: (ct['Occultisme'] || 0) >= 4 },
+            { label: 'Connaissance de la faëomancie', met: hasSpec('Occultisme', 'Connaissance de la faëomancie') },
+            { label: 'Médecine, Survie ou Cuisine ≥ 4', val: Math.max(ct['Médecine'] || 0, ct['Survie'] || 0, ct['Cuisine'] || 0, ft['Cuisine'] || 0), need: 4, met: ((ct['Médecine'] || 0) >= 4 || (ct['Survie'] || 0) >= 4 || Math.max(ct['Cuisine'] || 0, ft['Cuisine'] || 0) >= 4) },
+        ],
     },
     {
         nom: 'Souffle',
         xpCode: XP_CODES.SOUFFLE_DEBLOCAGE,
         specNom: 'Connaissance du Souffle',
-        prereqsLabel: 'Occultisme ≥ 4 + Connaissance du Souffle + Fortitude ≥ 4',
-        checkPrereqs: (ct, ft, hasSpec) =>
-            (ct['Occultisme'] || 0) >= 4 &&
-            hasSpec('Occultisme', 'Connaissance du Souffle') &&
-            (ct['Fortitude'] || 0) >= 4,
+        getDetails: (ct, ft, hasSpec) => [
+            { label: 'Occultisme ≥ 4', val: ct['Occultisme'] || 0, need: 4, met: (ct['Occultisme'] || 0) >= 4 },
+            { label: 'Connaissance du Souffle', met: hasSpec('Occultisme', 'Connaissance du Souffle') },
+            { label: 'Fortitude ≥ 4', val: ct['Fortitude'] || 0, need: 4, met: (ct['Fortitude'] || 0) >= 4 },
+        ],
     },
     {
         nom: 'Nécromancie',
         xpCode: XP_CODES.NECROMANCIE_DEBLOCAGE,
         specNom: 'Connaissance de la nécromancie',
-        prereqsLabel: 'Occultisme ≥ 4 + Connaissance de la nécromancie + Sciences ≥ 4 + Médecine ≥ 4 + Spécialité Chirurgie',
-        checkPrereqs: (ct, ft, hasSpec) =>
-            (ct['Occultisme'] || 0) >= 4 &&
-            hasSpec('Occultisme', 'Connaissance de la nécromancie') &&
-            (ct['Sciences'] || 0) >= 4 &&
-            (ct['Médecine'] || 0) >= 4 &&
-            hasSpec('Médecine', 'Chirurgie'),
+        getDetails: (ct, ft, hasSpec) => [
+            { label: 'Occultisme ≥ 4', val: ct['Occultisme'] || 0, need: 4, met: (ct['Occultisme'] || 0) >= 4 },
+            { label: 'Connaissance de la nécromancie', met: hasSpec('Occultisme', 'Connaissance de la nécromancie') },
+            { label: 'Sciences ≥ 4', val: ct['Sciences'] || 0, need: 4, met: (ct['Sciences'] || 0) >= 4 },
+            { label: 'Médecine ≥ 4', val: ct['Médecine'] || 0, need: 4, met: (ct['Médecine'] || 0) >= 4 },
+            { label: 'Chirurgie (spécialité Médecine)', met: hasSpec('Médecine', 'Chirurgie') },
+        ],
     },
     {
         nom: 'Théurgie',
         xpCode: XP_CODES.THEURGIE_DEBLOCAGE,
         specNom: 'Connaissance de la théurgie',
-        prereqsLabel: 'Occultisme ≥ 4 + Connaissance de la théurgie + Sensibilité ≥ 4',
-        checkPrereqs: (ct, ft, hasSpec) =>
-            (ct['Occultisme'] || 0) >= 4 &&
-            hasSpec('Occultisme', 'Connaissance de la théurgie') &&
-            (ct['Sensibilité'] || 0) >= 4,
+        getDetails: (ct, ft, hasSpec) => [
+            { label: 'Occultisme ≥ 4', val: ct['Occultisme'] || 0, need: 4, met: (ct['Occultisme'] || 0) >= 4 },
+            { label: 'Connaissance de la théurgie', met: hasSpec('Occultisme', 'Connaissance de la théurgie') },
+            { label: 'Sensibilité ≥ 4', val: ct['Sensibilité'] || 0, need: 4, met: (ct['Sensibilité'] || 0) >= 4 },
+        ],
     },
     {
         nom: 'Grand Langage',
         xpCode: XP_CODES.GRAND_LANGAGE_DEBLOCAGE,
         specNom: 'Connaissance du Grand Langage',
-        prereqsLabel: 'Occultisme ≥ 4 + Connaissance du Grand Langage + Rang Érudit ≥ 4',
-        checkPrereqs: (ct, ft, hasSpec, rangsProfils) =>
-            (ct['Occultisme'] || 0) >= 4 &&
-            hasSpec('Occultisme', 'Connaissance du Grand Langage') &&
-            (rangsProfils?.['Érudit'] || 0) >= 4,
+        getDetails: (ct, ft, hasSpec, rp) => [
+            { label: 'Occultisme ≥ 4', val: ct['Occultisme'] || 0, need: 4, met: (ct['Occultisme'] || 0) >= 4 },
+            { label: 'Connaissance du Grand Langage', met: hasSpec('Occultisme', 'Connaissance du Grand Langage') },
+            { label: 'Rang Érudit ≥ 4', val: rp?.['Érudit'] || 0, need: 4, met: (rp?.['Érudit'] || 0) >= 4 },
+        ],
     },
 ];
 export const SKILLS_ESPRIT = [
@@ -412,18 +412,30 @@ export function useCompetencesLibres() {
 
         const hasSpec = (comp, specName) => {
             if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
-            if (character.computedStats?.specialites?.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
             const metier = character.competencesLibres?.specialiteMetier;
             if (metier?.comp === comp && metier?.nom === specName) return true;
+            if (character.computedStats?.specialites?.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+            if (feeData?.competencesPredilection) {
+                for (let idx = 0; idx < feeData.competencesPredilection.length; idx++) {
+                    const pred = feeData.competencesPredilection[idx];
+                    if (pred.nom !== comp) continue;
+                    const feeSpec = pred.specialite || (pred.isSpecialiteChoix ? character.competencesLibres?.choixSpecialite?.[idx] : null);
+                    if (feeSpec === specName) return true;
+                }
+            }
             return false;
         };
 
-        return MAGIES_CONFIG.map(config => ({
-            ...config,
-            actif: !!magiesActives[config.nom]?.actif,
-            prereqsOk: config.checkPrereqs(ct, ft, hasSpec, rp),
-        }));
-    }, [isScelle, character.computedStats, character.data?.magies, character.competencesLibres]);
+        return MAGIES_CONFIG.map(config => {
+            const details = config.getDetails(ct, ft, hasSpec, rp);
+            return {
+                ...config,
+                actif: !!magiesActives[config.nom]?.actif,
+                prereqsOk: details.every(d => d.met),
+                prereqsDetails: details,
+            };
+        });
+    }, [isScelle, character.computedStats, character.data?.magies, character.competencesLibres, feeData]);
 
     const handleDebloquerMagie = useCallback((nomMagie) => {
         if (isReadOnly || !isScelle) return;

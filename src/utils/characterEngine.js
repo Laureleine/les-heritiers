@@ -551,6 +551,7 @@ export function characterReducer(state, action) {
             futilesTotal: futilesTotal,
             priceModifiers: priceModifiers,
             bible_autonome: bibleAutonome,
+            specialites: finalStats.specialites,
             combat: combatStats // ✨ LA VÉRITÉ ABSOLUE EST MAINTENANT ICI !
         };
     }
@@ -633,6 +634,7 @@ export function characterReducer(state, action) {
             futilesTotal[nomComp] = investis;
         });
 
+        const humanStats = calculateCharacterStats(newState, action.gameData);
         newState.computedStats = {
             ...(newState.computedStats || {}),
             rangsProfils,
@@ -643,6 +645,7 @@ export function characterReducer(state, action) {
             futilesPredFinales: [],
             futilesBase,
             futilesTotal,
+            specialites: humanStats.specialites,
         };
     }
 
