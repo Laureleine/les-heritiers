@@ -18,6 +18,7 @@ import { useGameDataContext } from './context/GameDataContext';
 import { supabase } from './config/supabase';
 import { Lock } from './config/icons';
 import { isCharacterScelle } from './utils/lockUtils';
+import { isAdmin } from './utils/authRoles';
 
 // Code Splitting
 const Encyclopedia = lazy(() => import('./components/Encyclopedia'));
@@ -112,7 +113,11 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
 
         <Route path="/validations" element={<ValidationsPendantes session={session} onBack={() => navigate('/encyclopedia')} />} />
         <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={refreshUserProfile} onBack={() => navigate('/')} />} />
-        <Route path="/admin_dashboard" element={<AdminDashboard session={session} userProfile={userProfile} onBack={() => navigate('/')} />} />
+        <Route path="/admin_dashboard" element={
+          isAdmin(userProfile)
+            ? <AdminDashboard session={session} userProfile={userProfile} onBack={() => navigate('/')} />
+            : <Navigate to="/" replace />
+        } />
         
         <Route path="/cercles" element={
           <CerclesDashboard
