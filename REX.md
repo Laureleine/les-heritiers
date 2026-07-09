@@ -1,4 +1,36 @@
-﻿# REX — Session 8 Juillet 2026 — v17.4.50 « La Table Bien Dressée »
+﻿# REX — Session 9 Juillet 2026 — v17.4.51 « Le Grimoire s'Ouvre à Tous »
+
+## Travailler sur une session compactée : vérifier le HEAD git avant de coder
+
+La session a repris sur une conversation compactée. Le code décrit dans le résumé était déjà committé (`c5041c4` — A1+A2). Toute tentative de « refaire » le travail décrit dans le résumé aurait créé des doublons. Règle : à la reprise d'un résumé, lancer `git log --oneline -5` pour savoir ce qui est déjà en base avant de toucher quoi que ce soit.
+
+## Les fichiers à indentation mixte résistent à Edit — utiliser PowerShell Replace
+
+`Auth.js` utilise des tabulations + espaces mélangés. L'outil `Edit` n'arrive pas à matcher le `old_string` même en copiant exactement depuis `Read`. Solution : `[System.IO.File]::ReadAllText` + `.Replace()` en PowerShell, ou `sed` en Bash quand les caractères exacts sont connus. Ne pas insister avec Edit sur des fichiers à encodage/indentation non-standard.
+
+## `useFocusTrap` doit être appelé APRÈS la déclaration des states dont dépend sa condition
+
+Dans GrimoirePersonnel.js, appeler `useFocusTrap(deleteModalRef, !!deleteConfirm)` AVANT `const [deleteConfirm] = useState(null)` provoque une `ReferenceError: can't access before initialization` au runtime. Les hooks React peuvent dépendre de states, mais l'appel doit venir après la déclaration du state.
+
+## Onglets conditionnels : `querySelectorAll('[role=tab]')` plutôt qu'un tableau statique
+
+Pour AdminDashboard et Telegraphe, les onglets sont conditionnellement rendus (selon `isSuperAdmin`, `isInitiated`). Un tableau statique d'IDs aurait pointé vers des éléments absents du DOM. La bonne approche : `tablistRef.current.querySelectorAll('[role=tab]')` au moment du keydown — ça lit le DOM réel.
+
+## La branche `backup` déclenche des builds Vercel qui échouent — c'est normal
+
+Le dépôt a une GitHub Action qui pousse un backup daily sur la branche `backup`. Vercel l'interpréte comme un push et tente un build Preview qui échoue (probablement un conflit de config). Ce n'est pas un problème de production — ignorer l'erreur Preview sur la branche `backup`.
+
+## `<option>` ne peut pas contenir `aria-hidden` — les émojis dans les selects sont non-corrigibles
+
+WCAG recommande de ne pas annoter les nœuds texte dans `<option>`. Les émojis dans QuickForgeModal, EntityForm, FairyTypeForm restent lus par les screen readers avec leur description complète. Seule solution propre : retirer les émojis du texte des options et les mettre en donnée visuelle CSS — hors scope pour une session a11y.
+
+## La vérification Vercel via MCP est plus fiable que `vercel ls` en PowerShell
+
+`vercel ls` en PowerShell génère des sorties parasites (erreurs RemoteException) qui polluent les pipes. Le MCP `list_deployments` avec le `projectId` et `teamId` issus de `.vercel/project.json` donne une réponse JSON propre et fiable.
+
+---
+
+# REX — Session 8 Juillet 2026 — v17.4.50 « La Table Bien Dressée »
 
 ## Quand on expose un calcul interne en paramètre, retirer l'import de la fonction de calcul
 
