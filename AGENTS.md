@@ -2,7 +2,6 @@
 
 - Au début de chaque session, lancer `node scripts/backup_supabase.js` dans le dossier `C:\Users\amara\-=- Apps -=-\heritiers` pour sauvegarder la base de données.
 - Lire `DRY_PLAN.md` entièrement (session memory + chantiers) pour le contexte de reprise.
-- **Mémoire projet :** Les fichiers de contexte (features, architecture, feedback, pièges…) sont dans `.claude/memory/` à la racine du projet. Lire et écrire ces fichiers dans ce dossier — pas dans `~/.claude/projects/`.
 - Toute modification du modèle de données (nouveau champ, nouvelle table, index, RLS) **doit** être accompagnée d'une migration SQL dans la même session. Ne jamais laisser du code qui dépend d'une colonne non encore créée en base.
 - **RÈGLE ABSOLUE — migrations SQL :** Ne jamais utiliser `mcp__claude_ai_Supabase__apply_migration` ni `mcp__claude_ai_Supabase__execute_sql` sur le projet de prod (`cijtzdfwrmbftmwookac`). Ces outils sont bloqués sur ce projet. Toujours passer par `pg` + `SUPABASE_DB_URL` (variable dans `.env`). Écrire un script Node si besoin.
 
