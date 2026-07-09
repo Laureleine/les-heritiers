@@ -1,4 +1,28 @@
-﻿# REX — Session 9 Juillet 2026 — v17.4.52 « Les Sceaux Vérifiés »
+﻿# REX — Session 9 Juillet 2026 — v17.4.53 « Le Barème du Sort »
+
+## Une migration de type sur colonne existante : ne jamais passer par NULL
+
+Pour migrer une colonne `INTEGER` → `TEXT` sur une table avec contrainte `NOT NULL`, la première version du script faisait `UPDATE SET weight = NULL` avant l'`ALTER`. Résultat : erreur immédiate. La bonne approche est `ALTER COLUMN weight TYPE TEXT USING 'frequent'` en une seule instruction — PostgreSQL convertit les valeurs existantes en ligne sans passer par un état NULL intermédiaire.
+
+## Backward compatibility dans tiragePondere : vérifier typeof avant de supposer
+
+Les tables hardcodées de `pnjTables.js` utilisent des poids numériques (ex : `weight: 10`). Les nouvelles entrées DB utilisent des clés string (`'frequent'`). Le dispatch `typeof item.weight === 'string' ? labelToWeight(item.weight) : (item.weight ?? 1)` permet aux deux systèmes de coexister sans migration des tables hardcodées — et sans casser les tests existants.
+
+## replace_all manque les occurrences sans virgule finale
+
+Lors du remplacement `weight: row.weight ?? 1,` (avec virgule), la ligne `const entry = { _dbId: row.id, weight: row.weight ?? 1 }` (sans virgule) n'a pas été capturée. Après un `replace_all`, toujours vérifier le fichier lu par le système pour s'assurer qu'aucune variante syntaxique n'a été oubliée.
+
+## Tests des hooks : mettre à jour les valeurs de weight dans les assertions
+
+Les tests de hooks vérifient le payload exact passé à Supabase. Avec l'ancien système numérique, `weight: 8` était un argument valide. Avec le nouveau système, passer un nombre ne planterait pas le mock, mais testerait un comportement qui ferait crasher le CHECK constraint en production. Toujours aligner les valeurs de test avec ce que la DB attend réellement.
+
+## Pour les TracasGenerateur à système de poids préexistant : substituer la constante, pas le composant
+
+TracasGenerateur avait déjà ses propres `POIDS_OPTIONS` (3 niveaux numériques). Plutôt que de réécrire le composant, remplacer `POIDS_OPTIONS` par `WEIGHT_LABELS.map((w) => ({ id: w.key, label: w.label }))` suffit — le composant `Select` existant reste intact et fonctionne immédiatement avec le nouveau format.
+
+---
+
+# REX — Session 9 Juillet 2026 — v17.4.52 « Les Sceaux Vérifiés »
 
 ## Une revue de code impitoyable révèle des problèmes de sécurité même dans un projet bien maintenu
 
