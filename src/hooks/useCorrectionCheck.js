@@ -80,7 +80,7 @@ export function useCorrectionCheck(userProfile) {
         await supabase.from('characters').update({
             correction_authorized: authorized,
             correction_responded_at: new Date().toISOString(),
-        }).eq('id', characterId);
+        }).eq('id', characterId).eq('user_id', userId);
 
         setPendingCorrections(prev => prev.filter(c => c.id !== characterId));
     };
@@ -91,6 +91,7 @@ export function useCorrectionCheck(userProfile) {
      * → lève correction_done = true pour déclencher la notification joueur au prochain login
      */
     const markCorrected = async (characterId) => {
+        if (!isAdmin) return;
         await supabase.from('characters').update({
             needs_correction: false,
             correction_reason: null,
@@ -104,6 +105,7 @@ export function useCorrectionCheck(userProfile) {
 
     /** Le Docte signale manuellement un personnage */
     const flagCharacter = async (characterId, reason) => {
+        if (!isAdmin) return;
         await supabase.from('characters').update({
             needs_correction: true,
             correction_reason: reason,

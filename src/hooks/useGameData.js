@@ -19,7 +19,7 @@ export function useGameData(enabled = true) {
                 loadProfils(), loadBadges(), loadCompetences(), loadFairyTypes(),
                 getCompetencesFutiles(true), loadSocialItems(), loadEncyclopediaRefs()
             ]);
-            console.log(`⏱️ useGameData: ${Math.round((performance.now() - t0) / 10) / 100}s`);
+
             return {
                 profils, badges, competences, competencesParProfil, competencesFutiles,
                 fairyData, fairyTypes, fairyTypesByAge, socialItems, encyclopediaRefs

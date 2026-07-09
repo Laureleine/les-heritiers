@@ -134,7 +134,8 @@ const updateOfflineMirror = (characters) => {
 
 const getOfflineMirror = () => {
     const stored = localStorage.getItem(OFFLINE_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) return [];
+    try { return JSON.parse(stored); } catch { return []; }
 };
 
 export const getUserCharacters = async (forceRefresh = false) => {

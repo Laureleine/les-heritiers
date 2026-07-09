@@ -29,6 +29,8 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
   if (activeTab === 'fairy_assets') linkedFairies = item.fairy_type_assets?.map(link => link.fairy_types?.name).filter(Boolean) || [];
   linkedFairies.sort();
 
+  const safeParseArray = (v) => { if (Array.isArray(v)) return v; try { return JSON.parse(v || '[]'); } catch { return []; } };
+
   // Helper pour afficher proprement les listes (Avantages/Désavantages) venant de Supabase
   const renderList = (data) => {
     if (!data) return null;
@@ -379,7 +381,7 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
                     <Star size={14} /> Profils Autorisés
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {(Array.isArray(item.profils_autorises) ? item.profils_autorises : JSON.parse(item.profils_autorises || '[]')).map((profil, idx) => (
+                    {safeParseArray(item.profils_autorises).map((profil, idx) => (
                       <span key={idx} className="text-xs font-bold text-blue-700 bg-blue-200 px-2.5 py-1 rounded-md">
                         {profil}
                       </span>
