@@ -4,6 +4,30 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.53 — Le Barème du Sort ⚖️🎲 (9 juillet 2026)
+
+Chers Héritiers,
+
+Dans les ateliers communautaires où vous proposez vos créatures, vos tracas et vos décors de Paris 1899, les dés parlaient jusqu'ici en chiffres — 1, 5, 25, 50 — des nombres que seul un mathématicien de la Rue de Rivoli aurait pu déchiffrer d'un coup d'œil.
+
+Désormais, le Sort a son propre vocabulaire.
+
+Lorsque vous soumettrez ou consulterez une entrée dans les Générateurs, vous verrez s'afficher cinq degrés de probabilité en toutes lettres :
+
+✦ **Extrêmement rare** — une pépite que la chance distille goutte à goutte
+✦ **Rare** — une apparition qui surprend encore
+✦ **Peu fréquent** — le sort s'en souvient, sans en abuser
+✦ **Fréquent** — le quotidien qui ponctue Paris
+✦ **Très fréquent** — ce qui court les pavés et les ruelles
+
+Que ce soit un objet trouvé dans les poches d'un inconnu, un nuage bas sur les toits de la banlieue industrielle, un tracas qui grippe l'existence ou un trait de caractère d'un personnage rencontré au détour d'une impasse — chacun de ces éléments sait maintenant *à quelle cadence il se manifeste*, et peut vous le dire en français.
+
+Une mise à jour discrète, mais qui rend le jeu plus lisible pour tous ceux qui façonnent les tables communautaires avec soin.
+
+*L'Atelier des Merveilles, Paris, 9 juillet 1899*
+
+---
+
 ## v17.4.52 « Les Sceaux Vérifiés 🔏🛡️ »
 
 📜 **Mise à jour — v17.4.52 « Les Sceaux Vérifiés »** 🔏🛡️

@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.53 - \"Le Barème du Sort ⚖️🎲\"",
+    date: "9 Juillet 2026",
+    description: "Les dés du destin ont désormais un langage. Dans les ateliers communautaires des Générateurs, les poids numériques abstraits ont cédé la place à cinq degrés de probabilité en français — d'Extrêmement rare à Très fréquent — pour que chaque Héritier comprenne d'un regard à quelle cadence les fées et les tracas se manifestent.",
+    changes: [
+      "⚖️ **Cinq degrés de fréquence :** Les poids des entrées communautaires (Générateur de Poche, d'Ambiance, de Tracas, de PNJ) sont désormais exprimés en mots : *Extrêmement rare*, *Rare*, *Peu fréquent*, *Fréquent*, *Très fréquent*. Fini les chiffres orphelins.",
+      "🎲 **Cohérence de la mécanique :** Le tirage pondéré traduit automatiquement ces étiquettes en valeurs internes (1 / 3 / 5 / 10 / 20) et reste compatible avec les tables hardcodées existantes.",
+      "🗄️ **Migration de base de données :** La colonne `weight` des quatre tables communautaires est passée d'un entier libre à un texte contraint — toutes les entrées historiques ont été migrées vers *Fréquent*.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.52 - \"Les Sceaux Vérifiés 🔏🛡️\"",
     date: "9 Juillet 2026",
     description: "Session de rigueur invisible : les sceaux de sécurité ont été contrôlés, renforcés et gravés plus profond. Aucune nouvelle fonctionnalité — mais le coffre-fort est désormais mieux verrouillé.",
