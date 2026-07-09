@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.51 - \"Le Grimoire s'Ouvre à Tous 🔮♿\"",
+    date: "9 Juillet 2026",
+    description: "Fin du grand chantier d'accessibilité : les sept tickets WCAG 2.2 AA sont complétés. L'application est désormais pleinement navigable au clavier et aux lecteurs d'écran — modales, onglets, titres, formulaires, émojis et repères structurels.",
+    changes: [
+      "🔮 **Focus piégé dans toutes les modales :** Les modales de recadrage de portrait, de Forge rapide, de Grimoire, de Confirmation et l'Encyclopédie retiennent désormais correctement le focus au clavier. Impossible de se perdre hors de la fenêtre.",
+      "🗂️ **Navigation au clavier dans tous les onglets :** Les flèches ← → Home End permettent de naviguer entre les onglets partout dans l'application — Encyclopédie, Propositions, Administration, Télégraphe.",
+      "📐 **Hiérarchie des titres corrigée :** Les étapes Héritage, Capacités, Atouts et Compétences n'avaient pas de h2 parent — corrigé. Les lecteurs d'écran peuvent maintenant naviguer par titres sans saut de niveau.",
+      "🔗 **Erreurs liées à leur champ :** Le message d'erreur du formulaire de connexion est désormais annoncé par le lecteur d'écran dès qu'il apparaît, et lié à l'input par aria-describedby.",
+      "🙈 **Émojis silencieux pour les machines :** Les émojis décoratifs dans les menus, boutons et badges sont masqués aux lecteurs d'écran (aria-hidden). Fini les \"feu scintillant\" lus au milieu d'une phrase.",
+      "🏛️ **Repères structurels ajoutés :** Le Télégraphe est déclaré comme zone complémentaire (aside), le tableau de bord admin et la Forge ont leur section nommée. La navigation de l'Actualité porte son label.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.50 - \"La Table Bien Dressée 🍽️🎚️\"",
     date: "8 Juillet 2026",
     description: "Le générateur de menus gagne un contrôle manuel sur le contexte de la tablée — intime, ordinaire ou grande réception. Le Docte n'est plus contraint par le calcul automatique.",

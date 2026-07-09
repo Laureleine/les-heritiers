@@ -4,6 +4,34 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.51 « Le Grimoire s'Ouvre à Tous 🔮♿ »
+
+📜 **Mise à jour — v17.4.51 « Le Grimoire s'Ouvre à Tous »** 🔮♿
+
+Chers Héritiers,
+
+Dans les salons dorés de la Belle Époque, certains Doctes ont depuis longtemps fait remarquer que le Grimoire de la Société n'était pas toujours aisément consultable — pour qui ne voit pas l'écran comme les autres, ou pour qui navigue au clavier plutôt qu'à la souris. Cette session a été consacrée en entier à corriger cela.
+
+**Ce qui change — pour ceux qui utilisent clavier, lecteur d'écran ou technologie d'assistance :**
+
+🔮 Les **modales** — recadrage de portrait, Forge Rapide, Grimoire, Confirmation — retiennent désormais correctement le focus. On ne s'y perd plus.
+
+🗂️ Les **onglets** se naviguent aux flèches ← →, avec Home et End. Encyclopédie, Propositions, Administration, Télégraphe : tout est accessible.
+
+📐 La **hiérarchie des titres** a été rectifiée dans les étapes de création de personnage. Les lecteurs d'écran peuvent désormais sauter de section en section sans être déroutés par un saut de niveau.
+
+🔗 Les **erreurs de formulaire** sont annoncées dès leur apparition et liées à leur champ. Le formulaire de connexion ne se contente plus d'afficher un message en rouge — il le dit aussi.
+
+🙈 Les **émojis décoratifs** sont maintenant invisibles aux lecteurs d'écran. On ne se fait plus lire « feu scintillant étoile brillante » au milieu d'un label de bouton.
+
+🏛️ Les grandes zones de l'application ont reçu leurs **repères structurels** : le Télégraphe est une *zone complémentaire*, la Forge et le tableau de bord administrateur sont des *sections nommées*, le menu de l'Actualité porte son label.
+
+Le Grimoire parle désormais à tous.
+
+*— Les Archives de la Société des Héritiers*
+
+---
+
 ## v17.4.50 « La Table Bien Dressée 🍽️🎚️ »
 
 📜 **Mise à jour — v17.4.50 « La Table Bien Dressée »** 🍽️🎚️
