@@ -1,4 +1,24 @@
-﻿# REX — Session 10 Juillet 2026 — v17.4.57 « L'Éveil du Druide »
+﻿# REX — Session 10 Juillet 2026 — v17.4.58 « Le Docte Parmi les Siens »
+
+## Lire le code avant de proposer une architecture
+
+La demande de Nyalar ("intégrer mon personnage à ma propre campagne") aurait pu déboucher sur une grosse feature (nouveau champ DB, nouveau rôle, nouvelle vue). En lisant `ActiveCercleView.js` d'abord, on a découvert que le Docte pouvait **déjà** rejoindre son propre cercle via le code d'invitation — le vrai problème était un seul bouton manquant. Le delta réel était de 10 lignes de JSX, pas une refonte.
+
+## `isAlsoMember` comme garde conditionnelle légère
+
+Pour gérer un état "Docte qui est aussi joueur" sans dupliquer la vue ni créer un troisième mode, une variable booléenne dérivée suffit : `const isAlsoMember = isDocte && activeMembers.some(m => m.user_id === userId)`. Elle conditionne l'affichage du bouton "Quitter" sans toucher à la logique existante.
+
+## Séparer "quitter comme joueur" et "dissoudre le cercle"
+
+Deux actions dangereuses différentes ne doivent jamais partager le même bouton ou être regroupées dans la même zone sans distinction visuelle. Ici : "Quitter la table" (LogOut, rouge discret) placé **avant** "Dissoudre le Cercle" (X, encore plus discret) — l'ordre et le style signalent la gradation de gravité.
+
+## Une correction demandée en cours de route : toujours accuser réception sans friction
+
+Le bouton "Consulter" avait été retiré de la carte du Docte par souci de cohérence avec la vue joueur — l'utilisatrice a signalé qu'elle le voulait garder. Un `Edit` d'une ligne, commit, push. Pas de résistance. La règle : quand l'utilisatrice dit "laisse ça", on laisse, sans redemander pourquoi.
+
+---
+
+# REX — Session 10 Juillet 2026 — v17.4.57 « L'Éveil du Druide »
 
 ## Ne jamais oublier `git add` après avoir modifié un fichier source
 
