@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.59 - \"La Table s'Agrandit 🪑🪑\"",
+    date: "10 Juillet 2026",
+    description: "Un joueur — même le Docte — peut désormais amener plusieurs Héritiers à la même table. La contrainte qui limitait à un personnage par cercle a été levée. Quitter la table demande maintenant lequel retirer quand plusieurs personnages y siègent. Le bouton «Quitter la table» se niche désormais à côté du code d'invitation pour économiser de la place.",
+    changes: [
+      "🪑 **Multi-personnages par joueur :** Un même joueur peut rejoindre son cercle avec autant d'Héritiers qu'il le souhaite (un seul par rejoindre, mais plusieurs au total).",
+      "❓ **Sélecteur au départ :** Si plusieurs personnages siègent à la table, «Quitter la table» ouvre un sélecteur «Quel Héritier quitte ?» avant la confirmation.",
+      "📐 **Layout compact :** Le bouton «Quitter la table» est placé à droite du code d'invitation, sur la même ligne — «Dissoudre le Cercle» reste seul en dessous.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.58 - \"Le Docte Parmi les Siens 🛡️🪑\"",
     date: "10 Juillet 2026",
     description: "Le Docte peut désormais prendre place à sa propre table en tant que joueur. S'il a rejoint son cercle via le code d'invitation, un bouton «Quitter la table» apparaît dans son en-tête — distinct du bouton «Dissoudre le Cercle» — lui permettant de se retirer comme joueur sans dissoudre la campagne. Son personnage figure parmi les cartes de la table et conserve le bouton «Consulter».",

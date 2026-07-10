@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.59 — «La Table s'Agrandit» — 10 Juillet 2026
+
+✨ **Missive du Greffe des Âmes — v17.4.59 «La Table s'Agrandit»**
+
+Chers Héritiers,
+
+Un Héritier n'est pas toujours seul dans sa peau. Certains portent plusieurs visages, plusieurs destins, plusieurs noms gravés dans les registres du Greffe.
+
+Jusqu'à présent, chaque joueur ne pouvait présenter qu'un seul Héritier à la même table. Cette restriction est levée. Désormais, un joueur peut rejoindre son cercle avec autant de personnages qu'il le souhaite — chacun prenant sa place autour de la table virtuelle, avec sa propre fiche, ses propres XP, sa propre nature.
+
+Quand vient l'heure de partir, la table vous demande simplement : *lequel de vos Héritiers lève son siège ?* Un sélecteur vous guide vers la bonne décision, sans risque de confusion.
+
+Le code d'invitation et le bouton de départ partagent désormais la même ligne — car l'espace sur le parchemin est précieux.
+
+*Bon jeu à toutes et à tous,*
+*Le Greffe des Âmes*
+
+---
+
 ## v17.4.58 — «Le Docte Parmi les Siens» — 10 Juillet 2026
 
 ✨ **Missive du Greffe des Âmes — v17.4.58 «Le Docte Parmi les Siens»**
