@@ -1,7 +1,7 @@
 // src/components/CharacterList.js
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Search, AlertTriangle, CheckCircle, Map, Dices, Wrench } from '../config/icons';
+import { Bug, Info, User, Users, LogOut, Globe, Book, Crown, Gift, Plus, X, BarChart2, Search, Map, Dices, Wrench } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { getUserCharacters, getPublicCharacters, getAllCharactersAdmin, deleteCharacterFromSupabase, toggleCharacterVisibility, saveCharacterToSupabase, getFullCharacter } from '../utils/supabaseStorage';
 import { exportToPDF } from '../utils/pdfGenerator';
@@ -11,108 +11,12 @@ import { isCharacterScelle } from '../utils/lockUtils';
 import { isSuperAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
 import { useGameDataContext } from '../context/GameDataContext';
+import { useCharacterRepair } from '../hooks/useCharacterRepair';
 import { characterReducer } from '../utils/characterEngine';
-import { mapDbCharForReconstruction, journalNeedsRepair, buildRepairedJournal, computeXpDepenseFromJournal } from '../utils/repairJournaux';
-import { loadFairyTypes, loadSocialItems } from '../utils/supabaseGameData';
 import ConfirmModal from './ConfirmModal';
-import GrimoirePersonnel from './cercle/GrimoirePersonnel';
+import RepairConfirmModal from './admin/RepairConfirmModal';
+import GrimoireDrawer from './GrimoireDrawer';
 import CharacterCard from './CharacterCard';
-
-// ─── Constantes de réparation ───────────────────────────────────────────────
-const REPAIR_STATUS = {
-  PENDING:  'pending',
-  OK:       'ok',
-  REPAIRED: 'repaired',
-  SKIPPED:  'skipped',
-  ERROR:    'error',
-};
-
-// ─── Modale de confirmation de réparation (admin) ───────────────────────────
-function RepairConfirmModal({ target, onConfirm, onCancel }) {
-  if (!target) return null;
-  const { row, preview } = target;
-  const oldJournal   = row.dbChar.data?.historique_xp || [];
-  const gainsBefore  = oldJournal.filter(t => t.type === 'GAIN').length;
-  const depBefore    = oldJournal.filter(t => t.type === 'DEPENSE').length;
-  const gainsAfter   = preview.filter(t => t.type === 'GAIN').length;
-  const depAfter     = preview.filter(t => t.type === 'DEPENSE').length;
-  const newXpDepense = computeXpDepenseFromJournal(preview);
-  const oldXpTotal   = row.dbChar.xp_total || 0;
-  const newXpTotal   = Math.max(oldXpTotal, newXpDepense);
-  const xpTotalBumped = newXpTotal > oldXpTotal;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onCancel}>
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
-        <div className="flex items-start gap-3 mb-4">
-          <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={22} />
-          <div>
-            <h3 className="font-serif font-bold text-gray-900 text-lg leading-tight">
-              Reconstruire le journal de<br />
-              <span className="text-amber-800">{row.dbChar.nom}</span> ?
-            </h3>
-            <p className="text-sm text-gray-500 mt-1">Les dépenses actuelles seront remplacées.</p>
-          </div>
-        </div>
-
-        {/* Tableau avant / après */}
-        <div className="bg-stone-50 rounded-xl border border-stone-200 overflow-hidden mb-4">
-          <div className="grid grid-cols-3 text-[11px] font-bold text-stone-500 uppercase tracking-wider border-b border-stone-200">
-            <div className="p-2 border-r border-stone-200">Données</div>
-            <div className="p-2 text-center border-r border-stone-200">Avant</div>
-            <div className="p-2 text-center text-blue-700">Après</div>
-          </div>
-          <div className="grid grid-cols-3 text-sm divide-y divide-stone-100">
-            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">Entrées GAIN</div>
-            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{gainsBefore}</div>
-            <div className="p-2 text-center text-blue-700 font-bold">{gainsAfter}</div>
-
-            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">Entrées DÉPENSE</div>
-            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{depBefore}</div>
-            <div className="p-2 text-center text-blue-700 font-bold">{depAfter}</div>
-
-            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">Total entrées</div>
-            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{oldJournal.length}</div>
-            <div className="p-2 text-center text-blue-700 font-bold">{preview.length}</div>
-
-            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">XP dépensé</div>
-            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{row.dbChar.xp_depense}</div>
-            <div className="p-2 text-center text-blue-700 font-bold">{newXpDepense}</div>
-
-            <div className="p-2 text-stone-600 border-r border-stone-200 font-medium">XP total</div>
-            <div className="p-2 text-center text-stone-700 border-r border-stone-200">{oldXpTotal}</div>
-            <div className={`p-2 text-center font-bold ${xpTotalBumped ? 'text-amber-600' : 'text-blue-700'}`}>
-              {newXpTotal}{xpTotalBumped && ' ↑'}
-            </div>
-          </div>
-        </div>
-
-        {xpTotalBumped && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 mb-4 flex items-start gap-2">
-            <AlertTriangle size={14} className="shrink-0 mt-0.5 text-amber-600" />
-            <span>
-              Le XP total sera relevé de <strong>{oldXpTotal}</strong> à <strong>{newXpTotal}</strong> pour rester cohérent avec les dépenses reconstruites (contrainte de base de données).
-            </span>
-          </div>
-        )}
-
-        <p className="text-xs text-stone-500 mb-5">
-          Les entrées <strong>GAIN</strong> sont préservées. Les <strong>DÉPENSES</strong> sont recalculées depuis le Plancher de Verre.
-        </p>
-
-        <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 px-4 py-2.5 bg-stone-100 text-stone-700 rounded-lg font-bold hover:bg-stone-200 transition-colors">
-            Annuler
-          </button>
-          <button onClick={onConfirm} className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-            <CheckCircle size={16} /> Reconstruire
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
@@ -138,15 +42,17 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   // ✨ Filtre de recherche
   const [searchQuery, setSearchQuery] = useState('');
 
-  // ✨ Réparation XP (admin)
-  const [repairRows, setRepairRows] = useState({});      // { [charId]: { dbChar, mapped, status, detail } }
-  const [repairGameData, setRepairGameData] = useState(null);
-  const [repairConfirmTarget, setRepairConfirmTarget] = useState(null);
-
-  // ✨ Réparation XP (joueur) — détection locale + demande admin
-  const [playerRepairNeeds, setPlayerRepairNeeds] = useState({});  // { [charId]: boolean }
-  const [playerRepairRequest, setPlayerRepairRequest] = useState(null); // { charId, charNom }
-  const [pendingRepairCount, setPendingRepairCount] = useState(0); // badge admin
+  // ✨ Réparation XP — logique déléguée au hook
+  const {
+    repairRows,
+    repairConfirmTarget, setRepairConfirmTarget,
+    pendingRepairCount,
+    playerRepairNeeds,
+    playerRepairRequest, setPlayerRepairRequest,
+    requestRepairOne,
+    executeRepair,
+    submitPlayerRepairRequest,
+  } = useCharacterRepair({ isAdmin, myCharacters });
 
   // 🧠 FIX : Le "Latest Ref Pattern" pour isoler onSignOut du cycle de dépendances
   const onSignOutRef = useRef(onSignOut);
@@ -215,157 +121,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
     loadCharacters(isMounted);
     return () => { isMounted = false; };
   }, [loadCharacters]);
-
-  // ─── Réparation XP : chargement des statuts (admin seulement) ───────────
-  const loadRepairStatuses = useCallback(async () => {
-    try {
-      const { data: chars, error } = await supabase
-        .from('characters')
-        .select('*')
-        .in('statut', ['scelle', 'scellé'])
-        .order('nom');
-      if (error) throw error;
-
-      const rows = {};
-      for (const dbChar of (chars || [])) {
-        const mapped = mapDbCharForReconstruction(dbChar);
-        let status = REPAIR_STATUS.PENDING;
-        if (!dbChar.data?.stats_scellees)    status = REPAIR_STATUS.SKIPPED;
-        else if (!journalNeedsRepair(mapped)) status = REPAIR_STATUS.OK;
-        rows[dbChar.id] = { dbChar, mapped, status, detail: '' };
-      }
-      setRepairRows(rows);
-    } catch (e) {
-      console.error('Repair status load error:', e);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isAdmin) loadRepairStatuses();
-  }, [isAdmin, loadRepairStatuses]);
-
-  // ─── Réparation XP : détection côté joueur (non-admin) ──────────────────
-  useEffect(() => {
-    if (isAdmin || myCharacters.length === 0) return;
-    const sealedIds = myCharacters
-      .filter(c => c.statut === 'scelle' || c.statut === 'scellé')
-      .map(c => c.id);
-    if (sealedIds.length === 0) return;
-
-    (async () => {
-      try {
-        const { data } = await supabase
-          .from('characters')
-          .select('id, xp_depense, statut, data')
-          .in('id', sealedIds);
-        if (!data) return;
-        const needs = {};
-        for (const dbChar of data) {
-          needs[dbChar.id] = journalNeedsRepair(mapDbCharForReconstruction(dbChar));
-        }
-        setPlayerRepairNeeds(needs);
-      } catch { /* silencieux */ }
-    })();
-  }, [isAdmin, myCharacters]);
-
-  // ─── Réparation XP : comptage des demandes en attente (admin) ───────────
-  useEffect(() => {
-    if (!isAdmin) return;
-    (async () => {
-      try {
-        const { count } = await supabase
-          .from('journal_repair_requests')
-          .select('*', { count: 'exact', head: true })
-          .is('resolved_at', null);
-        setPendingRepairCount(count || 0);
-      } catch { /* silencieux */ }
-    })();
-  }, [isAdmin]);
-
-  // ─── Réparation XP : soumission de la demande joueur ────────────────────
-  const submitPlayerRepairRequest = useCallback(async () => {
-    if (!playerRepairRequest) return;
-    const { charId, charNom } = playerRepairRequest;
-    setPlayerRepairRequest(null);
-    try {
-      const { error } = await supabase.from('journal_repair_requests').insert({
-        character_id: charId,
-        character_nom: charNom,
-        requested_by: session?.user?.id,
-      });
-      if (error) throw error;
-      showInAppNotification("Demande envoyée ! L'administrateur va réparer votre journal.", "success");
-    } catch (e) {
-      showInAppNotification("Erreur lors de l'envoi de la demande : " + e.message, "error");
-    }
-  }, [playerRepairRequest, session?.user?.id]);
-
-  // ─── Réparation XP : demande de reconstruction pour une carte ────────────
-  const requestRepairOne = useCallback(async (charId) => {
-    const row = repairRows[charId];
-    if (!row) return;
-
-    try {
-      showInAppNotification("Analyse du journal en cours…", "info");
-
-      // Charge le gameData de réparation si pas encore disponible
-      let gd = repairGameData;
-      if (!gd) {
-        const [fairyResult, socialItems, atoutsResult] = await Promise.all([
-          loadFairyTypes(),
-          loadSocialItems(),
-          supabase.from('fairy_assets').select('id, nom').order('nom'),
-        ]);
-        gd = { fairyData: fairyResult.fairyData, socialItems, atouts: atoutsResult.data || [] };
-        setRepairGameData(gd);
-      }
-
-      const preview = buildRepairedJournal(row.mapped, gd);
-      if (!preview) {
-        showInAppNotification("Reconstruction impossible (plancher de verre absent).", "warning");
-        return;
-      }
-      setRepairConfirmTarget({ row, charId, preview });
-    } catch (e) {
-      showInAppNotification("Erreur d'analyse : " + e.message, "error");
-    }
-  }, [repairRows, repairGameData]);
-
-  // ─── Réparation XP : exécution après confirmation ────────────────────────
-  const executeRepair = useCallback(async () => {
-    if (!repairConfirmTarget) return;
-    const { row, charId, preview } = repairConfirmTarget;
-    setRepairConfirmTarget(null);
-
-    try {
-      const newXpDepense = computeXpDepenseFromJournal(preview);
-      // ⚡ Garantit xp_depense ≤ xp_total (contrainte check_xp_coherence)
-      const newXpTotal   = Math.max(row.dbChar.xp_total || 0, newXpDepense);
-      const updatedData  = { ...row.dbChar.data, historique_xp: preview };
-
-      const { error } = await supabase
-        .from('characters')
-        .update({ data: updatedData, xp_depense: newXpDepense, xp_total: newXpTotal })
-        .eq('id', charId);
-      if (error) throw error;
-
-      const gains  = preview.filter(t => t.type === 'GAIN').length;
-      const deps   = preview.filter(t => t.type === 'DEPENSE').length;
-      const detail = `${preview.length} entrées (${gains} gains + ${deps} dépenses) — ${newXpDepense} XP dépensés`;
-
-      setRepairRows(prev => ({
-        ...prev,
-        [charId]: { ...prev[charId], status: REPAIR_STATUS.REPAIRED, detail }
-      }));
-      showInAppNotification(`✨ Journal reconstruit : ${detail}`, "success");
-    } catch (e) {
-      setRepairRows(prev => ({
-        ...prev,
-        [repairConfirmTarget?.charId]: { ...prev[repairConfirmTarget?.charId], status: REPAIR_STATUS.ERROR, detail: e.message }
-      }));
-      showInAppNotification("Erreur : " + e.message, "error");
-    }
-  }, [repairConfirmTarget]);
 
   // ─── Actions sur les personnages ─────────────────────────────────────────
 
@@ -871,27 +626,11 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       )}
 
       {/* ✨ LA MODALE IMMERSIVE DU GRIMOIRE PERSONNEL (SOLO) ✨ */}
-      {activeGrimoireCharId && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-stone-900/90 backdrop-blur-sm p-4 md:p-8">
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={() => setActiveGrimoireCharId(null)}
-              className="text-stone-300 hover:text-white flex items-center gap-2 font-bold transition-colors bg-stone-800/50 px-4 py-2 rounded-xl"
-            >
-              <X size={20} /> Refermer le Grimoire
-            </button>
-          </div>
-          <div className="flex-1 overflow-hidden max-w-5xl mx-auto w-full relative">
-            <GrimoirePersonnel
-              characterId={activeGrimoireCharId}
-              cercleId={null}
-              playerId={session?.user?.id}
-              isAdmin={isAdmin}
-              userProfile={userProfile}
-            />
-          </div>
-        </div>
-      )}
+      <GrimoireDrawer
+        charId={activeGrimoireCharId}
+        isAdmin={isAdmin}
+        onClose={() => setActiveGrimoireCharId(null)}
+      />
     </div>
   );
 }
