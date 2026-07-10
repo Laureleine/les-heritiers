@@ -1,7 +1,7 @@
 // src/hooks/useGrimoire.js
 // 14.6.0
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
 
@@ -12,6 +12,8 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
   const [contacts, setContacts] = useState([]);
   const [possessions, setPossessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
 
   const fetchGrimoire = useCallback(async () => {
     if (!characterId) return;
@@ -32,6 +34,7 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
+    if (!mountedRef.current) return;
     if (error) {
       showInAppNotification("Les fluides éthérés refusent l'accès au Grimoire.", "error");
     } else if (data) {

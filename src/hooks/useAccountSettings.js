@@ -66,7 +66,8 @@ export function useAccountSettings(session, userProfile, onUpdateProfile) {
 
     useEffect(() => {
         setPushSupported('Notification' in window);
-        
+        let mounted = true;
+
         const loadNotifPrefs = async () => {
             const { data, error } = await supabase
                 .from('user_notification_preferences')
@@ -74,6 +75,7 @@ export function useAccountSettings(session, userProfile, onUpdateProfile) {
                 .eq('user_id', session.user.id)
                 .maybeSingle();
 
+            if (!mounted) return;
             if (!error && data) {
                 const loadedPrefs = {
                     subscribe_to_updates: data.subscribe_to_updates,
@@ -93,6 +95,7 @@ export function useAccountSettings(session, userProfile, onUpdateProfile) {
             }
         };
         loadNotifPrefs();
+        return () => { mounted = false; };
     }, [session.user.id]);
 
     // --- 5. DÉTECTEUR DE CHANGEMENTS ---

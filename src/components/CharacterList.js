@@ -182,7 +182,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       const [mesPersos, persosPublics, persosAdmin] = await Promise.all([
         getUserCharacters(myUserId),
         getPublicCharacters(),
-        isAdminUser ? getAllCharactersAdmin() : Promise.resolve([])
+        isAdminUser ? getAllCharactersAdmin(isAdminUser) : Promise.resolve([])
       ]);
 
       const { data: giftPing } = await supabase.rpc('check_pending_gifts');

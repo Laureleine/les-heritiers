@@ -15,29 +15,27 @@ export function useCorrectionCheck(userProfile) {
 
     useEffect(() => {
         if (!userId) return;
+        let mounted = true;
 
         const checkCorrections = async () => {
             setLoading(true);
             try {
 
                 // ── 1. NOTIFICATION : personnages récemment corrigés par le Docte ──────
-                // correction_done = true signale que le Docte vient de corriger.
-                // On consomme le flag immédiatement pour ne notifier qu'une seule fois.
                 const { data: corrected } = await supabase
                     .from('characters')
                     .select('id, nom')
                     .eq('user_id', userId)
                     .eq('correction_done', true);
 
+                if (!mounted) return;
                 if (corrected?.length > 0) {
-                    // Notifier le joueur pour chaque personnage corrigé
                     corrected.forEach(c => {
                         showInAppNotification(
                             `✨ Bonne nouvelle ! "${c.nom}" a été corrigé par le Docte.`,
                             'success'
                         );
                     });
-                    // Consommer le flag (ne plus montrer la notification au prochain login)
                     await supabase
                         .from('characters')
                         .update({ correction_done: false })
@@ -52,6 +50,7 @@ export function useCorrectionCheck(userProfile) {
                     .eq('needs_correction', true)
                     .is('correction_authorized', null);
 
+                if (!mounted) return;
                 setPendingCorrections(myChars || []);
 
                 // ── 4. FILE D'ATTENTE ADMIN ───────────────────────────────────────────
@@ -62,17 +61,19 @@ export function useCorrectionCheck(userProfile) {
                         .eq('needs_correction', true)
                         .eq('correction_authorized', true);
 
+                    if (!mounted) return;
                     setAdminQueue(queue || []);
                 }
 
             } catch (err) {
                 console.error('❌ useCorrectionCheck :', err);
             } finally {
-                setLoading(false);
+                if (mounted) setLoading(false);
             }
         };
 
         checkCorrections();
+        return () => { mounted = false; };
     }, [userId, isAdmin]);
 
     /** Le joueur répond : true = autorise, false = refuse pour l'instant */

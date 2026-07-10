@@ -20,6 +20,9 @@ export function useTelegraphe(session, userProfile) {
   const isAdmin = checkIsAdmin(userProfile);
   const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin;
 
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
+
   const activeChannelRef = useRef(activeChannel);
   useEffect(() => { activeChannelRef.current = activeChannel; }, [activeChannel]);
 
@@ -110,11 +113,12 @@ export function useTelegraphe(session, userProfile) {
         return { ...c, has_unread: unread };
       });
 
+      if (!mountedRef.current) return;
       setChannels(finalChannels);
     } catch (err) {
       showInAppNotification("Erreur de lecture des correspondances : " + translateError(err), "error");
     } finally {
-      if (!isSilent) setLoading(false);
+      if (mountedRef.current && !isSilent) setLoading(false);
     }
   }, [session?.user?.id, isAdmin, isInitiated]);
 
@@ -163,6 +167,7 @@ export function useTelegraphe(session, userProfile) {
         .limit(200);
 
       if (error) throw error;
+      if (!mountedRef.current) return;
       if (data) {
         setMessages([...data].reverse());
 
@@ -204,7 +209,7 @@ export function useTelegraphe(session, userProfile) {
     } catch (err) {
       showInAppNotification("Erreur de lecture des missives : " + translateError(err), "error");
     } finally {
-      if (!isSilent) setLoading(false);
+      if (mountedRef.current && !isSilent) setLoading(false);
     }
   }, [session?.user?.id, isAdmin, updateChannelStatus]);
 

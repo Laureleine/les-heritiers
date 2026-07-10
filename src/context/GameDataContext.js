@@ -6,7 +6,7 @@ const GameDataContext = createContext();
 const defaultGameData = {
     profils: [], competences: {}, competencesParProfil: {}, competencesFutiles: [],
     fairyData: {}, fairyTypes: [], fairyTypesByAge: { enfoui: [], traditionnelles: [], modernes: [] },
-    socialItems: [],
+    socialItems: [], sorts: [],
     encyclopediaRefs: { capacites: [], pouvoirs: [], atouts: [], fairies: [] }
 };
 

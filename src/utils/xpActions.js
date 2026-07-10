@@ -33,6 +33,7 @@ export const XP_CODES = {
     GRAND_LANGAGE_DEBLOCAGE:  'GRAND_LANGAGE_DEBLOCAGE',   // Grand Langage débloqué
     VOIE_CHIMERES_DEBLOCAGE:  'VOIE_CHIMERES_DEBLOCAGE',   // Voie des Chimères débloquée
     SPIRITISME_DEBLOCAGE:     'SPIRITISME_DEBLOCAGE',       // Spiritisme débloqué
+    SORT_APPRENTISSAGE:      'SORT_APPRENTISSAGE',       // Sort appris (dépense XP)
     // --- Vie Sociale ---
     FORTUNE_ELEVATION:     'FORTUNE_ELEVATION',      // Fortune ↑↓
     // --- Sessions de jeu ---

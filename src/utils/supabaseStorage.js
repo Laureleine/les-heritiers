@@ -296,7 +296,8 @@ export const deleteCharacterFromSupabase = async (characterId) => {
     return true;
 };
 
-export const getAllCharactersAdmin = async () => {
+export const getAllCharactersAdmin = async (isAdmin = false) => {
+    if (!isAdmin) return [];
     try {
         const { data, error } = await supabase
             .from('characters')

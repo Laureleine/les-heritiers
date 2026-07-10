@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { APP_VERSION } from '../version';
 import {
     loadProfils, loadBadges, loadCompetences, loadFairyTypes,
-    getCompetencesFutiles, loadSocialItems, loadEncyclopediaRefs
+    getCompetencesFutiles, loadSocialItems, loadEncyclopediaRefs, loadSorts
 } from '../utils/supabaseGameData';
 
 export function useGameData(enabled = true) {
@@ -14,15 +14,15 @@ export function useGameData(enabled = true) {
                 profils, badges,
                 { competences, competencesParProfil },
                 { fairyData, fairyTypes, fairyTypesByAge },
-                competencesFutiles, socialItems, encyclopediaRefs
+                competencesFutiles, socialItems, encyclopediaRefs, sorts
             ] = await Promise.all([
                 loadProfils(), loadBadges(), loadCompetences(), loadFairyTypes(),
-                getCompetencesFutiles(true), loadSocialItems(), loadEncyclopediaRefs()
+                getCompetencesFutiles(true), loadSocialItems(), loadEncyclopediaRefs(), loadSorts()
             ]);
 
             return {
                 profils, badges, competences, competencesParProfil, competencesFutiles,
-                fairyData, fairyTypes, fairyTypesByAge, socialItems, encyclopediaRefs
+                fairyData, fairyTypes, fairyTypesByAge, socialItems, encyclopediaRefs, sorts
             };
         },
         staleTime: 10 * 60 * 1000,

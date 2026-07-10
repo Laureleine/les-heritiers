@@ -297,6 +297,24 @@ export const loadFairyTypes = async () => {
     }
 };
 
+// ============================================================================
+// SORTS
+// ============================================================================
+
+export const loadSorts = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('sorts')
+            .select('id, nom, magie, niveau, branche, details')
+            .order('magie').order('niveau').order('nom');
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('Erreur chargement sorts:', error);
+        return [];
+    }
+};
+
 export const addGlobalSpeciality = async (competenceId, newSpeciality) => {
     try {
         const { data, error } = await supabase

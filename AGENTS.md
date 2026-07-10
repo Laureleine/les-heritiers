@@ -1,5 +1,6 @@
 # Rules
 
+- **RÈGLE ABSOLUE — worktrees interdits :** Ne jamais utiliser `isolation: "worktree"` dans l'outil Agent. Ne jamais créer de worktree git sous quelque forme que ce soit. Tout le travail se fait dans le répertoire principal `C:\Users\amara\-=- Apps -=-\heritiers`.
 - Au début de chaque session, lancer `node scripts/backup_supabase.js` dans le dossier `C:\Users\amara\-=- Apps -=-\heritiers` pour sauvegarder la base de données.
 - Lire `DRY_PLAN.md` entièrement (session memory + chantiers) pour le contexte de reprise.
 - Toute modification du modèle de données (nouveau champ, nouvelle table, index, RLS) **doit** être accompagnée d'une migration SQL dans la même session. Ne jamais laisser du code qui dépend d'une colonne non encore créée en base.
