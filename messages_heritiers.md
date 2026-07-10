@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.57 — «L'Éveil du Druide» — 10 Juillet 2026
+
+✨ **Missive du Greffe des Âmes — v17.4.57 «L'Éveil du Druide»**
+
+Chers Héritiers,
+
+Une grande nouvelle parcourt les loges secrètes : le Druidisme a enfin pris sa juste place parmi les grandes pratiques mystiques.
+
+À la création, l'Eubage demeure ce qu'il était — un initié qui transfère deux rangs de sa compétence profil dans l'art druidique. Mais désormais, une fois le Puits des Âmes scellé, son step se transforme : là où se trouvait l'atelier d'initiation s'ouvre un véritable sanctuaire de maîtrise, avec ses paliers (*Eubage, Saronide, Ovate, Archidruide*), ses rangs achetables en XP, et… ses **philtres**.
+
+Six philtres de niveau Novice font leur entrée dans les archives :
+⚗️ *Philtre de veille* — *Philtre de sommeil* — *Philtre d'amour* — *Philtre de descendance féérique* — *Philtre de bienveillance végétale* — *Philtre tord-boyaux*
+
+Chaque bouton «Apprendre» indique désormais son coût en XP — 5 pour la première pratique maîtrisée, 8 pour les suivantes.
+
+*Que les herbes murmurent leurs secrets à qui sait écouter.*
+
+---
+
 ## v17.4.56 — Les Coulisses de la Magie 🪄📚 (10 juillet 2026)
 
 Chers Héritiers,

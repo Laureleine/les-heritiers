@@ -412,7 +412,7 @@ export function useCompetencesLibres() {
         };
     }, [lib, getScoreBase, predFinales, isScelle, character.data, character.caracteristiques?.esprit, feeData, atoutsBonuses, character.competencesLibres, competences, isReadOnly, budgetsInfo]);
 
-    const isDruidisme = isScelle && !!character.data?.eubage?.actif;
+    const isDruidisme = !!character.data?.magies?.['Druidisme']?.actif;
 
     // --- MAGIES XP (post-scellage) ---
     const magiesEtat = useMemo(() => {
@@ -455,18 +455,37 @@ export function useCompetencesLibres() {
     }, [isScelle, character.computedStats, character.data?.magies, character.competencesLibres, feeData]);
 
     const handleDebloquerMagie = useCallback((nomMagie) => {
-        if (isReadOnly || !isScelle) return;
+        if (isReadOnly) return;
+        const magiesActuelles = character.data?.magies || {};
+        if (magiesActuelles[nomMagie]?.actif) return;
+
+        // Druidisme peut être acquis à la création (avant scellage, pour 5 PP)
+        if (!isScelle && nomMagie === 'Druidisme') {
+            dispatchCharacter({
+                type: 'UPDATE_FIELD',
+                field: 'data',
+                value: {
+                    ...(character.data || {}),
+                    magies: { ...magiesActuelles, Druidisme: { actif: true, unlockedAt: new Date().toISOString() } },
+                    druidismeCreationPP: 5,
+                },
+                gameData,
+            });
+            showInAppNotification('Druidisme acquis à la création (−5 PP) !', 'success');
+            return;
+        }
+
+        if (!isScelle) return;
+
         const COUT = 5;
         if (xpDispo < COUT) {
             showInAppNotification(`Il vous faut ${COUT} XP pour débloquer ${nomMagie}.`, 'error');
             return;
         }
-        const magiesActuelles = character.data?.magies || {};
-        if (magiesActuelles[nomMagie]?.actif) return;
         const config = MAGIES_CONFIG.find(c => c.nom === nomMagie);
         xpTransaction(dispatchCharacter, {
             updates: {
-                data: { ...(character.data || {}), magies: { ...magiesActuelles, [nomMagie]: { actif: true } } }
+                data: { ...(character.data || {}), magies: { ...magiesActuelles, [nomMagie]: { actif: true, unlockedAt: new Date().toISOString() } } }
             },
             transaction: {
                 type: 'DEPENSE',
@@ -478,13 +497,55 @@ export function useCompetencesLibres() {
         }, gameData);
     }, [isReadOnly, isScelle, xpDispo, character.data, dispatchCharacter, gameData]);
 
+    // Détermine la "première magie" débloquée (timestamp le plus ancien, Druidisme en priorité)
+    const getPremiereMagie = useCallback(() => {
+        if (character.data?.magies?.['Druidisme']?.actif) return 'Druidisme';
+        const magiesData = character.data?.magies || {};
+        const timestampees = Object.entries(magiesData)
+            .filter(([, v]) => v?.actif && v?.unlockedAt)
+            .sort((a, b) => new Date(a[1].unlockedAt) - new Date(b[1].unlockedAt));
+        if (timestampees.length) return timestampees[0][0];
+        // Fallback pour vieux personnages : première active dans l'ordre de MAGIES_CONFIG
+        return MAGIES_CONFIG.find(c => magiesData[c.nom]?.actif)?.nom || null;
+    }, [character.data]);
+
+    const handleApprendreSortMagie = useCallback((nomMagie, sort) => {
+        if (isReadOnly || !isScelle) return;
+        const premiere = getPremiereMagie();
+        const coutXP = premiere === nomMagie ? 5 : 8;
+        if (xpDispo < coutXP) {
+            showInAppNotification(`Il vous faut ${coutXP} XP pour apprendre ce sort.`, 'error');
+            return;
+        }
+        const magiesActuelles = character.data?.magies || {};
+        const magieCourante = magiesActuelles[nomMagie] || { actif: true };
+        const sortsConnus = magieCourante.sortsConnus || [];
+        if (sortsConnus.includes(sort.id)) return;
+        xpTransaction(dispatchCharacter, {
+            updates: {
+                data: {
+                    ...(character.data || {}),
+                    magies: { ...magiesActuelles, [nomMagie]: { ...magieCourante, sortsConnus: [...sortsConnus, sort.id] } }
+                }
+            },
+            transaction: {
+                type: 'DEPENSE',
+                code: XP_CODES.SORT_APPRENTISSAGE,
+                label: `Sort appris : ${sort.nom} (${nomMagie})`,
+                valeur: coutXP,
+            },
+            notification: { text: `"${sort.nom}" appris pour ${coutXP} XP !`, type: 'success' },
+        }, gameData);
+    }, [isReadOnly, isScelle, getPremiereMagie, xpDispo, character.data, dispatchCharacter, gameData]);
+
     return {
         character, isScelle, isReadOnly, feeData, profils, competencesParProfil,
         lib, budgetsInfo, creatingSpecFor, setCreatingSpecFor,
         rangsProfils, budgetsPP,
         isDruidisme,
         magiesEtat,
-        handlers: { handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality, handleChoixChange, handleReset, handleDebloquerMagie },
-        getCompRowData
+        handlers: { handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality, handleChoixChange, handleReset, handleDebloquerMagie, handleApprendreSortMagie },
+        getCompRowData,
+        getPremiereMagie,
     };
 }

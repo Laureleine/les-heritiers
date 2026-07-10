@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.57 - \"L'Éveil du Druide 🌿🪄\"",
+    date: "10 Juillet 2026",
+    description: "Le Druidisme rejoint enfin le rang des grandes pratiques magiques. À la création, l'Eubage choisit la compétence qui cède ses deux rangs à son art — puis, une fois scellé, son step se mue en véritable espace de maîtrise : rangs, paliers (Eubage, Saronide, Ovate, Archidruide) et philtres à apprendre. Six philtres de niveau Novice font leur entrée dans les archives, chacun accompagné de son coût en XP affiché directement sur le bouton.",
+    changes: [
+      "🌿 **Druidisme = magie comme les autres :** Après le scellage, le step Druidisme affiche la pratique magique complète (rangs XP, paliers titrés, sorts) — exactement comme Faëomancie, Nécromancie ou Spiritisme.",
+      "📖 **Step dual :** Avant le scellage, le step 18 guide l'Eubage dans le choix de la compétence source ; après le scellage, il devient le step de pratique Druidisme. Le bloc «Rappel» de création disparaît une fois le Puits scellé.",
+      "⚗️ **Six philtres Novice :** Philtre de veille, de sommeil, d'amour, de descendance féérique, de bienveillance végétale et tord-boyaux — tous apprenables dès le rang 1 en Druidisme.",
+      "💰 **Coût XP sur le bouton Apprendre :** «Apprendre — 5 XP» pour la première magie de l'Héritier, «Apprendre — 8 XP» pour les suivantes.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.56 - \"Les Coulisses de la Magie 🪄📚\"",
     date: "10 Juillet 2026",
     description: "Les pratiques magiques ont désormais leur propre espace dédié dans le créateur de personnage. Un step «Magies» centralise le déblocage, puis chaque pratique débloquée fait apparaître son propre step pour y investir des rangs — invisible jusqu'au moment où l'Héritier franchit le seuil. En parallèle, l'étoile (*) accolée à une spécialité n'est plus qu'un ornement : elle n'entre plus en jeu dans aucune vérification de prérequis.",

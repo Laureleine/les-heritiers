@@ -338,8 +338,9 @@ export function characterReducer(state, action) {
                 const bonusAtoutActuel = atoutsRangs[nomComp] || 0;
                 const bonusAtoutBase = isScelle ? (atoutsRangsBase[nomComp] || 0) : bonusAtoutActuel;
 
-                // Transfert Eubage : la comp source cède son bonusProfil (2 rangs automatiques) à Druidisme
-                const bonusProfilEffectif = (eubage?.actif && isMajeur && nomComp === eubage.source_competence)
+                // Transfert Druidisme création : la comp source cède son bonusProfil (2 rangs automatiques)
+                const druidismeCreation = !!newState.data?.magies?.['Druidisme']?.actif && !!eubage?.source_competence;
+                const bonusProfilEffectif = (druidismeCreation && isMajeur && nomComp === eubage.source_competence)
                     ? 0 : bonusProfil;
 
                 const baseScoreActuel = bonusProfilEffectif + bonusPred + bonusAtoutActuel;
@@ -373,8 +374,8 @@ export function characterReducer(state, action) {
             budgetsPP[profilNom] = budgetTotal;
         });
 
-        // Druidisme (Eubage) — compétence hors profil alimentée par le transfert
-        if (eubage?.actif && eubage.source_competence) {
+        // Druidisme (création) — compétence hors profil alimentée par le transfert de rangs
+        if (!!newState.data?.magies?.['Druidisme']?.actif && eubage?.source_competence) {
             const rangsTransferes = eubage.rangs_transferes || 2;
             const investisDruidisme = newState.competencesLibres?.rangs?.['Druidisme'] || 0;
             competencesBase['Druidisme'] = rangsTransferes;
@@ -384,6 +385,8 @@ export function characterReducer(state, action) {
         // Magies XP — compétences hors profil débloquées post-scellage
         Object.entries(newState.data?.magies || {}).forEach(([nomMagie, info]) => {
             if (info?.actif) {
+                // Druidisme à la création est géré par le bloc de transfert ci-dessus
+                if (nomMagie === 'Druidisme' && eubage?.source_competence) return;
                 const investis = newState.competencesLibres?.rangs?.[nomMagie] || 0;
                 competencesBase[nomMagie] = 0;
                 competencesTotal[nomMagie] = investis;
@@ -590,7 +593,8 @@ export function characterReducer(state, action) {
                     ? (newState.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0)
                     : investisActuels;
 
-                const bonusProfilEffectif = (eubageH?.actif && isMajeur && nomComp === eubageH.source_competence)
+                const druidismeCreationH = !!newState.data?.magies?.['Druidisme']?.actif && !!eubageH?.source_competence;
+                const bonusProfilEffectif = (druidismeCreationH && isMajeur && nomComp === eubageH.source_competence)
                     ? 0 : bonusProfil;
 
                 competencesBase[nomComp] = bonusProfilEffectif;
@@ -612,8 +616,8 @@ export function characterReducer(state, action) {
             budgetsPP[profilNom] = budgetTotal;
         });
 
-        // Druidisme (Eubage) — compétence hors profil
-        if (eubageH?.actif && eubageH.source_competence) {
+        // Druidisme (création) — compétence hors profil alimentée par le transfert de rangs
+        if (!!newState.data?.magies?.['Druidisme']?.actif && eubageH?.source_competence) {
             const rangsTransferes = eubageH.rangs_transferes || 2;
             const investisDruidisme = newState.competencesLibres?.rangs?.['Druidisme'] || 0;
             competencesBase['Druidisme'] = rangsTransferes;
@@ -623,6 +627,8 @@ export function characterReducer(state, action) {
         // Magies XP — compétences hors profil débloquées post-scellage
         Object.entries(newState.data?.magies || {}).forEach(([nomMagie, info]) => {
             if (info?.actif) {
+                // Druidisme à la création est géré par le bloc de transfert ci-dessus
+                if (nomMagie === 'Druidisme' && eubageH?.source_competence) return;
                 const investis = newState.competencesLibres?.rangs?.[nomMagie] || 0;
                 competencesBase[nomMagie] = 0;
                 competencesTotal[nomMagie] = investis;

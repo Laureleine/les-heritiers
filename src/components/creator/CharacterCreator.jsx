@@ -7,6 +7,7 @@ import { useCharacter } from '../../context/CharacterContext';
 import { useGameDataContext } from '../../context/GameDataContext';
 import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
+import { isCharacterScelle } from '../../utils/lockUtils';
 import { flushContactsToGrimoire, clearContactSyncQueue } from '../../utils/contactSyncQueue';
 import { getXpState } from '../../utils/xpActions';
 import { STEP_CONFIG } from '../../data/DictionnaireJeu';
@@ -58,14 +59,15 @@ export default function CharacterCreator({ session, userProfile }) {
   const isHumain = character?.typePersonnage === 'humain';
   const HUMAN_SKIPPED_STEPS = [2, 3, 4];
 
-  const isEubage = !!character?.data?.eubage?.actif ||
-    Object.values(character?.vieSociale || {}).flat().some(id =>
-      (gameData.socialItems || []).find(i => i.id === id && i.nom?.includes('Eubage'))
-    );
+  const isDruidismeActif = !!character?.data?.magies?.['Druidisme']?.actif;
 
   // Steps magiques masqués jusqu'au déblocage de la magie correspondante
   const magicHiddenStepIds = STEP_CONFIG
-    .filter(s => s.magieName && !character?.data?.magies?.[s.magieName]?.actif)
+    .filter(s => {
+      if (!s.magieName) return false;
+      if (s.magieName === 'Druidisme') return !isDruidismeActif;
+      return !character?.data?.magies?.[s.magieName]?.actif;
+    })
     .map(s => s.id);
 
   // Steps visibles dans la barre (magic-hidden exclus, humain-skipped restent mais grisés)
@@ -89,7 +91,6 @@ export default function CharacterCreator({ session, userProfile }) {
     let next = step + 1;
     if (isHumain) while (HUMAN_SKIPPED_STEPS.includes(next) && next <= totalSteps) next++;
     while (magicHiddenStepIds.includes(next) && next <= totalSteps) next++;
-    if (next === 18 && !isEubage) next++;
     setStep(Math.min(totalSteps, next));
     window.scrollTo(0, 0);
   };
@@ -98,7 +99,6 @@ export default function CharacterCreator({ session, userProfile }) {
     let prev = step - 1;
     if (isHumain) while (HUMAN_SKIPPED_STEPS.includes(prev) && prev >= 1) prev--;
     while (magicHiddenStepIds.includes(prev) && prev >= 1) prev--;
-    if (prev === 18 && !isEubage) prev--;
     setStep(Math.max(1, prev));
     window.scrollTo(0, 0);
   };
@@ -258,13 +258,12 @@ export default function CharacterCreator({ session, userProfile }) {
         {visibleSteps.map((s) => {
           const isActive = step === s.id;
           const isPast = step > s.id;
-          const isSkipped = (isHumain && HUMAN_SKIPPED_STEPS.includes(s.id)) || (s.id === 18 && !isEubage);
+          const isSkipped = isHumain && HUMAN_SKIPPED_STEPS.includes(s.id);
           return (
             <div key={s.id} className="relative z-10 flex flex-col items-center group">
               <button
                 onClick={() => {
                   if (isSkipped) return;
-                  if (s.id === 18 && !isEubage) return;
                   if (s.id > 1 && !canProceedStep1) {
                     showInAppNotification("La magie bloque le passage. Terminez l'Étape 1 avant de sauter les pages.", "warning");
                     return;
@@ -272,7 +271,7 @@ export default function CharacterCreator({ session, userProfile }) {
                   setStep(s.id);
                   window.scrollTo(0, 0);
                 }}
-                disabled={isSkipped || (s.id === 18 && !isEubage)}
+                disabled={isSkipped}
                 aria-label={`${s.label}${isActive ? ' (étape en cours)' : isPast ? ' (terminée)' : ''}`}
                 aria-current={isActive ? 'step' : undefined}
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${
@@ -329,7 +328,9 @@ export default function CharacterCreator({ session, userProfile }) {
             <p className="text-amber-900 font-serif text-lg font-bold">Dépliage du parchemin...</p>
           </div>
         }>
-          {stepComponents[step]}
+          {step === 18 && isDruidismeActif && isCharacterScelle(character)
+            ? <StepMagiePratique nomMagie="Druidisme" />
+            : stepComponents[step]}
         </Suspense>
       </section>
 

@@ -32,6 +32,9 @@ export function useVieSociale() {
         const dict = {};
         tousLesProfils.forEach(p => {
             dict[p] = socialItems.filter(item => {
+                // L'item Eubage est supprimé : le Druidisme s'acquiert via l'étape Magies
+                if (item.nom?.includes('Eubage')) return false;
+
                 // ✨ LE FIX : On lit enfin notre colonne JSONB multi-profils !
                 const parsedArray = safeParseArray(item.profils_autorises);
 
@@ -111,6 +114,13 @@ export function useVieSociale() {
             });
         });
 
+        // Druidisme acquis à la création — 5 PP déduits du profil majeur (hors catalogue)
+        const druidismePP = character.data?.druidismeCreationPP || 0;
+        const profilMajeurNom = character.profils?.majeur?.nom;
+        if (druidismePP && profilMajeurNom && depenses[profilMajeurNom] !== undefined) {
+            depenses[profilMajeurNom] += druidismePP;
+        }
+
         // 2. Allocations de contacts gratuits (s'ajoutent au budget pour les contacts uniquement)
         let totalAllocated = 0;
         const safeAllocations = {};
@@ -136,8 +146,8 @@ export function useVieSociale() {
         });
 
         return { depenses, budgets, budgetsBase, rests, depensesContacts, safeAllocations, freeContactsRemaining: freeRemaining, freeContactsTotal };
-        
-    }, [achats, socialItems, tousLesProfils, character.computedStats, character.caracteristiques, getItemCost]);
+
+    }, [achats, socialItems, tousLesProfils, character.computedStats, character.caracteristiques, getItemCost, character.data?.druidismeCreationPP, character.profils?.majeur?.nom]);
 
     // MOTEUR DE FORTUNE
     const getFortuneFromHeritage = useCallback(() => {

@@ -1,7 +1,7 @@
 // src/components/recap/FicheParchemin.jsx
 
 import React, { useMemo } from 'react';
-import { CARAC_LIST, accorderTexte } from '../../data/DictionnaireJeu';
+import { CARAC_LIST, accorderTexte, getTitreMagie } from '../../data/DictionnaireJeu';
 import { calculateCharacterStats } from '../../utils/bonusCalculator';
 import { calculateFullCombatStats, calculatePvSeuils } from '../../utils/rulesEngine';
 import { isCharacterScelle } from '../../utils/lockUtils';
@@ -291,6 +291,52 @@ export default function FicheParchemin({ character, gameData, detailed = false }
         return merged;
     }, [character.computedStats, finalStats, gameData.competences]);
 
+    // =========================================================================
+    // 🔮 FEUILLE DE MAGIE — données calculées directement depuis character
+    // =========================================================================
+
+    const PALIERS_MAGIE = [
+        { label: 'Grand Maître', min: 7, max: 7, color: '#b45309', bg: '#fef3c7' },
+        { label: 'Maître',       min: 5, max: 6, color: '#6d28d9', bg: '#ede9fe' },
+        { label: 'Adepte',       min: 3, max: 4, color: '#1d4ed8', bg: '#dbeafe' },
+        { label: 'Novice',       min: 1, max: 2, color: '#44403c', bg: '#f5f5f4' },
+    ];
+
+    const NOMS_MAGIES = ['Faëomancie', 'Souffle', 'Nécromancie', 'Théurgie', 'Grand Langage', 'Voie des Chimères', 'Spiritisme'];
+
+    // Palier → valeur numérique (Novice=1, Adepte=2, Maître=3, Grand Maître=4)
+    const palierValeur = (rang) => {
+        if (rang >= 7) return 4;
+        if (rang >= 5) return 3;
+        if (rang >= 3) return 2;
+        if (rang >= 1) return 1;
+        return 0;
+    };
+
+    const magiesActives = useMemo(() => {
+        const result = [];
+        const magiesData = character.data?.magies || {};
+        NOMS_MAGIES.forEach(nom => {
+            if (magiesData[nom]?.actif) {
+                const rang = character.competencesLibres?.rangs?.[nom] || 0;
+                const palier = PALIERS_MAGIE.find(p => rang >= p.min && rang <= p.max) || null;
+                result.push({ nom, rang, palier, titre: getTitreMagie(nom, rang) });
+            }
+        });
+        if (character.data?.magies?.['Druidisme']?.actif) {
+            const rang = character.computedStats?.competencesTotal?.['Druidisme']
+                ?? (character.competencesLibres?.rangs?.['Druidisme'] || 0);
+            const palier = PALIERS_MAGIE.find(p => rang >= p.min && rang <= p.max) || null;
+            result.push({ nom: 'Druidisme', rang, palier, titre: getTitreMagie('Druidisme', rang) });
+        }
+        return result;
+    }, [character.data, character.competencesLibres]);
+
+    const niveauMagie = magiesActives.reduce((max, m) => Math.max(max, palierValeur(m.rang)), 0);
+    const espritTotal = getCarac('esprit').total;
+    const sangFroidTotal = getCarac('sangFroid').total;
+    const pointsAmeMax = espritTotal + sangFroidTotal + niveauMagie;
+
     return (
         <div className="recap-wrapper font-serif">
             <style dangerouslySetInnerHTML={{__html: `
@@ -299,6 +345,17 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     width: 210mm; min-height: 297mm; background: #fdfbf7; padding: 12mm; margin: 0 auto 20px;
                     box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #d4c5b0; box-sizing: border-box;
                     font-family: 'Georgia', serif; color: #2c241b; position: relative;
+                }
+                .recap-page-magie {
+                    width: 210mm; height: 297mm; background: #fdfbf7; padding: 12mm; margin: 0 auto 20px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #d4c5b0; box-sizing: border-box;
+                    font-family: 'Georgia', serif; color: #2c241b; display: flex; flex-direction: column;
+                }
+                @media print {
+                    .recap-page-magie {
+                        box-shadow: none !important; margin: 0 !important; padding: 5mm !important;
+                        border: none !important; page-break-after: always; height: 297mm !important;
+                    }
                 }
                 .recap-header { text-align: center; border-bottom: 3px double #b5a287; padding-bottom: 6px; margin-bottom: 10px; }
                 .recap-char-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: #92400e; text-transform: uppercase; }
@@ -695,6 +752,106 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     </>
                 )}
             </div>
+
+            {/* ======================= PAGE 3 : FEUILLE DE MAGIE ======================= */}
+            {magiesActives.length > 0 && (
+                <div className="recap-page-magie">
+                    {/* En-tête */}
+                    <div className="recap-header" style={{flexShrink: 0}}>
+                        <div style={{fontFamily: "'Playfair Display', serif", fontSize: '22px', fontWeight: '900', color: '#5b21b6', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                            Feuille de Magie — {character.nom || ''}
+                        </div>
+                    </div>
+
+                    {/* Points d'Âme — compact */}
+                    <div style={{flexShrink: 0, border: '1px solid #8b5cf6', borderRadius: '4px', padding: '6px 10px', background: '#f5f3ff', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '16px'}}>
+                        <div style={{fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase', color: '#5b21b6', letterSpacing: '0.06em', whiteSpace: 'nowrap'}}>Points d'Âme</div>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '6px', flex: 1}}>
+                            {[
+                                { val: espritTotal,    label: 'Esprit' },
+                                { val: sangFroidTotal, label: 'Sang-froid' },
+                                { val: niveauMagie,    label: 'Maîtrise' },
+                            ].map(({ val, label }, idx) => (
+                                <React.Fragment key={label}>
+                                    {idx > 0 && <span style={{color: '#8b7355', fontWeight: 'bold', fontSize: '13px'}}>+</span>}
+                                    <div style={{textAlign: 'center'}}>
+                                        <div style={{width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #5b21b6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Playfair Display', serif", fontSize: '13px', fontWeight: '900', background: 'white', color: '#5b21b6', margin: '0 auto'}}>{val}</div>
+                                        <div style={{fontSize: '7px', fontWeight: 'bold', textTransform: 'uppercase', marginTop: '2px', color: '#5b21b6'}}>{label}</div>
+                                    </div>
+                                </React.Fragment>
+                            ))}
+                            <span style={{color: '#8b7355', fontWeight: 'bold', fontSize: '13px'}}>=</span>
+                            <div style={{textAlign: 'center'}}>
+                                <div style={{width: '36px', height: '36px', borderRadius: '50%', border: '3px solid #7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Playfair Display', serif", fontSize: '17px', fontWeight: '900', background: '#7c3aed', color: 'white', margin: '0 auto'}}>{pointsAmeMax}</div>
+                                <div style={{fontSize: '7px', fontWeight: 'bold', textTransform: 'uppercase', marginTop: '2px', color: '#7c3aed'}}>Maximum</div>
+                            </div>
+                            <div style={{marginLeft: 'auto', fontSize: '9px', color: '#8b7355', fontStyle: 'italic'}}>
+                                Points actuels : <span style={{display: 'inline-block', width: '60px', borderBottom: '1px dotted #b5a287'}}>&nbsp;</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Une entrée par magie — chacune prend le même espace vertical */}
+                    <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', minHeight: 0}}>
+                        {magiesActives.map(({ nom, rang, palier, titre }) => (
+                            <div key={nom} style={{flex: 1, display: 'flex', flexDirection: 'column', border: `1px solid ${palier?.color || '#b5a287'}`, borderRadius: '4px', overflow: 'hidden', minHeight: 0}}>
+                                {/* Bandeau de la magie */}
+                                <div style={{flexShrink: 0, background: palier?.bg || '#f5f3ff', borderBottom: `1px solid ${palier?.color || '#b5a287'}`, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                    <span style={{fontFamily: "'Playfair Display', serif", fontSize: '13px', fontWeight: 'bold', color: '#2c241b'}}>{nom}</span>
+                                    {palier && (
+                                        <span style={{fontSize: '9px', fontWeight: 'bold', padding: '1px 7px', borderRadius: '99px', border: `1px solid ${palier.color}`, color: palier.color, background: 'white'}}>
+                                            {titre ? `${titre} — ${palier.label}` : palier.label}
+                                        </span>
+                                    )}
+                                    {/* Barre de progression */}
+                                    <div style={{display: 'flex', gap: '3px', flex: 1, maxWidth: '140px'}}>
+                                        {[1,2,3,4,5,6,7].map(i => (
+                                            <div key={i} style={{flex: 1, height: '7px', borderRadius: '2px', background: i <= rang ? (palier?.color || '#5b21b6') : '#e7e5e4', border: `1px solid ${i <= rang ? (palier?.color || '#5b21b6') : '#d4c5b0'}`}} />
+                                        ))}
+                                    </div>
+                                    <span style={{fontSize: '9px', color: '#8b7355', fontWeight: 'bold', whiteSpace: 'nowrap'}}>
+                                        Rang {rang}/7{rang === 0 ? ' — non investie' : ''}
+                                    </span>
+                                    {/* Miniature paliers */}
+                                    <div style={{display: 'flex', gap: '2px', marginLeft: 'auto'}}>
+                                        {[{label:'Novice',min:1,max:2},{label:'Adepte',min:3,max:4},{label:'Maître',min:5,max:6},{label:'G.Maître',min:7,max:7}].map(p => {
+                                            const atteint = rang >= p.min;
+                                            const courant = rang >= p.min && rang <= p.max;
+                                            return (
+                                                <span key={p.label} style={{fontSize: '7px', fontWeight: courant ? 'bold' : 'normal', color: atteint ? (palier?.color || '#5b21b6') : '#c7bfb5', padding: '0 3px', borderBottom: courant ? `2px solid ${palier?.color || '#5b21b6'}` : '2px solid transparent'}}>
+                                                    {p.label}
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                                {/* Zone sorts — remplit tout l'espace restant */}
+                                <div style={{flex: 1, padding: '8px 10px', background: 'white', minHeight: 0, overflow: 'hidden'}}>
+                                    {(() => {
+                                        const sortsConnus = character.data?.magies?.[nom]?.sortsConnus || [];
+                                        const sortsNoms = (gameData?.sorts || [])
+                                            .filter(s => s.magie === nom && sortsConnus.includes(s.id));
+                                        return sortsNoms.length > 0 ? (
+                                            <div>
+                                                <div style={{fontSize: '7px', fontWeight: 'bold', textTransform: 'uppercase', color: '#8b7355', letterSpacing: '0.06em', marginBottom: '4px'}}>Sorts connus</div>
+                                                <div style={{display: 'flex', flexWrap: 'wrap', gap: '4px'}}>
+                                                    {sortsNoms.map(s => (
+                                                        <span key={s.id} style={{fontSize: '10px', fontFamily: "'Georgia', serif", color: '#2c241b', background: '#f5f0e8', border: '1px solid #d4c5b0', borderRadius: '3px', padding: '2px 6px'}}>
+                                                            {s.nom}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <span style={{fontSize: '8px', fontWeight: 'bold', textTransform: 'uppercase', color: '#c7bfb5', letterSpacing: '0.06em'}}>Sorts &amp; Formules</span>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

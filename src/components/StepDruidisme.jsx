@@ -1,5 +1,5 @@
 // src/components/StepDruidisme.jsx
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Wand2, CheckCircle, AlertCircle, Info } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { useGameDataContext } from '../context/GameDataContext';
@@ -25,22 +25,14 @@ export default function StepDruidisme() {
     const eubage = character.data?.eubage || {};
     const sourceChoisie = eubage.source_competence || null;
 
-    // Vérifie si l'item Eubage est bien acheté dans vieSociale
-    const hasEubageItem = useMemo(() => {
-        const allIds = Object.values(character.vieSociale || {}).flat();
-        return allIds.some(id =>
-            (gameData.socialItems || []).find(i => i.id === id && i.nom?.includes('Eubage'))
-        );
-    }, [character.vieSociale, gameData.socialItems]);
-
-    if (!hasEubageItem && !eubage.actif) {
+    if (!character.data?.magies?.['Druidisme']?.actif) {
         return (
             <div className="space-y-4">
                 <div className="bg-stone-50 border border-stone-200 rounded-xl p-6 text-center">
                     <Wand2 size={32} className="mx-auto text-stone-400 mb-3" />
                     <p className="text-stone-600 font-serif">
-                        Cette étape est réservée aux personnages initiés comme Eubage.<br />
-                        <span className="text-sm text-stone-500">Achetez l'option <strong>Eubage (Druide novice)</strong> à l'étape Sociale pour y accéder.</span>
+                        Cette étape est réservée aux personnages ayant acquis le Druidisme.<br />
+                        <span className="text-sm text-stone-500">Débloquez le <strong>Druidisme</strong> à l'étape Magies pour y accéder.</span>
                     </p>
                 </div>
             </div>
@@ -51,7 +43,6 @@ export default function StepDruidisme() {
         if (isReadOnly || isScelle) return;
 
         const nouvelEubage = {
-            actif: true,
             source_competence: nomComp,
             rangs_transferes: 2,
         };
@@ -189,11 +180,13 @@ export default function StepDruidisme() {
                 </div>
             )}
 
-            {/* RAPPEL RÈGLES */}
-            <div className="bg-stone-50 border border-stone-200 rounded-lg p-3 text-xs text-stone-600 leading-relaxed">
-                <strong>Rappel :</strong> L'initiation a coûté 5 PP (Profil {profilMajeur}).
-                Les sorts du 1<sup>er</sup> cercle coûteront 1 PP à la création et 5 XP par la suite.
-            </div>
+            {/* RAPPEL RÈGLES — création uniquement */}
+            {!isScelle && (
+                <div className="bg-stone-50 border border-stone-200 rounded-lg p-3 text-xs text-stone-600 leading-relaxed">
+                    <strong>Rappel :</strong> L'initiation a coûté 5 PP (Profil {profilMajeur}).
+                    Les sorts du 1<sup>er</sup> cercle coûteront 1 PP à la création et 5 XP par la suite.
+                </div>
+            )}
         </div>
     );
 }
