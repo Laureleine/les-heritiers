@@ -112,13 +112,34 @@ export const STEP_CONFIG = [
   { id: 15, label: "Grand Langage",     icon: <Wand2 size={18} />, magieName: "Grand Langage" },
   { id: 16, label: "Voie des Chimères", icon: <Wand2 size={18} />, magieName: "Voie des Chimères" },
   { id: 17, label: "Spiritisme",        icon: <Wand2 size={18} />, magieName: "Spiritisme" },
-  { id: 18, label: "Druide",            icon: <Wand2 size={18} /> },
+  { id: 18, label: "Druidisme",          icon: <Wand2 size={18} />, magieName: "Druidisme" },
   { id: 19, label: "Masque",            icon: <VenetianMask size={18} /> },
   { id: 20, label: "Bilan",             icon: <CheckCircle size={18} /> },
 ];
 
 // ============================================================================
-// 5. MOTEUR DE BADGES MAGIQUES (DRY)
+// 5. TITRES DE MAÎTRISE MAGIQUE (par palier, par pratique)
+// ============================================================================
+export const TITRES_MAGIE = {
+    'Druidisme':     { novice: 'Eubage',     adepte: 'Saronide',   maitre: 'Ovate',    grandMaitre: 'Archidruide' },
+    'Faëomancie':    { novice: 'Marmiton',   adepte: 'Queux',      maitre: 'Chef',     grandMaitre: 'Maître-queux' },
+    'Nécromancie':   { novice: 'Inexpertus', adepte: 'Discipulus', maitre: 'Dominus',  grandMaitre: 'Magister' },
+    'Souffle':       { novice: 'Apprenti',   adepte: 'Disciple',   maitre: 'Maître',   grandMaitre: 'Éminence' },
+    'Théurgie':      { novice: 'Frère',      adepte: 'Père',       maitre: 'Saint',    grandMaitre: 'Apôtre' },
+    'Grand Langage': { novice: 'Éveillé',    adepte: 'Initié',     maitre: 'Sage',     grandMaitre: 'Docteur' },
+};
+
+export function getTitreMagie(nomMagie, rang) {
+    const t = TITRES_MAGIE[nomMagie];
+    if (!t || rang < 1) return null;
+    if (rang <= 2) return t.novice;
+    if (rang <= 4) return t.adepte;
+    if (rang <= 6) return t.maitre;
+    return t.grandMaitre;
+}
+
+// ============================================================================
+// 6. MOTEUR DE BADGES MAGIQUES (DRY)
 // ============================================================================
 export const getMagicBadges = (typeStr) => {
     if (!typeStr) return [];
