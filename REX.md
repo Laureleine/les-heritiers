@@ -1,4 +1,24 @@
-﻿# REX — Session 10 Juillet 2026 — v17.4.58 « Le Docte Parmi les Siens »
+﻿# REX — Session 10 Juillet 2026 — v17.4.59 « La Table s'Agrandit »
+
+## Vérifier les contraintes DB avant de coder un changement de comportement
+
+Avant d'écrire une seule ligne de code front, un `SELECT conname, pg_get_constraintdef(oid)` sur `pg_constraint` a confirmé qu'il y avait bien un `UNIQUE (cercle_id, user_id)` à lever. Sans ce check, on aurait codé le multi-perso côté front sans que la DB l'accepte — les `INSERT` en double auraient silencieusement échoué. Réflexe : toujours inspecter les contraintes de la table concernée avant tout changement de cardinalité.
+
+## Supprimer par `id` de membre, pas par `(user_id, cercle_id)`
+
+L'ancienne logique `DELETE WHERE (cercle_id, user_id)` supprimait TOUTES les lignes d'un joueur dans un cercle. Dès qu'on permet plusieurs personnages, cette approche est destructive. La bonne granularité : chaque ligne de `cercle_membres` a un `id` (UUID) — supprimer par cet `id` est chirurgical et n'affecte qu'un seul personnage. Le `member.id` était déjà présent dans `activeMembers` (utilisé comme `key={member.id}` dans le render), il suffisait de le propager.
+
+## Picker avant ConfirmModal : séparer choix et confirmation
+
+Quand une action destructrice porte sur un objet ambigu (plusieurs candidats), le bon pattern est de résoudre l'ambiguïté d'abord (picker), puis de confirmer. Fusionner les deux dans un seul modal surcharge l'interface et complique la logique. Ici : `leavePickerState` → picker → `setConfirmState` → ConfirmModal existant. Deux étapes distinctes, aucun composant modifié.
+
+## `join_cercle_by_code` : plain INSERT sans ON CONFLICT — rien à toucher
+
+Avant de migrer, vérifier le code de la RPC a évité une erreur d'hypothèse. La fonction faisait déjà un `INSERT` simple (pas d'UPSERT), donc lever la contrainte `UNIQUE (cercle_id, user_id)` n'a pas nécessité de modifier la RPC — le comportement était déjà correct pour le nouveau schéma.
+
+---
+
+# REX — Session 10 Juillet 2026 — v17.4.58 « Le Docte Parmi les Siens »
 
 ## Lire le code avant de proposer une architecture
 
