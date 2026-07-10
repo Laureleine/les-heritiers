@@ -40,6 +40,8 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
   const [activeMembers, setActiveMembers] = useState([]);
   const [isCreatingCercle, setIsCreatingCercle] = useState(false);
   const [xpSubmitting, setXpSubmitting] = useState(false);
+  const [leavePickerState, setLeavePickerState] = useState({ isOpen: false, members: [] });
+  const [leavePickerSelected, setLeavePickerSelected] = useState('');
 
   // 🧠 FIX : Mémoïsation pure du chargement
   const loadCercles = useCallback(async () => {
@@ -155,13 +157,13 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     }
   };
 
-  const executeLeaveCercle = useCallback(async (cercleId) => {
+  const executeLeaveCercle = useCallback(async (memberId) => {
     setConfirmState(prev => ({ ...prev, isOpen: false }));
     try {
       const { error } = await supabase
         .from('cercle_membres')
         .delete()
-        .match({ cercle_id: cercleId, user_id: session.user.id });
+        .eq('id', memberId);
       if (error) throw error;
 
       showInAppNotification("Vous avez quitté la table avec succès.", "success");
@@ -170,17 +172,26 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
     } catch (err) {
       showInAppNotification("Erreur lors du départ : " + err.message, "error");
     }
-  }, [session?.user?.id, loadCercles]);
+  }, [loadCercles]);
 
   const handleLeaveCercle = useCallback((cercleId) => {
-    setConfirmState({
-      isOpen: true,
-      title: "Quitter la Table",
-      message: "Êtes-vous sûr de vouloir quitter cette campagne ? Votre place sera libérée.",
-      confirmText: "Oui, quitter la table",
-      action: () => executeLeaveCercle(cercleId)
-    });
-  }, [executeLeaveCercle]);
+    const myMemberships = activeMembers.filter(m => m.user_id === session.user.id);
+    if (myMemberships.length === 0) return;
+
+    if (myMemberships.length === 1) {
+      const memberId = myMemberships[0].id;
+      setConfirmState({
+        isOpen: true,
+        title: "Quitter la Table",
+        message: "Êtes-vous sûr de vouloir quitter cette campagne ? Votre place sera libérée.",
+        confirmText: "Oui, quitter la table",
+        action: () => executeLeaveCercle(memberId)
+      });
+    } else {
+      setLeavePickerSelected(myMemberships[0].id);
+      setLeavePickerState({ isOpen: true, members: myMemberships });
+    }
+  }, [activeMembers, session?.user?.id, executeLeaveCercle]);
 
   const executeDeleteCercle = useCallback(async (cercleId) => {
     setConfirmState(prev => ({ ...prev, isOpen: false }));
@@ -399,6 +410,48 @@ export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
                 <input type="text" placeholder="Nom de la Campagne..." value={newCircleName} onChange={e => setNewCircleName(e.target.value)} className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none" />
                 <button onClick={handleCreateCercle} disabled={isCreatingCercle} className="w-full py-3 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 disabled:opacity-50 transition-colors">Générer la Table</button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {leavePickerState.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4">
+          <div className="bg-[#fdfbf7] max-w-sm w-full rounded-xl shadow-2xl border-2 border-amber-900/20 p-6 space-y-4">
+            <h3 className="font-serif font-bold text-lg text-stone-800">Quel Héritier quitte la table ?</h3>
+            <p className="text-sm text-stone-500">Vous avez plusieurs Héritiers à cette table. Choisissez lequel retirer.</p>
+            <select
+              value={leavePickerSelected}
+              onChange={e => setLeavePickerSelected(e.target.value)}
+              className="w-full p-3 border border-stone-300 rounded-lg bg-white font-serif text-stone-800"
+            >
+              {leavePickerState.members.map(m => (
+                <option key={m.id} value={m.id}>{m.characters?.nom || 'Héritier sans nom'}</option>
+              ))}
+            </select>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setLeavePickerState({ isOpen: false, members: [] })}
+                className="flex-1 py-2 bg-stone-100 text-stone-700 rounded-lg font-bold hover:bg-stone-200 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => {
+                  const chosen = leavePickerState.members.find(m => m.id === leavePickerSelected);
+                  setLeavePickerState({ isOpen: false, members: [] });
+                  setConfirmState({
+                    isOpen: true,
+                    title: "Quitter la Table",
+                    message: `Retirer ${chosen?.characters?.nom || 'cet Héritier'} de la table ? Sa place sera libérée.`,
+                    confirmText: "Oui, retirer cet Héritier",
+                    action: () => executeLeaveCercle(leavePickerSelected)
+                  });
+                }}
+                className="flex-1 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition-colors"
+              >
+                Continuer
+              </button>
             </div>
           </div>
         </div>

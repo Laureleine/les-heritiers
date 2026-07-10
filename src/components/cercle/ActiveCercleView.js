@@ -65,19 +65,22 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         </div>
 
         {isDocte ? (
-          <div className="flex flex-col items-end gap-3">
-            <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-center shadow-sm">
-              <div className="text-xs text-amber-700 font-bold uppercase tracking-wider mb-1">Code d'invitation</div>
-              <div className="font-mono text-xl text-amber-900 font-black tracking-widest">{cercle.code_invitation}</div>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-center shadow-sm">
+                <div className="text-xs text-amber-700 font-bold uppercase tracking-wider mb-1">Code d'invitation</div>
+                <div className="font-mono text-xl text-amber-900 font-black tracking-widest">{cercle.code_invitation}</div>
+              </div>
+              {isAlsoMember && (
+                <button
+                  onClick={() => onLeave(cercle.id)}
+                  className="text-sm bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 shadow-sm self-stretch flex-col justify-center"
+                >
+                  <LogOut size={16} />
+                  <span className="text-xs">Quitter la table</span>
+                </button>
+              )}
             </div>
-            {isAlsoMember && (
-              <button
-                onClick={() => onLeave(cercle.id)}
-                className="text-sm bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 shadow-sm"
-              >
-                <LogOut size={16} /> Quitter la table
-              </button>
-            )}
             <button
               onClick={() => onDelete(cercle.id)}
               className="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1 transition-colors"
