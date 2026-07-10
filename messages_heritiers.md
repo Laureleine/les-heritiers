@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.58 — «Le Docte Parmi les Siens» — 10 Juillet 2026
+
+✨ **Missive du Greffe des Âmes — v17.4.58 «Le Docte Parmi les Siens»**
+
+Chers Héritiers,
+
+Il arrive que le gardien d'un cercle soit lui-même un Héritier — qu'il porte la clé de la salle des cartes et s'assoie néanmoins autour de la table, comme l'un des vôtres.
+
+Jusqu'à présent, ce Docte-joueur se trouvait dans une situation délicate : une fois qu'il avait rejoint sa propre table via le code d'invitation, il ne pouvait plus en partir comme joueur sans dissoudre le cercle tout entier. Le Greffe a rectifié cette injustice.
+
+Désormais, lorsqu'un Docte prend place parmi ses joueurs, un bouton **«Quitter la table»** apparaît dans son espace de Docte — distinct du bouton «Dissoudre le Cercle», qu'il gardera bien au chaud pour les grandes décisions. Son Héritier figure sur les cartes de la table virtuelle, avec la possibilité de consulter sa propre fiche depuis cet espace.
+
+La table est à lui. La clé aussi. Les deux peuvent coexister.
+
+*Bon jeu à toutes et à tous,*
+*Le Greffe des Âmes*
+
+---
+
 ## v17.4.57 — «L'Éveil du Druide» — 10 Juillet 2026
 
 ✨ **Missive du Greffe des Âmes — v17.4.57 «L'Éveil du Druide»**

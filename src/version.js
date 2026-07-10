@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.58 - \"Le Docte Parmi les Siens 🛡️🪑\"",
+    date: "10 Juillet 2026",
+    description: "Le Docte peut désormais prendre place à sa propre table en tant que joueur. S'il a rejoint son cercle via le code d'invitation, un bouton «Quitter la table» apparaît dans son en-tête — distinct du bouton «Dissoudre le Cercle» — lui permettant de se retirer comme joueur sans dissoudre la campagne. Son personnage figure parmi les cartes de la table et conserve le bouton «Consulter».",
+    changes: [
+      "🛡️ **Docte joueur :** Quand le Docte a rejoint son propre cercle, le bouton «Quitter la table» apparaît dans son espace de Docte, à côté de «Dissoudre le Cercle».",
+      "🪑 **Sa place à la table :** La carte du personnage du Docte s'affiche parmi les Héritiers, avec le bouton «Consulter» conservé.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.57 - \"L'Éveil du Druide 🌿🪄\"",
     date: "10 Juillet 2026",
     description: "Le Druidisme rejoint enfin le rang des grandes pratiques magiques. À la création, l'Eubage choisit la compétence qui cède ses deux rangs à son art — puis, une fois scellé, son step se mue en véritable espace de maîtrise : rangs, paliers (Eubage, Saronide, Ovate, Archidruide) et philtres à apprendre. Six philtres de niveau Novice font leur entrée dans les archives, chacun accompagné de son coût en XP affiché directement sur le bouton.",
