@@ -4,20 +4,29 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-## 🧠 Session Memory — v17.4.48+ (9 Juillet 2026)
+## 🧠 Session Memory — v17.4.59+ (10 Juillet 2026)
 
-**Tests :** 483 passes / 0 échecs
+**Tests :** 497 passes / 0 échecs
 
-### Dernières modifications
+### Dernières modifications (10 juillet 2026)
 
-1. **Chantier A11y A1→A7 — TERMINÉ** — score estimé 76/100 → ~95/100 (WCAG 2.2 AA quasi-complet).
-   - A1 : focus trap + role=dialog sur toutes les modales restantes (CropPortraitModal, QuickForgeModal, EncyclopediaViewModal, GrimoirePersonnel×2, ConfirmModal via labelledBy)
-   - A2 : ARIA Tabs sur TabBar.jsx (réutilisable), Encyclopedia, MesPropositions, AdminDashboard, Telegraphe
-   - A3 : heading-order — FairyDetailsPanel, StepCapacites, StepAtouts, StepCompetencesLibres
-   - A4 : autocomplete sur Auth.js (déjà présent)
-   - A5 : aria-describedby sur input email + id/role=alert sur bloc erreur (Auth.js)
-   - A6 : aria-hidden="true" sur émojis décoratifs (Actualite, StepRecap, AccountSettings, CharacterList, StepAtouts, StepCapacites, StepCompetencesLibres, FairyLoreSection)
-   - A7 : landmarks — aside (Telegraphe), section (AdminDashboard, BonusBuilder), aria-label sur nav Actualite
+1. **v17.4.57** — Fix Vercel : DictionnaireJeu.js (TITRES_MAGIE / getTitreMagie) non committé
+2. **v17.4.58** — Feature Docte-joueur : bouton "Quitter la table" dans la vue Docte quand `isAlsoMember`
+3. **v17.4.59** — Multi-personnages par cercle : contrainte UNIQUE(cercle_id, user_id, character_id), picker modal, bouton horizontal
+4. **DRY backlog** (commit `1f2715f`) :
+   - R3–R6 : guards `isMounted` / `mountedRef` sur useGrimoire, useCorrectionCheck, useAccountSettings, useTelegraphe
+   - S7 : `getAllCharactersAdmin(isAdmin=false)` + early-return
+   - T4–T7 : 14 nouveaux tests (useCorrectionCheck, useGrimoire, supabaseStorage offline, AppRouter routes)
+   - Dead code : `src/components/nouveau 1.txt` supprimé
+   - Préparation sorts : `loadSorts()`, `sorts[]` dans GameDataContext, `XP_CODES.SORT_APPRENTISSAGE`
+
+### Backlog restant (🟡 Sévère en priorité)
+
+- **A1** — Props drilling `userProfile/session` → React Context (4+ niveaux)
+- **A2** — Props drilling `gameData` → `GameDataContext` (migration partielle déjà faite)
+- **A3** — `CharacterList.js` ~900 lignes → extraire AdminPanel, GrimoireDrawer
+- **A4** — `AdminDashboard.js` → lazy tab mounting
+- **A5** — `ForgeContext` god object → scinder
 
 ### Prochaine session
 
@@ -55,43 +64,19 @@ Ce qui reste, à traiter au fil des sessions.
 - Trop de responsabilités (état créateur + XP + validation + sauvegarde)
 - Solution : scinder en `CharacterStateContext` + `CharacterActionsContext`
 
-**T4 — Tests manquants sur `useCorrectionCheck`**
-- Les nouvelles vérifications de sécurité (S4/S5) n'ont pas de tests
-- Écrire : `respondToCorrection` filtre bien `user_id`, `markCorrected` refuse si `!isAdmin`
-
-**T5 — Tests manquants sur `useGrimoire`**
-- `createEntry`, `updateEntry`, `deleteEntry`, `toggleShare` : aucun test
-- Mock Supabase + tester les filtres `player_id`
-
-**T6 — Tests manquants sur `supabaseStorage`**
-- `getOfflineMirror` : tester le fallback JSON corrompu
-- `saveCharacterToSupabase` : tester le mode offline (rejet réseau → cache local)
-
-**T7 — Tests manquants sur `AppRouter`**
-- Route `/admin_dashboard` : tester que non-admin est redirigé vers `/`
-- Route `/encyclopedia` : tester que non-docte voit l'écran de refus
+**T4 ✅ — Tests `useCorrectionCheck`** — 3 tests (respondToCorrection/markCorrected) — 10 juillet 2026
+**T5 ✅ — Tests `useGrimoire`** — 4 tests (createEntry/updateEntry/deleteEntry/toggleShare) — 10 juillet 2026
+**T6 ✅ — Tests `supabaseStorage` offline** — 5 tests (JSON corrompu, fallback réseau) — 10 juillet 2026
+**T7 ✅ — Tests `AppRouter`** — 2 tests (/admin_dashboard redirect, /encyclopedia verrou) — 10 juillet 2026
 
 ### 🟢 Mineur
 
-**R3 — `useGrimoire` : pas de guard `isMounted` dans `fetchGrimoire`**
-- Async sans vérification montage → setState potentiel après unmount
-- Ajouter `let mounted = true` + cleanup `return () => { mounted = false; }`
-
-**R4 — `useCorrectionCheck` : même pattern**
-- `checkCorrections()` async dans `useEffect` sans guard `isMounted`
-
-**R5 — `useAccountSettings` : à vérifier**
-- Idem — charger le fichier et auditer
-
-**R6 — `useTelegraphe` : fetchMessages / fetchChannels**
-- Déjà partiellement protégé (réf `isMounted` ?) — vérifier
-
-**S7 — `getAllCharactersAdmin` sans vérification de rôle côté client**
-- Appelé directement depuis `CharacterList.js` sans guard `isAdmin` supplémentaire
-- Le RLS Supabase protège la donnée, mais ajouter un early-return client comme filet
-
-**Dead code**
-- `src/components/nouveau 1.txt` — liste de fichiers, inutile
+**R3 ✅ — `useGrimoire` : guard `mountedRef` dans `fetchGrimoire`** — 10 juillet 2026
+**R4 ✅ — `useCorrectionCheck` : guard `let mounted` dans `checkCorrections`** — 10 juillet 2026
+**R5 ✅ — `useAccountSettings` : guard `let mounted` dans `loadNotifPrefs`** — 10 juillet 2026
+**R6 ✅ — `useTelegraphe` : guard `mountedRef` dans `fetchChannels` / `fetchMessages`** — 10 juillet 2026
+**S7 ✅ — `getAllCharactersAdmin` : paramètre `isAdmin=false` + early-return** — 10 juillet 2026
+**Dead code ✅ — `src/components/nouveau 1.txt` supprimé** — 10 juillet 2026
 - Vérifier si `src/version.legacy.js` est bien absent (supprimé session précédente)
 
 ---
