@@ -61,8 +61,6 @@ export default function AppRouter() {
         <Route path="/" element={
           <>
             <CharacterList
-              profils={gameData.profils}
-              gameData={gameData}
               onSelectCharacter={(c, readOnly = false) => {
                 // ✨ Si on ouvre en lecture seule un personnage scellé, on force la reconstruction
                 // complète du journal depuis stats_scellees (comme handleAppropriate), car le journal

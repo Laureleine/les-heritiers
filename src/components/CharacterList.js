@@ -10,6 +10,7 @@ import { showInAppNotification, translateError } from '../utils/SystemeServices'
 import { isCharacterScelle } from '../utils/lockUtils';
 import { isSuperAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
+import { useGameDataContext } from '../context/GameDataContext';
 import { characterReducer } from '../utils/characterEngine';
 import { mapDbCharForReconstruction, journalNeedsRepair, buildRepairedJournal, computeXpDepenseFromJournal } from '../utils/repairJournaux';
 import { loadFairyTypes, loadSocialItems } from '../utils/supabaseGameData';
@@ -116,8 +117,10 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenOutils, profils = [], gameData }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenOutils }) {
   const { session, userProfile } = useUserContext();
+  const { gameData } = useGameDataContext();
+  const profils = gameData?.profils ?? [];
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);

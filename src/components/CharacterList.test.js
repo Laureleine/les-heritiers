@@ -40,6 +40,10 @@ vi.mock('../utils/supabaseGameData', () => ({
   loadFairyTypes: vi.fn(),
   loadSocialItems: vi.fn(),
 }));
+
+vi.mock('../context/GameDataContext', () => ({
+  useGameDataContext: () => ({ gameData: { profils: [], fairyData: null, fairyTypes: [], socialItems: [], badges: [] } }),
+}));
 vi.mock('./ConfirmModal', () => ({ default: () => null }));
 vi.mock('./cercle/GrimoirePersonnel', () => ({ default: () => null }));
 vi.mock('./CharacterCard', () => ({ default: () => null }));
