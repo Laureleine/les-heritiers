@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.60 - \"Les Gardiens Invisibles 🛡️⚗️\"",
+    date: "10 Juillet 2026",
+    description: "Une session de veille silencieuse. Quatre hooks reçoivent leurs gardiens de montage — ces sentinelles discrètes qui empêchent tout état de se modifier après qu'un Héritier a quitté une page. Un verrou interne supplémentaire protège la consultation des personnages côté Gardien. Et dans les caves de l'Atelier, un premier registre des Sorts est ouvert — les philtres arriveront.",
+    changes: [
+      "🛡️ **Guards de montage :** Quatre hooks (Grimoire, Corrections, Paramètres, Télégraphe) ne produiront plus de mises à jour fantômes après navigation.",
+      "🔒 **Défense en profondeur :** `getAllCharactersAdmin` porte désormais son propre verrou interne — une ligne de sécurité supplémentaire imperceptible pour les joueurs.",
+      "⚗️ **Sorts en gestation :** Le contexte de jeu charge désormais la table des sorts. L'action XP `SORT_APPRENTISSAGE` est répertoriée pour les futurs philtres.",
+      "🧪 **497 Sentinelles — 14 nouvelles gardes** (corrections, Grimoire, mode hors-ligne, routes protégées).",
+    ],
+  },
+  {
     version: "17.4.59 - \"La Table s'Agrandit 🪑🪑\"",
     date: "10 Juillet 2026",
     description: "Un joueur — même le Docte — peut désormais amener plusieurs Héritiers à la même table. La contrainte qui limitait à un personnage par cercle a été levée. Quitter la table demande maintenant lequel retirer quand plusieurs personnages y siègent. Le bouton «Quitter la table» se niche désormais à côté du code d'invitation pour économiser de la place.",

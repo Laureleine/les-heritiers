@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.60 — «Les Gardiens Invisibles» — 10 Juillet 2026
+
+✨ **Missive du Greffe des Âmes — v17.4.60 «Les Gardiens Invisibles»**
+
+Chers Héritiers,
+
+Certaines améliorations n'ont pas de visage. Elles œuvrent dans l'ombre, veillant à ce que le Manoir ne tremble pas sous ses propres fondations.
+
+Cette nuit, quatre esprits gardiens ont pris leur poste silencieux : le Grimoire, le Bureau des Corrections, la Chambre des Paramètres et le Télégraphe disposent désormais de sentinelles qui s'assurent qu'aucun état fantôme ne s'attarde après votre passage. Ces mises à jour spectrales qui s'invitaient parfois dans les coulisses quand vous tourniez les talons — elles ne trouveront plus de porte entrouverte.
+
+Quatorze nouvelles gardes rejoignent les 483 Sentinelles existantes — autant de postes supplémentaires veillant sur les archives du Grimoire, le Bureau des Corrections, les routes protégées et le mode de veille hors-ligne. Le Manoir compte désormais **497 Sentinelles**.
+
+Et dans les caves de l'Atelier, un premier registre a discrètement été ouvert. Les Sorts commencent à y prendre place, un à un. Les philtres n'ont pas encore de flacons — mais les étiquettes s'écrivent. 🔮
+
+*Bon jeu à toutes et à tous,*
+*Le Greffe des Âmes*
+
+---
+
 ## v17.4.59 — «La Table s'Agrandit» — 10 Juillet 2026
 
 ✨ **Missive du Greffe des Âmes — v17.4.59 «La Table s'Agrandit»**
