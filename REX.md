@@ -1,4 +1,34 @@
-﻿# REX — Session 10 Juillet 2026 — v17.4.56 « Les Coulisses de la Magie »
+﻿# REX — Session 10 Juillet 2026 — v17.4.57 « L'Éveil du Druide »
+
+## Ne jamais oublier `git add` après avoir modifié un fichier source
+
+La cause du build Vercel cassé en fin de session précédente : `DictionnaireJeu.js` avait été modifié localement (ajout de `TITRES_MAGIE` + `getTitreMagie`) mais jamais stagé. `FicheParchemin.jsx`, lui, importait ces symboles et avait bien été commis — Rollup échouait donc en prod avec "X is not exported by Y". Diagnostic immédiat : `git diff HEAD -- src/data/DictionnaireJeu.js` révèle les changements non commis. Réflexe à adopter : après chaque groupe de modifications fonctionnellement liées, `git status` pour vérifier que rien n'est resté en local.
+
+## Cache Vite sur Windows avec chemins spéciaux (`-=-`)
+
+Si un changement de code ne se répercute pas en dev malgré un rechargement, le file watcher Vite peut être bloqué par les caractères spéciaux dans le chemin (`-=-`). Solution : `npm run dev -- --force` vide le cache interne de Vite et force la ré-analyse de tous les modules. Ne pas passer du temps à douter du code — tester le cache en premier.
+
+## Step dual-purpose : condition au point de rendu, pas dans `useMemo`
+
+Pour que le step 18 se comporte différemment selon l'état du personnage (initiation Druidique avant scellage, StepMagiePratique après), la condition doit être posée **au point de rendu**, pas dans le tableau `stepComponents` calculé par `useMemo`. Ce tableau est une closure potentiellement stale : `isCharacterScelle(character)` au moment du calcul initial peut ne pas refléter l'état courant. Le pattern fiable :
+
+```jsx
+{step === 18 && isDruidismeActif && isCharacterScelle(character)
+  ? <StepMagiePratique nomMagie="Druidisme" />
+  : stepComponents[step]}
+```
+
+## Diagnostiquer "données absentes" : vérifier la table en base avant le code
+
+Les philtres druidiques n'apparaissaient pas dans StepMagiePratique car la table `sorts` n'existait tout simplement pas en DB — `loadSorts()` retournait `[]` silencieusement, sans erreur. Réflexe : avant de chercher un bug de rendu ou de state, confirmer que la source de données existe (`\d sorts` via psql ou équivalent). Ici : `node scripts/migrate_sorts.js` a créé la table et inséré les 6 philtres Novice.
+
+## Coût XP sur le bouton "Apprendre" : exposer `getPremiereMagie` depuis le hook
+
+Pour afficher le coût correct (5 XP si 1re magie, 8 XP sinon) sur le bouton, il faut que `StepMagiePratique` connaisse quelle magie est la première. La solution : exporter `getPremiereMagie` depuis `useCompetencesLibres`, et calculer `coutSort = getPremiereMagie() === nomMagie ? 5 : 8` dans le composant parent, puis le passer à `SortsSection` comme prop. Évite de dupliquer la logique ou d'avoir une prop "coût" hardcodée par magie.
+
+---
+
+# REX — Session 10 Juillet 2026 — v17.4.56 « Les Coulisses de la Magie »
 
 ## STEP_CONFIG nécessite un Read avant tout Edit
 
