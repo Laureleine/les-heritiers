@@ -343,7 +343,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                       Joué par {member.profiles?.username}
                     </div>
 
-                    {(isDocte && !isSelf) ? (
+                    {isDocte ? (
                       <div className="flex flex-col items-center gap-3 mt-4 w-full">
                         <div className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider border shadow-sm ${
                           hasChar
