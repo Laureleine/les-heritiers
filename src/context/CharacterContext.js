@@ -15,31 +15,42 @@ export const initialCharacterState = {
   pouvoirs: [],
   vieSociale: {}, fortune: 0,
   atouts: [],
-  data: { choixEquipement: {} }, // ✨ NOUVEAU : La mémoire de l'équipement
+  data: { choixEquipement: {} },
   isPublic: false
 };
 
-const CharacterContext = createContext();
+// Deux contextes distincts : lecture seule vs actions
+// Les composants qui ne lisent pas character ne re-rendent pas sur chaque frappe
+const CharacterStateContext = createContext();
+const CharacterActionsContext = createContext();
 
 export function CharacterProvider({ children }) {
-  // L'état global du personnage en cours de création
   const [character, dispatchCharacter] = useReducer(characterReducer, initialCharacterState);
-
-  // L'état global de sécurité (Mode vue seule)
   const [isReadOnly, setIsReadOnly] = useState(false);
 
-  const ctxValue = useMemo(() => ({
-    character, dispatchCharacter,
-    isReadOnly, setIsReadOnly,
-    initialCharacterState
-  }), [character, dispatchCharacter, isReadOnly, setIsReadOnly]);
+  const stateValue = useMemo(() => ({ character, isReadOnly }), [character, isReadOnly]);
+
+  // Les actions (callbacks) ne changent jamais → pas de re-render superflu
+  const actionsValue = useMemo(() => ({
+    dispatchCharacter, setIsReadOnly, initialCharacterState
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), []);
 
   return (
-    <CharacterContext.Provider value={ctxValue}>
-      {children}
-    </CharacterContext.Provider>
+    <CharacterStateContext.Provider value={stateValue}>
+      <CharacterActionsContext.Provider value={actionsValue}>
+        {children}
+      </CharacterActionsContext.Provider>
+    </CharacterStateContext.Provider>
   );
 }
 
-// Le Hook magique que n'importe quel composant pourra appeler !
-export const useCharacter = () => useContext(CharacterContext);
+// Hook unifié — backward compatible, consomme les deux contextes
+export const useCharacter = () => ({
+  ...useContext(CharacterStateContext),
+  ...useContext(CharacterActionsContext),
+});
+
+// Hooks granulaires pour les composants qui n'ont besoin que d'une moitié
+export const useCharacterState = () => useContext(CharacterStateContext);
+export const useCharacterActions = () => useContext(CharacterActionsContext);
