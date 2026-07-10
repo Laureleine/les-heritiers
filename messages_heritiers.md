@@ -4,6 +4,26 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.61 — «Le Grand Ménage des Arcanes» — 11 Juillet 2026
+
+✨ **Missive du Greffe des Âmes — v17.4.61 «Le Grand Ménage des Arcanes»**
+
+Chers Héritiers,
+
+Cette nuit, l'Atelier n'a forgé aucune nouveauté visible — et pourtant les Archivistes n'ont pas chômé.
+
+Ils ont entrepris ce que les Scribes nomment entre eux *Le Grand Ménage* : démêler les fils invisibles qui reliaient chaque rouage de l'Atelier à tous les autres. Session, profil joueur, données du jeu — tout cela voyageait de main en main à travers vingt-huit composants comme un pli cacheté passant de messager en messager. Désormais, chaque pièce de la machinerie puise directement à sa source, sans intermédiaire.
+
+La Liste des Héritiers a rendu deux cents lignes à la Bibliothèque. La logique de réparation des journaux XP a été confiée à un Gardien dédié. Le Grimoire s'est extrait de son logement pour devenir un Tiroir autonome. Le tableau de bord des Administrateurs ne recharge plus ses onglets à chaque visite — une fois ouvert, un onglet reste fidèle au poste.
+
+Et, dans les profondeurs du Contexte du Personnage, une scission s'est opérée : celui qui *observe* et celui qui *agit* ne partagent plus le même siège.
+
+Rien de tout cela n'est visible à l'œil nu. Mais l'Atelier respire mieux, et les prochains sortilèges pourront être posés sur des fondations plus nettes.
+
+*— L'Atelier des Héritiers*
+
+---
+
 ## v17.4.60 — «Les Gardiens Invisibles» — 10 Juillet 2026
 
 ✨ **Missive du Greffe des Âmes — v17.4.60 «Les Gardiens Invisibles»**

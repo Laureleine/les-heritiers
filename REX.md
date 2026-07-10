@@ -1,4 +1,32 @@
-﻿# REX — Session 10 Juillet 2026 — v17.4.60 « Les Gardiens Invisibles »
+﻿# REX — Session 11 Juillet 2026 — v17.4.61 « Le Grand Ménage des Arcanes »
+
+## Contexte de compaction : toujours relire les fichiers avant d'éditer
+
+Après une compaction de contexte, l'outil `Edit` refusera d'éditer un fichier qui n'a pas été lu dans la *nouvelle* fenêtre de contexte — même si la session précédente l'avait lu. Toujours intercaler un `Read` avant le premier `Edit` d'un fichier dans une fenêtre compactée.
+
+## Ordre des edits sur CharacterList : travailler de bas en haut
+
+Lors de la suppression de grandes sections dans un fichier, partir du bas vers le haut. Les numéros de ligne bougent après chaque edit, mais le contenu supérieur reste intact si on commence par le bas.
+
+## `useCharacterRepair` : l'extraction de hook est le bon outil pour le state enchevêtré
+
+Quand un composant contient ~150 lignes de state + callbacks + effects liés à un domaine précis (ici, la réparation XP), extraire en hook custom est la bonne approche — pas en composant React, car le state reste dans le même arbre. Le hook retourne un objet structuré, le composant destructure ce qu'il veut.
+
+## Pattern `hidden` HTML pour les onglets lazy
+
+`<div hidden={activeTab !== 'x'}>` est la façon native HTML de cacher un élément sans le démonter. Plus simple que CSS `display:none`, et accessible — les lecteurs d'écran ignorent le contenu `hidden`. Couplé à un `Set` de `mountedTabs`, c'est le pattern le plus propre pour "mount once, keep alive".
+
+## Scission de contexte React : toujours garder un hook backward-compatible
+
+Quand on scinde un contexte (CharacterContext → State + Actions), exporter un `useCharacter()` unifié qui merge les deux contextes garantit zéro migration forcée. Les 18 consommateurs existants continuent de fonctionner. Les nouveaux consommateurs peuvent choisir `useCharacterState()` ou `useCharacterActions()` selon leur besoin.
+
+## Tester immédiatement après chaque extraction
+
+Chaque chantier DRY a été testé en isolation (npm test après A1, A2, A3, A4, A5). Cela a permis de détecter les 17 tests cassés par A1 (providers manquants) avant de passer à A2 — sans ce garde-fou, les erreurs se seraient accumulées.
+
+---
+
+# REX — Session 10 Juillet 2026 — v17.4.60 « Les Gardiens Invisibles »
 
 ## Deux patterns `isMounted` selon la nature du hook
 

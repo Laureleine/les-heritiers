@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.61 - \"Le Grand Ménage des Arcanes 🧹✨\"",
+    date: "11 Juillet 2026",
+    description: "Une session de refactoring profond — invisible pour les joueurs, précieux pour l'Atelier. Le prop drilling est éradiqué : session, profil joueur et données de jeu ne voyagent plus de main en main à travers toute la hiérarchie, mais habitent désormais leurs propres Contextes auxquels chaque composant se connecte directement. CharacterList perd deux cents lignes de logique de réparation qu'un hook dédié prend en charge. Le Grimoire se détache en tiroir autonome. Le tableau de bord admin ne recharge plus ses onglets à chaque visite. Et le Contexte du Personnage se scinde en deux rôles distincts : celui qui lit, et celui qui agit.",
+    changes: [
+      "🔗 **UserContext :** session et profil joueur ne descendent plus en props — 28 composants se branchent directement au Contexte, la chaîne de transmission disparaît.",
+      "📚 **GameDataContext :** CharacterList puise les données de jeu dans le Contexte plutôt que de les recevoir en héritage depuis AppRouter.",
+      "🪛 **CharacterList allégée :** Toute la logique de réparation XP migre dans `useCharacterRepair`. Le Grimoire devient `GrimoireDrawer`. La modale admin devient `RepairConfirmModal`. ~200 lignes disparaissent.",
+      "💤 **Onglets admin paresseux :** Un onglet visité reste monté — retourner sur «Métriques» ou «Reconstruction XP» ne relance plus les requêtes.",
+      "⚗️ **CharacterContext scindé :** L'état (character, isReadOnly) et les actions (dispatch, setIsReadOnly) vivent dans deux sous-contextes séparés — les composants ne se ré-affichent plus que pour ce qu'ils consomment réellement.",
+    ],
+  },
+  {
     version: "17.4.60 - \"Les Gardiens Invisibles 🛡️⚗️\"",
     date: "10 Juillet 2026",
     description: "Une session de veille silencieuse. Quatre hooks reçoivent leurs gardiens de montage — ces sentinelles discrètes qui empêchent tout état de se modifier après qu'un Héritier a quitté une page. Un verrou interne supplémentaire protège la consultation des personnages côté Gardien. Et dans les caves de l'Atelier, un premier registre des Sorts est ouvert — les philtres arriveront.",
