@@ -13,6 +13,7 @@ import DiceRoller from './components/DiceRoller';
 import WidgetAnomalie from './components/forge/WidgetAnomalie';
 import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
 import { APP_VERSION, BUILD_DATE } from './version';
+import { UserContext } from './context/UserContext';
 import { useCorrectionCheck } from './hooks/useCorrectionCheck';
 import CorrectionRequestModal from './components/CorrectionRequestModal';
 import AdminCorrectionWidget from './components/AdminCorrectionWidget';
@@ -66,6 +67,7 @@ export default function App() {
   }
 
   return (
+    <UserContext.Provider value={{ session, userProfile, refreshUserProfile }}>
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
       
       {updateAvailable && (
@@ -79,7 +81,7 @@ export default function App() {
         </div>
       )}
 
-      <AlertSystem userProfile={userProfile} />
+      <AlertSystem />
       <PWAPrompt />
       <DisclaimerModal />
 
@@ -123,11 +125,11 @@ export default function App() {
       </header>
 
       <main id="main-content" className="max-w-5xl mx-auto px-4 w-full relative z-10">
-        <AppRouter session={session} userProfile={userProfile} refreshUserProfile={refreshUserProfile} />
+        <AppRouter />
       </main>
 
-      {session && userProfile && <Telegraphe session={session} userProfile={userProfile} />}
-      {session && <WidgetAnomalie userProfile={userProfile} />}
+      {session && userProfile && <Telegraphe />}
+      {session && <WidgetAnomalie />}
       <DiceRoller use3DDice={userProfile?.profile?.use_3d_dice} diceTheme={userProfile?.profile?.dice_theme} />
 
       {/* 4. MODALE DU JOURNAL DES VERSIONS */}
@@ -177,5 +179,6 @@ export default function App() {
         </div>
       )}
     </div>
+    </UserContext.Provider>
   );
 }

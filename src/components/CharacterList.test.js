@@ -1,4 +1,4 @@
-﻿vi.mock('../config/supabase', () => ({
+vi.mock('../config/supabase', () => ({
   supabase: {
     from: vi.fn(),
     rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -53,6 +53,7 @@ import { render, waitFor } from '@testing-library/react';
 import { supabase } from '../config/supabase';
 import { getAllCharactersAdmin } from '../utils/supabaseStorage';
 import CharacterList from './CharacterList';
+import { UserContext } from '../context/UserContext';
 
 const mockSession = { user: { id: 'user-1' }, access_token: 'token' };
 const mockProfile = { profile: { role: 'user' } };
@@ -76,6 +77,14 @@ function makeChain() {
   return chain;
 }
 
+function renderWithContext(userProfile) {
+  return render(
+    <UserContext.Provider value={{ session: mockSession, userProfile }}>
+      <CharacterList onSignOut={() => {}} />
+    </UserContext.Provider>
+  );
+}
+
 describe('CharacterList RPC calls', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -83,11 +92,7 @@ describe('CharacterList RPC calls', () => {
   });
 
   it('appelle check_pending_gifts RPC au chargement', async () => {
-    render(<CharacterList
-      session={mockSession}
-      userProfile={mockProfile}
-      onSignOut={() => {}}
-    />);
+    renderWithContext(mockProfile);
 
     await waitFor(() => {
       expect(supabase.rpc).toHaveBeenCalledWith('check_pending_gifts');
@@ -95,11 +100,7 @@ describe('CharacterList RPC calls', () => {
   });
 
   it("n'appelle PAS getAllCharactersAdmin pour un simple user", async () => {
-    render(<CharacterList
-      session={mockSession}
-      userProfile={mockProfile}
-      onSignOut={() => {}}
-    />);
+    renderWithContext(mockProfile);
 
     await waitFor(() => {
       expect(getAllCharactersAdmin).not.toHaveBeenCalled();
@@ -107,11 +108,7 @@ describe('CharacterList RPC calls', () => {
   });
 
   it('appelle getAllCharactersAdmin pour un super_admin', async () => {
-    render(<CharacterList
-      session={mockSession}
-      userProfile={{ profile: { role: 'super_admin' } }}
-      onSignOut={() => {}}
-    />);
+    renderWithContext({ profile: { role: 'super_admin' } });
 
     await waitFor(() => {
       expect(getAllCharactersAdmin).toHaveBeenCalled();
@@ -119,11 +116,7 @@ describe('CharacterList RPC calls', () => {
   });
 
   it('rend sans planter avec le profil admin', async () => {
-    const { container } = render(<CharacterList
-      session={mockSession}
-      userProfile={{ profile: { role: 'super_admin' } }}
-      onSignOut={() => {}}
-    />);
+    const { container } = renderWithContext({ profile: { role: 'super_admin' } });
 
     await waitFor(() => {
       expect(container).toBeTruthy();
@@ -131,11 +124,7 @@ describe('CharacterList RPC calls', () => {
   });
 
   it('rend sans planter avec un profil gardien', async () => {
-    const { container } = render(<CharacterList
-      session={mockSession}
-      userProfile={{ profile: { role: 'gardien' } }}
-      onSignOut={() => {}}
-    />);
+    const { container } = renderWithContext({ profile: { role: 'gardien' } });
 
     await waitFor(() => {
       expect(container).toBeTruthy();

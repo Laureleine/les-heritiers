@@ -1,12 +1,12 @@
-﻿vi.mock('../../config/supabase', () => ({
+vi.mock('../../config/supabase', () => ({
   supabase: {
-    from: jest.fn(),
-    rpc: jest.fn().mockResolvedValue({ data: [], error: null }),
+    from: vi.fn(),
+    rpc: vi.fn().mockResolvedValue({ data: [], error: null }),
   },
 }));
 
 vi.mock('../../utils/SystemeServices', () => ({
-  showInAppNotification: jest.fn(),
+  showInAppNotification: vi.fn(),
 }));
 
 vi.mock('lucide-react', async (importOriginal) => {
@@ -18,32 +18,41 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { supabase } from '../../config/supabase';
 import TabUsers from './TabUsers';
+import { UserContext } from '../../context/UserContext';
 
 const mockSession = { user: { id: 'user-123' } };
 
 function makeChain(role) {
   const chain = { then: undefined };
-  chain.select = jest.fn(() => chain);
-  chain.eq = jest.fn(() => chain);
-  chain.single = jest.fn(() => Promise.resolve({ data: { role }, error: null }));
-  chain.update = jest.fn(() => Promise.resolve({ data: null, error: null }));
-  chain.order = jest.fn(() => chain);
-  chain.then = jest.fn((res) => {
+  chain.select = vi.fn(() => chain);
+  chain.eq = vi.fn(() => chain);
+  chain.single = vi.fn(() => Promise.resolve({ data: { role }, error: null }));
+  chain.update = vi.fn(() => Promise.resolve({ data: null, error: null }));
+  chain.order = vi.fn(() => chain);
+  chain.then = vi.fn((res) => {
     res({ data: [], error: null });
     return Promise.resolve();
   });
-  chain.catch = jest.fn();
+  chain.catch = vi.fn();
   return chain;
+}
+
+function renderWithContext() {
+  return render(
+    <UserContext.Provider value={{ session: mockSession, userProfile: null }}>
+      <TabUsers />
+    </UserContext.Provider>
+  );
 }
 
 describe('TabUsers role-based data fetching', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('appelle get_admin_users RPC quand le profil est super_admin', async () => {
     supabase.from.mockReturnValue(makeChain('super_admin'));
-    render(<TabUsers session={mockSession} />);
+    renderWithContext();
 
     await waitFor(() => {
       expect(supabase.rpc).toHaveBeenCalledWith('get_admin_users');
@@ -52,7 +61,7 @@ describe('TabUsers role-based data fetching', () => {
 
   it('appelle profiles.select basique quand le profil est un simple user', async () => {
     supabase.from.mockReturnValue(makeChain('user'));
-    render(<TabUsers session={mockSession} />);
+    renderWithContext();
 
     await waitFor(() => {
       const profileCalls = supabase.from.mock.calls
@@ -63,7 +72,7 @@ describe('TabUsers role-based data fetching', () => {
 
   it("n'appelle PAS get_admin_users RPC pour un simple user", async () => {
     supabase.from.mockReturnValue(makeChain('user'));
-    render(<TabUsers session={mockSession} />);
+    renderWithContext();
 
     await waitFor(() => {
       expect(supabase.rpc).not.toHaveBeenCalledWith('get_admin_users');
@@ -72,7 +81,7 @@ describe('TabUsers role-based data fetching', () => {
 
   it("n'appelle PAS get_admin_users RPC pour un gardien (seulement super_admin)", async () => {
     supabase.from.mockReturnValue(makeChain('gardien'));
-    render(<TabUsers session={mockSession} />);
+    renderWithContext();
 
     await waitFor(() => {
       expect(supabase.rpc).not.toHaveBeenCalledWith('get_admin_users');

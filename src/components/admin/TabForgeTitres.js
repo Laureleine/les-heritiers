@@ -2,9 +2,11 @@
 import React from 'react';
 import { iconMap, HelpCircle, Hammer, Save, Edit, Trash2 } from '../../config/icons';
 import { useForgeTitres } from '../../hooks/useForgeTitres';
+import { useUserContext } from '../../context/UserContext';
 import ConfirmModal from '../ConfirmModal';
 
-export default function TabForgeTitres({ userProfile }) {
+export default function TabForgeTitres() {
+  const { userProfile } = useUserContext();
   const {
     isSuperAdmin,
     badges,

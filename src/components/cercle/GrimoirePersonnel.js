@@ -9,6 +9,7 @@ import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
 import TabChroniques from './TabChroniques';
 import { migrateContactContent, getCategoryStyle, getVisibleRelations, hasActiveFauxSemblant, getFauxSemblantTypeFee, CATEGORIES_SUGGESTIONS } from '../../utils/relationsHelper';
+import { useUserContext } from '../../context/UserContext';
 
 const FAIRY_TYPES = [
   'Ange', 'Bastet', 'Elfe', 'Farfadet', 'Gnome', 'Gobelin', 'Korrigan',
@@ -30,7 +31,8 @@ function formatLocalisation(loc) {
   return p.texte || [p.ville, p.pays].filter(Boolean).join(', ') || 'Lieu inconnu';
 }
 
-export default function GrimoirePersonnel({ characterId, cercleId, playerId, isAdmin = false, userProfile, characterNom = '' }) {
+export default function GrimoirePersonnel({ characterId, cercleId, playerId, isAdmin = false, characterNom = '' }) {
+  const { userProfile } = useUserContext();
   const [activeTab, setActiveTab] = useState('notes');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

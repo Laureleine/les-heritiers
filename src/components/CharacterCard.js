@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Globe, Sparkles, Edit, Eye, FileText, Download, EyeOff, BookOpen, Copy, Gift, Trash2, User, Calendar, MessageCircle, AlertTriangle } from '../config/icons';
 import { isSuperAdmin } from '../utils/authRoles';
+import { useUserContext } from '../context/UserContext';
 
 // ─── Constantes admin (badges de réparation XP) ────────────────────────────
 const REPAIR_BADGE = {
@@ -19,7 +20,6 @@ const CharacterCard = React.memo(({
   char,
   isMyCharacter,
   isAdmin,
-  userProfile,
   profils,
   gameData,
   onSelect,
@@ -38,6 +38,7 @@ const CharacterCard = React.memo(({
   onRequestRepair,  // joueur: (charId, charNom) => void — demande à l'admin
 }) => {
 
+  const { userProfile } = useUserContext();
   const [showSuperAdminModal, setShowSuperAdminModal] = useState(false);
   const isSA = isSuperAdmin(userProfile);
 

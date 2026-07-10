@@ -33,17 +33,16 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AppRouter from '../../AppRouter';
+import { UserContext } from '../../context/UserContext';
 import { isAdmin } from '../../utils/authRoles';
 
 function renderAt(path, userProfile) {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <AppRouter
-        session={{ user: { id: 'user-1' } }}
-        userProfile={userProfile}
-        refreshUserProfile={vi.fn()}
-      />
-    </MemoryRouter>
+    <UserContext.Provider value={{ session: { user: { id: 'user-1' } }, userProfile, refreshUserProfile: vi.fn() }}>
+      <MemoryRouter initialEntries={[path]}>
+        <AppRouter />
+      </MemoryRouter>
+    </UserContext.Provider>
   );
 }
 

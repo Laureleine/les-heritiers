@@ -7,8 +7,10 @@ import EncyclopediaCard from './EncyclopediaCard';
 import ConfirmModal from './ConfirmModal';
 import { useEncyclopedia } from '../hooks/useEncyclopedia';
 import { TabBar } from './ui/TabBar';
+import { useUserContext } from '../context/UserContext';
 
-export default function Encyclopedia({ userProfile, onBack, onOpenValidations, onOpenMesPropositions }) {
+export default function Encyclopedia({ onBack, onOpenValidations, onOpenMesPropositions }) {
+    const { userProfile } = useUserContext();
     const { state, setters, handlers } = useEncyclopedia();
     const [groupSpecialitesByCompetence, setGroupSpecialitesByCompetence] = useState(false);
 

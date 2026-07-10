@@ -5,12 +5,14 @@ import { supabase } from '../../config/supabase';
 import { iconMap, Mail, Filter, CheckCircle, MessageCircle, Shield, User, Crown, Award, Key } from '../../config/icons';
 import { SearchBar } from '../ui/SearchBar';
 import { showInAppNotification } from '../../utils/SystemeServices';
+import { useUserContext } from '../../context/UserContext';
 
 // ============================================================================
 // --- 1. ONGLET : GESTION DES HÉRITIERS (Ancien AdminUserList) ---
 // ============================================================================
 
-function TabUsers({ session }) {
+function TabUsers() {
+    const { session } = useUserContext();
     // --- 1. LES MÉMOIRES (States) ---
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);

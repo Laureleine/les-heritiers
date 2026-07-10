@@ -8,6 +8,7 @@ import ModalShell, { ModalHeader } from './ui/ModalShell';
 import { useMapPoints } from '../hooks/useMapPoints';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { isSuperAdmin } from '../utils/authRoles';
+import { useUserContext } from '../context/UserContext';
 import { getDocteCircles, getVisiblePoints, filterPointsByListFilter } from '../utils/mapVisibility';
 import { supabase } from '../config/supabase';
 
@@ -380,7 +381,8 @@ function ModePersoForm({ form, onChange, onSave, onCancel }) {
 
 // ─── Composant principal ─────────────────────────────────────────────────────
 
-export default function CarteDeParisPage({ onBack, userProfile, session }) {
+export default function CarteDeParisPage({ onBack }) {
+  const { userProfile, session } = useUserContext();
   const { points, loading, addPoint, updatePoint, deletePoint } = useMapPoints();
   const isSA   = isSuperAdmin(userProfile);
   const userId = session?.user?.id;

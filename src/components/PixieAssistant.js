@@ -3,8 +3,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'; // ✨ 
 import { Sparkles, AlertCircle, CheckCircle2, Info, Moon } from '../config/icons';
 import { getPixieAdvice } from '../utils/pixieBrain';
 import { supabase } from '../config/supabase';
+import { useUserContext } from '../context/UserContext';
 
-export default function PixieAssistant({ character, step, session, onSleep, fairyData }) {
+export default function PixieAssistant({ character, step, onSleep, fairyData }) {
+    const { session } = useUserContext();
     const [position, setPosition] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
     const [isTalking, setIsTalking] = useState(false);
     const [message, setMessage] = useState({ text: "", mood: "info" });

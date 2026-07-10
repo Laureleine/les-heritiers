@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell, Coins } from '../config/icons';
 import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
+import { useUserContext } from '../context/UserContext';
 import TabUsers from './admin/TabUsers';
 import TabStats from './admin/TabStats';
 import TabForgeTitres from './admin/TabForgeTitres';
@@ -11,7 +12,8 @@ import TabNotifications from './admin/TabNotifications';
 import TabUsageIA from './admin/TabUsageIA';
 
 // ✨ FIX : On récupère userProfile depuis le routeur
-export default function AdminDashboard({ session, userProfile, onBack }) {
+export default function AdminDashboard({ onBack }) {
+    const { session, userProfile } = useUserContext();
     const [activeTab, setActiveTab] = useState('users');
     const tablistRef = useRef(null);
 
@@ -72,9 +74,9 @@ export default function AdminDashboard({ session, userProfile, onBack }) {
 
             {/* Contenu de l'onglet actif */}
             <div id="admin-tabpanel" role="tabpanel" aria-labelledby={`admin-tab-${activeTab}`}>
-            {activeTab === 'users' && <TabUsers session={session} />}
+            {activeTab === 'users' && <TabUsers />}
             {activeTab === 'stats' && <TabStats />}
-            {activeTab === 'titres' && <TabForgeTitres userProfile={userProfile} />}
+            {activeTab === 'titres' && <TabForgeTitres />}
             {activeTab === 'repair' && isSuperAdmin && <TabRepairJournaux />}
             {activeTab === 'notifications' && isSuperAdmin && <TabNotifications />}
             {activeTab === 'usage_ia' && isSuperAdmin && <TabUsageIA />}

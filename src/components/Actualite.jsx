@@ -5,6 +5,7 @@ import eclipses from '../data/eclipses_data';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { supabase } from '../config/supabase';
 import { isSuperAdmin } from '../utils/authRoles';
+import { useUserContext } from '../context/UserContext';
 
 // --- Constantes de formatage ---
 const MONTHS_FR = {
@@ -112,7 +113,8 @@ export function formatLuneHtml(dailyInfo) {
   </table>`;
 }
 
-export default function Actualite({ onBack, userProfile }) {
+export default function Actualite({ onBack }) {
+  const { userProfile } = useUserContext();
   const [dateStr, setDateStr] = useState(null);
   const [activeMenu, setActiveMenu] = useState('meteo'); // meteo, lune, chronique, fetes, page1, page2, page3, page4, votes
   const [eventsData, setEventsData] = useState({});

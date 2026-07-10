@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Bug, Sparkles, X, Image as ImageIcon, Send, Key, Trash2, FolderOpen } from '../../config/icons';
 import { useForge } from '../../context/ForgeContext';
 import { isAdmin } from '../../utils/authRoles';
+import { useUserContext } from '../../context/UserContext';
 import { useFileUpload } from '../../hooks/useFileUpload';
 import { showInAppNotification } from '../../utils/SystemeServices';
 
-export default function WidgetAnomalie({ userProfile }) {
+export default function WidgetAnomalie() {
+  const { userProfile } = useUserContext();
   const { soumettreEntree } = useForge();
   const { validateFile } = useFileUpload({ maxSizeMB: 10, allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] });
 

@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import ConfirmModal from './ConfirmModal';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { useGameDataContext } from '../context/GameDataContext';
+import { useUserContext } from '../context/UserContext';
 import ChangeCard from './admin/ChangeCard';
 
 const TABLE_NAME = 'data_change_requests';
@@ -35,7 +36,8 @@ const notifyEscalation = async (change, errorMsg, currentUserId) => {
 // ======================================================================
 // 🛡️ LE CONSEIL DES GARDIENS (Parent)
 // ======================================================================
-export default function ValidationsPendantes({ session, onBack }) {
+export default function ValidationsPendantes({ onBack }) {
+  const { session } = useUserContext();
   const { gameData } = useGameDataContext();
   const queryClient = useQueryClient();
 

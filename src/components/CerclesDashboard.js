@@ -11,6 +11,7 @@ import { showInAppNotification } from '../utils/SystemeServices';
 import ConfirmModal from './ConfirmModal';
 import { getFullCharacter } from '../utils/supabaseStorage';
 import ActiveCercleView from './cercle/ActiveCercleView';
+import { useUserContext } from '../context/UserContext';
 
 // ============================================================================
 // ✨ LE COMPOSANT PRINCIPAL
@@ -20,7 +21,8 @@ import ActiveCercleView from './cercle/ActiveCercleView';
 // ✨ LE COMPOSANT PRINCIPAL
 // ============================================================================
 
-export default function CerclesDashboard({ session, onBack, onViewCharacter }) {
+export default function CerclesDashboard({ onBack, onViewCharacter }) {
+  const { session } = useUserContext();
   const [cercles, setCercles] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
   const [loading, setLoading] = useState(true);

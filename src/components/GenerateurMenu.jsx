@@ -4,6 +4,7 @@ import { useMenuPlats } from '../hooks/useMenuPlats';
 import { useMenuGenerateur } from '../hooks/useMenuGenerateur';
 import { useMenuSauvegardes } from '../hooks/useMenuSauvegardes';
 import { isAdmin } from '../utils/authRoles';
+import { useUserContext } from '../context/UserContext';
 import { supabase } from '../config/supabase';
 import MenuForm from './menu/MenuForm';
 import MenuAffichage from './menu/MenuAffichage';
@@ -226,7 +227,8 @@ function ValidationTab({ session, approuver, refuser }) {
   );
 }
 
-export default function GenerateurMenu({ onBack, userProfile, session }) {
+export default function GenerateurMenu({ onBack }) {
+  const { userProfile, session } = useUserContext();
   const [activeTab, setActiveTab] = useState('generateur');
   const [params, setParams] = useState(PARAMS_INITIAUX);
   const [saveMsg, setSaveMsg] = useState(null);

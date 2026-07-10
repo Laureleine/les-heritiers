@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Printer, List, Save, Sparkles, BookOpen, BookMarked } from '../../config/icons';
 import { exportToPDF } from '../../utils/pdfGenerator';
 import { useCharacter } from '../../context/CharacterContext';
+import { useUserContext } from '../../context/UserContext';
 import { useGameDataContext } from '../../context/GameDataContext';
 import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
 import { showInAppNotification } from '../../utils/SystemeServices';
@@ -31,7 +32,8 @@ const StepPersonnalisation = lazy(() => import('../StepPersonnalisation'));
 const StepRecapitulatif = lazy(() => import('../StepRecapitulatif'));
 const TabChroniques = lazy(() => import('../cercle/TabChroniques'));
 
-export default function CharacterCreator({ session, userProfile }) {
+export default function CharacterCreator() {
+  const { session, userProfile } = useUserContext();
   const { character, dispatchCharacter, isReadOnly } = useCharacter();
   const { gameData } = useGameDataContext();
   const navigate = useNavigate();
@@ -374,7 +376,6 @@ export default function CharacterCreator({ session, userProfile }) {
         <PixieAssistant
           character={character || {}}
           step={step}
-          session={session}
           fairyData={gameData?.fairyData}
         />
       )}

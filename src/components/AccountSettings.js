@@ -2,9 +2,11 @@
 import React, { useState } from 'react';
 import { iconMap, User, Mail, Gem, ExternalLink, Dices, Award, Palette, Bell, BookOpen, Sparkles, BellOff, Smartphone, MessageCircle, ArrowLeft, Lock, Eye, EyeOff } from '../config/icons';
 import { useAccountSettings } from '../hooks/useAccountSettings';
+import { useUserContext } from '../context/UserContext';
 
-export default function AccountSettings({ session, userProfile, onBack, onUpdateProfile }) {
-    const { state, setters, computed, handlers } = useAccountSettings(session, userProfile, onUpdateProfile);
+export default function AccountSettings({ onBack }) {
+    const { session, userProfile, refreshUserProfile } = useUserContext();
+    const { state, setters, computed, handlers } = useAccountSettings(session, userProfile, refreshUserProfile);
 
     return (
         <div className="max-w-4xl mx-auto p-4 pb-12">

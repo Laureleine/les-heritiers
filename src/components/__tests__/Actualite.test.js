@@ -1,4 +1,4 @@
-﻿vi.mock('../../config/supabase', () => ({
+vi.mock('../../config/supabase', () => ({
   supabase: {
     from: vi.fn(),
     rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -28,6 +28,9 @@ import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { supabase } from '../../config/supabase';
 import Actualite from '../Actualite';
+import { UserContext } from '../../context/UserContext';
+
+const mockUserProfile = { profile: { role: 'user' } };
 
 function makeChain(returnData = []) {
   const chain = { then: undefined };
@@ -50,6 +53,14 @@ function makeChain(returnData = []) {
   return chain;
 }
 
+function renderActualite(userProfile = mockUserProfile) {
+  return render(
+    <UserContext.Provider value={{ session: null, userProfile }}>
+      <Actualite onBack={() => {}} />
+    </UserContext.Provider>
+  );
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
@@ -58,34 +69,26 @@ beforeEach(() => {
 
 describe('Actualite', () => {
   it('rend sans planter', async () => {
-    const { container } = render(
-      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
-    );
+    const { container } = renderActualite();
     await waitFor(() => {
       expect(container).toBeTruthy();
     });
   });
 
   it('affiche le titre Le Petit Parisien', async () => {
-    const { findAllByText } = render(
-      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
-    );
+    const { findAllByText } = renderActualite();
     const titles = await findAllByText('Le Petit Parisien');
     expect(titles.length).toBeGreaterThanOrEqual(1);
   });
 
   it('affiche le bouton retour', async () => {
-    const { findByText } = render(
-      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
-    );
+    const { findByText } = renderActualite();
     const btn = await findByText("Retour à l'accueil");
     expect(btn).toBeTruthy();
   });
 
   it('affiche le bouton de bascule mode nuit', async () => {
-    const { container } = render(
-      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
-    );
+    const { container } = renderActualite();
     await waitFor(() => {
       const toggle = container.querySelector('button[title*="mode sombre"]');
       expect(toggle).toBeTruthy();
@@ -93,9 +96,7 @@ describe('Actualite', () => {
   });
 
   it('rend la section sommaire avec les entrées attendues', async () => {
-    const { findByText } = render(
-      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
-    );
+    const { findByText } = renderActualite();
     expect(await findByText('Sommaire')).toBeTruthy();
     expect(await findByText('Météo de Paris')).toBeTruthy();
     expect(await findByText('Influence Lunaire')).toBeTruthy();
@@ -105,9 +106,7 @@ describe('Actualite', () => {
   });
 
   it('passe en mode nuit au clic sur le toggle et persiste dans localStorage', async () => {
-    const { container } = render(
-      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
-    );
+    const { container } = renderActualite();
     await waitFor(() => {
       const toggle = container.querySelector('button[title*="mode sombre"]');
       expect(toggle).toBeTruthy();
@@ -128,9 +127,7 @@ describe('Actualite', () => {
 
   it('restaure le mode nuit depuis localStorage', async () => {
     localStorage.setItem('journal-dark-mode', 'enabled');
-    const { container } = render(
-      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
-    );
+    const { container } = renderActualite();
     await waitFor(() => {
       const toggle = container.querySelector('button[title*="mode clair"]');
       expect(toggle).toBeTruthy();
@@ -149,21 +146,18 @@ describe('Actualite', () => {
       },
       {
         date: '1899-11-26',
-        name: 'Sainte Catherine d\'Alexandrie',
+        name: "Sainte Catherine d'Alexandrie",
         type: 'chrétien',
-        description: 'Sainte Catherine d\'Alexandrie — Vierges, Martyres. Vierge savante d\'Égypte, martyrisée au IVe siècle sur une roue.',
+        description: "Sainte Catherine d'Alexandrie — Vierges, Martyres. Vierge savante d'Égypte, martyrisée au IVe siècle sur une roue.",
         traditions: 'Fête traditionnelle de Sainte Catherine.'
       }
     ];
 
     const chain = makeChain();
-    // Premier appel = journal_articles (vide)
-    // Deuxième appel = journal_holidays → retourne les saints
     let holidayCall = false;
     chain.then = vi.fn((res) => {
       if (!holidayCall) {
         holidayCall = true;
-        // second call: journal_daily_info
         setTimeout(() => res({ data: null, error: { code: 'PGRST116' } }), 0);
         return Promise.resolve();
       }
@@ -173,15 +167,12 @@ describe('Actualite', () => {
     chain.single = vi.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } }));
     supabase.from.mockReturnValue(chain);
 
-    const { findByText } = render(
-      <Actualite onBack={() => {}} userProfile={{ profile: { role: 'user' } }} />
-    );
+    const { findByText } = renderActualite();
 
-    // Ouvrir Fêtes & Traditions
     const fetesBtn = await findByText('Fêtes & Traditions');
     fireEvent.click(fetesBtn);
 
     expect(await findByText('Saint Sylvestre Gozzolini — Fondateur des Sylvestrins')).toBeTruthy();
-    expect(await findByText('Sainte Catherine d\'Alexandrie')).toBeTruthy();
+    expect(await findByText("Sainte Catherine d'Alexandrie")).toBeTruthy();
   });
 });

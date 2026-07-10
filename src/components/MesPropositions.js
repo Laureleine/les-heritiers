@@ -4,8 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, CheckCircle, XCircle, Archive, MessageCircle, FileText } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { TabBar } from './ui/TabBar';
+import { useUserContext } from '../context/UserContext';
 
-export default function MesPropositions({ session, onBack }) {
+export default function MesPropositions({ onBack }) {
+  const { session } = useUserContext();
   const [propositions, setPropositions] = useState([]);
   const [loading, setLoading] = useState(true);
   

@@ -9,6 +9,7 @@ import { exportCharacter } from '../utils/utils';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { isSuperAdmin } from '../utils/authRoles';
+import { useUserContext } from '../context/UserContext';
 import { characterReducer } from '../utils/characterEngine';
 import { mapDbCharForReconstruction, journalNeedsRepair, buildRepairedJournal, computeXpDepenseFromJournal } from '../utils/repairJournaux';
 import { loadFairyTypes, loadSocialItems } from '../utils/supabaseGameData';
@@ -115,7 +116,8 @@ function RepairConfirmModal({ target, onConfirm, onCancel }) {
 // ============================================================================
 // ✨ COMPOSANT PRINCIPAL
 // ============================================================================
-export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenOutils, profils = [], userProfile, gameData, session }) {
+export default function CharacterList({ onSelectCharacter, onNewCharacter, onSignOut, onOpenAccount, onOpenEncyclopedia, onOpenAdmin, onOpenCercles, onOpenBureau, onOpenOutils, profils = [], gameData }) {
+  const { session, userProfile } = useUserContext();
   const [myCharacters, setMyCharacters] = useState([]);
   const [publicCharacters, setPublicCharacters] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
@@ -658,7 +660,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       {...commonCardProps}
                       char={char}
                       isMyCharacter={true}
-                      userProfile={userProfile}
                       repairStatus={isAdmin ? repairRows[char.id]?.status : undefined}
                       onRepairRequest={isAdmin ? requestRepairOne : undefined}
                       needsRepair={!isAdmin ? playerRepairNeeds[char.id] : undefined}
@@ -697,7 +698,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       {...commonCardProps}
                       char={char}
                       isMyCharacter={char.userId === session?.user?.id}
-                      userProfile={userProfile}
                       repairStatus={isAdmin ? repairRows[char.id]?.status : undefined}
                       onRepairRequest={isAdmin ? requestRepairOne : undefined}
                     />
@@ -725,7 +725,6 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
                       {...commonCardProps}
                       char={char}
                       isMyCharacter={char.userId === session?.user?.id}
-                      userProfile={userProfile}
                       repairStatus={repairRows[char.id]?.status}
                       onRepairRequest={requestRepairOne}
                     />

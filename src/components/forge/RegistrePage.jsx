@@ -6,8 +6,10 @@ import { Filter, Archive, EyeOff, ArrowLeft, Plus, User, ThumbsUp, ThumbsDown, L
 import ConfirmModal from '../ConfirmModal';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { isAdmin } from '../../utils/authRoles';
+import { useUserContext } from '../../context/UserContext';
 
-export default function RegistrePage({ onBack, userProfile }) {
+export default function RegistrePage({ onBack }) {
+  const { userProfile } = useUserContext();
   // ✨ On récupère rejeterEntree + fetchForge pour le rechargement !
   const { entrees, loading, fetchForge, deplacerCarteKanban, toggleArchive, voterEntree, toggleInitieOnly, rejeterEntree } = useForge();
 

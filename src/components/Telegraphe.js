@@ -2,13 +2,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LayoutList, MessageCircle, X, Send, Inbox, ShieldAlert, Globe, Users, User, Shield, ListFilter, Settings, Key, Check, CheckCheck } from '../config/icons';
 import { useTelegraphe } from '../hooks/useTelegraphe';
+import { useUserContext } from '../context/UserContext';
 
 const getSafeUiMode = () => {
   try { return localStorage.getItem('telegraphe_ui_mode') || 'tabs'; }
   catch (e) { return 'tabs'; }
 };
 
-export default function Telegraphe({ session, userProfile }) {
+export default function Telegraphe() {
+  const { session, userProfile } = useUserContext();
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState('list');
   const [newSujet, setNewSujet] = useState('');

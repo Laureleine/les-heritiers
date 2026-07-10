@@ -4,6 +4,7 @@ import { usePocheTableEntries } from '../hooks/usePocheTableEntries';
 import { genererInventaire } from '../utils/pocheGenerator';
 import { WEIGHT_LABELS, weightLabel } from '../data/pnjTables';
 import { isAdmin } from '../utils/authRoles';
+import { useUserContext } from '../context/UserContext';
 import { supabase } from '../config/supabase';
 
 const SEXES = [
@@ -372,7 +373,8 @@ function ValidationTab({ session, approuver, refuser, ajouterDirectement }) {
   );
 }
 
-export default function PocheGenerateur({ onBack, userProfile, session }) {
+export default function PocheGenerateur({ onBack }) {
+  const { userProfile, session } = useUserContext();
   const { dbEntries, myProposals, loaded, submitting, proposer, ajouterDirectement, approuver, refuser } = usePocheTableEntries(session);
   const [activeTab, setActiveTab] = useState('generateur');
   const [config, setConfig] = useState({

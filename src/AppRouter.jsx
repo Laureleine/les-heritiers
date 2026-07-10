@@ -15,6 +15,7 @@ function RouteAnnouncer() {
 }
 import { useCharacter, initialCharacterState } from './context/CharacterContext';
 import { useGameDataContext } from './context/GameDataContext';
+import { useUserContext } from './context/UserContext';
 import { supabase } from './config/supabase';
 import { Lock } from './config/icons';
 import { isCharacterScelle } from './utils/lockUtils';
@@ -41,7 +42,8 @@ const TraducteurArgot = lazy(() => import('./components/TraducteurArgot'));
 const TracasGenerateur = lazy(() => import('./components/TracasGenerateur'));
 const OutilsHub = lazy(() => import('./components/OutilsHub'));
 
-export default function AppRouter({ session, userProfile, refreshUserProfile }) {
+export default function AppRouter() {
+  const { session, userProfile, refreshUserProfile } = useUserContext();
   const { character, dispatchCharacter, setIsReadOnly } = useCharacter();
   const { gameData } = useGameDataContext();
   const navigate = useNavigate();
@@ -59,8 +61,6 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
         <Route path="/" element={
           <>
             <CharacterList
-              session={session}
-              userProfile={userProfile}
               profils={gameData.profils}
               gameData={gameData}
               onSelectCharacter={(c, readOnly = false) => {
@@ -88,7 +88,7 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
               onOpenOutils={() => navigate('/outils')}
             />
             {userProfile?.profile?.show_pixie !== false && (
-              <PixieAssistant character={character || {}} session={session} fairyData={gameData?.fairyData} />
+              <PixieAssistant character={character || {}} fairyData={gameData?.fairyData} />
             )}
           </>
         } />
@@ -96,9 +96,9 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
         <Route path="/encyclopedia" element={
           userProfile?.profile?.is_docte ? (
             <>
-              <Encyclopedia userProfile={userProfile} onBack={() => navigate('/')} onOpenValidations={() => navigate('/validations')} onOpenMesPropositions={() => navigate('/mes_propositions')} />
+              <Encyclopedia onBack={() => navigate('/')} onOpenValidations={() => navigate('/validations')} onOpenMesPropositions={() => navigate('/mes_propositions')} />
               {userProfile?.profile?.show_pixie !== false && (
-                <PixieAssistant character={character || {}} session={session} fairyData={gameData?.fairyData} />
+                <PixieAssistant character={character || {}} fairyData={gameData?.fairyData} />
               )}
             </>
           ) : (
@@ -111,17 +111,16 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
           )
         } />
 
-        <Route path="/validations" element={<ValidationsPendantes session={session} onBack={() => navigate('/encyclopedia')} />} />
-        <Route path="/account" element={<AccountSettings session={session} userProfile={userProfile} onUpdateProfile={refreshUserProfile} onBack={() => navigate('/')} />} />
+        <Route path="/validations" element={<ValidationsPendantes onBack={() => navigate('/encyclopedia')} />} />
+        <Route path="/account" element={<AccountSettings onBack={() => navigate('/')} />} />
         <Route path="/admin_dashboard" element={
           isAdmin(userProfile)
-            ? <AdminDashboard session={session} userProfile={userProfile} onBack={() => navigate('/')} />
+            ? <AdminDashboard onBack={() => navigate('/')} />
             : <Navigate to="/" replace />
         } />
         
         <Route path="/cercles" element={
           <CerclesDashboard
-            session={session}
             onBack={() => navigate('/')}
             onViewCharacter={(c, cercleId) => {
               // ✨ Idem : force la reconstruction du journal pour les fiches scellées en lecture seule.
@@ -135,9 +134,9 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
           />
         } />
         
-        <Route path="/mes_propositions" element={<MesPropositions session={session} onBack={() => navigate('/encyclopedia')} />} />
-        <Route path="/bureau_anomalies" element={<RegistrePage onBack={() => navigate('/')} userProfile={userProfile} />} />
-        <Route path="/creator" element={<CharacterCreator session={session} userProfile={userProfile} />} />
+        <Route path="/mes_propositions" element={<MesPropositions onBack={() => navigate('/encyclopedia')} />} />
+        <Route path="/bureau_anomalies" element={<RegistrePage onBack={() => navigate('/')} />} />
+        <Route path="/creator" element={<CharacterCreator />} />
         <Route path="/outils" element={
           <OutilsHub
             onBack={() => navigate('/')}
@@ -151,14 +150,14 @@ export default function AppRouter({ session, userProfile, refreshUserProfile }) 
             onOpenTracas={() => navigate('/tracas')}
           />
         } />
-        <Route path="/actualite" element={<Actualite onBack={() => navigate('/outils')} userProfile={userProfile} />} />
-        <Route path="/carte" element={<CarteDeParisPage onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
-        <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
-        <Route path="/menu" element={<GenerateurMenu onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
-        <Route path="/poche" element={<PocheGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
-        <Route path="/ambiance" element={<AmbianceGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
-        <Route path="/argot" element={<TraducteurArgot onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
-        <Route path="/tracas" element={<TracasGenerateur onBack={() => navigate('/outils')} userProfile={userProfile} session={session} />} />
+        <Route path="/actualite" element={<Actualite onBack={() => navigate('/outils')} />} />
+        <Route path="/carte" element={<CarteDeParisPage onBack={() => navigate('/outils')} />} />
+        <Route path="/generateur" element={<PnjGenerateur onBack={() => navigate('/outils')} />} />
+        <Route path="/menu" element={<GenerateurMenu onBack={() => navigate('/outils')} />} />
+        <Route path="/poche" element={<PocheGenerateur onBack={() => navigate('/outils')} />} />
+        <Route path="/ambiance" element={<AmbianceGenerateur onBack={() => navigate('/outils')} />} />
+        <Route path="/argot" element={<TraducteurArgot onBack={() => navigate('/outils')} />} />
+        <Route path="/tracas" element={<TracasGenerateur onBack={() => navigate('/outils')} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

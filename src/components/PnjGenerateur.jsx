@@ -12,6 +12,7 @@ import {
 } from '../data/pnjTables';
 import { usePnjTableEntries } from '../hooks/usePnjTableEntries';
 import { isAdmin } from '../utils/authRoles';
+import { useUserContext } from '../context/UserContext';
 
 // ─── CONFIGURATION DES TABLES ────────────────────────────────────────────────
 
@@ -613,7 +614,8 @@ function TabTables({ dbEntries, myProposals, session, proposer, submitting, user
 
 // ─── COMPOSANT PRINCIPAL ─────────────────────────────────────────────────────
 
-export default function PnjGenerateur({ onBack, userProfile, session }) {
+export default function PnjGenerateur({ onBack }) {
+  const { userProfile, session } = useUserContext();
   const [activeTab, setActiveTab] = useState('generateur');
   const [mode, setMode] = useState('reel');
   const [typeFee, setTypeFee] = useState(null);
