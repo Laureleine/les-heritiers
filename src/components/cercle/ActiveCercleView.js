@@ -11,8 +11,9 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
   const [subTab, setSubTab] = useState('table');
 
   if (!cercle) return null;
-  const isDocte = cercle.docte_id === session.user.id;
-  const userId  = session.user.id;
+  const isDocte       = cercle.docte_id === session.user.id;
+  const userId        = session.user.id;
+  const isAlsoMember  = isDocte && activeMembers.some(m => m.user_id === userId);
 
   const handleXpPreset = (amount) => {
     setXpDefault(amount);
@@ -69,6 +70,14 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
               <div className="text-xs text-amber-700 font-bold uppercase tracking-wider mb-1">Code d'invitation</div>
               <div className="font-mono text-xl text-amber-900 font-black tracking-widest">{cercle.code_invitation}</div>
             </div>
+            {isAlsoMember && (
+              <button
+                onClick={() => onLeave(cercle.id)}
+                className="text-sm bg-red-50 text-red-600 hover:bg-red-100 px-3 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-200 shadow-sm"
+              >
+                <LogOut size={16} /> Quitter la table
+              </button>
+            )}
             <button
               onClick={() => onDelete(cercle.id)}
               className="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1 transition-colors"
@@ -334,7 +343,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                       Joué par {member.profiles?.username}
                     </div>
 
-                    {isDocte ? (
+                    {(isDocte && !isSelf) ? (
                       <div className="flex flex-col items-center gap-3 mt-4 w-full">
                         <div className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider border shadow-sm ${
                           hasChar
