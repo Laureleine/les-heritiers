@@ -1,4 +1,54 @@
-﻿# REX — Session 10 Juillet 2026 — v17.4.59 « La Table s'Agrandit »
+﻿# REX — Session 10 Juillet 2026 — v17.4.60 « Les Gardiens Invisibles »
+
+## Deux patterns `isMounted` selon la nature du hook
+
+Pour éviter `setState` après démontage, le bon pattern dépend de la structure du hook :
+- **Hook exposé via `useCallback`** (fonction référencée par un parent, appelée depuis l'extérieur comme `refetch`) → `useRef(true)` déclaré au niveau du hook, car le ref doit survivre aux re-renders. `useEffect(() => () => { ref.current = false; }, [])` pour le cleanup.
+- **Fonction async locale dans un `useEffect`** → `let mounted = true` + `return () => { mounted = false; }` dans la closure du `useEffect`. Plus simple, no ref needed.
+
+Ne pas mélanger les deux dans un même hook sans raison.
+
+## Mock Supabase "thenable chain" pour Vitest
+
+Le fluent API Supabase (`.from().select().eq()...`) ne renvoie pas une Promise standard, mais un objet thenable. Le mock fiable :
+
+```js
+function makeChain(result = { data: null, error: null }) {
+  const chain = {};
+  ['select','eq','is','in','update','insert','delete','filter','order'].forEach(m => {
+    chain[m] = vi.fn().mockReturnValue(chain);
+  });
+  chain.then = (res, rej) => Promise.resolve(result).then(res, rej);
+  chain.catch = (fn) => Promise.resolve(result).catch(fn);
+  return chain;
+}
+```
+
+Chaque méthode retourne `chain` (fluent), et `chain.then` le rend awaitable. Penser à `chain.catch` aussi pour les `.catch()` dans le code testé. Pour réutiliser entre tests, appeler `makeChain()` dans `beforeEach` et le brancher sur `supabase.from.mockReturnValue(...)`.
+
+## Défense en profondeur : verrou paramètre + ternaire à l'appel
+
+`getAllCharactersAdmin(isAdmin=false)` a un early-return interne, mais l'appelant (`CharacterList`) conserve quand même son ternaire `isAdmin ? getAllCharactersAdmin(isAdmin) : Promise.resolve([])`. Les deux lignes de défense coexistent et servent à des niveaux différents :
+- Le paramètre protège la fonction si elle est appelée depuis un autre endroit sans précaution.
+- Le ternaire à l'appel évite un appel réseau inutile.
+
+Le test existant `"n'appelle PAS getAllCharactersAdmin pour un simple user"` teste le ternaire — ne pas supprimer le ternaire sous prétexte que le paramètre suffit.
+
+## Tester les routes `AppRouter` avec `MemoryRouter` + `Suspense`
+
+Les composants lazy-loadés dans `AppRouter` (via `React.lazy`) demandent d'attendre la résolution de la Suspense boundary. Utiliser `await screen.findByTestId(...)` plutôt que `getByTestId` synchrone. Mocker les composants lourds (`CharacterList`, `PixieAssistant`) en stub minimal pour éviter les cascades de dépendances. Le pattern :
+
+```jsx
+vi.mock('../CharacterList', () => ({ default: () => <div data-testid="character-list" /> }));
+// ...
+expect(await screen.findByTestId('character-list')).toBeTruthy();
+```
+
+Penser à `show_pixie: false` dans le userProfile de test si `PixieAssistant` est conditionnel — sinon le mock doit gérer ce prop.
+
+---
+
+# REX — Session 10 Juillet 2026 — v17.4.59 « La Table s'Agrandit »
 
 ## Vérifier les contraintes DB avant de coder un changement de comportement
 
