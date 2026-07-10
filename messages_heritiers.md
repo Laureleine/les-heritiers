@@ -4,6 +4,20 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.56 — Les Coulisses de la Magie 🪄📚 (10 juillet 2026)
+
+Chers Héritiers,
+
+La Forge a réorganisé ses ateliers. Désormais, les arts magiques ont leur propre antichambre dans le livret de création.
+
+Après l'étape de la Vie sociale, un nouveau palier «Magies» s'ouvre — c'est là que l'on débloque une pratique, pour 5 points d'expérience, lorsque les astres s'alignent. Et pour chaque pratique débloquée, un step discret apparaît dans la barre de progression, taillé sur mesure pour y investir ses rangs sans confusion. Tant qu'une voie reste fermée, son step demeure invisible, comme une porte qui n'existe que pour ceux qui en ont la clé.
+
+Par ailleurs, une convention longtemps muette trouve aujourd'hui sa clarté officielle : l'étoile (\*) qui orne parfois le nom d'une spécialité — Chirurgie\*, Spiritisme\*, Dressage\* — n'est qu'un signe de reconnaissance entre joueurs. Elle n'a jamais pesé sur aucun prérequis. L'application en a été informée.
+
+*Les archives de la Forge*
+
+---
+
 ## v17.4.55 — Les Nouvelles Voies 🌀👻 (10 juillet 2026)
 
 Chers Héritiers,

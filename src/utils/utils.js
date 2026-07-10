@@ -3,6 +3,10 @@
 // 9.6.0 // 9.11.0
 // 10.4.0
 
+// L'étoile (*) après un nom de spécialité est une convention d'affichage uniquement.
+// Pour toute comparaison fonctionnelle, normaliser les deux côtés avec cette fonction.
+export const normalizeSpec = (s) => (s || '').replace(/\*$/, '');
+
 export const exportCharacter = (character) => {
   const dataStr = JSON.stringify(character, null, 2);
   const dataBlob = new Blob([dataStr], { type: 'application/json' });

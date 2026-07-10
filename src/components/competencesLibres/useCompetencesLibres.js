@@ -11,6 +11,7 @@ import { parseIfString } from '../../utils/json';
 import { getXpState, XP_CODES } from '../../utils/xpActions';
 import { xpTransaction } from '../../utils/xpTransaction';
 import { HUMAIN_RANGS } from '../../data/DictionnaireJeu';
+import { normalizeSpec } from '../../utils/utils';
 
 export const POINTS_TOTAUX = 15;
 
@@ -426,16 +427,17 @@ export function useCompetencesLibres() {
         if ((ct['Occultisme'] || 0) < 4 && !hasActiveMagie && !hasNoPrereqMagie) return [];
 
         const hasSpec = (comp, specName) => {
-            if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
+            const n = normalizeSpec(specName);
+            if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.some(s => normalizeSpec(s) === n)) return true;
             const metier = character.competencesLibres?.specialiteMetier;
-            if (metier?.comp === comp && metier?.nom === specName) return true;
-            if (character.computedStats?.specialites?.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+            if (metier?.comp === comp && normalizeSpec(metier?.nom) === n) return true;
+            if (character.computedStats?.specialites?.gratuites?.[comp]?.some(s => normalizeSpec(s.specialite) === n)) return true;
             if (feeData?.competencesPredilection) {
                 for (let idx = 0; idx < feeData.competencesPredilection.length; idx++) {
                     const pred = feeData.competencesPredilection[idx];
                     if (pred.nom !== comp) continue;
                     const feeSpec = pred.specialite || (pred.isSpecialiteChoix ? character.competencesLibres?.choixSpecialite?.[idx] : null);
-                    if (feeSpec === specName) return true;
+                    if (normalizeSpec(feeSpec) === n) return true;
                 }
             }
             return false;

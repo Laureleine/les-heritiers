@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.56 - \"Les Coulisses de la Magie 🪄📚\"",
+    date: "10 Juillet 2026",
+    description: "Les pratiques magiques ont désormais leur propre espace dédié dans le créateur de personnage. Un step «Magies» centralise le déblocage, puis chaque pratique débloquée fait apparaître son propre step pour y investir des rangs — invisible jusqu'au moment où l'Héritier franchit le seuil. En parallèle, l'étoile (*) accolée à une spécialité n'est plus qu'un ornement : elle n'entre plus en jeu dans aucune vérification de prérequis.",
+    changes: [
+      "🪄 **Step Magies dédié :** Un step «Magies» s'intercale après la Vie sociale pour centraliser le déblocage des pratiques — clair et distinct.",
+      "📚 **Steps par pratique :** Chaque pratique débloquée (Faëomancie, Nécromancie, Spiritisme…) ouvre son propre step pour y gérer les rangs — masqué tant que la pratique n'est pas active.",
+      "⭐ **Étoile = affichage seulement :** La convention «Chirurgie*» n'a plus d'incidence sur les vérifications de prérequis — Chirurgie et Chirurgie* sont traités de façon identique dans toute l'application.",
+      "🧪 **483 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.55 - \"Les Nouvelles Voies 🌀👻\"",
     date: "10 Juillet 2026",
     description: "Deux nouvelles pratiques magiques font leur entrée dans les Compétences Libres : la Voie des Chimères, accessible à tout Héritier scellé sans condition particulière, et le Spiritisme, réservé à ceux qui maîtrisent déjà la spécialité Spiritisme en Occultisme.",

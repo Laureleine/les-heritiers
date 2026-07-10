@@ -289,60 +289,6 @@ export default function StepCompetencesLibres() {
         </div>
       )}
 
-      {/* PRATIQUES MAGIQUES (post-scellage, Occultisme ≥ 4) */}
-      {magiesEtat.length > 0 && (
-        <div className="bg-white rounded-xl border border-violet-200 shadow-sm overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2 bg-violet-50 border-b border-violet-200">
-            <Sparkles size={15} className="text-violet-600 shrink-0" />
-            <span className="text-sm font-bold text-violet-900 font-serif">Pratiques Magiques</span>
-            <span className="text-[10px] bg-violet-200 text-violet-800 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">XP</span>
-          </div>
-          <div className="divide-y divide-violet-50">
-            {magiesEtat.map(magie =>
-              magie.actif ? (
-                <CompetenceRow
-                  key={magie.nom}
-                  data={getCompRowData(magie.nom)}
-                  handlers={handlers}
-                  isScelle={isScelle}
-                  creatingSpecFor={creatingSpecFor}
-                  setCreatingSpecFor={setCreatingSpecFor}
-                  character={character}
-                />
-              ) : (
-                <div key={magie.nom} className={`px-4 py-3 flex justify-between items-center gap-3 ${magie.prereqsOk ? 'bg-violet-50/40' : ''}`}>
-                  <div className="min-w-0">
-                    <span className={`font-medium text-sm ${magie.prereqsOk ? 'text-violet-900' : 'text-stone-400'}`}>
-                      {magie.nom}
-                    </span>
-                    <ul className="mt-1 space-y-0.5">
-                      {magie.prereqsDetails.map((d, i) => (
-                        <li key={i} className={`flex items-center gap-1 text-[11px] ${d.met ? 'text-emerald-600' : 'text-red-500'}`}>
-                          <span className="shrink-0">{d.met ? '✓' : '✗'}</span>
-                          <span>{d.label}</span>
-                          {!d.met && d.val !== undefined && <span className="text-stone-400 ml-0.5">({d.val}/{d.need})</span>}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  {magie.prereqsOk ? (
-                    <button
-                      onClick={() => handlers.handleDebloquerMagie(magie.nom)}
-                      className="shrink-0 text-xs bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-lg font-bold transition-colors"
-                    >
-                      Débloquer — 5 XP
-                    </button>
-                  ) : (
-                    <span className="shrink-0 text-[10px] text-stone-400 bg-stone-100 px-2 py-1 rounded-full">
-                      Prérequis manquants
-                    </span>
-                  )}
-                </div>
-              )
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

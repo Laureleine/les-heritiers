@@ -1,5 +1,6 @@
 // src/utils/xpCalculator.js
 // 13.5.0
+import { normalizeSpec } from './utils';
 
 /**
  * Calcule le coût en XP pour passer à la Caractéristique ou au Masque supérieur.
@@ -79,10 +80,11 @@ export const getFortuneSpecialites = (character) => {
   const specialites = {};
 
   const check = (comp, specName) => {
-    if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
-    if (character.computedStats?.specialites?.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+    const n = normalizeSpec(specName);
+    if (character.competencesLibres?.choixSpecialiteUser?.[comp]?.some(s => normalizeSpec(s) === n)) return true;
+    if (character.computedStats?.specialites?.gratuites?.[comp]?.some(s => normalizeSpec(s.specialite) === n)) return true;
     const metier = character.competencesLibres?.specialiteMetier;
-    if (metier?.comp === comp && metier?.nom === specName) return true;
+    if (metier?.comp === comp && normalizeSpec(metier?.nom) === n) return true;
     return false;
   };
 

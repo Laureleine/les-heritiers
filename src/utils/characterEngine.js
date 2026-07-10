@@ -4,6 +4,7 @@ import { calculateCharacterStats } from './bonusCalculator';
 import { isCharacterScelle } from './lockUtils';
 import { parseIfString } from './json';
 import { XP_CODES } from './xpActions';
+import { normalizeSpec } from './utils';
 
 // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
 export function characterReducer(state, action) {
@@ -509,16 +510,17 @@ export function characterReducer(state, action) {
         else if (tailleFeerique === 'Très Grande') modTailleFeerique = -2;
 
         const hasSpecialite = (comp, specName) => {
-            if (newState.competencesLibres?.choixSpecialiteUser?.[comp]?.includes(specName)) return true;
+            const n = normalizeSpec(specName);
+            if (newState.competencesLibres?.choixSpecialiteUser?.[comp]?.some(s => normalizeSpec(s) === n)) return true;
             const metier = newState.competencesLibres?.specialiteMetier;
-            if (metier?.comp === comp && metier?.nom === specName) return true;
-            if (finalStats.specialites.gratuites?.[comp]?.some(s => s.specialite === specName)) return true;
+            if (metier?.comp === comp && normalizeSpec(metier?.nom) === n) return true;
+            if (finalStats.specialites.gratuites?.[comp]?.some(s => normalizeSpec(s.specialite) === n)) return true;
             if (feeData?.competencesPredilection) {
                 for (let idx = 0; idx < feeData.competencesPredilection.length; idx++) {
                     const pred = feeData.competencesPredilection[idx];
                     if (pred.nom !== comp) continue;
                     const feeSpec = pred.specialite || (pred.isSpecialiteChoix ? newState.competencesLibres?.choixSpecialite?.[idx] : null);
-                    if (feeSpec === specName) return true;
+                    if (normalizeSpec(feeSpec) === n) return true;
                 }
             }
             return false;

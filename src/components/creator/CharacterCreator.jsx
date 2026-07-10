@@ -24,6 +24,8 @@ const StepCompetencesLibres = lazy(() => import('../competencesLibres/StepCompet
 const StepCompetencesFutiles = lazy(() => import('../StepCompetencesFutiles'));
 const StepVieSociale = lazy(() => import('../vieSociale/StepVieSociale'));
 const StepDruidisme = lazy(() => import('../StepDruidisme'));
+const StepMagies = lazy(() => import('../StepMagies'));
+const StepMagiePratique = lazy(() => import('../StepMagiePratique'));
 const StepPersonnalisation = lazy(() => import('../StepPersonnalisation'));
 const StepRecapitulatif = lazy(() => import('../StepRecapitulatif'));
 const TabChroniques = lazy(() => import('../cercle/TabChroniques'));
@@ -61,6 +63,15 @@ export default function CharacterCreator({ session, userProfile }) {
       (gameData.socialItems || []).find(i => i.id === id && i.nom?.includes('Eubage'))
     );
 
+  // Steps magiques masqués jusqu'au déblocage de la magie correspondante
+  const magicHiddenStepIds = STEP_CONFIG
+    .filter(s => s.magieName && !character?.data?.magies?.[s.magieName]?.actif)
+    .map(s => s.id);
+
+  // Steps visibles dans la barre (magic-hidden exclus, humain-skipped restent mais grisés)
+  const visibleSteps = STEP_CONFIG.filter(s => !magicHiddenStepIds.includes(s.id));
+  const currentVisibleIdx = visibleSteps.findIndex(s => s.id === step);
+
   const canProceedStep1 = character?.nom && character?.sexe && (
     isHumain ? !!character?.rangHumain : !!character?.typeFee
   );
@@ -77,7 +88,8 @@ export default function CharacterCreator({ session, userProfile }) {
     }
     let next = step + 1;
     if (isHumain) while (HUMAN_SKIPPED_STEPS.includes(next) && next <= totalSteps) next++;
-    if (next === 10 && !isEubage) next++;
+    while (magicHiddenStepIds.includes(next) && next <= totalSteps) next++;
+    if (next === 18 && !isEubage) next++;
     setStep(Math.min(totalSteps, next));
     window.scrollTo(0, 0);
   };
@@ -85,7 +97,8 @@ export default function CharacterCreator({ session, userProfile }) {
   const prevStep = () => {
     let prev = step - 1;
     if (isHumain) while (HUMAN_SKIPPED_STEPS.includes(prev) && prev >= 1) prev--;
-    if (prev === 10 && !isEubage) prev--;
+    while (magicHiddenStepIds.includes(prev) && prev >= 1) prev--;
+    if (prev === 18 && !isEubage) prev--;
     setStep(Math.max(1, prev));
     window.scrollTo(0, 0);
   };
@@ -154,10 +167,26 @@ export default function CharacterCreator({ session, userProfile }) {
   }, []);
 
   const stepComponents = useMemo(() => ({
-    1: <Step1 />, 2: <StepCapacites />, 3: <StepPouvoirs />, 4: <StepAtouts />,
-    5: <StepCaracteristiques />, 6: <StepProfils />, 7: <StepCompetencesLibres />,
-    8: <StepCompetencesFutiles />, 9: <StepVieSociale />, 10: <StepDruidisme />,
-    11: <StepPersonnalisation />, 12: <StepRecapitulatif />
+    1:  <Step1 />,
+    2:  <StepCapacites />,
+    3:  <StepPouvoirs />,
+    4:  <StepAtouts />,
+    5:  <StepCaracteristiques />,
+    6:  <StepProfils />,
+    7:  <StepCompetencesLibres />,
+    8:  <StepCompetencesFutiles />,
+    9:  <StepVieSociale />,
+    10: <StepMagies />,
+    11: <StepMagiePratique nomMagie="Faëomancie" />,
+    12: <StepMagiePratique nomMagie="Souffle" />,
+    13: <StepMagiePratique nomMagie="Nécromancie" />,
+    14: <StepMagiePratique nomMagie="Théurgie" />,
+    15: <StepMagiePratique nomMagie="Grand Langage" />,
+    16: <StepMagiePratique nomMagie="Voie des Chimères" />,
+    17: <StepMagiePratique nomMagie="Spiritisme" />,
+    18: <StepDruidisme />,
+    19: <StepPersonnalisation />,
+    20: <StepRecapitulatif />,
   }), []);
 
   return (
@@ -223,18 +252,19 @@ export default function CharacterCreator({ session, userProfile }) {
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-stone-200 z-0 rounded-full"></div>
         <div
           className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-500 z-0 transition-all duration-700 ease-in-out rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]"
-          style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
+          style={{ width: visibleSteps.length > 1 ? `${(currentVisibleIdx / (visibleSteps.length - 1)) * 100}%` : '0%' }}
         ></div>
 
-        {STEP_CONFIG.map((s) => {
+        {visibleSteps.map((s) => {
           const isActive = step === s.id;
           const isPast = step > s.id;
-          const isSkipped = isHumain && HUMAN_SKIPPED_STEPS.includes(s.id);
+          const isSkipped = (isHumain && HUMAN_SKIPPED_STEPS.includes(s.id)) || (s.id === 18 && !isEubage);
           return (
             <div key={s.id} className="relative z-10 flex flex-col items-center group">
               <button
                 onClick={() => {
                   if (isSkipped) return;
+                  if (s.id === 18 && !isEubage) return;
                   if (s.id > 1 && !canProceedStep1) {
                     showInAppNotification("La magie bloque le passage. Terminez l'Étape 1 avant de sauter les pages.", "warning");
                     return;
@@ -242,7 +272,7 @@ export default function CharacterCreator({ session, userProfile }) {
                   setStep(s.id);
                   window.scrollTo(0, 0);
                 }}
-                disabled={isSkipped}
+                disabled={isSkipped || (s.id === 18 && !isEubage)}
                 aria-label={`${s.label}${isActive ? ' (étape en cours)' : isPast ? ' (terminée)' : ''}`}
                 aria-current={isActive ? 'step' : undefined}
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-md ${
@@ -309,7 +339,7 @@ export default function CharacterCreator({ session, userProfile }) {
           Précédent
         </button>
         <div className="text-sm font-bold text-gray-500 uppercase tracking-widest hidden sm:block">
-          Étape {step} sur {totalSteps}
+          Étape {currentVisibleIdx + 1} sur {visibleSteps.length}
         </div>
         <button onClick={nextStep} disabled={step === totalSteps} className="px-6 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-700 transition-all font-bold shadow-md disabled:opacity-50">
           Suivant

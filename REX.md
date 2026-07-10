@@ -1,4 +1,25 @@
-﻿# REX — Session 10 Juillet 2026 — v17.4.55 « Les Nouvelles Voies »
+﻿# REX — Session 10 Juillet 2026 — v17.4.56 « Les Coulisses de la Magie »
+
+## STEP_CONFIG nécessite un Read avant tout Edit
+
+Dès qu'on tente d'éditer `DictionnaireJeu.js` sans l'avoir lu au préalable dans la session, l'outil Edit retourne "File has not been read yet". Avec un fichier long (~150+ lignes), lire seulement les premières lignes suffit : le contenu entier est ensuite modifiable via `old_string` / `new_string`, pourvu que le bloc à remplacer soit unique.
+
+## Filtrage dynamique des steps dans le créateur de personnage
+
+Le pattern `visibleSteps = STEP_CONFIG.filter(s => !magicHiddenStepIds.includes(s.id))` est plus robuste qu'une numérotation séquentielle fixe. Quand les steps sont masqués dynamiquement (magie non débloquée, non-Eubage…), il faut recalculer :
+- `currentVisibleIdx` pour la barre de progression
+- "Étape X sur Y" (total visible, pas total absolu)
+- Navigation `nextStep` / `prevStep` (sauter les hidden + Druide si non-Eubage)
+
+Tout cela s'enchaîne proprement si on garde une seule source de vérité : `magicHiddenStepIds`.
+
+## `vercel ls --limit` n'existe pas
+
+La CLI Vercel ne supporte pas le flag `--limit` pour `vercel ls`. Filtrer côté PowerShell avec `Select-String` ou `| Select-Object -First N` à la place.
+
+---
+
+# REX — Session 10 Juillet 2026 — v17.4.55 « Les Nouvelles Voies »
 
 ## Vérifier les données réelles en base avant de définir les prérequis
 

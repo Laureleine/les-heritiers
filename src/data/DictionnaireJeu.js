@@ -94,18 +94,27 @@ export const getSizeModifier = (taille) => {
 // 4. CONFIGURATION DE LA NAVIGATION
 // ============================================================================
 export const STEP_CONFIG = [
-  { id: 1, label: "Héritage", icon: <User size={18} /> },
-  { id: 2, label: "Capacités", icon: <Sparkles size={18} /> },
-  { id: 3, label: "Pouvoirs", icon: <Zap size={18} /> },
-  { id: 4, label: "Atouts", icon: <Star size={18} /> },
-  { id: 5, label: "Attributs", icon: <Activity size={18} /> },
-  { id: 6, label: "Profils", icon: <Award size={18} /> },
-  { id: 7, label: "Utiles", icon: <BookOpen size={18} /> },
-  { id: 8, label: "Futiles", icon: <Feather size={18} /> },
-  { id: 9, label: "Social & Richesse", icon: <Briefcase size={18} /> },
-  { id: 10, label: "Druide", icon: <Wand2 size={18} /> },
-  { id: 11, label: "Masque", icon: <VenetianMask size={18} /> },
-  { id: 12, label: "Bilan", icon: <CheckCircle size={18} /> }
+  { id: 1,  label: "Héritage",          icon: <User size={18} /> },
+  { id: 2,  label: "Capacités",         icon: <Sparkles size={18} /> },
+  { id: 3,  label: "Pouvoirs",          icon: <Zap size={18} /> },
+  { id: 4,  label: "Atouts",            icon: <Star size={18} /> },
+  { id: 5,  label: "Attributs",         icon: <Activity size={18} /> },
+  { id: 6,  label: "Profils",           icon: <Award size={18} /> },
+  { id: 7,  label: "Utiles",            icon: <BookOpen size={18} /> },
+  { id: 8,  label: "Futiles",           icon: <Feather size={18} /> },
+  { id: 9,  label: "Social & Richesse", icon: <Briefcase size={18} /> },
+  { id: 10, label: "Magies",            icon: <Sparkles size={18} /> },
+  // Steps par magie — masqués dans la barre tant que la magie n'est pas débloquée
+  { id: 11, label: "Faëomancie",        icon: <Wand2 size={18} />, magieName: "Faëomancie" },
+  { id: 12, label: "Souffle",           icon: <Wand2 size={18} />, magieName: "Souffle" },
+  { id: 13, label: "Nécromancie",       icon: <Wand2 size={18} />, magieName: "Nécromancie" },
+  { id: 14, label: "Théurgie",          icon: <Wand2 size={18} />, magieName: "Théurgie" },
+  { id: 15, label: "Grand Langage",     icon: <Wand2 size={18} />, magieName: "Grand Langage" },
+  { id: 16, label: "Voie des Chimères", icon: <Wand2 size={18} />, magieName: "Voie des Chimères" },
+  { id: 17, label: "Spiritisme",        icon: <Wand2 size={18} />, magieName: "Spiritisme" },
+  { id: 18, label: "Druide",            icon: <Wand2 size={18} /> },
+  { id: 19, label: "Masque",            icon: <VenetianMask size={18} /> },
+  { id: 20, label: "Bilan",             icon: <CheckCircle size={18} /> },
 ];
 
 // ============================================================================
