@@ -4,35 +4,29 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 
 ---
 
-## 🧠 Session Memory — v17.4.59+ (10 Juillet 2026)
+## 🧠 Session Memory — v17.4.60 (11 Juillet 2026)
 
 **Tests :** 497 passes / 0 échecs
 
-### Dernières modifications (10 juillet 2026)
+### Dernières modifications (10–11 juillet 2026)
 
-1. **v17.4.57** — Fix Vercel : DictionnaireJeu.js (TITRES_MAGIE / getTitreMagie) non committé
-2. **v17.4.58** — Feature Docte-joueur : bouton "Quitter la table" dans la vue Docte quand `isAlsoMember`
-3. **v17.4.59** — Multi-personnages par cercle : contrainte UNIQUE(cercle_id, user_id, character_id), picker modal, bouton horizontal
-4. **DRY backlog** (commit `1f2715f`) :
-   - R3–R6 : guards `isMounted` / `mountedRef` sur useGrimoire, useCorrectionCheck, useAccountSettings, useTelegraphe
-   - S7 : `getAllCharactersAdmin(isAdmin=false)` + early-return
-   - T4–T7 : 14 nouveaux tests (useCorrectionCheck, useGrimoire, supabaseStorage offline, AppRouter routes)
-   - Dead code : `src/components/nouveau 1.txt` supprimé
-   - Préparation sorts : `loadSorts()`, `sorts[]` dans GameDataContext, `XP_CODES.SORT_APPRENTISSAGE`
+1. **v17.4.60** — Les Gardiens Invisibles : isMounted défense, mock Supabase thenable, sécurité multi-couche
+2. **A1 ✅** — UserContext : 28 fichiers migrés, props drilling session/userProfile éliminé
+3. **A2 ✅** — GameDataContext dans CharacterList : profils/gameData retirés des props
+4. **A3 ✅** — CharacterList ~900→~700 lignes : useCharacterRepair hook, GrimoireDrawer.jsx, RepairConfirmModal.jsx
+5. **A4 ✅** — AdminDashboard lazy tab mounting (mount-once, CSS hidden)
+6. **A5 ✅** — CharacterContext scindé (CharacterStateContext + CharacterActionsContext), useCharacter() backward-compat
 
-### Backlog restant (🟡 Sévère en priorité)
+### Backlog restant
 
-- **A1** — Props drilling `userProfile/session` → React Context (4+ niveaux)
-- **A2** — Props drilling `gameData` → `GameDataContext` (migration partielle déjà faite)
-- **A3** — `CharacterList.js` ~900 lignes → extraire AdminPanel, GrimoireDrawer
-- **A4** — `AdminDashboard.js` → lazy tab mounting
-- **A5** — `ForgeContext` god object → scinder
+- **Sorts** — infrastructure ready (loadSorts, sorts[], SORT_APPRENTISSAGE) mais UI non construite
+- **A5 migration granulaire** — les 18 consommateurs de useCharacter() peuvent migrer vers useCharacterState() / useCharacterActions() au besoin
 
 ### Prochaine session
 
 - Lire `DRY_PLAN.md` (ce fichier) en premier.
 - Lancer `node scripts/backup_supabase.js`.
-- Backlog actif : voir section **Revue de code — items restants** ci-dessous.
+- Backlog DRY Majeur : **TERMINÉ**. Prochaine feature : UI des Sorts.
 
 ---
 
@@ -41,28 +35,13 @@ _Ce fichier sert de point de reprise entre sessions. Chaque chantier est décrit
 Revue impitoyable complète. Items critiques (S1–S5, R1–R2) corrigés et commités.
 Ce qui reste, à traiter au fil des sessions.
 
-### 🟡 Sévère
+### 🟡 Sévère — TOUS TERMINÉS ✅
 
-**A1 — Props drilling `userProfile` / `session`**
-- `userProfile` descend sur 4+ niveaux (`App → AppRouter → CharacterList → GrimoirePersonnel → useGrimoire`)
-- Solution : React Context ou React Query + hook centralisé
-- Fichiers : `App.js`, `AppRouter.jsx`, `CharacterList.js`, `GrimoirePersonnel.js`, `useCorrectionCheck.js`, tous les composants Étape
-
-**A2 — Props drilling `gameData`**
-- `gameData` passé en prop à travers `AppRouter` → `CharacterList` → chaque Step
-- Solution : `GameDataContext` existe déjà (`useGameDataContext`) — vérifier quels composants ne l'utilisent pas encore et migrer
-
-**A3 — `CharacterList.js` monolithique (~900 lignes)**
-- Mélange liste, sélection, Grimoire, admin panel, réparation
-- Solution : extraire `AdminPanel`, `GrimoireDrawer` en composants dédiés
-
-**A4 — `AdminDashboard.js` couplé aux onglets**
-- État d'onglet global dans le composant parent → re-render complet sur chaque tab switch
-- Solution : lazy tab mounting ou sous-routes
-
-**A5 — `ForgeContext` god object**
-- Trop de responsabilités (état créateur + XP + validation + sauvegarde)
-- Solution : scinder en `CharacterStateContext` + `CharacterActionsContext`
+**A1 ✅ — Props drilling `userProfile` / `session`** — 11 juillet 2026
+**A2 ✅ — Props drilling `gameData`** — 11 juillet 2026
+**A3 ✅ — `CharacterList.js` monolithique** — 11 juillet 2026
+**A4 ✅ — `AdminDashboard.js` lazy tab mounting** — 11 juillet 2026
+**A5 ✅ — `CharacterContext` scindé** — 11 juillet 2026
 
 **T4 ✅ — Tests `useCorrectionCheck`** — 3 tests (respondToCorrection/markCorrected) — 10 juillet 2026
 **T5 ✅ — Tests `useGrimoire`** — 4 tests (createEntry/updateEntry/deleteEntry/toggleShare) — 10 juillet 2026
