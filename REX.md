@@ -1,4 +1,32 @@
-﻿# REX — Session 11 Juillet 2026 — v17.4.61 « Le Grand Ménage des Arcanes »
+﻿# REX — Session 11 Juillet 2026 — v17.4.62 « Les Philtres des Arts Obscurs »
+
+## Extraire le texte d'un PDF en amont, pas à la volée
+
+Plutôt que d'utiliser un outil MCP ou de lire le PDF page par page, le fichier `pdfs/arts_obscurs_text.txt` (extraction préalable) a permis de lire 6400+ lignes en une poignée d'appels `Read` avec `offset`. Cette approche est beaucoup plus rapide et évite les problèmes de pagination PDF. Toujours vérifier si un `.txt` d'extraction existe avant de lire un PDF.
+
+## Contrainte d'idempotence sur `(nom, magie)` plutôt que sur `nom` seul
+
+Deux sorts portent le même nom dans deux magies différentes (« Confusion » en Grand Langage et en Souffle/Esprit). La contrainte de déduplication `WHERE nom=$1 AND magie=$2` est obligatoire pour éviter les faux positifs. Toujours inclure la magie dans le check d'existence.
+
+## Compter les sorts avant de coder : lire tout le PDF, noter les totaux
+
+Avant d'écrire le script, la lecture attentive a révélé des écarts par rapport aux comptes annoncés en session précédente (10 sorts Nécromancie et non 9, 22 miracles Théurgie et non 16). Investir 5 minutes à compter les entrées dans le texte source évite de hardcoder les mauvais nombres et de devoir corriger la migration.
+
+## Niveaux-titres mappés une fois, réutilisés partout
+
+Chaque magie a ses propres titres de niveaux (Eubage/Saronide/Ovate/Archidruide pour le Druidisme, Marmiton/Queux/Chef/Maître-queux pour la Faëomancie, etc.). Constituer le mapping titre → niveau standardisé (Novice/Adepte/Maître/Grand Maître) en amont du script, sous forme de commentaire ou de tableau, évite les erreurs de saisie dans les 84 entrées.
+
+## Script de migration : pattern check-avant-insert = idempotent et re-jouable
+
+Le pattern `SELECT id WHERE nom=$1 AND magie=$2` avant chaque `INSERT` rend le script totalement idempotent. On peut le relancer autant de fois qu'on veut sans créer de doublons — précieux quand on développe par étapes (écriture par magie, test, correction).
+
+## Session coupée en cours d'exécution : reprendre sans perdre de temps
+
+La session s'est compactée pendant les `Read` du PDF. La reprise dans une nouvelle fenêtre a nécessité de relire les lignes déjà analysées pour reconstituer le contexte. Pour les prochaines sessions longues sur PDF : noter sur une ligne le dernier `offset` atteint + les totaux comptés, afin de reprendre rapidement après compaction.
+
+---
+
+# REX — Session 11 Juillet 2026 — v17.4.61 « Le Grand Ménage des Arcanes »
 
 ## Contexte de compaction : toujours relire les fichiers avant d'éditer
 
