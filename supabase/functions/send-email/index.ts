@@ -22,26 +22,33 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { data: { user }, error: userError } = await adminSupabase.auth.getUser(jwt)
-    if (userError || !user) {
-      console.error('getUser error:', userError?.message)
-      return new Response(JSON.stringify({ error: 'Utilisateur introuvable' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    const isServiceRole = jwt === serviceRoleKey
 
-    const { data: profile } = await adminSupabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+    if (!isServiceRole) {
+      const { data: { user }, error: userError } = await adminSupabase.auth.getUser(jwt)
+      if (userError || !user) {
+        console.error('getUser error:', userError?.message)
+        return new Response(JSON.stringify({ error: 'Utilisateur introuvable' }), {
+          status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
 
-    console.log('user:', user.id, '| role:', profile?.role)
+      const { data: profile } = await adminSupabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
 
-    if (profile?.role !== 'super_admin') {
-      return new Response(JSON.stringify({ error: 'Droits insuffisants' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
+      console.log('user:', user.id, '| role:', profile?.role)
+
+      if (profile?.role !== 'super_admin') {
+        return new Response(JSON.stringify({ error: 'Droits insuffisants' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+    } else {
+      console.log('Appel service role — autorisation directe')
     }
 
     const { to, subject, html } = await req.json()

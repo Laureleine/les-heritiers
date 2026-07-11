@@ -30,4 +30,5 @@
   4. Rédiger le *Message aux Héritiers* : résumé vulgarisé dans le ton du jeu (Belle Époque, merveilleux, féérique), destiné à être posté sur Discord. Ne jamais mentionner Isabelle. Le consigner **aussi** dans `messages_heritiers.md` à la racine du projet (le plus récent en haut), en plus de l'afficher en chat — l'autrice ne peut pas toujours copier depuis le chat.
   5. Commit + push sur `main`.
   6. Vérifier le déploiement Vercel (build vert, site accessible).
-  7. Rédiger un REX (Retour d'EXpérience) de la session dans un fichier dédié (`REX.md` à la racine) : lister les règles, astuces et enseignements pour gagner du temps et être plus efficace lors de la prochaine session.
+  7. Envoyer les notifications de mise à jour aux abonnés : `node scripts/notify_version.js`. Le script lit la version dans `public/version.json` et le message dans `messages_heritiers.md` (le plus récent). Il envoie à tous les abonnés correspondant au type de version (majeure/mineure).
+  8. Rédiger un REX (Retour d'EXpérience) de la session dans un fichier dédié (`REX.md` à la racine) : lister les règles, astuces et enseignements pour gagner du temps et être plus efficace lors de la prochaine session.

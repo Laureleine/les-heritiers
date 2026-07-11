@@ -76,9 +76,9 @@ function TabStats() {
           sealed: totalsData.total_sealed,
           cercles: totalsData.total_cercles,
         },
-        fees: (detailData.fees || []).map(({ type_fee, count }) => [type_fee, count]),
-        profilsMajeurs: (detailData.profils_majeurs || []).map(({ nom, count }) => [nom, count]),
-        profilsMineurs: (detailData.profils_mineurs || []).map(({ nom, count }) => [nom, count]),
+        fees: (detailData.fees || []).filter(({ type_fee }) => type_fee).map(({ type_fee, count }) => [type_fee, count]),
+        profilsMajeurs: (detailData.profils_majeurs || []).filter(({ nom }) => nom).map(({ nom, count }) => [nom, count]),
+        profilsMineurs: (detailData.profils_mineurs || []).filter(({ nom }) => nom).map(({ nom, count }) => [nom, count]),
         activity: Object.values(dailyData).sort((a, b) => b.sortValue - a.sortValue),
         outils: { parUsage: outilsParUsage, par30j: parOutil30j, topUsers, total: (outilsRaw || []).length },
       });
