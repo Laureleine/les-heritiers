@@ -28,7 +28,8 @@ function formatMessageToHtml(text) {
     .map(p => {
       const clean = p.trim()
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
       return `<p style="margin:0 0 14px;color:#78350f;font-size:15px;line-height:1.6;">${clean}</p>`;
     })
     .join('');
