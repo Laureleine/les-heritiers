@@ -1,4 +1,12 @@
-﻿# REX — Session 11-12 Juillet 2026 — v17.5.0 « Le Grand Éveil des Arts Obscurs »
+﻿# REX — Session 12 Juillet 2026 — v17.5.1 « L'Encre Bien Tracée »
+
+## Toujours tester la mise en forme HTML avant d'envoyer le premier email de prod
+
+Le bug des retours à la ligne (`\n` → `<br>` manquant) n'a été détecté qu'après l'envoi réel aux 10 abonnés. Un test local avec un vrai client email (ou même un `console.log` du HTML généré et une inspection dans un navigateur) aurait évité ce faux départ. Pour tout template email modifié, prévisualiser le HTML rendu avant le premier envoi en production.
+
+---
+
+# REX — Session 11-12 Juillet 2026 — v17.5.0 « Le Grand Éveil des Arts Obscurs »
 
 ## Edge Function : bypass service role avec comparaison JWT directe
 
