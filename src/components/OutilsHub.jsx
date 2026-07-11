@@ -1,6 +1,8 @@
 // src/components/OutilsHub.jsx
 import React from 'react';
 import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package, Route, Feather, AlertTriangle } from '../config/icons';
+import { useUserContext } from '../context/UserContext';
+import { logOutilUsage } from '../utils/supabaseGameData';
 
 const OUTILS = [
   {
@@ -94,7 +96,20 @@ const OUTILS = [
 ];
 
 export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche, onOpenAmbiance, onOpenArgot, onOpenTracas }) {
-  const handlers = { actualite: onOpenActualite, carte: onOpenCarte, generateur: onOpenGenerateur, menu: onOpenMenu, poche: onOpenPoche, ambiance: onOpenAmbiance, argot: onOpenArgot, tracas: onOpenTracas };
+  const { session } = useUserContext();
+  const userId = session?.user?.id;
+
+  const track = (id, fn) => () => { logOutilUsage(userId, id); fn(); };
+  const handlers = {
+    actualite:  track('actualite',  onOpenActualite),
+    carte:      track('carte',      onOpenCarte),
+    generateur: track('generateur', onOpenGenerateur),
+    menu:       track('menu',       onOpenMenu),
+    poche:      track('poche',      onOpenPoche),
+    ambiance:   track('ambiance',   onOpenAmbiance),
+    argot:      track('argot',      onOpenArgot),
+    tracas:     track('tracas',     onOpenTracas),
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f0e8]">

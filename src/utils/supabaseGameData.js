@@ -315,6 +315,11 @@ export const loadSorts = async () => {
     }
 };
 
+export const logOutilUsage = async (userId, outil) => {
+    if (!userId) return;
+    await supabase.from('outil_usage').insert({ user_id: userId, outil });
+};
+
 export const addGlobalSpeciality = async (competenceId, newSpeciality) => {
     try {
         const { data, error } = await supabase
