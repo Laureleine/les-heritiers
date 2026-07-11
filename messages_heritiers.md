@@ -4,6 +4,24 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.4.62 — «Les Philtres des Arts Obscurs» — 11 Juillet 2026
+
+✨ **Missive du Greffe des Âmes — v17.4.62 «Les Philtres des Arts Obscurs»**
+
+Chers Héritiers,
+
+Ce soir, les Archives des Arts Obscurs ont livré leurs secrets.
+
+Les portes de sept pratiques magiques s'ouvrent désormais sur leurs philtres, rites et formules apprenables. Le Druide de haut rang trouvera dans sa besace six élixirs de Maître — de quoi faire dormir un régiment ou faire pousser une forêt en une nuit. Le Faëomancien accèdera à neuf recettes dont les ingrédients feraient pâlir n'importe quel cuisinier ordinaire. Le Nécromancien comptera dix rites, du Novice qui chuchote aux Mânes jusqu'au Grand Maître qui ordonne aux Revenants. Les trois Branches du Souffle — Combat, Mouvement, Esprit — dévoilent chacune leurs passes secrètes. La Théurgie étale ses vingt-deux miracles. Et le Grand Langage, cette langue oubliée des premières heures du monde, révèle ses douze Axiomes fondateurs.
+
+Quatre-vingt-quatre sorts en tout — tous consultables et apprenables depuis la fiche personnage, avec leur coût en XP affiché sur le bouton. Les sorts offerts portent un badge doré, signe qu'ils ont été accordés sans contrepartie.
+
+En marge de ces révélations, les Doctes noteront qu'un registre invisible a été ouvert dans les caves de l'Atelier : chaque visite aux Outils y est désormais consignée, et les Métriques du tableau de bord en font état.
+
+*— L'Atelier des Héritiers*
+
+---
+
 ## v17.4.61 — «Le Grand Ménage des Arcanes» — 11 Juillet 2026
 
 ✨ **Missive du Greffe des Âmes — v17.4.61 «Le Grand Ménage des Arcanes»**

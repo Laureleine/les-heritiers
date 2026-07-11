@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.4.62 - \"Les Philtres des Arts Obscurs 🔮📜\"",
+    date: "11 Juillet 2026",
+    description: "Les archives des Arts Obscurs s'ouvrent enfin. Sept pratiques magiques révèlent leurs secrets : les philtres du Druidisme de niveau Maître, les recettes de la Faëomancie, les rites de la Nécromancie, les trois branches du Souffle (Combat, Mouvement, Esprit), les miracles de la Théurgie et les douze Axiomes du Grand Langage. En tout, quatre-vingt-quatre sorts apprenables entrent dans la base — avec leurs coûts en XP affichés sur les boutons, et un badge doré pour les sorts offerts. En coulisses, un registre discret consigne l'usage de chaque outil par les Doctes.",
+    changes: [
+      "📜 **84 sorts des Arts Obscurs en base :** 6 philtres Druidisme (Maître), 9 recettes Faëomancie, 10 rites Nécromancie, 25 sorts Souffle répartis en trois branches (Combat / Mouvement / Esprit), 22 miracles Théurgie et 12 Axiomes du Grand Langage — tous apprenables depuis la fiche personnage.",
+      "💰 **Coût XP sur les boutons d'apprentissage :** Les sorts portent désormais leur tarif en XP. Un badge «Offert» doré distingue les sorts gratuits (Rituel des Portes d'Avalon, Rituel de malédiction) des sorts au tarif ordinaire.",
+      "📊 **Registre des usages Docte :** Une table discrète consigne chaque visite aux outils (Gazette, Carte, Générateurs…). L'onglet Métriques du tableau de bord admin en tire désormais les statistiques d'usage.",
+      "🧪 **497 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.4.61 - \"Le Grand Ménage des Arcanes 🧹✨\"",
     date: "11 Juillet 2026",
     description: "Une session de refactoring profond — invisible pour les joueurs, précieux pour l'Atelier. Le prop drilling est éradiqué : session, profil joueur et données de jeu ne voyagent plus de main en main à travers toute la hiérarchie, mais habitent désormais leurs propres Contextes auxquels chaque composant se connecte directement. CharacterList perd deux cents lignes de logique de réparation qu'un hook dédié prend en charge. Le Grimoire se détache en tiroir autonome. Le tableau de bord admin ne recharge plus ses onglets à chaque visite. Et le Contexte du Personnage se scinde en deux rôles distincts : celui qui lit, et celui qui agit.",
