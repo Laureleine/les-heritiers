@@ -3,6 +3,7 @@
 - **RÈGLE ABSOLUE — worktrees interdits :** Ne jamais utiliser `isolation: "worktree"` dans l'outil Agent. Ne jamais créer de worktree git sous quelque forme que ce soit. Tout le travail se fait dans le répertoire principal `C:\Users\amara\-=- Apps -=-\heritiers`.
 - Au début de chaque session, lancer `node scripts/backup_supabase.js` dans le dossier `C:\Users\amara\-=- Apps -=-\heritiers` pour sauvegarder la base de données.
 - Lire `DRY_PLAN.md` entièrement (session memory + chantiers) pour le contexte de reprise.
+- Lire `REX_ESSENTIELS.md` (condensé des 15 règles les plus importantes tirées du REX complet).
 - Toute modification du modèle de données (nouveau champ, nouvelle table, index, RLS) **doit** être accompagnée d'une migration SQL dans la même session. Ne jamais laisser du code qui dépend d'une colonne non encore créée en base.
 - **RÈGLE ABSOLUE — migrations SQL :** Ne jamais utiliser `mcp__claude_ai_Supabase__apply_migration` ni `mcp__claude_ai_Supabase__execute_sql` sur le projet de prod (`cijtzdfwrmbftmwookac`). Ces outils sont bloqués sur ce projet. Toujours passer par `pg` + `SUPABASE_DB_URL` (variable dans `.env`). Écrire un script Node si besoin.
 
