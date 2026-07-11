@@ -4,6 +4,26 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.5.0 — «Le Grand Éveil des Arts Obscurs» — 12 Juillet 2026
+
+✨ **Missive du Greffe des Âmes — v17.5.0 «Le Grand Éveil des Arts Obscurs»**
+
+Chers Héritiers,
+
+Un cap est franchi ce soir.
+
+Les Archives des Arts Obscurs — longtemps muettes, leurs rayonnages couverts de poussière dorée — ont livré l'intégralité de leurs secrets. Quatre-vingt-quatre sorts, philtres, rites et formules ont quitté le parchemin pour entrer dans la mémoire vive de l'Atelier. Le Druide au faîte de son art, la Faëomancienne à sa fourneaux mystique, le Nécromancien qui dialogue avec les ombres, le souffleur aux trois branches (Combat, Mouvement, Esprit), le Théurge et ses miracles, le Grand Linguiste et ses douze Axiomes fondateurs — chacun trouvera désormais sa pratique pleinement déployée sur sa fiche.
+
+Chaque sort porte son prix en XP sur le bouton même. Deux sorts ont été offerts sans contrepartie à ceux qui en ont le rang — ils portent un badge doré.
+
+Dans les caves de l'Atelier, un registre s'est ouvert : chaque visite aux Outils y est consignée, discrètement, et les Doctes peuvent désormais en consulter les statistiques depuis leur tableau de bord.
+
+Et pour ceux d'entre vous qui se sont abonnés aux nouvelles de l'Atelier — si vous lisez ces lignes, c'est que la Poste fonctionne. Désormais, chaque version vous sera annoncée directement, sans qu'il vous soit nécessaire de guetter le Télégraphe.
+
+*— L'Atelier des Héritiers*
+
+---
+
 ## v17.4.62 — «Les Philtres des Arts Obscurs» — 11 Juillet 2026
 
 ✨ **Missive du Greffe des Âmes — v17.4.62 «Les Philtres des Arts Obscurs»**
