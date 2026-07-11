@@ -2,6 +2,14 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.5.1 - \"L'Encre Bien Tracée 📬\"",
+    date: "12 Juillet 2026",
+    description: "Un souci de mise en forme s'est glissé dans les premières missives automatiques : les retours à la ligne n'étaient pas honorés. Les messages arrivent désormais avec leur ponctuation intacte, paragraphes et sauts de ligne fidèlement reproduits.",
+    changes: [
+      "📬 **Mise en forme des emails corrigée :** les sauts de ligne du Message aux Héritiers sont désormais correctement rendus dans les notifications de mise à jour.",
+    ]
+  },
+  {
     version: "17.5.0 - \"Le Grand Éveil des Arts Obscurs 🔮✨\"",
     date: "12 Juillet 2026",
     description: "Un cap est franchi. Les Arts Obscurs, longtemps silencieux dans les archives, déploient enfin leurs quatre-vingt-quatre sorts apprenables — des philtres du Druide Maître aux Axiomes du Grand Langage en passant par les rites de la Nécromancie, les recettes de la Faëomancie, les miracles de la Théurgie et les trois branches du Souffle. Les coûts en XP s'affichent sur chaque bouton d'apprentissage ; les sorts offerts portent un badge doré. En coulisses, le Greffe des Âmes commence à observer discrètement l'usage de chaque outil par les Doctes — et les abonnés aux nouvelles de l'Atelier reçoivent désormais leurs missives automatiquement à chaque nouvelle version.",

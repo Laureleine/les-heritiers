@@ -4,6 +4,19 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.5.1 — L'Encre Bien Tracée 📬
+
+Chers Héritiers,
+
+Un défaut s'était glissé dans le système postal de l'Atelier : les premières missives automatiques vous parvenaient avec leur texte aplati, comme si le copiste avait oublié de lever la plume entre chaque paragraphe.
+
+Ce manque de façon est désormais corrigé. Vos futures lettres de l'Atelier arriveront avec leur mise en forme soignée — sauts de ligne, paragraphes distincts, tout ce qu'une correspondance digne de la Belle Époque exige.
+
+À très bientôt pour de nouvelles nouvelles,
+*L'Atelier des Héritiers*
+
+---
+
 ## v17.5.0 — «Le Grand Éveil des Arts Obscurs» — 12 Juillet 2026
 
 ✨ **Missive du Greffe des Âmes — v17.5.0 «Le Grand Éveil des Arts Obscurs»**
