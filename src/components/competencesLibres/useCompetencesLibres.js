@@ -1,6 +1,6 @@
 // src/components/competencesLibres/useCompetencesLibres.js
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
 import { useGameDataContext } from '../../context/GameDataContext';
 import { addGlobalSpeciality } from '../../utils/supabaseGameData';
@@ -496,6 +496,47 @@ export function useCompetencesLibres() {
             notification: { text: `${nomMagie} débloquée pour ${COUT} XP !`, type: 'success' },
         }, gameData);
     }, [isReadOnly, isScelle, xpDispo, character.data, dispatchCharacter, gameData]);
+
+    // Auto-ajout des sorts à cout_xp = 0 dès que le rang de la magie est suffisant
+    useEffect(() => {
+        if (!isScelle) return;
+        const RANG_REQUIS = { 'Novice': 1, 'Adepte': 3, 'Maître': 5, 'Grand Maître': 7 };
+        const sortsGratuits = (gameData?.sorts || []).filter(s => s.cout_xp === 0);
+        if (!sortsGratuits.length) return;
+
+        const magiesAffectees = [...new Set(sortsGratuits.map(s => s.magie))];
+        let majNecessaire = false;
+        const newMagies = { ...(character.data?.magies || {}) };
+
+        for (const nomMagie of magiesAffectees) {
+            const rang = (getScoreBase(nomMagie) || 0) + (lib.rangs[nomMagie] || 0);
+            const magieCourante = newMagies[nomMagie] || {};
+            const sortsConnus = magieCourante.sortsConnus || [];
+            const sortsConnus_set = new Set(sortsConnus);
+
+            const aAjouter = sortsGratuits.filter(s =>
+                s.magie === nomMagie &&
+                !sortsConnus_set.has(s.id) &&
+                rang >= (RANG_REQUIS[s.niveau] || 1)
+            );
+
+            if (aAjouter.length > 0) {
+                majNecessaire = true;
+                newMagies[nomMagie] = {
+                    ...magieCourante,
+                    sortsConnus: [...sortsConnus, ...aAjouter.map(s => s.id)],
+                };
+            }
+        }
+
+        if (majNecessaire) {
+            dispatchCharacter({
+                type: 'UPDATE_FIELD',
+                field: 'data',
+                value: { ...(character.data || {}), magies: newMagies },
+            });
+        }
+    }, [isScelle, lib.rangs, gameData?.sorts, character.data?.magies, getScoreBase, dispatchCharacter]);
 
     // Détermine la "première magie" débloquée (timestamp le plus ancien, Druidisme en priorité)
     const getPremiereMagie = useCallback(() => {

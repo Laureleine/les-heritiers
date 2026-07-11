@@ -183,12 +183,14 @@ function SortsSection({ nomMagie, rang, sortsCatalog, sortsConnus, niveauxAccess
                         {sort.nom}
                       </span>
                       {!connu && isScelle && apprenableIci && (
-                        <button
-                          onClick={() => handlers.handleApprendreSortMagie(nomMagie, sort)}
-                          className="text-[10px] font-bold px-2 py-1 rounded bg-violet-600 text-white hover:bg-violet-700 transition-colors shrink-0"
-                        >
-                          Apprendre — {coutSort} XP
-                        </button>
+                        sort.cout_xp === 0
+                          ? <span className="text-[10px] font-bold px-2 py-1 rounded bg-emerald-100 text-emerald-700 border border-emerald-300 shrink-0">Offert</span>
+                          : <button
+                              onClick={() => handlers.handleApprendreSortMagie(nomMagie, sort)}
+                              className="text-[10px] font-bold px-2 py-1 rounded bg-violet-600 text-white hover:bg-violet-700 transition-colors shrink-0"
+                            >
+                              Apprendre — {coutSort} XP
+                            </button>
                       )}
                     </div>
                   );

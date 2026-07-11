@@ -305,7 +305,7 @@ export const loadSorts = async () => {
     try {
         const { data, error } = await supabase
             .from('sorts')
-            .select('id, nom, magie, niveau, branche, details')
+            .select('id, nom, magie, niveau, branche, details, cout_xp')
             .order('magie').order('niveau').order('nom');
         if (error) throw error;
         return data || [];
