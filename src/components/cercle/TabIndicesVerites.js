@@ -24,9 +24,11 @@ const XP_BADGE = {
   dit_du_marcheur: 'bg-amber-50 text-amber-700',
 };
 
+const TYPE_ORDER = { indice: 0, verite_mineure: 1, verite_majeure: 2, dit_du_marcheur: 3 };
+
 export default function TabIndicesVerites({ cercleId, isDocte, userId, activeMembers }) {
   const { items, revealedIds, loading, reveler, masquer, isBonusEarned, isBonusDistributed, XP_BAREME, XP_BONUS_ELEMENT } = useIndicesVerites(cercleId, activeMembers);
-  const [collapsed, setCollapsed] = useState({});
+  const [openElement, setOpenElement] = useState(null); // vrai accordéon : un seul ouvert à la fois
   const [pending, setPending] = useState(null); // itemId en cours de toggle
 
   // Pour les joueurs : ne montrer que les révélés
@@ -37,6 +39,10 @@ export default function TabIndicesVerites({ cercleId, isDocte, userId, activeMem
     for (const item of visibleItems) {
       if (!map[item.element_nom]) map[item.element_nom] = [];
       map[item.element_nom].push(item);
+    }
+    // Trier chaque groupe : indice → vérité mineure → vérité majeure → dit du marcheur
+    for (const nom of Object.keys(map)) {
+      map[nom].sort((a, b) => (TYPE_ORDER[a.type] ?? 99) - (TYPE_ORDER[b.type] ?? 99) || a.ordre - b.ordre);
     }
     return map;
   }, [visibleItems]);
@@ -67,7 +73,7 @@ export default function TabIndicesVerites({ cercleId, isDocte, userId, activeMem
   return (
     <div className="space-y-3">
       {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b, 'fr')).map(([elementNom, elementItems]) => {
-        const isOpen = !collapsed[elementNom];
+        const isOpen = openElement === elementNom;
         const revealedCount = elementItems.filter(i => revealedIds.has(i.id)).length;
         const bonusEarned = isBonusEarned(elementNom);
         const bonusDistributed = isBonusDistributed(elementNom);
@@ -75,7 +81,7 @@ export default function TabIndicesVerites({ cercleId, isDocte, userId, activeMem
         return (
           <div key={elementNom} className="border border-stone-200 rounded-xl overflow-hidden">
             <button
-              onClick={() => setCollapsed(p => ({ ...p, [elementNom]: !p[elementNom] }))}
+              onClick={() => setOpenElement(p => p === elementNom ? null : elementNom)}
               className="w-full flex items-center justify-between px-4 py-3 bg-stone-50 hover:bg-stone-100 transition-colors text-left"
             >
               <div className="flex items-center gap-3">
