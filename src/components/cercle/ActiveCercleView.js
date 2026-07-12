@@ -1,8 +1,9 @@
 // src/components/cercle/ActiveCercleView.js
 import React, { useState } from 'react';
-import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles, BookOpen } from '../../config/icons';
+import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles, BookOpen, Scroll } from '../../config/icons';
 import { getXpState } from '../../utils/xpActions';
 import TabPartiesJeu from './TabPartiesJeu';
+import TabIndicesVerites from './TabIndicesVerites';
 
 const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
   const [xpDefault, setXpDefault] = useState(0);
@@ -104,7 +105,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         aria-label="Sections du Cercle"
         className="flex gap-1 border-b border-stone-100 mb-5 -mt-1"
         onKeyDown={(e) => {
-          const tabs = ['table', 'parties'];
+          const tabs = ['table', 'parties', 'secrets'];
           const idx = tabs.indexOf(subTab);
           let next = null;
           if (e.key === 'ArrowRight') { e.preventDefault(); next = tabs[(idx + 1) % tabs.length]; }
@@ -134,6 +135,17 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         >
           <BookOpen size={14} /> Parties
         </button>
+        <button
+          role="tab"
+          id="tab-cercle-secrets"
+          aria-selected={subTab === 'secrets'}
+          aria-controls="panel-cercle"
+          tabIndex={subTab === 'secrets' ? 0 : -1}
+          onClick={() => setSubTab('secrets')}
+          className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'secrets' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
+        >
+          <Scroll size={14} /> Secrets du Monde
+        </button>
       </div>
 
       <div id="panel-cercle" role="tabpanel" aria-labelledby={`tab-cercle-${subTab}`}>
@@ -143,6 +155,16 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           cercleId={cercle.id}
           userId={userId}
           isDocte={isDocte}
+          activeMembers={activeMembers}
+        />
+      )}
+
+      {/* ── Onglet Secrets du Monde ── */}
+      {subTab === 'secrets' && (
+        <TabIndicesVerites
+          cercleId={cercle.id}
+          isDocte={isDocte}
+          userId={userId}
           activeMembers={activeMembers}
         />
       )}
