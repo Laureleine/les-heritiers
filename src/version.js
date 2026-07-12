@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.6.0 - \"Le Voile Levé 📜🕯️\"",
+    date: "12 Juillet 2026",
+    description: "Les Doctes reçoivent aujourd'hui un outil inédit : les Secrets du Monde. Dans chaque Cercle, un nouvel onglet leur permet de cocher, un à un, les Indices et Vérités tirés du livret de jeu — 224 révélations réparties sur 21 grands mystères de l'Ordonnancement. À chaque coche, les Héritiers de la table gagnent automatiquement de l'expérience selon le poids de la révélation. Découvrir toutes les Vérités majeures d'un même élément déclenche un bonus supplémentaire. Les joueurs, eux, ne voient que ce que leur Docte a choisi de dévoiler.",
+    changes: [
+      "📜 **Secrets du Monde :** nouvel onglet dans chaque Cercle, réservé au Docte et à ses Héritiers. Le Docte coche les Indices et Vérités qu'il révèle à sa table ; les joueurs ne voient que les éléments dévoilés.",
+      "🕯️ **224 révélations pré-remplies** tirées du livret de jeu, couvrant 21 mystères (Alliance, Avalon, Gwydion le Marcheur, le Grand Dragon, Ys…).",
+      "✨ **XP automatiques à la révélation :** Indice +1 XP, Vérité mineure +2, Vérité majeure +4, Dit du Marcheur +5. Décocher retire l'XP accordé.",
+      "🏆 **Bonus de complétude :** révéler toutes les Vérités majeures d'un même élément déclenche un bonus de +5 XP pour tous les membres du Cercle.",
+      "🔧 **Admin Secrets du Monde :** les super-admins peuvent éditer, ajouter ou supprimer des éléments depuis le tableau de bord d'administration.",
+      "📊 **Correction métriques Docte :** le compteur d'usage des Outils est désormais déclenché à la génération effective (et non à l'ouverture), et le classement des top utilisateurs est à nouveau fonctionnel.",
+    ]
+  },
+  {
     version: "17.5.1 - \"L'Encre Bien Tracée 📬\"",
     date: "12 Juillet 2026",
     description: "Un souci de mise en forme s'est glissé dans les premières missives automatiques : les retours à la ligne n'étaient pas honorés. Les messages arrivent désormais avec leur ponctuation intacte, paragraphes et sauts de ligne fidèlement reproduits.",

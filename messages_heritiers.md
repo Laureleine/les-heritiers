@@ -4,6 +4,28 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.6.0 — Le Voile Levé 📜🕯️
+
+✨ **Missive du Greffe des Âmes — v17.6.0 «Le Voile Levé»**
+
+Chers Héritiers,
+
+Depuis les premières heures du monde, certains savoirs sont gardés sous scellé. Ils circulent entre les Doctes par fragments, en murmures, dans des livrets qu'on ne montre pas à n'importe qui. Ce soir, l'Atelier leur donne un réceptacle.
+
+Un nouvel onglet a ouvert ses pages dans chaque Cercle : **les Secrets du Monde**.
+
+C'est là que le Docte orchestre les révélations. Deux cent vingt-quatre éléments — Indices, Vérités mineures, Vérités majeures et Dits du Marcheur — sont tirés du grand livret de jeu et répartis entre vingt et un mystères fondateurs : l'Alliance, Avalon, le Grand Dragon endormi, Gwydion le Marcheur et ses pérégrinations, la cité d'Ys engloutie, les Docteurs du Grand Langage, Shaïtan le Subversif, et bien d'autres encore.
+
+Chaque révélation cochée se traduit en expérience pour les Héritiers de la table. Un Indice vaut peu — c'est un détail, une piste. Une Vérité mineure pèse davantage. Une Vérité majeure change quelque chose à la façon dont on voit le monde. Et le Dit du Marcheur — ces mots gravés dans la pierre par Gwydion lui-même — a un poids tout particulier. Décocher retire ce qui avait été accordé.
+
+Quand tous les Vérités majeures d'un même mystère sont enfin révélées, un bonus supplémentaire est distribué à la table — signe que quelque chose de fondamental vient d'être compris.
+
+Les joueurs, eux, ne voient que ce que leur Docte a choisi de lever. Le reste dort dans l'ombre.
+
+*— L'Atelier des Héritiers*
+
+---
+
 ## v17.5.1 — L'Encre Bien Tracée 📬
 
 Chers Héritiers,
