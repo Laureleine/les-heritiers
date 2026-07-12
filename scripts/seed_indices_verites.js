@@ -54,13 +54,6 @@ const SEED = [
   ind('Avalon', 5, "Chacun peut contempler l'érosion d'Avalon dans le vide."),
   ind('Avalon', 6, "Chacun peut constater qu'il n'y a pas d'humains en Avalon."),
   ind('Avalon', 7, "Lorsqu'une fée moderne naît, un morceau d'Avalon réapparaît."),
-  ind('Avalon', 8, "Les fées modernes sont l'incarnation des rêves humains et féeriques à propos de la modernité. Elles sont apparues au moment où l'imaginaire populaire a commencé à intégrer des éléments de la modernité."),
-  ind('Avalon', 9, "Les hauts lieux de la modernité sont souvent désertés par les fées. Lorsqu'ils sont récupérés par des fées, leur efficience et leur utilité diminuent au profit d'un réenchantement esthétique, symptôme de la Féerie."),
-  ind('Avalon', 10, "La technologie tend à s'enrayer à Avalon."),
-  ind('Avalon', 11, "La naissance des fées modernes à Avalon s'est accompagnée de la création d'une langue de terre, comme s'il s'agissait d'une victoire sur la disparition de la Féerie."),
-  ind('Avalon', 12, "Il existe des machines merveilleuses dans quelques lieux très secrets d'Avalon. Peu d'Avaloniens savent d'où elles proviennent mais elles semblent fonctionner et sont manifestement féeriques."),
-  ind('Avalon', 13, "Merlin étudie en secret les machines merveilleuses et la techno-magie avec le fouinard Elbertus."),
-
   // ══════════════════════════════════════════════════════════════════════════
   // DOCTEURS DU GRAND LANGAGE
   // ══════════════════════════════════════════════════════════════════════════
@@ -100,6 +93,12 @@ const SEED = [
   vm ('Féérie', 2, "La Grande Hérésie est l'ennemie de la Féerie."),
   vm ('Féérie', 3, "Les fées dites modernes sont liées aux rêves humains et féeriques et elles incarnent la Féerie qui naît de la modernité."),
   vm ('Féérie', 4, "Inversement, une partie de la modernité tend à affaiblir la Féerie par le désenchantement du monde qu'elle provoque."),
+  ind('Féérie', 1, "Les fées modernes sont l'incarnation des rêves humains et féeriques à propos de la modernité. Elles sont apparues au moment où l'imaginaire populaire a commencé à intégrer des éléments de la modernité."),
+  ind('Féérie', 2, "Les hauts lieux de la modernité sont souvent désertés par les fées. Lorsqu'ils sont récupérés par des fées, leur efficience et leur utilité diminuent au profit d'un réenchantement esthétique, symptôme de la Féerie."),
+  ind('Féérie', 3, "La technologie tend à s'enrayer à Avalon."),
+  ind('Féérie', 4, "La naissance des fées modernes à Avalon s'est accompagnée de la création d'une langue de terre, comme s'il s'agissait d'une victoire sur la disparition de la Féerie."),
+  ind('Féérie', 5, "Il existe des machines merveilleuses dans quelques lieux très secrets d'Avalon. Peu d'Avaloniens savent d'où elles proviennent mais elles semblent fonctionner et sont manifestement féeriques."),
+  ind('Féérie', 6, "Merlin étudie en secret les machines merveilleuses et la techno-magie avec le fouinard Elbertus."),
 
   // ══════════════════════════════════════════════════════════════════════════
   // FLUIDE
