@@ -4,12 +4,28 @@ import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles, B
 import { getXpState } from '../../utils/xpActions';
 import TabPartiesJeu from './TabPartiesJeu';
 import TabIndicesVerites from './TabIndicesVerites';
+import { useCallback, useRef } from 'react';
 
 const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
   const [xpDefault, setXpDefault] = useState(0);
   const [xpAmounts, setXpAmounts] = useState({});
   const [xpMotif, setXpMotif] = useState('');
   const [subTab, setSubTab] = useState('table');
+  const [xpModal, setXpModal] = useState(null); // { pendingXp, distributeXp, nextTab }
+  const secretsXpRef = useRef({ pendingXp: 0, distributeXp: null });
+
+  const handlePendingXpChange = useCallback((xp, fn) => {
+    secretsXpRef.current = { pendingXp: xp, distributeXp: fn };
+  }, []);
+
+  const switchTab = useCallback((nextTab) => {
+    const { pendingXp, distributeXp } = secretsXpRef.current;
+    if (subTab === 'secrets' && nextTab !== 'secrets' && pendingXp > 0) {
+      setXpModal({ pendingXp, distributeXp, nextTab });
+      return;
+    }
+    setSubTab(nextTab);
+  }, [subTab]);
 
   if (!cercle) return null;
   const isDocte       = cercle.docte_id === session.user.id;
@@ -43,6 +59,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
   };
 
   return (
+    <>
     <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
       <div className="flex justify-between items-start mb-6 border-b border-stone-100 pb-4">
         <div>
@@ -110,7 +127,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           let next = null;
           if (e.key === 'ArrowRight') { e.preventDefault(); next = tabs[(idx + 1) % tabs.length]; }
           else if (e.key === 'ArrowLeft') { e.preventDefault(); next = tabs[(idx - 1 + tabs.length) % tabs.length]; }
-          if (next) { setSubTab(next); setTimeout(() => document.getElementById(`tab-cercle-${next}`)?.focus(), 0); }
+          if (next) { switchTab(next); setTimeout(() => document.getElementById(`tab-cercle-${next}`)?.focus(), 0); }
         }}
       >
         <button
@@ -119,7 +136,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           aria-selected={subTab === 'table'}
           aria-controls="panel-cercle"
           tabIndex={subTab === 'table' ? 0 : -1}
-          onClick={() => setSubTab('table')}
+          onClick={() => switchTab('table')}
           className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'table' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
         >
           <Users size={14} /> La Table
@@ -130,7 +147,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           aria-selected={subTab === 'parties'}
           aria-controls="panel-cercle"
           tabIndex={subTab === 'parties' ? 0 : -1}
-          onClick={() => setSubTab('parties')}
+          onClick={() => switchTab('parties')}
           className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'parties' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
         >
           <BookOpen size={14} /> Parties
@@ -141,7 +158,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           aria-selected={subTab === 'secrets'}
           aria-controls="panel-cercle"
           tabIndex={subTab === 'secrets' ? 0 : -1}
-          onClick={() => setSubTab('secrets')}
+          onClick={() => switchTab('secrets')}
           className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'secrets' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
         >
           <Scroll size={14} /> Secrets du Monde
@@ -166,6 +183,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           isDocte={isDocte}
           userId={userId}
           activeMembers={activeMembers}
+          onPendingXpChange={handlePendingXpChange}
         />
       )}
 
@@ -440,6 +458,41 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
     </>}
       </div>
   </div>
+
+  {/* ── Modal distribution XP Secrets ── */}
+
+  {xpModal && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true" aria-labelledby="xp-modal-title">
+      <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full border border-amber-200">
+        <h3 id="xp-modal-title" className="font-serif font-bold text-amber-900 text-lg mb-2 flex items-center gap-2">
+          <Sparkles size={18} className="text-amber-500" /> Distribuer les XP ?
+        </h3>
+        <p className="text-sm text-stone-600 mb-5">
+          Vous avez révélé des secrets non encore distribués.
+          Voulez-vous attribuer <strong className="text-amber-800">+{xpModal.pendingXp} XP</strong> à tous les membres de votre cercle ?
+        </p>
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={() => { setXpModal(null); setSubTab(xpModal.nextTab); }}
+            className="px-4 py-2 rounded-lg border border-stone-300 text-stone-600 text-sm font-bold hover:bg-stone-50 transition-colors"
+          >
+            Non, passer
+          </button>
+          <button
+            onClick={async () => {
+              await xpModal.distributeXp();
+              setXpModal(null);
+              setSubTab(xpModal.nextTab);
+            }}
+            className="px-4 py-2 rounded-lg bg-amber-700 text-white text-sm font-bold hover:bg-amber-800 transition-colors flex items-center gap-1.5"
+          >
+            <Sparkles size={14} /> Distribuer +{xpModal.pendingXp} XP
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+  </>
   );
 });
 

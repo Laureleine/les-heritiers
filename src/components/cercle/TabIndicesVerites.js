@@ -1,5 +1,5 @@
 // src/components/cercle/TabIndicesVerites.js
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Eye, EyeOff, Loader, ChevronDown, ChevronUp } from '../../config/icons';
 import { useIndicesVerites } from '../../hooks/useIndicesVerites';
 
@@ -26,10 +26,15 @@ const XP_BADGE = {
 
 const TYPE_ORDER = { indice: 0, verite_mineure: 1, verite_majeure: 2, dit_du_marcheur: 3 };
 
-export default function TabIndicesVerites({ cercleId, isDocte, userId, activeMembers }) {
-  const { items, revealedIds, loading, reveler, masquer, isBonusEarned, isBonusDistributed, XP_BAREME, XP_BONUS_ELEMENT } = useIndicesVerites(cercleId, activeMembers);
+export default function TabIndicesVerites({ cercleId, isDocte, userId, activeMembers, onPendingXpChange }) {
+  const { items, revealedIds, loading, reveler, masquer, isBonusEarned, isBonusDistributed, pendingXp, distributeXp, XP_BAREME, XP_BONUS_ELEMENT } = useIndicesVerites(cercleId, activeMembers);
   const [openElement, setOpenElement] = useState(null); // vrai accordéon : un seul ouvert à la fois
   const [pending, setPending] = useState(null); // itemId en cours de toggle
+
+  // Remonte pendingXp + distributeXp au parent pour le modal de départ
+  useEffect(() => {
+    onPendingXpChange?.(pendingXp, distributeXp);
+  }, [pendingXp, distributeXp, onPendingXpChange]);
 
   // Pour les joueurs : ne montrer que les révélés
   const visibleItems = isDocte ? items : items.filter(i => revealedIds.has(i.id));
