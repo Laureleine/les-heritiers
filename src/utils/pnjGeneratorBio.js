@@ -164,7 +164,7 @@ function _resolveFamille(state) {
 // ─── ÉTAPE 5 : LIEU DE NAISSANCE ─────────────────────────────────────────────
 
 function _resolveNaissance(state) {
-  const roll = d(20) + BONUS_GENRE_HORREUR;
+  const roll = d(20);
   if (roll <= 4) {
     state.lieuNaissance = 'En plein champ, à découvert';
     state.biModTotal = 5;
