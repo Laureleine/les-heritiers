@@ -29,10 +29,21 @@ BEGIN
     RAISE EXCEPTION 'Seul le Docte du Cercle peut attribuer des XP à cet Héritier.';
   END IF;
 
+  IF p_amount = 0 THEN RETURN; END IF;
+
   UPDATE characters SET xp_total = xp_total + p_amount WHERE id = p_character_id;
 
+  -- valeur doit être positive (contrainte xp_transaction_veleur_check) ;
+  -- le code distingue gain (XP_GAIN) de retrait (XP_AJUSTEMENT).
   INSERT INTO xp_transactions (character_id, type, code, label, valeur, date_mouvement)
-  VALUES (p_character_id, 'GAIN', 'REWARD', p_motif, p_amount, NOW());
+  VALUES (
+    p_character_id,
+    'GAIN',
+    CASE WHEN p_amount > 0 THEN 'XP_GAIN' ELSE 'XP_AJUSTEMENT' END,
+    p_motif,
+    ABS(p_amount),
+    NOW()
+  );
 END;
 $$;
 

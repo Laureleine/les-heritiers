@@ -146,10 +146,19 @@ async function migrate() {
           RAISE EXCEPTION 'Accès refusé : vous n''êtes pas membre de ce Cercle.';
         END IF;
 
+        IF p_amount = 0 THEN RETURN; END IF;
+
         FOREACH v_char_id IN ARRAY p_character_ids LOOP
           UPDATE characters SET xp_total = xp_total + p_amount WHERE id = v_char_id;
           INSERT INTO xp_transactions (character_id, type, code, label, valeur, date_mouvement)
-          VALUES (v_char_id, 'GAIN', 'SESSION_XP', p_label, p_amount, NOW());
+          VALUES (
+            v_char_id,
+            'GAIN',
+            CASE WHEN p_amount > 0 THEN 'SESSION_XP' ELSE 'SESSION_XP_CORRECTION' END,
+            p_label,
+            ABS(p_amount),
+            NOW()
+          );
         END LOOP;
 
         UPDATE sessions_jeu SET xp_attribue = true, updated_at = NOW() WHERE id = p_session_id;

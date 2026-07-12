@@ -6,6 +6,34 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+# REX — Session 12 Juillet 2026 — v17.7.0 « Le Roman d'une Vie »
+
+## Subagent-Driven Development : la contradiction plan/test se règle en faveur du test
+
+La table `TABLE_CHRONOLOGIE_JEUNESSE` du plan avait une entrée `{ max: 5, bracket: 'D', texte: "Glisse vers le milieu criminel..." }` ET un test qui attendait `fn: 'drame_ou_miracle'` pour score 5 — contradiction interne. L'implémenteur a eu raison de supprimer l'entrée et de faire primer le test : le test est la spécification exécutable. Au moment de l'écriture du plan, les tables et les tests doivent être cohérents — les écrire en parallèle dans la même passe.
+
+## Une constante partagée peut avoir deux usages distincts — les séparer
+
+`BONUS_GENRE_HORREUR` avait été appliqué à la fois au lieu de naissance (step 5) et aux événements de naissance (step 6). Résultat : la première branche du lieu (`roll <= 4`) était inaccessible puisque le roll minimum devenait 6. La revue finale l'a détecté. Règle : quand une constante est utilisée dans deux étapes différentes, vérifier que son effet est intentionnel à chaque endroit, ou définir deux constantes distinctes (`BONUS_LIEU` et `BONUS_EVENEMENTS`).
+
+## La revue finale de branche détecte ce que les revues par tâche ratent
+
+La cohérence cross-tâches (ici : double tirage de `raisonPresence` entre le pipeline bio et le pipeline réel) n'est visible qu'en lisant les deux côtés ensemble. Les revues par tâche n'ont qu'un diff isolé. La revue finale de branche est obligatoire et sa qualité dépend du soin apporté à son prompt (liste des interfaces inter-tâches, shape des objets partagés).
+
+## Le plan peut contenir du code pour les tâches mécaniques — le sous-agent transcrit
+
+Quand le plan inclut le code complet (tables, fonctions), l'implémenteur devient essentiellement un transcripteur + testeur. Utiliser le modèle `haiku` pour ces tâches (Task 1) : même qualité, bien moins cher. Réserver `sonnet` pour les tâches avec de l'intégration ou du jugement (Tasks 2, 3, 4).
+
+## `??` null-coalescing : propager les valeurs de l'historique vers le PNJ réel
+
+En mode biographique, plusieurs champs du PNJ réel (`raisonPresence`) sont retirés dans le pipeline réel mais présents dans l'historique bio. Après génération, il faut systématiquement propager `historique.origines.X ?? null` vers `pnj.X` pour éviter les divergences entre l'accordéon bio et la carte identité. Checklist mentale au moment de l'intégration : "quels champs du mode réel sont aussi dans l'historique, et lequel doit primer ?"
+
+## Spec + plan rédigés dans la même session : écrire les tests avant les tables
+
+Dans cette session, les tests ont été écrits après les tables (brief du plan écrit d'un bloc). La contradiction `max:5` n'aurait pas existé si on avait énuméré les cas de test d'abord. Pour les futures tables biographiques ou similaires : lister les valeurs de test avant de définir les plages.
+
+---
+
 # REX — Session 12 Juillet 2026 — v17.6.1 « La Main Tendue »
 
 ## useRef pour partager une valeur mutable entre un enfant et un parent sans re-render
