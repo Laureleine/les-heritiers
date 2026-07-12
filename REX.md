@@ -6,6 +6,22 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+# REX — Session 12 Juillet 2026 — v17.6.1 « La Main Tendue »
+
+## useRef pour partager une valeur mutable entre un enfant et un parent sans re-render
+
+Pour partager `pendingXp` + `distributeXp` de `TabIndicesVerites` vers `ActiveCercleView` (qui doit l'intercepter au moment d'un changement d'onglet), un `useRef` dans le parent est plus simple qu'un état : pas de re-render inutile du parent à chaque coche, et la valeur est toujours fraîche au moment où la logique d'interception en a besoin.
+
+## Toujours envelopper dans un Fragment quand on ajoute un élément frère à la racine du return
+
+Ajouter un modal en dehors du `<div>` principal d'un composant crée deux racines JSX — erreur de compilation. Envelopper dans `<>…</>` avant d'ajouter tout élément frère.
+
+## Les PRs "N'importe quand" de l'utilisateur signifient "pas d'XP automatique"
+
+"En option, la coche pourra déclencher le gain d'XP" → l'utilisateur voulait que le Docte contrôle le moment de la distribution, pas que l'XP tombe à chaque coche. Poser la question en menu avant de coder aurait évité d'implémenter deux fois.
+
+---
+
 # REX — Session 12 Juillet 2026 — v17.6.0 « Le Voile Levé »
 
 ## Vérifier l'export d'une icône avant de l'importer dans un composant
