@@ -103,12 +103,12 @@ export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpen
   const handlers = {
     actualite:  track('actualite',  onOpenActualite),
     carte:      track('carte',      onOpenCarte),
-    generateur: track('generateur', onOpenGenerateur),
-    menu:       track('menu',       onOpenMenu),
-    poche:      track('poche',      onOpenPoche),
-    ambiance:   track('ambiance',   onOpenAmbiance),
-    argot:      track('argot',      onOpenArgot),
-    tracas:     track('tracas',     onOpenTracas),
+    generateur: onOpenGenerateur,
+    menu:       onOpenMenu,
+    poche:      onOpenPoche,
+    ambiance:   onOpenAmbiance,
+    argot:      onOpenArgot,
+    tracas:     onOpenTracas,
   };
 
   return (

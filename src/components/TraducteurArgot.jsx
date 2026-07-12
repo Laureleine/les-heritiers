@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Feather, Copy } from '../config/icons';
 import { supabase } from '../config/supabase';
+import { useUserContext } from '../context/UserContext';
+import { logOutilUsage } from '../utils/supabaseGameData';
 
 const STYLES = [
   { id: 'bourgeois', label: 'Bourgeois', description: 'Le jargon snob et précieux des salons parisiens.' },
@@ -11,6 +13,7 @@ const STYLES = [
 ];
 
 export default function TraducteurArgot({ onBack }) {
+  const { session } = useUserContext();
   const [texte, setTexte] = useState('');
   const [style, setStyle] = useState('bourgeois');
   const [resultat, setResultat] = useState(null);
@@ -23,6 +26,7 @@ export default function TraducteurArgot({ onBack }) {
     setLoading(true);
     setErreur(null);
     setResultat(null);
+    logOutilUsage(session?.user?.id, 'argot');
     try {
       const { data, error } = await supabase.functions.invoke('translate-argot', {
         body: { texte: texte.trim(), style },

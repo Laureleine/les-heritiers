@@ -26,12 +26,12 @@ function TabStats() {
         { data: totalsData, error: totalsError },
         { data: detailData, error: detailError },
         { data: outilsRaw },
-        { data: outilsUserRaw },
+        { data: topUsersData },
       ] = await Promise.all([
         supabase.rpc('get_admin_stats'),
         supabase.rpc('get_community_stats_detail'),
         supabase.from('outil_usage').select('outil, created_at').limit(5000).order('created_at', { ascending: false }),
-        supabase.from('outil_usage').select('user_id, profiles!inner(email)').limit(5000),
+        supabase.rpc('get_top_outil_users', { limit_n: 5 }),
       ]);
 
       if (totalsError || !totalsData) throw totalsError || new Error('get_admin_stats returned null');
@@ -62,12 +62,7 @@ function TabStats() {
       }
       const outilsParUsage = Object.entries(parOutil).sort((a, b) => b[1] - a[1]);
 
-      const parUser = {};
-      for (const row of (outilsUserRaw || [])) {
-        const email = row.profiles?.email || row.user_id;
-        parUser[email] = (parUser[email] || 0) + 1;
-      }
-      const topUsers = Object.entries(parUser).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const topUsers = (topUsersData || []).map(({ email, total }) => [email, total]);
 
       setStats({
         totals: {

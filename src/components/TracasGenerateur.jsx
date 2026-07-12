@@ -5,6 +5,7 @@ import { genererTracas } from '../utils/tracasGenerator';
 import { WEIGHT_LABELS, weightLabel } from '../data/pnjTables';
 import { isAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
+import { logOutilUsage } from '../utils/supabaseGameData';
 import { supabase } from '../config/supabase';
 
 const CATEGORIES = [
@@ -396,7 +397,7 @@ export default function TracasGenerateur({ onBack }) {
 
   const set = (champ) => (valeur) => setConfig((c) => ({ ...c, [champ]: valeur }));
 
-  const tirer = () => setResultats(genererTracas({ categorie: config.categorie, nombre: Number(config.nombre) }, dbEntries));
+  const tirer = () => { setResultats(genererTracas({ categorie: config.categorie, nombre: Number(config.nombre) }, dbEntries)); logOutilUsage(session?.user?.id, 'tracas'); };
 
   const estGardien = !!userProfile && isAdmin(userProfile);
 

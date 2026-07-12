@@ -5,6 +5,7 @@ import { genererAmbianceVoyage } from '../utils/ambianceGenerator';
 import { WEIGHT_LABELS, weightLabel } from '../data/pnjTables';
 import { isAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
+import { logOutilUsage } from '../utils/supabaseGameData';
 import { supabase } from '../config/supabase';
 
 const ZONES = [
@@ -385,7 +386,7 @@ export default function AmbianceGenerateur({ onBack }) {
 
   const set = (champ) => (valeur) => setConfig((c) => ({ ...c, [champ]: valeur }));
 
-  const generer = () => setScene(genererAmbianceVoyage(config, dbEntries));
+  const generer = () => { setScene(genererAmbianceVoyage(config, dbEntries)); logOutilUsage(session?.user?.id, 'ambiance'); };
 
   const estGardien = !!userProfile && isAdmin(userProfile);
 

@@ -5,6 +5,7 @@ import { useMenuGenerateur } from '../hooks/useMenuGenerateur';
 import { useMenuSauvegardes } from '../hooks/useMenuSauvegardes';
 import { isAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
+import { logOutilUsage } from '../utils/supabaseGameData';
 import { supabase } from '../config/supabase';
 import MenuForm from './menu/MenuForm';
 import MenuAffichage from './menu/MenuAffichage';
@@ -239,6 +240,8 @@ export default function GenerateurMenu({ onBack }) {
 
   const estGardien = !!userProfile && isAdmin(userProfile);
 
+  const handleGenerer = () => { generer(params); logOutilUsage(session?.user?.id, 'menu'); };
+
   const handleSauvegarder = async (titre) => {
     const { error } = await sauvegarder(titre, params, menu);
     setSaveMsg(error ? `Erreur : ${error.message}` : 'Menu sauvegardé !');
@@ -303,7 +306,7 @@ export default function GenerateurMenu({ onBack }) {
 
             <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-5 print:block">
               <div className="print:hidden">
-                <MenuForm params={params} onChange={setParams} onGenerer={() => generer(params)} loading={loading} />
+                <MenuForm params={params} onChange={setParams} onGenerer={handleGenerer} loading={loading} />
               </div>
 
               <MenuAffichage

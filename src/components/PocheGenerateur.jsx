@@ -5,6 +5,7 @@ import { genererInventaire } from '../utils/pocheGenerator';
 import { WEIGHT_LABELS, weightLabel } from '../data/pnjTables';
 import { isAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
+import { logOutilUsage } from '../utils/supabaseGameData';
 import { supabase } from '../config/supabase';
 
 const SEXES = [
@@ -384,7 +385,7 @@ export default function PocheGenerateur({ onBack }) {
 
   const set = (champ) => (valeur) => setConfig((c) => ({ ...c, [champ]: valeur }));
 
-  const fouiller = () => setInventaire(genererInventaire(config, dbEntries));
+  const fouiller = () => { setInventaire(genererInventaire(config, dbEntries)); logOutilUsage(session?.user?.id, 'poche'); };
 
   const estGardien = !!userProfile && isAdmin(userProfile);
 

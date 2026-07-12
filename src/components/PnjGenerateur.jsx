@@ -13,6 +13,7 @@ import {
 import { usePnjTableEntries } from '../hooks/usePnjTableEntries';
 import { isAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
+import { logOutilUsage } from '../utils/supabaseGameData';
 
 // ─── CONFIGURATION DES TABLES ────────────────────────────────────────────────
 
@@ -647,7 +648,8 @@ export default function PnjGenerateur({ onBack }) {
     setPnj(nouveau);
     setSavedMsg(null);
     setGenKey(k => k + 1);
-  }, [mode, typeFee, options, dbEntries, fairyTypes]);
+    logOutilUsage(session?.user?.id, 'generateur');
+  }, [mode, typeFee, options, dbEntries, fairyTypes, session]);
 
   const handleReroll = useCallback((champ) => {
     if (!pnj) return;
