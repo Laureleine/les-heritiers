@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.6.1 — La Main Tendue ✨🤝
+
+✨ **Missive du Greffe des Âmes — v17.6.1 «La Main Tendue»**
+
+Chers Héritiers,
+
+Un ajustement de conduite pour les Doctes qui utilisent les Secrets du Monde.
+
+Jusqu'ici, cocher un secret déclenchait aussitôt la distribution des points d'expérience à toute la table — sans que le Docte ait son mot à dire sur le moment. C'était trop empressé.
+
+Désormais, les XP n'arrivent que quand le Docte le décide. Il peut cocher plusieurs secrets d'affilée, prendre son temps, revenir en arrière — et quand il est prêt à quitter l'onglet, l'Atelier lui pose la question : *« Distribuer +XX XP à votre groupe ? »* Il dit oui, et la main se tend vers tous les membres du cercle. Il dit non, et les révélations restent visibles, les XP en suspens pour plus tard.
+
+*— L'Atelier des Héritiers*
+
+---
+
 ## v17.6.0 — Le Voile Levé 📜🕯️
 
 ✨ **Missive du Greffe des Âmes — v17.6.0 «Le Voile Levé»**

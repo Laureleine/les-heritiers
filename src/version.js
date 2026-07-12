@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.6.1 - \"La Main Tendue ✨🤝\"",
+    date: "12 Juillet 2026",
+    description: "Les XP des Secrets du Monde ne tombent plus automatiquement dans les escarcelles des Héritiers dès qu'un secret est coché. Le Docte décide lui-même du moment : quand il quitte l'onglet avec des révélations non encore récompensées, l'Atelier lui demande s'il souhaite distribuer les points accumulés. Oui ou non — c'est lui qui commande.",
+    changes: [
+      "🤝 **Distribution XP à la demande :** cocher un secret ne distribue plus les XP immédiatement. Un modal apparaît quand le Docte quitte l'onglet Secrets avec des XP en attente : il choisit de distribuer ou de passer.",
+      "✅ **Décocher retire toujours l'XP** si celui-ci avait déjà été distribué pour cet item.",
+    ]
+  },
+  {
     version: "17.6.0 - \"Le Voile Levé 📜🕯️\"",
     date: "12 Juillet 2026",
     description: "Les Doctes reçoivent aujourd'hui un outil inédit : les Secrets du Monde. Dans chaque Cercle, un nouvel onglet leur permet de cocher, un à un, les Indices et Vérités tirés du livret de jeu — 224 révélations réparties sur 21 grands mystères de l'Ordonnancement. À chaque coche, les Héritiers de la table gagnent automatiquement de l'expérience selon le poids de la révélation. Découvrir toutes les Vérités majeures d'un même élément déclenche un bonus supplémentaire. Les joueurs, eux, ne voient que ce que leur Docte a choisi de dévoiler.",
