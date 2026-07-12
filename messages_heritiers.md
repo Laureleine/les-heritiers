@@ -4,6 +4,34 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.7.0 — Le Roman d'une Vie 📖✨
+
+✨ **Missive du Greffe des Âmes — v17.7.0 «Le Roman d'une Vie»**
+
+Chers Héritiers,
+
+Depuis quelques semaines, le Générateur de PNJ tire ses silhouettes en un battement de paupières — un nom, un métier, un secret, quelques traits. Utile. Efficace. Mais muet sur ce qui précède l'instant.
+
+Ce soir, l'Atelier lui offre un troisième mode : le mode **Biographique**.
+
+En l'activant, un PNJ n'arrive plus seulement avec ce qu'il est — il arrive avec ce qui l'a fait. Neuf étapes se déroulent avant le portrait :
+
+**Ses origines.** D'où vient-il ? Dans la Paris de 1899, huit chances sur dix que ce soit de France. Mais il peut tout aussi bien être Russe, Britannique, Austro-Hongrois, ou venu d'un horizon plus lointain encore. Sa nationalité emporte avec elle sa langue, son niveau de civilisation, sa culture.
+
+**Son milieu.** Du misérable au duc en titre, en passant par la classe commode des petits fonctionnaires et des boutiquiers. Légitime ou non. Élevé par ses deux parents, par une tante, dans un orphelinat, ou livré à lui-même dans les rues.
+
+**Sa naissance.** Un simple accouchement à domicile — ou quelque chose de moins ordinaire. Un lieu insolite, un phénomène météorologique impossible pour la saison, un étranger qui dépose un présent dans le berceau avant de disparaître, une vieille malédiction murmuée par un occultiste présent ce soir-là.
+
+**Sa jeunesse.** Fugues, apprentissages précoces, rencontres mystiques, bouleversements familiaux, dons financiers inattendus — ou simplement des années tranquilles dans les salons littéraires de la rive gauche.
+
+Tout cela s'affiche en accordéon, section par section, avant le portrait habituel. Le reste — traits, secret, apparence, métier — suit en dessous, inchangé.
+
+Un PNJ Biographique est un PNJ qui a vécu avant que vous l'aperceviez.
+
+*— L'Atelier des Héritiers*
+
+---
+
 ## v17.6.1 — La Main Tendue ✨🤝
 
 ✨ **Missive du Greffe des Âmes — v17.6.1 «La Main Tendue»**

@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.7.0 - \"Le Roman d'une Vie 📖✨\"",
+    date: "12 Juillet 2026",
+    description: "Le générateur de PNJ reçoit un troisième mode : le mode Biographique. En l'activant, chaque personnage tiré arrive avec un historique complet en neuf étapes — origines nationales et culturelles, niveau de civilisation, statut social, configuration du foyer familial, lieu de naissance, événements de naissance, profil des parents, enfance et adolescence. Ces neuf étapes se déploient en accordéon. Tout ce qui s'affiche en temps normal — traits, secret, métier, apparence — suit en dessous, inchangé.",
+    changes: [
+      "📖 **Mode Biographique :** Troisième mode du générateur de PNJ. Avant de dessiner le portrait habituel, neuf étapes d'histoire : origines nationales et culturelles, niveau de civilisation, statut social, structure du foyer, lieu de naissance, événements de naissance, profil des parents, enfance et adolescence.",
+      "🌿 **Origines démographiques :** Nationalité tirée d'un pool pondéré ancré dans la Paris de 1899 — 80 % de Français, mais aussi Italiens, Britanniques, Russes, Austro-Hongrois, Allemands, Américains et plus loin encore. Chaque origine emporte un niveau de culture et de technologie cohérent.",
+      "🏛️ **Statut social et famille :** Du misérable à la noblesse (avec ses titres et ses fortunes) en passant par la classe confortable. Légitimité, structure du foyer, rang dans la fratrie.",
+      "🕯️ **Naissance et événements :** Du domicile familial au laboratoire secret d'un savant excentrique. Parfois rien — parfois une malédiction, un présent anonyme dans le berceau, ou un phénomène météorologique impossible pour la saison.",
+      "🌱 **Jeunesse :** Fugues, apprentissages précoces, rencontres mystiques, bouleversements familiaux, ou simplement des années tranquilles dans les salons littéraires de la rive gauche.",
+      "✨ **549 Sentinelles — aucune régression.**",
+    ]
+  },
+  {
     version: "17.6.1 - \"La Main Tendue ✨🤝\"",
     date: "12 Juillet 2026",
     description: "Les XP des Secrets du Monde ne tombent plus automatiquement dans les escarcelles des Héritiers dès qu'un secret est coché. Le Docte décide lui-même du moment : quand il quitte l'onglet avec des révélations non encore récompensées, l'Atelier lui demande s'il souhaite distribuer les points accumulés. Oui ou non — c'est lui qui commande.",
