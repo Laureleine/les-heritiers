@@ -147,6 +147,104 @@ function ChampPnj({ label, valeur, onReroll, multiline = false, accent = 'stone'
   );
 }
 
+// ─── SECTION HISTORIQUE ──────────────────────────────────────────────────────
+
+const LABELS_MAITRISE = {
+  natif:      'français natif',
+  parfait:    'français parfait',
+  baragouine: 'baragouine le français',
+  aucun:      'ne parle pas français',
+};
+
+function SectionHistorique({ historique }) {
+  const [open, setOpen] = React.useState(null);
+  const toggle = (id) => setOpen(o => o === id ? null : id);
+  const h = historique;
+
+  const sections = [
+    {
+      id: 'origines',
+      titre: 'Origines',
+      lignes: [
+        h.origines.nationalite,
+        h.origines.estImmigre && LABELS_MAITRISE[h.origines.maitriseFrancais],
+        h.origines.estImmigre && h.origines.raisonPresence && `Raison : ${h.origines.raisonPresence}`,
+        h.formation.culture,
+        h.formation.techLevel,
+        h.formation.estAlphabete ? 'Alphabétisé(e)' : 'Non alphabétisé(e)',
+      ].filter(Boolean),
+    },
+    {
+      id: 'milieu',
+      titre: 'Milieu familial',
+      lignes: [
+        h.milieu.statutSocial,
+        h.milieu.titreNoble && `Titre : ${h.milieu.titreNoble}`,
+        !h.milieu.legitime && 'Naissance illégitime',
+        h.milieu.structureFoyer,
+        h.milieu.nombreFreresSoeurs > 0
+          ? `${h.milieu.nombreFreresSoeurs} frère(s)/sœur(s) — ${h.milieu.rangNaissance}`
+          : h.milieu.rangNaissance,
+      ].filter(Boolean),
+    },
+    {
+      id: 'naissance',
+      titre: 'Naissance',
+      lignes: [
+        h.naissance.lieuPrecis,
+        ...h.naissance.evenements.map(e => `→ ${e}`),
+      ].filter(Boolean),
+    },
+    {
+      id: 'parents',
+      titre: 'Parents',
+      lignes: [
+        h.parents.configurationMetier,
+        ...h.parents.faitsNotables.map(f => `→ ${f}`),
+      ].filter(Boolean),
+    },
+    {
+      id: 'jeunesse',
+      titre: 'Jeunesse',
+      lignes: [
+        ...h.jeunesse.enfance,
+        ...h.jeunesse.adolescence,
+      ].filter(Boolean),
+    },
+  ];
+
+  return (
+    <div className="bg-stone-50 rounded-2xl border border-stone-200 overflow-hidden">
+      <p className="px-5 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider border-b border-stone-200">
+        Historique
+      </p>
+      {sections.map(section => (
+        <div key={section.id} className="border-b border-stone-100 last:border-0">
+          <button
+            onClick={() => toggle(section.id)}
+            className="w-full flex items-center justify-between px-5 py-3 text-left hover:bg-stone-100 transition-colors"
+          >
+            <span className="text-sm font-bold font-serif text-stone-700">{section.titre}</span>
+            <ChevronDown
+              size={14}
+              className={`text-stone-400 transition-transform ${open === section.id ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {open === section.id && (
+            <div className="px-5 pb-4 space-y-1">
+              {section.lignes.map((ligne, i) => (
+                <p key={i} className="text-sm font-serif text-stone-600 leading-snug">
+                  {ligne}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── ACCORDION PAR TABLE ─────────────────────────────────────────────────────
 
 const POLARITY_OPTIONS = [
@@ -742,8 +840,9 @@ export default function PnjGenerateur({ onBack }) {
           <p className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">Nature du personnage</p>
           <div className="flex gap-2 mb-4">
             {[
-              { id: 'reel',       label: '🌍 Réel',       desc: 'Parisien·ne Belle Époque' },
-              { id: 'merveilleux', label: '✨ Merveilleux', desc: 'Créature féérique' },
+              { id: 'reel',         label: '🌍 Réel',         desc: 'Parisien·ne Belle Époque' },
+              { id: 'merveilleux',  label: '✨ Merveilleux',  desc: 'Créature féérique' },
+              { id: 'biographique', label: '📜 Biographique', desc: 'Avec historique complet' },
             ].map(opt => (
               <button
                 key={opt.id}
@@ -791,6 +890,14 @@ export default function PnjGenerateur({ onBack }) {
             </div>
           )}
 
+          {mode === 'biographique' && (
+            <div className="bg-stone-50 rounded-xl border border-stone-200 px-4 py-3">
+              <p className="text-xs text-stone-500 font-serif">
+                En mode biographique, la nationalité et le sexe sont tirés automatiquement par le générateur d'historique.
+              </p>
+            </div>
+          )}
+
           {/* ─── Sélecteurs d'identité ──────────────────────────────── */}
           <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
             <SelectOuAleatoire
@@ -799,12 +906,14 @@ export default function PnjGenerateur({ onBack }) {
               value={options.trancheAge}
               onChange={v => setOptions(o => ({ ...o, trancheAge: v }))}
             />
-            <SelectOuAleatoire
-              label="Sexe"
-              options={SEXES}
-              value={options.sexe}
-              onChange={v => setOptions(o => ({ ...o, sexe: v }))}
-            />
+            {mode !== 'biographique' && (
+              <SelectOuAleatoire
+                label="Sexe"
+                options={SEXES}
+                value={options.sexe}
+                onChange={v => setOptions(o => ({ ...o, sexe: v }))}
+              />
+            )}
             <SelectOuAleatoire
               label="Genre / Expression"
               options={GENRES.filter(g => mode === 'merveilleux' ? true : g.id !== 'indetermine')}
@@ -909,6 +1018,10 @@ export default function PnjGenerateur({ onBack }) {
               )}
             </div>
 
+            {pnj.historique && (
+              <SectionHistorique historique={pnj.historique} />
+            )}
+
             {/* Grille des attributs */}
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 space-y-3 divide-y divide-stone-100">
               <ChampPnj label="Métier / Classe" valeur={pnj.metier}    onReroll={() => handleReroll('metier')} multiline />
@@ -933,7 +1046,7 @@ export default function PnjGenerateur({ onBack }) {
             </div>
 
             {/* Phobie / Hobby / Comportement (mode réel uniquement) */}
-            {mode === 'reel' && (pnj.phobie || pnj.hobby || pnj.comportement) && (
+            {(mode === 'reel' || mode === 'biographique') && (pnj.phobie || pnj.hobby || pnj.comportement) && (
               <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 space-y-3 divide-y divide-stone-100">
                 {pnj.phobie && (
                   <ChampPnj label="Peur / Phobie" valeur={pnj.phobie} onReroll={() => handleReroll('phobie')} multiline accent="rose" />
