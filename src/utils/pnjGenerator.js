@@ -11,6 +11,7 @@ import {
   tirage, tiragePondere, tirageCloche, tirageMultiple,
   accordLabel, resolveMetier, resolveText, getPolarity,
 } from '../data/pnjTables';
+import { genererHistorique } from './pnjGeneratorBio';
 
 const POLARITY_SCORES = { l2: 2, l1: 1, n: 0, d1: -1, d2: -2 };
 
@@ -121,6 +122,15 @@ export function genererPnj(options = {}, dbEntries = {}) {
     typeFee = null,
   } = options;
 
+  if (mode === 'biographique') {
+    const { sexeId, nationaliteId, historique } = genererHistorique();
+    const pnjReel = genererPnj(
+      { ...options, mode: 'reel', sexe: sexeId, nationalite: nationaliteId },
+      dbEntries
+    );
+    return { ...pnjReel, mode: 'biographique', historique };
+  }
+
   // Tirer les champs d'identité si non fixés (tirage pondéré)
   const sexe              = options.sexe              || tiragePondere(merge(SEXES, dbEntries, 'sexes')).id;
   const genre             = options.genre             || tiragePondere(merge(
@@ -219,6 +229,15 @@ export function genererPnj(options = {}, dbEntries = {}) {
  * @param {string} champ - Nom du champ à retirer
  */
 export function rerollChamp(pnj, champ, dbEntries = {}) {
+  if (pnj.mode === 'biographique' && (champ === 'sexe' || champ === 'nationalite')) {
+    const { sexeId, nationaliteId, historique } = genererHistorique();
+    const newPrenom = getPrenom(sexeId, 'reel', nationaliteId, null);
+    const newNom    = getNom('reel', nationaliteId, null);
+    const newMetier = getMetier('reel', pnj.trancheAge, null, sexeId, dbEntries);
+    return { ...pnj, sexe: sexeId, nationalite: nationaliteId,
+             prenom: newPrenom, nom: newNom, metier: newMetier, historique };
+  }
+
   const { mode, typeFee, trancheAge, situationMatrimoniale, nationalite } = pnj;
   const tables = mode === 'merveilleux' ? TABLES_MERVEILLEUX : TABLES_REEL;
 
@@ -328,6 +347,35 @@ export function pnjVersPayloadFigure(pnj) {
 
   const lignes = [];
 
+  if (pnj.historique) {
+    const h = pnj.historique;
+    const maitrise = {
+      natif: 'natif', parfait: 'parfait',
+      baragouine: 'baragouine', aucun: 'aucun',
+    }[h.origines.maitriseFrancais] ?? h.origines.maitriseFrancais;
+
+    lignes.push('── Historique ──');
+    lignes.push(`Origines : ${h.origines.nationalite} — ${h.formation.culture} — ${h.formation.techLevel}`);
+    if (h.origines.estImmigre) {
+      lignes.push(`Français : ${maitrise}${h.origines.raisonPresence ? ` — ${h.origines.raisonPresence}` : ''}`);
+    }
+    lignes.push(`Milieu : ${h.milieu.statutSocial} — ${h.milieu.structureFoyer} — ${h.milieu.rangNaissance}`);
+    if (!h.milieu.legitime) lignes.push('Naissance illégitime.');
+    lignes.push(`Naissance : ${h.naissance.lieuPrecis}`);
+    h.naissance.evenements.forEach(e => lignes.push(`  → ${e}`));
+    lignes.push(`Parents : ${h.parents.configurationMetier}`);
+    h.parents.faitsNotables.forEach(f => lignes.push(`  → ${f}`));
+    if (h.jeunesse.enfance.length > 0) {
+      lignes.push('Enfance :');
+      h.jeunesse.enfance.forEach(e => lignes.push(`  ${e}`));
+    }
+    if (h.jeunesse.adolescence.length > 0) {
+      lignes.push('Adolescence :');
+      h.jeunesse.adolescence.forEach(e => lignes.push(`  ${e}`));
+    }
+    lignes.push('');
+  }
+
   lignes.push(`Métier : ${pnj.metier}${trancheLabel ? ` (${trancheLabel})` : ''}`);
   if (pnj.typeFee) lignes.push(`Type de fée : ${pnj.typeFee}`);
   if (natLabel && natLabel !== 'Française') {
@@ -389,6 +437,7 @@ export function pnjVersPayloadFigure(pnj) {
       mode:                   pnj.mode,
       type_fee:               pnj.typeFee,
       generated_by:           'random',
+      historique:             pnj.historique ?? null,
     },
   };
 }
