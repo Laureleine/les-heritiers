@@ -6,6 +6,30 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+# REX — Session 12 Juillet 2026 — v17.6.0 « Le Voile Levé »
+
+## Vérifier l'export d'une icône avant de l'importer dans un composant
+
+`Scroll` n'était pas dans le barrel `src/config/icons.js`. Le composant compilait sans erreur visible (Vite/React tolère les imports manquants au build), mais l'icône aurait rendu `undefined` en runtime. Réflexe : `Grep "NomIcone" src/config/icons.js` avant tout nouvel import d'icône.
+
+## Lire la colonne `element_type` avant d'écrire le seed
+
+La table `indices_verites` a une contrainte `CHECK (element_type IN ('concept','lieu','personnage','événement'))`. Dans le seed, la valeur `'événement'` avec accent doit être exactement identique à celle du CHECK côté SQL (encodage UTF-8, accent inclus). Un mismatch encodage aurait cassé silencieusement l'insertion. Toujours copier-coller la valeur exacte du CHECK depuis la migration, ne pas la retaper.
+
+## Barème XP dans le hook, pas dans le composant
+
+Le barème XP (`indice: 1, verite_mineure: 2, …`) est défini dans `useIndicesVerites.js` et exporté. Le composant l'utilise via déstructuration. C'est la bonne séparation : si le barème change, un seul fichier à modifier, sans toucher à l'UI.
+
+## `isBonusDistributed` appelle Supabase indirectement via `revelations` en mémoire
+
+La détection de bonus déjà distribué (`bonus_element_distribue`) se fait sur le state local `revelations`, pas sur un appel Supabase direct. Cela fonctionne parce que `loadRevelations` est appelé après chaque `reveler`/`masquer`. Si l'on ajoute un autre chemin de mutation (ex: admin), penser à invalider ce state.
+
+## `AskUserQuestion` : max 4 options par question
+
+La limite est 4 options (pas 5). Toujours compter avant de soumettre. Si le contexte en a besoin de plus, splitter en deux questions.
+
+---
+
 # REX — Session 12 Juillet 2026 — v17.5.1 « L'Encre Bien Tracée »
 
 ## Toujours tester la mise en forme HTML avant d'envoyer le premier email de prod
