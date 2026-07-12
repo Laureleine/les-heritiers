@@ -128,7 +128,8 @@ export function genererPnj(options = {}, dbEntries = {}) {
       { ...options, mode: 'reel', sexe: sexeId, nationalite: nationaliteId },
       dbEntries
     );
-    return { ...pnjReel, mode: 'biographique', historique };
+    return { ...pnjReel, mode: 'biographique', historique,
+             raisonPresence: historique.origines.raisonPresence ?? null };
   }
 
   // Tirer les champs d'identité si non fixés (tirage pondéré)
@@ -235,7 +236,8 @@ export function rerollChamp(pnj, champ, dbEntries = {}) {
     const newNom    = getNom('reel', nationaliteId, null);
     const newMetier = getMetier('reel', pnj.trancheAge, null, sexeId, dbEntries);
     return { ...pnj, sexe: sexeId, nationalite: nationaliteId,
-             prenom: newPrenom, nom: newNom, metier: newMetier, historique };
+             prenom: newPrenom, nom: newNom, metier: newMetier, historique,
+             raisonPresence: historique.origines.raisonPresence ?? null };
   }
 
   const { mode, typeFee, trancheAge, situationMatrimoniale, nationalite } = pnj;
