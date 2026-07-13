@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.8.0 - \"L'Ordre des Choses 🔮\"",
+    date: "14 Juillet 2026",
+    description: "Une mise à jour de précision. Dans chaque step de magie, seuls les sorts accessibles au rang actuel du personnage sont désormais visibles — les cercles supérieurs restent cachés jusqu'à ce que la pratique mûrisse. Plusieurs anomalies sont corrigées : les indices de Féérie retrouvent leur élément, l'XP peut à nouveau être retiré dans un cercle, et deux erreurs de données (Fortune et Secrets du Monde) sont réparées.",
+    changes: [
+      "🔮 **Sorts filtrés par rang :** Dans les steps de pratiques magiques, seuls les niveaux que le rang du personnage autorise à apprendre sont affichés. Un sort déjà connu reste toujours visible, même si le niveau n'est plus accessible.",
+      "🕯️ **Fix — Indices Féérie :** Six indices du mystère Féérie avaient été attribués par erreur à l'élément Avalon. Ils retrouvent leur place dans la Féérie (ordres 1 à 6).",
+      "⚖️ **Fix — XP négatif dans les Cercles :** Retirer de l'XP à un personnage d'un cercle déclenchait une violation de contrainte SQL. Les fonctions `award_xp` et `distribute_session_xp` utilisent désormais la valeur absolue pour l'entrée de journal.",
+      "🏛️ **Fix — Fortune des cabinets d'avocats :** L'item « Possesseur de plusieurs cabinets d'avocats (Secondaire) » n'accordait aucun bonus de Fortune faute de valeur en base. Corrigé à +2.",
+      "🔧 **Fix — Pouvoirs de Fées (Encyclopédie) :** La sauvegarde d'un pouvoir déclenchait une erreur de cache de schéma Supabase. La table `fairy_powers` ne possède pas de colonne `effets_techniques`.",
+    ],
+  },
+  {
     version: "17.7.0 - \"Le Roman d'une Vie 📖✨\"",
     date: "12 Juillet 2026",
     description: "Le générateur de PNJ reçoit un troisième mode : le mode Biographique. En l'activant, chaque personnage tiré arrive avec un historique complet en neuf étapes — origines nationales et culturelles, niveau de civilisation, statut social, configuration du foyer familial, lieu de naissance, événements de naissance, profil des parents, enfance et adolescence. Ces neuf étapes se déploient en accordéon. Tout ce qui s'affiche en temps normal — traits, secret, métier, apparence — suit en dessous, inchangé.",

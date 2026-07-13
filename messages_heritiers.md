@@ -4,6 +4,29 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.8.0 — « L'Ordre des Choses » — 14 Juillet 2026
+
+✨ **Mise à jour v17.8.0 — L'Ordre des Choses** ✨
+
+Chers Héritiers,
+
+L'Ordonnancement veille. Les pratiques magiques obéissent désormais à leurs propres lois : dans chaque step de magie, seuls les sorts que votre rang autorise à apprendre vous sont révélés. Les cercles supérieurs restent voilés tant que votre maîtrise ne les a pas mérités — comme il se doit.
+
+Quelques désordres ont par ailleurs été remis à leur place juste :
+
+🕯️ Six indices du mystère **Féérie** avaient erré sous l'enseigne d'Avalon. Ils ont retrouvé leur élément.
+
+⚖️ Les Doctes peuvent à nouveau **retirer de l'XP** dans leurs cercles sans que le Registre des Âmes ne s'y oppose.
+
+🏛️ Le rang de **Fortune** de certains personnages était sous-estimé — un item secondaire manquait de valeur en base. C'est corrigé.
+
+🔧 L'**Encyclopédie des Pouvoirs de Fées** accepte à nouveau les modifications sans erreur.
+
+Que vos soirées soient fructueuses,
+*Les Architectes de l'Ordonnancement*
+
+---
+
 ## v17.7.0 — Le Roman d'une Vie 📖✨
 
 ✨ **Missive du Greffe des Âmes — v17.7.0 «Le Roman d'une Vie»**
