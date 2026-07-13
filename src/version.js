@@ -29,7 +29,7 @@ export const VERSION_HISTORY = [
     description: "Les Doctes reçoivent aujourd'hui un outil inédit : les Secrets du Monde. Dans chaque Cercle, un nouvel onglet leur permet de cocher, un à un, les Indices et Vérités tirés du livret de jeu — 224 révélations réparties sur 21 grands mystères de l'Ordonnancement. À chaque coche, les Héritiers de la table gagnent automatiquement de l'expérience selon le poids de la révélation. Découvrir toutes les Vérités majeures d'un même élément déclenche un bonus supplémentaire. Les joueurs, eux, ne voient que ce que leur Docte a choisi de dévoiler.",
     changes: [
       "📜 **Secrets du Monde :** nouvel onglet dans chaque Cercle, réservé au Docte et à ses Héritiers. Le Docte coche les Indices et Vérités qu'il révèle à sa table ; les joueurs ne voient que les éléments dévoilés.",
-      "🕯️ **224 révélations pré-remplies** tirées du livret de jeu, couvrant 21 mystères (Alliance, Avalon, Gwydion le Marcheur, le Grand Dragon, Ys…).",
+      "🕯️ **24 révélations pré-remplies**, couvrant 21 mystères.",
       "✨ **XP automatiques à la révélation :** Indice +1 XP, Vérité mineure +2, Vérité majeure +4, Dit du Marcheur +5. Décocher retire l'XP accordé.",
       "🏆 **Bonus de complétude :** révéler toutes les Vérités majeures d'un même élément déclenche un bonus de +5 XP pour tous les membres du Cercle.",
       "🔧 **Admin Secrets du Monde :** les super-admins peuvent éditer, ajouter ou supprimer des éléments depuis le tableau de bord d'administration.",
