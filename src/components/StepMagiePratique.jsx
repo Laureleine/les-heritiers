@@ -159,21 +159,18 @@ function SortsSection({ nomMagie, rang, sortsCatalog, sortsConnus, niveauxAccess
           const sortsNiveau = sortsCatalog.filter(s => s.niveau === niveau);
           if (sortsNiveau.length === 0) return null;
           const accessible = niveauxAccessibles.includes(niveau);
+          const sortsVisibles = accessible ? sortsNiveau : sortsNiveau.filter(s => sortsConnus_set.has(s.id));
+          if (sortsVisibles.length === 0) return null;
           const prereq = checkPrerequisSort(niveau, sortsConnus, sortsCatalog);
 
           return (
-            <div key={niveau} className={`px-3 py-2 ${!accessible ? 'opacity-40' : ''}`}>
+            <div key={niveau} className="px-3 py-2">
               <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wide mb-1.5">{niveau}</div>
-              {!accessible && (
-                <p className="text-[10px] text-stone-400 italic mb-1">
-                  Rang {niveau === 'Adepte' ? '3' : niveau === 'Maître' ? '5' : '7'} requis
-                </p>
-              )}
               {accessible && !prereq.ok && (
                 <p className="text-[10px] text-amber-600 italic mb-1">{prereq.msg}</p>
               )}
               <div className="space-y-1">
-                {sortsNiveau.map(sort => {
+                {sortsVisibles.map(sort => {
                   const connu = sortsConnus_set.has(sort.id);
                   const apprenableIci = accessible && (prereq.ok || connu);
                   return (
