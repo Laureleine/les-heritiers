@@ -6,6 +6,30 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+# REX — Session 14 Juillet 2026 — v17.8.0 « L'Ordre des Choses »
+
+## 1. Bug de schéma Supabase : diagnostiquer par le nom de table, pas par le message d'erreur
+
+Le message `Could not find the 'effets_techniques' column of 'fairy_powers' in the schema cache` est trompeur : il suggère un problème de cache alors que c'est un bug de code. Réflexe : chercher immédiatement où la table est mentionnée dans le groupe fautif (`encyclopediaEngine.js` ligne 342). La correction était d'une ligne.
+
+## 2. `MAX` vs `SUM` dans le calcul de Fortune — piège silencieux
+
+La Fortune se calcule `MAX(fortune_score) + SUM(fortune_bonus)`. Un item dont le `fortune_score` est inférieur au score déjà atteint ne contribue **rien** même s'il est acheté. Merlin pensait avoir un bug applicatif ; c'était un bug de données (fortune_bonus null). Avant de conclure à une erreur de règles, toujours vérifier les valeurs brutes en DB avec un script de diagnostic ciblé.
+
+## 3. Script de diagnostic avant script de fix
+
+Pour le bug Fortune, j'ai écrit `_debug_fortune_clovis.js` avant `_fix_fortune_cabinets.js`. Cette séquence a permis de voir que le problème venait d'un `null` et non d'une mauvaise valeur, et d'identifier qu'il existait deux items homonymes (Principal et Secondaire) avant de cibler l'UPDATE par UUID. Ne jamais écrire un script de fix sans avoir lu la situation réelle au préalable.
+
+## 4. Filtrage UI : filter+null guard plutôt que opacity
+
+Pour masquer des sections dans une liste (sorts inaccessibles), préférer `return null` conditionnel à `opacity-40`. L'`opacity` cache visuellement mais laisse le contenu dans le DOM et crée de la confusion sur ce qui est "vraiment" disponible. Le null guard (`sortsVisibles.length === 0 → return null`) est plus propre et plus explicite.
+
+## 5. `replace_all` échoue si les deux occurrences ont un texte légèrement différent
+
+Dans `version.js`, les deux entrées changelog "84 sorts" avaient des textes différents en fin de phrase. `replace_all: true` n'a remplacé que celles qui correspondaient exactement. Leçon : après un `replace_all`, vérifier avec `grep` qu'il ne reste pas d'occurrences manquées.
+
+---
+
 # REX — Session 12 Juillet 2026 — v17.7.0 « Le Roman d'une Vie »
 
 ## Subagent-Driven Development : la contradiction plan/test se règle en faveur du test
