@@ -35,10 +35,15 @@ export function useForgeTitres(userProfile) {
     const cleanId = form.id.toLowerCase().replace(/\s+/g, '_');
 
     try {
-      const { error } = await supabase.from('titres_honorifiques').upsert([{ ...form, id: cleanId }]);
+      const newBadge = { ...form, id: cleanId };
+      const { error } = await supabase.from('titres_honorifiques').upsert([newBadge]);
       if (error) throw error;
       showInAppNotification("Le Titre a été forgé et gravé dans le Nuage !", "success");
-      fetchBadges();
+      setBadges(prev => {
+        const exists = prev.some(b => b.id === cleanId);
+        const updated = exists ? prev.map(b => b.id === cleanId ? newBadge : b) : [...prev, newBadge];
+        return updated.sort((a, b) => a.label.localeCompare(b.label));
+      });
       setForm({ id: '', label: '', icon_name: 'Award', color_classes: 'bg-stone-100 text-stone-800 border-stone-300', description: '' });
     } catch (err) {
       showInAppNotification("La forge a échoué : " + err.message, "error");

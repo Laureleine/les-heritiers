@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.9.0 - \"La Loge des Façonneurs 🏅\"",
+    date: "14 Juillet 2026",
+    description: "La Forge des Titres s'enrichit d'un sélecteur visuel d'icônes : fini de taper un nom à l'aveugle, le Façonneur parcourt désormais la totalité de la bibliothèque Lucide (~1 400 icônes) dans une grille filtrée par recherche, clique et voit l'aperçu instantanément. Les badges fraîchement forgés apparaissent aussitôt dans le registre sans rechargement. Dans le Bureau des Anomalies, les Gardiens peuvent désormais contacter directement le signaleur par un lien cliquable.",
+    changes: [
+      "🏅 **Sélecteur d'icônes pour les Titres :** La Forge affiche une grille visuelle de toutes les icônes Lucide (~1 400). Un champ de recherche filtre en temps réel ; cliquer sélectionne et met à jour l'aperçu en direct.",
+      "⚡ **Forgeage instantané :** Le titre créé ou modifié apparaît aussitôt dans le registre, sans attendre un rechargement réseau.",
+      "📬 **Contact direct dans les fiches d'anomalie :** Les Gardiens voient un lien e-mail cliquable sur chaque signalement, pour joindre le joueur sans quitter l'application.",
+    ],
+  },
+  {
     version: "17.8.0 - \"L'Ordre des Choses 🔮\"",
     date: "14 Juillet 2026",
     description: "Une mise à jour de précision. Dans chaque step de magie, seuls les sorts accessibles au rang actuel du personnage sont désormais visibles — les cercles supérieurs restent cachés jusqu'à ce que la pratique mûrisse. Plusieurs anomalies sont corrigées : les indices de Féérie retrouvent leur élément, l'XP peut à nouveau être retiré dans un cercle, et deux erreurs de données (Fortune et Secrets du Monde) sont réparées.",

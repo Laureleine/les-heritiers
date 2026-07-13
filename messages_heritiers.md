@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.9.0 — La Loge des Façonneurs 🏅
+
+Chers Héritiers,
+
+Dans les arrière-salles du Grimoire, la Loge des Façonneurs a reçu de nouveaux outils.
+
+Jusqu'ici, créer un titre honorifique exigeait de taper le nom exact d'une icône — un pari sur la mémoire autant que sur l'orthographe. Désormais, la Forge ouvre un cabinet de plusieurs centaines de symboles : une grille entière, filtrée par un champ de recherche, où il suffit de cliquer pour choisir. L'aperçu se met à jour à l'instant même, et le titre fraîchement forgé apparaît dans le registre sans délai.
+
+Dans le Bureau des Anomalies, les Gardiens disposent maintenant d'un lien direct pour écrire au signaleur d'un bug — un fil télégraphique entre l'administration et les Héritiers qui font remonter les failles.
+
+Que la forge tourne sans relâche.
+
+*— Les Gardiens du Grimoire*
+
+---
+
 ## v17.8.0 — « L'Ordre des Choses » — 14 Juillet 2026
 
 ✨ **Mise à jour v17.8.0 — L'Ordre des Choses** ✨
