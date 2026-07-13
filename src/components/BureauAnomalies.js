@@ -1,9 +1,10 @@
 // 15.0.0
 
 import React, { useState, useEffect } from 'react';
-import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft } from '../config/icons';
+import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft, Mail } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext';
+import { isAdmin } from '../utils/authRoles';
 import { showInAppNotification } from '../utils/SystemeServices';
 
 export default function BureauAnomalies({ onBack }) {
@@ -20,7 +21,7 @@ export default function BureauAnomalies({ onBack }) {
     // On ne charge que les bugs publics OU ceux de l'utilisateur
     const { data, error } = await supabase
       .from('bug_reports')
-      .select('*, profiles(username)')
+      .select('*, profiles(username, email)')
       .or(`is_confidential.eq.false,user_id.eq.${userProfile.id}`)
       .order('created_at', { ascending: false });
     
@@ -159,8 +160,17 @@ export default function BureauAnomalies({ onBack }) {
                   {report.is_confidential && <EyeOff size={14} className="text-stone-400" title="Confidentiel" />}
                 </div>
                 <p className="text-sm text-stone-600 leading-relaxed">{report.description}</p>
-                <div className="text-xs text-stone-400 mt-3 flex gap-4">
+                <div className="text-xs text-stone-400 mt-3 flex flex-wrap gap-4 items-center">
                   <span>Déclaré par : {report.profiles?.username || 'Anonyme'}</span>
+                  {isAdmin(userProfile) && report.profiles?.email && (
+                    <a
+                      href={`mailto:${report.profiles.email}`}
+                      className="flex items-center gap-1 text-amber-700 hover:text-amber-900 hover:underline transition-colors"
+                      title={`Écrire à ${report.profiles.email}`}
+                    >
+                      <Mail size={11} /> {report.profiles.email}
+                    </a>
+                  )}
                   <span>Version : {report.version_app}</span>
                 </div>
               </div>
