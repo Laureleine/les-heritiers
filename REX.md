@@ -6,6 +6,22 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+# REX — Session 14 Juillet 2026 — v17.9.0 « La Loge des Façonneurs »
+
+## 1. `import * as X` défait le tree-shaking — à isoler dans les composants admin
+
+`import * as LucideIcons from 'lucide-react'` importe toutes les icônes (~1 400) et annule le tree-shaking. C'est acceptable dans un composant admin-only (TabForgeTitres) car le coût bundle est supporté une seule fois par Vite. Ne jamais faire ça dans `icons.js` ni dans un composant chargé sur le chemin critique — ça gonflerait le bundle principal pour tous les joueurs.
+
+## 2. Mise à jour optimiste après upsert : préférer `setState` à un re-fetch
+
+Après un `supabase.upsert`, appeler `fetchBadges()` impose un round-trip réseau inutile puisqu'on connaît déjà le résultat. Mise à jour directe de l'état local (`setBadges`) avec tri identique à la requête Supabase (`.sort((a,b) => a.label.localeCompare(b.label))`) — le résultat est instantané. Valide pour toute mutation dont on contrôle la réponse.
+
+## 3. Filtre des exports Lucide : `typeof comp === 'function' && /^[A-Z]/.test(name)` suffit
+
+Pour extraire uniquement les composants d'icônes de `* as LucideIcons`, le filtre capitalized-function est suffisant. `createLucideIcon` commence par minuscule, les constantes de version sont des strings : aucun faux positif observé.
+
+---
+
 # REX — Session 14 Juillet 2026 — v17.8.0 « L'Ordre des Choses »
 
 ## 1. Bug de schéma Supabase : diagnostiquer par le nom de table, pas par le message d'erreur
