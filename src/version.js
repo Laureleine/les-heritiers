@@ -49,7 +49,7 @@ export const VERSION_HISTORY = [
     date: "12 Juillet 2026",
     description: "Un cap est franchi. Les Arts Obscurs, longtemps silencieux dans les archives, déploient enfin leurs quatre-vingt-quatre sorts apprenables — des philtres du Druide Maître aux Axiomes du Grand Langage en passant par les rites de la Nécromancie, les recettes de la Faëomancie, les miracles de la Théurgie et les trois branches du Souffle. Les coûts en XP s'affichent sur chaque bouton d'apprentissage ; les sorts offerts portent un badge doré. En coulisses, le Greffe des Âmes commence à observer discrètement l'usage de chaque outil par les Doctes — et les abonnés aux nouvelles de l'Atelier reçoivent désormais leurs missives automatiquement à chaque nouvelle version.",
     changes: [
-      "📜 **84 sorts des Arts Obscurs en base :** 6 philtres Druidisme (Maître), 9 recettes Faëomancie, 10 rites Nécromancie, 25 sorts Souffle (Combat / Mouvement / Esprit), 22 miracles Théurgie, 12 Axiomes du Grand Langage — tous apprenables depuis la fiche personnage.",
+      "📜 **84 sorts des Arts Obscurs en base**, apprenables depuis la fiche personnage.",
       "💰 **Coût XP sur les boutons d'apprentissage :** Chaque sort affiche son tarif. Un badge «Offert» doré distingue les sorts gratuits (Ritual des Portes d'Avalon, Rituel de malédiction).",
       "📊 **Registre des usages Docte :** Une table consigne chaque visite aux Outils (Gazette, Carte, Générateurs…). L'onglet Métriques du tableau de bord en tire les statistiques d'usage par outil et par utilisateur.",
       "📬 **Notifications automatiques aux abonnés :** À chaque nouvelle version, les Héritiers abonnés reçoivent directement leur missive de l'Atelier — selon leur préférence (versions majeures ou toutes versions).",
@@ -61,7 +61,7 @@ export const VERSION_HISTORY = [
     date: "11 Juillet 2026",
     description: "Les archives des Arts Obscurs s'ouvrent enfin. Sept pratiques magiques révèlent leurs secrets : les philtres du Druidisme de niveau Maître, les recettes de la Faëomancie, les rites de la Nécromancie, les trois branches du Souffle (Combat, Mouvement, Esprit), les miracles de la Théurgie et les douze Axiomes du Grand Langage. En tout, quatre-vingt-quatre sorts apprenables entrent dans la base — avec leurs coûts en XP affichés sur les boutons, et un badge doré pour les sorts offerts. En coulisses, un registre discret consigne l'usage de chaque outil par les Doctes.",
     changes: [
-      "📜 **84 sorts des Arts Obscurs en base :** 6 philtres Druidisme (Maître), 9 recettes Faëomancie, 10 rites Nécromancie, 25 sorts Souffle répartis en trois branches (Combat / Mouvement / Esprit), 22 miracles Théurgie et 12 Axiomes du Grand Langage — tous apprenables depuis la fiche personnage.",
+      "📜 **84 sorts des Arts Obscurs en base**, apprenables depuis la fiche personnage.",
       "💰 **Coût XP sur les boutons d'apprentissage :** Les sorts portent désormais leur tarif en XP. Un badge «Offert» doré distingue les sorts gratuits (Rituel des Portes d'Avalon, Rituel de malédiction) des sorts au tarif ordinaire.",
       "📊 **Registre des usages Docte :** Une table discrète consigne chaque visite aux outils (Gazette, Carte, Générateurs…). L'onglet Métriques du tableau de bord admin en tire désormais les statistiques d'usage.",
       "🧪 **497 Sentinelles — aucune régression.**",
