@@ -7,7 +7,7 @@ import { useUserContext } from '../../context/UserContext';
 import ConfirmModal from '../ConfirmModal';
 
 const ALL_ICONS = Object.entries(LucideIcons).filter(
-  ([name, comp]) => /^[A-Z]/.test(name) && !name.endsWith('Icon') && comp && typeof comp === 'object' && '$$typeof' in comp
+  ([name, comp]) => /^[A-Z]/.test(name) && !name.endsWith('Icon') && !name.startsWith('Lucide') && comp && typeof comp === 'object' && '$$typeof' in comp
 );
 
 function IconPicker({ value, onChange }) {
