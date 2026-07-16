@@ -4,6 +4,7 @@ import { genererConsultation } from '../utils/cabinetGenerator';
 import { useCabinetTableEntries } from '../hooks/useCabinetTableEntries';
 import { isAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
+import { logOutilUsage } from '../utils/supabaseGameData';
 import { supabase } from '../config/supabase';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
@@ -499,6 +500,7 @@ export default function CabinetGenerateur({ onBack }) {
 
   const generer = async () => {
     setLoading(true);
+    logOutilUsage(session?.user?.id, 'cabinet');
     try {
       const result = await genererConsultation(genreMedecin);
       setConsultation(result);

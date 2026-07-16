@@ -12,6 +12,7 @@ const OUTIL_LABELS = {
   ambiance:   "Génér. d'Ambiance",
   argot:      "Trad. d'Argot",
   tracas:     'Génér. de Tracas',
+  cabinet:    'Cabinet Médical',
 };
 
 function TabStats() {
