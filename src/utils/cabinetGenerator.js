@@ -17,20 +17,21 @@ function tirerAuHasard(liste) {
 }
 
 async function fetchNom(genre) {
-  const { data: prenoms } = await supabase.from('cabinet_noms').select('prenom').eq('genre', genre);
-  const { data: noms } = await supabase.from('cabinet_noms').select('nom');
+  const { data: prenoms } = await supabase.from('cabinet_noms').select('prenom').eq('genre', genre).eq('status', 'approved');
+  const { data: noms } = await supabase.from('cabinet_noms').select('nom').eq('status', 'approved');
   return `${tirerAuHasard(prenoms).prenom} ${tirerAuHasard(noms).nom}`;
 }
 
 async function fetchBackground(genre) {
-  const { data } = await supabase.from('cabinet_backgrounds').select('*').in('genre', [genre, 'Mixte']);
+  const { data } = await supabase.from('cabinet_backgrounds').select('*').in('genre', [genre, 'Mixte']).eq('status', 'approved');
   return tirerParPoids(data || []);
 }
 
 async function fetchPathologie(groupeCible, genre) {
   const { data } = await supabase.from('cabinet_pathologies').select('*')
     .in('groupe_cible', [groupeCible, 'Tous'])
-    .in('genre_autorise', [genre, 'Tous']);
+    .in('genre_autorise', [genre, 'Tous'])
+    .eq('status', 'approved');
   return tirerParPoids(data || []);
 }
 
