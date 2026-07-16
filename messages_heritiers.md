@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.10.0 — Le Registre du Cabinet 🩺
+
+Chers Héritiers,
+
+Le Cabinet Médical de Paris 1899 vient d'ouvrir ses archives au public savant.
+
+Jusqu'ici, les consultations tirées au sort puisaient dans un fonds fixe de pathologies, d'origines sociales et de noms. Désormais, chacun d'entre vous peut y contribuer : proposer un nouveau diagnostic oublié de la médecine d'époque, une profession singulière, un patronyme tiré des registres paroissiaux. Vos propositions entrent dans une file d'attente ; les Gardiens les examinent, les approuvent, les affinent ou les écartent avec motif — exactement comme pour les autres générateurs de la Société.
+
+Deux nouveaux onglets ont été ouverts dans le Cabinet : **Tables**, qui expose l'intégralité du fonds approuvé, et **Validation**, réservé aux Gardiens pour tenir à jour ce corpus vivant.
+
+Paris est vaste, ses malades sont innombrables, et la science de l'époque est pleine de lacunes délicieuses. Remplissez-les.
+
+*— La Société des Héritiers*
+
+---
+
 ## v17.9.0 — La Loge des Façonneurs 🏅
 
 Chers Héritiers,

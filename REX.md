@@ -6,6 +6,33 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session v17.10.0 — 16 juillet 2026
+
+### Ce qui a été fait
+- Ajout des onglets Tables + Validation au Cabinet Médical (continuation de session précédente)
+- Migration SQL sur 3 tables existantes (`cabinet_noms`, `cabinet_backgrounds`, `cabinet_pathologies`)
+- Hook `useCabinetTableEntries` gérant 3 tables hétérogènes avec une API unifiée
+- Fix tracking : `logOutilUsage('cabinet')` + label dans `TabStats.js`
+
+### Leçons
+
+**1. Toujours vérifier le tracking au moment de créer un générateur**
+Deux oublis en une session : ni `logOutilUsage` dans le composant, ni l'entrée dans `OUTIL_LABELS`. Faire un checklist mentale systématique lors de la création d'un outil : (a) le composant logue-t-il à l'usage ? (b) le hub OutilsHub a-t-il le bon handler ? (c) TabStats connaît-il l'ID ?
+
+**2. 3 tables hétérogènes = hook unifié avec tableName discriminant**
+Quand un générateur repose sur plusieurs tables aux schémas différents (noms / backgrounds / pathologies), la solution la plus propre reste une API unique `proposer({ tableName, ...fields })` avec `buildFields(tableName, form)` côté formulaire pour n'envoyer que les champs pertinents. Évite de multiplier les fonctions spécialisées.
+
+**3. Le formulaire dynamique par type de table est incontournable**
+Le ProposerEntree doit rendre des champs différents selon la table sélectionnée. Utiliser un objet form unique avec toutes les clés possibles, et `buildFields()` pour extraire uniquement les champs du type courant avant l'envoi. Propre et sans collisions de state.
+
+**4. Pour la ValidationTab multi-tables : merge + `_tableName` discriminant**
+Interroger les 3 tables en parallèle (`Promise.all`), merger les résultats avec `_tableName` et `_label` calculé, trier par `created_at`. La clé composite `${entry._tableName}-${entry.id}` évite les collisions de key React.
+
+**5. Migration sur tables existantes vs nouvelle table d'entrées**
+Quand les données du générateur sont déjà en 3 tables, ajouter les colonnes de tracking directement (avec `DEFAULT 'approved'` pour les lignes existantes) est plus simple que de créer une nouvelle table d'entrées et migrer les données. Les deux approches sont valides selon le contexte.
+
+---
+
 # REX — Session 14 Juillet 2026 — v17.9.0 « La Loge des Façonneurs »
 
 ## 1. `import * as X` défait le tree-shaking — à isoler dans les composants admin

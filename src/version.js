@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.10.0 - \"Le Registre du Cabinet 🩺\"",
+    date: "16 Juillet 2026",
+    description: "Le Cabinet Médical s'enrichit de deux onglets : Tables et Validation. Les joueurs peuvent désormais proposer de nouveaux noms, origines sociales et pathologies pour alimenter les tirages. Les Gardiens disposent d'une file de validation pour approuver, refuser ou corriger chaque proposition. Les statistiques d'usage du Cabinet sont maintenant intégrées aux métriques admin.",
+    changes: [
+      "🩺 **Tables du Cabinet :** Un onglet affiche toutes les entrées approuvées (Noms & Prénoms, Origines & Professions, Pathologies) avec un formulaire de proposition adapté à chaque type.",
+      "✅ **Validation des propositions :** Les Gardiens accèdent à une file d'attente pending / approuvés / refusés, avec approbation, refus motivé et édition inline de chaque entrée.",
+      "📊 **Tracking des usages :** Chaque tirage du Cabinet Médical est désormais comptabilisé dans les métriques de l'espace Gardien.",
+    ],
+  },
+  {
     version: "17.9.0 - \"La Loge des Façonneurs 🏅\"",
     date: "14 Juillet 2026",
     description: "La Forge des Titres s'enrichit d'un sélecteur visuel d'icônes : fini de taper un nom à l'aveugle, le Façonneur parcourt désormais la totalité de la bibliothèque Lucide (~1 400 icônes) dans une grille filtrée par recherche, clique et voit l'aperçu instantanément. Les badges fraîchement forgés apparaissent aussitôt dans le registre sans rechargement. Dans le Bureau des Anomalies, les Gardiens peuvent désormais contacter directement le signaleur par un lien cliquable.",
