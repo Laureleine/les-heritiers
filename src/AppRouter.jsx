@@ -40,6 +40,7 @@ const PocheGenerateur = lazy(() => import('./components/PocheGenerateur'));
 const AmbianceGenerateur = lazy(() => import('./components/AmbianceGenerateur'));
 const TraducteurArgot = lazy(() => import('./components/TraducteurArgot'));
 const TracasGenerateur = lazy(() => import('./components/TracasGenerateur'));
+const CabinetGenerateur = lazy(() => import('./components/CabinetGenerateur'));
 const OutilsHub = lazy(() => import('./components/OutilsHub'));
 
 export default function AppRouter() {
@@ -146,6 +147,7 @@ export default function AppRouter() {
             onOpenAmbiance={() => navigate('/ambiance')}
             onOpenArgot={() => navigate('/argot')}
             onOpenTracas={() => navigate('/tracas')}
+            onOpenCabinet={() => navigate('/cabinet')}
           />
         } />
         <Route path="/actualite" element={<Actualite onBack={() => navigate('/outils')} />} />
@@ -156,6 +158,7 @@ export default function AppRouter() {
         <Route path="/ambiance" element={<AmbianceGenerateur onBack={() => navigate('/outils')} />} />
         <Route path="/argot" element={<TraducteurArgot onBack={() => navigate('/outils')} />} />
         <Route path="/tracas" element={<TracasGenerateur onBack={() => navigate('/outils')} />} />
+        <Route path="/cabinet" element={<CabinetGenerateur onBack={() => navigate('/outils')} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

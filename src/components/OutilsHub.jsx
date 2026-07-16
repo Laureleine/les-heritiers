@@ -1,6 +1,6 @@
 // src/components/OutilsHub.jsx
 import React from 'react';
-import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package, Route, Feather, AlertTriangle } from '../config/icons';
+import { ArrowLeft, Globe, Map, Dices, UtensilsCrossed, Package, Route, Feather, AlertTriangle, Activity } from '../config/icons';
 import { useUserContext } from '../context/UserContext';
 import { logOutilUsage } from '../utils/supabaseGameData';
 
@@ -93,9 +93,20 @@ const OUTILS = [
     hover: 'hover:bg-orange-100 hover:border-orange-300',
     iconColor: 'text-orange-700',
   },
+  {
+    id: 'cabinet',
+    titre: 'Cabinet Médical 1899',
+    description: "Générez une consultation médicale complète — patient, diagnostic historique et dynamique psychologique.",
+    icon: Activity,
+    couleur: 'red',
+    bg: 'bg-red-50',
+    border: 'border-red-200',
+    hover: 'hover:bg-red-100 hover:border-red-300',
+    iconColor: 'text-red-700',
+  },
 ];
 
-export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche, onOpenAmbiance, onOpenArgot, onOpenTracas }) {
+export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpenGenerateur, onOpenMenu, onOpenPoche, onOpenAmbiance, onOpenArgot, onOpenTracas, onOpenCabinet }) {
   const { session } = useUserContext();
   const userId = session?.user?.id;
 
@@ -109,6 +120,7 @@ export default function OutilsHub({ onBack, onOpenActualite, onOpenCarte, onOpen
     ambiance:   onOpenAmbiance,
     argot:      onOpenArgot,
     tracas:     onOpenTracas,
+    cabinet:    onOpenCabinet,
   };
 
   return (
