@@ -73,7 +73,7 @@ const OUTILS = [
   },
   {
     id: 'argot',
-    titre: "Traducteur d'Argot 1899",
+    titre: "Traducteur d'Argot",
     description: "Réécrivez une phrase dans le parler bourgeois, apache, ouvrier ou louchebem de l'époque.",
     icon: Feather,
     couleur: 'violet',
@@ -95,7 +95,7 @@ const OUTILS = [
   },
   {
     id: 'cabinet',
-    titre: 'Cabinet Médical 1899',
+    titre: 'Cabinet Médical',
     description: "Générez une consultation médicale complète — patient, diagnostic historique et dynamique psychologique.",
     icon: Activity,
     couleur: 'red',

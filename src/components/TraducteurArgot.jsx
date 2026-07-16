@@ -67,7 +67,7 @@ export default function TraducteurArgot({ onBack }) {
           <button onClick={onBack} className="p-2 rounded-lg text-amber-200/70 hover:text-amber-100 hover:bg-white/10 transition-all">
             <ArrowLeft size={18} />
           </button>
-          <h1 className="font-serif font-bold text-amber-100 text-lg">Traducteur d'Argot 1899</h1>
+          <h1 className="font-serif font-bold text-amber-100 text-lg">Traducteur d'Argot</h1>
         </div>
       </header>
 

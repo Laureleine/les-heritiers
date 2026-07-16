@@ -54,7 +54,7 @@ export default function CabinetGenerateur({ onBack }) {
             <ArrowLeft size={18} />
           </button>
           <Activity size={18} className="text-red-400" />
-          <h1 className="font-serif font-bold text-amber-100 text-base">Cabinet Médical — 1899</h1>
+          <h1 className="font-serif font-bold text-amber-100 text-base">Cabinet Médical</h1>
         </div>
       </header>
 
