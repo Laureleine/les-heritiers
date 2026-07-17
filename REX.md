@@ -6,6 +6,45 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session 17 juillet 2026 — Mode Offline Complet (v17.11.0)
+
+### Méthode : Subagent-Driven Development
+
+**Architecture offline en stubs dépendants**
+Quand un module A (`syncQueue.js`) est importé par un module B (`db.js`) avant d'être terminé, créer un **stub fonctionnel** : la fonction centrale (`enqueueOperation`) est opérationnelle, les fonctions secondaires (`syncAll`, etc.) sont des no-ops. Le stub évite de bloquer B tout en gardant la task A indépendante.
+
+**Clé composite Dexie `[key+user_id]` pour `user_data`**
+Le filtre `.eq()` sur USER_DATA offline est inutile — les données sont déjà scopées par la clé composite. Un filtre colonne-par-colonne en offline serait trop strict et dépendant du schéma live. Retourner le dataset complet pour `[key+user_id]` est correct.
+
+**`cacheUserData()` n'est PAS automatique**
+`wrapOnlineQuery` ne cache que `GAME_DATA_TABLES`. Pour USER_DATA (profils, notes, chroniques, sessions), `db.cacheUserData(key, userId, data)` doit être appelé **explicitement** dans chaque hook après chaque fetch réussi. Le rater silencieusement = pas de données offline pour cet utilisateur.
+
+**Double listener `online` = insertions dupliquées**
+Si `syncQueue.js` s'abonne lui-même à `window.addEventListener('online', syncAll)` ET que `OfflineStatusContext` appelle aussi `syncAll` au retour en ligne, chaque retour réseau déclenche deux `syncAll` concurrents. Résultat : les `insert` non idempotents (notes, signalements) sont dupliqués en base. **Un seul orchestrateur.** Supprimer le listener dans `syncQueue.js`, laisser `OfflineStatusContext` seul maître du cycle.
+
+**`git add -A` par les agents = danger**
+Un agent correcteur de sécurité (Task 9) a commis 8158 fichiers `1899/output/*.json` qui traînaient dans le répertoire non-suivis. Toujours vérifier `git status` avant commit dans les briefs d'implémentation. Ajouter la règle explicitement : **"Utilisez `git add <fichiers spécifiques>`, jamais `git add -A` ou `git add .`"**.
+
+**Mapping camelCase offline/online obligatoire**
+Les données Supabase arrivent en snake_case ; `mapDatabaseToCharacter()` existe pour convertir. Les chemins offline (lecture Dexie) doivent appliquer le même mapping que le chemin online. Sans ça, le snake_case casse silencieusement les callers — les tests passent car ils mockent `navigator.onLine=true` par défaut et n'exercent pas le chemin Dexie.
+
+**Filtres de sécurité (`player_id`) à préserver lors des refactorings**
+Simplifier les signatures de fonctions (ex: `updateNote`, `deleteNote`) peut faire sauter des filtres `.eq('player_id', playerId)` qui protégeaient les données d'un utilisateur contre modification par un autre. Les tests de sécurité spécifiques (assertion que `eq('player_id', ...)` est appelé) doivent être explicitement inclus dans les briefs.
+
+**`review-package` explose avec des fichiers non-suivis committé**
+Le script `scripts/review-package BASE HEAD` produit un diff de plusieurs centaines de Mo quand des milliers de fichiers parasites sont dans l'historique. Solution de contournement : `git show SHA -U5 -- src/ fichier1 fichier2` pour générer un diff ciblé manuellement.
+
+**`db.setUserId()` avant `db.from('profiles')`**
+L'`OfflineBuilder` utilise `db._userId` pour chercher dans Dexie. Si `setUserId()` est appelé *après* `db.from('profiles')`, la lecture offline retourne vide car l'userId n'était pas encore connu. Ordre impératif : **setUserId → from → select**.
+
+**Haiku pour les reviews, Sonnet pour les implémenteurs multi-fichiers**
+Les reviews de petits diffs (< 5000 bytes) peuvent être faites par Haiku (rapide, économique). Les implémenteurs qui touchent 3+ fichiers avec de la logique conditionnelle valent Sonnet — Haiku prend 2-3× plus de tours et coûte plus au final.
+
+**Ledger de session vital après compaction de contexte**
+Sans le fichier `.superpowers/sdd/progress.md`, une compaction de contexte aurait relancé des tâches déjà terminées. Ce fichier a sauvé la session deux fois. Toujours l'écrire **au moment de marquer une tâche terminée**, pas en batch à la fin.
+
+---
+
 ## Session v17.10.1 — 17 juillet 2026
 
 ### 1. Vérifier la signature d'une fonction avant de chercher ailleurs
