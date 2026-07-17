@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.11.0 - \"Le Grimoire Voyageur 🧳✨\"",
+    date: "17 Juillet 2026",
+    description: "L'Atelier ouvre ses portes même quand le réseau se ferme. Grâce à un cache secret tissé dans les profondeurs de votre navigateur, les fiches personnage, l'encyclopédie, le Grimoire, la carte, les chroniques et les sessions restent accessibles sans connexion. Les notes écrites hors ligne sont prudemment mises en attente et rejoignent Supabase dès que le réseau revient. Une bannière discrète signale l'état du lien — ambre quand vous voyagez seul, verte quand le pont se reconstruit.",
+    changes: [
+      "🧳 **Mode hors ligne :** L'application fonctionne sans connexion dès qu'elle a été visitée une fois en ligne. Les données de jeu (encyclopédie, badges, sorts, types de fées), les fiches personnage, le Grimoire, la carte, les chroniques et les sessions sont servis depuis le cache local.",
+      "📝 **File d'attente des mutations :** Les notes du Grimoire ajoutées ou modifiées hors ligne sont enregistrées dans une file secrète et soumises automatiquement à Supabase au retour en ligne. Trois tentatives maximum — les échecs sont signalés avec un bouton « Réessayer ».",
+      "🔔 **Bannière d'état réseau :** Quatre états distincts — ambre (hors ligne), bleu avec roue tournante (synchronisation en cours), rouge avec bouton Réessayer (erreurs), vert 3 secondes (synchronisation réussie).",
+      "🚪 **Écran première visite hors ligne :** Si vous n'avez jamais visité l'Atelier en ligne sur cet appareil, un écran patiemment orné vous invite à vous connecter une première fois pour ouvrir le Grimoire.",
+      "🔄 **Mise à jour automatique :** Quand une nouvelle version de l'Atelier est disponible, une notification discrète vous invite à recharger la page.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.10.1 - \"Les Trois Réparations 🔧\"",
     date: "17 Juillet 2026",
     description: "Trois anomalies silencieuses corrigées : le lanceur de dés 3D tenait mal ses promesses en navigation privée et ignorait les thèmes sang et améthyste ; la création de compétences futiles depuis l'encyclopédie échouait sans bruit ; et le contact e-mail dans le Bureau des Anomalies n'apparaissait jamais faute de données dans la bonne table.",

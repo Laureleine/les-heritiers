@@ -4,6 +4,32 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.11.0 — Le Grimoire Voyageur 🧳✨
+*17 juillet 2026*
+
+Chers Héritiers,
+
+Il est des nuits où le réseau vacille, où le fil pneumatique se coupe entre deux arrondissements, où le brouillard de la Manche enveloppe les câbles sous-marins. L'Atelier a longtemps gardé ses portes closes en pareilles circonstances. Ce soir, elles restent ouvertes.
+
+**Le Grimoire Voyageur** (v17.11.0) tisse un cache secret dans les profondeurs de votre navigateur. Dès qu'un Héritier a posé le pied dans l'Atelier au moins une fois en ligne, ses données l'accompagnent partout — en wagon, en villégiature, dans les zones blanches de la carte où le réseau n'ose pas s'aventurer.
+
+🧳 **Ce qui voyage avec vous, même sans connexion :**
+- Votre fiche personnage, vos capacités, vos sorts
+- Votre Grimoire (notes, contacts, possessions)
+- La carte de Paris et ses points d'intérêt
+- Vos Chroniques d'Héritage et les sessions de Cercle
+- L'encyclopédie des données de jeu
+
+📝 **Les notes ne se perdent pas dans le vide.** Si vous rédigez une entrée dans votre Grimoire hors ligne, elle est prudemment mise en attente. Dès que le réseau revient, elle rejoint Supabase sans que vous ayez à lever le petit doigt.
+
+🔔 **Une bannière discrète** veille dans l'ombre — ambre quand vous voyagez seul, bleue et tournoyante pendant la synchronisation, verte quelques secondes pour vous annoncer que tout est rentré dans l'ordre.
+
+Que vos aventures ne s'arrêtent plus aux caprices du réseau.
+
+*L'Atelier des Héritiers*
+
+---
+
 ## v17.10.1 — Les Trois Réparations 🔧
 *17 juillet 2026*
 
