@@ -6,6 +6,21 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session 17 juillet 2026 — Le Sceau du Docte (v17.11.1)
+
+### Correctif : XP réservé au Docte du Cercle
+
+**Localiser rapidement le bon niveau pour un guard de permission UI**
+Dans une arborescence React avec props transmises en chaîne, chercher `isDocte` depuis la source (ici `ActiveCercleView.js`) vers le bas jusqu'au composant qui rend le contenu à restreindre. La règle : wrapper `{isDocte && (...)}` côté affichage, et neutraliser les champs côté `handleSubmit` pour la défense en profondeur. Ces deux couches ensemble protègent à la fois l'UX et les données envoyées au serveur.
+
+**Une prop manquante, deux fichiers à corriger**
+Quand un composant enfant reçoit une prop mais ne la transmet pas à son enfant, vérifier les deux niveaux. `TabPartiesJeu` avait `isDocte` mais ne le passait pas à `SessionForm`. Corriger l'intermédiaire ET le destinataire final.
+
+**Patch version pour correctif UX/sécurité**
+Un correctif de permission sans nouveau champ de base de données ni migration mérite un patch (x.y.Z), pas une mineure. La distinction est importante pour calibrer les notifications aux abonnés (type `minor` = patches + mineures).
+
+---
+
 ## Session 17 juillet 2026 — Mode Offline Complet (v17.11.0)
 
 ### Méthode : Subagent-Driven Development
