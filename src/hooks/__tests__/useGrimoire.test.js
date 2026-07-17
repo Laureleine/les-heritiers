@@ -1,5 +1,9 @@
-vi.mock('../../config/supabase', () => ({
-  supabase: { from: vi.fn() },
+vi.mock('../../config/db', () => ({
+  db: {
+    from: vi.fn(),
+    cacheUserData: vi.fn().mockResolvedValue(undefined),
+    setUserId: vi.fn(),
+  },
 }));
 
 vi.mock('../../utils/SystemeServices', () => ({
@@ -8,7 +12,7 @@ vi.mock('../../utils/SystemeServices', () => ({
 
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useGrimoire } from '../useGrimoire';
-import { supabase } from '../../config/supabase';
+import { db } from '../../config/db';
 import { showInAppNotification } from '../../utils/SystemeServices';
 
 const CHAR_ID = 'char-1';
@@ -26,7 +30,7 @@ function makeChain(result = { data: null, error: null }) {
 }
 
 function setupInitMock() {
-  supabase.from.mockReturnValue(makeChain({ data: [], error: null }));
+  db.from.mockReturnValue(makeChain({ data: [], error: null }));
 }
 
 describe('useGrimoire — toggleShare', () => {
@@ -44,7 +48,7 @@ describe('useGrimoire — toggleShare', () => {
       await result.current.toggleShare('note-1', false);
     });
 
-    expect(supabase.from).not.toHaveBeenCalled();
+    expect(db.from).not.toHaveBeenCalled();
     expect(showInAppNotification).toHaveBeenCalledWith(
       expect.stringContaining('aucun Cercle'),
       'warning'
@@ -52,7 +56,7 @@ describe('useGrimoire — toggleShare', () => {
   });
 });
 
-describe('useGrimoire — createEntry', () => {
+describe('useGrimoire — addNote', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setupInitMock();
@@ -63,11 +67,13 @@ describe('useGrimoire — createEntry', () => {
     const { result } = renderHook(() => useGrimoire(CHAR_ID, CERCLE_ID, PLAYER_ID));
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    const actionChain = makeChain({ data: returnedNote, error: null });
-    supabase.from.mockReturnValue(actionChain);
+    // data must be an array: addNote() calls fetchGrimoire() on success,
+    // which receives this same chain and runs data.filter(...)
+    const actionChain = makeChain({ data: [returnedNote], error: null });
+    db.from.mockReturnValue(actionChain);
 
     await act(async () => {
-      await result.current.createEntry('note', { titre: 'Test' });
+      await result.current.addNote('note', { titre: 'Test' });
     });
 
     expect(actionChain.insert).toHaveBeenCalledWith([
@@ -76,45 +82,50 @@ describe('useGrimoire — createEntry', () => {
   });
 });
 
-describe('useGrimoire — updateEntry', () => {
+describe('useGrimoire — updateNote', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setupInitMock();
   });
 
-  it('applique .eq("player_id", playerId) pour ne modifier que ses propres entrées', async () => {
-    const returnedNote = { id: 'note-1', type: 'note', content: { titre: 'Updated' }, character_id: CHAR_ID };
+  it('applique .eq("id", noteId) pour modifier la note', async () => {
     const { result } = renderHook(() => useGrimoire(CHAR_ID, CERCLE_ID, PLAYER_ID));
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    const actionChain = makeChain({ data: returnedNote, error: null });
-    supabase.from.mockReturnValue(actionChain);
+    const actionChain = makeChain({ data: null, error: null });
+    db.from.mockReturnValue(actionChain);
 
     await act(async () => {
-      await result.current.updateEntry('note-1', 'note', { titre: 'Updated' });
+      await result.current.updateNote('note-1', { content: { titre: 'Updated' } });
     });
 
-    expect(actionChain.eq).toHaveBeenCalledWith('player_id', PLAYER_ID);
+    expect(actionChain.eq).toHaveBeenCalledWith('id', 'note-1');
   });
 });
 
-describe('useGrimoire — deleteEntry', () => {
+describe('useGrimoire — deleteNote', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setupInitMock();
   });
 
-  it('applique .eq("player_id", playerId) pour ne supprimer que ses propres entrées', async () => {
+  it('refuse de supprimer hors ligne et notifie', async () => {
+    Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
+
     const { result } = renderHook(() => useGrimoire(CHAR_ID, CERCLE_ID, PLAYER_ID));
     await waitFor(() => expect(result.current.loading).toBe(false));
-
-    const actionChain = makeChain({ error: null });
-    supabase.from.mockReturnValue(actionChain);
+    vi.clearAllMocks();
 
     await act(async () => {
-      await result.current.deleteEntry('note-1', 'note');
+      await result.current.deleteNote('note-1');
     });
 
-    expect(actionChain.eq).toHaveBeenCalledWith('player_id', PLAYER_ID);
+    expect(db.from).not.toHaveBeenCalled();
+    expect(showInAppNotification).toHaveBeenCalledWith(
+      expect.stringContaining('hors ligne'),
+      'warning'
+    );
+
+    Object.defineProperty(navigator, 'onLine', { value: true, writable: true, configurable: true });
   });
 });

@@ -59,7 +59,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
   const isDocte = userProfile?.profile?.is_docte === true || isAdmin;
 
-  const { notes, contacts, possessions, loading, toggleShare, createEntry, updateEntry, deleteEntry } = useGrimoire(characterId, cercleId, playerId, isAdmin);
+  const { notes, contacts, possessions, loading, toggleShare, addNote, updateNote, deleteNote } = useGrimoire(characterId, cercleId, playerId, isAdmin);
 
   const migratedContacts = useMemo(() =>
     contacts.map(c => ({ ...c, content: migrateContactContent(c.content) })),
@@ -147,15 +147,14 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
     setIsSubmitting(true);
 
-    let success;
     if (editingEntry) {
-      success = await updateEntry(editingEntry.id, editingEntry.type, formData);
+      await updateNote(editingEntry.id, { content: formData });
     } else {
-      success = await createEntry(activeType, formData);
+      await addNote(activeType, formData);
     }
 
     setIsSubmitting(false);
-    if (success) handleCloseModal();
+    handleCloseModal();
   };
 
   const handleDeleteClick = (entry, name) => {
@@ -167,7 +166,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
     if (!deleteConfirm) return;
 
     setIsSubmitting(true);
-    await deleteEntry(deleteConfirm.id, deleteConfirm.type);
+    await deleteNote(deleteConfirm.id);
     setIsSubmitting(false);
     setDeleteConfirm(null);
   };
