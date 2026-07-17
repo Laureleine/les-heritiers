@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.11.2 - \"Le Pont Réparé 🌉\"",
+    date: "17 Juillet 2026",
+    description: "Un défaut invisible dans les fondations du mode hors ligne provoquait un effondrement silencieux au démarrage de l'Atelier — l'application ne s'initialisait plus correctement en ligne. La cause : une incompatibilité entre la couche de cache offline et la version récente de la bibliothèque Supabase. Le pont entre l'Atelier et le Nuage est désormais solidement réparé.",
+    changes: [
+      "🌉 **Démarrage corrigé :** L'application ne plantait plus silencieusement au chargement en mode connecté. L'erreur provenait d'un appel `.bind()` sur une méthode absente dans la nouvelle version de postgrest-js (v2).",
+      "🔧 **Cache GAME_DATA préservé :** La logique de mise en cache des données encyclopédiques (types de fées, compétences, sorts…) pour le mode hors ligne fonctionne à nouveau correctement.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.11.1 - \"Le Sceau du Docte 🔏\"",
     date: "17 Juillet 2026",
     description: "Un verrou féérique vient d'être posé sur les registres d'expérience : seul le Docte du Cercle — gardien et maître du jeu — peut désormais octroyer des points d'expérience lors de la création ou de la modification d'une session. Les membres du Cercle continuent de rédiger leurs chroniques de parties, mais la plume dorée qui distribue les XP n'appartient qu'au Docte.",

@@ -4,6 +4,23 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.11.2 — Le Pont Réparé 🌉
+*17 juillet 2026*
+
+Chers Héritiers,
+
+Ce matin, un défaut invisible s'était glissé dans les fondations de l'Atelier — un pont fragilisé entre l'application et le Nuage qui empêchait le démarrage correct en mode connecté.
+
+La cause était subtile : lors de la construction du mode hors ligne, un mécanisme de cache avait été bâti sur une hypothèse légèrement fausse concernant la bibliothèque de communication avec Supabase. Cette bibliothèque, mise à jour récemment, avait modifié l'ordre de ses promesses — et le pont s'était effondré en silence.
+
+L'Atelier peut de nouveau s'allumer normalement. Le cache des données encyclopédiques (types de fées, compétences, sorts, objet de poche…) qui alimentent le mode hors ligne fonctionne à nouveau correctement.
+
+Toutes nos excuses pour la gêne occasionnée. Les réparations sont terminées. ✨
+
+*L'Atelier des Héritiers — v17.11.2*
+
+---
+
 ## v17.11.1 — Le Sceau du Docte 🔏
 *17 juillet 2026*
 
