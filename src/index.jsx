@@ -7,6 +7,7 @@ import { ForgeProvider } from './context/ForgeContext';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GameDataProvider } from './context/GameDataContext';
+import { OfflineStatusProvider } from './context/OfflineStatusContext';
 import { registerSW } from 'virtual:pwa-register';
 
 // Enregistrement SW PWA (distinct de sw.js pour les notifs push)
@@ -29,6 +30,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
+      <OfflineStatusProvider>
       <GameDataProvider>
         <CharacterProvider>
           <ForgeProvider>
@@ -36,6 +38,7 @@ root.render(
           </ForgeProvider>
         </CharacterProvider>
       </GameDataProvider>
+      </OfflineStatusProvider>
     </BrowserRouter>
   </QueryClientProvider>
 );

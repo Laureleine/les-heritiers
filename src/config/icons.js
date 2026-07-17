@@ -25,7 +25,10 @@ import {
     Printer,
     RotateCcw,
     RefreshCcw,
+    RefreshCw,
     LogOut,
+    Wifi,
+    WifiOff,
 
     // État & feedback
     Check,
@@ -134,7 +137,7 @@ import {
 export {
     ArrowLeft, ChevronDown, ChevronUp, X, XCircle, Plus, PlusCircle, Minus,
     Save, Download, Upload, Share, Share2, Copy, ExternalLink, Edit, Trash2,
-    Send, Printer, RotateCcw, RefreshCcw, LogOut,
+    Send, Printer, RotateCcw, RefreshCcw, RefreshCw, LogOut, Wifi, WifiOff,
     Check, CheckCheck, CheckCircle, CheckCircle2, AlertCircle, AlertTriangle,
     Info, HelpCircle, ShieldAlert, Clock, Loader, Moon, Sun,
     User, Users, Mail, MessageCircle, Inbox, Globe,
@@ -153,7 +156,7 @@ export {
 export const iconMap = {
     ArrowLeft, ChevronDown, ChevronUp, X, XCircle, Plus, PlusCircle, Minus,
     Save, Download, Upload, Share, Share2, Copy, ExternalLink, Edit, Trash2,
-    Send, Printer, RotateCcw, RefreshCcw, LogOut,
+    Send, Printer, RotateCcw, RefreshCcw, RefreshCw, LogOut, Wifi, WifiOff,
     Check, CheckCheck, CheckCircle, CheckCircle2, AlertCircle, AlertTriangle,
     Info, HelpCircle, ShieldAlert, Clock, Loader, Moon, Sun,
     User, Users, Mail, MessageCircle, Inbox, Globe,

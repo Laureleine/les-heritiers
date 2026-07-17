@@ -18,6 +18,7 @@ import { useCorrectionCheck } from './hooks/useCorrectionCheck';
 import CorrectionRequestModal from './components/CorrectionRequestModal';
 import AdminCorrectionWidget from './components/AdminCorrectionWidget';
 import ResetPasswordForm from './components/ResetPasswordForm';
+import OfflineBanner from './components/OfflineBanner';
 
 export default function App() {
   const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate, isRecoveryMode } = useAppInit();
@@ -69,7 +70,8 @@ export default function App() {
   return (
     <UserContext.Provider value={{ session, userProfile, refreshUserProfile }}>
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
-      
+      <OfflineBanner />
+
       {updateAvailable && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-md">
           <button
