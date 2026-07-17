@@ -73,10 +73,3 @@ export async function retrySync() {
     .modify({ status: 'pending', attempts: 0 });
   return syncAll();
 }
-
-// Démarrer l'écoute du retour en ligne
-if (typeof window !== 'undefined') {
-  window.addEventListener('online', () => {
-    syncAll().catch(e => console.warn('[syncQueue] syncAll échoué:', e));
-  });
-}
