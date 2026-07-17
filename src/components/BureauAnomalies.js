@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft, Mail } from '../config/icons';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext';
-import { isAdmin } from '../utils/authRoles';
+import { isAdmin, isSuperAdmin } from '../utils/authRoles';
 import { showInAppNotification } from '../utils/SystemeServices';
 
 export default function BureauAnomalies({ onBack }) {
@@ -18,14 +18,25 @@ export default function BureauAnomalies({ onBack }) {
   const [isConfidential, setIsConfidential] = useState(false);
 
   const fetchReports = async () => {
-    // On ne charge que les bugs publics OU ceux de l'utilisateur
     const { data, error } = await supabase
       .from('bug_reports')
-      .select('*, profiles(username, email)')
+      .select('*, profiles(username)')
       .or(`is_confidential.eq.false,user_id.eq.${userProfile.id}`)
       .order('created_at', { ascending: false });
-    
-    if (!error && data) setReports(data);
+
+    if (error || !data) return;
+
+    // Enrichir avec les emails si super_admin (via get_admin_users qui lit auth.users)
+    if (isSuperAdmin(userProfile)) {
+      const { data: adminUsers } = await supabase.rpc('get_admin_users');
+      if (adminUsers) {
+        const emailMap = {};
+        adminUsers.forEach(u => { emailMap[u.id] = u.email; });
+        setReports(data.map(r => ({ ...r, _reporterEmail: emailMap[r.user_id] || null })));
+        return;
+      }
+    }
+    setReports(data);
   };
 
   useEffect(() => {
@@ -162,13 +173,13 @@ export default function BureauAnomalies({ onBack }) {
                 <p className="text-sm text-stone-600 leading-relaxed">{report.description}</p>
                 <div className="text-xs text-stone-400 mt-3 flex flex-wrap gap-4 items-center">
                   <span>Déclaré par : {report.profiles?.username || 'Anonyme'}</span>
-                  {isAdmin(userProfile) && report.profiles?.email && (
+                  {report._reporterEmail && (
                     <a
-                      href={`mailto:${report.profiles.email}`}
+                      href={`mailto:${report._reporterEmail}`}
                       className="flex items-center gap-1 text-amber-700 hover:text-amber-900 hover:underline transition-colors"
-                      title={`Écrire à ${report.profiles.email}`}
+                      title={`Écrire à ${report._reporterEmail}`}
                     >
-                      <Mail size={11} /> {report.profiles.email}
+                      <Mail size={11} /> {report._reporterEmail}
                     </a>
                   )}
                   <span>Version : {report.version_app}</span>

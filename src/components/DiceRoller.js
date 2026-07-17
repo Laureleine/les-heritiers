@@ -63,13 +63,17 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
                 if (cancelled) return;
 
                 containerEl.innerHTML = '';
+                const themeColor = diceTheme === 'sang' ? '#dc2626'
+                    : diceTheme === 'améthyste' ? '#7c3aed'
+                    : diceTheme === 'ivoire' ? '#d4c5a9'
+                    : '#b45309';
                 diceBoxRef.current = new DiceBox({
                     container: "#casino-dice-canvas",
                     assetPath: '/assets/dice-box/',
-                    theme: diceTheme === 'sang' ? 'rust' : diceTheme === 'améthyste' ? 'purple' : 'default',
+                    theme: 'default',
                     width: rect.width,
                     height: rect.height,
-                    themeColor: "#b45309",
+                    themeColor,
                     scale: 8,
                     gravity: 4,
                     mass: 2,
@@ -86,6 +90,9 @@ export default function DiceRoller({ use3DDice = false, diceTheme = 'laiton' }) 
                         canvas.style.height = '100%';
                     }
                     window.dispatchEvent(new Event('resize'));
+                }).catch(e => {
+                    console.warn('[DiceRoller] Init 3D échoué, repli sur 2D :', e);
+                    diceBoxRef.current = null;
                 });
             } catch (e) { console.error("Défaut DiceBox:", e); }
         };

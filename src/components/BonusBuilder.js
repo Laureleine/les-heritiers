@@ -185,7 +185,7 @@ export default function BonusBuilder({
     const handleCreateFutile = async (blockId) => {
         if (!newFutileName.trim()) return;
         try {
-            await addCompetenceFutile({ nom: newFutileName.trim(), description: newFutileDesc.trim() || 'Créée depuis la forge.' });
+            await addCompetenceFutile(newFutileName.trim(), newFutileDesc.trim() || 'Créée depuis la forge.');
             updateBlock(blockId, 'key', newFutileName.trim());
             setCreatingFutileId(null);
             setNewFutileName('');
@@ -664,7 +664,7 @@ export default function BonusBuilder({
                                         <button onClick={async () => {
                                             if (!newFutileName.trim()) return;
                                             try {
-                                                await addCompetenceFutile({ nom: newFutileName.trim(), description: 'Créée via la forge.' });
+                                                await addCompetenceFutile(newFutileName.trim(), 'Créée via la forge.');
                                                 const newBlocks = blocks.map(b => b.id === block.id ? { ...b, options: [...(b.options || []), newFutileName.trim()] } : b);
                                                 setBlocks(newBlocks);
                                                 setHasUnsavedChanges(true);

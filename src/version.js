@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.10.1 - \"Les Trois Réparations 🔧\"",
+    date: "17 Juillet 2026",
+    description: "Trois anomalies silencieuses corrigées : le lanceur de dés 3D tenait mal ses promesses en navigation privée et ignorait les thèmes sang et améthyste ; la création de compétences futiles depuis l'encyclopédie échouait sans bruit ; et le contact e-mail dans le Bureau des Anomalies n'apparaissait jamais faute de données dans la bonne table.",
+    changes: [
+      "🎲 **Lanceur de dés — thèmes et navigation privée :** Les thèmes Sang et Améthyste référençaient des fichiers d'assets inexistants (rust/purple) ; ils utilisent maintenant le thème default avec une couleur personnalisée. En navigation privée, la création du moteur physique échouait sans filet — un .catch() assure désormais le repli silencieux sur le mode 2D.",
+      "📚 **Encyclopédie — création de futiles :** Le formulaire de création de compétences futiles (BonusBuilder) passait un objet `{ nom, description }` à une fonction attendant deux arguments positionnels `(name, description)`. L'insert Supabase recevait \"[object Object]\" et rejetait en silence.",
+      "📬 **Bureau des Anomalies — email du rapporteur :** Le lien de contact n'apparaissait jamais car la colonne email n'existe pas dans la table profiles. Les e-mails sont maintenant lus depuis auth.users via la fonction get_admin_users, visible uniquement des super-admins.",
+    ],
+  },
+  {
     version: "17.10.0 - \"Le Registre du Cabinet 🩺\"",
     date: "16 Juillet 2026",
     description: "Le Cabinet Médical s'enrichit de deux onglets : Tables et Validation. Les joueurs peuvent désormais proposer de nouveaux noms, origines sociales et pathologies pour alimenter les tirages. Les Gardiens disposent d'une file de validation pour approuver, refuser ou corriger chaque proposition. Les statistiques d'usage du Cabinet sont maintenant intégrées aux métriques admin.",

@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.10.1 — Les Trois Réparations 🔧
+*17 juillet 2026*
+
+Chers Héritiers,
+
+Les lutins de la mécanique ont travaillé cette nuit. Trois petits fantômes s'étaient glissés dans les rouages du Grimoire, et ils ont été chassés sans cérémonie.
+
+🎲 Le **lanceur de dés** boudait les teintes Sang et Améthyste — elles pointaient vers des encres qui n'existaient pas. Chaque couleur retrouve sa juste nuance, et les modes secrets du navigateur ne plongeront plus les dés dans le silence.
+
+📚 Dans l'**Encyclopédie**, le formulaire de création de compétences futiles se prenait les pieds dans ses propres mots — il murmurait un nom illisible à la base de données qui le rejetait. Le message est maintenant correctement formulé.
+
+📬 Dans le **Bureau des Anomalies**, le lien de contact vers le signaleur d'une faille n'apparaissait jamais. Les Gardiens peuvent désormais écrire directement à l'Héritier concerné d'un simple clic.
+
+Trois réparations discrètes, pour que la magie coule sans accroc.
+
+*— Les Gardiens du Savoir*
+
+---
+
 ## v17.10.0 — Le Registre du Cabinet 🩺
 
 Chers Héritiers,
