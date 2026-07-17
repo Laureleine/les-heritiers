@@ -77,8 +77,8 @@ export const sendLocalNotification = (title, options = {}) => {
 };
 
 // Déclencheur du composant InAppNotification
-export const showInAppNotification = (message, type = 'info') => {
-  const event = new CustomEvent('app-notification', { detail: { message, type } });
+export const showInAppNotification = (message, type = 'info', duration = 5000) => {
+  const event = new CustomEvent('app-notification', { detail: { message, type, duration } });
   window.dispatchEvent(event);
   // Annonce via aria-live pour les lecteurs d'écran (WCAG 4.1.3)
   const live = document.getElementById('a11y-live');

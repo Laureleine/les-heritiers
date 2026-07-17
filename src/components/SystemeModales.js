@@ -64,14 +64,14 @@ export function InAppNotification() {
 
   useEffect(() => {
     const handleNotification = (event) => {
-      const { message, type } = event.detail;
+      const { message, type, duration = 5000 } = event.detail;
       const id = Date.now();
-      
+
       setNotifications(prev => [...prev, { id, message, type }]);
-      
+
       setTimeout(() => {
         setNotifications(prev => prev.filter(n => n.id !== id));
-      }, 5000);
+      }, duration);
     };
 
     window.addEventListener('app-notification', handleNotification);

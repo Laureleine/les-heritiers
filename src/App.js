@@ -1,9 +1,10 @@
 // src/App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, X, Sparkles } from './config/icons';
 import { isSuperAdmin } from './utils/authRoles';
 import { useAppInit } from './hooks/useAppInit';
+import { showInAppNotification } from './utils/SystemeServices';
 import AppRouter from './AppRouter';
 
 import Auth from './components/Auth';
@@ -37,6 +38,21 @@ export default function App() {
       import('./version').then(m => setVersionHistory(m.VERSION_HISTORY));
     }
   }, [showVersionModal, versionHistory]);
+
+  // Écouter les mises à jour du Service Worker
+  useEffect(() => {
+    const handler = () => {
+      showInAppNotification(
+        '✨ Nouvelle version disponible — rechargez la page pour l\'appliquer.',
+        'info',
+        8000
+      );
+    };
+    window.addEventListener('pwa-update-available', handler);
+    // Vérifier si une mise à jour était déjà disponible avant le montage
+    if (window.__pwaUpdateAvailable) handler();
+    return () => window.removeEventListener('pwa-update-available', handler);
+  }, []);
 
   if (!isOnline && !hasCachedData) {
     return (
