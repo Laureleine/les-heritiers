@@ -159,7 +159,7 @@ export const getUserCharacters = async (userId) => {
         if (data) {
             await Promise.all(data.map(c => localDb.characters.put(c))).catch(() => {});
         }
-        return data || [];
+        return (data || []).map(mapDatabaseToCharacter);
     } catch (error) {
         console.error('Erreur chargement personnages:', error);
         return getOfflineMirror();
