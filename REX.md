@@ -6,6 +6,24 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session 17 juillet 2026 — Le Pont Réparé (v17.11.2)
+
+### Bug : crash au démarrage — `wrapOnlineQuery` incompatible postgrest-js v2
+
+**`supabase.from()` ne retourne pas un thenable en postgrest-js v2**
+En `@supabase/postgrest-js` v2, `from(table)` retourne un `PostgrestQueryBuilder` qui n'a PAS de méthode `.then`. Le `.then` n'existe que sur le `PostgrestFilterBuilder` retourné par `.select()` (ou `.insert()`, etc.). Appeler `.then.bind()` directement sur le résultat de `from()` plante systématiquement.
+
+**Règle à retenir pour toute couche proxy Supabase**
+Ne jamais supposer que `supabase.from(table)` est thenable. Intercepter à l'étape suivante de la chaîne (`.select()`, `.insert()`, etc.) qui retourne un builder thenable. Pattern correct : `origSelect = builder.select.bind(builder); builder.select = (...args) => { const fb = origSelect(...args); fb.then = wrap(fb.then.bind(fb)); return fb; }`.
+
+**Distinguer les tables selon leur besoin de cache**
+Intercepter `.then` sur TOUTES les tables (pour non-GAME_DATA, le wrapper ne faisait rien d'utile) est inutile et risqué. Filtrer en entrée avec `if (!GAME_DATA_TABLES.has(table)) return supabaseQuery;` — plus lisible, moins de surface d'erreur.
+
+**Tester les proxys Supabase avec le bon contexte**
+Les tests Vitest mockent Supabase et passent — le crash ne se voit qu'en runtime réel avec la vraie bibliothèque. Pour les couches proxy sur `db.js`, ajouter des tests d'intégration qui exercent la chaîne complète `.from().select().eq().single()` avec de vrais builders (ou des stubs fidèles à l'API postgrest).
+
+---
+
 ## Session 17 juillet 2026 — Le Sceau du Docte (v17.11.1)
 
 ### Correctif : XP réservé au Docte du Cercle
