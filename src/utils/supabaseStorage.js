@@ -3,6 +3,8 @@
 import { supabase } from '../config/supabase';
 import { getCurrentUser, requireCurrentUser } from './authUtils';
 import { showInAppNotification } from './SystemeServices';
+import { db } from '../config/db';
+import { localDb } from '../config/localDb';
 
 // ============================================================================
 // 🏛️ CALCUL xp_depense DEPUIS LE JOURNAL (Source unique de vérité)
@@ -138,27 +140,28 @@ const getOfflineMirror = () => {
     try { return JSON.parse(stored); } catch { return []; }
 };
 
-export const getUserCharacters = async (forceRefresh = false) => {
+export const getUserCharacters = async (userId) => {
+    if (!navigator.onLine) {
+        if (userId) {
+            const chars = await localDb.characters.where('user_id').equals(userId).toArray();
+            return chars;
+        }
+        return getOfflineMirror();
+    }
     try {
-        const user = await getCurrentUser();
-        if (!user) return getOfflineMirror();
-
         const { data, error } = await supabase
             .from('characters')
-            .select(LIGHT_SELECT)
-            .eq('user_id', user.id)
-            .order('updated_at', { ascending: false });
-
-        if (error) {
-            console.error("🔥 [STORAGE] Erreur Supabase :", error);
-            throw error;
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        // Mettre en cache dans Dexie
+        if (data) {
+            await Promise.all(data.map(c => localDb.characters.put(c))).catch(() => {});
         }
-
-        const mappedData = (data || []).map(mapDatabaseToCharacter);
-        updateOfflineMirror(mappedData);
-        return mappedData;
+        return data || [];
     } catch (error) {
-        console.error('Erreur getUserCharacters:', error);
+        console.error('Erreur chargement personnages:', error);
         return getOfflineMirror();
     }
 };
@@ -253,25 +256,28 @@ export const saveCharacterToSupabase = async (character) => {
             updated_at: new Date().toISOString()
         };
 
-        let savedData;
+        // Inclure l'id dans le payload pour que l'upsert mette à jour au lieu d'insérer
         if (character.id && !character.id.toString().startsWith('temp_')) {
-            const { data, error } = await supabase
-                .from('characters')
-                .update(characterData)
-                .eq('id', character.id)
-                .select()
-                .single();
-            if (error) throw error;
-            savedData = data;
-        } else {
-            const { data, error } = await supabase
-                .from('characters')
-                .insert([characterData])
-                .select()
-                .single();
-            if (error) throw error;
-            savedData = data;
+            characterData.id = character.id;
         }
+
+        if (!navigator.onLine) {
+            if (!characterData.id) {
+                characterData.id = idTemp;
+            }
+            const { data, error } = await db.from('characters').upsert(characterData);
+            if (error) throw error;
+            return data;
+        }
+
+        // En ligne : upsert Supabase + cache Dexie
+        const { data: savedData, error: saveError } = await supabase
+            .from('characters')
+            .upsert(characterData)
+            .select()
+            .single();
+        if (saveError) throw saveError;
+        await localDb.characters.put(savedData).catch(() => {});
 
         const finalCache = getOfflineMirror().filter(c => c.id !== idTemp && c.id !== savedData.id);
         updateOfflineMirror([mapDatabaseToCharacter(savedData), ...finalCache]);
