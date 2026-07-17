@@ -16,7 +16,7 @@ function buildPresents(activeMembers) {
     }));
 }
 
-export default function SessionForm({ onClose, onSave, activeMembers, editSession }) {
+export default function SessionForm({ onClose, onSave, activeMembers, editSession, isDocte }) {
   const isEdit = !!editSession;
 
   const [form, setForm] = useState({
@@ -54,7 +54,8 @@ export default function SessionForm({ onClose, onSave, activeMembers, editSessio
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.titre.trim()) return;
-    onSave(form, presents);
+    const safeForm = isDocte ? form : { ...form, xp_distribue: 0, xp_auto: false };
+    onSave(safeForm, presents);
   };
 
   return (
@@ -139,71 +140,73 @@ export default function SessionForm({ onClose, onSave, activeMembers, editSessio
               </div>
             )}
 
-            {/* ── XP ── */}
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <Gift size={15} className="text-amber-700 shrink-0" />
-                <span className="text-sm font-bold text-amber-900">Points d'expérience</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <label className="text-xs text-stone-600 font-bold">XP accordés :</label>
-                <div className="flex items-center gap-1">
-                  <button type="button" onClick={() => setForm(f => ({ ...f, xp_distribue: Math.max(0, (f.xp_distribue || 0) - 1) }))}
-                    className="w-7 h-7 rounded bg-white border border-amber-300 text-amber-800 font-bold hover:bg-amber-100 text-sm">−</button>
-                  <input
-                    type="number" min="0" max="100"
-                    value={form.xp_distribue || ''}
-                    onChange={e => setForm(f => ({ ...f, xp_distribue: parseInt(e.target.value) || 0 }))}
-                    className="w-16 text-center px-2 py-1 border border-amber-300 rounded text-sm font-bold text-amber-900 outline-none focus:ring-1 focus:ring-amber-400"
-                  />
-                  <button type="button" onClick={() => setForm(f => ({ ...f, xp_distribue: (f.xp_distribue || 0) + 1 }))}
-                    className="w-7 h-7 rounded bg-white border border-amber-300 text-amber-800 font-bold hover:bg-amber-100 text-sm">+</button>
+            {/* ── XP — réservé au Docte ── */}
+            {isDocte && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Gift size={15} className="text-amber-700 shrink-0" />
+                  <span className="text-sm font-bold text-amber-900">Points d'expérience</span>
                 </div>
-                <div className="flex gap-1 flex-wrap">
-                  {[3, 5, 10].map(n => (
-                    <button key={n} type="button"
-                      onClick={() => setForm(f => ({ ...f, xp_distribue: n }))}
-                      className={`px-2 py-0.5 rounded text-xs font-bold border transition-colors ${form.xp_distribue === n ? 'bg-amber-700 text-white border-amber-700' : 'bg-white border-amber-300 text-amber-700 hover:bg-amber-100'}`}>
-                      {n}
-                    </button>
-                  ))}
+
+                <div className="flex items-center gap-3">
+                  <label className="text-xs text-stone-600 font-bold">XP accordés :</label>
+                  <div className="flex items-center gap-1">
+                    <button type="button" onClick={() => setForm(f => ({ ...f, xp_distribue: Math.max(0, (f.xp_distribue || 0) - 1) }))}
+                      className="w-7 h-7 rounded bg-white border border-amber-300 text-amber-800 font-bold hover:bg-amber-100 text-sm">−</button>
+                    <input
+                      type="number" min="0" max="100"
+                      value={form.xp_distribue || ''}
+                      onChange={e => setForm(f => ({ ...f, xp_distribue: parseInt(e.target.value) || 0 }))}
+                      className="w-16 text-center px-2 py-1 border border-amber-300 rounded text-sm font-bold text-amber-900 outline-none focus:ring-1 focus:ring-amber-400"
+                    />
+                    <button type="button" onClick={() => setForm(f => ({ ...f, xp_distribue: (f.xp_distribue || 0) + 1 }))}
+                      className="w-7 h-7 rounded bg-white border border-amber-300 text-amber-800 font-bold hover:bg-amber-100 text-sm">+</button>
+                  </div>
+                  <div className="flex gap-1 flex-wrap">
+                    {[3, 5, 10].map(n => (
+                      <button key={n} type="button"
+                        onClick={() => setForm(f => ({ ...f, xp_distribue: n }))}
+                        className={`px-2 py-0.5 rounded text-xs font-bold border transition-colors ${form.xp_distribue === n ? 'bg-amber-700 text-white border-amber-700' : 'bg-white border-amber-300 text-amber-700 hover:bg-amber-100'}`}>
+                        {n}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={form.xp_auto}
-                  onChange={e => setForm(f => ({ ...f, xp_auto: e.target.checked }))}
-                  className="w-4 h-4 rounded accent-amber-700"
-                />
-                <Sparkles size={13} className="text-amber-600" />
-                <span className="text-sm text-amber-900">Attribution automatique à la validation</span>
-              </label>
-
-              {form.xp_auto && hasAbsent && (
-                <label className="flex items-center gap-2 cursor-pointer select-none pl-6">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
                   <input
                     type="checkbox"
-                    checked={form.xp_scope === 'presents'}
-                    onChange={e => setForm(f => ({ ...f, xp_scope: e.target.checked ? 'presents' : 'membres' }))}
+                    checked={form.xp_auto}
+                    onChange={e => setForm(f => ({ ...f, xp_auto: e.target.checked }))}
                     className="w-4 h-4 rounded accent-amber-700"
                   />
-                  <span className="text-xs text-stone-600">Distribuer aux présents uniquement (pas aux absents)</span>
+                  <Sparkles size={13} className="text-amber-600" />
+                  <span className="text-sm text-amber-900">Attribution automatique à la validation</span>
                 </label>
-              )}
 
-              {form.xp_auto && (form.xp_distribue || 0) === 0 && (
-                <p className="text-[11px] text-stone-400 italic pl-1">Saisissez un montant supérieur à 0 pour activer la distribution.</p>
-              )}
+                {form.xp_auto && hasAbsent && (
+                  <label className="flex items-center gap-2 cursor-pointer select-none pl-6">
+                    <input
+                      type="checkbox"
+                      checked={form.xp_scope === 'presents'}
+                      onChange={e => setForm(f => ({ ...f, xp_scope: e.target.checked ? 'presents' : 'membres' }))}
+                      className="w-4 h-4 rounded accent-amber-700"
+                    />
+                    <span className="text-xs text-stone-600">Distribuer aux présents uniquement (pas aux absents)</span>
+                  </label>
+                )}
 
-              {isEdit && editSession?.xp_attribue && (
-                <p className="text-[11px] text-amber-700 bg-amber-100 px-3 py-1.5 rounded-lg border border-amber-200">
-                  ⚠ XP déjà distribués. Une modification du montant appliquera un delta (±) sur chaque Héritier.
-                </p>
-              )}
-            </div>
+                {form.xp_auto && (form.xp_distribue || 0) === 0 && (
+                  <p className="text-[11px] text-stone-400 italic pl-1">Saisissez un montant supérieur à 0 pour activer la distribution.</p>
+                )}
+
+                {isEdit && editSession?.xp_attribue && (
+                  <p className="text-[11px] text-amber-700 bg-amber-100 px-3 py-1.5 rounded-lg border border-amber-200">
+                    ⚠ XP déjà distribués. Une modification du montant appliquera un delta (±) sur chaque Héritier.
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* ── Résumé ── */}
             <div>

@@ -302,6 +302,7 @@ export default function TabPartiesJeu({ cercleId, userId, isDocte, activeMembers
           onSave={handleSave}
           activeMembers={activeMembers}
           editSession={editSession}
+          isDocte={isDocte}
         />
       )}
 
