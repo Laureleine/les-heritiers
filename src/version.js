@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.11.1 - \"Le Sceau du Docte 🔏\"",
+    date: "17 Juillet 2026",
+    description: "Un verrou féérique vient d'être posé sur les registres d'expérience : seul le Docte du Cercle — gardien et maître du jeu — peut désormais octroyer des points d'expérience lors de la création ou de la modification d'une session. Les membres du Cercle continuent de rédiger leurs chroniques de parties, mais la plume dorée qui distribue les XP n'appartient qu'au Docte.",
+    changes: [
+      "🔏 **XP réservés au Docte :** Le formulaire de session masque la section « Points d'expérience » pour les membres ordinaires du Cercle. Seul le Docte voit les contrôles d'attribution, le compteur d'XP et les options de distribution.",
+      "🛡️ **Garde défensive :** Même en cas de contournement de l'interface, les champs XP sont neutralisés côté client avant soumission si l'utilisateur n'est pas le Docte.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.11.0 - \"Le Grimoire Voyageur 🧳✨\"",
     date: "17 Juillet 2026",
     description: "L'Atelier ouvre ses portes même quand le réseau se ferme. Grâce à un cache secret tissé dans les profondeurs de votre navigateur, les fiches personnage, l'encyclopédie, le Grimoire, la carte, les chroniques et les sessions restent accessibles sans connexion. Les notes écrites hors ligne sont prudemment mises en attente et rejoignent Supabase dès que le réseau revient. Une bannière discrète signale l'état du lien — ambre quand vous voyagez seul, verte quand le pont se reconstruit.",

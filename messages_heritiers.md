@@ -4,6 +4,23 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.11.1 — Le Sceau du Docte 🔏
+*17 juillet 2026*
+
+Chers Héritiers,
+
+Un sceau féérique a été gravé sur les registres d'expérience de vos Cercles.
+
+Jusqu'à présent, n'importe quel membre pouvait, lors de la rédaction d'une chronique de partie, apposer la plume dorée qui distribue les XP. Une telle liberté, si charmante soit-elle en théorie, troublait l'ordre naturel des choses — car la distribution des points d'expérience est un privilège du **Docte**, gardien et maître des arcanes de son Cercle.
+
+Désormais, la section « Points d'expérience » du formulaire de session n'apparaît plus qu'aux yeux du Docte. Les membres du Cercle continuent bien sûr de raconter leurs aventures et de cocher les présences — mais c'est le Docte seul qui décide combien de lumière chaque Héritier emportera dans sa lanterne.
+
+L'ordre des transmissions est rétabli. ✨
+
+*L'Atelier des Héritiers — v17.11.1*
+
+---
+
 ## v17.11.0 — Le Grimoire Voyageur 🧳✨
 *17 juillet 2026*
 
