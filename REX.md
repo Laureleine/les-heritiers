@@ -6,6 +6,25 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session v17.10.1 — 17 juillet 2026
+
+### 1. Vérifier la signature d'une fonction avant de chercher ailleurs
+Quand un bug dit "création impossible", avant de creuser la logique métier, grep la signature de la fonction appelée et tous ses call sites. `addCompetenceFutile(name, description)` était appelée avec `{ nom, description }` dans BonusBuilder — erreur de signature silencieuse, l'insert Supabase recevait `"[object Object]"`. Un simple grep `addCompetenceFutile` aurait montré l'incohérence immédiatement.
+
+### 2. Quand une feature "ne marche pas", vérifier si la donnée source existe réellement
+Le lien email dans BureauAnomalies ne s'affichait jamais. La condition `report.profiles?.email` était vraie seulement si la colonne `email` existait dans `profiles` — elle n'existe pas. Avant d'ajouter une feature qui lit un champ, vérifier que ce champ est écrit quelque part dans le code (grep). Ici il ne l'était pas, et le commit d'origine avait oublié la migration.
+
+### 3. Toujours grepper les call sites quand on répare une feature qui "n'a jamais marché"
+La feature email du Bureau des Anomalies avait été ajoutée lors d'un commit précédent mais n'avait jamais fonctionné. Rechercher dans git log `--follow` permet de trouver le commit responsable et de voir si une migration associée était manquante.
+
+### 4. Pour les données sensibles (email), utiliser les RPC existantes plutôt que d'ajouter une colonne
+Plutôt que d'ajouter `email` à `profiles` (colonne publique potentiellement lisible par tous), utiliser `get_admin_users()` qui lit `auth.users` avec les permissions Supabase Auth — les emails restent côté auth, jamais dans une table publique.
+
+### 5. Pour les assets de librairies tiers, vérifier ce qui est réellement présent dans public/
+`@3d-dice/dice-box` n'a qu'un seul thème `default`. Les thèmes rust et purple n'existent pas dans le paquet. Quand une librairie propose des thèmes nommés, grepper son `node_modules` avant d'exposer ces noms dans l'UI — utiliser `themeColor` pour la personnalisation visuelle plutôt que des thèmes complets inexistants.
+
+---
+
 ## Session v17.10.0 — 16 juillet 2026
 
 ### Ce qui a été fait

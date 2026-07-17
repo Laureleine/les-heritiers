@@ -53,7 +53,8 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
     }
     const { error } = await db.from('heritier_notes')
       .update({ is_shared: !currentShareState, cercle_id: !currentShareState ? cercleId : null })
-      .eq('id', noteId);
+      .eq('id', noteId)
+      .eq('player_id', playerId);
     if (!error) fetchGrimoire();
   };
 
@@ -69,7 +70,7 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
   };
 
   const updateNote = async (noteId, updates) => {
-    const { error } = await db.from('heritier_notes').update(updates).eq('id', noteId);
+    const { error } = await db.from('heritier_notes').update(updates).eq('id', noteId).eq('player_id', playerId);
     if (!error) fetchGrimoire();
   };
 
@@ -80,7 +81,7 @@ export function useGrimoire(characterId, cercleId, playerId, isAdmin = false) {
       return;
     }
     const { supabase } = await import('../config/supabase');
-    const { error } = await supabase.from('heritier_notes').delete().eq('id', noteId);
+    const { error } = await supabase.from('heritier_notes').delete().eq('id', noteId).eq('player_id', playerId);
     if (!error) fetchGrimoire();
   };
 

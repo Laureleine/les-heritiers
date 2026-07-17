@@ -100,6 +100,7 @@ describe('useGrimoire — updateNote', () => {
     });
 
     expect(actionChain.eq).toHaveBeenCalledWith('id', 'note-1');
+    expect(actionChain.eq).toHaveBeenCalledWith('player_id', PLAYER_ID);
   });
 });
 
