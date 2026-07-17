@@ -1,5 +1,6 @@
 // src/hooks/useSessionsJeu.js
 import { useState, useCallback, useEffect } from 'react';
+import { db } from '../config/db';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
 
@@ -11,12 +12,14 @@ export function useSessionsJeu(cercleId, userId) {
     if (!cercleId) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('sessions_jeu')
+      const { data, error } = await db.from('sessions_jeu')
         .select('*, session_presents(character_id, present)')
         .eq('cercle_id', cercleId)
         .order('date_partie', { ascending: false });
       if (error) throw error;
+      if (data && navigator.onLine) {
+        db.cacheUserData('sessions_jeu', cercleId, data).catch(() => {});
+      }
       setSessions(data || []);
     } catch (err) {
       showInAppNotification('Erreur chargement des parties : ' + err.message, 'error');

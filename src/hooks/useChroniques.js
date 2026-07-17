@@ -1,5 +1,6 @@
 // src/hooks/useChroniques.js
 import { useState, useCallback } from 'react';
+import { db } from '../config/db';
 import { supabase } from '../config/supabase';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 
@@ -13,19 +14,22 @@ export function useChroniques(characterId) {
     setLoading(true);
     try {
       const [{ data: chron, error: e1 }, { data: ombs, error: e2 }] = await Promise.all([
-        supabase
-          .from('chroniques_heritiers')
+        db.from('chroniques_heritiers')
           .select('*, sessions_jeu(id, titre, date_partie)')
           .eq('character_id', characterId)
           .order('date_session', { ascending: false }),
-        supabase
-          .from('ombre_consequences')
+        db.from('ombre_consequences')
           .select('*, sessions_jeu(id, titre)')
           .eq('character_id', characterId)
           .order('created_at', { ascending: false }),
       ]);
       if (e1) throw e1;
       if (e2) throw e2;
+      // Mise en cache si online
+      if (navigator.onLine) {
+        db.cacheUserData('chroniques_heritiers', characterId, chron || []).catch(() => {});
+        db.cacheUserData('ombre_consequences', characterId, ombs || []).catch(() => {});
+      }
       setChroniques(chron || []);
       setOmbres(ombs || []);
     } catch (err) {
