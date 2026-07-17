@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft, Mail } from '../config/icons';
+import { db } from '../config/db';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext';
 import { isAdmin, isSuperAdmin } from '../utils/authRoles';
@@ -18,16 +19,19 @@ export default function BureauAnomalies({ onBack }) {
   const [isConfidential, setIsConfidential] = useState(false);
 
   const fetchReports = async () => {
-    const { data, error } = await supabase
-      .from('bug_reports')
+    const { data, error } = await db.from('bug_reports')
       .select('*, profiles(username)')
       .or(`is_confidential.eq.false,user_id.eq.${userProfile.id}`)
       .order('created_at', { ascending: false });
 
     if (error || !data) return;
 
-    // Enrichir avec les emails si super_admin (via get_admin_users qui lit auth.users)
-    if (isSuperAdmin(userProfile)) {
+    // Mise en cache
+    if (navigator.onLine) {
+      db.cacheUserData('bug_reports', userProfile.id, data).catch(() => {});
+    }
+
+    if (isSuperAdmin(userProfile) && navigator.onLine) {
       const { data: adminUsers } = await supabase.rpc('get_admin_users');
       if (adminUsers) {
         const emailMap = {};
@@ -48,21 +52,28 @@ export default function BureauAnomalies({ onBack }) {
     if (!title.trim() || !description.trim()) return;
     setLoading(true);
 
-    const { error } = await supabase.from('bug_reports').insert([{
+    if (!navigator.onLine) {
+      showInAppNotification("Anomalie mise en attente — elle sera transmise dès le retour en ligne.", "info");
+    }
+
+    const { error } = await db.from('bug_reports').insert([{
       user_id: userProfile.id,
       title,
       description,
       status: 'Signalé',
       is_confidential: isConfidential,
-      version_app: '15.4.0', // Idéalement importé depuis src/version.js
+      version_app: '17.10.1',
       community_weight: []
     }]);
 
     setLoading(false);
-    if (error) {
+    if (error && navigator.onLine) {
       showInAppNotification("Les Gardiens n'ont pas reçu le message.", "error");
     } else {
-      showInAppNotification("Anomalie signalée ! Le Bureau enquête.", "success");
+      showInAppNotification(
+        navigator.onLine ? "Anomalie signalée ! Le Bureau enquête." : "Anomalie mise en file — sera envoyée en ligne.",
+        "success"
+      );
       setTitle('');
       setDescription('');
       setIsConfidential(false);
