@@ -144,14 +144,14 @@ export const getUserCharacters = async (userId) => {
     if (!navigator.onLine) {
         if (userId) {
             const chars = await localDb.characters.where('user_id').equals(userId).toArray();
-            return chars;
+            return chars.map(mapDatabaseToCharacter);
         }
         return getOfflineMirror();
     }
     try {
         const { data, error } = await supabase
             .from('characters')
-            .select('*')
+            .select(LIGHT_SELECT)
             .eq('user_id', userId)
             .order('created_at', { ascending: false });
         if (error) throw error;
@@ -267,7 +267,10 @@ export const saveCharacterToSupabase = async (character) => {
             }
             const { data, error } = await db.from('characters').upsert(characterData);
             if (error) throw error;
-            return data;
+            const mappedChar = mapDatabaseToCharacter(characterData);
+            const updatedMirror = getOfflineMirror().filter(c => c.id !== idTemp && c.id !== characterData.id);
+            updateOfflineMirror([mappedChar, ...updatedMirror]);
+            return mappedChar;
         }
 
         // En ligne : upsert Supabase + cache Dexie
