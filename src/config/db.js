@@ -208,17 +208,28 @@ class OfflineBuilder {
 // Proxy en ligne : délègue à Supabase + met Dexie à jour en background
 // ────────────────────────────────────────────────────────────────────────────
 function wrapOnlineQuery(table, supabaseQuery) {
-  const originalThen = supabaseQuery.then.bind(supabaseQuery);
-  supabaseQuery.then = (onFulfilled, onRejected) => {
-    return originalThen(result => {
-      if (!result?.error && result?.data && GAME_DATA_TABLES.has(table)) {
-        localDb.game_data
-          .put({ key: table, data: result.data })
-          .then(() => localDb.meta.put({ key: table, lastSync: Date.now() }))
-          .catch(() => {});
-      }
-      return onFulfilled ? onFulfilled(result) : result;
-    }, onRejected);
+  // En postgrest-js v2, from() retourne un PostgrestQueryBuilder qui n'est PAS thenable.
+  // Le .then n'existe que sur le PostgrestFilterBuilder renvoyé par .select().
+  // Pour les tables non-GAME_DATA, aucun cache n'est nécessaire — retour direct.
+  if (!GAME_DATA_TABLES.has(table)) return supabaseQuery;
+
+  // Pour les GAME_DATA, on intercepte .select() pour accrocher le cache sur le FilterBuilder.
+  const origSelect = supabaseQuery.select.bind(supabaseQuery);
+  supabaseQuery.select = (...args) => {
+    const fb = origSelect(...args);
+    if (!fb || typeof fb.then !== 'function') return fb;
+    const origThen = fb.then.bind(fb);
+    fb.then = (onFulfilled, onRejected) =>
+      origThen(result => {
+        if (!result?.error && result?.data) {
+          localDb.game_data
+            .put({ key: table, data: result.data })
+            .then(() => localDb.meta.put({ key: table, lastSync: Date.now() }))
+            .catch(() => {});
+        }
+        return onFulfilled ? onFulfilled(result) : result;
+      }, onRejected);
+    return fb;
   };
   return supabaseQuery;
 }
