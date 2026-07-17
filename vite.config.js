@@ -1,5 +1,6 @@
 import { defineConfig, transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
@@ -14,22 +15,36 @@ export default defineConfig({
       },
     },
     react(),
+    VitePWA({
+      registerType: 'prompt',
+      filename: 'pwa-sw.js',
+      manifest: false,
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/[^/]*\.supabase\.co\/rest\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'supabase-api',
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 50, maxAgeSeconds: 86400 },
+            },
+          },
+        ],
+      },
+      devOptions: { enabled: false },
+    }),
   ],
   esbuild: {
     loader: 'jsx',
     include: /src\/.*\.js$/,
     jsx: 'automatic',
   },
-  server: {
-    port: 3000,
-    open: false,
-  },
+  server: { port: 3000, open: false },
   build: {
     outDir: 'dist',
-    rollupOptions: {
-      // pg est utilisé uniquement dans les scripts Node.js (scripts/), jamais dans src/
-      external: ['pg'],
-    },
+    rollupOptions: { external: ['pg'] },
   },
   test: {
     globals: true,
@@ -38,13 +53,10 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', 'tests/e2e/**', '.claude/**'],
   },
   define: {
-    // Compatibilité pour les libs qui lisent process.env.NODE_ENV
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   },
   optimizeDeps: {
     exclude: ['@3d-dice/dice-box'],
-    esbuildOptions: {
-      loader: { '.js': 'jsx' },
-    },
+    esbuildOptions: { loader: { '.js': 'jsx' } },
   },
 });

@@ -1,6 +1,10 @@
 {
-  "short_name": "Les Héritiers",
-  "name": "Les Héritiers - Générateur",
+  "name": "Les Héritiers",
+  "short_name": "Héritiers",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#d97706",
+  "background_color": "#1c1917",
   "icons": [
     {
       "src": "favicon.ico",
@@ -16,10 +20,12 @@
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#d97706",
-  "background_color": "#fafaf9"
+  ]
 }
