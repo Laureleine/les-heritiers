@@ -1,6 +1,7 @@
 // src/hooks/useAppInit.js
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../config/supabase';
+import { db } from '../config/db';
 import { useAutoUpdate } from './useAutoUpdate';
 import { useGameData } from './useGameData';
 
@@ -42,7 +43,8 @@ export function useAppInit() {
         const initializeApp = async () => {
             try {
                 setLoadingStep("Vérification connexion...");
-                const { data: { session: activeSession } } = await supabase.auth.getSession();
+                // db.auth.getSession lit depuis Dexie si offline
+                const { data: { session: activeSession } } = await db.auth.getSession();
 
                 if (!activeSession) {
                     if (mounted) setProfileLoaded(true);
@@ -51,8 +53,10 @@ export function useAppInit() {
                 }
 
                 setLoadingStep("Allumage du Noyau...");
-                const { data: profileData } = await supabase
-                    .from('profiles')
+                // Définir l'userId avant la lecture du profil (cohérence cache offline)
+                db.setUserId(activeSession.user.id);
+                // db.from('profiles') lit depuis Dexie si offline
+                const { data: profileData } = await db.from('profiles')
                     .select('*')
                     .eq('id', activeSession.user.id)
                     .single();
@@ -64,6 +68,7 @@ export function useAppInit() {
 
                 if (profileData) {
                     setUserProfile({ ...activeSession.user, profile: profileData });
+                    db.cacheProfile(activeSession.user.id, profileData).catch(() => {});
                 } else {
                     const username = activeSession.user.user_metadata?.username || 'Héritier';
                     const { data: newProfile } = await supabase
@@ -71,7 +76,10 @@ export function useAppInit() {
                         .insert({ id: activeSession.user.id, username, role: 'user' })
                         .select()
                         .single();
-                    if (newProfile) setUserProfile({ ...activeSession.user, profile: newProfile });
+                    if (newProfile) {
+                        setUserProfile({ ...activeSession.user, profile: newProfile });
+                        db.cacheProfile(activeSession.user.id, newProfile).catch(() => {});
+                    }
                 }
 
                 setLoadingStep("Déchiffrage des archives...");
@@ -95,6 +103,7 @@ export function useAppInit() {
     }, [initTrigger]);
 
     // --- ÉCOUTEUR D'AUTHENTIFICATION ---
+    // onAuthStateChange reste sur supabase direct (temps réel, non nécessaire offline)
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
             if (event === 'PASSWORD_RECOVERY') {
@@ -111,6 +120,7 @@ export function useAppInit() {
                 setUserProfile(null);
                 setProfileLoaded(false);
                 setIsRecoveryMode(false);
+                db.setUserId(null);
             }
         });
         return () => subscription.unsubscribe();
