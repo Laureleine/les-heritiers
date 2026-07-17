@@ -4,6 +4,7 @@ import { supabase } from '../config/supabase';
 import { showInAppNotification, translateError } from '../utils/SystemeServices';
 import { isAdmin as checkIsAdmin } from '../utils/authRoles';
 import { withLoading } from '../utils/withLoading';
+import { useOfflineStatus } from '../context/OfflineStatusContext';
 
 const chunk = (arr, size) =>
   Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
@@ -19,6 +20,7 @@ export function useTelegraphe(session, userProfile) {
 
   const isAdmin = checkIsAdmin(userProfile);
   const isInitiated = userProfile?.profile?.is_initiated === true || isAdmin;
+  const { isOnline } = useOfflineStatus();
 
   const mountedRef = useRef(true);
   useEffect(() => () => { mountedRef.current = false; }, []);
@@ -30,6 +32,10 @@ export function useTelegraphe(session, userProfile) {
   // 📡 LECTURE DES CANAUX & CALCUL DES NON-LUS (PAR CANAL)
   // ==========================================================================
   const fetchChannels = useCallback(async (isSilent = false) => {
+    if (!isOnline) {
+      showInAppNotification('Le Télégraphe nécessite une connexion.', 'warning');
+      return;
+    }
     if (!isSilent) setLoading(true);
     try {
       const myId = session?.user?.id;
@@ -120,7 +126,7 @@ export function useTelegraphe(session, userProfile) {
     } finally {
       if (mountedRef.current && !isSilent) setLoading(false);
     }
-  }, [session?.user?.id, isAdmin, isInitiated]);
+  }, [session?.user?.id, isAdmin, isInitiated, isOnline]);
 
   const updateChannelStatus = useCallback(async (id, status) => {
     try {
@@ -142,6 +148,12 @@ export function useTelegraphe(session, userProfile) {
     if (channel.is_virtual) {
       setMessages([]);
       setMessageReads({});
+      if (!isSilent) setLoading(false);
+      return;
+    }
+
+    if (!isOnline) {
+      showInAppNotification('Le Télégraphe nécessite une connexion.', 'warning');
       if (!isSilent) setLoading(false);
       return;
     }
@@ -211,12 +223,16 @@ export function useTelegraphe(session, userProfile) {
     } finally {
       if (mountedRef.current && !isSilent) setLoading(false);
     }
-  }, [session?.user?.id, isAdmin, updateChannelStatus]);
+  }, [session?.user?.id, isAdmin, updateChannelStatus, isOnline]);
 
   // ==========================================================================
   // ✉️ ACTIONS (NOUVEAU CHAT, TICKET, REPONSE)
   // ==========================================================================
   const startPrivateChat = useCallback(async (targetUser) => {
+    if (!isOnline) {
+      showInAppNotification('Le Télégraphe nécessite une connexion.', 'warning');
+      return;
+    }
     await withLoading(setLoading, async () => {
       const myId = session?.user?.id;
       if (!myId || !targetUser?.id) return;
@@ -251,9 +267,13 @@ export function useTelegraphe(session, userProfile) {
         }
       }
     }, (err) => showInAppNotification("Erreur lors de la création du canal privé : " + translateError(err), "error"));
-  }, [session?.user?.id, fetchChannels, fetchMessages]);
+  }, [session?.user?.id, fetchChannels, fetchMessages, isOnline]);
 
   const createSupportTicket = async (newSujet, newMessage) => {
+    if (!isOnline) {
+      showInAppNotification('Le Télégraphe nécessite une connexion.', 'warning');
+      return;
+    }
     return await withLoading(setLoading, async () => {
       const { data: channelData, error: channelError } = await supabase
         .from('chat_channels')
@@ -288,6 +308,10 @@ export function useTelegraphe(session, userProfile) {
 
   const sendReply = async (newMessage) => {
     if (!activeChannel) return false;
+    if (!isOnline) {
+      showInAppNotification('Le Télégraphe nécessite une connexion.', 'warning');
+      return;
+    }
     return await withLoading(setLoading, async () => {
       let actualChannelId = activeChannel.id;
       let currentChannel = activeChannel;

@@ -82,6 +82,11 @@ export function useFileUpload({ maxSizeMB = 5, allowedTypes = null } = {}) {
     const handleUpload = async (file, uploadFn, key = 'default', messages = {}) => {
         if (!file) return null;
 
+        if (!navigator.onLine) {
+            showInAppNotification("Upload indisponible hors ligne.", "warning");
+            return null;
+        }
+
         const successMsg = messages.success ?? '✓ Fichier téléchargé avec succès !';
         const errorMsg   = messages.error   ?? ((err) => `Erreur lors du dépôt : ${err.message}`);
 

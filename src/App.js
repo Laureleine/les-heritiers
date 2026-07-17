@@ -14,6 +14,7 @@ import WidgetAnomalie from './components/forge/WidgetAnomalie';
 import { InAppNotification as AlertSystem, PWAPrompt, DisclaimerModal } from './components/SystemeModales';
 import { APP_VERSION, BUILD_DATE } from './version';
 import { UserContext } from './context/UserContext';
+import { useOfflineStatus } from './context/OfflineStatusContext';
 import { useCorrectionCheck } from './hooks/useCorrectionCheck';
 import CorrectionRequestModal from './components/CorrectionRequestModal';
 import AdminCorrectionWidget from './components/AdminCorrectionWidget';
@@ -28,6 +29,7 @@ export default function App() {
   // Système de correction : joueur + admin
   const { pendingCorrections, adminQueue, respondToCorrection, markCorrected } = useCorrectionCheck(userProfile);
   const navigate = useNavigate();
+  const { isOnline, hasCachedData } = useOfflineStatus();
 
   // Chargement différé de l'historique des versions (103 KB économisés du bundle initial)
   React.useEffect(() => {
@@ -35,6 +37,22 @@ export default function App() {
       import('./version').then(m => setVersionHistory(m.VERSION_HISTORY));
     }
   }, [showVersionModal, versionHistory]);
+
+  if (!isOnline && !hasCachedData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-900 p-6">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-6">📜</div>
+          <h1 className="text-2xl font-serif font-bold text-amber-200 mb-4">
+            Le Grimoire n'est pas encore ouvert
+          </h1>
+          <p className="text-stone-300 leading-relaxed">
+            Votre Grimoire n'a pas encore été chargé. Connectez-vous une première fois en ligne pour activer le mode hors ligne.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (globalLoading) {
     return (
