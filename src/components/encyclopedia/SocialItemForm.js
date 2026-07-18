@@ -2,6 +2,7 @@
 import React from 'react';
 import { Briefcase, Coins, Users, BookOpen, Crown, TrendingUp } from '../../config/icons';
 import BonusBuilder from '../BonusBuilder';
+import PersonalCardCostFields from './PersonalCardCostFields';
 
 const CATEGORIES = [
     { id: 'metier', label: 'Métier / Occupation' },
@@ -20,7 +21,8 @@ export default function SocialItemForm({
     updateTech,
     competencesData,
     usefulSkills,
-    allCompFutiles
+    allCompFutiles,
+    isPersonal
 }) {
 
     const toggleProfil = (p) => {
@@ -223,6 +225,13 @@ export default function SocialItemForm({
                     futilesSkills={allCompFutiles ? allCompFutiles.map(c => c.nom || c.name) : []}
                 />
             </div>
+
+            {isPersonal && (
+                <PersonalCardCostFields
+                    costs={{ xp: proposal.cost_xp, fortune: proposal.cost_fortune, pp: proposal.cost_pp, hide_effects: proposal.hide_effects_until_accepted }}
+                    onChange={c => setProposal({ ...proposal, cost_xp: c.xp, cost_fortune: c.fortune, cost_pp: c.pp, hide_effects_until_accepted: c.hide_effects })}
+                />
+            )}
         </div>
     );
 }

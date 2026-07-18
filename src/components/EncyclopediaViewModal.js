@@ -3,8 +3,9 @@ import React, { useRef } from 'react';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { X, BookOpen, ShieldCheck, Sparkles, Star, Zap, Info, Activity, Briefcase, Coins, Crown, TrendingUp, Users, VenetianMask } from '../config/icons';
 import { getMagicBadges } from '../data/DictionnaireJeu';
+import PersonalCardGrantsList from './encyclopedia/PersonalCardGrantsList';
 
-export default function EncyclopediaViewModal({ item, activeTab, isInitiated, onClose }) {
+export default function EncyclopediaViewModal({ item, activeTab, isInitiated, userProfile, onClose }) {
   const modalRef = useRef(null);
   useFocusTrap(modalRef, !!item);
 
@@ -63,16 +64,19 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
                 <ShieldCheck size={14} /> Savoir Scellé
               </span>
             )}
-            {item.is_official === true && (
+            {item.creator_id != null ? (
+              <span className="flex items-center gap-1.5 text-xs font-bold text-violet-800 bg-violet-100 px-3 py-1 rounded-full border border-violet-300 shadow-sm">
+                ✦ Carte Personnelle
+              </span>
+            ) : item.is_official === true ? (
               <span className="flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-300 shadow-sm">
                 📚 Archive Officielle
               </span>
-            )}
-            {item.is_official === false && (
+            ) : item.is_official === false ? (
               <span className="flex items-center gap-1.5 text-xs font-bold text-blue-800 bg-blue-100 px-3 py-1 rounded-full border border-blue-300 shadow-sm">
                 <Info size={14} /> Faux-Semblant Communautaire
               </span>
-            )}
+            ) : null}
             {item.era && (
               <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider shadow-sm">
                 Ère : {item.era}
@@ -466,6 +470,16 @@ export default function EncyclopediaViewModal({ item, activeTab, isInitiated, on
                     {f}
                   </span>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* ✦ DISTRIBUTIONS (Carte personnelle — visible uniquement par le créateur) */}
+          {item.creator_id && userProfile?.id === item.creator_id && (
+            <div>
+              <h4 className="text-xs font-bold text-violet-600 uppercase tracking-widest mb-3">✦ Distributions de cette carte</h4>
+              <div className="bg-violet-50 p-4 rounded-xl border border-violet-200 shadow-sm">
+                <PersonalCardGrantsList cardId={item.id} cardType={activeTab} />
               </div>
             </div>
           )}

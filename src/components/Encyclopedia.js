@@ -331,6 +331,7 @@ export default function Encyclopedia({ onBack, onOpenValidations, onOpenMesPropo
                     item={state.viewingItem}
                     activeTab={state.activeTab}
                     isInitiated={isInitiated}
+                    userProfile={userProfile}
                     onClose={() => setters.setViewingItem(null)}
                 />
             )}

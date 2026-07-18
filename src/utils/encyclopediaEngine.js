@@ -82,6 +82,11 @@ export const submitEncyclopediaProposal = async ({
             surgicalData.is_official = proposal.is_official;
         }
 
+        // ✦ CARTE PERSONNELLE : inclure creator_id à la création
+        if (isCreating && proposal.creator_id) {
+            surgicalData.creator_id = proposal.creator_id;
+        }
+
         if (activeTab === 'fairy_types') {
             const newAvantages = normalizeTextListField(proposal.avantages);
             const oldAvantages = normalizeTextListField(editingItem.avantages);

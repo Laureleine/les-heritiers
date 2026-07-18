@@ -445,11 +445,14 @@ export default function BonusBuilder({
                                     >
                                         <option value="">Spécialité (Offerte)...</option>
                                         <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
-                                        {availableSpecs.filter(s => s.is_official).length > 0 && (
-                                            <optgroup label="📚 Officielles">{availableSpecs.filter(s => s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
+                                        {availableSpecs.filter(s => s.creator_id).length > 0 && (
+                                            <optgroup label="✦ Personnelles">{availableSpecs.filter(s => s.creator_id).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
                                         )}
-                                        {availableSpecs.filter(s => !s.is_official).length > 0 && (
-                                            <optgroup label="👥 Communauté">{availableSpecs.filter(s => !s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
+                                        {availableSpecs.filter(s => s.is_official && !s.creator_id).length > 0 && (
+                                            <optgroup label="📚 Officielles">{availableSpecs.filter(s => s.is_official && !s.creator_id).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
+                                        )}
+                                        {availableSpecs.filter(s => !s.is_official && !s.creator_id).length > 0 && (
+                                            <optgroup label="👥 Communauté">{availableSpecs.filter(s => !s.is_official && !s.creator_id).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
                                         )}
                                     </select>
                                 )}
@@ -631,11 +634,14 @@ export default function BonusBuilder({
                                     >
                                         <option value="">Spécialité (Optionnelle)...</option>
                                         <option value="__CREATE_NEW__">✨ Créer une nouvelle...</option>
-                                        {availableSpecs.filter(s => s.is_official).length > 0 && (
-                                            <optgroup label="📚 Officielles">{availableSpecs.filter(s => s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
+                                        {availableSpecs.filter(s => s.creator_id).length > 0 && (
+                                            <optgroup label="✦ Personnelles">{availableSpecs.filter(s => s.creator_id).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
                                         )}
-                                        {availableSpecs.filter(s => !s.is_official).length > 0 && (
-                                            <optgroup label="👥 Communauté">{availableSpecs.filter(s => !s.is_official).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
+                                        {availableSpecs.filter(s => s.is_official && !s.creator_id).length > 0 && (
+                                            <optgroup label="📚 Officielles">{availableSpecs.filter(s => s.is_official && !s.creator_id).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
+                                        )}
+                                        {availableSpecs.filter(s => !s.is_official && !s.creator_id).length > 0 && (
+                                            <optgroup label="👥 Communauté">{availableSpecs.filter(s => !s.is_official && !s.creator_id).map(s => <option key={s.id || s.nom} value={s.nom}>{s.nom}</option>)}</optgroup>
                                         )}
                                     </select>
                                 )}

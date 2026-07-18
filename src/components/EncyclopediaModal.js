@@ -33,6 +33,9 @@ export default function EncyclopediaModal({
     const { gameData } = useGameDataContext();
     const isSuperAdmin = checkSuperAdmin(userProfile);
     const isInitiated = userProfile?.profile?.is_initiated === true || isSuperAdmin;
+    const isDocte = userProfile?.profile?.is_docte === true || isSuperAdmin;
+    const canBePersonal = isCreating && isDocte && !['specialites', 'figures', 'fairy_types'].includes(activeTab);
+    const isPersonal = !!proposal.creator_id;
 
     // 🧠 ÉTATS LOCAUX PURIFIÉS (L'autonomie est de retour !)
     const [proposal, setProposal] = useState(() => {
@@ -128,17 +131,17 @@ export default function EncyclopediaModal({
         });
 
         if (result.success) {
-            if (isSuperAdmin && result.requestId) {
+            if ((isSuperAdmin || isPersonal) && result.requestId) {
                 const { data, error } = await supabase.functions.invoke('apply-encyclopedia-change', {
                     body: { requestId: result.requestId, sealRequested: false }
                 });
 
                 if (error || data?.error) {
-                    logger.error("❌ Échec application directe Super Admin :", error || data?.error);
-                    showInAppNotification("La proposition a été créée mais l'application directe a échoué. Le ticket reste disponible dans le Conseil.", "warning");
+                    logger.error("❌ Échec application directe :", error || data?.error);
+                    showInAppNotification("La carte a été créée mais l'application directe a échoué. Le ticket reste disponible dans le Conseil.", "warning");
                 } else {
-                    logger.info("✅ Modification appliquée directement :", result.recordName);
-                    showInAppNotification("Modification appliquée immédiatement (mode Super Admin).", "success");
+                    logger.info("✅ Carte personnelle créée :", result.recordName);
+                    showInAppNotification(isSuperAdmin && !isPersonal ? "Modification appliquée immédiatement (mode Super Admin)." : "✦ Carte personnelle créée et disponible dans vos archives !", "success");
                 }
             } else {
                 logger.info("✅ Proposition envoyée :", result.recordName);
@@ -168,7 +171,7 @@ export default function EncyclopediaModal({
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-stone-50 shrink-0">
                     <div>
                         <h2 id="enc-modal-title" className="text-xl font-serif font-bold text-amber-900">
-                            {isCreating ? 'Proposition de création' : 'Proposition de modification'}
+                            {isPersonal && isCreating ? '✦ Forger une Carte Personnelle' : isCreating ? 'Proposition de création' : 'Proposition de modification'}
                         </h2>
                         {!isCreating && <p className="text-sm text-gray-500 mt-1">Élément : <span className="font-bold text-gray-800">{editingItem?.name || editingItem?.nom}</span></p>}
                     </div>
@@ -191,6 +194,7 @@ export default function EncyclopediaModal({
                         <SocialItemForm
                             proposal={proposal} setProposal={setProposal} parsedTech={parsedTech} updateTech={updateTech}
                             competencesData={competencesData} usefulSkills={usefulSkills} allCompFutiles={allCompFutiles}
+                            isPersonal={isPersonal}
                         />
                     ) : activeTab === 'fairy_types' ? (
                         <FairyTypeForm
@@ -211,11 +215,45 @@ export default function EncyclopediaModal({
                             proposal={proposal} setProposal={setProposal} parsedTech={parsedTech} updateTech={updateTech}
                             competencesData={competencesData} usefulSkills={usefulSkills} allCompFutiles={allCompFutiles}
                             allFairyTypes={allFairyTypes}
+                            isPersonal={isPersonal}
                         />
                     )}
 
                     {/* SCEAU D'OFFICIALITÉ */}
-                    <div className="mt-6 border-t border-gray-100 pt-6">
+                    <div className="mt-6 border-t border-gray-100 pt-6 space-y-4">
+                        {canBePersonal && (
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <label className="block text-sm font-bold text-violet-700">
+                                        ✦ Carte Personnelle
+                                    </label>
+                                    <p className="text-xs text-stone-500 mt-0.5">
+                                        {isPersonal
+                                            ? 'Carte créée par vous, distribuable aux membres de votre cercle.'
+                                            : 'Activer pour créer une carte personnelle non-officielle.'}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={isPersonal}
+                                    onClick={() => {
+                                        if (isPersonal) {
+                                            setProposal({ ...proposal, creator_id: null, cost_xp: 0, cost_fortune: 0, cost_pp: {}, hide_effects_until_accepted: false });
+                                        } else {
+                                            setProposal({ ...proposal, creator_id: userProfile.id, is_official: false });
+                                        }
+                                    }}
+                                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50 ${
+                                        isPersonal ? 'bg-violet-600 border-violet-700' : 'bg-stone-200 border-stone-300'
+                                    }`}
+                                >
+                                    <span className={`inline-block h-4 w-4 mt-0.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                                        isPersonal ? 'translate-x-5' : 'translate-x-0.5'
+                                    }`} />
+                                </button>
+                            </div>
+                        )}
                         <div className="flex items-center justify-between">
                             <div>
                                 <label className="block text-sm font-bold text-gray-700">
@@ -231,6 +269,7 @@ export default function EncyclopediaModal({
                                 type="button"
                                 role="switch"
                                 aria-checked={proposal.is_official}
+                                disabled={isPersonal}
                                 onClick={() => {
                                     if (proposal.is_official) {
                                         const confirmMsg = `Êtes-vous sûr de vouloir rétrograder "${proposal.name || proposal.nom}" au rang de Faux-Semblant Communautaire ? Cette fiche ne sera plus considérée comme officielle par le Grimoire.`;
@@ -238,7 +277,9 @@ export default function EncyclopediaModal({
                                     }
                                     setProposal({ ...proposal, is_official: !proposal.is_official });
                                 }}
-                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 ${
+                                className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 ${
+                                    isPersonal ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+                                } ${
                                     proposal.is_official ? 'bg-emerald-600 border-emerald-700' : 'bg-stone-200 border-stone-300'
                                 }`}
                             >

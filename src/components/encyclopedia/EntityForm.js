@@ -4,6 +4,7 @@ import React, { useCallback } from 'react';
 import { Star, Sparkles } from '../../config/icons';
 import BonusBuilder from '../BonusBuilder';
 import RelationSelector from './RelationSelector';
+import PersonalCardCostFields from './PersonalCardCostFields';
 
 const EntityForm = ({
   activeTab,
@@ -16,7 +17,8 @@ const EntityForm = ({
   competencesData,
   usefulSkills,
   allCompFutiles,
-  allFairyTypes
+  allFairyTypes,
+  isPersonal
 }) => {
 
   // 🧠 LE CERVEAU SÉPARÉ : Mémoïsation de la fonction de bascule pour éviter les re-renders inutiles
@@ -136,6 +138,14 @@ const EntityForm = ({
             colorTheme="indigo"
           />
         </div>
+      )}
+
+      {/* 7. COÛTS D'ACQUISITION (Cartes personnelles uniquement) */}
+      {isPersonal && (
+        <PersonalCardCostFields
+          costs={{ xp: proposal.cost_xp, fortune: proposal.cost_fortune, pp: proposal.cost_pp, hide_effects: proposal.hide_effects_until_accepted }}
+          onChange={c => setProposal({ ...proposal, cost_xp: c.xp, cost_fortune: c.fortune, cost_pp: c.pp, hide_effects_until_accepted: c.hide_effects })}
+        />
       )}
 
     </div>
