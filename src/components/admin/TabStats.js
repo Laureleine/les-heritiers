@@ -63,7 +63,7 @@ function TabStats() {
       }
       const outilsParUsage = Object.entries(parOutil).sort((a, b) => b[1] - a[1]);
 
-      const topUsers = (topUsersData || []).map(({ email, total }) => [email, total]);
+      const topUsers = (topUsersData || []).map(({ username, total }) => [username, total]);
 
       setStats({
         totals: {
@@ -280,9 +280,9 @@ function TabStats() {
                   {stats.outils.topUsers.length > 0 ? (
                     <table className="w-full text-left">
                       <tbody className="divide-y divide-stone-100">
-                        {stats.outils.topUsers.map(([email, count]) => (
-                          <tr key={email}>
-                            <td className="py-1.5 text-xs font-bold text-stone-700 truncate max-w-[160px]" title={email}>{email}</td>
+                        {stats.outils.topUsers.map(([username, count]) => (
+                          <tr key={username}>
+                            <td className="py-1.5 text-xs font-bold text-stone-700 truncate max-w-[160px]">{username}</td>
                             <td className="py-1.5 text-right font-black text-teal-700 tabular-nums">{count}</td>
                           </tr>
                         ))}
