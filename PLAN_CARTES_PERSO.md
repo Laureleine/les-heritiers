@@ -55,7 +55,7 @@
 
 ### 3c — Modal d'acceptation
 - [x] **T3.8** Composant `GrantAcceptanceModal.jsx` : affiche carte + coûts + Accepter/Refuser
-- [ ] **T3.9** Application des coûts au personnage (XP, Fortune, PP) — **différé** (nécessite résolution du personnage cible dans le cercle)
+- [x] **T3.9** Application des coûts au personnage (XP, Fortune, PP)
 - [x] **T3.10** Grant → `accepted` ou `rejected` + `responded_at`
 - [x] **T3.11** Notification Docte via `support_tickets`
 

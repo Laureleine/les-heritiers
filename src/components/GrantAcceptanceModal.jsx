@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
+import { useUserContext } from '../context/UserContext';
 import { X } from '../config/icons';
 
 const CARD_TABLES = {
@@ -26,6 +27,7 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
     const [cardData, setCardData] = useState(null);
     const [loadingCard, setLoadingCard] = useState(false);
     const [acting, setActing] = useState(false);
+    const { userProfile } = useUserContext();
 
     const grant = grants[idx];
 
@@ -41,6 +43,63 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
             .then(({ data }) => { setCardData(data); setLoadingCard(false); });
     }, [grant]);
 
+    const applyGrantCosts = async (grant) => {
+        if (!userProfile?.id || !grant.cercle_id) return;
+        const hasCostXp = grant.cost_xp > 0;
+        const hasCostFortune = grant.cost_fortune > 0;
+        const costPP = grant.cost_pp || {};
+        const hasCostPP = Object.values(costPP).some(v => v > 0);
+        if (!hasCostXp && !hasCostFortune && !hasCostPP) return;
+
+        const { data: membre } = await supabase
+            .from('cercle_membres')
+            .select('character_id')
+            .eq('cercle_id', grant.cercle_id)
+            .eq('user_id', userProfile.id)
+            .maybeSingle();
+        if (!membre?.character_id) return;
+
+        const { data: char } = await supabase
+            .from('characters')
+            .select('id, data, xp_depense, fortune')
+            .eq('id', membre.character_id)
+            .single();
+        if (!char) return;
+
+        const newData = { ...char.data };
+        const updates = { data: newData };
+
+        if (hasCostXp) {
+            const historique = newData.historique_xp || [];
+            newData.historique_xp = [{
+                type: 'DEPENSE',
+                code: 'CARTE_PERSO',
+                label: `Don du Docte : ${cardData?.nom || cardData?.name || 'Carte'}`,
+                valeur: grant.cost_xp,
+                date_mouvement: new Date().toISOString()
+            }, ...historique];
+            updates.xp_depense = Math.max(0, newData.historique_xp.reduce((acc, tx) => {
+                if (tx.type === 'DEPENSE') return acc + tx.valeur;
+                if (tx.type === 'REMBOURSEMENT') return acc - tx.valeur;
+                return acc;
+            }, 0));
+        }
+
+        if (hasCostFortune) {
+            updates.fortune = Math.max(0, (char.fortune || 0) - grant.cost_fortune);
+        }
+
+        if (hasCostPP) {
+            const newPP = { ...(newData.pp_cartes_perso || {}) };
+            Object.entries(costPP).forEach(([profil, amount]) => {
+                if (amount > 0) newPP[profil] = (newPP[profil] || 0) + amount;
+            });
+            newData.pp_cartes_perso = newPP;
+        }
+
+        await supabase.from('characters').update(updates).eq('id', char.id);
+    };
+
     const respond = async (status) => {
         setActing(true);
         try {
@@ -49,6 +108,10 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
                 .update({ status, responded_at: new Date().toISOString() })
                 .eq('id', grant.id);
             if (error) throw error;
+
+            if (status === 'accepted') {
+                await applyGrantCosts(grant);
+            }
 
             // Notifier le Docte via support_tickets
             await supabase.from('support_tickets').insert({

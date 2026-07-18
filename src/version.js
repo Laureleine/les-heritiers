@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.12.1 - \"Le Prix du Don ✦\"",
+    date: "18 Juillet 2026",
+    description: "Quand un Héritier accepte un Don du Docte, le prix s'acquitte désormais pour de vrai : les XP sont retranchés du journal de dépenses, la Fortune est diminuée du rang convenu, et les PP sont inscrits dans le registre des Cartes Personnelles. Rien ne vient plus gratis sous le soleil de la Belle Époque.",
+    changes: [
+      "💸 **Application des coûts à l'acceptation :** Accepter un Don du Docte débite maintenant le personnage — XP déduits du journal (transaction DEPENSE), Fortune diminuée du rang indiqué, PP comptabilisés dans le registre des Cartes Personnelles.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.12.0 - \"Les Largesses du Docte ✦\"",
     date: "18 Juillet 2026",
     description: "Les Doctes des Cercles peuvent désormais forger des Cartes Personnelles — atouts, pouvoirs, capacités ou items de vie sociale — et les offrir à leurs membres comme autant de dons féeriques. Chaque distribution arrive sous la forme d'une enveloppe mystérieuse : le joueur reçoit une alerte, peut accepter ou refuser le présent, et choisit si les effets lui sont révélés d'emblée ou seulement après qu'il a tendu la main. Les cartes acceptées s'affichent en violet ✦ dans les étapes de la fiche et sur le parchemin de synthèse.",

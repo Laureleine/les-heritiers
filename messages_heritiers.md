@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.12.1 — Le Prix du Don ✦
+*18 juillet 2026*
+
+Chers Héritiers,
+
+Un ajustement discret, mais qui change tout pour les Cercles.
+
+Jusqu'à présent, accepter un Don du Docte était un geste purement symbolique — le coût affiché restait lettre morte, aucune ressource ne quittait réellement votre bourse. Ce n'était pas dans l'esprit de la maison.
+
+Désormais, **le prix se paie vraiment** : si le Docte a fixé un coût en XP, ils sont retranchés de votre journal de dépenses au moment où vous tendez la main. Si une Fortune est exigée, votre rang de richesse baisse en conséquence. Si des Points de Profil sont réclamés, ils s'inscrivent dans le registre de vos Cartes Personnelles.
+
+Rien ne vient plus gratis sous le soleil de la Belle Époque — mais la parole du Docte, elle, n'a jamais été aussi solide.
+
+---
+
 ## v17.12.0 — Les Largesses du Docte ✦
 *18 juillet 2026*
 

@@ -6,6 +6,23 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session 18 juillet 2026 — Le Prix du Don (v17.12.1)
+
+### Ce qui a été fait
+- T3.9 : Application des coûts au personnage à l'acceptation d'un grant (XP, Fortune, PP)
+- `usePendingGrants` : ajout de `cercle_id` au select (indispensable pour retrouver le personnage)
+- `GrantAcceptanceModal` : fonction `applyGrantCosts` — lookup via `cercle_membres`, update direct Supabase sur `characters`
+- La fortune se déduit directement de la colonne `fortune` du personnage (rang, pas pool)
+
+### Leçons
+
+1. **`fortune` est une colonne directe, pas dans `data`** — sélectionner `id, data, xp_depense, fortune` dans la requête characters pour pouvoir la modifier.
+2. **`xp_depense` est un cache à maintenir manuellement** en mise à jour directe (hors `saveCharacterToSupabase`) : recalculer depuis `historique_xp` avec la même formule `reduce` et inclure dans le même `update`.
+3. **Grouper les updates en un seul objet** (`updates = { data, xp_depense, fortune }`) pour éviter des requêtes multiples et des états intermédiaires incohérents.
+4. **Early return sur "aucun coût"** (`!hasCostXp && !hasCostFortune && !hasCostPP`) : évite les requêtes inutiles pour les dons gratuits.
+
+---
+
 ## Session 18 juillet 2026 — Les Largesses du Docte (v17.12.0)
 
 ### Ce qui a été fait

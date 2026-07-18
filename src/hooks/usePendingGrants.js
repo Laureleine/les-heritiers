@@ -13,7 +13,7 @@ export function usePendingGrants(userProfile) {
         if (!userId || dismissed) return;
         supabase
             .from('personal_card_grants')
-            .select('id, card_id, card_type, cost_xp, cost_fortune, cost_pp, hide_effects_until_accepted')
+            .select('id, card_id, card_type, cost_xp, cost_fortune, cost_pp, hide_effects_until_accepted, cercle_id')
             .eq('granted_to', userId)
             .eq('status', 'pending')
             .then(({ data }) => { if (data?.length) setPendingGrants(data); });
