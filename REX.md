@@ -6,6 +6,27 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session 18 juillet 2026 — Les Gardiens Éveillés (v17.11.3)
+
+### Ce qui a été fait
+- Bouton « Contacter » sur les cartes bug (BureauAnomalies) et idée (ValidationsPendantes/ChangeCard) — ouvre un ticket Télégraphe adressé à l'auteur
+- Popup admin « validations en attente » au chargement de session (hook + composant, sessionStorage pour le refus)
+- Fix métriques outils : pseudo au lieu d'email — nécessitait DROP + CREATE de la RPC (type de retour incompatible avec `CREATE OR REPLACE`)
+- Fix colonne `effets_techniques` manquante sur `fairy_capacites`
+
+### Leçons
+
+**1. Toujours vérifier les icônes dans `icons.js` avant de commiter**
+Un composant peut compiler localement (Vitest n'importe pas vraiment lucide-react) mais planter le build Rollup/Vercel sur une icône non exportée. Vérifier avec `grep NomIcone src/config/icons.js` systématiquement quand on introduit une nouvelle icône.
+
+**2. `CREATE OR REPLACE FUNCTION` ne peut pas changer le type de retour**
+PostgreSQL refuse de remplacer une fonction dont les colonnes de retour changent (ex : `email TEXT` → `username TEXT`). Il faut `DROP FUNCTION IF EXISTS` d'abord, puis `CREATE FUNCTION`. Penser à utiliser `DROP FUNCTION nom(args)` avec la signature exacte pour éviter les conflits de surcharge.
+
+**3. Le popup admin avec sessionStorage est le bon pattern anti-spam**
+Utiliser `sessionStorage` (et non `localStorage`) signifie que le popup revient à chaque nouvelle session — ce qui est souhaitable pour une alerte de travail à faire — mais ne s'affiche pas plusieurs fois dans la même session si l'utilisateur l'a déjà fermé.
+
+---
+
 ## Session 17 juillet 2026 — Le Pont Réparé (v17.11.2)
 
 ### Bug : crash au démarrage — `wrapOnlineQuery` incompatible postgrest-js v2
