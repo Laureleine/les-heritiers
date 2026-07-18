@@ -121,6 +121,14 @@ export function useVieSociale() {
             depenses[profilMajeurNom] += druidismePP;
         }
 
+        // PP déduits par les cartes personnelles acceptées
+        const ppCartesPerso = character.data?.pp_cartes_perso || {};
+        Object.entries(ppCartesPerso).forEach(([pName, val]) => {
+            if (val > 0 && depenses[pName] !== undefined) {
+                depenses[pName] += val;
+            }
+        });
+
         // 2. Allocations de contacts gratuits (s'ajoutent au budget pour les contacts uniquement)
         let totalAllocated = 0;
         const safeAllocations = {};
