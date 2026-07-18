@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.12.0 — Les Largesses du Docte ✦
+*18 juillet 2026*
+
+Chers Héritiers,
+
+Une nouvelle magie vient de s'installer dans l'Atelier — discrète, violette, et réservée à ceux qui tiennent les rênes des Cercles.
+
+Les **Doctes** peuvent désormais forger leurs propres **Cartes Personnelles** : des atouts, des pouvoirs, des capacités ou des objets de vie sociale qui n'appartiennent qu'à eux et qu'ils peuvent offrir — ou vendre, à leur gré — aux membres de leur Cercle. Ce sont des cadeaux féeriques, des secrets de maison, des grâces particulières que seul le Docte peut accorder.
+
+Depuis l'onglet ✦ de leur Cercle, ils choisissent qui reçoit quoi, à quel coût (en expérience, en fortune, en points de profil), et s'ils veulent que les effets restent voilés jusqu'à ce que le membre ait tendu la main.
+
+Du côté des joueurs : à chaque session, si un don attend, **une enveloppe violette s'ouvre**. Carte après carte, vous pouvez accepter ou refuser. Si vous acceptez, la carte apparaît en ✦ violet sur votre fiche — dans vos atouts, vos pouvoirs, votre inventaire.
+
+Le Docte est prévenu par Télégraphe de chaque décision.
+
+Que les Cercles fleurissent, et que les dons circulent.
+
+---
+
 ## v17.11.3 — Les Gardiens Éveillés 🛡️
 *18 juillet 2026*
 

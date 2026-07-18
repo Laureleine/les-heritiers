@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.12.0 - \"Les Largesses du Docte ✦\"",
+    date: "18 Juillet 2026",
+    description: "Les Doctes des Cercles peuvent désormais forger des Cartes Personnelles — atouts, pouvoirs, capacités ou items de vie sociale — et les offrir à leurs membres comme autant de dons féeriques. Chaque distribution arrive sous la forme d'une enveloppe mystérieuse : le joueur reçoit une alerte, peut accepter ou refuser le présent, et choisit si les effets lui sont révélés d'emblée ou seulement après qu'il a tendu la main. Les cartes acceptées s'affichent en violet ✦ dans les étapes de la fiche et sur le parchemin de synthèse.",
+    changes: [
+      "✦ **Cartes Personnelles (Encyclopédie) :** Un Docte peut désormais créer une carte encyclopédique marquée ✦ Personnel — atout, pouvoir, capacité ou item de vie sociale — réservée aux membres de son Cercle. Elle se forge comme toute entrée, mais n'entre pas dans le flux des validations communautaires.",
+      "📦 **Distribution depuis le Cercle :** Depuis l'onglet ✦ Cartes Perso (visible du seul Docte), il peut distribuer chaque carte à un ou plusieurs membres, en précisant un coût optionnel (XP, Fortune, PP par profil) et en choisissant si les effets restent voilés jusqu'à l'acceptation.",
+      "🎁 **Alerte et acceptation (joueur) :** À chaque session, si des dons sont en attente, un popup violet s'ouvre pour présenter l'offre — carte par carte. Le joueur accepte ou décline ; le Docte reçoit une notification dans son Télégraphe.",
+      "🗂️ **Badge ✦ partout :** Les cartes personnelles arborent un badge violet ✦ Personnel dans l'Encyclopédie, un badge ✦ Don du Docte dans les sélecteurs d'atouts et de pouvoirs, et apparaissent en violet sur la Fiche Parchemin.",
+      "🏛️ **Vie Sociale :** Les social_items personnels offerts sont listés dans la colonne Inventaire. Leurs PP sont comptabilisés séparément dans le budget, sans interférer avec le catalogue communautaire.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.11.3 - \"Les Gardiens Éveillés 🛡️\"",
     date: "18 Juillet 2026",
     description: "Les Gardiens du Savoir disposent désormais de nouveaux outils pour veiller sur la communauté : un signal lumineux les prévient dès qu'une proposition attend leur jugement, ils peuvent contacter directement un Héritier depuis la carte de son signalement ou de son idée, et les métriques des outils affichent enfin les pseudos plutôt que les adresses techniques. Un correctif silencieux règle également une erreur de cache sur les capacités féeriques.",
