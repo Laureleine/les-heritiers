@@ -378,8 +378,18 @@ export default function RegistrePage({ onBack }) {
               {/* ✨ LE POSTE DE COMMANDEMENT DU GARDIEN (Pour Rejeter) */}
               {isInitiated && !rejetState.isOpen && carteSelectionnee.statut !== 'Rejeté' && (
                 <div className="mt-6 pt-4 border-t border-stone-200 flex justify-end gap-3">
-                  <button 
-                    onClick={() => setRejetState({ isOpen: true, raison: '' })} 
+                  {carteSelectionnee.user_id && carteSelectionnee.user_id !== myUserId && (
+                    <button
+                      onClick={() => window.dispatchEvent(new CustomEvent('open-telegraphe', {
+                        detail: { targetUser: { id: carteSelectionnee.user_id, username: carteSelectionnee.profiles?.username } }
+                      }))}
+                      className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm"
+                    >
+                      <MessageCircle size={18} /> Contacter
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setRejetState({ isOpen: true, raison: '' })}
                     className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm"
                   >
                     <X size={18} /> Rejeter et Archiver
