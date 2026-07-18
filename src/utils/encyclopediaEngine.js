@@ -378,6 +378,25 @@ export const submitEncyclopediaProposal = async ({
             return { warning: true, message: "Aucune modification détectée." };
         }
 
+        // ✦ CARTES PERSONNELLES — bypass data_change_requests
+        // Création ou modification par le créateur lui-même, sans promotion ni relation aux espèces
+        const isPersonalAsset = activeTab === 'fairy_assets';
+        const isCreatorEditing = !isCreating && editingItem?.creator_id === userProfile?.id && editingItem?.is_official === false;
+        const isCreatorCreating = isCreating && proposal.creator_id === userProfile?.id;
+        const isPromotion = surgicalData.is_official === true || surgicalData.creator_id === null;
+        const hasSpeciesRelation = !!(surgicalData._relations?.fairyIds);
+
+        if (isPersonalAsset && (isCreatorEditing || isCreatorCreating) && !isPromotion && !hasSpeciesRelation) {
+            const cardId = isCreating ? generateId() : editingItem.id;
+            const { _relations, id: _id, ...rpcData } = surgicalData;
+            const { error: rpcError } = await supabase.rpc('upsert_personal_fairy_asset', {
+                p_id: cardId,
+                p_data: rpcData
+            });
+            if (rpcError) throw rpcError;
+            return { success: true, recordName: proposal.nom || proposal.name };
+        }
+
         // --- ENVOI DE LA REQUÊTE ---
         const recordId = isCreating ? generateId() : editingItem.id;
         // 🔴 FIX : Injecter l'ID dans surgicalData pour que apply-encyclopedia-change

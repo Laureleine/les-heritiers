@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../config/supabase';
 import { useGameDataContext } from '../context/GameDataContext';
+import { useUserContext } from '../context/UserContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { invalidateAllCaches } from '../utils/supabaseGameData';
 import { useQueryClient } from '@tanstack/react-query';
@@ -100,6 +101,7 @@ const buildFairyTypeEditingItem = (item, fairyCloudData) => {
 
 export function useEncyclopedia() {
     const { gameData } = useGameDataContext();
+    const { userProfile } = useUserContext();
     const queryClient = useQueryClient();
     const { encyclopediaRefs, competencesFutiles, fairyData } = gameData || {};
 
@@ -301,11 +303,21 @@ export function useEncyclopedia() {
     const executeDelete = useCallback(async (item, tabName) => {
         setConfirmState(prev => ({ ...prev, isOpen: false }));
         await withLoading(setLoading, async () => {
-            const { error } = await supabase.rpc('purge_encyclopedia_entity', {
-                p_table_name: tabName,
-                p_record_id: item.id
-            });
-            if (error) throw error;
+            const isOwnPersonalCard = tabName === 'fairy_assets'
+                && item.creator_id === userProfile?.id
+                && item.is_official === false;
+
+            if (isOwnPersonalCard) {
+                const { error } = await supabase.rpc('delete_personal_fairy_asset', { p_id: item.id });
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.rpc('purge_encyclopedia_entity', {
+                    p_table_name: tabName,
+                    p_record_id: item.id
+                });
+                if (error) throw error;
+            }
+
             showInAppNotification("L'archive a été effacée de la trame temporelle.", "success");
             invalidateAllCaches();
             queryClient.invalidateQueries({ queryKey: ['gameData'] });
@@ -314,7 +326,7 @@ export function useEncyclopedia() {
             console.error("Erreur RPC Destruction:", err);
             showInAppNotification("La destruction a échoué : " + err.message, "error");
         });
-    }, [fetchData]);
+    }, [fetchData, userProfile]);
 
     const triggerDelete = useCallback((item) => {
         setConfirmState({

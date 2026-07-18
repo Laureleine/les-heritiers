@@ -178,6 +178,18 @@ const EncyclopediaCard = ({ item, activeTab, onOpenEdit, onView, isLocked, onTog
                 )}
             </div>
 
+            {/* SUPPRESSION PAR LE CRÉATEUR de sa propre carte personnelle */}
+            {activeTab === 'fairy_assets' && item.creator_id && item.creator_id === userProfile?.id && !item.is_official && (
+                <div className="flex gap-2 mt-3 w-full">
+                    <button
+                        onClick={() => onDeleteClick(item, activeTab)}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:border-red-300 rounded-lg text-xs font-bold transition-colors shadow-sm"
+                    >
+                        <Trash2 size={14} /> Supprimer ma création
+                    </button>
+                </div>
+            )}
+
             {/* LE PRIVILÈGE DES GARDIENS */}
             {isAdmin(userProfile) && (
                 <div className="flex gap-2 mt-3 w-full">
