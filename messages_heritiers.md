@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.11.3 — Les Gardiens Éveillés 🛡️
+*18 juillet 2026*
+
+Chers Héritiers,
+
+Cette mise à jour est dédiée à celles et ceux qui veillent dans l'ombre — nos Gardiens du Savoir.
+
+Désormais, dès qu'une proposition de la communauté attend leur jugement, une lueur dorée s'allume à leur arrivée dans l'Atelier : un signal discret mais clair qui leur dit *"il y a du travail, Gardien"*. Un clic suffit à ouvrir le Bureau des Validations ; un autre à remettre la chose à plus tard, si d'autres affaires pressent.
+
+Depuis les cartes de signalement et de proposition, les Gardiens peuvent aussi ouvrir un fil Télégraphe pour contacter directement l'Héritier concerné — plus besoin de chercher une adresse : la plume trouve son destinataire d'un geste.
+
+Côté coulisses, les métriques des outils affichent maintenant vos pseudos plutôt que vos adresses de courrier. Et un petit défaut dans les capacités féeriques de l'Encyclopédie a été silencieusement réparé.
+
+Que les Gardiens veillent, et que les Héritiers créent.
+
+✦ *L'Atelier des Merveilles — v17.11.3*
+
+---
+
 ## v17.11.2 — Le Pont Réparé 🌉
 *17 juillet 2026*
 

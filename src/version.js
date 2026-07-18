@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.11.3 - \"Les Gardiens Éveillés 🛡️\"",
+    date: "18 Juillet 2026",
+    description: "Les Gardiens du Savoir disposent désormais de nouveaux outils pour veiller sur la communauté : un signal lumineux les prévient dès qu'une proposition attend leur jugement, ils peuvent contacter directement un Héritier depuis la carte de son signalement ou de son idée, et les métriques des outils affichent enfin les pseudos plutôt que les adresses techniques. Un correctif silencieux règle également une erreur de cache sur les capacités féeriques.",
+    changes: [
+      "🛡️ **Alerte validations :** À chaque nouvelle session, les Gardiens voient un popup s'ils ont des propositions en attente — avec accès direct au Bureau des Validations ou option de remettre à plus tard.",
+      "💬 **Bouton Contacter :** Les Gardiens peuvent désormais ouvrir un ticket Télégraphe directement depuis la carte d'un signalement (Bureau des Anomalies) ou d'une proposition (Validations Pendantes) pour contacter l'Héritier concerné.",
+      "👤 **Métriques — pseudos :** Les métriques d'usage des outils affichent le pseudo des Héritiers au lieu de leur adresse de courrier.",
+      "🔧 **Fix capacités féeriques :** La sauvegarde d'une capacité depuis l'Encyclopédie déclenchait une erreur de cache Supabase. La colonne manquante a été ajoutée à la table.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.11.2 - \"Le Pont Réparé 🌉\"",
     date: "17 Juillet 2026",
     description: "Un défaut invisible dans les fondations du mode hors ligne provoquait un effondrement silencieux au démarrage de l'Atelier — l'application ne s'initialisait plus correctement en ligne. La cause : une incompatibilité entre la couche de cache offline et la version récente de la bibliothèque Supabase. Le pont entre l'Atelier et le Nuage est désormais solidement réparé.",
