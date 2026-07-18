@@ -21,6 +21,8 @@ import CorrectionRequestModal from './components/CorrectionRequestModal';
 import AdminCorrectionWidget from './components/AdminCorrectionWidget';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import OfflineBanner from './components/OfflineBanner';
+import PendingValidationsAlert from './components/PendingValidationsAlert';
+import { usePendingValidationsAlert } from './hooks/usePendingValidationsAlert';
 
 export default function App() {
   const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate, isRecoveryMode } = useAppInit();
@@ -29,6 +31,7 @@ export default function App() {
 
   // Système de correction : joueur + admin
   const { pendingCorrections, adminQueue, respondToCorrection, markCorrected } = useCorrectionCheck(userProfile);
+  const { pendingCount, isVisible: showValidationsAlert, dismiss: dismissValidationsAlert } = usePendingValidationsAlert(userProfile);
   const navigate = useNavigate();
   const { isOnline, hasCachedData } = useOfflineStatus();
 
@@ -126,6 +129,15 @@ export default function App() {
         <CorrectionRequestModal
           corrections={pendingCorrections}
           onRespond={respondToCorrection}
+        />
+      )}
+
+      {/* Alerte validations en attente (admin seulement) */}
+      {showValidationsAlert && (
+        <PendingValidationsAlert
+          count={pendingCount}
+          onNavigate={() => { dismissValidationsAlert(); navigate('/validations'); }}
+          onDismiss={dismissValidationsAlert}
         />
       )}
 
