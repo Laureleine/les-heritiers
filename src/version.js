@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.12.4 - \"L'Art de la Forge Juste ⚙️\"",
+    date: "18 Juillet 2026",
+    description: "Trois corrections dans les entrailles du Grimoire : le bouton Contacter désormais visible dans le Bureau des Anomalies, les versions figées remplacées par la version réelle du jeu dans les formulaires de signalement, et deux bugs dans le moteur de l'Encyclopédie qui effaçaient silencieusement les règles techniques des cartes communautaires.",
+    changes: [
+      "🐛 **Fix Bouton Contacter invisible (BureauAnomalies) :** Le bouton « Contacter » n'apparaissait pas pour les Gardiens sur les signalements d'anomalies. Cause : le hook de contexte utilisé ne donnait pas accès au profil utilisateur, rendant la vérification admin toujours fausse. Corrigé.",
+      "🐛 **Fix Bouton Contacter absent (ValidationsPendantes, Registre de la Forge) :** La fonctionnalité de contact direct depuis le tableau de validation et le Registre était manquante ou silencieuse. Les trois espaces ouvrent maintenant le Télégraphe directement sur le joueur concerné.",
+      "🐛 **Fix version figée dans les formulaires de signalement :** Les formulaires WidgetAnomalie et BureauAnomalies affichaient des versions codées en dur ('15.4.0', '17.10.1'). Ils lisent désormais la version réelle du build.",
+      "🐛 **Fix moteur Encyclopédie — effets_techniques écrasés :** Sauvegarder une fiche sans avoir compilé les briques du BonusBuilder effaçait silencieusement les règles techniques existantes. Le moteur préserve désormais la valeur en base si aucune nouvelle règle n'a été compilée.",
+      "🐛 **Fix moteur Encyclopédie — faux diff sur description vide :** Une description `null` générait un diff inutile à chaque sauvegarde (`null ≠ ''`). Normalisé des deux côtés.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.12.3 - \"La Voie du Grand Maître ✦\"",
     date: "18 Juillet 2026",
     description: "Le rang 7 — Grand Maître — était inaccessible dans les disciplines magiques, même avec les XP requis. Le bouton restait grisé faute de reconnaissance : les magies n'étaient pas traitées comme des compétences de prédilection. La voie est désormais ouverte jusqu'au sommet.",

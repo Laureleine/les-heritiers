@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.12.4 — L'Art de la Forge Juste ⚙️ (18 juillet 2026)
+
+Chers Héritiers,
+
+Les Gardiens du Savoir ont passé la nuit dans les mécanismes secrets du Grimoire, là où les rouages invisibles dictent ce qui s'affiche et ce qui disparaît.
+
+Plusieurs failles de transmission ont été réparées : le bouton pour contacter un joueur directement depuis un signalement d'anomalie était muet — il ouvre désormais le Télégraphe comme il se doit. Les formulaires de rapport portaient encore des dates d'une version révolue — ils lisent maintenant la version réelle du bâtiment en cours.
+
+Mais la correction la plus silencieuse est aussi la plus importante : lorsqu'un Docte forgeait une Carte Personnelle et tentait d'en affiner les règles techniques, le Grimoire pouvait, sans prévenir, effacer ce travail à la prochaine sauvegarde. Ce comportement a été corrigé. Les règles que vous gravez dans vos créations sont désormais protégées.
+
+*La forge est un art de patience et de précision. Vos œuvres méritent d'être préservées.*
+
+— Les Gardiens du Savoir ✦
+
+---
+
 ## v17.12.3 — La Voie du Grand Maître ✦ (18 juillet 2026)
 
 Chers Héritiers,
