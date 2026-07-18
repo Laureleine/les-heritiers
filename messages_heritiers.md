@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.12.2 — La Forge Bien Nommée 🔨
+*18 juillet 2026*
+
+Chers Héritiers,
+
+Un correctif silencieux, mais qui débloque une Forge fermée depuis hier.
+
+Depuis l'arrivée des Cartes Personnelles, le bouton « Forger » de l'Encyclopédie ouvrait sur le vide — une page blanche, pas de formulaire, pas d'explication. Le spectre a été exorcisé.
+
+Tant qu'on y était, la Forge a reçu une nouvelle tenue : chaque discipline a désormais son propre bouton, libellé avec précision et habillé de sa couleur — indigo pour le féérique, émeraude pour la vie sociale, bleu pour les spécialités, violet pour les Figures. Et pour ceux qui attendaient de pouvoir proposer une nouvelle spécialité : le bouton est là, enfin.
+
+La Forge est ouverte. Entrez.
+
+---
+
 ## v17.12.1 — Le Prix du Don ✦
 *18 juillet 2026*
 

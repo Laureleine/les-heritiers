@@ -99,16 +99,24 @@ export default function Encyclopedia({ onBack, onOpenValidations, onOpenMesPropo
                         className="w-full pl-10 pr-4 py-2.5 border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none shadow-sm"
                     />
                 </div>
-                {isDocte && state.activeTab !== 'specialites' && state.activeTab !== 'figures' && (
-                    <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-amber-700 text-white font-bold rounded-xl hover:bg-amber-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
-                        <Plus size={20} /> Forger une Entité
-                    </button>
-                )}
-                {isDocte && state.activeTab === 'figures' && (
-                    <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className="w-full sm:w-auto px-5 py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-all flex items-center justify-center gap-2 shadow-md shrink-0">
-                        <Plus size={20} /> Forger une Figure
-                    </button>
-                )}
+                {isDocte && (() => {
+                    const FORGE_LABELS = {
+                        fairy_types:     { label: 'Forger une Espèce',    color: 'bg-amber-700 hover:bg-amber-800' },
+                        fairy_capacites: { label: 'Forger une Capacité',  color: 'bg-indigo-600 hover:bg-indigo-700' },
+                        fairy_powers:    { label: 'Forger un Pouvoir',    color: 'bg-indigo-600 hover:bg-indigo-700' },
+                        fairy_assets:    { label: 'Forger un Atout',      color: 'bg-indigo-600 hover:bg-indigo-700' },
+                        social_items:    { label: 'Forger un Item',       color: 'bg-emerald-700 hover:bg-emerald-800' },
+                        specialites:     { label: 'Forger une Spécialité', color: 'bg-blue-600 hover:bg-blue-700' },
+                        figures:         { label: 'Forger une Figure',    color: 'bg-purple-600 hover:bg-purple-700' },
+                    };
+                    const entry = FORGE_LABELS[state.activeTab];
+                    if (!entry) return null;
+                    return (
+                        <button onClick={() => { setters.setIsCreating(true); setters.setEditingItem({}); }} className={`w-full sm:w-auto px-5 py-2.5 ${entry.color} text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shrink-0`}>
+                            <Plus size={20} /> {entry.label}
+                        </button>
+                    );
+                })()}
             </div>
 
             {/* LES JOLIES PUCES DE FILTRAGE (FÉES) */}

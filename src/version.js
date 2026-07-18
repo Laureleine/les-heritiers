@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.12.2 - \"La Forge Bien Nommée 🔨\"",
+    date: "18 Juillet 2026",
+    description: "Deux petites corrections qui font leur effet : la modale de l'Encyclopédie ne s'ouvrait plus — une page blanche avait pris sa place depuis l'arrivée des Cartes Personnelles. Elle est de retour. Et les boutons de forge ont reçu des étiquettes précises et des couleurs propres à chaque discipline : indigo pour le féérique, émeraude pour le social, bleu pour les spécialités, violet pour les Figures, ambre pour les Espèces.",
+    changes: [
+      "🐛 **Fix page blanche — Encyclopédie :** Le bouton « Forger » ouvrait une page vide depuis v17.12.0. Cause : la variable `isPersonal` référençait `proposal` avant que le `useState` ne l'ait déclaré (temporal dead zone). Corrigé en déplaçant la déclaration après l'état.",
+      "🎨 **Boutons de forge colorés et renommés :** Chaque onglet de l'Encyclopédie dispose désormais d'un bouton libellé selon la discipline (Forger une Capacité, Forger un Atout, Forger un Item…) et coloré en cohérence avec les étapes de la création de personnage.",
+      "✨ **Forger une Spécialité :** Le bouton manquait sur l'onglet Spécialités — il y est maintenant, en bleu.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.12.1 - \"Le Prix du Don ✦\"",
     date: "18 Juillet 2026",
     description: "Quand un Héritier accepte un Don du Docte, le prix s'acquitte désormais pour de vrai : les XP sont retranchés du journal de dépenses, la Fortune est diminuée du rang convenu, et les PP sont inscrits dans le registre des Cartes Personnelles. Rien ne vient plus gratis sous le soleil de la Belle Époque.",

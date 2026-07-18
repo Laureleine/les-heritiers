@@ -6,6 +6,21 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session 18 juillet 2026 — La Forge Bien Nommée (v17.12.2)
+
+### Ce qui a été fait
+- Fix bug page blanche sur "Forger une Entité" : `isPersonal = !!proposal.creator_id` déclaré avant le `useState` de `proposal` → ReferenceError (temporal dead zone)
+- Boutons de forge renommés + colorés par onglet (indigo/émeraude/bleu/violet/ambre)
+- Ajout du bouton "Forger une Spécialité" sur l'onglet Spécialités
+
+### Leçons
+
+1. **Temporal dead zone sur `const`** : en React, toutes les déclarations de variables dans le corps d'un composant sont dans la même portée. Référencer une variable `const` avant sa ligne de déclaration produit un ReferenceError silencieux qui crashe le composant et affiche une page vide — pas d'erreur visible dans l'UI. Toujours déclarer les variables dérivées d'un état après le `useState` correspondant.
+2. **Symptôme "page blanche" sans erreur console visible** : souvent un crash de composant React en dehors d'un ErrorBoundary. Première piste : chercher une utilisation de variable avant sa déclaration dans le corps du composant.
+3. **IIFE `(() => { … })()` dans le JSX** : pattern utile pour loger une logique de sélection locale (switch/map) sans créer une fonction nommée séparée. À réserver aux cas où la logique est simple et auto-contenue.
+
+---
+
 ## Session 18 juillet 2026 — Le Prix du Don (v17.12.1)
 
 ### Ce qui a été fait

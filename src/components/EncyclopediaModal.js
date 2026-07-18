@@ -35,7 +35,6 @@ export default function EncyclopediaModal({
     const isInitiated = userProfile?.profile?.is_initiated === true || isSuperAdmin;
     const isDocte = userProfile?.profile?.is_docte === true || isSuperAdmin;
     const canBePersonal = isCreating && isDocte && !['specialites', 'figures', 'fairy_types'].includes(activeTab);
-    const isPersonal = !!proposal.creator_id;
 
     // 🧠 ÉTATS LOCAUX PURIFIÉS (L'autonomie est de retour !)
     const [proposal, setProposal] = useState(() => {
@@ -47,6 +46,7 @@ export default function EncyclopediaModal({
             ...(isNew && activeTab === 'fairy_types' ? { era: 'traditionnelle', taille: 'moyenne' } : {}),
         };
     });
+    const isPersonal = !!proposal.creator_id;
     const [justification, setJustification] = useState('');
     const [hasPendingTech, setHasPendingTech] = useState(false);
     
