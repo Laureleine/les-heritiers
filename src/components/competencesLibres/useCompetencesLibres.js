@@ -200,8 +200,9 @@ export function useCompetencesLibres() {
         const current = lib.rangs[nomComp] || 0;
         const totalScore = getScoreBase(nomComp) + current;
         const isPred = predFinales?.includes(nomComp);
-        
-        const evolutionMax = isPred ? 7 : 6;
+        const isMagie = !!character.data?.magies?.[nomComp]?.actif;
+
+        const evolutionMax = (isPred || isMagie) ? 7 : 6;
         const maxAllowed = isScelle ? evolutionMax : (isPred ? 5 : 4);
 
         if (isScelle) {
@@ -347,9 +348,10 @@ export function useCompetencesLibres() {
         const scoreBase = getScoreBase(nomComp);
         const totalScore = scoreBase + current;
         const isPred = predFinales?.includes(nomComp);
+        const isMagie = !!character.data?.magies?.[nomComp]?.actif;
         const isEspritEligible = SKILLS_ESPRIT.includes(nomComp);
-        
-        const evolutionMax = isPred ? 7 : 6;
+
+        const evolutionMax = (isPred || isMagie) ? 7 : 6;
         const maxAllowed = isScelle ? evolutionMax : (isPred ? 5 : 4);
         const plancher = character.data?.stats_scellees?.competencesLibres?.rangs?.[nomComp] || 0;
 

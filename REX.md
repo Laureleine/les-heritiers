@@ -6,6 +6,22 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session v17.12.3 — 18 juillet 2026
+
+### Bug "Grand Maître impossible" — Méthode de diagnostic
+
+**Symptôme :** bouton + grisé pour les magies à rang 6, même avec l'XP requis.
+
+**Chemin de lecture :** `useCompetencesLibres.js` → `isPlusDisabled` → `totalScore >= maxAllowed` → `maxAllowed = evolutionMax = isPred ? 7 : 6` → `isPred = predFinales.includes(nomComp)` → `predFinales` calculé dans `characterEngine.js` depuis `feeData.competencesPredilection`.
+
+**Cause racine :** `predFinales` ne contient que les compétences de prédilection d'espèce. Les magies (Druidisme, Faëomancie…) n'y figurent jamais → `isPred = false` → `evolutionMax = 6` → rang 7 impossible.
+
+**Fix :** Ajouter `isMagie = !!character.data?.magies?.[nomComp]?.actif` et utiliser `(isPred || isMagie) ? 7 : 6` dans les deux fonctions (`handleRangChange` + `getCompRowData`).
+
+**Leçon :** Quand une évolution est bloquée malgré les conditions remplies, remonter la chaîne `isPlusDisabled → maxAllowed → evolutionMax → isPred → predFinales → characterEngine` pour trouver quelle catégorie de compétence n'est pas reconnue. Le moteur central ne connaît que les prédilections d'espèce — toute autre "exception de plafond" (magies, futurs cas) doit être explicitement ajoutée.
+
+---
+
 ## Session 18 juillet 2026 — La Forge Bien Nommée (v17.12.2)
 
 ### Ce qui a été fait

@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.12.3 - \"La Voie du Grand Maître ✦\"",
+    date: "18 Juillet 2026",
+    description: "Le rang 7 — Grand Maître — était inaccessible dans les disciplines magiques, même avec les XP requis. Le bouton restait grisé faute de reconnaissance : les magies n'étaient pas traitées comme des compétences de prédilection. La voie est désormais ouverte jusqu'au sommet.",
+    changes: [
+      "🐛 **Fix Grand Maître impossible (bug Bloquant v15.4.0) :** Les magies (Druidisme, Faëomancie, Sorcellerie…) avaient un plafond de rang 6 au lieu de 7, car elles n'apparaissaient jamais dans les prédilections de l'espèce. Désormais, toute magie active est reconnue comme atteignable au rang 7.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.12.2 - \"La Forge Bien Nommée 🔨\"",
     date: "18 Juillet 2026",
     description: "Deux petites corrections qui font leur effet : la modale de l'Encyclopédie ne s'ouvrait plus — une page blanche avait pris sa place depuis l'arrivée des Cartes Personnelles. Elle est de retour. Et les boutons de forge ont reçu des étiquettes précises et des couleurs propres à chaque discipline : indigo pour le féérique, émeraude pour le social, bleu pour les spécialités, violet pour les Figures, ambre pour les Espèces.",

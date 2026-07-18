@@ -4,6 +4,20 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.12.3 — La Voie du Grand Maître ✦ (18 juillet 2026)
+
+Chers Héritiers,
+
+Depuis bien longtemps, une ombre pesait sur les arts magiques : quelles que fussent votre dévotion et la profondeur de vos XP, le rang de Grand Maître demeurait hors d'atteinte. Le bouton restait figé, sourd à vos efforts, comme si une serrure invisible gardait la porte du sommet.
+
+L'enquête est close. Les magies — Druidisme, Faëomancie, Sorcellerie et leurs sœurs — n'étaient pas reconnues comme dignes d'un septième rang. Une erreur dans les arcanes du système, corrigée ce jour.
+
+Le chemin vers le rang 7 est désormais ouvert à ceux qui ont l'XP pour le franchir. Que vos grimoires s'épaississent.
+
+✦ *Les Chroniques des Héritiers, v17.12.3*
+
+---
+
 ## v17.12.2 — La Forge Bien Nommée 🔨
 *18 juillet 2026*
 
