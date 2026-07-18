@@ -69,11 +69,11 @@
 - [x] **T4.3** `StepVieSociale` : section read-only "✦ Dons du Docte" dans la colonne Inventaire
 
 ### 4b — Affichage sur la fiche
-- [ ] **T4.4** Partout où un atout/pouvoir/item est affiché : badge `✦ Personnel` ou `✦ Don du Docte` si `creator_id != null`
+- [x] **T4.4** `FicheParchemin.jsx` : atoutsPerso et pouvoirsPerso affichés en violet avec badge ✦
 - [x] **T4.5** `useVieSociale.js` : ajouter `character.data?.pp_cartes_perso?.[pName] || 0` aux dépenses PP (commité en session précédente)
 
 ### 4c — Création de personnage
-- [ ] **T4.6** `CharacterCreator` : les cartes perso accessibles au joueur apparaissent dans les étapes concernées dès la création
+- [x] **T4.6** `CharacterCreator` : couvert automatiquement — charge les mêmes StepAtouts/StepPouvoirs/StepVieSociale déjà modifiés
 
 ---
 

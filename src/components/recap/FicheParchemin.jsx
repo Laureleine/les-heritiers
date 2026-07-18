@@ -631,6 +631,11 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                         <ul className="text-xs list-inside mt-2" style={{listStyle: 'none', padding: 0}}>
                             {character.capaciteChoisie && <li><b>{(feeData?.capacites && [...(feeData.capacites.fixe1 ? [feeData.capacites.fixe1] : []), ...(feeData.capacites.fixe2 ? [feeData.capacites.fixe2] : []), ...(feeData.capacites.choix || [])].find(c => c.id === character.capaciteChoisie || c.nom === character.capaciteChoisie)?.nom) || character.capaciteChoisie}</b></li>}
                             {(character.atouts || []).map((a, i) => <li key={i}>- {(feeData?.atouts?.find(at => at.id === a || at.nom === a)?.nom) || a}</li>)}
+                            {(character.atoutsPerso || []).map((a, i) => (
+                                <li key={`perso-${i}`} className="flex items-center gap-1" style={{color: '#6d28d9'}}>
+                                    <span style={{fontSize: '10px', fontWeight: 'bold'}}>✦</span> {a}
+                                </li>
+                            ))}
                         </ul>
                     </div>
                     <div className="recap-box">
@@ -639,6 +644,12 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                             {character.pouvoirs?.map((p, i) => (
                                 <div key={i} className="text-xs py-1 border-b border-dotted flex justify-between font-bold">
                                     <span>{p}</span><span style={{color: '#a8a29e'}}>□ □ □ □ □</span>
+                                </div>
+                            ))}
+                            {(character.pouvoirsPerso || []).map((p, i) => (
+                                <div key={`perso-${i}`} className="text-xs py-1 border-b border-dotted flex justify-between font-bold" style={{color: '#6d28d9'}}>
+                                    <span className="flex items-center gap-1"><span style={{fontSize: '10px'}}>✦</span> {p}</span>
+                                    <span style={{color: '#a8a29e'}}>□ □ □ □ □</span>
                                 </div>
                             ))}
                         </div>
