@@ -6,6 +6,48 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session 18 juillet 2026 — Les Largesses du Docte (v17.12.0)
+
+### Ce qui a été fait
+- Migrations SQL T1 : ajout `creator_id` sur les 4 tables encyclopédiques + table `personal_card_grants` (via pg + SUPABASE_DB_URL, pas MCP)
+- Badge 3 états sur EncyclopediaCard/EncyclopediaViewModal (✦ Personnel / 📚 Officiel / 👥 Communautaire)
+- BonusBuilder : optgroups tripartites pour les spécialités ; 2 occurrences trouvées → différenciées par placeholder text
+- EncyclopediaModal : toggle ✦ Carte Personnelle + auto-apply via edge function (même path que SuperAdmin)
+- Formulaires EntityForm + SocialItemForm : champs de coût (XP, Fortune, PP par profil) si `isPersonal`
+- TabCartesPerso (Cercle) + DistributeCardModal : distribution depuis l'interface Docte
+- Flow acceptation : `usePendingGrants` + `PendingGrantsAlert` + `GrantAcceptanceModal` (sessionStorage pattern)
+- `useVieSociale` : `pp_cartes_perso` additionné aux dépenses PP
+- `usePersonalCards(userId)` : hook React Query chargeant les grants acceptés + données cartes
+- Filtre `creator_id IS NULL` dans `loadSocialItems` pour isoler les items perso du catalogue global
+- StepAtouts + StepPouvoirs : section ✦ Dons du Docte → `character.atoutsPerso` / `character.pouvoirsPerso`
+- StepVieSociale : section informative ✦ dans la colonne Inventaire
+- FicheParchemin : atoutsPerso + pouvoirsPerso affichés en violet avec ✦
+
+### Leçons techniques
+
+**1. Deux occurrences du même pattern dans un fichier (BonusBuilder)**
+Quand `replace_all: false` signale 2 matches, ne pas deviner — lire le contexte autour de chaque occurrence pour trouver un discriminant (ici le placeholder text "Offerte" vs "Optionnelle"). Deux édits ciblés valent mieux qu'un remplacement global hasardeux.
+
+**2. `TOGGLE_ARRAY_ITEM` sans limite → `max: Infinity`**
+Le reducer vérifie `currentArray.length < action.max`. En JS, `0 < Infinity` est `true` pour tout array. Passer `max: Infinity` sur un champ libre (atoutsPerso, pouvoirsPerso) évite d'ajouter un nouveau type d'action au reducer.
+
+**3. Un `</div>` superflu → "Unterminated regular expression" chez esbuild**
+Un `</div>` orphelin après la fermeture réelle d'un conteneur parent produit cette erreur cryptique dans rollup/esbuild (pas un message de div manquante). Compter les niveaux d'indentation dans la zone éditée avant de conclure.
+
+**4. `FicheParchemin` est un composant pur (pas de hooks réseau)**
+Elle reçoit `character` et `gameData` en prop. Pour afficher des données per-user (cartes perso), il faut soit passer les données en prop depuis le parent, soit se contenter des champs déjà dans `character` (atoutsPerso, pouvoirsPerso). Ici on a opté pour la seconde solution — simple et sans re-render.
+
+**5. CharacterCreator réexpose automatiquement les étapes modifiées**
+Les Steps chargés en lazy depuis CharacterCreator n'ont pas besoin de modification spécifique : les sections ✦ ajoutées dans StepAtouts/StepPouvoirs/StepVieSociale s'y affichent aussi bien qu'en mode évolution.
+
+**6. Filtre `creator_id IS NULL` avant le cache Dexie**
+L'ajout du filtre dans `loadSocialItems` s'applique aussi bien en ligne qu'au write dans localDb. Résultat : le cache offline ne stocke jamais les items perso du catalogue global — bonne isolation.
+
+**7. T3.9 différé volontairement — documenter le pourquoi**
+Appliquer les coûts (XP, Fortune, PP) au personnage à l'acceptation nécessite de connaître le personnage du joueur DANS le cercle concerné, puis de modifier `historique_xp`. Ce n'est pas trivial ; le noter explicitement dans PLAN évite de se retrouver à moitié implémenté en session suivante.
+
+---
+
 ## Session 18 juillet 2026 — Les Gardiens Éveillés (v17.11.3)
 
 ### Ce qui a été fait
