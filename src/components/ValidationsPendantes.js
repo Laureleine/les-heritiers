@@ -269,15 +269,10 @@ export default function ValidationsPendantes({ onBack }) {
     dbBadges: gameData?.badges || [] // ✨ NOUVEAU : On transmet les badges du Nuage
   }), [originalRecords, referenceNames, myRole, session.user.id, gameData?.badges]);
 
-  const handleContact = useCallback(async (change) => {
-    const { error } = await supabase
-      .from('support_tickets')
-      .insert({ user_id: change.user_id, sujet: `💬 Question Gardien — ${change.record_name || 'Proposition'}` });
-    if (error) {
-      showInAppNotification("Impossible de créer le ticket.", "error");
-    } else {
-      showInAppNotification("Ticket ouvert dans le Télégraphe. Rendez-vous dans la section Support pour écrire.", "success");
-    }
+  const handleContact = useCallback((change) => {
+    window.dispatchEvent(new CustomEvent('open-telegraphe', {
+      detail: { targetUser: { id: change.user_id, username: change.profiles?.username } }
+    }));
   }, []);
 
   const cardActions = useMemo(() => ({

@@ -4,12 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft, Mail, MessageSquare } from '../config/icons';
 import { db } from '../config/db';
 import { supabase } from '../config/supabase';
-import { useCharacter } from '../context/CharacterContext';
+import { useUserContext } from '../context/UserContext';
 import { isAdmin, isSuperAdmin } from '../utils/authRoles';
 import { showInAppNotification } from '../utils/SystemeServices';
 
 export default function BureauAnomalies({ onBack }) {
-  const { userProfile } = useCharacter();
+  const { userProfile } = useUserContext();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -115,15 +115,10 @@ export default function BureauAnomalies({ onBack }) {
     }
   };
   
-  const handleContact = async (report) => {
-    const { error } = await supabase
-      .from('support_tickets')
-      .insert({ user_id: report.user_id, sujet: `📢 Question Gardien — Bug : ${report.title}` });
-    if (error) {
-      showInAppNotification("Impossible de créer le ticket.", "error");
-    } else {
-      showInAppNotification("Ticket ouvert dans le Télégraphe. Rendez-vous dans la section Support pour écrire.", "success");
-    }
+  const handleContact = (report) => {
+    window.dispatchEvent(new CustomEvent('open-telegraphe', {
+      detail: { targetUser: { id: report.user_id, username: report.profiles?.username } }
+    }));
   };
 
   const isOlderThan7Days = (dateStr) => {
