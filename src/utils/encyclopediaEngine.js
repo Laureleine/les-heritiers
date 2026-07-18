@@ -300,7 +300,7 @@ export const submitEncyclopediaProposal = async ({
 
         } else {
             // 3. GESTION DES AUTRES TYPES (Pouvoirs, Atouts, Capacités, Vie Sociale)
-            if (proposal.description !== (editingItem.description || editingItem.desc || '')) {
+            if ((proposal.description || '') !== (editingItem.description || editingItem.desc || '')) {
                 surgicalData.description = proposal.description;
             }
             if (activeTab === 'fairy_powers' && proposal.type_pouvoir !== editingItem.type_pouvoir) {
@@ -354,9 +354,8 @@ export const submitEncyclopediaProposal = async ({
                     } catch (e) {
                         return { warning: true, message: "Le champ 'Effets Techniques' doit être un format JSON valide !" };
                     }
-                } else {
-                    surgicalData.effets_techniques = null;
                 }
+                // Si effets_techniques est vide/non compilé, on ne touche pas à la valeur existante en base
             }
 
             // Relations inversées (Lier aux Fées)
