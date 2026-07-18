@@ -6,6 +6,7 @@ import { isAdmin } from '../../utils/authRoles';
 import { useUserContext } from '../../context/UserContext';
 import { useFileUpload } from '../../hooks/useFileUpload';
 import { showInAppNotification } from '../../utils/SystemeServices';
+import { VERSION_HISTORY } from '../../version';
 
 export default function WidgetAnomalie() {
   const { userProfile } = useUserContext();
@@ -20,7 +21,7 @@ export default function WidgetAnomalie() {
   
   const [titre, setTitre] = useState('');
   const [description, setDescription] = useState('');
-  const [version, setVersion] = useState('15.4.0');
+  const [version, setVersion] = useState(VERSION_HISTORY[0].version.split(' ')[0]);
   const [gravite, setGravite] = useState('Gênant');
   const [benefice, setBenefice] = useState('Confort');
   
