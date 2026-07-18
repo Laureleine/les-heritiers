@@ -4,6 +4,24 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.12.5 — L'Atelier Libre ✦ (19 juillet 2026)
+
+Chers Héritiers,
+
+Jusqu'à ce jour, même la plus modeste retouche apportée à votre propre Carte Personnelle devait attendre, dans la file des requêtes, que les Gardiens la lisent et l'approuvent. Une lourdeur de chancellerie appliquée à votre propre atelier.
+
+Ce protocole ne s'applique plus à vos créations personnelles.
+
+Désormais, toute modification que vous apportez à une carte dont vous êtes l'autrice prend effet aussitôt, sans intermédiaire. Le Grimoire vérifie discrètement que la carte vous appartient bien, puis grave votre changement sans délai. De même, si vous souhaitez retirer une création qui ne vous convient plus — et qu'aucun personnage ne la possède encore —, un bouton discret vous permet de l'effacer de votre propre main.
+
+La validation des Gardiens reste requise pour ce qui touche à l'espace commun : passer une carte en communautaire, la lier à une espèce, ou la proposer aux rangs officiels. Ces actes-là engagent le Savoir partagé, et ils méritent le regard du Conseil.
+
+Votre atelier vous appartient. Forgez librement.
+
+— Les Gardiens du Savoir ✦
+
+---
+
 ## v17.12.4 — L'Art de la Forge Juste ⚙️ (18 juillet 2026)
 
 Chers Héritiers,

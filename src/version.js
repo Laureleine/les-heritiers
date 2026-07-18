@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.12.5 - \"L'Atelier Libre ✦\"",
+    date: "19 Juillet 2026",
+    description: "Les créations personnelles n'ont plus besoin d'attendre la bénédiction des Gardiens. Désormais, toute modification apportée à sa propre Carte Personnelle s'applique instantanément, sans passer par la file de validation. La création reste personnelle tant que son autrice le souhaite ; seule la promotion en carte communautaire ou officielle requiert encore l'aval du Conseil.",
+    changes: [
+      "✨ **Cartes Personnelles — édition directe :** Les modifications d'une Carte Personnelle (dont on est le créateur) contournent désormais la file `data_change_requests`. Elles transitent par un RPC sécurisé (`upsert_personal_fairy_asset`) qui vérifie la propriété côté serveur.",
+      "✨ **Cartes Personnelles — suppression par le créateur :** Un bouton « Supprimer ma création » apparaît sur les cartes dont on est l'autrice, tant qu'elles ne sont pas possédées par un personnage ni partagées. La suppression passe par un RPC dédié (`delete_personal_fairy_asset`) avec les mêmes vérifications.",
+      "✨ **Promotion préservée :** Dès lors qu'une modification vise à rendre la carte communautaire ou officielle, ou à la rattacher à une espèce, le flux de validation Gardien s'applique normalement.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.12.4 - \"L'Art de la Forge Juste ⚙️\"",
     date: "18 Juillet 2026",
     description: "Trois corrections dans les entrailles du Grimoire : le bouton Contacter désormais visible dans le Bureau des Anomalies, les versions figées remplacées par la version réelle du jeu dans les formulaires de signalement, et deux bugs dans le moteur de l'Encyclopédie qui effaçaient silencieusement les règles techniques des cartes communautaires.",

@@ -6,6 +6,46 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session v17.12.5 — 19 juillet 2026
+
+### RLS Supabase : contournement propre pour INSERT/UPDATE utilisateur
+
+**Contexte :** La table `fairy_assets` n'a pas de politique RLS `INSERT` ni `UPDATE` pour les utilisateurs normaux — toutes les mutations passent soit par l'Edge Function (service_role), soit par la file `data_change_requests`. Introduire un chemin de modification direct pour les cartes personnelles ne pouvait pas passer par un `upsert()` client ordinaire.
+
+**Solution retenue :** Deux RPCs `SECURITY DEFINER` (`upsert_personal_fairy_asset`, `delete_personal_fairy_asset`) qui :
+- vérifient la propriété (`creator_id = auth.uid()`) côté serveur,
+- s'exécutent avec les droits du propriétaire de la fonction (service_role),
+- sont appelées directement depuis le front sans passer par `data_change_requests`.
+
+**Règle :** Quand un utilisateur doit écrire dans une table sans politique RLS INSERT/UPDATE, la voie propre est le RPC SECURITY DEFINER, pas de contourner via service_role côté client ni de créer une politique permissive.
+
+---
+
+### Bifurcation dans le moteur : personnel vs. communautaire
+
+**Contexte :** `encyclopediaEngine.js::submitEncyclopediaProposal` était un chemin unique : toujours créer un ticket `data_change_requests`. Il a fallu y insérer une bifurcation : si la carte est personnelle ET que son créateur la modifie AND que ce n'est pas une promotion, court-circuit vers le RPC.
+
+**Ce qu'on a appris :**
+- La bifurcation se décide avant l'envoi du diff, pas après.
+- Les flags à vérifier : `activeTab === 'fairy_assets'`, `creator_id === userProfile.id`, `is_official === false`, `surgicalData.is_official !== true`, pas de `_relations.fairyIds`.
+- Le `_relations` doit être exclu du payload RPC (`const { _relations, id: _id, ...rpcData } = surgicalData`).
+
+**Règle :** Quand un moteur générique doit se comporter différemment pour un sous-type, injecter la bifurcation en bloc isolé juste avant l'envoi — ne pas fragmenter la logique dans plusieurs `if` éparpillés dans la fonction.
+
+---
+
+### Suppression avec vérifications en cascade via RPC
+
+**Pattern utilisé dans `delete_personal_fairy_asset` :**
+1. Vérifier propriété (`creator_id = auth.uid()`).
+2. Vérifier non-possession (chercher l'id dans `characters.atouts @> jsonb_build_array(...)`).
+3. Vérifier non-partagée (`personal_card_grants`).
+4. Seulement alors, supprimer.
+
+**Règle :** Pour toute suppression de donnée utilisateur, lister les vérifications en cascade dans la RPC elle-même — ne pas déléguer ces checks au front-end, qui peut être contourné.
+
+---
+
 ## Session v17.12.4 — 18 juillet 2026
 
 ### Diagnostic d'un bug communautaire depuis la base de données
