@@ -1,11 +1,11 @@
 // src/components/admin/ChangeCard.js
 import React from 'react';
-import { iconMap, Check, X, Plus, Minus, TestTubeDiagonal, ShieldAlert, Shield, User } from '../../config/icons';
+import { iconMap, Check, X, Plus, Minus, TestTubeDiagonal, ShieldAlert, Shield, User, MessageSquare } from '../../config/icons';
 import { isSuperAdmin } from '../../utils/authRoles';
 
 const ChangeCard = React.memo(({ change, context, actions }) => {
-  const { originalRecords, referenceNames, myRole, dbBadges } = context;
-  const { onReject, onApprove, onRestore } = actions;
+  const { originalRecords, referenceNames, myRole, dbBadges, currentUserId } = context;
+  const { onReject, onApprove, onRestore, onContact } = actions;
 
   const pData = change.new_data || change.proposed_data || {};
   const standardFields = Object.keys(pData).filter(k => k !== '_relations' && k !== 'id');
@@ -238,6 +238,14 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
 
       {/* BOUTONS D'ACTION */}
       <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
+        {onContact && change.user_id && change.user_id !== currentUserId && (
+          <button
+            onClick={() => onContact(change)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors"
+          >
+            <MessageSquare size={14} /> Contacter
+          </button>
+        )}
         {change.status === 'pending' && (
           <>
             <button onClick={() => onReject(change)} className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg font-bold flex items-center gap-2 transition-colors">

@@ -1,7 +1,7 @@
 // 15.0.0
 
 import React, { useState, useEffect } from 'react';
-import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft, Mail } from '../config/icons';
+import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft, Mail, MessageSquare } from '../config/icons';
 import { db } from '../config/db';
 import { supabase } from '../config/supabase';
 import { useCharacter } from '../context/CharacterContext';
@@ -115,6 +115,17 @@ export default function BureauAnomalies({ onBack }) {
     }
   };
   
+  const handleContact = async (report) => {
+    const { error } = await supabase
+      .from('support_tickets')
+      .insert({ user_id: report.user_id, sujet: `📢 Question Gardien — Bug : ${report.title}` });
+    if (error) {
+      showInAppNotification("Impossible de créer le ticket.", "error");
+    } else {
+      showInAppNotification("Ticket ouvert dans le Télégraphe. Rendez-vous dans la section Support pour écrire.", "success");
+    }
+  };
+
   const isOlderThan7Days = (dateStr) => {
     const diff = new Date() - new Date(dateStr);
     return diff > 7 * 24 * 60 * 60 * 1000;
@@ -210,11 +221,20 @@ export default function BureauAnomalies({ onBack }) {
                 </button>
 
                 {isStale && (
-                  <button 
+                  <button
                     onClick={() => handlePingStale(report)}
                     className="flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors"
                   >
                     <Clock size={14} /> Toujours observable
+                  </button>
+                )}
+
+                {isAdmin(userProfile) && report.user_id !== userProfile.id && (
+                  <button
+                    onClick={() => handleContact(report)}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors"
+                  >
+                    <MessageSquare size={14} /> Contacter
                   </button>
                 )}
               </div>
