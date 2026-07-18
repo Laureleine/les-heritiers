@@ -6,6 +6,49 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session v17.12.4 — 18 juillet 2026
+
+### Diagnostic d'un bug communautaire depuis la base de données
+
+**Contexte :** Un joueur signale que ses règles techniques ne se sauvegardent pas sur sa Carte Personnelle.
+
+**Méthode efficace :** Plutôt que de lire le code d'abord, chercher directement l'enregistrement en base avec un script Node + `pg`. En une requête, on voit : l'état exact de la ligne (`effets_techniques: null`), les `data_change_requests` archivées, ce qui a été soumis et quand.
+
+**Ce qu'on a appris :**
+- Les cartes personnelles sont auto-approuvées (status `archived` immédiat, pas `pending`).
+- Le moteur inclut systématiquement `effets_techniques: null` dans le diff quand le BonusBuilder n'est pas compilé — comportement destructeur masqué.
+- La comparaison `null !== ''` génère un faux diff sur `description` à chaque sauvegarde.
+
+**Règle :** Avant de corriger un bug de sauvegarde "données perdues", chercher en base ce qui a réellement été envoyé dans `data_change_requests.new_data`. Ça révèle immédiatement si le problème est côté client (données mal préparées) ou côté serveur (mal appliquées).
+
+---
+
+### Bug moteur — `effets_techniques = null` destructeur
+
+**Cause :** `else { surgicalData.effets_techniques = null }` — quand le BonusBuilder n'est pas compilé, le moteur écrase la valeur existante en base avec `null`.
+
+**Fix :** Supprimer le `else`. Si aucune règle compilée, ne pas inclure le champ dans le diff. La valeur existante est préservée.
+
+**Règle générale :** Dans un moteur de diff chirurgical, l'absence de modification = absence du champ dans `surgicalData`. Ne jamais forcer une valeur null sauf si c'est une intention explicite de l'utilisateur.
+
+---
+
+### Bug moteur — faux diff `null !== ''`
+
+**Cause :** `proposal.description !== (editingItem.description || '')` — quand les deux sont `null`, `null !== ''` est `true`.
+
+**Fix :** Normaliser les deux côtés : `(proposal.description || '') !== (editingItem.description || '')`.
+
+**Règle :** Dans les comparaisons de diff, toujours normaliser les valeurs null/undefined/'' avant de comparer des champs texte optionnels.
+
+---
+
+### Contexte de hook React dans les composants admin
+
+**Rappel de la session précédente :** `useCharacter()` ne donne pas accès à `userProfile`. Il faut `useUserContext()`. Ce pattern est apparu dans `BureauAnomalies` — à vérifier systématiquement dans tout composant admin qui teste `isAdmin()`.
+
+---
+
 ## Session v17.12.3 — 18 juillet 2026
 
 ### Bug "Grand Maître impossible" — Méthode de diagnostic
