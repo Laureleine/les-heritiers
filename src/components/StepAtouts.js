@@ -2,6 +2,8 @@ import React from 'react';
 import { Check, Sparkles } from '../config/icons';
 import { useCharacter } from '../context/CharacterContext';
 import { useGameDataContext } from '../context/GameDataContext';
+import { useUserContext } from '../context/UserContext';
+import { usePersonalCards } from '../hooks/usePersonalCards';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { FIXED_XP_COSTS } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
@@ -22,6 +24,10 @@ const CHAINED_ATOUTS = ['Anomalie féérique', 'Sang-mêlé', 'Hybride'];
 export default function StepAtouts() {
   const { character, dispatchCharacter, isReadOnly } = useCharacter();
   const { gameData } = useGameDataContext();
+  const { userProfile } = useUserContext();
+  const { data: personalCards } = usePersonalCards(userProfile?.id);
+  const personalAssets = personalCards?.assets || [];
+
   const fairyData = gameData.fairyData;
   const data = fairyData && character.typeFee ? fairyData[character.typeFee] : null;
 
@@ -132,6 +138,46 @@ export default function StepAtouts() {
           )}
         </div>
       </div>
+
+      {/* ✦ DONS DU DOCTE */}
+      {personalAssets.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-violet-100">
+          <h3 className="text-sm font-bold text-violet-700 mb-3 flex items-center gap-2">
+            <span>✦</span> Dons du Docte
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {personalAssets.map((atout) => {
+              const isSelected = character.atoutsPerso?.includes(atout.nom);
+              return (
+                <div
+                  key={atout.id}
+                  onClick={() => {
+                    if (!isReadOnly) {
+                      dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'atoutsPerso', value: atout.nom, max: Infinity, gameData });
+                    }
+                  }}
+                  className={`relative p-4 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                    isSelected
+                      ? 'border-violet-600 bg-violet-50 shadow-md ring-2 ring-violet-400'
+                      : 'border-violet-200 bg-white hover:border-violet-400 hover:shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-bold font-serif flex items-center gap-2 text-violet-900">
+                      {isSelected && <Check size={16} className="text-violet-600" />}
+                      {atout.nom}
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 font-bold border border-violet-200">✦ Don du Docte</span>
+                  </div>
+                  {atout.description && (
+                    <div className="text-sm text-stone-600 leading-relaxed">{atout.description}</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* LA GRILLE DES ATOUTS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">

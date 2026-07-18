@@ -4,6 +4,8 @@ import { ChevronUp, ChevronDown, MessageCircle, Star, ShoppingBag, Award, Coins,
 import { useVieSociale } from './useVieSociale';
 import { getFortuneCost, getFortuneSpecialites } from '../../utils/xpCalculator';
 import { parseIfString } from '../../utils/json';
+import { useUserContext } from '../../context/UserContext';
+import { usePersonalCards } from '../../hooks/usePersonalCards';
 
 // 🎨 COMPOSANT D'ACCORDÉON
 const CategoryAccordion = ({ title, icon, items, myItems, reste, toggleAchat, profilNom, getItemCost, budgetsInfo, character }) => {
@@ -125,8 +127,12 @@ export default function StepVieSociale() {
         character, isScelle, isReadOnly, tousLesProfils, activeTab, setActiveTab, achats,
         getProfilDisplayName, catalogueParProfil, getItemCost, budgetsInfo, plancherFortune,
         handleToggleItem, handleUpgradeFortune, handleDowngradeFortune, updateContactAllocation,
-        socialItems 
+        socialItems
     } = useVieSociale();
+
+    const { userProfile } = useUserContext();
+    const { data: personalCards } = usePersonalCards(userProfile?.id);
+    const personalSocialItems = personalCards?.socialItems || [];
 
     const currentFortune = isScelle ? (character.fortune || 0) : plancherFortune;
     const [filterText, setFilterText] = useState('');
@@ -375,8 +381,8 @@ export default function StepVieSociale() {
 
         {/* COLONNE DROITE : L'INVENTAIRE */}
         <div className="lg:col-span-3">
-          <div className="bg-stone-50 rounded-xl p-4 border border-stone-200 sticky top-4">
-            <h3 className="font-serif font-bold text-stone-800 border-b border-stone-200 pb-2 mb-3">Votre Inventaire</h3>
+          <div className="bg-stone-50 rounded-xl p-4 border border-stone-200 sticky top-4 space-y-4">
+            <h3 className="font-serif font-bold text-stone-800 border-b border-stone-200 pb-2">Votre Inventaire</h3>
             
             {/* ✨ LE FIX : On filtre intelligemment pour ignorer la clé allocationsContacts et vérifier les tableaux ! */}
             {Object.keys(achats).filter(k => k !== 'allocationsContacts').length === 0 || 
@@ -413,6 +419,23 @@ export default function StepVieSociale() {
               </div>
             )}
           </div>
+
+          {/* ✦ DONS DU DOCTE */}
+          {personalSocialItems.length > 0 && (
+            <div className="border-t border-violet-100 pt-3">
+              <h4 className="text-xs font-bold text-violet-700 uppercase tracking-wide mb-2">✦ Dons du Docte</h4>
+              <ul className="space-y-2">
+                {personalSocialItems.map(item => (
+                  <li key={item.id} className="text-sm text-violet-900 font-semibold flex flex-col gap-0.5">
+                    <span>{item.nom}</span>
+                    {item.description && (
+                      <span className="text-[11px] text-stone-400 font-normal italic leading-snug">{item.description}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>

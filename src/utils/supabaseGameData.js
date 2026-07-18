@@ -363,6 +363,7 @@ export const loadSocialItems = async () => {
         const { data, error } = await supabase
             .from('social_items')
             .select(`*, profils ( name_masculine )`)
+            .is('creator_id', null)
             .order('cout', { ascending: true });
 
         if (error) throw error;

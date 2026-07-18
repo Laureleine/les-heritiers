@@ -32,7 +32,7 @@
 
 ### 2c — Filtrage et visibilité
 - [x] **T2.9** `useEncyclopedia.js` : pas de changement nécessaire — les cartes perso apparaissent déjà dans les queries (pas de filtre WHERE)
-- [ ] **T2.10** `supabaseGameData.js` : inclure les cartes perso accessibles au user courant (via grants) — **différé après T3.x**
+- [x] **T2.10** `usePersonalCards.js` (nouveau hook) + filtre `creator_id IS NULL` dans `loadSocialItems` — grants acceptés accessibles par composant
 
 ### 2d — Liste distributions par carte
 - [x] **T2.11** Nouveau composant `PersonalCardGrantsList.jsx` : liste des grants (username + statut), dans `EncyclopediaViewModal` pour le créateur
@@ -64,13 +64,13 @@
 ## Étape 4 — Intégration fiche personnage
 
 ### 4a — Sélecteurs
-- [ ] **T4.1** Sélecteur d'atouts (`StepAtouts` / `competencesLibres`) : inclure les atouts perso accessibles, badge violet
-- [ ] **T4.2** Sélecteur de pouvoirs : inclure les pouvoirs perso accessibles
-- [ ] **T4.3** Vie Sociale (`StepVieSociale`) : inclure les social_items perso accessibles
+- [x] **T4.1** `StepAtouts` : section "✦ Dons du Docte" → toggle → `character.atoutsPerso`
+- [x] **T4.2** `StepPouvoirs` : section "✦ Dons du Docte" → toggle → `character.pouvoirsPerso`
+- [x] **T4.3** `StepVieSociale` : section read-only "✦ Dons du Docte" dans la colonne Inventaire
 
 ### 4b — Affichage sur la fiche
 - [ ] **T4.4** Partout où un atout/pouvoir/item est affiché : badge `✦ Personnel` ou `✦ Don du Docte` si `creator_id != null`
-- [ ] **T4.5** `useVieSociale.js` : ajouter `character.data?.pp_cartes_perso?.[pName] || 0` aux dépenses PP (ligne ~111)
+- [x] **T4.5** `useVieSociale.js` : ajouter `character.data?.pp_cartes_perso?.[pName] || 0` aux dépenses PP (commité en session précédente)
 
 ### 4c — Création de personnage
 - [ ] **T4.6** `CharacterCreator` : les cartes perso accessibles au joueur apparaissent dans les étapes concernées dès la création
