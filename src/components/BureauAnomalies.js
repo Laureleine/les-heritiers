@@ -6,6 +6,7 @@ import { db } from '../config/db';
 import { supabase } from '../config/supabase';
 import { useUserContext } from '../context/UserContext';
 import { isAdmin, isSuperAdmin } from '../utils/authRoles';
+import { VERSION_HISTORY } from '../version';
 import { showInAppNotification } from '../utils/SystemeServices';
 
 export default function BureauAnomalies({ onBack }) {
@@ -62,7 +63,7 @@ export default function BureauAnomalies({ onBack }) {
       description,
       status: 'Signalé',
       is_confidential: isConfidential,
-      version_app: '17.10.1',
+      version_app: VERSION_HISTORY[0].version.split(' ')[0],
       community_weight: []
     }]);
 
