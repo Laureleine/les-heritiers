@@ -43,28 +43,21 @@
 ## Étape 3 — Distribution depuis le Cercle + Flow acceptation
 
 ### 3a — Interface Docte
-- [ ] **T3.1** Dans l'interface Cercle (nouvel onglet ou section dans onglet existant) : liste des cartes perso du Docte
-- [ ] **T3.2** Bouton "Distribuer" sur chaque carte → modal `DistributeCardModal.jsx`
-- [ ] **T3.3** `DistributeCardModal.jsx` : sélection des membres cibles + confirmation coûts + toggle `hide_effects`
-- [ ] **T3.4** Insertion dans `personal_card_grants` (un grant par membre sélectionné)
+- [x] **T3.1** Onglet "✦ Cartes Perso" dans `ActiveCercleView` (Docte uniquement) via `TabCartesPerso.jsx`
+- [x] **T3.2** Bouton "Distribuer" sur chaque carte → modal `DistributeCardModal.jsx`
+- [x] **T3.3** `DistributeCardModal.jsx` : sélection des membres cibles + coûts + toggle `hide_effects`
+- [x] **T3.4** Insertion dans `personal_card_grants` (un grant par membre sélectionné)
 
 ### 3b — Notification membre
-- [ ] **T3.5** Hook `usePendingGrants(userProfile)` : charge les grants `status='pending'` pour `granted_to = moi`
-- [ ] **T3.6** Composant `PendingGrantsAlert.jsx` : popup au chargement si grants en attente (même pattern que `PendingValidationsAlert`)
-- [ ] **T3.7** Brancher dans `App.js`
+- [x] **T3.5** Hook `usePendingGrants(userProfile)` : charge les grants `status='pending'` pour `granted_to = moi`
+- [x] **T3.6** Composant `PendingGrantsAlert.jsx` : popup au chargement si grants en attente
+- [x] **T3.7** Branché dans `App.js`
 
 ### 3c — Modal d'acceptation
-- [ ] **T3.8** Composant `GrantAcceptanceModal.jsx` :
-  - Affiche nom + description de la carte (+ effets si `hide_effects=false` ou déjà accepté)
-  - Affiche les coûts (XP, fortune, PP par profil)
-  - Boutons : Accepter / Refuser
-- [ ] **T3.9** À l'acceptation : appliquer les coûts
-  - XP : insert dans `xp_transactions` + incrémenter `xp_depense` sur le personnage
-  - Fortune : décrémenter `characters.fortune`
-  - PP : incrémenter `character.data.pp_cartes_perso[profilNom]`
-  - Ajouter l'ID de la carte dans l'array approprié du personnage (atouts / pouvoirs / vie_sociale)
-- [ ] **T3.10** Passer le grant à `accepted` ou `rejected` + noter `responded_at`
-- [ ] **T3.11** Notification retour au Docte (insert `notification_history` ou `support_tickets`)
+- [x] **T3.8** Composant `GrantAcceptanceModal.jsx` : affiche carte + coûts + Accepter/Refuser
+- [ ] **T3.9** Application des coûts au personnage (XP, Fortune, PP) — **différé** (nécessite résolution du personnage cible dans le cercle)
+- [x] **T3.10** Grant → `accepted` ou `rejected` + `responded_at`
+- [x] **T3.11** Notification Docte via `support_tickets`
 
 ---
 

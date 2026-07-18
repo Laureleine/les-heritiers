@@ -4,6 +4,7 @@ import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles, B
 import { getXpState } from '../../utils/xpActions';
 import TabPartiesJeu from './TabPartiesJeu';
 import TabIndicesVerites from './TabIndicesVerites';
+import TabCartesPerso from './TabCartesPerso';
 import { useCallback, useRef } from 'react';
 
 const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
@@ -122,7 +123,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         aria-label="Sections du Cercle"
         className="flex gap-1 border-b border-stone-100 mb-5 -mt-1"
         onKeyDown={(e) => {
-          const tabs = ['table', 'parties', 'secrets'];
+          const tabs = isDocte ? ['table', 'parties', 'secrets', 'cartes'] : ['table', 'parties', 'secrets'];
           const idx = tabs.indexOf(subTab);
           let next = null;
           if (e.key === 'ArrowRight') { e.preventDefault(); next = tabs[(idx + 1) % tabs.length]; }
@@ -163,6 +164,19 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         >
           <Scroll size={14} /> Secrets du Monde
         </button>
+        {isDocte && (
+          <button
+            role="tab"
+            id="tab-cercle-cartes"
+            aria-selected={subTab === 'cartes'}
+            aria-controls="panel-cercle"
+            tabIndex={subTab === 'cartes' ? 0 : -1}
+            onClick={() => switchTab('cartes')}
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'cartes' ? 'border-violet-600 text-violet-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
+          >
+            ✦ Cartes Perso
+          </button>
+        )}
       </div>
 
       <div id="panel-cercle" role="tabpanel" aria-labelledby={`tab-cercle-${subTab}`}>
@@ -184,6 +198,15 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           userId={userId}
           activeMembers={activeMembers}
           onPendingXpChange={handlePendingXpChange}
+        />
+      )}
+
+      {/* ── Onglet Cartes Personnelles (Docte uniquement) ── */}
+      {subTab === 'cartes' && isDocte && (
+        <TabCartesPerso
+          docteId={userId}
+          cercleId={cercle.id}
+          activeMembers={activeMembers}
         />
       )}
 

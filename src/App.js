@@ -23,6 +23,9 @@ import ResetPasswordForm from './components/ResetPasswordForm';
 import OfflineBanner from './components/OfflineBanner';
 import PendingValidationsAlert from './components/PendingValidationsAlert';
 import { usePendingValidationsAlert } from './hooks/usePendingValidationsAlert';
+import PendingGrantsAlert from './components/PendingGrantsAlert';
+import GrantAcceptanceModal from './components/GrantAcceptanceModal';
+import { usePendingGrants } from './hooks/usePendingGrants';
 
 export default function App() {
   const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate, isRecoveryMode } = useAppInit();
@@ -32,6 +35,8 @@ export default function App() {
   // Système de correction : joueur + admin
   const { pendingCorrections, adminQueue, respondToCorrection, markCorrected } = useCorrectionCheck(userProfile);
   const { pendingCount, isVisible: showValidationsAlert, dismiss: dismissValidationsAlert } = usePendingValidationsAlert(userProfile);
+  const { pendingGrants, isVisible: showGrantsAlert, dismiss: dismissGrantsAlert } = usePendingGrants(userProfile);
+  const [showGrantsModal, setShowGrantsModal] = React.useState(false);
   const navigate = useNavigate();
   const { isOnline, hasCachedData } = useOfflineStatus();
 
@@ -138,6 +143,23 @@ export default function App() {
           count={pendingCount}
           onNavigate={() => { dismissValidationsAlert(); navigate('/validations'); }}
           onDismiss={dismissValidationsAlert}
+        />
+      )}
+
+      {/* Alerte cartes personnelles en attente */}
+      {showGrantsAlert && !showGrantsModal && (
+        <PendingGrantsAlert
+          count={pendingGrants.length}
+          onView={() => { dismissGrantsAlert(); setShowGrantsModal(true); }}
+          onDismiss={dismissGrantsAlert}
+        />
+      )}
+
+      {showGrantsModal && pendingGrants.length > 0 && (
+        <GrantAcceptanceModal
+          grants={pendingGrants}
+          onClose={() => setShowGrantsModal(false)}
+          onDone={() => setShowGrantsModal(false)}
         />
       )}
 
