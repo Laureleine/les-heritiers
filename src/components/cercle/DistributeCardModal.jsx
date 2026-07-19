@@ -17,10 +17,10 @@ function costLabel(grant) {
 
 export default function DistributeCardModal({ card, cardType, cercleId, members, onClose, onSuccess }) {
     const [selectedIds, setSelectedIds] = useState([]);
-    const [costXp, setCostXp] = useState(0);
-    const [costFortune, setCostFortune] = useState(0);
-    const [costPp, setCostPp] = useState({});
-    const [hideEffects, setHideEffects] = useState(false);
+    const [costXp, setCostXp] = useState(card.cost_xp || 0);
+    const [costFortune, setCostFortune] = useState(card.cost_fortune || 0);
+    const [costPp, setCostPp] = useState(card.cost_pp || {});
+    const [hideEffects, setHideEffects] = useState(card.hide_effects_until_accepted || false);
     const [submitting, setSubmitting] = useState(false);
 
     const toggleMember = (uid) => setSelectedIds(prev =>
@@ -89,10 +89,10 @@ export default function DistributeCardModal({ card, cardType, cercleId, members,
                                         className="rounded accent-violet-600"
                                     />
                                     <span className="font-bold text-stone-800">
-                                        {m.profiles?.username || m.characters?.nom_personnage || '—'}
+                                        {m.characters?.nom || m.profiles?.username || '—'}
                                     </span>
-                                    {m.characters?.nom_personnage && (
-                                        <span className="text-xs text-stone-400 italic">{m.characters.nom_personnage}</span>
+                                    {m.characters?.nom && m.profiles?.username && (
+                                        <span className="text-xs text-stone-400 italic">joué par {m.profiles.username}</span>
                                     )}
                                 </label>
                             ))}
