@@ -26,6 +26,10 @@ export const translateError = (error) => {
   if (msgLower.includes('failed to fetch') || msg.includes('NetworkError')) return "Les fluides éthérés sont perturbés. Impossible de contacter les archives centrales (Erreur réseau).";
   if (msgLower.includes('row-level security')) return "Les Gardiens vous refusent l'accès. Votre session a expiré en arrière-plan, veuillez vous déconnecter puis vous reconnecter.";
 
+  if (!msg) {
+    const details = [error.code && `code ${error.code}`, error.details, error.hint].filter(Boolean).join(' — ');
+    return details ? `Anomalie détectée : ${details}` : "Une perturbation mystérieuse s'est produite. Rechargez la page ou contactez l'Atelier.";
+  }
   return `Anomalie détectée : ${msg}`;
 };
 

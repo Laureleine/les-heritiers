@@ -310,6 +310,18 @@ export const submitEncyclopediaProposal = async ({
                 surgicalData.effets = proposal.effets;
             }
 
+            // Coûts par défaut des cartes personnelles (stockés dans fairy_assets)
+            if (activeTab === 'fairy_assets') {
+                const costXp = Number(proposal.cost_xp) || 0;
+                const costFortune = Number(proposal.cost_fortune) || 0;
+                const costPp = proposal.cost_pp || {};
+                const hideEffects = !!proposal.hide_effects_until_accepted;
+                if (costXp !== (Number(editingItem.cost_xp) || 0)) surgicalData.cost_xp = costXp;
+                if (costFortune !== (Number(editingItem.cost_fortune) || 0)) surgicalData.cost_fortune = costFortune;
+                if (JSON.stringify(costPp) !== JSON.stringify(editingItem.cost_pp || {})) surgicalData.cost_pp = costPp;
+                if (hideEffects !== !!(editingItem.hide_effects_until_accepted)) surgicalData.hide_effects_until_accepted = hideEffects;
+            }
+
             // ✨ Spécialités : compétence parente
             if (activeTab === 'specialites') {
                 if (proposal.competence_id !== editingItem.competence_id) {
@@ -381,7 +393,7 @@ export const submitEncyclopediaProposal = async ({
         // ✦ CARTES PERSONNELLES — bypass data_change_requests
         // Création ou modification par le créateur lui-même, sans promotion ni relation aux espèces
         const isPersonalAsset = activeTab === 'fairy_assets';
-        const isCreatorEditing = !isCreating && editingItem?.creator_id === userProfile?.id && editingItem?.is_official === false;
+        const isCreatorEditing = !isCreating && editingItem?.creator_id === userProfile?.id && editingItem?.is_official !== true;
         const isCreatorCreating = isCreating && proposal.creator_id === userProfile?.id;
         const isPromotion = surgicalData.is_official === true || surgicalData.creator_id === null;
         const hasSpeciesRelation = !!(surgicalData._relations?.fairyIds);

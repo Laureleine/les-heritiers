@@ -83,7 +83,7 @@ describe('translateError', () => {
   });
 
   it('gère un objet error vide', () => {
-    expect(translateError({})).toBe('Anomalie détectée : ');
+    expect(translateError({})).toBe("Une perturbation mystérieuse s'est produite. Rechargez la page ou contactez l'Atelier.");
   });
 });
 
