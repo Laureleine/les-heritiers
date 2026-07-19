@@ -35,7 +35,10 @@ export default function App() {
   // Système de correction : joueur + admin
   const { pendingCorrections, adminQueue, respondToCorrection, markCorrected } = useCorrectionCheck(userProfile);
   const { pendingCount, isVisible: showValidationsAlert, dismiss: dismissValidationsAlert } = usePendingValidationsAlert(userProfile);
-  const { pendingGrants } = usePendingGrants(userProfile);
+  const { pendingGrants, setPendingGrants } = usePendingGrants(userProfile);
+  const handleGrantResponded = React.useCallback((grantId) => {
+    setPendingGrants(prev => prev.filter(g => g.id !== grantId));
+  }, [setPendingGrants]);
   const [showGrantsModal, setShowGrantsModal] = React.useState(false);
   const [grantsAlertDismissed, setGrantsAlertDismissed] = React.useState(false);
   const navigate = useNavigate();
@@ -161,6 +164,7 @@ export default function App() {
           grants={pendingGrants}
           onClose={() => { setShowGrantsModal(false); setGrantsAlertDismissed(false); }}
           onDone={() => setShowGrantsModal(false)}
+          onResponded={handleGrantResponded}
         />
       )}
 

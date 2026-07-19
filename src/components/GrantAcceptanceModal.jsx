@@ -22,15 +22,14 @@ function CostLine({ grant }) {
     return <span className="font-bold text-violet-800">{parts.join(' + ')}</span>;
 }
 
-export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
-    const [idx, setIdx] = useState(0);
+export default function GrantAcceptanceModal({ grants, onClose, onDone, onResponded }) {
     const [cardData, setCardData] = useState(null);
     const [loadingCard, setLoadingCard] = useState(false);
     const [acting, setActing] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null); // 'accepted' | 'rejected' | null
     const { userProfile } = useUserContext();
 
-    const grant = grants[idx];
+    const grant = grants[0];
 
     useEffect(() => {
         if (!grant) return;
@@ -126,11 +125,10 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
 
             showInAppNotification(status === 'accepted' ? '✦ Carte acceptée !' : 'Carte refusée.', status === 'accepted' ? 'success' : 'info');
 
-            if (idx + 1 < grants.length) {
-                setIdx(idx + 1);
-            } else {
+            const isLast = grants.length === 1;
+            onResponded?.(grant.id);
+            if (isLast) {
                 onDone?.();
-                onClose();
             }
         } catch (e) {
             showInAppNotification('Erreur : ' + e.message, 'error');
@@ -149,7 +147,7 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
                 <div className="p-5 border-b border-violet-100 bg-violet-50 flex justify-between items-center">
                     <div>
                         <h2 className="font-serif font-bold text-violet-900 text-lg">✦ Don du Docte</h2>
-                        <p className="text-xs text-violet-600 mt-0.5">{idx + 1} / {grants.length}</p>
+                        <p className="text-xs text-violet-600 mt-0.5">{grants.length > 1 ? `${grants.length} cadeaux en attente` : 'Un cadeau en attente'}</p>
                     </div>
                     <button onClick={onClose} className="text-stone-400 hover:text-stone-600 p-1"><X size={20} /></button>
                 </div>
