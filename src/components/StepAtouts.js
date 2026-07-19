@@ -148,20 +148,47 @@ export default function StepAtouts() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {personalAssets.map((atout) => {
               const isSelected = character.atoutsPerso?.includes(atout.nom);
+              const handlePersonalAtoutToggle = () => {
+                if (isReadOnly) return;
+                if (isScelle) {
+                  if (isSelected) {
+                    const newAtoutsPerso = (character.atoutsPerso || []).filter(a => a !== atout.nom);
+                    xpTransaction(dispatchCharacter, {
+                      updates: { atoutsPerso: newAtoutsPerso },
+                      transaction: { type: 'REMBOURSEMENT', code: XP_CODES.ATOUT_ACQUISITION, label: `Acquisition : Don du Docte ${atout.nom}`, valeur: FIXED_XP_COSTS.nouvel_atout },
+                      notification: { text: `Don désappris : +${FIXED_XP_COSTS.nouvel_atout} XP récupérés !`, type: 'success' }
+                    }, gameData);
+                  } else {
+                    if (xpDispo < FIXED_XP_COSTS.nouvel_atout) {
+                      showInAppNotification(`Il vous faut ${FIXED_XP_COSTS.nouvel_atout} XP pour acquérir ce Don !`, 'error');
+                      return;
+                    }
+                    const newAtoutsPerso = [...(character.atoutsPerso || []), atout.nom];
+                    xpTransaction(dispatchCharacter, {
+                      updates: { atoutsPerso: newAtoutsPerso },
+                      transaction: { type: 'DEPENSE', code: XP_CODES.ATOUT_ACQUISITION, label: `Acquisition : Don du Docte ${atout.nom}`, valeur: FIXED_XP_COSTS.nouvel_atout },
+                      notification: { text: `Don acquis : "${atout.nom}" pour ${FIXED_XP_COSTS.nouvel_atout} XP !`, type: 'success' }
+                    }, gameData);
+                  }
+                } else {
+                  dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'atoutsPerso', value: atout.nom, max: Infinity, gameData });
+                }
+              };
               return (
                 <div
                   key={atout.id}
-                  onClick={() => {
-                    if (!isReadOnly) {
-                      dispatchCharacter({ type: 'TOGGLE_ARRAY_ITEM', field: 'atoutsPerso', value: atout.nom, max: Infinity, gameData });
-                    }
-                  }}
+                  onClick={handlePersonalAtoutToggle}
                   className={`relative p-4 rounded-xl border-2 text-left transition-all cursor-pointer ${
                     isSelected
                       ? 'border-violet-600 bg-violet-50 shadow-md ring-2 ring-violet-400'
                       : 'border-violet-200 bg-white hover:border-violet-400 hover:shadow-sm'
                   }`}
                 >
+                  {isScelle && !isSelected && (
+                    <div className="absolute top-3 right-3 bg-amber-100 text-amber-800 text-[10px] uppercase font-bold px-2 py-1 rounded border border-amber-300 shadow-sm">
+                      {FIXED_XP_COSTS.nouvel_atout} XP
+                    </div>
+                  )}
                   <div className="flex items-center justify-between mb-2">
                     <div className="font-bold font-serif flex items-center gap-2 text-violet-900">
                       {isSelected && <Check size={16} className="text-violet-600" />}
