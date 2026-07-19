@@ -5,13 +5,11 @@ import DistributeCardModal from './DistributeCardModal';
 import { Send, X } from '../../config/icons';
 
 const CARD_TABLES = [
-    { key: 'fairy_assets', label: 'Atouts', extraCols: ', effets' },
-    { key: 'fairy_powers', label: 'Pouvoirs', extraCols: '' },
-    { key: 'fairy_capacites', label: 'Capacités', extraCols: '' },
-    { key: 'social_items', label: 'Vie Sociale', extraCols: '' },
+    { key: 'fairy_assets',    label: 'Atouts',      extraCols: ', effets, cost_xp, cost_fortune, cost_pp, hide_effects_until_accepted, creator_id' },
+    { key: 'fairy_powers',    label: 'Pouvoirs',    extraCols: ', creator_id' },
+    { key: 'fairy_capacites', label: 'Capacités',   extraCols: ', creator_id' },
+    { key: 'social_items',    label: 'Vie Sociale', extraCols: ', creator_id' },
 ];
-
-const COST_COLS = ', cost_xp, cost_fortune, cost_pp, hide_effects_until_accepted, creator_id';
 
 function CardDetailModal({ card, onClose }) {
     return (
@@ -59,7 +57,7 @@ export default function TabCartesPerso({ docteId, cercleId, activeMembers }) {
                 CARD_TABLES.map(async ({ key, label, extraCols }) => {
                     const { data } = await supabase
                         .from(key)
-                        .select(`id, nom, description${extraCols}${COST_COLS}`)
+                        .select(`id, nom, description${extraCols}`)
                         .eq('creator_id', docteId);
                     return (data || []).map(c => ({ ...c, _type: key, _typeLabel: label }));
                 })
