@@ -2,6 +2,8 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useCharacter } from '../../context/CharacterContext';
 import { useGameDataContext } from '../../context/GameDataContext';
+import { useUserContext } from '../../context/UserContext';
+import { usePersonalCards } from '../../hooks/usePersonalCards';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { getFortuneCost, getFortuneSpecialites } from '../../utils/xpCalculator';
 import { isCharacterScelle } from '../../utils/lockUtils';
@@ -13,6 +15,9 @@ import { queueContactSync } from '../../utils/contactSyncQueue';
 export function useVieSociale() {
     const { character, dispatchCharacter, isReadOnly } = useCharacter();
     const { gameData } = useGameDataContext();
+    const { userProfile } = useUserContext();
+    const { data: personalCards } = usePersonalCards(userProfile?.id);
+    const personalAssets = personalCards?.assets || [];
     const isScelle = isCharacterScelle(character);
 
     const { fairyData, socialItems } = gameData;
@@ -176,6 +181,13 @@ export function useVieSociale() {
             });
         }
 
+        if (character.atoutsPerso) {
+            character.atoutsPerso.forEach(atoutNom => {
+                const atout = personalAssets.find(a => a.nom === atoutNom);
+                if (atout?.effets_techniques) applyTechEffects(atout.effets_techniques);
+            });
+        }
+
         if (feeData?.avantages) {
             feeData.avantages.forEach(av => {
                 const isOwned = (character.avantages && character.avantages.length > 0) ? (character.avantages.includes(av.id) || character.avantages.includes(av.nom)) : true;
@@ -196,7 +208,7 @@ export function useVieSociale() {
         }
 
         return { hBase, hBonus };
-    }, [character.atouts, character.avantages, character.desavantages, character.capaciteChoisie, feeData]);
+    }, [character.atouts, character.atoutsPerso, character.avantages, character.desavantages, character.capaciteChoisie, feeData, personalAssets]);
 
     const plancherFortune = useMemo(() => {
         let fBase = 0, fBonus = 0;
