@@ -151,10 +151,13 @@ export default function StepAtouts() {
               const handlePersonalAtoutToggle = () => {
                 if (isReadOnly) return;
                 if (isScelle) {
+                  const fortuneBonus = atout.effets_techniques?.fortune_bonus || 0;
                   if (isSelected) {
                     const newAtoutsPerso = (character.atoutsPerso || []).filter(a => a !== atout.nom);
+                    const updates = { atoutsPerso: newAtoutsPerso };
+                    if (fortuneBonus) updates.fortune = Math.max(0, (character.fortune || 0) - fortuneBonus);
                     xpTransaction(dispatchCharacter, {
-                      updates: { atoutsPerso: newAtoutsPerso },
+                      updates,
                       transaction: { type: 'REMBOURSEMENT', code: XP_CODES.ATOUT_ACQUISITION, label: `Acquisition : Don du Docte ${atout.nom}`, valeur: FIXED_XP_COSTS.nouvel_atout },
                       notification: { text: `Don désappris : +${FIXED_XP_COSTS.nouvel_atout} XP récupérés !`, type: 'success' }
                     }, gameData);
@@ -164,8 +167,10 @@ export default function StepAtouts() {
                       return;
                     }
                     const newAtoutsPerso = [...(character.atoutsPerso || []), atout.nom];
+                    const updates = { atoutsPerso: newAtoutsPerso };
+                    if (fortuneBonus) updates.fortune = Math.min(15, (character.fortune || 0) + fortuneBonus);
                     xpTransaction(dispatchCharacter, {
-                      updates: { atoutsPerso: newAtoutsPerso },
+                      updates,
                       transaction: { type: 'DEPENSE', code: XP_CODES.ATOUT_ACQUISITION, label: `Acquisition : Don du Docte ${atout.nom}`, valeur: FIXED_XP_COSTS.nouvel_atout },
                       notification: { text: `Don acquis : "${atout.nom}" pour ${FIXED_XP_COSTS.nouvel_atout} XP !`, type: 'success' }
                     }, gameData);
