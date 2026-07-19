@@ -35,8 +35,9 @@ export default function App() {
   // Système de correction : joueur + admin
   const { pendingCorrections, adminQueue, respondToCorrection, markCorrected } = useCorrectionCheck(userProfile);
   const { pendingCount, isVisible: showValidationsAlert, dismiss: dismissValidationsAlert } = usePendingValidationsAlert(userProfile);
-  const { pendingGrants, isVisible: showGrantsAlert, dismiss: dismissGrantsAlert } = usePendingGrants(userProfile);
+  const { pendingGrants } = usePendingGrants(userProfile);
   const [showGrantsModal, setShowGrantsModal] = React.useState(false);
+  const [grantsAlertDismissed, setGrantsAlertDismissed] = React.useState(false);
   const navigate = useNavigate();
   const { isOnline, hasCachedData } = useOfflineStatus();
 
@@ -147,18 +148,18 @@ export default function App() {
       )}
 
       {/* Alerte cartes personnelles en attente */}
-      {showGrantsAlert && !showGrantsModal && (
+      {pendingGrants.length > 0 && !showGrantsModal && !grantsAlertDismissed && (
         <PendingGrantsAlert
           count={pendingGrants.length}
-          onView={() => { dismissGrantsAlert(); setShowGrantsModal(true); }}
-          onDismiss={dismissGrantsAlert}
+          onView={() => { setGrantsAlertDismissed(true); setShowGrantsModal(true); }}
+          onDismiss={() => setGrantsAlertDismissed(true)}
         />
       )}
 
       {showGrantsModal && pendingGrants.length > 0 && (
         <GrantAcceptanceModal
           grants={pendingGrants}
-          onClose={() => setShowGrantsModal(false)}
+          onClose={() => { setShowGrantsModal(false); setGrantsAlertDismissed(false); }}
           onDone={() => setShowGrantsModal(false)}
         />
       )}

@@ -27,6 +27,7 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
     const [cardData, setCardData] = useState(null);
     const [loadingCard, setLoadingCard] = useState(false);
     const [acting, setActing] = useState(false);
+    const [confirmAction, setConfirmAction] = useState(null); // 'accepted' | 'rejected' | null
     const { userProfile } = useUserContext();
 
     const grant = grants[idx];
@@ -182,22 +183,48 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
                     )}
                 </div>
 
-                <div className="p-4 border-t border-stone-100 flex gap-3">
-                    <button
-                        onClick={() => respond('rejected')}
-                        disabled={acting || loadingCard}
-                        className="flex-1 px-4 py-2.5 border border-stone-300 text-stone-600 hover:bg-stone-100 font-bold rounded-xl text-sm transition-colors disabled:opacity-50"
-                    >
-                        Refuser
-                    </button>
-                    <button
-                        onClick={() => respond('accepted')}
-                        disabled={acting || loadingCard}
-                        className="flex-1 px-4 py-2.5 bg-violet-700 hover:bg-violet-800 text-white font-bold rounded-xl text-sm transition-colors shadow disabled:opacity-50"
-                    >
-                        ✦ Accepter
-                    </button>
-                </div>
+                {confirmAction ? (
+                    <div className="p-4 border-t border-stone-100 bg-stone-50 space-y-3">
+                        <p className="text-sm text-stone-700 font-serif text-center">
+                            {confirmAction === 'accepted'
+                                ? `Confirmer l'acceptation de « ${cardName} » ?`
+                                : `Confirmer le refus de « ${cardName} » ?`}
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setConfirmAction(null)}
+                                disabled={acting}
+                                className="flex-1 px-4 py-2 border border-stone-300 text-stone-600 hover:bg-stone-100 font-bold rounded-xl text-sm transition-colors disabled:opacity-50"
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                onClick={() => { respond(confirmAction); setConfirmAction(null); }}
+                                disabled={acting}
+                                className={`flex-1 px-4 py-2 font-bold rounded-xl text-sm transition-colors shadow disabled:opacity-50 text-white ${confirmAction === 'accepted' ? 'bg-violet-700 hover:bg-violet-800' : 'bg-stone-600 hover:bg-stone-700'}`}
+                            >
+                                {acting ? '…' : confirmAction === 'accepted' ? '✦ Confirmer' : 'Confirmer le refus'}
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="p-4 border-t border-stone-100 flex gap-3">
+                        <button
+                            onClick={() => setConfirmAction('rejected')}
+                            disabled={acting || loadingCard}
+                            className="flex-1 px-4 py-2.5 border border-stone-300 text-stone-600 hover:bg-stone-100 font-bold rounded-xl text-sm transition-colors disabled:opacity-50"
+                        >
+                            Refuser
+                        </button>
+                        <button
+                            onClick={() => setConfirmAction('accepted')}
+                            disabled={acting || loadingCard}
+                            className="flex-1 px-4 py-2.5 bg-violet-700 hover:bg-violet-800 text-white font-bold rounded-xl text-sm transition-colors shadow disabled:opacity-50"
+                        >
+                            ✦ Accepter
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
