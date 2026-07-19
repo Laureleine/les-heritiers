@@ -22,11 +22,10 @@ export default function TabCartesPerso({ docteId, cercleId, activeMembers }) {
             setLoading(true);
             const results = await Promise.all(
                 CARD_TABLES.map(async ({ key, label }) => {
-                    const { data, error } = await supabase
+                    const { data } = await supabase
                         .from(key)
-                        .select('id, nom, name, description, effets')
+                        .select('id, nom, description')
                         .eq('creator_id', docteId);
-                    console.log(`[TabCartesPerso] ${key} — docteId:`, docteId, '— data:', data, '— error:', error);
                     return (data || []).map(c => ({ ...c, _type: key, _typeLabel: label }));
                 })
             );
