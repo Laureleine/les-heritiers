@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 import FicheParchemin from '../components/recap/FicheParchemin';
 import { characterReducer } from './characterEngine';
 
-export const exportToPDF = (character, gameData = {}, detailed = false) => {
+export const exportToPDF = (character, gameData = {}, detailed = false, printWindow = null) => {
     // 1. Hydratation via le reducer — recalcule computedStats (combat, futiles, bible…)
     //    identique au chemin du contexte, qu'on vienne du Bilan ou de la liste de persos
     const hydratedCharacter = characterReducer(character, { type: 'LOAD_CHARACTER', payload: character, gameData });
@@ -12,8 +12,8 @@ export const exportToPDF = (character, gameData = {}, detailed = false) => {
     // 2. On transforme notre composant pur en chaîne HTML
     const htmlContent = renderToString(<FicheParchemin character={hydratedCharacter} gameData={gameData} detailed={detailed} />);
 
-    // 2. On prépare la fenêtre d'impression
-    const printWindow = window.open('', '_blank');
+    // 2. On prépare la fenêtre d'impression (réutilise celle passée en paramètre si disponible)
+    if (!printWindow) printWindow = window.open('', '_blank');
 
     // 3. On injecte le HTML + Tailwind CSS (pour que les grilles et couleurs fonctionnent à l'impression)
     const fullHtml = `

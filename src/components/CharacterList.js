@@ -257,8 +257,9 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
   const handleExportPDF = useCallback(async (lightChar) => {
     try {
       showInAppNotification("Préparation du parchemin...", "info");
+      const printWindow = window.open('', '_blank'); // ouvert ici, dans le contexte du click
       const fullChar = await getFullCharacter(lightChar.id);
-      exportToPDF(fullChar, gameData);
+      exportToPDF(fullChar, gameData, false, printWindow);
     } catch (error) {
       showInAppNotification("Impossible de graver le parchemin : " + translateError(error), "error");
     }
