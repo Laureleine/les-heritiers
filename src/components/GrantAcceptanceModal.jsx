@@ -36,9 +36,10 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone }) {
         if (!grant) return;
         setCardData(null);
         setLoadingCard(true);
+        const extraCols = grant.card_type === 'fairy_assets' ? ', effets' : '';
         supabase
             .from(grant.card_type)
-            .select('id, nom, name, description, effets')
+            .select(`id, nom, description${extraCols}`)
             .eq('id', grant.card_id)
             .single()
             .then(({ data }) => { setCardData(data); setLoadingCard(false); });
