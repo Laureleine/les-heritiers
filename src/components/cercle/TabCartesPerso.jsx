@@ -11,7 +11,7 @@ const CARD_TABLES = [
     { key: 'social_items', label: 'Vie Sociale', extraCols: '' },
 ];
 
-const COST_COLS = ', cost_xp, cost_fortune, cost_pp, hide_effects_until_accepted';
+const COST_COLS = ', cost_xp, cost_fortune, cost_pp, hide_effects_until_accepted, creator_id';
 
 function CardDetailModal({ card, onClose }) {
     return (
