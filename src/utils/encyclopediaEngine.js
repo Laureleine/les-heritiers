@@ -441,6 +441,6 @@ export const submitEncyclopediaProposal = async ({
 
     } catch (error) {
         console.error("Erreur Engine:", error);
-        return { error: true, message: error.message };
+        return { success: false, error };
     }
 };
