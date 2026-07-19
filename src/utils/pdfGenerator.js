@@ -14,6 +14,7 @@ export const exportToPDF = (character, gameData = {}, detailed = false, printWin
 
     // 2. On prépare la fenêtre d'impression (réutilise celle passée en paramètre si disponible)
     if (!printWindow) printWindow = window.open('', '_blank');
+    if (!printWindow) throw new Error("Pop-ups bloquées — autorisez les pop-ups pour ce site dans votre navigateur.");
 
     // 3. On injecte le HTML + Tailwind CSS (pour que les grilles et couleurs fonctionnent à l'impression)
     const fullHtml = `
