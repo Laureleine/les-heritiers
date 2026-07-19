@@ -357,7 +357,7 @@ export const submitEncyclopediaProposal = async ({
 
             // On inclut social_items pour que les effets techniques soient aussi sauvegardés
             if (['fairy_assets', 'fairy_capacites', 'social_items'].includes(activeTab)) {
-                if (proposal.effets_techniques && proposal.effets_techniques.trim() !== '') {
+                if (typeof proposal.effets_techniques === 'string' && proposal.effets_techniques.trim() !== '') {
                     try {
                         const parsed = JSON.parse(proposal.effets_techniques);
                         if (JSON.stringify(parsed) !== JSON.stringify(editingItem.effets_techniques || {})) {
