@@ -113,7 +113,7 @@ export default function EncyclopediaModal({
             return;
         }
 
-        if (!isSuperAdmin && !justification.trim()) {
+        if (!isSuperAdmin && !isPersonal && !justification.trim()) {
             showInAppNotification("Veuillez expliquer brièvement la raison de cette modification.", "warning");
             return;
         }
@@ -131,7 +131,11 @@ export default function EncyclopediaModal({
         });
 
         if (result.success) {
-            if ((isSuperAdmin || isPersonal) && result.requestId) {
+            if (isPersonal && !result.requestId) {
+                // Bypass RPC direct — carte personnelle auto-validée, pas de ticket Gardien
+                logger.info("✅ Carte personnelle créée :", result.recordName);
+                showInAppNotification("✦ Carte personnelle créée et disponible dans vos archives !", "success");
+            } else if ((isSuperAdmin || isPersonal) && result.requestId) {
                 const { data, error } = await supabase.functions.invoke('apply-encyclopedia-change', {
                     body: { requestId: result.requestId, sealRequested: false }
                 });
@@ -140,7 +144,7 @@ export default function EncyclopediaModal({
                     logger.error("❌ Échec application directe :", error || data?.error);
                     showInAppNotification("La carte a été créée mais l'application directe a échoué. Le ticket reste disponible dans le Conseil.", "warning");
                 } else {
-                    logger.info("✅ Carte personnelle créée :", result.recordName);
+                    logger.info("✅ Application directe :", result.recordName);
                     showInAppNotification(isSuperAdmin && !isPersonal ? "Modification appliquée immédiatement (mode Super Admin)." : "✦ Carte personnelle créée et disponible dans vos archives !", "success");
                 }
             } else {
@@ -183,9 +187,16 @@ export default function EncyclopediaModal({
                 {/* CORPS DE LA MODALE */}
                 <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
                     {!isSuperAdmin && (
-                        <div className="mb-6 p-4 bg-amber-50 text-amber-800 rounded-lg text-sm flex gap-3 items-start border border-amber-100 shadow-sm">
-                            <Sparkles className="shrink-0 mt-0.5 text-amber-500" size={18} />
-                            <p>Vos propositions ne seront pas immédiates. Elles seront soumises à la validation des <em>Gardiens du Savoir</em>.</p>
+                        <div className={`mb-6 p-4 rounded-lg text-sm flex gap-3 items-start border shadow-sm ${
+                            isPersonal
+                                ? 'bg-violet-50 text-violet-800 border-violet-100'
+                                : 'bg-amber-50 text-amber-800 border-amber-100'
+                        }`}>
+                            <Sparkles className={`shrink-0 mt-0.5 ${isPersonal ? 'text-violet-500' : 'text-amber-500'}`} size={18} />
+                            {isPersonal
+                                ? <p>Votre carte personnelle sera créée <strong>immédiatement</strong>, sans passer par le Conseil des Gardiens.</p>
+                                : <p>Vos propositions ne seront pas immédiates. Elles seront soumises à la validation des <em>Gardiens du Savoir</em>.</p>
+                            }
                         </div>
                     )}
 
@@ -291,7 +302,7 @@ export default function EncyclopediaModal({
                     </div>
 
                     {/* CHAMP DE JUSTIFICATION (Commun) */}
-                    {!isSuperAdmin && (
+                    {!isSuperAdmin && !isPersonal && (
                         <div className="mt-6 border-t border-gray-100 pt-6">
                             <label className="block text-sm font-bold text-gray-700 mb-2">
                                 Pourquoi cette modification ? <span className="text-red-500">*</span>
