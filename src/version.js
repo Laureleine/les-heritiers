@@ -2,6 +2,26 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.14.0 - \"L'Âme de Pixie ✨\"",
+    date: "20 Juillet 2026",
+    description: "La petite fée n'est plus une simple boîte à conseils — elle a désormais un tempérament, une mémoire des rencontres, et une vie intérieure. Elle peut être espiègle, pensive, débordante d'entrain ou à moitié endormie selon l'heure et son humeur du moment. Elle se souvient combien de fois vous vous êtes croisés. Et si vous restez trop longtemps sans l'attraper... elle vous parlera toute seule.",
+    changes: [
+      "✨ **Humeurs de Pixie :** Quatre tempéraments (espiègle, pensive, excitée, somnolente), tirés au sort à l'ouverture et renouvelés toutes les 20 minutes. Chaque humeur dispose de 6 répliques propres, injectées dans ses conseils.",
+      "✨ **Cycle jour/nuit :** Pixie adapte son ton à l'heure de la journée — légère et moqueuse le matin, contemplative en soirée, mystérieuse en pleine nuit.",
+      "✨ **Mémoire des sessions :** Elle se souvient que c'est votre 2e, 5e, 10e, 25e ou 50e rencontre, et le marque d'une réplique unique.",
+      "✨ **Monologues spontanés :** Après 3 à 5 minutes de silence du joueur, Pixie prend la parole d'elle-même — sans attendre un clic.",
+      "✨ **Nouvelles réactions lore :** Elle commente les pratiques magiques actives, le Druidisme acquis à la création, l'XP à sec, et le scellage du Puits des Âmes.",
+      "✨ **Enrichissement des répliques :** +3 répliques sur six étapes de création, portant la bibliothèque à plus de 200 phrases distinctes.",
+      "🐛 **Fix animation — pointe de bulle :** La pointe colorée de la bulle ne s'affichait pas correctement (tableau CSS mal converti en string).",
+      "🐛 **Fix animation — transition :** La transition `all` animait trop d'éléments (couleurs, opacité) ; limitée à `left`, `top`, `opacity`.",
+      "🐛 **Fix animation — téléportation :** Un délai de 300 ms évite le saut brusque de position après la fermeture de bulle.",
+      "🐛 **Fix position — fenêtre redimensionnée :** Pixie se recadre maintenant si la fenêtre est réduite.",
+      "✨ **Améliorations visuelles :** Oscillation douce au repos, ailes ralentissant en parole, inclinaison du corps selon la direction du vol, glow adaptatif selon l'humeur, fadeIn à l'entrée.",
+      "✨ **Ping Forge — polling :** La vérification des bugs résolus ne se fait plus une seule fois au démarrage, mais toutes les 5 minutes.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.13.2 - \"L'Art d'Oublier ✦\"",
     date: "20 Juillet 2026",
     description: "Une pratique magique apprise trop vite peut désormais être abandonnée. Si un Héritier a débloqué une voie par erreur — sans y avoir encore investi de rang ni appris de sort — il peut la délaisser et récupérer les XP dépensés, comme si la tentation n'avait jamais eu lieu.",

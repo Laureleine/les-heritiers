@@ -4,6 +4,26 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.14.0 — L'Âme de Pixie ✨ (20 juillet 2026)
+
+Chers Héritiers,
+
+La petite fée qui volette au coin de votre Grimoire n'était jusqu'ici qu'une conseillère diligente — toujours là, toujours utile, mais prévisible comme une pendule bien remontée.
+
+Ce soir, elle a reçu une âme.
+
+**Pixie a désormais des humeurs.** Elle peut surgir espiègle et malicieuse, murmurant des taquineries que vous n'attendiez pas. Ou bien pensive, suspendue dans l'air comme une pensée à moitié oubliée. Excitée au point de ne plus tenir en place. Ou encore somnolente, les ailes lourdes, vous conseillant de revenir dans dix minutes. Son tempérament change au fil des heures — elle n'est plus tout à fait la même la nuit que le matin.
+
+**Elle se souvient de vous.** La deuxième visite, la cinquième, la dixième — elle les note, et les marque d'un mot singulier. Certains d'entre vous ont déjà croisé Pixie des dizaines de fois. Elle s'en souvient mieux que vous.
+
+**Et si vous l'oubliez trop longtemps... elle vous rappelle à l'ordre.** Après quelques minutes de silence, sans que vous ayez à l'attraper, elle prend la parole d'elle-même. Un monologue de fée, dans le vide de l'air de Paris.
+
+Sa bibliothèque de répliques s'est enrichie de plus de deux cents phrases nouvelles. Elle réagit aux pratiques magiques, au scellage du Puits des Âmes, à l'heure qu'il est. Ses ailes battent mieux, sa bulle se positionne plus justement, son éclat change de couleur selon son humeur.
+
+✨ *v17.14.0 — Le Grimoire est vivant.*
+
+---
+
 ## v17.13.2 — L'Art d'Oublier ✦ (20 juillet 2026)
 
 Chers Héritiers,
