@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.13.2 — L'Art d'Oublier ✦ (20 juillet 2026)
+
+Chers Héritiers,
+
+Le chemin des arts magiques n'est pas toujours celui que l'on croit emprunter.
+
+Un Héritier qui avait ouvert une voie par erreur — dans la fièvre du moment, sans y avoir encore versé une once de savoir ni appris le moindre sort — peut désormais refermer doucement cette porte. Les XP dépensés lui seront rendus, comme si la tentation n'avait jamais eu lieu.
+
+Un × discret apparaît à présent près de chaque pratique active. Il ne s'allume que lorsqu'il est encore temps de changer d'avis.
+
+Que vos voies soient choisies avec sagesse,
+*Le Conseil des Héritiers*
+
+---
+
 ## v17.13.1 — Le Don Bien Adressé 📜 (20 juillet 2026)
 
 Chers Héritiers,

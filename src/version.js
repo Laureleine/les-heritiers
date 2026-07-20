@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.13.2 - \"L'Art d'Oublier ✦\"",
+    date: "20 Juillet 2026",
+    description: "Une pratique magique apprise trop vite peut désormais être abandonnée. Si un Héritier a débloqué une voie par erreur — sans y avoir encore investi de rang ni appris de sort — il peut la délaisser et récupérer les XP dépensés, comme si la tentation n'avait jamais eu lieu.",
+    changes: [
+      "🐛 **Fix Pratiques Magiques — impossible de revenir en arrière :** Une pratique débloquée avec 5 XP en mode Évolution était définitive, sans aucun moyen de l'annuler. Un bouton discret « × » apparaît désormais à côté de chaque pratique active (sauf le Druidisme acquis à la création, dont le coût en PP n'est pas remboursable). Un clic rembourse les 5 XP et retire la voie — à condition de n'avoir ni rang investi ni sort payant déjà appris.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.13.1 - \"Le Don Bien Adressé 📜\"",
     date: "20 Juillet 2026",
     description: "Un Don du Docte ne se partage pas entre tous vos personnages. Une correction veille désormais à ce que chaque carte distribuée par un Docte reste attachée au seul personnage qui la reçut — et ne s'égare plus dans la corbeille de courrier de toute la maison.",
