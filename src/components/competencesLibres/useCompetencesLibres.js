@@ -552,6 +552,49 @@ export function useCompetencesLibres() {
         return MAGIES_CONFIG.find(c => magiesData[c.nom]?.actif)?.nom || null;
     }, [character.data]);
 
+    const handleRebloquerMagie = useCallback((nomMagie) => {
+        if (isReadOnly || !isScelle) return;
+
+        // Druidisme acquis à la création (PP) : non remboursable
+        if (nomMagie === 'Druidisme' && character.data?.druidismeCreationPP) {
+            showInAppNotification("Le Druidisme acquis à la création ne peut pas être oublié.", 'warning');
+            return;
+        }
+
+        // Vérifier que le rang est revenu à 0
+        const rangActuel = lib.rangs[nomMagie] || 0;
+        if (rangActuel > 0) {
+            showInAppNotification(`Réduisez d'abord tous vos rangs en ${nomMagie} avant d'oublier cette pratique.`, 'error');
+            return;
+        }
+
+        // Vérifier qu'il n'y a pas de sorts payants déjà appris
+        const magieCourante = character.data?.magies?.[nomMagie] || {};
+        const sortsCatalog = gameData?.sorts?.filter(s => s.magie === nomMagie) || [];
+        const sortsPayants = (magieCourante.sortsConnus || []).filter(id => {
+            const s = sortsCatalog.find(s => s.id === id);
+            return s && (s.cout_xp ?? 0) > 0;
+        });
+        if (sortsPayants.length > 0) {
+            showInAppNotification(`Oubliez d'abord vos sorts de ${nomMagie} avant de délaisser cette pratique.`, 'error');
+            return;
+        }
+
+        // Supprimer la magie (y compris les sorts gratuits auto-ajoutés)
+        const { [nomMagie]: _removed, ...restMagies } = character.data?.magies || {};
+        const config = MAGIES_CONFIG.find(c => c.nom === nomMagie);
+        xpTransaction(dispatchCharacter, {
+            updates: { data: { ...(character.data || {}), magies: restMagies } },
+            transaction: {
+                type: 'REMBOURSEMENT',
+                code: config?.xpCode || 'MAGIE_DEBLOCAGE',
+                label: `Pratique oubliée : ${nomMagie}`,
+                valeur: 5,
+            },
+            notification: { text: `${nomMagie} oubliée. +5 XP récupérés.`, type: 'info' },
+        }, gameData);
+    }, [isReadOnly, isScelle, lib.rangs, character.data, gameData, dispatchCharacter]);
+
     const handleApprendreSortMagie = useCallback((nomMagie, sort) => {
         if (isReadOnly || !isScelle) return;
         const premiere = getPremiereMagie();
@@ -587,7 +630,7 @@ export function useCompetencesLibres() {
         rangsProfils, budgetsPP,
         isDruidisme,
         magiesEtat,
-        handlers: { handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality, handleChoixChange, handleReset, handleDebloquerMagie, handleApprendreSortMagie },
+        handlers: { handleRangChange, handleAddSpecialiteUser, handleRemoveSpecialiteUser, handleCreateGlobalSpeciality, handleChoixChange, handleReset, handleDebloquerMagie, handleRebloquerMagie, handleApprendreSortMagie },
         getCompRowData,
         getPremiereMagie,
     };

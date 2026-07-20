@@ -124,11 +124,25 @@ export default function StepMagies() {
         <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
           <p className="text-xs font-bold text-emerald-800 uppercase tracking-wide mb-2">Pratiques actives</p>
           <div className="flex flex-wrap gap-2">
-            {magiesActives.map(m => (
-              <span key={m.nom} className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full font-bold">
-                ✓ {m.nom}
-              </span>
-            ))}
+            {magiesActives.map(m => {
+              const estCreation = m.nom === 'Druidisme' && character.data?.druidismeCreationPP;
+              return (
+                <div key={m.nom} className="flex items-center gap-1">
+                  <span className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full font-bold">
+                    ✓ {m.nom}
+                  </span>
+                  {!estCreation && (
+                    <button
+                      onClick={() => handlers.handleRebloquerMagie(m.nom)}
+                      className="text-stone-400 hover:text-red-500 hover:bg-red-50 w-5 h-5 flex items-center justify-center rounded-full transition-colors border border-transparent hover:border-red-200 text-sm leading-none"
+                      title={`Oublier ${m.nom} et récupérer 5 XP`}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
