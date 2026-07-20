@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.13.1 — Le Don Bien Adressé 📜 (20 juillet 2026)
+
+Chers Héritiers,
+
+Un étrange désordre dans le courrier des Dons avait été signalé.
+
+Lorsqu'un Docte remettait une carte de sa main à l'une de vos incarnations, il arrivait que celle-ci parvienne par mégarde à toutes vos autres silhouettes à la fois — comme une lettre glissée dans la mauvaise fente du casier postal.
+
+Les Fées des Archives ont rectifié l'adressage. Désormais, chaque Don du Docte est scellé au nom du personnage qui le reçoit — et lui seul pourra s'en prévaloir.
+
+Que chaque don trouve son destinataire,
+*Le Conseil des Héritiers*
+
+---
+
 ## v17.13.0 — Le Bureau des Anomalies 🔴 (20 juillet 2026)
 
 Chers Héritiers,

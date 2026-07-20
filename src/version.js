@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.13.1 - \"Le Don Bien Adressé 📜\"",
+    date: "20 Juillet 2026",
+    description: "Un Don du Docte ne se partage pas entre tous vos personnages. Une correction veille désormais à ce que chaque carte distribuée par un Docte reste attachée au seul personnage qui la reçut — et ne s'égare plus dans la corbeille de courrier de toute la maison.",
+    changes: [
+      "🐛 **Fix Dons du Docte — visibilité par personnage :** Un Don du Docte accepté apparaissait comme disponible pour tous les personnages d'un même compte. Cause : la table `personal_card_grants` ne liait les dons qu'à l'utilisateur, sans distinction de personnage. Migration ajoutant une colonne `character_id`, filtrage côté hook (`usePersonalCards`), et enregistrement du personnage actif à l'acceptation.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.13.0 - \"Le Bureau des Anomalies 🔴\"",
     date: "20 Juillet 2026",
     description: "Les erreurs ne disparaissent plus dans le silence. Un nouveau système de surveillance veille désormais en permanence sur l'application : chaque anomalie — crash visible ou erreur silencieuse — est capturée, dédupliquée et consignée dans un registre accessible aux Gardiennes. Une salle secrète du tableau de bord leur permet de tout consulter, de copier les rapports pour les transmettre, et de marquer les incidents comme résolus. Et si l'application venait à s'effondrer, un écran féerique accueille l'Héritier le temps que les Fées des Rouages remettent les fils en place.",
