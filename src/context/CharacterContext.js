@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useReducer, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import { characterReducer } from '../utils/characterEngine';
 
 // L'état vierge d'un personnage (Transféré depuis App.js)
@@ -29,6 +29,20 @@ export function CharacterProvider({ children }) {
   const [isReadOnly, setIsReadOnly] = useState(false);
 
   const stateValue = useMemo(() => ({ character, isReadOnly }), [character, isReadOnly]);
+
+  // Expose le contexte courant pour errorLogger (enrichit les logs d'erreur)
+  useEffect(() => {
+    window.__heritiers_error_context__ = {
+      characterId: character.id || null,
+      extra: character.id ? {
+        nom: character.nom,
+        typeFee: character.typeFee,
+        statut: character.statut,
+        xp_total: character.xp_total,
+        xp_depense: character.xp_depense,
+      } : null,
+    };
+  }, [character.id, character.nom, character.typeFee, character.statut, character.xp_total, character.xp_depense]);
 
   // Les actions (callbacks) ne changent jamais → pas de re-render superflu
   const actionsValue = useMemo(() => ({

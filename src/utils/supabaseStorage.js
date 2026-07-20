@@ -121,6 +121,8 @@ const mapDatabaseToCharacter = (char) => {
         ownerUsername: source.profiles?.username || 'Inconnu',
         data: source.data || {},
         computedStats: source.computed_stats || source.computedStats || {},
+        atoutsPerso: source.atoutsPerso || [],
+        pouvoirsPerso: source.pouvoirsPerso || [],
         created_at: source.created_at || new Date().toISOString(),
         updated_at: source.updated_at || new Date().toISOString()
     };
@@ -214,7 +216,9 @@ export const saveCharacterToSupabase = async (character) => {
             is_unmasked_revealed: cleaned.is_unmasked_revealed || false,
             is_insolite: cleaned.is_insolite || false,
             species_ids: cleaned.species_ids || [],
-            computed_stats: absoluteComputedStats
+            computed_stats: absoluteComputedStats,
+            atoutsPerso: cleaned.atoutsPerso || [],
+            pouvoirsPerso: cleaned.pouvoirsPerso || []
         };
 
         const characterData = {

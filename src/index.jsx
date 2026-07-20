@@ -9,6 +9,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GameDataProvider } from './context/GameDataContext';
 import { OfflineStatusProvider } from './context/OfflineStatusContext';
 import { registerSW } from 'virtual:pwa-register';
+import { initErrorMonitor } from './utils/errorMonitor';
+import ErrorBoundary from './components/ErrorBoundary';
+
+initErrorMonitor();
 
 // Enregistrement SW PWA (distinct de sw.js pour les notifs push)
 registerSW({
@@ -28,17 +32,19 @@ const queryClient = new QueryClient({
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <OfflineStatusProvider>
-      <GameDataProvider>
-        <CharacterProvider>
-          <ForgeProvider>
-            <App />
-          </ForgeProvider>
-        </CharacterProvider>
-      </GameDataProvider>
-      </OfflineStatusProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <OfflineStatusProvider>
+        <GameDataProvider>
+          <CharacterProvider>
+            <ForgeProvider>
+              <App />
+            </ForgeProvider>
+          </CharacterProvider>
+        </GameDataProvider>
+        </OfflineStatusProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );

@@ -4,6 +4,23 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.13.0 — Le Bureau des Anomalies 🔴 (20 juillet 2026)
+
+Chers Héritiers,
+
+Dans les sous-sols du Palais des Miroirs, une salle vient d'être inaugurée en secret.
+
+Les Fées des Rouages — ces petites créatures invisibles qui veillent sur le bon fonctionnement de vos aventures — ont obtenu leur propre registre. Chaque fois qu'une anomalie trouble le Tissu (une erreur silencieuse, un crash, une promesse féerique non tenue), elles la consignent aussitôt : le lieu, l'heure, le personnage concerné, et la nature exacte du désordre.
+
+Si jamais l'application venait à s'effondrer devant vous, ne vous alarmez pas. Un écran féerique vous accueillera le temps que les Fées remettent les fils en place — et le plus souvent, elles y parviennent toutes seules, en moins d'un battement d'ailes.
+
+Par ailleurs, un chagrin a été réparé : les **Dons du Docte** acquis en mode Scellé s'évanouissaient au rechargement, comme des rêves au réveil. Ils persistent désormais fidèlement, gravés dans le Grimoire comme il se doit.
+
+Que vos aventures restent sans accroc,
+*Le Conseil des Héritiers*
+
+---
+
 ## v17.12.5 — L'Atelier Libre ✦ (19 juillet 2026)
 
 Chers Héritiers,

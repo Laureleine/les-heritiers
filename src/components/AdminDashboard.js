@@ -1,7 +1,7 @@
 // src/components/AdminDashboard.js
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell, Coins, Scroll } from '../config/icons';
+import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell, Coins, Scroll, Bug } from '../config/icons';
 import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
 import TabUsers from './admin/TabUsers';
@@ -11,6 +11,7 @@ import TabRepairJournaux from './admin/TabRepairJournaux';
 import TabNotifications from './admin/TabNotifications';
 import TabUsageIA from './admin/TabUsageIA';
 import TabIndicesVeritesAdmin from './admin/TabIndicesVeritesAdmin';
+import TabErrorLogs from './admin/TabErrorLogs';
 
 // ✨ FIX : On récupère userProfile depuis le routeur
 export default function AdminDashboard({ onBack }) {
@@ -82,6 +83,11 @@ export default function AdminDashboard({ onBack }) {
                         <Scroll size={18} /> Secrets du Monde
                     </button>
                 )}
+                {isSuperAdmin && (
+                    <button id="admin-tab-error_logs" role="tab" aria-selected={activeTab === 'error_logs'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'error_logs' ? 0 : -1} onClick={() => switchTab('error_logs')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'error_logs' ? 'text-rose-900 border-rose-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
+                        <Bug size={18} /> Bureau des Anomalies
+                    </button>
+                )}
             </div>
 
             {/* Contenu des onglets — montés une fois, cachés par CSS ensuite */}
@@ -93,6 +99,7 @@ export default function AdminDashboard({ onBack }) {
               {isSuperAdmin && mountedTabs.has('notifications') && <div hidden={activeTab !== 'notifications'}><TabNotifications /></div>}
               {isSuperAdmin && mountedTabs.has('usage_ia') && <div hidden={activeTab !== 'usage_ia'}><TabUsageIA /></div>}
               {isSuperAdmin && mountedTabs.has('secrets') && <div hidden={activeTab !== 'secrets'}><TabIndicesVeritesAdmin /></div>}
+              {isSuperAdmin && mountedTabs.has('error_logs') && <div hidden={activeTab !== 'error_logs'}><TabErrorLogs /></div>}
             </div>
         </section>
     );

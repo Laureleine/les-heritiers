@@ -2,6 +2,21 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.13.0 - \"Le Bureau des Anomalies 🔴\"",
+    date: "20 Juillet 2026",
+    description: "Les erreurs ne disparaissent plus dans le silence. Un nouveau système de surveillance veille désormais en permanence sur l'application : chaque anomalie — crash visible ou erreur silencieuse — est capturée, dédupliquée et consignée dans un registre accessible aux Gardiennes. Une salle secrète du tableau de bord leur permet de tout consulter, de copier les rapports pour les transmettre, et de marquer les incidents comme résolus. Et si l'application venait à s'effondrer, un écran féerique accueille l'Héritier le temps que les Fées des Rouages remettent les fils en place.",
+    changes: [
+      "✨ **Bureau des Anomalies (Admin) :** Nouvel onglet dans le tableau de bord des Gardiennes. Chaque erreur y est listée avec son type, son message, sa stack trace, le contexte du personnage actif, le nombre d'occurrences et un horodatage. Filtre par statut : Nouveau / Transmis / Résolu.",
+      "✨ **Bouton « Copier pour Claude » :** Un clic copie un rapport complet dans le presse-papier et marque l'anomalie comme transmise — avec l'heure exacte de transmission.",
+      "✨ **Déduplication automatique :** Deux occurrences identiques ne créent qu'une seule entrée en base, avec un compteur d'occurrences mis à jour à chaque nouvelle apparition.",
+      "✨ **Surveillance permanente :** `console.error`, `console.warn`, les erreurs JS non rattrapées et les promesses rejetées sont toutes interceptées silencieusement dès le démarrage.",
+      "✨ **Auto-recovery sur crash React :** Si un composant s'effondre, l'application tente un remontage automatique après 1 s. En cas d'échec, un écran lore Belle Époque s'affiche avec un bouton de rechargement.",
+      "✨ **Contexte enrichi :** Chaque log capture la route courante, le personnage actif (id, nom, type, statut, XP) et l'agent navigateur — pour des enquêtes précises.",
+      "🐛 **Fix persistance atoutsPerso :** Le champ `atoutsPerso` (Dons du Docte acquis) n'était pas inclus dans la sauvegarde Supabase. Les atouts personnels survivent désormais aux rechargements de page.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.12.5 - \"L'Atelier Libre ✦\"",
     date: "19 Juillet 2026",
     description: "Les créations personnelles n'ont plus besoin d'attendre la bénédiction des Gardiens. Désormais, toute modification apportée à sa propre Carte Personnelle s'applique instantanément, sans passer par la file de validation. La création reste personnelle tant que son autrice le souhaite ; seule la promotion en carte communautaire ou officielle requiert encore l'aval du Conseil.",
