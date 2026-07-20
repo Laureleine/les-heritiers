@@ -6,7 +6,7 @@ import { supabase } from '../config/supabase';
 import { useUserContext } from '../context/UserContext';
 
 export default function PixieAssistant({ character, step, onSleep, fairyData }) {
-    const { session } = useUserContext();
+    const { session, userProfile } = useUserContext();
     const [position, setPosition] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
     const [isTalking, setIsTalking] = useState(false);
     const [message, setMessage] = useState({ text: "", mood: "info" });
@@ -31,6 +31,9 @@ export default function PixieAssistant({ character, step, onSleep, fairyData }) 
     const stepRef = useRef(step);
     const fairyDataRef = useRef(fairyData);
     const humeurRef = useRef(humeur);
+    const isTalkingRef = useRef(false);
+    const badgeQueueRef = useRef([]);
+    const afficherProchainBadgeRef = useRef(null);
 
     // FadeIn à l'entrée
     useEffect(() => {
@@ -43,6 +46,7 @@ export default function PixieAssistant({ character, step, onSleep, fairyData }) 
     useEffect(() => { stepRef.current = step; }, [step]);
     useEffect(() => { fairyDataRef.current = fairyData; }, [fairyData]);
     useEffect(() => { humeurRef.current = humeur; }, [humeur]);
+    useEffect(() => { isTalkingRef.current = isTalking; }, [isTalking]);
 
     // Rotation d'humeur toutes les 20 minutes
     useEffect(() => {
@@ -88,6 +92,43 @@ export default function PixieAssistant({ character, step, onSleep, fairyData }) 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Notification des nouveaux badges (titres honorifiques attribués par l'admin)
+    useEffect(() => {
+        if (!session?.user?.id || !userProfile?.profile?.badges?.length) return;
+
+        const verifier = async () => {
+            try {
+                const { data: profileData } = await supabase
+                    .from('profiles').select('badges_seen').eq('id', session.user.id).single();
+
+                const seen = profileData?.badges_seen || [];
+                const tous = userProfile.profile.badges || [];
+                const nouveaux = tous.filter(b => !seen.includes(b));
+                if (!nouveaux.length) return;
+
+                const { data: titres } = await supabase
+                    .from('titres_honorifiques').select('id, label, pixie_message').in('id', nouveaux);
+                if (!titres?.length) return;
+
+                await supabase.from('profiles')
+                    .update({ badges_seen: [...new Set([...seen, ...nouveaux])] })
+                    .eq('id', session.user.id);
+
+                const items = titres.map(t => ({
+                    text: t.pixie_message || `Oh là là ! Tu viens d'obtenir le titre "${t.label}" ! Quelle fierté, petit prodige !`,
+                }));
+                badgeQueueRef.current = [...badgeQueueRef.current, ...items];
+                if (!isTalkingRef.current) {
+                    afficherProchainBadgeRef.current?.();
+                }
+            } catch (err) {
+                console.error('Erreur notification badge Pixie :', err);
+            }
+        };
+
+        verifier();
+    }, [userProfile?.profile?.badges, session?.user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const volerAuHasard = useCallback(() => {
         const newX = Math.floor(Math.random() * (window.innerWidth * 0.8) + (window.innerWidth * 0.05));
         const newY = Math.floor(Math.random() * (window.innerHeight * 0.8) + (window.innerHeight * 0.05));
@@ -97,12 +138,32 @@ export default function PixieAssistant({ character, step, onSleep, fairyData }) 
         setPosition({ x: newX, y: newY });
     }, []);
 
+    const afficherProchainBadge = useCallback(() => {
+        if (badgeQueueRef.current.length === 0) return;
+        const { text } = badgeQueueRef.current.shift();
+
+        const cx = Math.floor(window.innerWidth / 2) - 20;
+        const cy = Math.floor(window.innerHeight / 3);
+        setDirection(cx < positionRef.current.x ? 'left' : 'right');
+        positionRef.current = { x: cx, y: cy };
+        setPosition({ x: cx, y: cy });
+
+        setMessage({ text, mood: 'success' });
+        setIsTalking(true);
+        lastInteractionRef.current = Date.now();
+    }, []);
+    useEffect(() => { afficherProchainBadgeRef.current = afficherProchainBadge; }, [afficherProchainBadge]);
+
     const fermerBulleEtFuir = useCallback(() => {
         lastInteractionRef.current = Date.now();
         setIsTalking(false);
         if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
-        // Délai court pour que la transition position démarre proprement après la bulle
-        setTimeout(volerAuHasard, 300);
+        if (badgeQueueRef.current.length > 0) {
+            setTimeout(() => afficherProchainBadgeRef.current?.(), 5000);
+        } else {
+            // Délai court pour que la transition position démarre proprement après la bulle
+            setTimeout(volerAuHasard, 300);
+        }
     }, [volerAuHasard]);
 
     // Moteur de vol
