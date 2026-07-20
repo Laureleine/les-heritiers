@@ -6,6 +6,53 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 20 Juillet 2026 — v17.13.1 (Fix grants par personnage)
+
+### 1. `personal_card_grants` : les grants étaient user-scoped, pas character-scoped
+Le schéma initial liait chaque grant à `granted_to = user_id` uniquement. Avec plusieurs personnages par compte, tous partageaient les mêmes Dons du Docte. **Modèle correct :** ajouter `character_id` à la table de grants + filtrer dans le hook par ce champ. **Règle d'or :** tout objet « possédé » par un joueur dans un jeu multi-personnages doit être rattaché au personnage, pas à l'utilisateur.
+
+### 2. Trois lieux à mettre à jour pour un changement de scope (grants)
+Quand on passe d'un scope *utilisateur* à un scope *personnage* pour un hook de données : (1) le hook lui-même (ajouter le paramètre + le filtre), (2) **tous** les composants appelants (4 ici : StepAtouts, StepPouvoirs, useVieSociale, StepVieSociale), (3) le point d'écriture (GrantAcceptanceModal, qui enregistre le `character_id` à l'acceptation). Utiliser `grep` pour trouver tous les appelants avant de modifier la signature.
+
+### 3. Migration SQL : vérifier les grants existants et les migrer dans le même script
+Ne pas laisser de données orphelines. Le script de migration doit : (a) ajouter la colonne, (b) backfiller les lignes existantes avec les bonnes valeurs, (c) afficher les résultats pour vérification. Ici, 1 grant existant migré vers `character_id = a737c1ce`.
+
+### 4. Récupérer le character_id au bon endroit pour un grant
+Dans `GrantAcceptanceModal`, `character.id` depuis `useCharacter()` est la source fiable — le joueur accepte toujours dans le contexte de son personnage actif. Inutile de le récupérer via des requêtes `cercle_membres`. **Ne pas faire retourner un `character_id` par `applyGrantCosts`** : cette fonction peut avoir des early returns (grant gratuit) et mélange deux responsabilités.
+
+### 5. Mauvaise première correction (réflexe isScelle)
+Premier réflexe incorrect : cacher les Dons du Docte avec `isScelle &&` dans `StepAtouts`. L'utilisatrice a immédiatement rectifié. **Leçon :** avant de coder, identifier la vraie cause racine dans le schéma de données — pas les symptômes d'affichage.
+
+---
+
+## Session du 20 Juillet 2026 — v17.13.0 (Bureau des Anomalies + fix atoutsPerso)
+
+### 1. `saveCharacterToSupabase` : le mapping n'est pas automatique
+Tout nouveau champ du character state doit être ajouté **manuellement** à deux endroits dans `supabaseStorage.js` : `newDataJson` (enregistrement) et le retour de `mapDatabaseToCharacter` (relecture). Le spread `{ ...char.data, ...char }` dans `mapDatabaseToCharacter` ne suffit pas — il faut mapper explicitement chaque champ dans l'objet retourné. **Diagnostic rapide :** si un champ ne persiste pas, vérifier ces deux endroits en premier.
+
+### 2. `INSERT ... ON CONFLICT DO UPDATE SET col = col + 1` → fonction SQL SECURITY DEFINER
+Le client Supabase JS ne supporte pas les expressions dans `ON CONFLICT DO UPDATE`. Créer une fonction PostgreSQL atomique et l'appeler via `supabase.rpc()`. Migration via `pg` + `SUPABASE_DB_URL` (jamais les MCP Supabase sur prod).
+
+### 3. Les trois piliers du monitoring JS
+Pour capturer toutes les erreurs : `window.onerror` (erreurs sync non rattrapées) + `window.addEventListener('unhandledrejection', ...)` (promesses rejetées) + override `console.error/warn` (erreurs loguées manuellement). Les trois sont complémentaires, aucun ne couvre les cas des autres.
+
+### 4. ErrorBoundary React : class obligatoire, auto-recovery avec flag `retried`
+Pas d'équivalent hook. Pattern : `getDerivedStateFromError` (sync, bascule `hasError`) + `componentDidCatch` (effets de bord async). L'auto-recovery via `setTimeout remount` doit être protégé par un flag `retried` pour éviter une boucle infinie sur crash persistant.
+
+### 5. Rate-limiting logger côté client
+Un `console.error` dans un `useEffect` sans dépendances peut déclencher des centaines de requêtes/min. Pattern : `Map<fingerprint, timestamp>` avec fenêtre de 60 s — simple et efficace.
+
+### 6. Contexte d'erreur via `window.__heritiers_error_context__`
+Exposer le contexte runtime (character, XP...) sur `window` depuis un `useEffect` dans CharacterContext, pour que les utilitaires sans accès aux hooks (errorLogger) puissent l'enrichir.
+
+### 7. Déduplication par fingerprint : proposer l'idée avant de coder
+La déduplication proposée comme "idée complémentaire" avant implémentation a été acceptée et ajoute une valeur réelle (évite le flood de la table, compteur d'occurrences informatif). Toujours proposer ce type d'enrichissement architectural juste avant de coder — pas après.
+
+### 8. Vérifier le déploiement Vercel avec `get_deployment` (pas `list_deployments`)
+`list_deployments` peut retourner `BUILDING`. `get_deployment` sur l'ID précis retourne l'état final. Attendre `state: READY` avant de notifier les abonnés.
+
+---
+
 ## Session v17.12.5 — 19 juillet 2026
 
 ### RLS Supabase : contournement propre pour INSERT/UPDATE utilisateur
