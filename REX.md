@@ -6,6 +6,19 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 20 Juillet 2026 — v17.13.2 (Fix pratiques magiques non supprimables)
+
+### 1. Actions de déblocage sans action inverse symétrique = bug garanti
+Dès qu'un handler "débloquer X" existe, prévoir dès le départ un handler "rebloquer X" avec les conditions de retour. Ici, `handleDebloquerMagie` sans `handleRebloquerMagie` laissait les joueurs bloqués sur une erreur à 5 XP. Règle générale : **toute dépense XP doit avoir un remboursement possible tant que l'achat n'a pas de conséquences irréversibles** (rangs investis, sorts appris).
+
+### 2. Cas Druidisme : deux chemins d'acquisition, deux politiques de remboursement
+Le Druidisme peut être acquis à la création (5 PP → `druidismeCreationPP`) ou en mode scellé (5 XP). Le distingueur est `character.data.druidismeCreationPP`. Sans ce test, un remboursement XP serait proposé à tort pour un Druidisme acquis en PP. Vérifier le `character.data` pour comprendre le mode d'acquisition avant toute action.
+
+### 3. Sorts gratuits auto-ajoutés : les retirer à la suppression de la magie
+Le hook `useEffect` auto-ajoute les sorts à `cout_xp = 0` dès que le rang atteint le seuil requis. Lors de la suppression d'une magie, il faut supprimer tout l'objet `magies[nomMagie]` (y compris les `sortsConnus`) — pas seulement basculer `actif: false`. Utiliser la destructuration `const { [nomMagie]: _, ...restMagies } = magies` pour un retrait propre.
+
+---
+
 ## Session du 20 Juillet 2026 — v17.13.1 (Fix grants par personnage)
 
 ### 1. `personal_card_grants` : les grants étaient user-scoped, pas character-scoped
