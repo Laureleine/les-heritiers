@@ -13,15 +13,68 @@ export default function PixieAssistant({ character, step, onSleep, fairyData }) 
     const [silentMood, setSilentMood] = useState("info");
     const [direction, setDirection] = useState('none'); // 'left' | 'right' | 'none'
     const [isVisible, setIsVisible] = useState(false);
+    const [humeur, setHumeur] = useState(() => {
+        const HUMEURS_LIST = ['espiegle', 'pensive', 'excitee', 'somnolente'];
+        return HUMEURS_LIST[Math.floor(Math.random() * HUMEURS_LIST.length)];
+    });
+    const [sessionCount] = useState(() => {
+        const count = parseInt(localStorage.getItem('pixie_sessions') || '0', 10) + 1;
+        localStorage.setItem('pixie_sessions', String(count));
+        return count;
+    });
     const bubbleTimer = useRef(null);
     const positionRef = useRef({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
     const forgeIntervalRef = useRef(null);
+    const lastInteractionRef = useRef(Date.now());
+    // Refs pour accéder aux props dans les timers sans dépendances stale
+    const characterRef = useRef(character);
+    const stepRef = useRef(step);
+    const fairyDataRef = useRef(fairyData);
+    const humeurRef = useRef(humeur);
 
     // FadeIn à l'entrée
     useEffect(() => {
         const t = setTimeout(() => setIsVisible(true), 100);
         return () => clearTimeout(t);
     }, []);
+
+    // Synchroniser les refs avec les props et états
+    useEffect(() => { characterRef.current = character; }, [character]);
+    useEffect(() => { stepRef.current = step; }, [step]);
+    useEffect(() => { fairyDataRef.current = fairyData; }, [fairyData]);
+    useEffect(() => { humeurRef.current = humeur; }, [humeur]);
+
+    // Rotation d'humeur toutes les 20 minutes
+    useEffect(() => {
+        const HUMEURS_LIST = ['espiegle', 'pensive', 'excitee', 'somnolente'];
+        const interval = setInterval(() => {
+            setHumeur(HUMEURS_LIST[Math.floor(Math.random() * HUMEURS_LIST.length)]);
+        }, 20 * 60 * 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Monologue spontané — Pixie parle toute seule après 3-5 min de silence
+    useEffect(() => {
+        const getPause = () => Math.floor(Math.random() * 2 * 60 * 1000) + 3 * 60 * 1000;
+        let timer;
+        const programmer = () => {
+            timer = setTimeout(() => {
+                if (Date.now() - lastInteractionRef.current >= 3 * 60 * 1000) {
+                    const advice = getPixieAdvice(
+                        characterRef.current || {},
+                        stepRef.current,
+                        fairyDataRef.current,
+                        { humeur: humeurRef.current, sessionCount }
+                    );
+                    setMessage(advice);
+                    setIsTalking(true);
+                }
+                programmer();
+            }, getPause());
+        };
+        programmer();
+        return () => clearTimeout(timer);
+    }, [sessionCount]); // sessionCount ne change jamais, effet stable
 
     // Contraindre la position si la fenêtre est redimensionnée
     useEffect(() => {
@@ -45,6 +98,7 @@ export default function PixieAssistant({ character, step, onSleep, fairyData }) 
     }, []);
 
     const fermerBulleEtFuir = useCallback(() => {
+        lastInteractionRef.current = Date.now();
         setIsTalking(false);
         if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
         // Délai court pour que la transition position démarre proprement après la bulle
@@ -70,7 +124,7 @@ export default function PixieAssistant({ character, step, onSleep, fairyData }) 
 
     // Analyse silencieuse à chaque changement de personnage/étape
     useEffect(() => {
-        const analysis = getPixieAdvice(character || {}, step, fairyData);
+        const analysis = getPixieAdvice(character || {}, step, fairyData, { humeur, sessionCount });
         setSilentMood(analysis.mood);
     }, [character, step, fairyData]);
 
@@ -116,7 +170,8 @@ export default function PixieAssistant({ character, step, onSleep, fairyData }) 
     }, [session?.user?.id]);
 
     const handleAttraperPixie = () => {
-        const advice = getPixieAdvice(character || {}, step, fairyData);
+        lastInteractionRef.current = Date.now();
+        const advice = getPixieAdvice(character || {}, step, fairyData, { humeur, sessionCount });
         setMessage(advice);
         setIsTalking(true);
     };
