@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../config/supabase';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { useUserContext } from '../context/UserContext';
+import { useCharacter } from '../context/CharacterContext';
 import { X } from '../config/icons';
 
 const CARD_TABLES = {
@@ -28,6 +29,7 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone, onRespon
     const [acting, setActing] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null); // 'accepted' | 'rejected' | null
     const { userProfile } = useUserContext();
+    const { character } = useCharacter();
 
     const grant = grants[0];
 
@@ -104,15 +106,18 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone, onRespon
     const respond = async (status) => {
         setActing(true);
         try {
-            const { error } = await supabase
-                .from('personal_card_grants')
-                .update({ status, responded_at: new Date().toISOString() })
-                .eq('id', grant.id);
-            if (error) throw error;
-
             if (status === 'accepted') {
                 await applyGrantCosts(grant);
             }
+
+            const grantUpdate = { status, responded_at: new Date().toISOString() };
+            if (status === 'accepted' && character?.id) grantUpdate.character_id = character.id;
+
+            const { error } = await supabase
+                .from('personal_card_grants')
+                .update(grantUpdate)
+                .eq('id', grant.id);
+            if (error) throw error;
 
             // Notifier le Docte via support_tickets
             await supabase.from('support_tickets').insert({

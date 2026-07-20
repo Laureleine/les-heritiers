@@ -16,7 +16,7 @@ export function useVieSociale() {
     const { character, dispatchCharacter, isReadOnly } = useCharacter();
     const { gameData } = useGameDataContext();
     const { userProfile } = useUserContext();
-    const { data: personalCards } = usePersonalCards(userProfile?.id);
+    const { data: personalCards } = usePersonalCards(userProfile?.id, character.id);
     const personalAssets = personalCards?.assets || [];
     const isScelle = isCharacterScelle(character);
 

@@ -12,14 +12,20 @@ async function fetchCards(table, grants) {
     }));
 }
 
-async function fetchPersonalCards(userId) {
+async function fetchPersonalCards(userId, characterId) {
     if (!userId) return { assets: [], powers: [], capacites: [], socialItems: [] };
 
-    const { data: grants } = await supabase
+    let query = supabase
         .from('personal_card_grants')
         .select('id, card_id, card_type, cost_xp, cost_fortune, cost_pp, granted_by')
         .eq('granted_to', userId)
         .eq('status', 'accepted');
+
+    if (characterId) {
+        query = query.eq('character_id', characterId);
+    }
+
+    const { data: grants } = await query;
 
     if (!grants?.length) return { assets: [], powers: [], capacites: [], socialItems: [] };
 
@@ -36,10 +42,10 @@ async function fetchPersonalCards(userId) {
     return { assets, powers, capacites, socialItems };
 }
 
-export function usePersonalCards(userId) {
+export function usePersonalCards(userId, characterId) {
     return useQuery({
-        queryKey: ['personalCards', userId],
-        queryFn: () => fetchPersonalCards(userId),
+        queryKey: ['personalCards', userId, characterId],
+        queryFn: () => fetchPersonalCards(userId, characterId),
         enabled: !!userId,
         staleTime: 5 * 60 * 1000,
         gcTime: 15 * 60 * 1000,

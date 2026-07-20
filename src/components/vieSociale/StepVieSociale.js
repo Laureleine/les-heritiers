@@ -131,7 +131,7 @@ export default function StepVieSociale() {
     } = useVieSociale();
 
     const { userProfile } = useUserContext();
-    const { data: personalCards } = usePersonalCards(userProfile?.id);
+    const { data: personalCards } = usePersonalCards(userProfile?.id, character.id);
     const personalSocialItems = personalCards?.socialItems || [];
 
     const currentFortune = isScelle ? (character.fortune || 0) : plancherFortune;
