@@ -6,6 +6,25 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 20 Juillet 2026 — v17.14.0 (L'Âme de Pixie)
+
+### 1. Les refs sont indispensables pour les props dans les timers récursifs
+Un monologue spontané déclenché par un `setTimeout` récursif lit les props au moment du montage si on passe les valeurs directement en dépendance — ce qui crée des stale closures. La solution : synchroniser `characterRef`, `stepRef`, `fairyDataRef`, `humeurRef` via des `useEffect` dédiés, et lire uniquement ces refs dans le timer. Règle : **tout `setTimeout` ou `setInterval` qui dure longtemps doit lire ses données via des refs, pas via des variables du scope de rendu**.
+
+### 2. `transition: all` est un piège courant — toujours préférer les propriétés explicites
+`transition: all` anime tout ce qui peut être animé : couleurs, opacité, transform, shadow... ce qui provoque des comportements inattendus sur les changements de ring d'aura ou de glow. Cibler uniquement `left`, `top`, `opacity` donne un comportement prévisible sans surprises visuelles. Règle : **ne jamais utiliser `all` pour une transition de position CSS**.
+
+### 3. `.split(' ')` sur un tableau retourne un string avec des virgules — pas des classes CSS
+`getBubbleColors(mood).split(' ')` retourne `Array(['bg-amber-100', 'border-amber-300', ...])`, qui en JSX devient `"bg-amber-100,border-amber-300,..."` avec des virgules — non reconnu par Tailwind. Il faut soit passer la string directement, soit utiliser `getBubbleColors(mood)` sans split dans className. Règle : **ne jamais appliquer `.split()` pour injecter des classes Tailwind dans un className JSX**.
+
+### 4. Humeur + contexte dans le cerveau de Pixie : signer avec un `context = {}` optionnel
+Plutôt que de multiplier les paramètres de `getPixieAdvice`, le pattern `context = { humeur, sessionCount }` garde la signature rétrocompatible et extensible. Tous les anciens appels sans contexte continuent de fonctionner avec les valeurs par défaut. Règle : **pour enrichir un cerveau comportemental existant, passer un objet `context` optionnel plutôt que des paramètres positionnels**.
+
+### 5. La mémoire `sessionGreetingDone` est module-level — c'est voulu
+La salutation de session (2e visite, 5e...) ne doit s'afficher qu'une seule fois par chargement de page, pas à chaque clic sur Pixie. Une variable module-level (`let sessionGreetingDone = false`) est réinitialisée au rechargement mais persist dans la session — exactement le bon périmètre. Contrairement à `spokenMemory` (anti-répétition), cette variable est un drapeau booléen sans besoin de reset.
+
+---
+
 ## Session du 20 Juillet 2026 — v17.13.2 (Fix pratiques magiques non supprimables)
 
 ### 1. Actions de déblocage sans action inverse symétrique = bug garanti
