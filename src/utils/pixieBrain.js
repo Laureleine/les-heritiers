@@ -273,7 +273,7 @@ export const getPixieAdvice = (character = {}, step, fairyData = {}) => {
 	
   // ✨ NOUVEAU : LE PLACEMENT DE PRODUIT DE PIXIE (Étape 9 uniquement, 15% de chance)
   if (step === 9 && Math.random() < 0.15) {
-    pool.push("Dis, si tu as trop de Francs, tu savais que tu pouvais offrir un cadeau au Créateur du Grimoire ? Le lien magique est caché dans ton profil !");
+    pool.push("Dis, si tu avais quelques Francs en trop, le Tisserand du Grimoire accepte parfois les offrandes... Un lien mystérieux sommeille dans ton profil !");
   }  
 
   // ---------------------------------------------------------
