@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.14.1 - \"Le Plan Bienveillant 🗺️\"",
+    date: "22 Juillet 2026",
+    description: "La Carte de Paris s'est faite plus accueillante. Les épingles murmurent désormais leur nom au simple passage de la souris — plus besoin de cliquer pour savoir où l'on est. Et quand on trace un itinéraire, la carte accroche d'elle-même le point le plus proche : un léger écart de clic n'éloigne plus du chemin voulu. Les noms du départ et de l'arrivée apparaissent dans le panneau dès qu'ils sont posés.",
+    changes: [
+      "🗺️ **Tooltip au survol des épingles :** Passer la souris sur un marqueur affiche maintenant son nom, sans avoir à cliquer.",
+      "🧲 **Snap d'itinéraire :** En mode Itinéraire, un clic dans un rayon de 80 mètres autour d'un marqueur accroche automatiquement sur ce marqueur — coordonnées exactes garanties.",
+      "📍 **Noms des points de trajet :** Le panneau latéral affiche les noms 🟢 Départ et 🔴 Arrivée dès qu'ils sont choisis, à la place des instructions génériques.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.14.0 - \"L'Âme de Pixie ✨\"",
     date: "20 Juillet 2026",
     description: "La petite fée n'est plus une simple boîte à conseils — elle a désormais un tempérament, une mémoire des rencontres, et une vie intérieure. Elle peut être espiègle, pensive, débordante d'entrain ou à moitié endormie selon l'heure et son humeur du moment. Elle se souvient combien de fois vous vous êtes croisés. Et si vous restez trop longtemps sans l'attraper... elle vous parlera toute seule.",

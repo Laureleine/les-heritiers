@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.14.1 — Le Plan Bienveillant 🗺️ (22 juillet 2026)
+
+Chers Héritiers,
+
+La Carte de Paris s'est faite plus attentionnée.
+
+Jusqu'ici, pour savoir à quoi correspondait une épingle sur le plan, il fallait cliquer — parfois au milieu d'une rue animée, parfois sur une minuscule goutte d'encre à peine visible. Ce temps est révolu. Désormais, il suffit de promener la souris au-dessus d'un marqueur pour que son nom apparaisse, doucement, comme un chuchotement.
+
+Pour ceux qui tracent des itinéraires : la carte s'est faite plus indulgente. Un clic légèrement à côté d'une épingle n'aboutit plus à un point perdu dans le vide — dans un rayon de quatre-vingts mètres, la carte accroche d'elle-même le lieu le plus proche. Et une fois le départ et l'arrivée posés, leurs noms s'affichent clairement dans le panneau, pour ne laisser aucun doute sur le chemin choisi.
+
+De petits raffinements, mais des compagnons de route fidèles.
+
+*L'Atelier des Fées — v17.14.1*
+
+---
+
 ## v17.14.0 — L'Âme de Pixie ✨ (20 juillet 2026)
 
 Chers Héritiers,

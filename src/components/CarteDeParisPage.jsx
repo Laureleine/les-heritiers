@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, useMap, Pane } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Polyline, Tooltip, useMapEvents, useMap, Pane } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ArrowLeft, MapPin, X, Loader, Trash2, Map, Search, Edit, ChevronDown, ChevronUp, Filter, ExternalLink, Menu } from '../config/icons';
@@ -58,6 +58,8 @@ const TRANSPORT_MODES = [
 ];
 
 const EMPTY_FORM = { nom: '', description: '', type: 'lieu', couleur: '#92400e', forme: 'goutte', adresse: '', url: '', linked_entity_type: null, linked_entity_id: null, visibilite: 'public', visibilite_cercle_id: null };
+
+const SNAP_RADIUS_M = 80;
 
 // ─── Utilitaires ─────────────────────────────────────────────────────────────
 
@@ -557,9 +559,23 @@ export default function CarteDeParisPage({ onBack }) {
     setSearchResults([]);
     if (tool === 'poi') { setNewPoiPos(latlng); return; }
     if (tool !== 'itineraire') return;
+
+    // Snap sur le marqueur existant le plus proche si pas de nom explicite
+    let point = { lat: latlng.lat, lng: latlng.lng, nom: latlng.nom ?? null };
+    if (!point.nom) {
+      let closest = null, minDist = Infinity;
+      for (const pt of visiblePoints) {
+        const d = haversineM({ lat: latlng.lat, lng: latlng.lng }, { lat: pt.lat, lng: pt.lng });
+        if (d < minDist) { minDist = d; closest = pt; }
+      }
+      if (closest && minDist <= SNAP_RADIUS_M) {
+        point = { lat: closest.lat, lng: closest.lng, nom: closest.nom };
+      }
+    }
+
     setRoutePts(prev => {
-      if (prev.length >= 2) { setRouteData(null); return [latlng]; }
-      const next = [...prev, latlng];
+      if (prev.length >= 2) { setRouteData(null); return [point]; }
+      const next = [...prev, point];
       if (next.length === 2) {
         setRouteLoading(true);
         fetchRoute(next[0], next[1])
@@ -568,7 +584,7 @@ export default function CarteDeParisPage({ onBack }) {
       }
       return next;
     });
-  }, [tool]);
+  }, [tool, visiblePoints]);
 
   // ── Sauvegarde nouveau POI ────────────────────────────────────────────────
   const handleAddPoi = useCallback(async () => {
@@ -732,7 +748,7 @@ export default function CarteDeParisPage({ onBack }) {
                             setNewPoiPos({ lat, lng });
                             setNewPoiForm(f => ({ ...f, nom: f.nom || adresse, adresse }));
                           } else if (tool === 'itineraire') {
-                            handleMapClick({ lat, lng });
+                            handleMapClick({ lat, lng, nom: label.split(',')[0].trim() });
                           }
                           setSearchResults([]);
                           setSearchQuery('');
@@ -814,11 +830,29 @@ export default function CarteDeParisPage({ onBack }) {
           )}
 
           {/* Aide contextuelle */}
-          {hint && (
+          {tool === 'itineraire' && routePts.length > 0 ? (
+            <div className="px-3 py-2 bg-amber-50/60 border-b border-amber-100 text-xs text-amber-800 leading-relaxed space-y-1">
+              <div className="flex items-center gap-1.5">
+                <span>🟢</span>
+                <span className="font-medium truncate">{routePts[0].nom || `${routePts[0].lat.toFixed(4)}, ${routePts[0].lng.toFixed(4)}`}</span>
+              </div>
+              {routePts.length >= 2 ? (
+                <div className="flex items-center gap-1.5">
+                  <span>🔴</span>
+                  <span className="font-medium truncate">{routePts[1].nom || `${routePts[1].lat.toFixed(4)}, ${routePts[1].lng.toFixed(4)}`}</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 italic text-amber-700/60">
+                  <span>🔴</span>
+                  <span>Cliquez pour choisir l'arrivée…</span>
+                </div>
+              )}
+            </div>
+          ) : hint ? (
             <div className="px-3 py-2 bg-amber-50/60 border-b border-amber-100 text-xs text-amber-800 italic leading-relaxed">
               {hint}
             </div>
-          )}
+          ) : null}
 
           {/* Formulaire ajout POI */}
           {tool === 'poi' && newPoiPos && (
@@ -889,7 +923,7 @@ export default function CarteDeParisPage({ onBack }) {
                       <button key={pt.id}
                         onClick={() => {
                           if (tool === 'itineraire') {
-                            handleMapClick({ lat: pt.lat, lng: pt.lng });
+                            handleMapClick({ lat: pt.lat, lng: pt.lng, nom: pt.nom });
                             setFlyTo([pt.lat, pt.lng]);
                           } else {
                             setSelectedPt(pt);
@@ -939,14 +973,16 @@ export default function CarteDeParisPage({ onBack }) {
               <Marker key={pt.id} position={[pt.lat, pt.lng]} icon={makePoiIcon(pt.couleur || POI_TYPES[pt.type]?.couleur || '#92400e', pt.forme || 'goutte', POI_TYPES[pt.type]?.emoji || '')}
                 eventHandlers={{ click: () => {
                   if (tool === 'itineraire') {
-                    handleMapClick({ lat: pt.lat, lng: pt.lng });
+                    handleMapClick({ lat: pt.lat, lng: pt.lng, nom: pt.nom });
                   } else {
                     setSelectedPt(pt);
                     setIsEditing(false);
                     setFlyTo([pt.lat, pt.lng]);
                   }
                 }}}
-              />
+              >
+                <Tooltip>{pt.nom}</Tooltip>
+              </Marker>
             ))}
             {/* Nouveau POI en attente */}
             {newPoiPos && <Marker position={[newPoiPos.lat, newPoiPos.lng]} icon={makePoiIcon(newPoiForm.couleur, newPoiForm.forme || 'goutte', POI_TYPES[newPoiForm.type]?.emoji || '', 22)} />}
