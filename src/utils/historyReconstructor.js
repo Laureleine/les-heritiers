@@ -62,7 +62,8 @@ export const reconstructHistory = (character, gameData) => {
   
   curAtouts.forEach(a => {
     if (!baseAtouts.includes(a)) {
-      const atoutObj = gameData?.atouts?.find(ref => ref.id === a || ref.nom === a);
+      const atoutsRef = gameData?.encyclopediaRefs?.atouts || gameData?.atouts || [];
+      const atoutObj = atoutsRef.find(ref => ref.id === a || ref.nom === a);
       const label = atoutObj ? atoutObj.nom : a;
       addTx(`Acquisition : Atout ${label}`, FIXED_XP_COSTS?.nouvel_atout || 8, null, XP_CODES.ATOUT_ACQUISITION);
     }
