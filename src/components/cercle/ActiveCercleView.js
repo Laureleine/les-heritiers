@@ -11,6 +11,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
   const [xpDefault, setXpDefault] = useState(0);
   const [xpAmounts, setXpAmounts] = useState({});
   const [xpMotif, setXpMotif] = useState('');
+  const [xpPanelOpen, setXpPanelOpen] = useState(false);
   const [subTab, setSubTab] = useState('table');
   const [xpModal, setXpModal] = useState(null); // { pendingXp, distributeXp, nextTab }
   const secretsXpRef = useRef({ pendingXp: 0, distributeXp: null });
@@ -214,12 +215,19 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
 
       {/* 🎁 PANNEAU D'ATTRIBUTION D'XP (Docte seulement) */}
       {isDocte && activeMembers.length > 0 && (
-        <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 md:p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <Gift size={18} className="text-amber-700" />
-            <h3 className="font-bold text-amber-900 text-base">Distribuer des Points d'Expérience</h3>
-          </div>
+        <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl shadow-sm overflow-hidden">
+          <button
+            onClick={() => setXpPanelOpen(o => !o)}
+            className="w-full flex items-center justify-between gap-2 px-4 py-3 md:px-5 hover:bg-amber-100/50 transition-colors text-left"
+          >
+            <div className="flex items-center gap-2">
+              <Gift size={18} className="text-amber-700" />
+              <h3 className="font-bold text-amber-900 text-base">Distribuer des Points d'Expérience</h3>
+            </div>
+            <span className="text-amber-600 text-lg leading-none">{xpPanelOpen ? '▲' : '▼'}</span>
+          </button>
 
+          {xpPanelOpen && <div className="px-4 pb-4 md:px-5 md:pb-5 pt-1">
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span className="text-xs text-amber-700 font-bold">Montant par défaut :</span>
             {[3, 5, 10, 15, 20].map(n => (
@@ -318,6 +326,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
               <Gift size={14} /> {xpSubmitting ? 'Distribution...' : `Distribuer les XP (${recipientCount} pers.)`}
             </button>
           </div>
+          </div>}
         </div>
       )}
 
