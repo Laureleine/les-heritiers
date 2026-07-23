@@ -1,6 +1,6 @@
 // src/components/cercle/TabCompetences.jsx
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../config/supabaseClient';
+import { supabase } from '../../config/supabase';
 
 export default function TabCompetences({ activeMembers }) {
   const [charData, setCharData] = useState([]);

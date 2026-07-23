@@ -6,6 +6,25 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 23 Juillet 2026 — v17.15.0 (Le Relevé des Talents)
+
+### 1. La source de vérité des compétences d'un personnage est la colonne top-level, pas `data.computed_stats`
+Quand `characterEngine.js` charge un personnage (`LOAD_CHARACTER`), il lit `newState.competencesFutiles.rangs` directement depuis la colonne top-level `competences_futiles`. Si on modifie uniquement `data.stats_scellees` ou `data.computed_stats`, l'app recalcule au prochain chargement et remet la valeur d'origine. **Toujours modifier la colonne `competences_futiles` (ou `competences_libres`) directement, en plus des autres champs**.
+
+### 2. `gameData.atouts` n'existe pas — les atouts sont dans `gameData.encyclopediaRefs.atouts`
+`historyReconstructor.js` cherchait dans `gameData?.atouts` (propriété inexistante) pour résoudre les UUIDs d'atouts en noms lisibles. `gameData` est construit par `useGameData` et ne contient pas de clé `atouts` — les atouts se trouvent dans `gameData.encyclopediaRefs.atouts` (chargés via `loadEncyclopediaRefs` qui requête la table `fairy_assets`). Corriger le chemin de lookup suffit ; le fallback `|| gameData?.atouts || []` reste en sécurité pour les hypothétiques anciens formats.
+
+### 3. Les données corrompues (UUIDs au lieu de noms) peuvent être dans deux endroits
+Lors du fix des UUIDs dans `atouts`, il ne suffit pas de corriger la colonne `atouts` — il faut aussi corriger `data.stats_scellees.atouts` pour les personnages scellés. Toujours chercher les deux emplacements avec deux requêtes distinctes (même pattern regex UUID sur les deux colonnes).
+
+### 4. Pour un tableau croisé dans un onglet : fetch séparé à la demande, ne pas surcharger la RPC
+La RPC `get_cercle_members` ne retourne que les données légères (XP, portrait, nom). Ajouter les compétences dans la RPC alourdirait chaque chargement de cercle. Créer un composant `Tab*` qui fait son propre `supabase.from('characters').select(...)` au montage est plus propre — les données ne sont chargées que si l'onglet est ouvert.
+
+### 5. Les scripts de correction de données doivent être atomiques
+La première tentative de retrait de la compétence "Mode" avait modifié `data.stats_scellees` et `data.computed_stats` mais pas la colonne source — l'app a recalculé et tout remis. La correction propre : une seule requête `UPDATE` qui modifie en une transaction la colonne source ET les snapshots, avec `RETURNING` pour vérifier immédiatement le résultat.
+
+---
+
 ## Session du 20 Juillet 2026 — v17.14.0 (L'Âme de Pixie)
 
 ### 1. Les refs sont indispensables pour les props dans les timers récursifs
