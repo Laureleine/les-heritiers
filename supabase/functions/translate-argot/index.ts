@@ -2,9 +2,11 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
 import { GoogleGenAI } from "npm:@google/genai"
 
+const allowedOrigin = Deno.env.get('ALLOWED_ORIGIN') ?? '*'
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': allowedOrigin,
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform',
+  'Vary': 'Origin',
 }
 
 const MODEL = 'gemini-2.5-flash-lite'

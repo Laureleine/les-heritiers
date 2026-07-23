@@ -1,4 +1,5 @@
 const { Client } = require('pg');
+const readline = require('readline');
 require('dotenv').config();
 
 (async () => {
@@ -8,7 +9,7 @@ require('dotenv').config();
   const { rows: dates } = await client.query(
     "SELECT date::text, COUNT(*) as count FROM public.journal_articles WHERE date >= '1890-01-01' AND date < '1891-01-01' GROUP BY date ORDER BY date"
   );
-  
+
   if (dates.length === 0) {
     console.log('Aucun article en 1890.');
     await client.end();
@@ -22,6 +23,15 @@ require('dotenv').config();
     total += parseInt(r.count);
   });
   console.log('Total: ' + total + ' articles');
+
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  const confirm = await new Promise(resolve => rl.question('\nSuppression irréversible. Taper "supprimer" pour confirmer : ', resolve));
+  rl.close();
+  if (confirm.trim() !== 'supprimer') {
+    console.log('Annulé.');
+    await client.end();
+    return;
+  }
 
   const res = await client.query("DELETE FROM public.journal_articles WHERE date >= '1890-01-01' AND date < '1891-01-01'");
   console.log('✅ ' + res.rowCount + ' articles supprimés de journal_articles.');

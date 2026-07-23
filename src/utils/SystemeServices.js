@@ -266,7 +266,7 @@ export const setLoggerRole = (role) => { currentUserRole = role; };
 const shouldLog = () => {
   const isDev = process.env.NODE_ENV === 'development';
   const isSuperAdmin = currentUserRole === 'super_admin';
-  const isForced = localStorage.getItem('FORCE_DEBUG') === 'true';
+  const isForced = import.meta.env.DEV && localStorage.getItem('FORCE_DEBUG') === 'true';
   return isDev || isSuperAdmin || isForced;
 };
 

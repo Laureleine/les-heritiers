@@ -1,9 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
 
+const allowedOrigin = Deno.env.get('ALLOWED_ORIGIN') ?? '*'
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': allowedOrigin,
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Vary': 'Origin',
 }
 
 Deno.serve(async (req) => {
@@ -40,7 +42,7 @@ Deno.serve(async (req) => {
         .eq('id', user.id)
         .single()
 
-      console.log('user:', user.id, '| role:', profile?.role)
+      console.log('send-email: utilisateur autorisé')
 
       if (profile?.role !== 'super_admin') {
         return new Response(JSON.stringify({ error: 'Droits insuffisants' }), {

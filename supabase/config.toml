@@ -413,5 +413,5 @@ entrypoint = "./functions/apply-encyclopedia-change/index.ts"
 
 [functions.send-email]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 entrypoint = "./functions/send-email/index.ts"

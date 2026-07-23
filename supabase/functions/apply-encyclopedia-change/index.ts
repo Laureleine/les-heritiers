@@ -1,9 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
 
+const allowedOrigin = Deno.env.get('ALLOWED_ORIGIN') ?? '*'
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': allowedOrigin,
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, dnt',
+  'Vary': 'Origin',
 }
 
 Deno.serve(async (req) => {
@@ -13,14 +15,30 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const body = await req.json()
-    const requestId = body.requestId
-    const sealRequested = body.sealRequested
-
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SERVICE_ROLE_KEY') ?? ''
     )
+
+    // Vérification du rôle appelant — seuls gardien et super_admin autorisés
+    const authHeader = req.headers.get('Authorization') ?? ''
+    const jwt = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: userError } = await supabase.auth.getUser(jwt)
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: 'Non authentifié' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    if (!['gardien', 'super_admin'].includes(profile?.role ?? '')) {
+      return new Response(JSON.stringify({ error: 'Droits insuffisants' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    const body = await req.json()
+    const requestId = body.requestId
+    const sealRequested = body.sealRequested
 
     // 1. Récupération du ticket
     const { data: request, error: reqError } = await supabase
