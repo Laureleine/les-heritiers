@@ -47,7 +47,7 @@ export function useProphetie() {
 
     const fermerSonge = useCallback(() => {
         setShowSonge(false);
-        setProphetieText(null);
+        // prophetieText conservé pour permettre la relecture sans rappel API
     }, []);
 
     return { showSonge, isGenerating, prophetieText, revelerSonge, fermerSonge };

@@ -39,10 +39,10 @@ export default function StepRecapitulatif() {
         revelerSonge(character.id, null);
     }, [character.id, revelerSonge, setShowSongePostSeal]);
 
-    // Bouton manuel sur la fiche d'un personnage déjà scellé
+    // Bouton manuel — prophetieText en priorité (même session), sinon depuis la DB
     const handleRevelerSonge = useCallback(() => {
-        revelerSonge(character.id, character.prophetie);
-    }, [character.id, character.prophetie, revelerSonge]);
+        revelerSonge(character.id, prophetieText || character.prophetie);
+    }, [character.id, character.prophetie, prophetieText, revelerSonge]);
 
     const handleFermerSonge = useCallback((prophetieGeneree) => {
         fermerSonge();
