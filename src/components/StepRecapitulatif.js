@@ -1,11 +1,13 @@
 // src/components/StepRecapitulatif.js
-import React, { useState } from 'react';
-import { Printer, ShieldAlert, Camera, Clock, RotateCcw } from '../config/icons';
+import React, { useState, useCallback } from 'react';
+import { Printer, ShieldAlert, Camera, Clock, RotateCcw, Sparkles } from '../config/icons';
 import { useCerbere } from '../hooks/useCerbere';
 import { useGameDataContext } from '../context/GameDataContext';
 import { exportToPDF } from '../utils/pdfGenerator';
 import ConfirmModal from './ConfirmModal';
 import FicheParchemin from './recap/FicheParchemin';
+import SongeRevelation from './SongeRevelation';
+import { useProphetie } from '../hooks/useProphetie';
 
 export default function StepRecapitulatif() {
     const {
@@ -17,6 +19,8 @@ export default function StepRecapitulatif() {
         sealWarnings,
         handleSealClick,
         executeSeal,
+        showSongePostSeal,
+        setShowSongePostSeal,
         snapshots,
         handleTakeSnapshot,
         handleCloneSnapshot
@@ -26,6 +30,28 @@ export default function StepRecapitulatif() {
     const [detailed, setDetailed] = useState(false);
     const [snapshotTitle, setSnapshotTitle] = useState('');
     const [showSnapshotModal, setShowSnapshotModal] = useState(false);
+
+    const { showSonge, isGenerating, prophetieText, revelerSonge, fermerSonge } = useProphetie();
+
+    // Déclenché après scellage → lance la cinématique avec génération
+    const handleSongePostSeal = useCallback(() => {
+        setShowSongePostSeal(false);
+        revelerSonge(character.id, null);
+    }, [character.id, revelerSonge, setShowSongePostSeal]);
+
+    // Bouton manuel sur la fiche d'un personnage déjà scellé
+    const handleRevelerSonge = useCallback(() => {
+        revelerSonge(character.id, character.prophetie);
+    }, [character.id, character.prophetie, revelerSonge]);
+
+    const handleFermerSonge = useCallback((prophetieGeneree) => {
+        fermerSonge();
+        // Mettre à jour l'état local si la prophétie vient d'être générée
+        if (prophetieGeneree && !character.prophetie) {
+            // Le CharacterContext sera mis à jour au prochain rechargement depuis Supabase
+            character.prophetie = prophetieGeneree;
+        }
+    }, [fermerSonge, character]);
 
     return (
         <div className="max-w-[210mm] mx-auto pb-12 font-serif">
@@ -132,6 +158,15 @@ export default function StepRecapitulatif() {
                         <ShieldAlert size={24} /> Apposer le Sceau
                     </button>
                 )}
+                {isScelle && (
+                    <button
+                        onClick={handleRevelerSonge}
+                        className="bg-indigo-950 text-amber-300 font-black py-4 px-10 rounded-xl flex items-center gap-3 shadow-lg hover:bg-indigo-900 border border-amber-700/40 transition-all"
+                    >
+                        <Sparkles size={24} />
+                        {character.prophetie ? 'Revoir le Songe' : 'Révéler mon Songe'}
+                    </button>
+                )}
             </div>
 
             <ConfirmModal
@@ -145,6 +180,43 @@ export default function StepRecapitulatif() {
                 confirmText="Apposer le Sceau"
                 cancelText={sealErrors.length > 0 ? "Corriger" : "Annuler"}
             />
+
+            {/* Proposition songe après scellage */}
+            {showSongePostSeal && (
+                <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowSongePostSeal(false)}>
+                    <div className="bg-indigo-950 border border-amber-700/40 rounded-2xl shadow-2xl max-w-sm w-full p-8 text-center" onClick={e => e.stopPropagation()}>
+                        <div className="text-4xl mb-4">✨</div>
+                        <h3 className="text-amber-200 font-serif font-bold text-xl mb-3">Le Songe du Scellage</h3>
+                        <p className="text-amber-300/70 font-serif text-sm mb-6 leading-relaxed italic">
+                            En cette nuit de Scellage, les brumes de Paris vous ont réservé un songe…
+                        </p>
+                        <div className="flex gap-3 justify-center">
+                            <button
+                                onClick={() => setShowSongePostSeal(false)}
+                                className="px-5 py-2 text-sm text-amber-600/60 hover:text-amber-400 transition-all font-serif"
+                            >
+                                Plus tard
+                            </button>
+                            <button
+                                onClick={handleSongePostSeal}
+                                className="px-6 py-2.5 bg-amber-700 text-amber-100 rounded-xl text-sm font-bold font-serif hover:bg-amber-600 transition-all shadow-lg"
+                            >
+                                Recevoir le Songe
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Cinématique du Songe */}
+            {showSonge && (
+                <SongeRevelation
+                    characterId={character.id}
+                    prophetie={prophetieText}
+                    isGenerating={isGenerating}
+                    onClose={handleFermerSonge}
+                />
+            )}
         </div>
     );
 }

@@ -21,6 +21,7 @@ export function useCerbere() {
     const [showConfirmSeal, setShowConfirmSeal] = useState(false);
     const [sealErrors,   setSealErrors]   = useState([]);
     const [sealWarnings, setSealWarnings] = useState([]);
+    const [showSongePostSeal, setShowSongePostSeal] = useState(false);
 
     const handleSealClick = () => {
         // Garde 0 — personnage non sauvegardé
@@ -70,9 +71,11 @@ export function useCerbere() {
                 dispatchCharacter({ type: 'UPDATE_FIELD', field: 'id', value: saved.id, gameData });
             }
             showInAppNotification("Sceau apposé !", "success");
+            setShowSongePostSeal(true);
         } catch (e) {
             dispatchCharacter({ type: 'SEAL_CHARACTER', gameData });
             showInAppNotification("Sceau local uniquement : " + e.message, "warning");
+            setShowSongePostSeal(true);
         }
     };
 
@@ -185,6 +188,7 @@ export function useCerbere() {
     return {
         character, feeData, gameData, isScelle, getCarac, uniqueFutiles, specialtiesByComp, liveCombatStats, isPredilection,
         showConfirmSeal, setShowConfirmSeal, sealErrors, sealWarnings,
+        showSongePostSeal, setShowSongePostSeal,
         snapshots, handleTakeSnapshot, handleCloneSnapshot, handleSealClick, executeSeal,
         calculateSkillScore: (nom) => calculateSkillScore(nom, character, gameData) // ✨ FIX: gameData !
     };

@@ -123,6 +123,7 @@ const mapDatabaseToCharacter = (char) => {
         computedStats: source.computed_stats || source.computedStats || {},
         atoutsPerso: source.atoutsPerso || [],
         pouvoirsPerso: source.pouvoirsPerso || [],
+        prophetie: source.prophetie || null,
         created_at: source.created_at || new Date().toISOString(),
         updated_at: source.updated_at || new Date().toISOString()
     };
