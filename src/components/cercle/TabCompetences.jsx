@@ -12,29 +12,39 @@ export default function TabCompetences({ activeMembers }) {
     const ids = activeMembers.map(m => m.characters?.id).filter(Boolean);
     if (ids.length === 0) { setLoading(false); return; }
 
+    let cancelled = false;
+
     const loadAll = async () => {
       const { data: chars, error } = await supabase
         .from('characters')
         .select('id, nom, type_fee, competences_libres, competences_futiles, data')
         .in('id', ids);
-      if (error || !chars) { setLoading(false); return; }
-      setCharData(chars);
+      if (cancelled || error || !chars) { if (!cancelled) setLoading(false); return; }
 
       const typeFees = [...new Set(chars.map(c => c.type_fee).filter(Boolean))];
-      if (typeFees.length === 0) { setLoading(false); return; }
+      if (typeFees.length === 0) {
+        if (!cancelled) { setCharData(chars); setLoading(false); }
+        return;
+      }
 
       const { data: ftData } = await supabase
         .from('fairy_types').select('id, name').in('name', typeFees);
+      if (cancelled) return;
+
       const idByName = Object.fromEntries((ftData || []).map(ft => [ft.name, ft.id]));
-      setFtIdByName(idByName);
-
       const ftIds = Object.values(idByName);
-      if (ftIds.length === 0) { setLoading(false); return; }
 
-      const { data: predData } = await supabase
-        .from('fairy_competences_predilection')
-        .select('fairy_type_id, specialite, is_choice, is_specialite_choice, choice_options, competence:competences(name)')
-        .in('fairy_type_id', ftIds);
+      // ORDER BY created_at garantit le même ordre que supabaseGameData.js (sans ORDER BY
+      // explicite, l'ordre heap ≈ created_at), ce qui est nécessaire pour que les indices
+      // dans choixSpecialite[idx] correspondent aux bonnes prédilections.
+      const { data: predData } = ftIds.length > 0
+        ? await supabase
+            .from('fairy_competences_predilection')
+            .select('fairy_type_id, specialite, is_choice, is_specialite_choice, competence:competences(name)')
+            .in('fairy_type_id', ftIds)
+            .order('created_at')
+        : { data: [] };
+      if (cancelled) return;
 
       const byFairy = {};
       (predData || []).forEach(cp => {
@@ -44,21 +54,23 @@ export default function TabCompetences({ activeMembers }) {
         } else {
           const nomComp = cp.competence?.name;
           if (nomComp) {
-            const opts = Array.isArray(cp.choice_options) ? cp.choice_options : [];
             byFairy[cp.fairy_type_id].push({
               nom: nomComp,
               specialite: cp.specialite,
               isSpecialiteChoix: cp.is_specialite_choice,
-              options: opts.filter(o => o !== 'PURE_SPEC'),
             });
           }
         }
       });
+
+      setCharData(chars);
+      setFtIdByName(idByName);
       setPredsByFairyType(byFairy);
       setLoading(false);
     };
 
     loadAll();
+    return () => { cancelled = true; };
   }, [activeMembers]);
 
   if (loading) return <div className="text-center py-10 text-stone-400 animate-pulse font-serif">Consultation des parchemins...</div>;
