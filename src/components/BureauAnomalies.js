@@ -1,7 +1,7 @@
 // 15.0.0
 
 import React, { useState, useEffect } from 'react';
-import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft, Mail, MessageSquare } from '../config/icons';
+import { Bug, CheckCircle2, AlertCircle, Clock, EyeOff, ThumbsUp, Send, ArrowLeft, Mail, MessageSquare, Copy, Archive } from '../config/icons';
 import { db } from '../config/db';
 import { supabase } from '../config/supabase';
 import { useUserContext } from '../context/UserContext';
@@ -13,6 +13,7 @@ export default function BureauAnomalies({ onBack }) {
   const { userProfile } = useUserContext();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Formulaire
   const [title, setTitle] = useState('');
@@ -23,6 +24,7 @@ export default function BureauAnomalies({ onBack }) {
     const { data, error } = await db.from('bug_reports')
       .select('*, profiles(username)')
       .or(`is_confidential.eq.false,user_id.eq.${userProfile.id}`)
+      .neq('status', 'Archivé')
       .order('created_at', { ascending: false });
 
     if (error || !data) return;
@@ -122,6 +124,32 @@ export default function BureauAnomalies({ onBack }) {
     }));
   };
 
+  const handleCopyAll = async () => {
+    const date = new Date().toLocaleDateString('fr-FR');
+    const lines = reports.map(r => {
+      const votes = (r.community_weight || []).length;
+      const auteur = r.profiles?.username || 'Anonyme';
+      return `[${r.status}] ${r.title}\nPar ${auteur} — v${r.version_app}\n${r.description}${votes > 0 ? `\n👍 ${votes} constatation(s)` : ''}`;
+    });
+    const texte = `Bureau des Anomalies — ${date}\n${'─'.repeat(40)}\n\n${lines.join('\n\n─────\n\n')}`;
+    await navigator.clipboard.writeText(texte);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleArchiveAll = async () => {
+    const { error } = await supabase
+      .from('bug_reports')
+      .update({ status: 'Archivé' })
+      .neq('status', 'Archivé');
+    if (!error) {
+      showInAppNotification('Toutes les anomalies ont été archivées.', 'success');
+      fetchReports();
+    } else {
+      showInAppNotification("L'archivage a échoué.", 'error');
+    }
+  };
+
   const isOlderThan7Days = (dateStr) => {
     const diff = new Date() - new Date(dateStr);
     return diff > 7 * 24 * 60 * 60 * 1000;
@@ -166,7 +194,27 @@ export default function BureauAnomalies({ onBack }) {
 
       {/* LISTE DES ANOMALIES COMMUNAUTAIRES */}
       <div className="space-y-4">
-        <h3 className="font-bold text-stone-800 text-lg border-b border-stone-200 pb-2">Registres Publics</h3>
+        <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+          <h3 className="font-bold text-stone-800 text-lg">Registres Publics</h3>
+          {isAdmin(userProfile) && reports.length > 0 && (
+            <div className="flex gap-2">
+              <button
+                onClick={handleCopyAll}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                  copied ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-stone-600 border-stone-300 hover:bg-stone-50'
+                }`}
+              >
+                <Copy size={13} /> {copied ? 'Copié !' : 'Tout copier'}
+              </button>
+              <button
+                onClick={handleArchiveAll}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border bg-white text-stone-500 border-stone-300 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300 transition-all"
+              >
+                <Archive size={13} /> Archiver tout
+              </button>
+            </div>
+          )}
+        </div>
         {reports.length === 0 && <p className="text-stone-500 italic text-center py-8">La matrice est parfaitement stable. Aucun signalement.</p>}
         
         {reports.map(report => {
