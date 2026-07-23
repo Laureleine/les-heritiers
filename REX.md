@@ -6,6 +6,45 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 23 Juillet 2026 — v17.17.0 (Le Songe du Scellage)
+
+### Ce qui a été fait
+- Ajout de la colonne `prophetie TEXT` sur la table `characters` via script Node + `pg`.
+- Création et déploiement de l'Edge Function `generate-prophetie` (Deno) : appel Haiku, vérification JWT + rôle, stockage unique en base.
+- Hook React `useProphetie` : gestion de la génération, du cache local en session, et du replay sans rappel API.
+- Composant `SongeRevelation.jsx` : cinématique en canvas (120 particules, Pixie SVG), Web Audio API (6 oscillateurs sinusoïdaux), machine d'états `noir → pixie → texte`, hook `useTypewriter`.
+- Intégration dans `StepRecapitulatif.js` : bouton "Révéler mon Songe" / "Revoir le Songe", modale post-scellage, mapping `prophetie` dans `supabaseStorage.js`.
+- Fix replay : `fermerSonge` ne remet plus `prophetieText` à null — la cinématique est revoyable à volonté sans régénérer le texte.
+
+### Règles et astuces
+
+**Edge Function avec colonne DB : ordre des opérations**
+- Créer la colonne en base AVANT de déployer la fonction qui l'écrit — sinon le déploiement réussit mais l'appel échoue silencieusement.
+- Ne jamais utiliser `mcp__claude_ai_Supabase__apply_migration` ni `execute_sql` sur le projet prod (`cijtzdfwrmbftmwookac`). Toujours passer par un script Node + `pg` + `SUPABASE_DB_URL` du `.env`.
+
+**CORS dans une Edge Function Deno**
+- Toujours répondre aux requêtes `OPTIONS` (preflight) avec un `200` + les headers CORS avant de traiter la logique métier.
+- Le pattern fiable : `if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });`
+- Les headers CORS doivent être présents sur TOUTES les réponses, y compris les erreurs.
+
+**Replay cinématique sans régénération**
+- Le state `prophetieText` dans `useProphetie` doit survivre à la fermeture du modal — ne pas le remettre à null dans `fermerSonge`.
+- Lors du replay (`handleRevelerSonge`), passer `prophetieText || character.prophetie` : priorité au state React (même session), fallback sur la DB (sessions suivantes).
+- La DB est la source de vérité persistante ; le state React est le cache de session.
+
+**Mutation directe d'un objet React en fallback**
+- `character.prophetie = prophetieGeneree` dans `handleFermerSonge` est une mutation directe qui contourne le dispatch du contexte. Elle fonctionne uniquement pour synchroniser l'affichage bouton dans la même session sans rechargement. Ne pas généraliser ce pattern — préférer un dispatch ou un rechargement Supabase pour les vraies mises à jour.
+
+**Heredoc PowerShell vs Bash**
+- `git commit -m "$(cat <<'EOF'...)"` est une syntaxe Bash — elle échoue en PowerShell avec une erreur de parser.
+- Pour les commits avec messages multilignes en PowerShell, utiliser le heredoc natif `@'...'@` (single-quoted, `'@` à colonne 0).
+- Alternative fiable : utiliser l'outil Bash (POSIX) pour tous les commits, même en environnement Windows.
+
+**`git filter-repo` supprime le remote automatiquement**
+- Après une purge `git filter-repo`, le remote `origin` est supprimé automatiquement. Toujours relancer `git remote add origin <url>` puis `git push --force origin main` pour rétablir la connexion Vercel/GitHub.
+
+---
+
 ## Session du 23 Juillet 2026 — v17.16.0 (La Forteresse Invisible)
 
 ### Ce qui a été fait
