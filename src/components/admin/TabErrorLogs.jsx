@@ -56,7 +56,7 @@ function buildCopyBlock(log) {
 export default function TabErrorLogs() {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState('all'); // 'all' | 'new' | 'transmitted' | 'resolved'
+    const [filter, setFilter] = useState('active'); // 'active' | 'new' | 'transmitted' | 'archived'
     const [expanded, setExpanded] = useState(null);
     const [copied, setCopied] = useState(false);
 
@@ -99,6 +99,13 @@ export default function TabErrorLogs() {
         setLogs(prev => prev.map(l => l.id === log.id ? { ...l, resolved_at: now } : l));
     };
 
+    const archiveAll = async (ids) => {
+        if (ids.length === 0) return;
+        const now = new Date().toISOString();
+        await supabase.from('error_logs').update({ resolved_at: now }).in('id', ids);
+        setLogs(prev => prev.map(l => ids.includes(l.id) ? { ...l, resolved_at: now } : l));
+    };
+
     const handleCopyAll = async () => {
         const date = new Date().toLocaleDateString('fr-FR');
         const blocks = filtered.map(log => buildCopyBlock(log));
@@ -107,24 +114,25 @@ export default function TabErrorLogs() {
             await navigator.clipboard.writeText(texte);
             setCopied(true);
             setTimeout(() => setCopied(false), 2500);
+            const ids = filtered.filter(l => !l.resolved_at).map(l => l.id);
+            await archiveAll(ids);
         } catch {
             showInAppNotification('Impossible de copier.', 'error');
         }
     };
 
     const handleResolveAll = async () => {
-        const now = new Date().toISOString();
         const ids = filtered.filter(l => !l.resolved_at).map(l => l.id);
         if (ids.length === 0) return;
-        await supabase.from('error_logs').update({ resolved_at: now }).in('id', ids);
-        setLogs(prev => prev.map(l => ids.includes(l.id) ? { ...l, resolved_at: now } : l));
-        showInAppNotification(`${ids.length} anomalie${ids.length > 1 ? 's' : ''} marquée${ids.length > 1 ? 's' : ''} comme résolue${ids.length > 1 ? 's' : ''}.`, 'success');
+        await archiveAll(ids);
+        showInAppNotification(`${ids.length} anomalie${ids.length > 1 ? 's' : ''} archivée${ids.length > 1 ? 's' : ''}.`, 'success');
     };
 
     const filtered = logs.filter(log => {
+        if (filter === 'active') return !log.resolved_at;
         if (filter === 'new') return !log.transmitted_at && !log.resolved_at;
         if (filter === 'transmitted') return !!log.transmitted_at && !log.resolved_at;
-        if (filter === 'resolved') return !!log.resolved_at;
+        if (filter === 'archived') return !!log.resolved_at;
         return true;
     });
 
@@ -141,7 +149,7 @@ export default function TabErrorLogs() {
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex gap-1 bg-stone-100 rounded-lg p-1">
-                        {[['all', 'Tout'], ['new', '🔴 Nouveaux'], ['transmitted', '🟡 Transmis'], ['resolved', '✅ Résolus']].map(([val, label]) => (
+                        {[['active', 'Actifs'], ['new', '🔴 Nouveaux'], ['transmitted', '🟡 Transmis'], ['archived', '📦 Archivés']].map(([val, label]) => (
                             <button
                                 key={val}
                                 onClick={() => setFilter(val)}
