@@ -4,20 +4,61 @@ import { supabase } from '../../config/supabase';
 
 export default function TabCompetences({ activeMembers }) {
   const [charData, setCharData] = useState([]);
+  const [predsByFairyType, setPredsByFairyType] = useState({});
+  const [ftIdByName, setFtIdByName] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const ids = activeMembers.map(m => m.characters?.id).filter(Boolean);
     if (ids.length === 0) { setLoading(false); return; }
 
-    supabase
-      .from('characters')
-      .select('id, nom, competences_libres, competences_futiles, data')
-      .in('id', ids)
-      .then(({ data, error }) => {
-        if (!error && data) setCharData(data);
-        setLoading(false);
+    const loadAll = async () => {
+      const { data: chars, error } = await supabase
+        .from('characters')
+        .select('id, nom, type_fee, competences_libres, competences_futiles, data')
+        .in('id', ids);
+      if (error || !chars) { setLoading(false); return; }
+      setCharData(chars);
+
+      const typeFees = [...new Set(chars.map(c => c.type_fee).filter(Boolean))];
+      if (typeFees.length === 0) { setLoading(false); return; }
+
+      const { data: ftData } = await supabase
+        .from('fairy_types').select('id, name').in('name', typeFees);
+      const idByName = Object.fromEntries((ftData || []).map(ft => [ft.name, ft.id]));
+      setFtIdByName(idByName);
+
+      const ftIds = Object.values(idByName);
+      if (ftIds.length === 0) { setLoading(false); return; }
+
+      const { data: predData } = await supabase
+        .from('fairy_competences_predilection')
+        .select('fairy_type_id, specialite, is_choice, is_specialite_choice, choice_options, competence:competences(name)')
+        .in('fairy_type_id', ftIds);
+
+      const byFairy = {};
+      (predData || []).forEach(cp => {
+        if (!byFairy[cp.fairy_type_id]) byFairy[cp.fairy_type_id] = [];
+        if (cp.is_choice) {
+          byFairy[cp.fairy_type_id].push({ isChoix: true });
+        } else {
+          const nomComp = cp.competence?.name;
+          if (nomComp) {
+            const opts = Array.isArray(cp.choice_options) ? cp.choice_options : [];
+            byFairy[cp.fairy_type_id].push({
+              nom: nomComp,
+              specialite: cp.specialite,
+              isSpecialiteChoix: cp.is_specialite_choice,
+              options: opts.filter(o => o !== 'PURE_SPEC'),
+            });
+          }
+        }
       });
+      setPredsByFairyType(byFairy);
+      setLoading(false);
+    };
+
+    loadAll();
   }, [activeMembers]);
 
   if (loading) return <div className="text-center py-10 text-stone-400 animate-pulse font-serif">Consultation des parchemins...</div>;
@@ -27,6 +68,28 @@ export default function TabCompetences({ activeMembers }) {
     .filter(m => m.charInfo);
 
   if (members.length === 0) return <div className="text-center py-10 text-stone-400 font-serif italic">Aucun personnage lié dans ce Cercle.</div>;
+
+  // ── Spécialités innées pour un personnage ────────────────────────────────
+  const getInneeSpecs = (charInfo) => {
+    const ftId = ftIdByName[charInfo.type_fee];
+    if (!ftId) return {};
+    const preds = predsByFairyType[ftId] || [];
+    const result = {}; // { [comp]: string[] }
+    preds.forEach((p, idx) => {
+      if (p.isChoix) return;
+      let nomSpec = null;
+      if (p.specialite && !p.isSpecialiteChoix) {
+        nomSpec = p.specialite;
+      } else if (p.isSpecialiteChoix) {
+        nomSpec = charInfo.competences_libres?.choixSpecialite?.[idx] || null;
+      }
+      if (nomSpec && p.nom) {
+        if (!result[p.nom]) result[p.nom] = [];
+        result[p.nom].push(nomSpec);
+      }
+    });
+    return result;
+  };
 
   // ── Compétences utiles ────────────────────────────────────────────────────
   const buildUtilesMatrix = () => {
@@ -42,14 +105,12 @@ export default function TabCompetences({ activeMembers }) {
       cells: members.map(m => {
         const cs = m.charInfo.data?.computed_stats || {};
         const rang = cs.competencesTotal?.[comp] || 0;
-        // Spécialités acquises par l'utilisateur
         const userSpecs = m.charInfo.competences_libres?.choixSpecialiteUser?.[comp] || [];
-        // Spécialités gratuites (profil, atout…)
         const gratSpecs = (cs.specialites?.gratuites?.[comp] || []).map(s => s.specialite || s);
-        // Spécialité de métier si elle concerne cette compétence
         const metierSpec = m.charInfo.competences_libres?.specialiteMetier;
         const metierSpecs = (metierSpec?.comp === comp) ? [metierSpec.nom] : [];
-        const specs = [...new Set([...userSpecs, ...gratSpecs, ...metierSpecs])];
+        const inneeSpecs = getInneeSpecs(m.charInfo)[comp] || [];
+        const specs = [...new Set([...userSpecs, ...gratSpecs, ...metierSpecs, ...inneeSpecs])];
         return { rang, specs };
       }),
     })).filter(row => row.cells.some(c => c.rang > 0));
