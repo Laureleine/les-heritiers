@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
-import Anthropic from "npm:@anthropic-ai/sdk"
+import { GoogleGenAI } from "npm:@google/genai"
 
 const allowedOrigin = Deno.env.get('ALLOWED_ORIGIN') ?? '*'
 const corsHeaders = {
@@ -8,6 +8,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Vary': 'Origin',
 }
+
+const MODEL = 'gemini-2.5-flash-lite'
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -63,7 +65,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Déjà générée → retourner sans rappeler Haiku
+    // Déjà générée → retourner sans rappeler l'IA
     if (character.prophetie) {
       return new Response(JSON.stringify({ prophetie: character.prophetie }), {
         status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -73,6 +75,13 @@ Deno.serve(async (req) => {
     if (character.statut !== 'scelle' && character.statut !== 'scellé') {
       return new Response(JSON.stringify({ error: 'Le personnage doit être scellé' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    const apiKey = Deno.env.get('GEMINI_API_KEY')
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'Clé Gemini manquante' }), {
+        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
@@ -90,7 +99,7 @@ Deno.serve(async (req) => {
       ? `${(character.anciennete as Record<string, number>).min}–${(character.anciennete as Record<string, number>).max} ans`
       : String(character.anciennete || 'ancienne')
 
-    const prompt = `Tu es l'Oracle des Brumes de Paris, Belle Époque (1899). Tu génères le fragment d'un rêve cryptique que ${character.nom} a vécu lors de son Scellage — le moment solennel où sa nature féerique s'est figée pour toujours.
+    const systemInstruction = `Tu es l'Oracle des Brumes de Paris, Belle Époque (1899). Tu génères le fragment d'un rêve cryptique que ${character.nom} a vécu lors de son Scellage — le moment solennel où sa nature féerique s'est figée pour toujours.
 
 Ce rêve est raconté par le personnage en monologue intérieur, à la première personne, au présent. Il doit être :
 - Onirique et sibyllin, jamais explicite sur l'avenir
@@ -98,31 +107,27 @@ Ce rêve est raconté par le personnage en monologue intérieur, à la première
 - Composé de 5 à 6 phrases courtes, séparées par des points de suspension (…)
 - Ancré dans la nature féerique, le profil et les atouts du personnage
 
-Nature : ${character.type_fee}, ${anciennete} d'existence
+Génère uniquement le texte du rêve, sans titre, sans guillemets, sans commentaire.`
+
+    const contents = `Nature : ${character.type_fee}, ${anciennete} d'existence
 Nom féerique : ${character.nom_feerique || 'inconnu'}
 Profil majeur : ${profils.majeur?.nom ?? '—'} (trait : ${profils.majeur?.trait ?? '—'})
 Profil mineur : ${profils.mineur?.nom ?? '—'}
 Compétences principales : ${topComps || 'aucune'}
-Atouts : ${atoutsNoms || 'aucun'}
+Atouts : ${atoutsNoms || 'aucun'}`
 
-Génère uniquement le texte du rêve, sans titre, sans guillemets, sans commentaire.`
-
-    const apiKey = Deno.env.get('ANTHROPIC_API_KEY') ?? ''
-    if (!apiKey) {
-      console.error('generate-prophetie: ANTHROPIC_API_KEY non configurée')
-      return new Response(JSON.stringify({ error: 'Service IA non configuré — contactez l\'administratrice' }), {
-        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    const anthropic = new Anthropic({ apiKey })
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 300,
-      messages: [{ role: 'user', content: prompt }]
+    const ai = new GoogleGenAI({ apiKey })
+    const response = await ai.models.generateContent({
+      model: MODEL,
+      config: {
+        systemInstruction,
+        temperature: 0.9,
+        maxOutputTokens: 300,
+      },
+      contents,
     })
 
-    const prophetie = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
+    const prophetie = response.text.trim()
     if (!prophetie) {
       return new Response(JSON.stringify({ error: 'Génération échouée' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -138,8 +143,8 @@ Génère uniquement le texte du rêve, sans titre, sans guillemets, sans comment
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 
-  } catch (e) {
-    console.error('generate-prophetie error:', e)
+  } catch (error) {
+    console.error('generate-prophetie error:', error)
     return new Response(JSON.stringify({ error: 'Erreur interne' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
