@@ -107,7 +107,15 @@ Atouts : ${atoutsNoms || 'aucun'}
 
 Génère uniquement le texte du rêve, sans titre, sans guillemets, sans commentaire.`
 
-    const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') ?? '' })
+    const apiKey = Deno.env.get('ANTHROPIC_API_KEY') ?? ''
+    if (!apiKey) {
+      console.error('generate-prophetie: ANTHROPIC_API_KEY non configurée')
+      return new Response(JSON.stringify({ error: 'Service IA non configuré — contactez l\'administratrice' }), {
+        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    const anthropic = new Anthropic({ apiKey })
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 300,

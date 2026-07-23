@@ -31,7 +31,7 @@ export default function StepRecapitulatif() {
     const [snapshotTitle, setSnapshotTitle] = useState('');
     const [showSnapshotModal, setShowSnapshotModal] = useState(false);
 
-    const { showSonge, isGenerating, prophetieText, revelerSonge, fermerSonge } = useProphetie();
+    const { showSonge, isGenerating, prophetieText, errorMessage, revelerSonge, fermerSonge } = useProphetie();
 
     // Déclenché après scellage → lance la cinématique avec génération
     const handleSongePostSeal = useCallback(() => {
@@ -159,13 +159,20 @@ export default function StepRecapitulatif() {
                     </button>
                 )}
                 {isScelle && (
-                    <button
-                        onClick={handleRevelerSonge}
-                        className="bg-indigo-950 text-amber-300 font-black py-4 px-10 rounded-xl flex items-center gap-3 shadow-lg hover:bg-indigo-900 border border-amber-700/40 transition-all"
-                    >
-                        <Sparkles size={24} />
-                        {character.prophetie ? 'Revoir le Songe' : 'Révéler mon Songe'}
-                    </button>
+                    <div className="flex flex-col items-center gap-2">
+                        <button
+                            onClick={handleRevelerSonge}
+                            className="bg-indigo-950 text-amber-300 font-black py-4 px-10 rounded-xl flex items-center gap-3 shadow-lg hover:bg-indigo-900 border border-amber-700/40 transition-all"
+                        >
+                            <Sparkles size={24} />
+                            {character.prophetie || prophetieText ? 'Revoir le Songe' : 'Révéler mon Songe'}
+                        </button>
+                        {errorMessage && (
+                            <p className="text-red-400 text-xs italic text-center max-w-xs">
+                                Le songe n'a pu s'ouvrir… ({errorMessage})
+                            </p>
+                        )}
+                    </div>
                 )}
             </div>
 

@@ -8,6 +8,7 @@ export function useProphetie() {
     const [showSonge, setShowSonge] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [prophetieText, setProphetieText] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const revelerSonge = useCallback(async (characterId, existingProphetie) => {
         if (existingProphetie) {
@@ -18,6 +19,7 @@ export function useProphetie() {
 
         setIsGenerating(true);
         setShowSonge(true);
+        setErrorMessage(null);
 
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -40,6 +42,7 @@ export function useProphetie() {
             console.error('useProphetie:', e);
             setProphetieText(null);
             setShowSonge(false);
+            setErrorMessage(e.message || 'Erreur inconnue');
         } finally {
             setIsGenerating(false);
         }
@@ -47,8 +50,8 @@ export function useProphetie() {
 
     const fermerSonge = useCallback(() => {
         setShowSonge(false);
-        // prophetieText conservé pour permettre la relecture sans rappel API
+        setErrorMessage(null);
     }, []);
 
-    return { showSonge, isGenerating, prophetieText, revelerSonge, fermerSonge };
+    return { showSonge, isGenerating, prophetieText, errorMessage, revelerSonge, fermerSonge };
 }
