@@ -6,6 +6,45 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 23 Juillet 2026 — v17.16.0 (La Forteresse Invisible)
+
+### Ce qui a été fait
+- Spécialisations innées dans `TabCompetences` : JOIN sur `fairy_competences_predilection`, résolution des index `choixSpecialite`, anti-race-condition.
+- Audit de sécurité applicatif complet (13 findings, tous vérifiés en production via `pg`).
+- 12 corrections appliquées dans l'ordre de criticité : RLS, Edge Functions, FORCE_DEBUG, CORS, MIME, headers, git history.
+- Purge de l'historique git avec `git filter-repo` (installation via `pip install git-filter-repo`).
+- Déploiement des 3 Edge Functions via `npx supabase functions deploy` avec le token dans `.env`.
+
+### Règles et astuces
+
+**Audit de sécurité — méthode**
+- Vérifier les politiques RLS directement en base (`pg_policies`) — le dashboard et les migrations peuvent diverger de la prod.
+- `WITH CHECK` absent sur un `UPDATE` = PostgreSQL applique le `USING` par défaut. Pour une colonne sensible comme `role`, c'est une faille silencieuse et critique.
+- Une Edge Function avec `verify_jwt = true` n'est pas automatiquement sécurisée : elle peut être appelée par n'importe quel utilisateur authentifié. Le rôle doit être vérifié dans le code serveur.
+- La `SERVICE_ROLE_KEY` bypass tout RLS — toute Edge Function qui l'utilise sans vérification de rôle est une escalade potentielle.
+- Les politiques RLS permissives (FOR SELECT avec `USING (true)`) exposent les données à tous les connectés, pas seulement aux admins.
+
+**Déploiement Edge Functions sans CLI installée**
+- `npx supabase functions deploy <nom> --project-ref <ref>` fonctionne avec le `SUPABASE_ACCESS_TOKEN` du `.env`.
+- Le MCP Supabase (`mcp__claude_ai_Supabase__deploy_edge_function`) n'a pas les droits de déploiement sur ce projet — toujours passer par la CLI.
+- L'avertissement `LegacyInvalidAccessTokenError` sur le format du token est cosmétique : le déploiement réussit quand même.
+
+**Purge d'historique git**
+- `git filter-repo` s'installe via `pip install git-filter-repo` si absent.
+- La commande supprime le remote (`origin`) automatiquement. Il faut le remettre avec `git remote add origin <url>` avant de pusher.
+- Après `filter-repo`, tous les hashes changent — le force-push est obligatoire. Confirmer avec l'utilisateur avant.
+- Vérification post-purge : `git log --all --full-history -- .env` doit retourner vide.
+
+**CORS dans les Edge Functions**
+- `Access-Control-Allow-Origin: *` est peu risqué quand `verify_jwt = true` (le JWT doit être envoyé explicitement, les cookies ne sont pas utilisés).
+- Pattern propre : `Deno.env.get('ALLOWED_ORIGIN') ?? '*'` + header `Vary: Origin` — la restriction s'active en configurant la variable dans Supabase sans redéploiement.
+
+**RLS — règle de nommage**
+- Deux policies SELECT coexistaient sur `data_change_requests` ("Lecture..." et "Radar_Gardiens_Policy"). Elles étaient combinées en OR — les supprimer toutes avant de recréer la bonne évite les collisions silencieuses.
+- Avant de supprimer une policy, récupérer son nom exact avec `pg_policies` pour éviter les erreurs.
+
+---
+
 ## Session du 23 Juillet 2026 — v17.15.0 (Le Relevé des Talents)
 
 ### 1. La source de vérité des compétences d'un personnage est la colonne top-level, pas `data.computed_stats`
