@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.16.0 - \"La Forteresse Invisible 🔐\"",
+    date: "23 Juillet 2026",
+    description: "Un audit complet de sécurité a été mené et ses conclusions appliquées : plusieurs failles permettant à un utilisateur de s'octroyer des droits supérieurs ou de modifier des données protégées ont été fermées. Le tableau des compétences du Cercle affiche désormais les spécialités innées liées au type de fée de chaque membre.",
+    changes: [
+      "🧿 **Spécialisations innées (Cercle — Tableau Compétences) :** Le tableau affiche maintenant les spécialités liées au type de fée de chaque membre — les dons propres à leur nature féérique, pas seulement ceux acquis en jeu.",
+      "🔐 **Sécurité — Escalade de rôle impossible :** Tout utilisateur connecté pouvait se promouvoir Gardien ou Super-Admin via une faille dans la base de données. Corrigé (RLS `profiles` — `WITH CHECK` sur la colonne `role`).",
+      "🔐 **Sécurité — Encyclopédie verrouillée :** Une porte dérobée permettait à n'importe quel Héritier connecté de déclencher des modifications arbitraires sur toute la base, via la fonction d'application des changements. Fermée (vérification de rôle côté serveur).",
+      "🔐 **Sécurité — Demandes de changement confidentielles :** Les propositions de modification encyclopédique sont désormais visibles uniquement par leur auteur et les Gardiens (auparavant accessibles à tous les connectés).",
+      "🔐 **Sécurité — Mode débogage restreint :** Le mode débogage forcé (`FORCE_DEBUG`) ne peut plus être activé en production depuis la console du navigateur.",
+      "🔐 **Sécurité — Corrections supplémentaires :** Types MIME limités pour les captures de bugs (images uniquement, 5 MiB max), en-têtes HTTP de sécurité ajoutés (X-Frame-Options, X-Content-Type-Options…), ancienne clé Supabase purgée de l'historique git, CORS des Edge Functions paramétrable.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.15.1 - \"Le Relevé des Talents 📋\"",
     date: "23 Juillet 2026",
     description: "Correction du tableau des compétences dans les Cercles : les rangs affichés sont maintenant les rangs réels (bonus de profil, de prédilection et d'atouts inclus), et toutes les spécialités apparaissent.",

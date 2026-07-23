@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.16.0 — La Forteresse Invisible 🔐 (23 juillet 2026)
+
+Chers Héritiers,
+
+Les fondations du Salon étaient solides — mais en y regardant de près, des fenêtres mal verrouillées laissaient la brise s'infiltrer là où elle n'aurait pas dû.
+
+Un audit a été mené dans les profondeurs du Salon : des mécanismes de protection ont été resserrés, des passages non surveillés ont été murés. Un Héritier ne peut plus se proclamer Gardien sans en avoir été désigné. Les archives de l'Encyclopédie ne sont plus accessibles à quiconque — seuls ceux qui en ont la charge peuvent y porter la main. Les demandes de modification n'appartiennent plus à la place publique.
+
+En parallèle, le tableau des compétences du Cercle s'est enrichi d'un détail qui manquait : les spécialités innées de chaque type de fée y apparaissent maintenant, ancrées dans la nature même de l'Héritier plutôt que dans ses seuls apprentissages.
+
+La forteresse n'est jamais entièrement bâtie. Mais elle est un peu plus haute, ce soir.
+
+*Azghâl*
+
+---
+
 ## v17.15.1 — Le Relevé des Talents 📋 — correctif (23 juillet 2026)
 
 Chers Héritiers,
