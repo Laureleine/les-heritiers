@@ -58,6 +58,7 @@ export default function TabErrorLogs() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all'); // 'all' | 'new' | 'transmitted' | 'resolved'
     const [expanded, setExpanded] = useState(null);
+    const [copied, setCopied] = useState(false);
 
     const fetchLogs = useCallback(async () => {
         setLoading(true);
@@ -98,6 +99,28 @@ export default function TabErrorLogs() {
         setLogs(prev => prev.map(l => l.id === log.id ? { ...l, resolved_at: now } : l));
     };
 
+    const handleCopyAll = async () => {
+        const date = new Date().toLocaleDateString('fr-FR');
+        const blocks = filtered.map(log => buildCopyBlock(log));
+        const texte = `Bureau des Anomalies — ${date}\n${'─'.repeat(40)}\n\n${blocks.join('\n\n─────\n\n')}`;
+        try {
+            await navigator.clipboard.writeText(texte);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
+        } catch {
+            showInAppNotification('Impossible de copier.', 'error');
+        }
+    };
+
+    const handleResolveAll = async () => {
+        const now = new Date().toISOString();
+        const ids = filtered.filter(l => !l.resolved_at).map(l => l.id);
+        if (ids.length === 0) return;
+        await supabase.from('error_logs').update({ resolved_at: now }).in('id', ids);
+        setLogs(prev => prev.map(l => ids.includes(l.id) ? { ...l, resolved_at: now } : l));
+        showInAppNotification(`${ids.length} anomalie${ids.length > 1 ? 's' : ''} marquée${ids.length > 1 ? 's' : ''} comme résolue${ids.length > 1 ? 's' : ''}.`, 'success');
+    };
+
     const filtered = logs.filter(log => {
         if (filter === 'new') return !log.transmitted_at && !log.resolved_at;
         if (filter === 'transmitted') return !!log.transmitted_at && !log.resolved_at;
@@ -128,6 +151,22 @@ export default function TabErrorLogs() {
                             </button>
                         ))}
                     </div>
+                    {filtered.length > 0 && (
+                        <>
+                            <button
+                                onClick={handleCopyAll}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${copied ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-stone-600 border-stone-300 hover:bg-stone-50'}`}
+                            >
+                                <Copy size={13} /> {copied ? 'Copié !' : 'Tout copier'}
+                            </button>
+                            <button
+                                onClick={handleResolveAll}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border bg-white text-stone-500 border-stone-300 hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition-all"
+                            >
+                                <CheckCircle size={13} /> Tout résoudre
+                            </button>
+                        </>
+                    )}
                     <button
                         onClick={fetchLogs}
                         className="p-2 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-500"
