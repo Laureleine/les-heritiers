@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.15.0 — Le Relevé des Talents 📋 (23 juillet 2026)
+
+Chers Héritiers,
+
+Dans les coulisses de chaque Table, le Docte veille. Il connaît ses membres, suit leurs progrès, distribue les récompenses avec soin. Mais jusqu'ici, pour comparer les talents de chacun, il lui fallait ouvrir les fiches une à une — fastidieux comme parcourir un archivage sans index.
+
+Cette époque est révolue.
+
+Le Cercle s'est doté d'un nouvel espace réservé au Docte : un tableau récapitulatif de toutes les compétences des membres, utiles et futiles, présentées côte à côte. D'un seul regard, le Docte voit qui maîtrise l'Escrime, qui excelle en Musique, qui a poussé la Botanique jusqu'au rang trois. Les spécialités y figurent aussi, en petites étiquettes sous les rangs.
+
+En même temps, le panneau de distribution d'XP a été rendu plus discret : replié par défaut, il s'ouvre sur demande et ne prend plus toute la place dès l'entrée dans la Table.
+
+Enfin, un détail qui agaçait en silence a été corrigé : dans le registre de quelques Héritiers, l'Atout « Anomalie féérique » s'affichait sous la forme d'un code cryptique plutôt que par son vrai nom. C'est réparé.
+
+Bonne campagne à tous,
+*Azghâl*
+
+---
+
 ## v17.14.1 — Le Plan Bienveillant 🗺️ (22 juillet 2026)
 
 Chers Héritiers,

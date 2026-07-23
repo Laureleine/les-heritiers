@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.15.0 - \"Le Relevé des Talents 📋\"",
+    date: "23 Juillet 2026",
+    description: "Le Docte peut désormais consulter d'un coup d'œil les compétences de tous les membres de son Cercle, côte à côte dans un tableau croisé. Utiles et Futiles, rangs et spécialités — tout y est. Le panneau de distribution d'XP se replie maintenant proprement pour laisser de la place. Et quelques étiquettes malencontreuses qui affichaient des codes cryptiques au lieu des noms d'Atouts ont été corrigées discrètement.",
+    changes: [
+      "📋 **Onglet Compétences (Cercle — Docte) :** Nouveau tableau croisé visible uniquement par le Docte : une ligne par compétence, une colonne par membre, avec les rangs et les spécialités acquises. Compétences utiles et futiles présentées séparément.",
+      "🎁 **Accordéon XP (Cercle) :** Le panneau « Distribuer des Points d'Expérience » est désormais replié par défaut et s'ouvre au clic sur son en-tête.",
+      "🐛 **Fix — registre XP :** Des UUIDs bruts s'affichaient à la place des noms d'Atouts dans le journal de certains personnages (ex. « Acquisition : Atout 067035cc-... »). Corrigé dans le code et en base pour les 16 personnages concernés.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.14.1 - \"Le Plan Bienveillant 🗺️\"",
     date: "22 Juillet 2026",
     description: "La Carte de Paris s'est faite plus accueillante. Les épingles murmurent désormais leur nom au simple passage de la souris — plus besoin de cliquer pour savoir où l'on est. Et quand on trace un itinéraire, la carte accroche d'elle-même le point le plus proche : un léger écart de clic n'éloigne plus du chemin voulu. Les noms du départ et de l'arrivée apparaissent dans le panneau dès qu'ils sont posés.",
