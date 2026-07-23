@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.15.1 - \"Le Relevé des Talents 📋\"",
+    date: "23 Juillet 2026",
+    description: "Correction du tableau des compétences dans les Cercles : les rangs affichés sont maintenant les rangs réels (bonus de profil, de prédilection et d'atouts inclus), et toutes les spécialités apparaissent.",
+    changes: [
+      "🐛 **Fix — Tableau Compétences (Cercle) :** Les rangs affichaient les rangs investis bruts au lieu des rangs totaux (bonus profil, prédilection, atouts non comptés). Corrigé.",
+      "🐛 **Fix — Tableau Compétences (Cercle) :** Seules les spécialités choisies par le joueur apparaissaient. Les spécialités gratuites (profil, atout) et la spécialité de métier sont désormais incluses.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.15.0 - \"Le Relevé des Talents 📋\"",
     date: "23 Juillet 2026",
     description: "Le Docte peut désormais consulter d'un coup d'œil les compétences de tous les membres de son Cercle, côte à côte dans un tableau croisé. Utiles et Futiles, rangs et spécialités — tout y est. Le panneau de distribution d'XP se replie maintenant proprement pour laisser de la place. Et quelques étiquettes malencontreuses qui affichaient des codes cryptiques au lieu des noms d'Atouts ont été corrigées discrètement.",

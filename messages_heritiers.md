@@ -4,6 +4,18 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.15.1 — Le Relevé des Talents 📋 — correctif (23 juillet 2026)
+
+Chers Héritiers,
+
+Un œil avisé a remarqué que le nouveau tableau des compétences dans les Cercles affichait les rangs bruts investis — sans tenir compte des bonus accordés par le profil, la prédilection ou les atouts. Un Héritier dont l'Observation atteignait 4 grâce à ses choix de création se voyait affiché à 2.
+
+C'est corrigé. Le tableau montre désormais les rangs réels, tels qu'ils apparaissent sur la fiche. Les spécialités gratuites et la spécialité de métier ont également été ajoutées.
+
+*Azghâl*
+
+---
+
 ## v17.15.0 — Le Relevé des Talents 📋 (23 juillet 2026)
 
 Chers Héritiers,
