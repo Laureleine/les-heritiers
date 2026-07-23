@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.17.0 - \"Le Songe du Scellage ✨\"",
+    date: "23 Juillet 2026",
+    description: "Au moment du Scellage — ou à tout moment sur la fiche d'un personnage scellé — une cinématique se déclenche : l'écran s'assombrit, Pixie traverse dans un vol de particules dorées, des notes de cloches résonnent, et un rêve cryptique apparaît lettre par lettre. Ce songe, unique et irrépétable, est généré par l'Oracle des Brumes à partir de la nature, du profil et des atouts du personnage. Il est conservé à vie et peut être revu à volonté.",
+    changes: [
+      "✨ **Le Songe du Scellage :** Au moment du Scellage, une cinématique théâtrale se déclenche — fondu au noir, Pixie qui traverse avec sa traînée d'étoiles, cloches féeriques, texte onirique qui s'écrit lettre par lettre.",
+      "🔮 **Rêve cryptique généré par l'IA :** Le songe est un monologue intérieur en français Belle Époque, ancré dans la nature féerique, le profil et les atouts du personnage. Unique, jamais répété, jamais régénéré.",
+      "📜 **Conservé à vie sur la fiche :** La prophétie est stockée définitivement et affichée sur la fiche du personnage, visible par le joueur, le Docte et les Gardiens.",
+      "🔁 **Relecture à volonté :** Le bouton « Revoir le Songe » rejoue la cinématique complète sans rappeler l'IA.",
+      "⏳ **Rétroactif :** Les personnages déjà scellés peuvent révéler leur songe depuis leur fiche — il n'est jamais trop tard.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.16.0 - \"La Forteresse Invisible 🔐\"",
     date: "23 Juillet 2026",
     description: "Un audit complet de sécurité a été mené et ses conclusions appliquées : plusieurs failles permettant à un utilisateur de s'octroyer des droits supérieurs ou de modifier des données protégées ont été fermées. Le tableau des compétences du Cercle affiche désormais les spécialités innées liées au type de fée de chaque membre.",

@@ -4,6 +4,24 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.17.0 — Le Songe du Scellage ✨ (23 juillet 2026)
+
+Chers Héritiers,
+
+Il existe un moment que tout Héritier connaît — ce battement suspendu où la nature féérique se fige, où le Sceau est apposé pour toujours. Jusqu'ici, ce moment passait sans laisser de trace.
+
+Ce n'est plus le cas.
+
+Désormais, au soir du Scellage, l'Oracle des Brumes vous tend un fragment de rêve. L'écran s'assombrit. Pixie traverse dans un vol d'étoiles dorées. Des notes de cloches résonnent dans la nuit. Et puis — lettre par lettre — un songe s'écrit, celui que votre personnage a vécu en cette nuit particulière.
+
+Ce songe est unique. Il est né de votre nature féérique, de vos atouts, de vos talents. Il ne sera jamais régénéré. Il est conservé à vie sur votre fiche, et vous pouvez le revoir à volonté — la cinématique complète, encore et encore.
+
+Pour les personnages déjà scellés : ouvrez la fiche, cherchez le bouton *Révéler mon Songe*. L'Oracle vous attend.
+
+*Azghâl*
+
+---
+
 ## v17.16.0 — La Forteresse Invisible 🔐 (23 juillet 2026)
 
 Chers Héritiers,
