@@ -5,6 +5,7 @@ import { getXpState } from '../../utils/xpActions';
 import TabPartiesJeu from './TabPartiesJeu';
 import TabIndicesVerites from './TabIndicesVerites';
 import TabCartesPerso from './TabCartesPerso';
+import TabCompetences from './TabCompetences';
 import { useCallback, useRef } from 'react';
 
 const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
@@ -124,7 +125,7 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
         aria-label="Sections du Cercle"
         className="flex gap-1 border-b border-stone-100 mb-5 -mt-1"
         onKeyDown={(e) => {
-          const tabs = isDocte ? ['table', 'parties', 'secrets', 'cartes'] : ['table', 'parties', 'secrets'];
+          const tabs = isDocte ? ['table', 'parties', 'secrets', 'cartes', 'competences'] : ['table', 'parties', 'secrets'];
           const idx = tabs.indexOf(subTab);
           let next = null;
           if (e.key === 'ArrowRight') { e.preventDefault(); next = tabs[(idx + 1) % tabs.length]; }
@@ -178,6 +179,19 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
             ✦ Cartes Perso
           </button>
         )}
+        {isDocte && (
+          <button
+            role="tab"
+            id="tab-cercle-competences"
+            aria-selected={subTab === 'competences'}
+            aria-controls="panel-cercle"
+            tabIndex={subTab === 'competences' ? 0 : -1}
+            onClick={() => switchTab('competences')}
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold font-serif border-b-2 transition-colors ${subTab === 'competences' ? 'border-amber-600 text-amber-900' : 'border-transparent text-stone-400 hover:text-stone-600'}`}
+          >
+            ⚙ Compétences
+          </button>
+        )}
       </div>
 
       <div id="panel-cercle" role="tabpanel" aria-labelledby={`tab-cercle-${subTab}`}>
@@ -209,6 +223,11 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
           cercleId={cercle.id}
           activeMembers={activeMembers}
         />
+      )}
+
+      {/* ── Onglet Compétences (Docte uniquement) ── */}
+      {subTab === 'competences' && isDocte && (
+        <TabCompetences activeMembers={activeMembers} />
       )}
 
       {subTab === 'table' && <>
