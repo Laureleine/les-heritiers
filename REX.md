@@ -6,6 +6,27 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 25 Juillet 2026 — v17.19.0 (Le Parchemin Révélé)
+
+### Contexte
+Petite feature ciblée : séparation des pouvoirs masqués/démasqués sur la fiche parchemin, avec cases adaptées à la valeur Masque / Féérie du personnage.
+
+### Leçons
+
+**1. IIFE dans JSX pour éviter l'extraction de composant**
+La logique de tri et de rendu des pouvoirs (lookup, groupage, cases) était trop dense pour un `map()` inline mais pas assez autonome pour justifier un composant extrait. L'IIFE `{(() => { ... })()}` dans le JSX est une solution propre pour ce cas : logique locale, accès au scope parent (`feeData`, `character`), pas de prop-drilling.
+
+**2. `Array(n).fill('□').join(' ')` pour les cases**
+Générer N cases dynamiquement. Simple, lisible, pas de boucle. Si les cases devaient être interactives un jour, il faudrait passer à un vrai tableau de composants.
+
+**3. Toujours vérifier `getType(nom) !== null` avant de classer en "inconnus"**
+Un pouvoir dont le `type_pouvoir` est `null` (introuvable dans le catalogue) ne doit pas atterrir dans les "démasqués" par défaut. La troisième catégorie `inconnus` (fallback 5 cases) est un filet de sécurité utile pour les personnages anciens ou les données manquantes.
+
+**4. Commits PowerShell : `@'...'@` obligatoire, guillemets doubles interdits dans le message**
+Les apostrophes dans le message de commit (`Révélé`, `Masqué`) font parfois planter le here-string PowerShell quand le texte contient des apostrophes simples. Passer par Bash (`git commit -m '...'`) est plus fiable pour les messages avec caractères spéciaux.
+
+---
+
 ## Session du 25 Juillet 2026 — v17.18.0 (La Plume et la Branche)
 
 ### Contexte
