@@ -4,6 +4,24 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.18.0 — La Plume et la Branche 🌿 (25 juillet 2026)
+
+Chers Héritiers,
+
+L'Atelier s'est fait plus ordonné, et le Souffle — plus juste.
+
+Du côté des coulisses, les Gardiennes disposent désormais d'un Bureau des Anomalies affiné : les archives se cachent d'elles-mêmes, un seul bouton copie et classe tous les incidents en attente, un autre les clôt d'une pression. Le registre reste lisible, même quand les rapports s'accumulent.
+
+Dans les Cercles, le tableau des compétences a gagné en largeur : six membres s'y affichent maintenant côte à côte, sans défilement. Les noms s'étalent sur deux lignes, les spécialités se font discrètes — l'essentiel reste à portée d'œil.
+
+Mais le changement le plus attendu concerne le Souffle. Merlin Pellinore — et sans doute d'autres avant lui — avait remarqué quelque chose d'étrange : maîtriser l'Esprit semblait ouvrir la voie du Combat, et vice versa. C'était une erreur de calcul dans les archives. Elle est corrigée. Les trois branches du Souffle — Combat, Mouvement, Esprit — ont désormais leurs propres prérequis. Ce que vous maîtrisez dans une branche ne compte que pour elle.
+
+Bonne pratique à toutes et à tous.
+
+*L'Atelier des Brumes*
+
+---
+
 ## v17.17.0 — Le Songe du Scellage ✨ (23 juillet 2026)
 
 Chers Héritiers,

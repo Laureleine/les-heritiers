@@ -2,6 +2,20 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.18.0 - \"La Plume et la Branche 🌿\"",
+    date: "25 Juillet 2026",
+    description: "Les outils de veille des Gardiennes gagnent en confort : les anomalies actives sont désormais visibles d'emblée, \"Tout copier\" les archive en un clic, et \"Tout résoudre\" les clôt d'une seule pression. Dans les Cercles, le tableau des compétences s'allonge pour accueillir six membres côte à côte. Et du côté des pratiques magiques, le Souffle retrouve sa cohérence : les branches Combat, Mouvement et Esprit ont chacune leurs prérequis indépendants — maîtriser l'Esprit n'ouvre plus par erreur la voie du Combat.",
+    changes: [
+      "📋 **Bureau des Anomalies (Admin) — filtre Actifs par défaut :** En arrivant dans l'onglet, seules les anomalies non archivées sont visibles — plus de liste encombrée d'archives anciennes.",
+      "📋 **Tout copier (archive d'office) :** Le bouton copie toutes les anomalies visibles dans le presse-papier et les archive automatiquement — une seule action pour transmettre et clôturer.",
+      "✅ **Tout résoudre :** Un bouton marque d'un coup toutes les anomalies actives comme résolues.",
+      "📊 **Tableau des Compétences (Cercle) — six colonnes :** Les colonnes membres ont été resserrées (noms sur deux lignes, spécialités plus petites) pour afficher six personnages côte à côte sans défilement horizontal.",
+      "🌿 **Fix Souffle — prérequis par branche :** Les trois branches du Souffle (Combat, Mouvement, Esprit) vérifient désormais leurs prérequis indépendamment. Il faut deux sorts Novice du Souffle du Combat pour progresser vers l'Adepte du Combat — et non deux sorts de n'importe quelle branche. L'affichage groupe les sorts par branche.",
+      "🔧 **Transactions XP négatives autorisées :** La contrainte de base interdisant les valeurs négatives dans le journal d'XP a été supprimée. Les corrections et remboursements (valeurs négatives) s'enregistrent désormais sans erreur.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.17.0 - \"Le Songe du Scellage ✨\"",
     date: "23 Juillet 2026",
     description: "Au moment du Scellage — ou à tout moment sur la fiche d'un personnage scellé — une cinématique se déclenche : l'écran s'assombrit, Pixie traverse dans un vol de particules dorées, des notes de cloches résonnent, et un rêve cryptique apparaît lettre par lettre. Ce songe, unique et irrépétable, est généré par l'Oracle des Brumes à partir de la nature, du profil et des atouts du personnage. Il est conservé à vie et peut être revu à volonté.",
