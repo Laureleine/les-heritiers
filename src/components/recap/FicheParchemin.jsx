@@ -640,19 +640,62 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     </div>
                     <div className="recap-box">
                         <span className="field-label" style={{color: '#9f1239'}}>Pouvoirs Maîtrisés</span>
-                        <div style={{ fontSize: '12px', marginTop: '5px' }}>
-                            {character.pouvoirs?.map((p, i) => (
-                                <div key={i} className="text-xs py-1 border-b border-dotted flex justify-between font-bold">
-                                    <span>{p}</span><span style={{color: '#a8a29e'}}>□ □ □ □ □</span>
+                        {(() => {
+                            const masqueVal = character.caracteristiques?.masque || 5;
+                            const feeerieVal = character.caracteristiques?.feerie || 5;
+                            const masqueBoxes = Array(masqueVal).fill('□').join(' ');
+                            const feeerieBoxes = Array(feeerieVal).fill('□').join(' ');
+
+                            const TYPES_MASQUES = new Set(['masque', 'profond_masque', 'legendaire_masque']);
+                            const pouvoirsCatalog = feeData?.pouvoirs || [];
+                            const getType = (nom) => pouvoirsCatalog.find(p => p.nom === nom)?.type_pouvoir || null;
+
+                            const masques = (character.pouvoirs || []).filter(nom => TYPES_MASQUES.has(getType(nom)));
+                            const demasques = (character.pouvoirs || []).filter(nom => !TYPES_MASQUES.has(getType(nom)) && getType(nom) !== null);
+                            const inconnus = (character.pouvoirs || []).filter(nom => getType(nom) === null);
+
+                            const rowStyle = { fontSize: '11px', padding: '2px 0', borderBottom: '1px dotted #d6d3d1', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' };
+                            const subLabel = { fontSize: '10px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '6px', marginBottom: '2px' };
+
+                            return (
+                                <div style={{ fontSize: '12px', marginTop: '5px' }}>
+                                    {masques.length > 0 && (
+                                        <>
+                                            <div style={{...subLabel, color: '#1d4ed8'}}>Sous le Masque</div>
+                                            {masques.map((p, i) => (
+                                                <div key={i} style={rowStyle}>
+                                                    <span>{p}</span>
+                                                    <span style={{color: '#a8a29e', letterSpacing: '2px'}}>{masqueBoxes}</span>
+                                                </div>
+                                            ))}
+                                        </>
+                                    )}
+                                    {demasques.length > 0 && (
+                                        <>
+                                            <div style={{...subLabel, color: '#9f1239', marginTop: masques.length > 0 ? '8px' : '6px'}}>Démasqués</div>
+                                            {demasques.map((p, i) => (
+                                                <div key={i} style={rowStyle}>
+                                                    <span>{p}</span>
+                                                    <span style={{color: '#a8a29e', letterSpacing: '2px'}}>{feeerieBoxes}</span>
+                                                </div>
+                                            ))}
+                                        </>
+                                    )}
+                                    {inconnus.map((p, i) => (
+                                        <div key={`unk-${i}`} style={rowStyle}>
+                                            <span>{p}</span>
+                                            <span style={{color: '#a8a29e'}}>□ □ □ □ □</span>
+                                        </div>
+                                    ))}
+                                    {(character.pouvoirsPerso || []).map((p, i) => (
+                                        <div key={`perso-${i}`} style={{...rowStyle, color: '#6d28d9'}}>
+                                            <span className="flex items-center gap-1"><span style={{fontSize: '10px'}}>✦</span> {p}</span>
+                                            <span style={{color: '#a8a29e'}}>□ □ □ □ □</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            {(character.pouvoirsPerso || []).map((p, i) => (
-                                <div key={`perso-${i}`} className="text-xs py-1 border-b border-dotted flex justify-between font-bold" style={{color: '#6d28d9'}}>
-                                    <span className="flex items-center gap-1"><span style={{fontSize: '10px'}}>✦</span> {p}</span>
-                                    <span style={{color: '#a8a29e'}}>□ □ □ □ □</span>
-                                </div>
-                            ))}
-                        </div>
+                            );
+                        })()}
                     </div>
                 </div>
                 {/* ============================================================== */}
