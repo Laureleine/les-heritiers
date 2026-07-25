@@ -4,6 +4,20 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.19.0 — Le Parchemin Révélé 📜 (25 juillet 2026)
+
+Chers Héritiers,
+
+La fiche parchemin a appris à faire la différence.
+
+Les pouvoirs maîtrisés se présentent désormais en deux colonnes de l'âme : les *Masqués* — ceux que l'on exerce sous apparence humaine, sans trahir la nature féérique — et les *Démasqués* — ceux qui exigent que le voile tombe.
+
+Et les cases à cocher ne mentent plus. Un Héritier au Masque de 7 a sept cases pour ses pouvoirs masqués. Un Héritier à la Féérie de 5 en a cinq pour ses démasqués. La fiche reflète enfin le personnage qu'on tient entre les mains.
+
+*L'Atelier des Brumes*
+
+---
+
 ## v17.18.0 — La Plume et la Branche 🌿 (25 juillet 2026)
 
 Chers Héritiers,

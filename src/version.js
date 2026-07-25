@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.19.0 - \"Le Parchemin Révélé 📜\"",
+    date: "25 Juillet 2026",
+    description: "La fiche parchemin distingue désormais les pouvoirs Masqués des pouvoirs Démasqués. Chaque groupe affiche le bon nombre de cases à cocher : autant que le Masque du personnage pour les pouvoirs utilisables sous apparence humaine, autant que sa Féérie pour ceux qui exigent la forme féérique.",
+    changes: [
+      "📜 **Séparation Masqués / Démasqués (Fiche Parchemin) :** Les pouvoirs maîtrisés sont maintenant présentés en deux groupes distincts — *Masqués* (utilisables sous apparence humaine) et *Démasqués* (forme féérique requise).",
+      "□ **Cases adaptées au personnage :** Les pouvoirs Masqués affichent autant de cases □ que la valeur de Masque du personnage ; les pouvoirs Démasqués autant que sa Féérie. Fini les cinq cases fixes pour tout le monde.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.18.0 - \"La Plume et la Branche 🌿\"",
     date: "25 Juillet 2026",
     description: "Les outils de veille des Gardiennes gagnent en confort : les anomalies actives sont désormais visibles d'emblée, \"Tout copier\" les archive en un clic, et \"Tout résoudre\" les clôt d'une seule pression. Dans les Cercles, le tableau des compétences s'allonge pour accueillir six membres côte à côte. Et du côté des pratiques magiques, le Souffle retrouve sa cohérence : les branches Combat, Mouvement et Esprit ont chacune leurs prérequis indépendants — maîtriser l'Esprit n'ouvre plus par erreur la voie du Combat.",
