@@ -168,8 +168,8 @@ export default function TabCompetences({ activeMembers }) {
               <tr>
                 <th className={`${tabClass} min-w-[160px] sticky left-0 z-10`}>Compétence</th>
                 {members.map(m => (
-                  <th key={m.user_id} className={`${tabClass} min-w-[120px] text-center`}>
-                    <div className="truncate max-w-[120px]">{m.charInfo.nom}</div>
+                  <th key={m.user_id} className={`${tabClass} min-w-[80px] w-[80px] text-center`}>
+                    <div className="text-[11px] leading-tight break-words whitespace-normal">{m.charInfo.nom}</div>
                   </th>
                 ))}
               </tr>
@@ -186,7 +186,7 @@ export default function TabCompetences({ activeMembers }) {
                           {cell.specs.length > 0 && (
                             <div className="mt-0.5 flex flex-wrap justify-center gap-0.5">
                               {cell.specs.map((s, si) => (
-                                <span key={si} className="text-[10px] text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded italic">{s}</span>
+                                <span key={si} className="text-[9px] text-stone-500 bg-stone-100 px-1 py-0.5 rounded italic">{s}</span>
                               ))}
                             </div>
                           )}
