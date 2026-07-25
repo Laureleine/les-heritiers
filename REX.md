@@ -6,6 +6,30 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 25 Juillet 2026 — v17.18.0 (La Plume et la Branche)
+
+### Contexte
+Session de reprise après compaction de contexte. Quatre chantiers indépendants : boutons admin dans TabErrorLogs, mise en page du tableau des compétences dans les Cercles, suppression d'une contrainte SQL, et correction logique du Souffle.
+
+### Leçons
+
+**1. Contexte compacté → lire la fin du résumé avant de coder**
+La session a repris directement sur la tâche en cours (correction Souffle), indiquée comme incomplète dans le résumé de compaction. Il était clairement décrit ce qui manquait (`SortsSection` à mettre à jour). Reprendre sans relire le résumé aurait risqué de refaire un travail déjà fait ou d'en manquer.
+
+**2. Deux composants portant le même nom "Bureau des Anomalies"**
+`TabErrorLogs.jsx` (AdminDashboard, logs JS techniques) et `BureauAnomalies.js` (page joueurs, signalements) ont le même nom métier mais sont deux composants distincts. Le débogage de la session précédente avait ciblé le mauvais. Retenu : quand un composant est introuvable par son nom métier, chercher par son rôle technique (`admin/` vs racine).
+
+**3. Composant enfant `SortsList` extrait pour éviter la duplication**
+La logique d'affichage d'une liste de sorts était identique avec ou sans branche. Extraire `SortsList` comme composant interne et appeler `checkPrerequisSort(niveau, branche || null, ...)` depuis lui a rendu `SortsSection` lisible sans duplication. Bonne pratique : quand un `map()` devient conditionnel et long, extraire un composant enfant nommé.
+
+**4. Suppression de contrainte SQL via pg direct (règle AGENTS.md)**
+La contrainte `CHECK (valeur >= 0)` sur `xp_transactions` rejetait les corrections négatives légitimes. Supprimée via script Node + `pg` (conformément à la règle absolue : jamais `apply_migration` ni `execute_sql` MCP sur le projet de prod). Script minimal, exécuté une seule fois, versionné dans `scripts/`.
+
+**5. PowerShell : heredoc `<<'EOF'` non supporté — toujours utiliser `@'...'@`**
+Git commit avec heredoc bash (`<<'EOF'`) échoue en PowerShell avec "opérateur < réservé". La forme correcte en PowerShell est `@'...'@` (here-string single-quote). Ne pas essayer d'adapter la syntaxe bash — passer directement à la forme PowerShell.
+
+---
+
 ## Session du 23 Juillet 2026 — v17.17.0 (Le Songe du Scellage)
 
 ### Ce qui a été fait
