@@ -661,7 +661,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                                 <div style={{ fontSize: '12px', marginTop: '5px' }}>
                                     {masques.length > 0 && (
                                         <>
-                                            <div style={{...subLabel, color: '#1d4ed8'}}>Sous le Masque</div>
+                                            <div style={{...subLabel, color: '#1d4ed8'}}>Masqués</div>
                                             {masques.map((p, i) => (
                                                 <div key={i} style={rowStyle}>
                                                     <span>{p}</span>
