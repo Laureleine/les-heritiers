@@ -28,12 +28,19 @@ const NIVEAUX_ACCESSIBLES = (rang) => {
   return niveaux;
 };
 
-// Prérequis avant d'apprendre un sort d'un niveau donné
-function checkPrerequisSort(niveauSort, sortsConnus, sortsCatalog) {
+// Prérequis avant d'apprendre un sort d'un niveau donné.
+// Si brancheSort est fourni, seuls les sorts de cette branche comptent.
+function checkPrerequisSort(niveauSort, brancheSort, sortsConnus, sortsCatalog) {
   if (niveauSort === 'Novice') return { ok: true };
   const niveauPrecedent = { 'Adepte': 'Novice', 'Maître': 'Adepte', 'Grand Maître': 'Maître' }[niveauSort];
-  const connus = sortsCatalog.filter(s => s.niveau === niveauPrecedent && sortsConnus.includes(s.id));
-  if (connus.length < 2) return { ok: false, msg: `Connaître 2 sorts de niveau ${niveauPrecedent} (${connus.length}/2)` };
+  const catalogFiltré = brancheSort
+    ? sortsCatalog.filter(s => s.branche === brancheSort)
+    : sortsCatalog;
+  const connus = catalogFiltré.filter(s => s.niveau === niveauPrecedent && sortsConnus.includes(s.id));
+  if (connus.length < 2) {
+    const label = brancheSort ? `${niveauPrecedent} — ${brancheSort}` : niveauPrecedent;
+    return { ok: false, msg: `2 sorts ${label} requis (${connus.length}/2)` };
+  }
   return { ok: true };
 }
 
@@ -138,9 +145,55 @@ export default function StepMagiePratique({ nomMagie }) {
   );
 }
 
+function SortsList({ nomMagie, branche, niveaux, sortsCatalog, sortsConnus, sortsConnus_set, niveauxAccessibles, handlers, isScelle, coutSort }) {
+  return niveaux.map(niveau => {
+    const sortsNiveau = sortsCatalog.filter(s => s.niveau === niveau && (!branche || s.branche === branche));
+    if (sortsNiveau.length === 0) return null;
+    const accessible = niveauxAccessibles.includes(niveau);
+    const sortsVisibles = accessible ? sortsNiveau : sortsNiveau.filter(s => sortsConnus_set.has(s.id));
+    if (sortsVisibles.length === 0) return null;
+    const prereq = checkPrerequisSort(niveau, branche || null, sortsConnus, sortsCatalog);
+
+    return (
+      <div key={niveau} className="px-3 py-2">
+        <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wide mb-1.5">{niveau}</div>
+        {accessible && !prereq.ok && (
+          <p className="text-[10px] text-amber-600 italic mb-1">{prereq.msg}</p>
+        )}
+        <div className="space-y-1">
+          {sortsVisibles.map(sort => {
+            const connu = sortsConnus_set.has(sort.id);
+            const apprenableIci = accessible && (prereq.ok || connu);
+            return (
+              <div key={sort.id} className={`flex items-center gap-2 py-1 px-2 rounded-lg ${connu ? 'bg-emerald-50 border border-emerald-200' : 'bg-stone-50 border border-stone-100'}`}>
+                <span className={`text-sm font-serif flex-1 ${connu ? 'text-emerald-800 font-bold' : 'text-stone-700'}`}>
+                  {connu && <span className="text-emerald-500 mr-1">✓</span>}
+                  {sort.nom}
+                </span>
+                {!connu && isScelle && apprenableIci && (
+                  sort.cout_xp === 0
+                    ? <span className="text-[10px] font-bold px-2 py-1 rounded bg-emerald-100 text-emerald-700 border border-emerald-300 shrink-0">Offert</span>
+                    : <button
+                        onClick={() => handlers.handleApprendreSortMagie(nomMagie, sort)}
+                        className="text-[10px] font-bold px-2 py-1 rounded bg-violet-600 text-white hover:bg-violet-700 transition-colors shrink-0"
+                      >
+                        Apprendre — {coutSort} XP
+                      </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  });
+}
+
 function SortsSection({ nomMagie, rang, sortsCatalog, sortsConnus, niveauxAccessibles, handlers, isScelle, coutSort }) {
   const sortsConnus_set = new Set(sortsConnus);
   const niveaux = ['Novice', 'Adepte', 'Maître', 'Grand Maître'];
+  const branches = [...new Set(sortsCatalog.map(s => s.branche).filter(Boolean))].sort();
+  const hasBranches = branches.length > 0;
 
   return (
     <div className="bg-white rounded-xl border border-violet-200 shadow-sm overflow-hidden">
@@ -154,49 +207,34 @@ function SortsSection({ nomMagie, rang, sortsCatalog, sortsConnus, niveauxAccess
         )}
       </div>
 
-      <div className="divide-y divide-stone-50">
-        {niveaux.map(niveau => {
-          const sortsNiveau = sortsCatalog.filter(s => s.niveau === niveau);
-          if (sortsNiveau.length === 0) return null;
-          const accessible = niveauxAccessibles.includes(niveau);
-          const sortsVisibles = accessible ? sortsNiveau : sortsNiveau.filter(s => sortsConnus_set.has(s.id));
-          if (sortsVisibles.length === 0) return null;
-          const prereq = checkPrerequisSort(niveau, sortsConnus, sortsCatalog);
-
-          return (
-            <div key={niveau} className="px-3 py-2">
-              <div className="text-[10px] font-bold text-stone-500 uppercase tracking-wide mb-1.5">{niveau}</div>
-              {accessible && !prereq.ok && (
-                <p className="text-[10px] text-amber-600 italic mb-1">{prereq.msg}</p>
-              )}
-              <div className="space-y-1">
-                {sortsVisibles.map(sort => {
-                  const connu = sortsConnus_set.has(sort.id);
-                  const apprenableIci = accessible && (prereq.ok || connu);
-                  return (
-                    <div key={sort.id} className={`flex items-center gap-2 py-1 px-2 rounded-lg ${connu ? 'bg-emerald-50 border border-emerald-200' : 'bg-stone-50 border border-stone-100'}`}>
-                      <span className={`text-sm font-serif flex-1 ${connu ? 'text-emerald-800 font-bold' : 'text-stone-700'}`}>
-                        {connu && <span className="text-emerald-500 mr-1">✓</span>}
-                        {sort.nom}
-                      </span>
-                      {!connu && isScelle && apprenableIci && (
-                        sort.cout_xp === 0
-                          ? <span className="text-[10px] font-bold px-2 py-1 rounded bg-emerald-100 text-emerald-700 border border-emerald-300 shrink-0">Offert</span>
-                          : <button
-                              onClick={() => handlers.handleApprendreSortMagie(nomMagie, sort)}
-                              className="text-[10px] font-bold px-2 py-1 rounded bg-violet-600 text-white hover:bg-violet-700 transition-colors shrink-0"
-                            >
-                              Apprendre — {coutSort} XP
-                            </button>
-                      )}
-                    </div>
-                  );
-                })}
+      {hasBranches ? (
+        <div className="divide-y divide-violet-100">
+          {branches.map(branche => (
+            <div key={branche}>
+              <div className="px-3 py-1.5 bg-violet-50/60 border-b border-violet-100">
+                <span className="text-[10px] font-bold text-violet-700 uppercase tracking-widest">Souffle du {branche}</span>
+              </div>
+              <div className="divide-y divide-stone-50">
+                <SortsList
+                  nomMagie={nomMagie} branche={branche} niveaux={niveaux}
+                  sortsCatalog={sortsCatalog} sortsConnus={sortsConnus}
+                  sortsConnus_set={sortsConnus_set} niveauxAccessibles={niveauxAccessibles}
+                  handlers={handlers} isScelle={isScelle} coutSort={coutSort}
+                />
               </div>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="divide-y divide-stone-50">
+          <SortsList
+            nomMagie={nomMagie} branche={null} niveaux={niveaux}
+            sortsCatalog={sortsCatalog} sortsConnus={sortsConnus}
+            sortsConnus_set={sortsConnus_set} niveauxAccessibles={niveauxAccessibles}
+            handlers={handlers} isScelle={isScelle} coutSort={coutSort}
+          />
+        </div>
+      )}
     </div>
   );
 }
