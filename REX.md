@@ -6,6 +6,27 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 26 Juillet 2026 — v17.20.0 (La Règle du Sang)
+
+### Contexte
+Feature visuelle : remplacement de la ligne de texte des seuils PV par une barre graduée colorée sur la fiche parchemin.
+
+### Leçons
+
+**1. Composant interne défini dans une IIFE JSX**
+`PvBar` est déclaré comme une fonction (`const PvBar = ({ pvMax, label }) => ...`) à l'intérieur d'une IIFE `{(() => { ... })()}`. Cela permet de réutiliser le même rendu pour la variante masquée et démasquée sans extraire un composant React global. Attention : ce pattern fait redéclarer la fonction à chaque render du parent — acceptable ici car la fiche parchemin ne se réaffiche pas souvent.
+
+**2. `calculatePvSeuils` appelé directement dans le rendu**
+Plutôt que de stocker les valeurs brutes dans le `useMemo` existant (qui formate déjà), `calculatePvSeuils(pvMax)` est appelé directement dans l'IIFE. Plus propre que parser une chaîne "11,5" pour récupérer un nombre.
+
+**3. Proportions de barre : total = pvMax + 5**
+La plage couvre pvMax → -5, soit `pvMax + 5` points. Chaque segment exprime sa largeur comme `size / total * 100%`. Avec des valeurs décimales possibles (malus1 peut être non entier), `toFixed(1)` suffit — les sous-pixels CSS n'affectent pas le rendu.
+
+**4. `messages_heritiers.md` : v17.19.0 absente**
+Le message de v17.19.0 n'avait pas été consigné dans le fichier (la commande `/version` précédente avait échoué à trouver le bon ancre pour l'insertion). Vérifié et corrigé lors de cette session.
+
+---
+
 ## Session du 25 Juillet 2026 — v17.19.0 (Le Parchemin Révélé)
 
 ### Contexte
