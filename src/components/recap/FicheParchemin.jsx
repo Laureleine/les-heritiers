@@ -548,18 +548,66 @@ export default function FicheParchemin({ character, gameData, detailed = false }
 						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.resPsychDemasquee ?? liveCombatStats.resPsych}</div><div className="combat-label" style={{color: '#b91c1c'}}>Rés. Psych. Dém.</div></div>
 						<div><div className="combat-circle" style={{color: '#b91c1c', borderColor: '#b91c1c'}}>{liveCombatStats.pvMaxDemasquee ?? liveCombatStats.pvMax}</div><div className="combat-label" style={{color: '#b91c1c'}}>PV Max Dém.</div></div>
 					</div>
-					<div style={{fontSize: '8px', color: '#4a3b2c', textAlign: 'center', marginTop: '4px', lineHeight: 1.5}}>
-						<div>
-							<strong>Seuils PV{liveCombatStats.pvMaxDemasquee !== liveCombatStats.pvMax ? ' (masquée)' : ''} :</strong>{' '}
-							Malus -1 en dessous de {pvSeuils.masquee.malus1} · Malus -2 en dessous de 5 · Moribonde de 0 à {pvSeuils.masquee.moribonde}
-						</div>
-						{liveCombatStats.pvMaxDemasquee !== liveCombatStats.pvMax && (
-							<div style={{color: '#b91c1c'}}>
-								<strong>Seuils PV (démasquée) :</strong>{' '}
-								Malus -1 en dessous de {pvSeuils.demasquee.malus1} · Malus -2 en dessous de 5 · Moribonde de 0 à {pvSeuils.demasquee.moribonde}
+					{(() => {
+						const hasDem = liveCombatStats.pvMaxDemasquee !== liveCombatStats.pvMax;
+						const fmt = (n) => Number.isInteger(n) ? n : n.toFixed(1).replace('.', ',');
+
+						const PvBar = ({ pvMax, label }) => {
+							const raw = calculatePvSeuils(pvMax);
+							const m1 = raw.malus1;
+							const total = pvMax + 5;
+							const segs = [
+								{ color: '#166534', label: 'Pleine forme', size: pvMax - m1 },
+								{ color: '#b45309', label: 'Malus -1',    size: m1 - 5 },
+								{ color: '#b91c1c', label: 'Malus -2',    size: 5 },
+								{ color: '#9f1239', label: 'Moribonde',   size: 5 },
+							];
+							const ticks = [
+								{ val: fmt(pvMax), pos: 0,                    anchor: 'start' },
+								{ val: fmt(m1),    pos: (pvMax - m1) / total, anchor: 'middle' },
+								{ val: '5',        pos: (pvMax - 5) / total,  anchor: 'middle' },
+								{ val: '0',        pos: pvMax / total,        anchor: 'middle' },
+								{ val: '-5',       pos: 1,                    anchor: 'end' },
+							];
+							const tickColors = ['#166534', '#b45309', '#b91c1c', '#9f1239', '#9f1239'];
+							return (
+								<div style={{ marginTop: '5px' }}>
+									{label && <div style={{ fontSize: '7px', fontWeight: 'bold', color: '#8b7355', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '1px' }}>{label}</div>}
+									{/* Chiffres au-dessus */}
+									<div style={{ position: 'relative', height: '13px' }}>
+										{ticks.map((t, i) => (
+											<span key={i} style={{
+												position: 'absolute',
+												left: `${t.pos * 100}%`,
+												transform: t.anchor === 'middle' ? 'translateX(-50%)' : t.anchor === 'end' ? 'translateX(-100%)' : 'none',
+												fontSize: '8px', fontWeight: '900', lineHeight: 1,
+												color: tickColors[i],
+											}}>{t.val}</span>
+										))}
+									</div>
+									{/* Barre colorée */}
+									<div style={{ display: 'flex', height: '9px', borderRadius: '2px', overflow: 'hidden' }}>
+										{segs.map((s, i) => (
+											<div key={i} style={{ width: `${s.size / total * 100}%`, background: s.color }} />
+										))}
+									</div>
+									{/* Labels sous la barre */}
+									<div style={{ display: 'flex', marginTop: '2px' }}>
+										{segs.map((s, i) => (
+											<div key={i} style={{ width: `${s.size / total * 100}%`, fontSize: '6.5px', textAlign: 'center', color: s.color, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '.03em', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.label}</div>
+										))}
+									</div>
+								</div>
+							);
+						};
+
+						return (
+							<div style={{ marginTop: '5px', padding: '4px 8px 5px', background: 'rgba(255,255,255,0.3)', border: '1px solid #d4c5b0', borderRadius: '3px' }}>
+								<PvBar pvMax={liveCombatStats.pvMax} label={hasDem ? 'Masquée' : null} />
+								{hasDem && <PvBar pvMax={liveCombatStats.pvMaxDemasquee} label="Démasquée" />}
 							</div>
-						)}
-					</div>
+						);
+					})()}
 				</div>
             </div>
 
