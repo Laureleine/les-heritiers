@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.20.0 - \"La Règle du Sang 🩸\"",
+    date: "26 Juillet 2026",
+    description: "La fiche parchemin affiche désormais une règle graduée colorée pour les seuils de Points de Vie. D'un coup d'œil, on voit où se situent les zones de danger — et les chiffres exacts propres à chaque personnage y sont inscrits.",
+    changes: [
+      "🩸 **Barre de seuils PV (Fiche Parchemin) :** La ligne de texte « Malus -1 en dessous de X · Malus -2… » est remplacée par une règle colorée proportionnelle : vert (pleine forme), ambre (Malus -1), rouge (Malus -2), bordeaux (Moribonde).",
+      "🔢 **Chiffres personnalisés :** Les valeurs exactes — PV Max, seuil Malus -1, 5, 0 et -5 — sont affichées au-dessus de chaque frontière dans la couleur de la zone correspondante.",
+      "⚔️ **Variante démasquée :** Si le personnage a des PV démasqués différents, une seconde barre s'affiche automatiquement dessous.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.19.0 - \"Le Parchemin Révélé 📜\"",
     date: "25 Juillet 2026",
     description: "La fiche parchemin distingue désormais les pouvoirs Masqués des pouvoirs Démasqués. Chaque groupe affiche le bon nombre de cases à cocher : autant que le Masque du personnage pour les pouvoirs utilisables sous apparence humaine, autant que sa Féérie pour ceux qui exigent la forme féérique.",

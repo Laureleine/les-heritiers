@@ -4,15 +4,17 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
-## v17.19.0 — Le Parchemin Révélé 📜 (25 juillet 2026)
+## v17.20.0 — La Règle du Sang 🩸 (26 juillet 2026)
 
 Chers Héritiers,
 
-La fiche parchemin a appris à faire la différence.
+La fiche parchemin s'est dotée d'un nouvel instrument de précision.
 
-Les pouvoirs maîtrisés se présentent désormais en deux colonnes de l'âme : les *Masqués* — ceux que l'on exerce sous apparence humaine, sans trahir la nature féérique — et les *Démasqués* — ceux qui exigent que le voile tombe.
+Là où une ligne de texte annonçait autrefois les seuils de Points de Vie en formule sèche, une règle graduée prend désormais place — colorée, proportionnelle, lisible d'un regard. Du vert de la pleine santé jusqu'au bordeaux sombre des derniers souffles, les quatre zones s'étendent sur la page selon les vraies valeurs du personnage.
 
-Et les cases à cocher ne mentent plus. Un Héritier au Masque de 7 a sept cases pour ses pouvoirs masqués. Un Héritier à la Féérie de 5 en a cinq pour ses démasqués. La fiche reflète enfin le personnage qu'on tient entre les mains.
+Les chiffres sont là aussi : PV Maximum, premier seuil de Malus, les cinq fatidiques, le zéro. Chacun inscrit à sa frontière, dans la couleur qui lui appartient.
+
+Pour les personnages dont la forme démasquée porte des Points de Vie différents, une seconde règle s'affiche en dessous.
 
 *L'Atelier des Brumes*
 
