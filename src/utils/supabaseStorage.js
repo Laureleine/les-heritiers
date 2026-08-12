@@ -279,12 +279,12 @@ export const saveCharacterToSupabase = async (character) => {
         }
 
         // En ligne : upsert Supabase + cache Dexie
-        const { data: savedData, error: saveError } = await supabase
+        const { data: savedData, error: saveError, status: saveStatus } = await supabase
             .from('characters')
             .upsert(characterData)
             .select()
             .single();
-        if (saveError) throw saveError;
+        if (saveError) throw Object.assign(saveError, { httpStatus: saveStatus });
         await localDb.characters.put(savedData).catch(() => {});
 
         const finalCache = getOfflineMirror().filter(c => c.id !== idTemp && c.id !== savedData.id);
@@ -295,7 +295,7 @@ export const saveCharacterToSupabase = async (character) => {
 
         return mapDatabaseToCharacter(savedData);
     } catch (error) {
-        const isAuthError = error?.status === 401 || error?.status === 403;
+        const isAuthError = error?.httpStatus === 401 || error?.httpStatus === 403;
         if (isAuthError) {
             console.warn("Échec sauvegarde Cloud (Erreur auth):", error);
             showInAppNotification(
