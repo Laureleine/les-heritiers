@@ -21,6 +21,10 @@ import { Lock } from './config/icons';
 import { isCharacterScelle } from './utils/lockUtils';
 import { isAdmin } from './utils/authRoles';
 
+// Flag de session : true si l'utilisateur a navigué vers /creator via l'appli.
+// Réinitialisé à chaque rechargement de page (variable de module JS).
+let creatorSessionActive = false;
+
 // Code Splitting
 const Encyclopedia = lazy(() => import('./components/Encyclopedia'));
 const ValidationsPendantes = lazy(() => import('./components/ValidationsPendantes'));
@@ -71,12 +75,14 @@ export default function AppRouter() {
                     : c;
                 dispatchCharacter({ type: 'LOAD_CHARACTER', payload: charToLoad, gameData });
                 setIsReadOnly(readOnly);
+                creatorSessionActive = true;
                 navigate('/creator', { state: { legitAccess: true } });
               }}
               onNewCharacter={() => {
                 dispatchCharacter({ type: 'RESET_CHARACTER', payload: { ...initialCharacterState } });
                 setIsReadOnly(false);
-                navigate('/creator', { state: { legitAccess: true } }); 
+                creatorSessionActive = true;
+                navigate('/creator', { state: { legitAccess: true } });
               }}
               onSignOut={() => supabase.auth.signOut()}
               onOpenAccount={() => navigate('/account')}
@@ -128,6 +134,7 @@ export default function AppRouter() {
                   : c;
               dispatchCharacter({ type: 'LOAD_CHARACTER', payload: charToLoad, gameData });
               setIsReadOnly(true);
+              creatorSessionActive = true;
               navigate('/creator', { state: { legitAccess: true, from: '/cercles', cercleId } });
             }}
           />
@@ -135,7 +142,7 @@ export default function AppRouter() {
         
         <Route path="/mes_propositions" element={<MesPropositions onBack={() => navigate('/encyclopedia')} />} />
         <Route path="/bureau_anomalies" element={<RegistrePage onBack={() => navigate('/')} />} />
-        <Route path="/creator" element={<CharacterCreator />} />
+        <Route path="/creator" element={creatorSessionActive ? <CharacterCreator /> : <Navigate to="/" replace />} />
         <Route path="/outils" element={
           <OutilsHub
             onBack={() => navigate('/')}
