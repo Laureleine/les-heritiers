@@ -1,7 +1,24 @@
 // src/context/OfflineStatusContext.js
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { syncAll, getSyncErrors, retrySync as retrySyncFn } from '../utils/syncQueue';
 import { localDb } from '../config/localDb';
+
+const PING_URL = (import.meta.env.VITE_SUPABASE_URL || '') + '/rest/v1/';
+const PING_TIMEOUT_MS = 5000;
+const PING_INTERVAL_MS = 30000;
+
+async function checkConnectivity() {
+  if (!navigator.onLine) return false;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), PING_TIMEOUT_MS);
+    await fetch(PING_URL, { method: 'HEAD', signal: ctrl.signal });
+    clearTimeout(timer);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const OfflineStatusContext = createContext({
   isOnline: true,
@@ -16,27 +33,52 @@ export function OfflineStatusProvider({ children }) {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncErrors, setSyncErrors] = useState([]);
   const [hasCachedData, setHasCachedData] = useState(false);
+  const prevOnlineRef = useRef(navigator.onLine);
 
   // Vérifier si des données sont en cache (au moins un dataset game_data)
   useEffect(() => {
     localDb.game_data.count().then(n => setHasCachedData(n > 0)).catch(() => {});
   }, []);
 
-  const handleOnline = useCallback(async () => {
-    setIsOnline(true);
-    setIsSyncing(true);
-    try {
-      await syncAll();
-    } finally {
-      const errors = await getSyncErrors();
-      setSyncErrors(errors);
-      setIsSyncing(false);
-      setHasCachedData(true);
+  // Vérification réelle de connectivité — utilisée à l'init et en polling
+  const verifyAndUpdate = useCallback(async () => {
+    const online = await checkConnectivity();
+    setIsOnline(online);
+    if (online && !prevOnlineRef.current) {
+      // Retour en ligne : synchroniser
+      prevOnlineRef.current = true;
+      setIsSyncing(true);
+      try {
+        await syncAll();
+      } finally {
+        const errors = await getSyncErrors();
+        setSyncErrors(errors);
+        setIsSyncing(false);
+        setHasCachedData(true);
+      }
+    } else if (!online) {
+      prevOnlineRef.current = false;
     }
   }, []);
 
+  // Vérification initiale (corrige navigator.onLine potentiellement erroné au chargement)
+  useEffect(() => {
+    verifyAndUpdate();
+  }, [verifyAndUpdate]);
+
+  // Polling toutes les 30 s pour sortir d'un état « hors ligne » bloqué
+  useEffect(() => {
+    const id = setInterval(verifyAndUpdate, PING_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [verifyAndUpdate]);
+
+  const handleOnline = useCallback(() => {
+    verifyAndUpdate();
+  }, [verifyAndUpdate]);
+
   const handleOffline = useCallback(() => {
     setIsOnline(false);
+    prevOnlineRef.current = false;
   }, []);
 
   useEffect(() => {
