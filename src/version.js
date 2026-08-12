@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.21.0 - \"Le Fil du Réseau 🌐\"",
+    date: "12 Août 2026",
+    description: "L'Atelier cesse de croire sur parole le navigateur quand il prétend être hors ligne. Désormais, il vérifie lui-même par un petit coup de sonde discret — et si la connexion répond, la bannière ambrée disparaît d'elle-même, toutes les trente secondes au plus.",
+    changes: [
+      "🌐 **Détection hors ligne corrigée :** La bannière « Hors ligne » pouvait s'afficher à tort même avec une connexion active, à cause d'un signal trompeur du navigateur (ad-bloqueurs, proxy, VPN, chargement depuis le cache). L'Atelier envoie désormais une vérification HTTP réelle vers les archives à chaque chargement et toutes les 30 secondes.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.20.0 - \"La Règle du Sang 🩸\"",
     date: "26 Juillet 2026",
     description: "La fiche parchemin affiche désormais une règle graduée colorée pour les seuils de Points de Vie. D'un coup d'œil, on voit où se situent les zones de danger — et les chiffres exacts propres à chaque personnage y sont inscrits.",

@@ -4,6 +4,18 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.21.0 — Le Fil du Réseau 🌐 (12 août 2026)
+
+Chers Héritiers,
+
+Il est arrivé que l'Atelier, au détour d'un chargement de page, se croie seul au monde — coupé des archives, hors du réseau — alors que vous étiez bel et bien connectés. Une illusion causée par le messager du navigateur, parfois sujet à la confusion.
+
+Désormais, l'Atelier ne prend plus sa parole pour argent comptant. Il envoie lui-même un discret signal vers les archives centrales, et si elles répondent, la bannière ambrée s'efface d'elle-même. La vérification se répète toutes les trente secondes, en silence, dans les coulisses.
+
+*L'Atelier des Brumes*
+
+---
+
 ## v17.20.0 — La Règle du Sang 🩸 (26 juillet 2026)
 
 Chers Héritiers,
