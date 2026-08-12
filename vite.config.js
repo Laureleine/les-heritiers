@@ -16,7 +16,7 @@ export default defineConfig({
     },
     react(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       filename: 'pwa-sw.js',
       manifest: false,
       workbox: {

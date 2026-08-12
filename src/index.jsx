@@ -14,13 +14,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 initErrorMonitor();
 
-// Enregistrement SW PWA (distinct de sw.js pour les notifs push)
+// Enregistrement SW PWA — autoUpdate : le rechargement est automatique.
 registerSW({
-  onNeedRefresh() {
-    // Géré en Task 13 — stocker dans window pour que le composant le lise
-    window.__pwaUpdateAvailable = true;
-    window.dispatchEvent(new Event('pwa-update-available'));
-  },
   onOfflineReady() {
     console.log('[PWA] Prête pour utilisation hors ligne');
   },

@@ -1,7 +1,7 @@
 // src/App.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, X, Sparkles } from './config/icons';
+import { BookOpen, X } from './config/icons';
 import { isSuperAdmin } from './utils/authRoles';
 import { useAppInit } from './hooks/useAppInit';
 import { showInAppNotification } from './utils/SystemeServices';
@@ -28,7 +28,7 @@ import GrantAcceptanceModal from './components/GrantAcceptanceModal';
 import { usePendingGrants } from './hooks/usePendingGrants';
 
 export default function App() {
-  const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, updateAvailable, applyUpdate, isRecoveryMode } = useAppInit();
+  const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, isRecoveryMode } = useAppInit();
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [versionHistory, setVersionHistory] = useState(null);
 
@@ -51,20 +51,6 @@ export default function App() {
     }
   }, [showVersionModal, versionHistory]);
 
-  // Écouter les mises à jour du Service Worker
-  useEffect(() => {
-    const handler = () => {
-      showInAppNotification(
-        '✨ Nouvelle version disponible — rechargez la page pour l\'appliquer.',
-        'info',
-        8000
-      );
-    };
-    window.addEventListener('pwa-update-available', handler);
-    // Vérifier si une mise à jour était déjà disponible avant le montage
-    if (window.__pwaUpdateAvailable) handler();
-    return () => window.removeEventListener('pwa-update-available', handler);
-  }, []);
 
   if (!isOnline && !hasCachedData) {
     return (
@@ -118,16 +104,6 @@ export default function App() {
     <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
       <OfflineBanner />
 
-      {updateAvailable && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-md">
-          <button
-            onClick={applyUpdate}
-            className="w-full bg-amber-700 text-white px-4 py-3 rounded-xl shadow-2xl font-serif font-bold flex items-center justify-center gap-3 hover:bg-amber-700 transition-all border-2 border-amber-300"
-          >
-            <Sparkles size={20} /> Savoir mis à jour ! Cliquez ici pour recharger le Grimoire.
-          </button>
-        </div>
-      )}
 
       <AlertSystem />
       <PWAPrompt />
