@@ -8,7 +8,6 @@ const PING_TIMEOUT_MS = 5000;
 const PING_INTERVAL_MS = 30000;
 
 async function checkConnectivity() {
-  if (!navigator.onLine) return false;
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), PING_TIMEOUT_MS);
