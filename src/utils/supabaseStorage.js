@@ -278,12 +278,24 @@ export const saveCharacterToSupabase = async (character) => {
             return mappedChar;
         }
 
-        // En ligne : upsert Supabase + cache Dexie
-        const { data: savedData, error: saveError, status: saveStatus } = await supabase
-            .from('characters')
-            .upsert(characterData)
-            .select()
-            .single();
+        // En ligne : insert ou update explicite selon l'existence du personnage.
+        // On évite upsert car sa vérification RLS INSERT bloquerait le super_admin
+        // qui édite un personnage dont il n'est pas l'auteur (user_id ≠ auth.uid()).
+        let savedData, saveError, saveStatus;
+        if (characterData.id) {
+            ({ data: savedData, error: saveError, status: saveStatus } = await supabase
+                .from('characters')
+                .update(characterData)
+                .eq('id', characterData.id)
+                .select()
+                .single());
+        } else {
+            ({ data: savedData, error: saveError, status: saveStatus } = await supabase
+                .from('characters')
+                .insert(characterData)
+                .select()
+                .single());
+        }
         if (saveError) throw Object.assign(saveError, { httpStatus: saveStatus });
         await localDb.characters.put(savedData).catch(() => {});
 
