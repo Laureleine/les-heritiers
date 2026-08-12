@@ -295,11 +295,20 @@ export const saveCharacterToSupabase = async (character) => {
 
         return mapDatabaseToCharacter(savedData);
     } catch (error) {
-        console.warn("Échec sauvegarde Cloud (Mode Hors-ligne activé):", error);
-        showInAppNotification(
-            "⚠️ Sauvegarde locale uniquement — réseau indisponible. Ne fermez pas l'onglet avant de retrouver la connexion.",
-            "warning"
-        );
+        const isAuthError = error?.status === 401 || error?.status === 403;
+        if (isAuthError) {
+            console.warn("Échec sauvegarde Cloud (Erreur auth):", error);
+            showInAppNotification(
+                "⚠️ Session expirée ou accès refusé — reconnectez-vous pour reprendre la sauvegarde en ligne.",
+                "warning"
+            );
+        } else {
+            console.warn("Échec sauvegarde Cloud (Mode Hors-ligne activé):", error);
+            showInAppNotification(
+                "⚠️ Sauvegarde locale uniquement — réseau indisponible. Ne fermez pas l'onglet avant de retrouver la connexion.",
+                "warning"
+            );
+        }
         return charToCache;
     }
 };
