@@ -6,6 +6,51 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 24 Août 2026 — v17.22.0 (Le Miroir de l'Expérience)
+
+### Ce qui a bien marché
+- **`getMemberXpState` déjà disponible** dans `ActiveCercleView.js` — la fonction existait déjà dans le panneau d'attribution XP. Réutilisation directe, zéro duplicat.
+- **Distinction de visibilité naturelle** : les branches `isDocte` / `isSelf` / autres étaient déjà en place. Ajouter les XP dans les bonnes branches sans toucher les autres a pris une seule passe.
+- **Connexion GitHub → Vercel (anna-chronique)** : résolue via un workflow GitHub Actions + deploy hook. Contournement propre quand l'interface Vercel ne propose pas de branche de production (projet créé par CLI).
+
+### Pièges rencontrés
+- **Auto-deploy Vercel ne se déclenche pas** quand le projet a été créé via CLI puis connecté à GitHub a posteriori : Vercel ne connaît pas la branche de production. Solution : deploy hook + GitHub Actions, pas l'interface Vercel.
+- **Le lien ↗ Édition** a d'abord été limité aux statuts `approved`/`generated` — mauvaise hypothèse. L'utilisatrice voulait pouvoir prévisualiser les drafts avant d'approuver. Toujours clarifier "visible par qui, dans quel état" avant de coder une condition de visibilité.
+- **Éditions en 404** : la page retournait `notFound()` pour les drafts. Retiré le filtre de statut — les drafts ne sont jamais listés publiquement, l'URL directe suffit à les protéger.
+
+### Règles à retenir
+- Avant d'ajouter une condition de visibilité (`if status === approved`), demander : "pour quel cas d'usage ?" La réponse change souvent le périmètre.
+- Quand un projet Vercel est créé par CLI, la connexion GitHub ultérieure ne configure pas la branche de production automatiquement. Prévoir un deploy hook dès le départ.
+
+---
+
+## Session du 12 Août 2026 — v17.21.0 (Le Fil du Réseau)
+
+### Contexte
+Session courte : trois bugs signalés par les joueurs. Analyse XP pour Albert/Ferval (faux positif de cache navigateur), correction du flag `xp_dette` intempestif pour Aristide, et fix de la bannière "hors réseau" affichée à tort.
+
+### Leçons
+
+**1. `navigator.onLine` est peu fiable — ne jamais s'y fier seul**
+Cette API peut retourner `false` avec une connexion active (extensions ad-block, proxy, VPN, Service Worker cache). La solution : doubler d'un vrai ping HTTP (`HEAD` sur Supabase, timeout 5 s) à l'initialisation et en polling toutes les 30 s. Voir `OfflineStatusContext.js`.
+
+**2. Deux sources d'XP peuvent diverger après une reconstruction de journal**
+`xp_transactions` (table SQL) et `character.data.historique_xp` (JSONB) sont maintenues séparément. La reconstruction (`TabRepairJournaux.js`) peut rater des entrées (`FORTUNE_ELEVATION`) ou écrire le mauvais rang pour une compétence. Le flag `xp_dette` posé par ce script peut donc être un faux positif si la situation réelle est saine.
+
+**3. `xp_dette` s'auto-efface uniquement à la prochaine sauvegarde**
+La logique dans `supabaseStorage.js` (lignes 253-256) efface `xp_dette` au moment du save, pas en temps réel. Si le personnage ne sauvegarde pas, le faux positif persiste indéfiniment. Correction manuelle via `UPDATE characters SET xp_dette = false WHERE id = '...'` est parfois nécessaire.
+
+**4. Cache navigateur stale après une migration XP en masse**
+Ferval voyait 55 XP pour Albert alors que la DB contenait 2. Cause : snapshot de données en cache dans le navigateur, antérieur à la migration du 11 août. Pas de correction nécessaire côté code — un F5 suffit. Garder en tête ce type de faux positif quand un gardien et un joueur voient des valeurs différentes.
+
+**5. Syntaxe Node.js `-e` avec apostrophes dans une query SQL**
+En PowerShell avec `node -e "..."`, les apostrophes SQL (`data->>'historique_xp'`) entrent en conflit avec les guillemets. Solution : guillemets doubles autour de la query + `\"` pour les guillemets internes, ou (plus propre) écrire un fichier script temporaire plutôt que d'utiliser `-e`.
+
+**6. Déploiement Vercel déclenché automatiquement par le push `main`**
+Chaque push sur `main` crée un nouveau déploiement de production. Les erreurs visibles dans la liste (`state: ERROR`) sont toutes sur la branche `backup` (cron quotidien), pas sur `main`. Les déploiements `main` sont systématiquement verts.
+
+---
+
 ## Session du 26 Juillet 2026 — v17.20.0 (La Règle du Sang)
 
 ### Contexte
