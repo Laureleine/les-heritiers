@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.22.0 - \"Le Miroir de l'Expérience ✦\"",
+    date: "24 Août 2026",
+    description: "Les cartes des personnages dans le Cercle affichent désormais les XP disponibles et les XP totaux de chaque Héritier. D'un coup d'œil, le Docte embrasse l'état de toute sa table — et chaque joueur connaît sa propre réserve sans quitter la vue du cercle.",
+    changes: [
+      "✦ **XP sur les cartes du Cercle :** Chaque carte de personnage affiche un badge « X / Y XP » (disponibles / acquis). Le badge vire au rouge si le personnage est en dette d'XP. Le Docte voit les XP de tous ses membres ; un joueur ne voit que les siens.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.21.0 - \"Le Fil du Réseau 🌐\"",
     date: "12 Août 2026",
     description: "L'Atelier cesse de croire sur parole le navigateur quand il prétend être hors ligne. Désormais, il vérifie lui-même par un petit coup de sonde discret — et si la connexion répond, la bannière ambrée disparaît d'elle-même, toutes les trente secondes au plus.",

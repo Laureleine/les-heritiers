@@ -4,6 +4,20 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.22.0 — Le Miroir de l'Expérience ✦ (24 août 2026)
+
+Chers Héritiers,
+
+Il n'est plus nécessaire de fouiller les registres pour savoir où en sont les membres de votre table. Désormais, chaque carte de personnage dans le Cercle porte son propre miroir d'expérience : un petit badge discret indique, en un coup d'œil, combien de points d'expérience l'Héritier peut encore dépenser — et combien il en a accumulé depuis ses premières heures à l'Atelier.
+
+Le Docte voit les réserves de chacun de ses membres. Les joueurs, eux, n'aperçoivent que les leurs — la discrétion est de mise en société.
+
+Et quand les dettes s'accumulent, le badge vire au rouge. Une invitation à ne pas trop dépenser avant d'avoir gagné.
+
+*L'Atelier des Brumes*
+
+---
+
 ## v17.21.0 — Le Fil du Réseau 🌐 (12 août 2026)
 
 Chers Héritiers,
