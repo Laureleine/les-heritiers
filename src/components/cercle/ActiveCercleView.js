@@ -446,6 +446,18 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                         }`}>
                           {member.characters?.typeFee || (hasChar ? 'Nature inconnue' : 'Fiche non liée')}
                         </div>
+                        {hasChar && (() => { const s = getMemberXpState(member); return s ? (
+                          <div
+                            className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm ${s.xpDispo < 0 ? 'bg-red-50 border-red-300' : 'bg-stone-50 border-stone-200'}`}
+                            title={`${s.xpDispo} XP disponibles sur ${s.xpTotal} acquis`}
+                          >
+                            <Sparkles size={11} className={s.xpDispo < 0 ? 'text-red-500' : 'text-amber-500'} />
+                            <span className={s.xpDispo < 0 ? 'text-red-700' : 'text-amber-700'}>{s.xpDispo}</span>
+                            <span className="text-stone-300">/</span>
+                            <span className="text-green-600">{s.xpTotal}</span>
+                            <span className="text-stone-400 text-[10px]">XP</span>
+                          </div>
+                        ) : null; })()}
                         {hasChar && member.characters?.statut && member.characters.statut !== 'scelle' && (
                           <div className="text-[9px] text-amber-700 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded font-bold mt-1">
                             ⚠ Non scellé — XP reçus mais non dépensables
@@ -465,7 +477,19 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                         </button>
                       </div>
                     ) : isSelf ? (
-                      <div className="mt-3 w-full space-y-2">
+                      <div className="mt-3 w-full space-y-2 flex flex-col items-center">
+                        {hasChar && (() => { const s = getMemberXpState(member); return s ? (
+                          <div
+                            className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm ${s.xpDispo < 0 ? 'bg-red-50 border-red-300' : 'bg-stone-50 border-stone-200'}`}
+                            title={`${s.xpDispo} XP disponibles sur ${s.xpTotal} acquis`}
+                          >
+                            <Sparkles size={11} className={s.xpDispo < 0 ? 'text-red-500' : 'text-amber-500'} />
+                            <span className={s.xpDispo < 0 ? 'text-red-700' : 'text-amber-700'}>{s.xpDispo}</span>
+                            <span className="text-stone-300">/</span>
+                            <span className="text-green-600">{s.xpTotal}</span>
+                            <span className="text-stone-400 text-[10px]">XP</span>
+                          </div>
+                        ) : null; })()}
                         {/*
                         <div className="text-[10px] text-stone-500 text-center italic">
                           {hasChar ? `Mon Héritier : ${member.characters.nom}` : 'Aucun Héritier lié à ce Cercle'}
