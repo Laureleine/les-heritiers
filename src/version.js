@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.23.0 - \"Le Scribe des Anomalies 🚨\"",
+    date: "26 Août 2026",
+    description: "Les Gardiens disposent désormais d'un bouton pour copier d'un clic toutes les informations d'un ticket escaladé. Côté archives, une protection empêche les tickets bloqués d'être appliqués deux fois par erreur — et les messages d'erreur sont désormais rédigés en bon français à la place du jargon SQL brut.",
+    changes: [
+      "🚨 **Bouton « Copier pour Claude » sur les escalades :** Dans l'onglet Escalades du tableau d'administration, chaque ticket en erreur affiche un bouton discret. Un clic copie dans le presse-papier toutes les informations utiles (cible, table, auteur, justification, erreur, delta complet) — prêt à coller dans le chat pour un diagnostic immédiat.",
+      "🛡️ **Protection anti-doublon sur les créations :** L'incantation d'application vérifie désormais si l'entrée existe déjà avant toute insertion. Si oui, elle met à jour au lieu de planter. Si un nom identique existe sous un identifiant différent, un message explicite remplace l'erreur SQL brute.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.22.0 - \"Le Miroir de l'Expérience ✦\"",
     date: "24 Août 2026",
     description: "Les cartes des personnages dans le Cercle affichent désormais les XP disponibles et les XP totaux de chaque Héritier. D'un coup d'œil, le Docte embrasse l'état de toute sa table — et chaque joueur connaît sa propre réserve sans quitter la vue du cercle.",

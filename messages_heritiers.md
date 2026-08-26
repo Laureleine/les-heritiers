@@ -4,6 +4,20 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.23.0 — Le Scribe des Anomalies 🚨 (26 août 2026)
+
+Chers Héritiers,
+
+Dans les coulisses de l'Atelier, les Gardiens veillent sans relâche à ce que chaque proposition soit correctement gravée dans les archives. Mais parfois, l'incantation bute sur un obstacle et le ticket se retrouve suspendu dans un sas d'escalade, attendant qu'un Architecte vienne y remédier.
+
+Pour simplifier ce travail d'enquête, une petite plume a été glissée sur chaque ticket en anomalie : d'un seul clic, le Gardien peut désormais copier l'intégralité des informations — cible, auteur, nature de l'erreur, delta complet — et les transmettre directement au Grand Architecte pour analyse.
+
+Et pour que ce genre d'embouteillage ne se reproduise pas trop souvent, l'Atelier apprend lui-même à reconnaître quand une entrée existe déjà dans ses archives avant de tenter de l'y graver une seconde fois. L'erreur en jargon cryptique laisse désormais place à un message en bonne et due forme.
+
+*L'Atelier des Brumes*
+
+---
+
 ## v17.22.0 — Le Miroir de l'Expérience ✦ (24 août 2026)
 
 Chers Héritiers,
