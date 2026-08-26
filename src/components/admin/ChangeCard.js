@@ -1,11 +1,36 @@
 // src/components/admin/ChangeCard.js
-import React from 'react';
-import { iconMap, Check, X, Plus, Minus, TestTubeDiagonal, ShieldAlert, Shield, User, MessageSquare } from '../../config/icons';
+import React, { useState } from 'react';
+import { iconMap, Check, X, Plus, Minus, TestTubeDiagonal, ShieldAlert, Shield, User, MessageSquare, Copy } from '../../config/icons';
 import { isSuperAdmin } from '../../utils/authRoles';
 
 const ChangeCard = React.memo(({ change, context, actions }) => {
   const { originalRecords, referenceNames, myRole, dbBadges, currentUserId } = context;
   const { onReject, onApprove, onRestore, onContact } = actions;
+  const [copied, setCopied] = useState(false);
+
+  const copyEscaladeInfo = () => {
+    const action = change.new_data?.id ? 'Création 🌟' : 'Modification 📝';
+    const date = new Date(change.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    const lines = [
+      `=== ANOMALIE ESCALADÉE ===`,
+      `Cible : ${change.record_name || 'Inconnue'}`,
+      `Table : ${change.table_name} • Action : ${action}`,
+      `Par : ${change.profiles?.username || 'Héritier Anonyme'} — ${date}`,
+      ``,
+      `Justification :`,
+      `"${change.justification || '—'}"`,
+      ``,
+      `Erreur :`,
+      change.rejection_reason || '(aucune)',
+      ``,
+      `Delta (new_data) :`,
+      JSON.stringify(change.new_data, null, 2),
+    ];
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const pData = change.new_data || change.proposed_data || {};
   const standardFields = Object.keys(pData).filter(k => k !== '_relations' && k !== 'id');
@@ -267,6 +292,9 @@ const ChangeCard = React.memo(({ change, context, actions }) => {
         )}
         {change.status === 'escalated' && isSuperAdmin(myRole) && (
           <>
+            <button onClick={copyEscaladeInfo} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${copied ? 'bg-green-50 text-green-700 border-green-300' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}>
+              <Copy size={13} /> {copied ? 'Copié !' : 'Copier pour Claude'}
+            </button>
             <button onClick={() => onReject(change)} className="px-4 py-2 bg-gray-100 text-red-600 hover:bg-red-50 rounded-lg font-bold flex items-center gap-2 transition-colors ml-auto">
               <X size={16} /> Rejeter définitivement
             </button>

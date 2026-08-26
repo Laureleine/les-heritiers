@@ -73,8 +73,23 @@ Deno.serve(async (req) => {
     // 3. Mutation principale
     if (Object.keys(mainData).length > 0) {
       if (isInsert) {
-        const { error: dbError } = await supabase.from(request.table_name).insert(mainData)
-        if (dbError) throw dbError
+        // Vérifie si le record existe déjà par son ID (CR escaladé re-appliqué)
+        const { data: existingById } = await supabase.from(request.table_name).select('id').eq('id', mainData.id).maybeSingle()
+        if (existingById) {
+          // Record déjà créé : on met à jour au lieu d'insérer
+          const { error: dbError } = await supabase.from(request.table_name).update(mainData).eq('id', mainData.id)
+          if (dbError) throw dbError
+        } else {
+          const { error: dbError } = await supabase.from(request.table_name).insert(mainData)
+          if (dbError) {
+            // Contrainte d'unicité sur le nom : message explicite
+            if (dbError.code === '23505') {
+              const name = mainData.name ?? mainData.id
+              throw new Error(`Un élément nommé "${name}" existe déjà dans les archives. Vérifiez si une entrée portant ce nom est déjà présente avant de ré-appliquer ce ticket.`)
+            }
+            throw dbError
+          }
+        }
       } else {
         const { error: dbError } = await supabase.from(request.table_name).update(mainData).eq('id', targetId)
         if (dbError) throw dbError
