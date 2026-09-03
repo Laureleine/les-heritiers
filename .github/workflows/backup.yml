@@ -1,9 +1,7 @@
 name: Sauvegarde Supabase quotidienne
 
 on:
-  schedule:
-    - cron: '0 3 * * *'   # 3h UTC = 5h Paris (heure d'été)
-  workflow_dispatch:        # déclenchement manuel possible
+  workflow_dispatch:        # désactivé : backup remplacé par node scripts/backup_supabase.js (lancé manuellement avant chaque modif)
 
 jobs:
   backup:
