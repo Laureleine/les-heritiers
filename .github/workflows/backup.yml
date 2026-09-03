@@ -1,133 +1,49 @@
 name: Sauvegarde Supabase quotidienne
 
 on:
-  workflow_dispatch:        # désactivé : backup remplacé par node scripts/backup_supabase.js (lancé manuellement avant chaque modif)
+  schedule:
+    - cron: '0 3 * * *'   # 3h UTC = 5h Paris (heure d'été)
+  workflow_dispatch:        # déclenchement manuel possible
 
 jobs:
   backup:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      # ── 1. Récupérer les scripts depuis main ─────────────────────────────
-      - name: Checkout main (scripts + dépendances)
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: main
-          path: main_repo
 
-      # ── 2. Checkout de la branche backup ─────────────────────────────────
-      - name: Checkout branche backup
-        uses: actions/checkout@v4
-        with:
-          ref: backup
-          path: backup_repo
-          fetch-depth: 0
-
-      # ── 3. Outils ────────────────────────────────────────────────────────
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
 
-      - name: Installer postgresql-client (version serveur)
-        env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y postgresql-client wget ca-certificates
-          # Détecter la version majeure du serveur Supabase
-          PG_MAJOR=$(psql "$SUPABASE_DB_URL" -tAc "SELECT current_setting('server_version_num')::int/10000" 2>/dev/null | tr -d ' ')
-          echo "→ PostgreSQL serveur : v${PG_MAJOR}"
-          # Installer le client pgdg correspondant
-          wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-          sudo apt-get update -qq
-          sudo apt-get install -y "postgresql-client-${PG_MAJOR}"
-          # Mettre les binaires pgdg en tête de PATH pour les steps suivants
-          echo "/usr/lib/postgresql/${PG_MAJOR}/bin" >> "$GITHUB_PATH"
-          echo "PG_MAJOR=${PG_MAJOR}" >> "$GITHUB_ENV"
-          /usr/lib/postgresql/${PG_MAJOR}/bin/pg_dump --version
-
-      - name: Installer dépendances Node
-        working-directory: main_repo
+      - name: Installer les dépendances
         run: npm ci
 
-      # ── 4. Sauvegarde base de données ─────────────────────────────────────
-      - name: Dump base de données complète
-        working-directory: backup_repo
+      - name: Sauvegarde JSON (toutes les tables)
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          DATE=$(date +%Y-%m-%d)
-          mkdir -p db-dumps db-schemas
-          export PGSSLMODE=require
+          node scripts/backup_supabase.js
+          echo "DATE=$(date +%Y-%m-%d)" >> "$GITHUB_ENV"
 
-          # pg_dump accepte une URL directement — pas besoin de parser avec sed
-          pg_dump --dbname="$SUPABASE_DB_URL" \
-            --no-owner --no-privileges \
-            -Fc -f "db-dumps/full_${DATE}.dump"
+      - name: Sauvegarde Storage (buckets)
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          BACKUP_DATE: ${{ env.DATE }}
+          STORAGE_OUT_DIR: ${{ github.workspace }}/storage/${{ env.DATE }}
+        run: node scripts/backup_storage.js
 
-          # Schéma lisible pour audit et diff
-          pg_dump --dbname="$SUPABASE_DB_URL" \
-            --schema-only --no-owner --no-privileges \
-            -f "db-schemas/schema_${DATE}.sql"
-
-          # Diff avec le schéma précédent
-          if [ -f db-schemas/schema_previous.sql ]; then
-            diff db-schemas/schema_previous.sql "db-schemas/schema_${DATE}.sql" \
-              > "db-schemas/diff_${DATE}.patch" 2>/dev/null || true
-            if [ -s "db-schemas/diff_${DATE}.patch" ]; then
-              echo "🔔 Changements de schéma détectés :"
-              cat "db-schemas/diff_${DATE}.patch"
-            else
-              echo "✅ Schéma inchangé"
-              rm -f "db-schemas/diff_${DATE}.patch"
-            fi
-          fi
-          cp "db-schemas/schema_${DATE}.sql" db-schemas/schema_previous.sql
-
-          echo "✅ Dump DB → db-dumps/full_${DATE}.dump"
-
-      # ── 5. Sauvegarde des buckets Storage ────────────────────────────────
-      - name: Sauvegarde des buckets Storage
-        run: |
-          DATE=$(date +%Y-%m-%d)
-          STORAGE_OUT="${{ github.workspace }}/backup_repo/storage/$DATE"
-          mkdir -p "$STORAGE_OUT"
-          VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}" \
-          SUPABASE_SERVICE_KEY="${{ secrets.SUPABASE_SERVICE_KEY }}" \
-          BACKUP_DATE="$DATE" \
-          STORAGE_OUT_DIR="$STORAGE_OUT" \
-          node main_repo/scripts/backup_storage.js
-
-      # ── 6. Rotation 30 jours glissants ───────────────────────────────────
-      - name: Rotation — garder les 30 derniers jours
-        working-directory: backup_repo
-        run: |
-          ls -t db-dumps/full_*.dump 2>/dev/null             | tail -n +31 | xargs -r rm -f
-          ls -t db-schemas/schema_????-??-??.sql 2>/dev/null | tail -n +31 | xargs -r rm -f
-          ls -t db-schemas/diff_*.patch 2>/dev/null          | tail -n +31 | xargs -r rm -f
-          ls -d storage/????-??-?? 2>/dev/null | sort        | head -n -30 | xargs -r rm -rf
-          echo "✅ Rotation terminée"
-
-      # ── 7. Commit unique — l'historique git ne grossit pas ───────────────
-      - name: Commit et push
-        working-directory: backup_repo
-        run: |
-          git config user.name "Backup Bot"
-          git config user.email "backup@les-heritiers.app"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "Rien à committer"
-            exit 0
-          fi
-          # Amend du commit unique : les binaires ne s'accumulent pas dans l'historique
-          if git log --oneline -1 > /dev/null 2>&1; then
-            git commit --amend --no-edit
-          else
-            git commit -m "backups: rotation 30j glissants"
-          fi
-          git push --force origin backup
-          echo "✅ Sauvegarde poussée sur la branche backup"
+      - name: Upload artefacts GitHub (rétention 30 jours)
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-${{ env.DATE }}
+          path: |
+            backups/
+            storage/
+          retention-days: 30
+          if-no-files-found: error
