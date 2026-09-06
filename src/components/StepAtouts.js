@@ -151,7 +151,8 @@ export default function StepAtouts() {
               const handlePersonalAtoutToggle = () => {
                 if (isReadOnly) return;
                 if (isScelle) {
-                  const fortuneBonus = atout.effets_techniques?.fortune_bonus || 0;
+                  const _tech = atout.effets_techniques || {};
+                  const fortuneBonus = (_tech.fortune || 0) + (_tech.fortune_bonus || 0);
                   if (isSelected) {
                     const newAtoutsPerso = (character.atoutsPerso || []).filter(a => a !== atout.nom);
                     const updates = { atoutsPerso: newAtoutsPerso };
