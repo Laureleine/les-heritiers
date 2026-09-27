@@ -1,6 +1,6 @@
 // src/components/cercle/ActiveCercleView.js
 import React, { useState } from 'react';
-import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles, BookOpen, Scroll } from '../../config/icons';
+import { Shield, Users, X, LogOut, Eye, EyeOff, MessageCircle, Gift, Sparkles, BookOpen, Scroll, UserX } from '../../config/icons';
 import { getXpState } from '../../utils/xpActions';
 import TabPartiesJeu from './TabPartiesJeu';
 import TabIndicesVerites from './TabIndicesVerites';
@@ -8,7 +8,7 @@ import TabCartesPerso from './TabCartesPerso';
 import TabCompetences from './TabCompetences';
 import { useCallback, useRef } from 'react';
 
-const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
+const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete, onLeave, onKickMember, onViewCharacter, myCharacters = [], onUpdateMyCharacter, onDistributeXp, xpSubmitting }) => {
   const [xpDefault, setXpDefault] = useState(0);
   const [xpAmounts, setXpAmounts] = useState({});
   const [xpMotif, setXpMotif] = useState('');
@@ -463,18 +463,29 @@ const ActiveCercleView = React.memo(({ cercle, session, activeMembers, onDelete,
                             ⚠ Non scellé — XP reçus mais non dépensables
                           </div>
                         )}
-                        <button
-                          onClick={() => hasChar && onViewCharacter(member.characters)}
-                          disabled={!hasChar}
-                          className={`w-full py-2 rounded-lg border text-xs font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm ${
-                            hasChar
-                              ? 'bg-stone-50 text-purple-700 hover:bg-purple-600 hover:text-white border-purple-200 cursor-pointer'
-                              : 'bg-orange-50 text-orange-400 border-orange-200 cursor-not-allowed'
-                          }`}
-                          title={hasChar ? "Inspecter la fiche complète" : "Ce joueur n'a pas encore lié son Héritier à ce Cercle"}
-                        >
-                          <Eye size={14} /> {hasChar ? 'Consulter' : 'En attente…'}
-                        </button>
+                        <div className="flex gap-1.5 w-full">
+                          <button
+                            onClick={() => hasChar && onViewCharacter(member.characters)}
+                            disabled={!hasChar}
+                            className={`flex-1 py-2 rounded-lg border text-xs font-bold transition-colors flex justify-center items-center gap-1.5 shadow-sm ${
+                              hasChar
+                                ? 'bg-stone-50 text-purple-700 hover:bg-purple-600 hover:text-white border-purple-200 cursor-pointer'
+                                : 'bg-orange-50 text-orange-400 border-orange-200 cursor-not-allowed'
+                            }`}
+                            title={hasChar ? "Inspecter la fiche complète" : "Ce joueur n'a pas encore lié son Héritier à ce Cercle"}
+                          >
+                            <Eye size={14} /> {hasChar ? 'Consulter' : 'En attente…'}
+                          </button>
+                          {member.user_id !== userId && (
+                            <button
+                              onClick={() => onKickMember(member)}
+                              className="px-2 py-2 rounded-lg border border-red-200 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-600 text-xs font-bold transition-colors flex items-center gap-1 shadow-sm"
+                              title="Exclure ce joueur de la Table"
+                            >
+                              <UserX size={14} />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ) : isSelf ? (
                       <div className="mt-3 w-full space-y-2 flex flex-col items-center">

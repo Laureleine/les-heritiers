@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.24.0 — La Révocation du Cercle 📜 (27 septembre 2026)
+
+Chers Héritiers,
+
+Une nouvelle prérogative est accordée aux Doctes de l'Atelier.
+
+Dès cette mise à jour, le maître d'un Cercle peut congédier un joueur de sa Table. Un simple geste suffit — une icône discrète sur la carte du membre, une confirmation, et c'est fait. Le joueur congédié reçoit aussitôt une missive privée via le Télégraphe, l'informant avec toute la courtoisie requise que sa présence au Cercle a pris fin.
+
+Les personnages et leurs précieux Points d'Expérience demeurent bien entendu intacts — seul le lien à la Table est rompu.
+
+Que vos Tables restent harmonieuses,
+*L'Atelier des Héritiers*
+
+---
+
 ## v17.23.0 — Le Scribe des Anomalies 🚨 (26 août 2026)
 
 Chers Héritiers,

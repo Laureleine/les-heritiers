@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.24.0 - \"La Révocation du Cercle 📜\"",
+    date: "27 Septembre 2026",
+    description: "Le Docte peut désormais exclure un joueur de sa Table. Un bouton discret apparaît sur chaque carte de membre — une confirmation, et le joueur reçoit une missive privée via le Télégraphe l'informant de son congé.",
+    changes: [
+      "📜 **Exclure un joueur de la Table :** Sur les cartes membres (onglet La Table), le Docte dispose d'un bouton «Exclure» (icône UserX) à côté de «Consulter». Un dialog de confirmation précise le nom du joueur et annonce l'envoi d'une missive. L'action supprime l'entrée dans le Cercle et envoie automatiquement un message dans le canal Télégraphe privé entre le Docte et le joueur exclu.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.23.0 - \"Le Scribe des Anomalies 🚨\"",
     date: "26 Août 2026",
     description: "Les Gardiens disposent désormais d'un bouton pour copier d'un clic toutes les informations d'un ticket escaladé. Côté archives, une protection empêche les tickets bloqués d'être appliqués deux fois par erreur — et les messages d'erreur sont désormais rédigés en bon français à la place du jargon SQL brut.",

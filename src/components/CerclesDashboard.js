@@ -222,6 +222,61 @@ export default function CerclesDashboard({ onBack, onViewCharacter }) {
     });
   }, [executeDeleteCercle]);
 
+  const executeKickMember = useCallback(async (member, cercleNom) => {
+    setConfirmState(prev => ({ ...prev, isOpen: false }));
+    try {
+      const { error } = await supabase
+        .from('cercle_membres')
+        .delete()
+        .eq('id', member.id);
+      if (error) throw error;
+
+      // Notifier le joueur exclu via un message Télégraphe privé
+      const docteId = session.user.id;
+      const targetId = member.user_id;
+      const { data: existingChan } = await supabase
+        .from('chat_channels')
+        .select('id')
+        .eq('type', 'private')
+        .or(`and(participant_1.eq.${docteId},participant_2.eq.${targetId}),and(participant_1.eq.${targetId},participant_2.eq.${docteId})`)
+        .maybeSingle();
+
+      let channelId = existingChan?.id;
+      if (!channelId) {
+        const { data: newChan } = await supabase
+          .from('chat_channels')
+          .insert([{ type: 'private', name: 'Correspondance', participant_1: docteId, participant_2: targetId, status: 'open', last_message_at: new Date().toISOString() }])
+          .select().single();
+        channelId = newChan?.id;
+      }
+      if (channelId) {
+        await supabase.from('chat_messages').insert([{
+          channel_id: channelId,
+          user_id: docteId,
+          message: `Votre présence au Cercle « ${cercleNom} » a été révoquée par le Docte.`
+        }]);
+        await supabase.from('chat_channels').update({ last_message_at: new Date().toISOString() }).eq('id', channelId);
+      }
+
+      showInAppNotification(`${member.profiles?.username || 'Le joueur'} a été exclu de la Table.`, "success");
+      loadMembers(activeTab);
+    } catch (err) {
+      showInAppNotification("Erreur lors de l'exclusion : " + err.message, "error");
+    }
+  }, [session?.user?.id, activeTab, loadMembers]);
+
+  const handleKickMember = useCallback((member) => {
+    const nom = member.characters?.nom || member.profiles?.username || 'ce joueur';
+    const cercleNom = activeCercleObj?.nom || 'ce Cercle';
+    setConfirmState({
+      isOpen: true,
+      title: "Exclure de la Table",
+      message: `Voulez-vous exclure ${nom} du Cercle « ${cercleNom} » ? Le joueur en sera informé par missive.`,
+      confirmText: "Oui, exclure ce joueur",
+      action: () => executeKickMember(member, cercleNom)
+    });
+  }, [activeCercleObj, executeKickMember]);
+
   const activeCercleObj = useMemo(() => {
     return cercles.find(c => c.id === activeTab);
   }, [cercles, activeTab]);
@@ -365,6 +420,7 @@ export default function CerclesDashboard({ onBack, onViewCharacter }) {
               activeMembers={activeMembers}
               onDelete={handleDeleteCercle}
               onLeave={handleLeaveCercle}
+              onKickMember={handleKickMember}
               onViewCharacter={handleInspectCharacter}
               myCharacters={myCharacters}
               onUpdateMyCharacter={handleUpdateMyCharacter}

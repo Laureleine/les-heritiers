@@ -47,6 +47,7 @@ import {
 
     // Utilisateurs & social
     User,
+    UserX,
     Users,
     Mail,
     MessageCircle,
@@ -141,7 +142,7 @@ export {
     Send, Printer, RotateCcw, RefreshCcw, RefreshCw, LogOut, Wifi, WifiOff,
     Check, CheckCheck, CheckCircle, CheckCircle2, AlertCircle, AlertTriangle,
     Info, HelpCircle, ShieldAlert, Clock, Loader, Moon, Sun,
-    User, Users, Mail, MessageCircle, MessageSquare, Inbox, Globe,
+    User, UserX, Users, Mail, MessageCircle, MessageSquare, Inbox, Globe,
     Lock, Unlock, Key, Shield, ShieldCheck, Crown,
     BookOpen, Book, BookMarked, Scroll, FileText, Archive, Tag, Filter, ListFilter, LayoutList,
     Search, List, ZoomIn, ZoomOut,
@@ -160,7 +161,7 @@ export const iconMap = {
     Send, Printer, RotateCcw, RefreshCcw, RefreshCw, LogOut, Wifi, WifiOff,
     Check, CheckCheck, CheckCircle, CheckCircle2, AlertCircle, AlertTriangle,
     Info, HelpCircle, ShieldAlert, Clock, Loader, Moon, Sun,
-    User, Users, Mail, MessageCircle, MessageSquare, Inbox, Globe,
+    User, UserX, Users, Mail, MessageCircle, MessageSquare, Inbox, Globe,
     Lock, Unlock, Key, Shield, ShieldCheck, Crown,
     BookOpen, Book, BookMarked, Scroll, FileText, Archive, Tag, Filter, ListFilter, LayoutList,
     Search, List, ZoomIn, ZoomOut,
