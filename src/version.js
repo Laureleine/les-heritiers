@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "17.25.0 - \"Le Songe du Docte 🔮\"",
+    date: "28 Septembre 2026",
+    description: "Trois corrections discrètes mais importantes : le Docte peut enfin consulter la Prophétie de ses joueurs sans en déclencher une nouvelle ; la page des Cercles ne plantait plus au chargement ; et les items de vie sociale s'enregistrent désormais correctement.",
+    changes: [
+      "🔮 **Prophétie accessible au Docte :** Sur la fiche d'un joueur de sa Table, le Docte peut désormais lire le Songe déjà révélé. Il ne peut pas en déclencher un nouveau — ce privilège reste celui du joueur.",
+      "⚙️ **Correction page Cercles :** Une erreur d'initialisation (« Cannot access W before initialization ») empêchait la page /cercles de s'afficher après la v17.24.0. Corrigée.",
+      "🗂️ **Correction catégorie vide sur les items sociaux :** La création d'un item de vie sociale échouait silencieusement si la catégorie n'était pas renseignée. Le champ est désormais correctement initialisé.",
+      "🧪 **566 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.24.0 - \"La Révocation du Cercle 📜\"",
     date: "27 Septembre 2026",
     description: "Le Docte peut désormais exclure un joueur de sa Table. Un bouton discret apparaît sur chaque carte de membre — une confirmation, et le joueur reçoit une missive privée via le Télégraphe l'informant de son congé.",

@@ -59,8 +59,41 @@ Deno.serve(async (req) => {
 
     const isOwner = character.user_id === user.id
     const isAdmin = ['gardien', 'super_admin'].includes(profile?.role ?? '')
+
+    // Vérifier si l'utilisateur est Docte d'un cercle contenant ce personnage
+    let isDocte = false
     if (!isOwner && !isAdmin) {
+      const { data: cerclesDocte } = await adminSupabase
+        .from('cercles')
+        .select('id')
+        .eq('docte_id', user.id)
+
+      if (cerclesDocte && cerclesDocte.length > 0) {
+        const cercleIds = cerclesDocte.map((c: { id: string }) => c.id)
+        const { data: membership } = await adminSupabase
+          .from('cercle_membres')
+          .select('id')
+          .eq('user_id', character.user_id)
+          .in('cercle_id', cercleIds)
+          .maybeSingle()
+        isDocte = !!membership
+      }
+    }
+
+    if (!isOwner && !isAdmin && !isDocte) {
       return new Response(JSON.stringify({ error: 'Accès refusé' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Docte : lecture seule, ne peut pas déclencher la génération
+    if (isDocte && !isOwner && !isAdmin) {
+      if (character.prophetie) {
+        return new Response(JSON.stringify({ prophetie: character.prophetie }), {
+          status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      return new Response(JSON.stringify({ error: 'Ce joueur n\'a pas encore révélé son Songe' }), {
         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }

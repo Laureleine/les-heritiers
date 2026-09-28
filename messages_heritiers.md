@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v17.25.0 — Le Songe du Docte 🔮 (28 septembre 2026)
+
+Chers Héritiers,
+
+Trois petites retouches de l'Atelier, discrètes mais utiles.
+
+La plus notable concerne les Doctes : il leur est désormais possible de contempler le Songe d'un joueur de leur Table — ce fragment de rêve prophétique révélé lors du Scellage. Jusqu'ici, la porte restait close ; elle s'entrouvre. Le Docte peut lire, mais non déclencher : ce privilege d'initiation demeure celui du joueur seul.
+
+Deux autres corrections accompagnent cette mise à jour : la page des Cercles, qui refusait obstinément de s'afficher depuis la dernière version, retrouve sa sérénité ; et les items de vie sociale s'enregistrent à nouveau sans caprice.
+
+L'Atelier vous souhaite de belles intrigues,
+*L'Atelier des Héritiers*
+
+---
+
 ## v17.24.0 — La Révocation du Cercle 📜 (27 septembre 2026)
 
 Chers Héritiers,
