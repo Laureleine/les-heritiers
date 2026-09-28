@@ -222,6 +222,10 @@ export default function CerclesDashboard({ onBack, onViewCharacter }) {
     });
   }, [executeDeleteCercle]);
 
+  const activeCercleObj = useMemo(() => {
+    return cercles.find(c => c.id === activeTab);
+  }, [cercles, activeTab]);
+
   const executeKickMember = useCallback(async (member, cercleNom) => {
     setConfirmState(prev => ({ ...prev, isOpen: false }));
     try {
@@ -276,10 +280,6 @@ export default function CerclesDashboard({ onBack, onViewCharacter }) {
       action: () => executeKickMember(member, cercleNom)
     });
   }, [activeCercleObj, executeKickMember]);
-
-  const activeCercleObj = useMemo(() => {
-    return cercles.find(c => c.id === activeTab);
-  }, [cercles, activeTab]);
 
   // ✨ L'INCISION 3 : L'intercepteur qui charge le lourd lore
   const handleInspectCharacter = async (lightChar) => {

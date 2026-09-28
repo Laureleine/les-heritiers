@@ -344,7 +344,10 @@ export const submitEncyclopediaProposal = async ({
             if (activeTab === 'social_items') {
                 if (proposal.cout !== editingItem.cout) surgicalData.cout = proposal.cout;
                 if (proposal.cout_moderne !== editingItem.cout_moderne) surgicalData.cout_moderne = proposal.cout_moderne;
-                if (proposal.categorie !== editingItem.categorie) surgicalData.categorie = proposal.categorie;
+                // categorie est NOT NULL en base : fallback 'objet' si le select n'a pas été touché
+                const catNow = proposal.categorie || 'objet';
+                const catWas = editingItem.categorie || 'objet';
+                if (isCreating || catNow !== catWas) surgicalData.categorie = catNow;
                 if (proposal.is_choix_multiple !== editingItem.is_choix_multiple) surgicalData.is_choix_multiple = proposal.is_choix_multiple;
                 if (JSON.stringify(proposal.profils_autorises) !== JSON.stringify(editingItem.profils_autorises)) {
                     surgicalData.profils_autorises = proposal.profils_autorises;
