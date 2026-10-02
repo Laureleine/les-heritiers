@@ -61,12 +61,12 @@ const CharacterCard = React.memo(({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
+    <div className="bg-lh-parchemin-chaud rounded-sm shadow-sm border border-lh-gris-parchemin overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
 
       {/* 1. EN-TÊTE */}
-      <div className="p-4 pb-1 border-b border-stone-100">
+      <div className="p-4 pb-1 border-b border-lh-gris-parchemin/50">
         <div className="flex justify-between items-start mb-1 gap-2">
-          <h2 className="text-xl font-bold text-amber-900 font-serif truncate w-full" title={char.nom}>
+          <h2 className="text-xl font-bold text-lh-encre font-serif truncate w-full" title={char.nom}>
             {char.nom || 'Sans nom'}
             {char.isPublic && (
               <sup className="ml-1 text-blue-500 inline-block" title="Visible par tous"><Globe size={12} /></sup>
@@ -75,7 +75,7 @@ const CharacterCard = React.memo(({
         </div>
 
         <div className="flex justify-between items-center">
-          <div className="text-sm text-amber-700 font-serif italic">
+          <div className="text-sm text-lh-or-sombre font-serif italic">
             {char.typeFee || 'Inconnu'} • {char.sexe || '?'}
           </div>
           {(char.statut === 'scelle' || char.statut === 'scellé') && (() => {
@@ -85,7 +85,7 @@ const CharacterCard = React.memo(({
             const isDebt    = remaining < 0;
             return (
               <div
-                className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm ${isDebt ? 'bg-red-50 border-red-300' : 'bg-stone-50 border-stone-200'}`}
+                className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm ${isDebt ? 'bg-red-50 border-red-300' : 'bg-lh-parchemin border-lh-gris-parchemin'}`}
                 title={isDebt ? `Dette XP : ${depense} dépensés pour ${total} acquis` : `${remaining} XP disponibles sur ${total} acquis`}
               >
                 <Sparkles size={12} className={isDebt ? 'text-red-500' : 'text-amber-500'} />
@@ -134,15 +134,15 @@ const CharacterCard = React.memo(({
       </div>
 
       {/* 2. PROFILS */}
-      <div className="flex items-center justify-center gap-3 text-sm text-gray-600 mb-2 pt-1">
+      <div className="flex items-center justify-center gap-3 text-sm text-lh-encre/60 mb-2 pt-1">
         <div className="flex items-center gap-1.5" title="Profil Majeur">
           <span className="text-base">{majeur.icon}</span>
-          <span className="font-bold text-amber-900">{majeur.text}</span>
+          <span className="font-bold text-lh-encre">{majeur.text}</span>
         </div>
-        <span className="text-gray-300">|</span>
+        <span className="text-lh-gris-parchemin">|</span>
         <div className="flex items-center gap-1.5" title="Profil Mineur">
           <span className="text-base">{mineur.icon}</span>
-          <span className="text-blue-900">{mineur.text}</span>
+          <span className="text-lh-encre/80">{mineur.text}</span>
         </div>
       </div>
 
@@ -151,18 +151,18 @@ const CharacterCard = React.memo(({
 
         {/* Le Bouton Principal (Modifier ou Voir la fiche) */}
         {isMyCharacter ? (
-          <button onClick={() => onSelect(char)} className="flex-1 py-1.5 px-2 bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-800 rounded border border-stone-200 text-xs font-bold transition-colors flex justify-center items-center gap-1.5 overflow-hidden">
+          <button onClick={() => onSelect(char)} className="flex-1 py-1.5 px-2 bg-lh-parchemin text-lh-encre/70 hover:bg-lh-or/10 hover:text-lh-encre rounded border border-lh-gris-parchemin text-xs font-bold transition-colors flex justify-center items-center gap-1.5 overflow-hidden">
             <Edit size={14} className="shrink-0" />
             <span className="truncate hidden sm:inline">Modifier</span>
           </button>
         ) : (
-          <button onClick={() => onSelect(char, true)} className="flex-1 py-1.5 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2">
+          <button onClick={() => onSelect(char, true)} className="flex-1 py-1.5 bg-lh-or text-lh-nuit rounded text-sm font-bold hover:bg-lh-or-clair transition-colors flex justify-center items-center gap-2">
             <Eye size={16}/> Voir la fiche
           </button>
         )}
 
         {/* Les Petits Boutons d'Action alignés à droite */}
-        <div className="flex items-center gap-0.5 shrink-0 bg-stone-50/50 p-0.5 rounded border border-stone-100">
+        <div className="flex items-center gap-0.5 shrink-0 bg-lh-parchemin/50 p-0.5 rounded border border-lh-gris-parchemin/30">
 
           {/* Boutons Communs (PDF & JSON) */}
           <button onClick={() => onExportPDF(char)} className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded transition-all" title="Exporter en PDF" aria-label="Exporter en PDF">
@@ -248,21 +248,21 @@ const CharacterCard = React.memo(({
           </div>
         </div>
       )}
-      <div className="bg-stone-50 px-4 py-2 border-t border-stone-100 flex justify-between items-center text-[10px] text-stone-400 mt-auto">
+      <div className="bg-lh-parchemin px-4 py-2 border-t border-lh-gris-parchemin/30 flex justify-between items-center text-[10px] text-lh-gris-parchemin mt-auto">
         <div className="flex items-center gap-1.5">
           {!isMyCharacter && (
             <>
               {/* ✨ Bouton Télégraphe discret à côté du pseudo */}
               <button
                 onClick={handleTelegraphe}
-                className="p-0.5 text-blue-300 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                className="p-0.5 text-lh-or/40 hover:text-lh-or hover:bg-lh-or/10 rounded transition-colors"
                 title={`Missive privée à ${char.ownerUsername}`}
                 aria-label={`Envoyer une missive privée à ${char.ownerUsername}`}
               >
                 <MessageCircle size={10} />
               </button>
-              <User size={10} className="text-blue-400"/>
-              <span className="text-blue-900 font-bold">{char.ownerUsername || 'Inconnu'}</span>
+              <User size={10} className="text-lh-or/60"/>
+              <span className="text-lh-encre font-bold">{char.ownerUsername || 'Inconnu'}</span>
             </>
           )}
           {isMyCharacter && <span className="italic">Mon personnage</span>}

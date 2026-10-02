@@ -298,16 +298,16 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
         {/* ─── BARRE DE NAVIGATION ─────────────────────────────────────── */}
         <div className="relative z-50 flex flex-nowrap items-center gap-1 overflow-x-auto hide-scrollbar w-full pb-2">
-          <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-amber-100 text-amber-900 border-2 border-amber-200 rounded-lg hover:bg-amber-200 hover:border-amber-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
+          <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={14} /> <span className="hidden lg:inline">Encyclopédie</span>
           </button>
-          <button onClick={onOpenOutils} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-stone-100 text-stone-800 border-2 border-stone-200 rounded-lg hover:bg-stone-200 hover:border-stone-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Outils pour les Doctes">
+          <button onClick={onOpenOutils} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Outils pour les Doctes">
             <Wrench size={14} /> <span className="hidden lg:inline">Outils</span>
           </button>
-          <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-purple-100 text-purple-900 border-2 border-purple-200 rounded-lg hover:bg-purple-200 hover:border-purple-300 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
+          <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
             <Users size={14} /> <span className="hidden lg:inline">Cercles</span>
           </button>
-          <button onClick={onOpenAdmin} className="relative flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-indigo-100 text-indigo-800 border-2 border-indigo-200 rounded-lg hover:bg-indigo-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
+          <button onClick={onOpenAdmin} className="relative flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
             <BarChart2 size={14} /> <span className="hidden lg:inline">Communauté</span>
             {isAdmin && pendingRepairCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center bg-orange-500 text-white text-[10px] font-black rounded-full px-1 animate-pulse shadow">
@@ -315,50 +315,50 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               </span>
             )}
           </button>
-          <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-rose-100 text-rose-800 border-2 border-rose-200 rounded-lg hover:bg-rose-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Signaler une faille dans la matrice">
+          <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Signaler une faille dans la matrice">
             <Bug size={14} /> <span className="hidden lg:inline">Anomalies</span>
           </button>
-          <button onClick={onOpenAccount} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-gray-100 text-gray-700 border-2 border-gray-200 rounded-lg hover:bg-gray-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm">
+          <button onClick={onOpenAccount} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm">
             <User size={14} /> <span className="hidden lg:inline">Compte</span>
           </button>
-          <button onClick={onSignOut} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-red-100 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-200 transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Se déconnecter">
+          <button onClick={onSignOut} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-bordeaux border-2 border-lh-bordeaux/30 rounded-lg hover:bg-lh-bordeaux/10 hover:border-lh-bordeaux transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Se déconnecter">
             <LogOut size={14} /> <span className="hidden lg:inline">Déconnexion</span>
           </button>
         </div>
 
         {/* ─── ONGLETS ─────────────────────────────────────────────────── */}
-        <div className="flex gap-4 border-b border-gray-200 overflow-x-auto hide-scrollbar items-end">
+        <div className="flex gap-4 border-b border-lh-gris-parchemin overflow-x-auto hide-scrollbar items-end">
           <button
             onClick={onNewCharacter}
             disabled={!gameData?.fairyTypes?.length}
             title={!gameData?.fairyTypes?.length ? "Chargement des données en cours…" : undefined}
-            className={`flex-shrink-0 mr-6 pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 text-green-700 border-transparent hover:text-green-800 hover:border-green-600 ${!gameData?.fairyTypes?.length ? 'opacity-50 cursor-wait' : ''}`}
+            className={`flex-shrink-0 mr-6 pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 text-lh-foret border-transparent hover:text-lh-foret hover:border-lh-foret ${!gameData?.fairyTypes?.length ? 'opacity-50 cursor-wait' : ''}`}
           >
             <Plus size={16} /> Nouveau
           </button>
-          <button onClick={() => handleTabChange('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+          <button onClick={() => handleTabChange('my')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'my' ? 'text-lh-encre border-lh-or' : 'text-lh-gris-parchemin border-transparent hover:text-lh-encre hover:border-lh-gris-parchemin' }`}>
             Mes personnages
-            <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'my' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600'}`}>
+            <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'my' ? 'bg-lh-or/20 text-lh-encre' : 'bg-lh-parchemin text-lh-gris-parchemin'}`}>
               {activeCount.my}
             </span>
           </button>
-          <button onClick={() => handleTabChange('public')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'public' ? 'text-blue-900 border-blue-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+          <button onClick={() => handleTabChange('public')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'public' ? 'text-lh-encre border-lh-or' : 'text-lh-gris-parchemin border-transparent hover:text-lh-encre hover:border-lh-gris-parchemin' }`}>
             <Globe size={16} /> Publics
-            <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'public' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
+            <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'public' ? 'bg-lh-or/20 text-lh-encre' : 'bg-lh-parchemin text-lh-gris-parchemin'}`}>
               {activeCount.public}
             </span>
           </button>
           {isAdmin && (
-            <button onClick={() => handleTabChange('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-red-900 border-red-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300' }`}>
+            <button onClick={() => handleTabChange('admin')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${ activeTab === 'admin' ? 'text-lh-bordeaux border-lh-bordeaux' : 'text-lh-gris-parchemin border-transparent hover:text-lh-encre hover:border-lh-gris-parchemin' }`}>
               <Crown size={16} /> Admin
-              <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'admin' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
+              <span className={`py-0.5 px-2 rounded-full text-xs ${activeTab === 'admin' ? 'bg-lh-bordeaux/10 text-lh-bordeaux' : 'bg-lh-parchemin text-lh-gris-parchemin'}`}>
                 {activeCount.admin}
               </span>
             </button>
           )}
           <button
             onClick={() => setShowClaimModal(true)}
-            className="ml-auto pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 text-emerald-600 border-b-2 border-transparent hover:border-emerald-600 hover:text-emerald-700 transition-colors"
+            className="ml-auto pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 text-lh-foret border-b-2 border-transparent hover:border-lh-foret transition-colors"
             title="Saisir le code d'un Parchemin Scellé"
           >
             <Gift size={16} className={hasGiftsWaiting ? "animate-pulse drop-shadow-md" : ""} /> Recevoir
@@ -373,7 +373,7 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
             placeholder="Filtrer les personnages… (nom, nature, joueur)"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-8 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 bg-white font-serif"
+            className="w-full pl-8 pr-8 py-2 text-sm border border-lh-gris-parchemin rounded-lg focus:outline-none focus:border-lh-or focus:ring-1 focus:ring-lh-or/20 bg-lh-parchemin-chaud font-serif text-lh-encre"
           />
           {searchQuery && (
             <button
@@ -390,22 +390,22 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden animate-pulse flex flex-col h-[200px]">
-              <div className="p-4 border-b border-stone-100">
+            <div key={i} className="bg-lh-parchemin-chaud rounded-sm shadow-sm border border-lh-gris-parchemin overflow-hidden animate-pulse flex flex-col h-[200px]">
+              <div className="p-4 border-b border-lh-gris-parchemin/50">
                 <div className="flex justify-between items-start mb-3">
-                  <div className="h-6 w-1/2 bg-stone-200 rounded-md"></div>
-                  <div className="h-5 w-16 bg-stone-200 rounded-full"></div>
+                  <div className="h-6 w-1/2 bg-lh-gris-parchemin/40 rounded-md"></div>
+                  <div className="h-5 w-16 bg-lh-gris-parchemin/40 rounded-full"></div>
                 </div>
-                <div className="h-4 w-1/3 bg-stone-100 rounded-md"></div>
+                <div className="h-4 w-1/3 bg-lh-gris-parchemin/30 rounded-md"></div>
               </div>
               <div className="flex-1 p-4 flex items-center justify-center gap-3">
-                <div className="h-5 w-24 bg-stone-200 rounded-md"></div>
-                <div className="h-4 w-4 bg-stone-100 rounded-full"></div>
-                <div className="h-5 w-24 bg-stone-200 rounded-md"></div>
+                <div className="h-5 w-24 bg-lh-gris-parchemin/40 rounded-md"></div>
+                <div className="h-4 w-4 bg-lh-gris-parchemin/30 rounded-full"></div>
+                <div className="h-5 w-24 bg-lh-gris-parchemin/40 rounded-md"></div>
               </div>
-              <div className="bg-stone-50 px-4 py-3 border-t border-stone-100 flex justify-between items-center mt-auto">
-                <div className="h-3 w-20 bg-stone-200 rounded-md"></div>
-                <div className="h-3 w-16 bg-stone-200 rounded-md"></div>
+              <div className="bg-lh-parchemin px-4 py-3 border-t border-lh-gris-parchemin/30 flex justify-between items-center mt-auto">
+                <div className="h-3 w-20 bg-lh-gris-parchemin/40 rounded-md"></div>
+                <div className="h-3 w-16 bg-lh-gris-parchemin/40 rounded-md"></div>
               </div>
             </div>
           ))}

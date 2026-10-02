@@ -54,13 +54,13 @@ export default function App() {
 
   if (!isOnline && !hasCachedData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-900 p-6">
+      <div className="min-h-screen flex items-center justify-center bg-lh-nuit p-6">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-6">📜</div>
-          <h1 className="text-2xl font-serif font-bold text-amber-200 mb-4">
+          <h1 className="text-2xl font-serif font-bold text-lh-or mb-4">
             Le Grimoire n'est pas encore ouvert
           </h1>
-          <p className="text-stone-300 leading-relaxed">
+          <p className="text-lh-parchemin/70 leading-relaxed">
             Votre Grimoire n'a pas encore été chargé. Connectez-vous une première fois en ligne pour activer le mode hors ligne.
           </p>
         </div>
@@ -70,10 +70,10 @@ export default function App() {
 
   if (globalLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-lh-parchemin p-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
-          <p className="text-lg text-amber-900 font-serif">{loadingStep}</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lh-or mx-auto mb-4"></div>
+          <p className="text-lg text-lh-encre font-serif">{loadingStep}</p>
         </div>
       </div>
     );
@@ -81,7 +81,7 @@ export default function App() {
 
   if (isRecoveryMode) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-lh-parchemin p-4">
         <main>
           <ResetPasswordForm />
         </main>
@@ -91,7 +91,7 @@ export default function App() {
 
   if (!session || !userProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-lh-parchemin p-4">
         <main>
           <Auth />
         </main>
@@ -101,7 +101,7 @@ export default function App() {
 
   return (
     <UserContext.Provider value={{ session, userProfile, refreshUserProfile }}>
-    <div className="min-h-screen bg-stone-50 pb-24 font-sans text-gray-800">
+    <div className="min-h-screen bg-lh-parchemin pb-24 text-lh-encre">
       <OfflineBanner />
 
 
@@ -187,13 +187,13 @@ export default function App() {
 
       {/* 4. MODALE DU JOURNAL DES VERSIONS */}
       {showVersionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
-          <div className="bg-[#fdfbf7] max-w-2xl w-full max-h-[80vh] rounded-xl shadow-2xl border-2 border-amber-900/20 flex flex-col overflow-hidden">
-            <div className="bg-amber-900 text-amber-50 p-4 flex justify-between items-center shadow-md z-10 shrink-0">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-lh-nuit/70 backdrop-blur-sm p-4">
+          <div className="bg-lh-parchemin max-w-2xl w-full max-h-[80vh] rounded-xl shadow-2xl border-2 border-lh-or/20 flex flex-col overflow-hidden">
+            <div className="bg-lh-nuit text-lh-parchemin p-4 flex justify-between items-center shadow-md z-10 shrink-0">
               <h3 className="font-serif font-bold text-lg flex items-center gap-2">
-                <BookOpen size={18} className="text-amber-300" /> Registre des Mises à jour
+                <BookOpen size={18} className="text-lh-or" /> Registre des Mises à jour
               </h3>
-              <button onClick={() => setShowVersionModal(false)} className="hover:text-red-400 bg-amber-800/50 p-1.5 rounded-lg transition-colors" aria-label="Fermer le registre des mises à jour">
+              <button onClick={() => setShowVersionModal(false)} className="hover:text-lh-bordeaux bg-lh-or/10 p-1.5 rounded-lg transition-colors" aria-label="Fermer le registre des mises à jour">
                 <X size={18} />
               </button>
             </div>
@@ -202,18 +202,18 @@ export default function App() {
             <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
               {versionHistory ? versionHistory.map((entry, index) => (
                 <div key={index} className="mb-6 last:mb-0">
-                  <h4 className="text-lg font-bold text-amber-900 font-serif border-b border-amber-200 pb-1 mb-3">
-                    {entry.version} <span className="text-sm font-normal text-amber-700 italic ml-2">({entry.date})</span>
+                  <h4 className="text-lg font-bold text-lh-encre font-serif border-b border-lh-gris-parchemin pb-1 mb-3">
+                    {entry.version} <span className="text-sm font-normal text-lh-or-sombre italic ml-2">({entry.date})</span>
                   </h4>
                   <ul className="space-y-3">
                     {entry.changes.map((change, i) => {
                       // Mini-parseur pour transformer nos "**" en texte gras 
                       const parts = change.split('**');
                       return (
-                        <li key={i} className="text-sm text-stone-700 leading-relaxed flex items-start gap-2">
-                          <span className="mt-0.5 text-amber-600 shrink-0">✦</span>
+                        <li key={i} className="text-sm text-lh-encre/80 leading-relaxed flex items-start gap-2">
+                          <span className="mt-0.5 text-lh-or shrink-0">✦</span>
                           <span>
-                            {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-stone-900 font-bold">{part}</strong> : part)}
+                            {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-lh-encre font-bold">{part}</strong> : part)}
                           </span>
                         </li>
                       );
@@ -221,8 +221,8 @@ export default function App() {
                   </ul>
                 </div>
               )) : (
-                <div className="flex items-center justify-center py-12 text-stone-400">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mr-3"></div>
+                <div className="flex items-center justify-center py-12 text-lh-gris-parchemin">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lh-or mr-3"></div>
                   Chargement du registre...
                 </div>
               )}
