@@ -1,33 +1,102 @@
+/* === Polices officielles Les Héritiers === */
+@font-face {
+  font-family: 'AG Garamond Pro';
+  src: url('/fonts/aggaramond-regular.otf') format('opentype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'AG Garamond Pro';
+  src: url('/fonts/aggaramond-bold.otf') format('opentype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'AG Garamond Pro';
+  src: url('/fonts/aggaramond-italic.otf') format('opentype');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'AG Garamond Pro';
+  src: url('/fonts/aggaramond-bolditalic.otf') format('opentype');
+  font-weight: 700; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Arnold Boecklin';
+  src: url('/fonts/arnold-boecklin.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gismonda';
+  src: url('/fonts/gismonda.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Amarante';
+  src: url('/fonts/amarante-regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Jugendstil Ornamente';
+  src: url('/fonts/jugendstil-ornamente.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* Google Fonts fallback pour Playfair Display (UI utilitaire) */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* === Base === */
 body {
   margin: 0;
-  font-family: 'Playfair Display', serif;
+  font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+  background-color: #faf6ed; /* lh-parchemin */
+  color: #2e2100;            /* lh-encre */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Filtre sépia Belle Époque sur le panneau IGN historique */
+/* === Filtre sépia Belle Époque sur le panneau IGN historique === */
 .leaflet-historical-pane {
   filter: sepia(0.18) brightness(0.9) contrast(1.08);
 }
 
-/* Impression du menu généré : isole #menu-imprimable, masque le reste de la page */
+/* === Impression du menu === */
 @media print {
-  body * {
-    visibility: hidden;
+  body * { visibility: hidden; }
+  #menu-imprimable, #menu-imprimable * { visibility: visible; }
+  #menu-imprimable { position: absolute; top: 0; left: 0; width: 100%; }
+}
+
+@layer components {
+  /* Boutons */
+  .btn-lh-primary {
+    @apply bg-lh-or text-lh-nuit font-bold px-5 py-2 rounded
+           hover:bg-lh-or-clair active:bg-lh-or-sombre
+           transition-colors duration-150 cursor-pointer;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
   }
-  #menu-imprimable, #menu-imprimable * {
-    visibility: visible;
+  .btn-lh-secondary {
+    @apply border-2 border-lh-or text-lh-or bg-transparent font-bold px-5 py-2 rounded
+           hover:bg-lh-or/10 active:bg-lh-or/20
+           transition-colors duration-150 cursor-pointer;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
   }
-  #menu-imprimable {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+  .btn-lh-danger {
+    @apply bg-lh-bordeaux text-lh-parchemin font-bold px-5 py-2 rounded
+           hover:opacity-90 active:opacity-80
+           transition-opacity duration-150 cursor-pointer;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+  }
+
+  /* Cartes */
+  .card-lh {
+    @apply bg-lh-parchemin-chaud border border-lh-gris-parchemin rounded-sm
+           shadow-sm p-4;
+  }
+  .card-lh-title {
+    @apply text-lh-or font-bold text-lg mb-2;
+    font-family: 'Gismonda', 'AG Garamond Pro', Georgia, serif;
   }
 }

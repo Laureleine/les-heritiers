@@ -21,6 +21,7 @@ export default defineConfig({
       manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globIgnores: ['**/culs-de-lampe/**', '**/fonts/**'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/[^/]*\.supabase\.co\/rest\//,
