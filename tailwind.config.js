@@ -19,10 +19,13 @@ module.exports = {
         },
       },
       fontFamily: {
-        garamond: ['"AG Garamond Pro"', 'Garamond', 'Georgia', 'serif'],
-        boecklin:  ['"Arnold Boecklin"', 'fantasy'],
-        gismonda:  ['Gismonda', '"AG Garamond Pro"', 'Georgia', 'serif'],
-        amarante:  ['Amarante', 'serif'],
+        /* font-serif Tailwind → Amarante (tous les composants utilisant font-serif) */
+        serif:       ['Amarante', 'Georgia', 'serif'],
+        garamond:    ['"AG Garamond Pro"', 'Garamond', 'Georgia', 'serif'],
+        boecklin:    ['"Arnold Boecklin"', 'fantasy'],
+        gismonda:    ['Gismonda', 'Georgia', 'serif'],
+        amarante:    ['Amarante', 'Georgia', 'serif'],
+        magnificent: ['"Magnificent Personal Use"', 'fantasy'],
       },
       animation: {
         'fade-in':      'fadeIn 0.3s ease-out',

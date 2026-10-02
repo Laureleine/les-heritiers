@@ -39,6 +39,11 @@
   src: url('/fonts/jugendstil-ornamente.ttf') format('truetype');
   font-weight: 400; font-style: normal; font-display: swap;
 }
+@font-face {
+  font-family: 'Magnificent Personal Use';
+  src: url('/fonts/magnificent-personal-use.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
 
 /* Google Fonts fallback pour Playfair Display (UI utilitaire) */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
@@ -50,11 +55,17 @@
 /* === Base === */
 body {
   margin: 0;
-  font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+  font-family: 'Amarante', Georgia, serif;
   background-color: #faf6ed; /* lh-parchemin */
   color: #2e2100;            /* lh-encre */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  h1, h2, h3 {
+    font-family: 'Gismonda', Georgia, serif;
+  }
 }
 
 /* === Filtre sépia Belle Époque sur le panneau IGN historique === */
@@ -75,19 +86,19 @@ body {
     @apply bg-lh-or text-lh-nuit font-bold px-5 py-2 rounded
            hover:bg-lh-or-clair active:bg-lh-or-sombre
            transition-colors duration-150 cursor-pointer;
-    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+    font-family: 'Amarante', Georgia, serif;
   }
   .btn-lh-secondary {
     @apply border-2 border-lh-or text-lh-or bg-transparent font-bold px-5 py-2 rounded
            hover:bg-lh-or/10 active:bg-lh-or/20
            transition-colors duration-150 cursor-pointer;
-    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+    font-family: 'Amarante', Georgia, serif;
   }
   .btn-lh-danger {
     @apply bg-lh-bordeaux text-lh-parchemin font-bold px-5 py-2 rounded
            hover:opacity-90 active:opacity-80
            transition-opacity duration-150 cursor-pointer;
-    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+    font-family: 'Amarante', Georgia, serif;
   }
 
   /* Cartes */
@@ -97,6 +108,6 @@ body {
   }
   .card-lh-title {
     @apply text-lh-or font-bold text-lg mb-2;
-    font-family: 'Gismonda', 'AG Garamond Pro', Georgia, serif;
+    font-family: 'Gismonda', Georgia, serif;
   }
 }
