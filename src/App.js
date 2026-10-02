@@ -151,26 +151,28 @@ export default function App() {
       />
       <BackgroundDecor />
 
-      <header className="pt-6 pb-4 text-center relative z-10">
-        <div className="flex flex-wrap justify-center items-baseline gap-4">
-          <h1
-            className="text-5xl font-serif text-amber-900 cursor-pointer hover:text-amber-700 transition-colors m-0"
+      <header className="pt-4 pb-3 text-center relative z-10 bg-lh-nuit border-b-2 border-lh-or">
+        <div className="flex flex-wrap justify-center items-center gap-4">
+          <img
+            src="/assets/logo/logo-heritiers-soustitre.png"
+            alt="Les Héritiers — Aventures féeriques à la Belle Époque"
+            className="h-20 cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => navigate('/')}
             title="Retour à l'accueil"
-          >
-            Les Héritiers
-          </h1>
+          />
           <button
             onClick={() => setShowVersionModal(true)}
-            className="text-xs text-amber-700 bg-amber-100/50 hover:bg-amber-200 hover:text-amber-900 border border-amber-200 px-3 py-1 rounded-full uppercase tracking-widest font-bold transition-all shadow-sm flex items-center gap-2"
+            className="text-xs text-lh-or bg-lh-nuit/50 hover:bg-lh-nuit border border-lh-or/40 px-3 py-1 rounded-full uppercase tracking-widest font-bold transition-all shadow-sm flex items-center gap-2"
             aria-label={`Journal des mises à jour, version ${APP_VERSION}`}
           >
             Version {APP_VERSION} • {BUILD_DATE} <BookOpen size={12} />
           </button>
         </div>
-        <div className="flex flex-wrap justify-center items-center gap-2 mt-3 max-w-2xl mx-auto">
+        <div className="flex flex-wrap justify-center items-center gap-2 mt-2 max-w-2xl mx-auto">
           {isSuperAdmin(userProfile) && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full border border-purple-200 shadow-sm">Super Admin</span>
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-lh-bordeaux/20 text-lh-or text-xs font-bold rounded-full border border-lh-or/30 shadow-sm">
+              Super Admin
+            </span>
           )}
         </div>
       </header>
