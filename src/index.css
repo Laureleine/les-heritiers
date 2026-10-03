@@ -63,8 +63,23 @@ body {
 }
 
 @layer base {
-  h1, h2, h3 {
+  h1 {
     font-family: 'Gismonda', Georgia, serif;
+    color: #2c4312; /* lh-foret */
+  }
+  h2 {
+    font-family: 'Gismonda', Georgia, serif;
+    color: #4b0221; /* lh-bordeaux */
+  }
+  h3 {
+    font-family: 'Amarante', Georgia, serif;
+    color: #2c4312; /* lh-foret */
+  }
+  h4 {
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+    font-variant-caps: small-caps;
+    color: #7a6220; /* lh-or-sombre */
+    letter-spacing: 0.04em;
   }
 }
 
