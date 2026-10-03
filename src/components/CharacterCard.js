@@ -66,7 +66,7 @@ const CharacterCard = React.memo(({
       {/* 1. EN-TÊTE */}
       <div className="p-4 pb-1 border-b border-lh-gris-parchemin/50">
         <div className="flex justify-between items-start mb-1 gap-2">
-          <h2 className="text-xl font-bold text-lh-encre font-serif truncate w-full" title={char.nom}>
+          <h2 className="text-xl font-bold text-lh-encre font-amarante truncate w-full" title={char.nom}>
             {char.nom || 'Sans nom'}
             {char.isPublic && (
               <sup className="ml-1 text-blue-500 inline-block" title="Visible par tous"><Globe size={12} /></sup>
@@ -137,12 +137,12 @@ const CharacterCard = React.memo(({
       <div className="flex items-center justify-center gap-3 text-sm text-lh-encre/60 mb-2 pt-1">
         <div className="flex items-center gap-1.5" title="Profil Majeur">
           <span className="text-base">{majeur.icon}</span>
-          <span className="font-bold text-lh-encre">{majeur.text}</span>
+          <span className="font-bold text-lh-encre font-amarante">{majeur.text}</span>
         </div>
         <span className="text-lh-gris-parchemin">|</span>
         <div className="flex items-center gap-1.5" title="Profil Mineur">
           <span className="text-base">{mineur.icon}</span>
-          <span className="text-lh-encre/80">{mineur.text}</span>
+          <span className="text-lh-encre/80 font-amarante">{mineur.text}</span>
         </div>
       </div>
 

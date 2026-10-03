@@ -298,16 +298,16 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
 
         {/* ─── BARRE DE NAVIGATION ─────────────────────────────────────── */}
         <div className="relative z-50 flex flex-nowrap items-center gap-1 overflow-x-auto hide-scrollbar w-full pb-2">
-          <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
+          <button onClick={onOpenEncyclopedia} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-gismonda font-bold text-xs sm:text-sm shadow-sm" title="Accéder au Grimoire">
             <Book size={14} /> <span className="hidden lg:inline">Encyclopédie</span>
           </button>
-          <button onClick={onOpenOutils} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Outils pour les Doctes">
+          <button onClick={onOpenOutils} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-gismonda font-bold text-xs sm:text-sm shadow-sm" title="Outils pour les Doctes">
             <Wrench size={14} /> <span className="hidden lg:inline">Outils</span>
           </button>
-          <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
+          <button onClick={onOpenCercles} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-gismonda font-bold text-xs sm:text-sm shadow-sm" title="Gérer mes tables virtuelles">
             <Users size={14} /> <span className="hidden lg:inline">Cercles</span>
           </button>
-          <button onClick={onOpenAdmin} className="relative flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
+          <button onClick={onOpenAdmin} className="relative flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-gismonda font-bold text-xs sm:text-sm shadow-sm" title="Voir la communauté et les statistiques du jeu">
             <BarChart2 size={14} /> <span className="hidden lg:inline">Communauté</span>
             {isAdmin && pendingRepairCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center bg-orange-500 text-white text-[10px] font-black rounded-full px-1 animate-pulse shadow">
@@ -315,13 +315,13 @@ export default function CharacterList({ onSelectCharacter, onNewCharacter, onSig
               </span>
             )}
           </button>
-          <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Signaler une faille dans la matrice">
+          <button onClick={onOpenBureau} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-gismonda font-bold text-xs sm:text-sm shadow-sm" title="Signaler une faille dans la matrice">
             <Bug size={14} /> <span className="hidden lg:inline">Anomalies</span>
           </button>
-          <button onClick={onOpenAccount} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-serif font-bold text-xs sm:text-sm shadow-sm">
+          <button onClick={onOpenAccount} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-encre border-2 border-lh-gris-parchemin rounded-lg hover:bg-lh-or/10 hover:border-lh-or transition-all font-gismonda font-bold text-xs sm:text-sm shadow-sm">
             <User size={14} /> <span className="hidden lg:inline">Compte</span>
           </button>
-          <button onClick={onSignOut} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-bordeaux border-2 border-lh-bordeaux/30 rounded-lg hover:bg-lh-bordeaux/10 hover:border-lh-bordeaux transition-all font-serif font-bold text-xs sm:text-sm shadow-sm" title="Se déconnecter">
+          <button onClick={onSignOut} className="flex-shrink-0 flex items-center space-x-1 px-2 py-1 sm:px-2.5 sm:py-1.5 bg-lh-parchemin-chaud text-lh-bordeaux border-2 border-lh-bordeaux/30 rounded-lg hover:bg-lh-bordeaux/10 hover:border-lh-bordeaux transition-all font-gismonda font-bold text-xs sm:text-sm shadow-sm" title="Se déconnecter">
             <LogOut size={14} /> <span className="hidden lg:inline">Déconnexion</span>
           </button>
         </div>
