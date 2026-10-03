@@ -52,12 +52,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* === Palette LH — variables CSS (miroir de tailwind.config.js) === */
+:root {
+  --lh-or:               #ac882e;
+  --lh-or-clair:         #d4aa4e;
+  --lh-or-sombre:        #7a6220;
+  --lh-nuit:             #0a1c36;
+  --lh-encre:            #2e2100;
+  --lh-parchemin:        #faf6ed;
+  --lh-parchemin-chaud:  #f0e8d0;
+  --lh-bordeaux:         #4b0221;
+  --lh-foret:            #2c4312;
+  --lh-gris-parchemin:   #c8bc9c;
+}
+
 /* === Base === */
 body {
   margin: 0;
   font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
-  background-color: #faf6ed; /* lh-parchemin */
-  color: #2e2100;            /* lh-encre */
+  background-color: var(--lh-parchemin);
+  color: var(--lh-encre);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -65,20 +79,20 @@ body {
 @layer base {
   h1 {
     font-family: 'Gismonda', Georgia, serif;
-    color: #2c4312; /* lh-foret */
+    color: var(--lh-foret);
   }
   h2 {
     font-family: 'Gismonda', Georgia, serif;
-    color: #4b0221; /* lh-bordeaux */
+    color: var(--lh-bordeaux);
   }
   h3 {
     font-family: 'Amarante', Georgia, serif;
-    color: #2c4312; /* lh-foret */
+    color: var(--lh-foret);
   }
   h4 {
     font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
     font-variant-caps: small-caps;
-    color: #7a6220; /* lh-or-sombre */
+    color: var(--lh-or-sombre);
     letter-spacing: 0.04em;
   }
 }
