@@ -19,8 +19,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        /* font-serif Tailwind → Amarante (tous les composants utilisant font-serif) */
-        serif:       ['Amarante', 'Georgia', 'serif'],
+        /* font-serif Tailwind → AG Garamond Pro (corps de texte principal) */
+        serif:       ['"AG Garamond Pro"', 'Garamond', 'Georgia', 'serif'],
         garamond:    ['"AG Garamond Pro"', 'Garamond', 'Georgia', 'serif'],
         boecklin:    ['"Arnold Boecklin"', 'fantasy'],
         gismonda:    ['Gismonda', 'Georgia', 'serif'],

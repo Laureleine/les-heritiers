@@ -55,7 +55,7 @@
 /* === Base === */
 body {
   margin: 0;
-  font-family: 'Amarante', Georgia, serif;
+  font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
   background-color: #faf6ed; /* lh-parchemin */
   color: #2e2100;            /* lh-encre */
   -webkit-font-smoothing: antialiased;
@@ -86,19 +86,19 @@ body {
     @apply bg-lh-or text-lh-nuit font-bold px-5 py-2 rounded
            hover:bg-lh-or-clair active:bg-lh-or-sombre
            transition-colors duration-150 cursor-pointer;
-    font-family: 'Amarante', Georgia, serif;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
   }
   .btn-lh-secondary {
     @apply border-2 border-lh-or text-lh-or bg-transparent font-bold px-5 py-2 rounded
            hover:bg-lh-or/10 active:bg-lh-or/20
            transition-colors duration-150 cursor-pointer;
-    font-family: 'Amarante', Georgia, serif;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
   }
   .btn-lh-danger {
     @apply bg-lh-bordeaux text-lh-parchemin font-bold px-5 py-2 rounded
            hover:opacity-90 active:opacity-80
            transition-opacity duration-150 cursor-pointer;
-    font-family: 'Amarante', Georgia, serif;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
   }
 
   /* Cartes */
