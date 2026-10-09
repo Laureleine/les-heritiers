@@ -95,12 +95,7 @@ describe('characterReducer', () => {
   });
 
   describe('LOAD_CHARACTER', () => {
-    function setScelle(value) {
-      isCharacterScelle.mockReturnValue(value);
-    }
-
-    it('charge un personnage non scellé sans modification', () => {
-      setScelle(false);
+    it('charge les champs du personnage', () => {
       const result = characterReducer({}, {
         type: 'LOAD_CHARACTER',
         payload: { id: 'char-1', nom: 'Test' },
@@ -110,80 +105,44 @@ describe('characterReducer', () => {
       expect(result.nom).toBe('Test');
     });
 
-    it('reconstruit historique_xp pour un personnage scellé sans historique', () => {
-      setScelle(true);
-      reconstructHistory.mockReturnValue([
-        { type: 'DEPENSE', code: 'CARAC_AUGMENTATION', valeur: 12, label: 'Augmentation : Agilité' },
-      ]);
-
-      const result = characterReducer({}, {
-        type: 'LOAD_CHARACTER',
-        payload: { id: 'char-1', xp_total: 100, xp_depense: 12, data: {} },
-        gameData: baseGameData,
-      });
-
-      expect(result.data.historique_xp).toBeDefined();
-      expect(result.data.historique_xp.length).toBeGreaterThanOrEqual(2);
-      expect(result.data.historique_xp.some(tx => tx.type === 'GAIN')).toBe(true);
-      expect(reconstructHistory).toHaveBeenCalled();
-    });
-
-    it('ne crée pas d\'historique si déjà présent', () => {
-      setScelle(true);
-      const existingHistory = [{ type: 'GAIN', valeur: 100, code: 'XP_HISTORIQUE', label: 'Initial' }];
-
-      const result = characterReducer({}, {
-        type: 'LOAD_CHARACTER',
-        payload: { id: 'char-1', xp_total: 100, xp_depense: 30, data: { historique_xp: existingHistory } },
-        gameData: baseGameData,
-      });
-
-      expect(result.data.historique_xp).toBe(existingHistory);
-      expect(reconstructHistory).not.toHaveBeenCalled();
-    });
-
-    it('ne crée pas d\'entrée GAIN si xp_total et xp_depense sont 0', () => {
-      setScelle(true);
-
-      const result = characterReducer({}, {
-        type: 'LOAD_CHARACTER',
-        payload: { id: 'char-1', xp_total: 0, xp_depense: 0, data: {} },
-        gameData: baseGameData,
-      });
-
-      expect(result.data?.historique_xp).toBeUndefined();
-    });
-
-    it('injecte la reconstruction sans entrée SOLDE même si reconstruction != depense', () => {
-      setScelle(true);
-      reconstructHistory.mockReturnValue([
-        { type: 'DEPENSE', valeur: 10, code: 'CARAC_AUGMENTATION' },
-      ]);
-
-      const result = characterReducer({}, {
-        type: 'LOAD_CHARACTER',
-        payload: { id: 'char-1', xp_total: 100, xp_depense: 15, data: {} },
-        gameData: baseGameData,
-      });
-
-      const solde = result.data.historique_xp.find(tx => tx.code === 'XP_SOLDE');
-      expect(solde).toBeUndefined();
-      // La reconstruction est injectée telle quelle (10 XP), pas réconciliée à 15
-      const depense = result.data.historique_xp.find(tx => tx.code === 'CARAC_AUGMENTATION');
-      expect(depense).toBeDefined();
-      expect(depense.valeur).toBe(10);
-    });
-
-    it('ne fait rien pour un personnage non scellé', () => {
-      setScelle(false);
-
+    it('initialise historique_xp à un tableau vide (buffer de session)', () => {
       const result = characterReducer({}, {
         type: 'LOAD_CHARACTER',
         payload: { id: 'char-1', xp_total: 100, xp_depense: 30, data: {} },
         gameData: baseGameData,
       });
+      expect(result.data.historique_xp).toEqual([]);
+    });
 
-      expect(result.data?.historique_xp).toBeUndefined();
+    it('réinitialise historique_xp même si un historique existait dans le payload', () => {
+      const existingHistory = [{ type: 'GAIN', valeur: 100, code: 'XP_HISTORIQUE', label: 'Initial' }];
+      const result = characterReducer({}, {
+        type: 'LOAD_CHARACTER',
+        payload: { id: 'char-1', xp_total: 100, xp_depense: 30, data: { historique_xp: existingHistory } },
+        gameData: baseGameData,
+      });
+      // Le buffer de session repart toujours vide, quelle que soit la valeur dans le payload
+      expect(result.data.historique_xp).toEqual([]);
+    });
+
+    it('ne reconstruit pas l\'historique au chargement (la source de vérité est xp_transactions)', () => {
+      isCharacterScelle.mockReturnValue(true);
+      const result = characterReducer({}, {
+        type: 'LOAD_CHARACTER',
+        payload: { id: 'char-1', xp_total: 100, xp_depense: 30, data: {} },
+        gameData: baseGameData,
+      });
+      expect(reconstructHistory).not.toHaveBeenCalled();
+      expect(result.data.historique_xp).toEqual([]);
+    });
+
+    it('fonctionne quand xp_total et xp_depense sont 0', () => {
+      const result = characterReducer({}, {
+        type: 'LOAD_CHARACTER',
+        payload: { id: 'char-1', xp_total: 0, xp_depense: 0, data: {} },
+        gameData: baseGameData,
+      });
+      expect(result.data.historique_xp).toEqual([]);
     });
   });
 

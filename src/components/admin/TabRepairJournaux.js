@@ -46,7 +46,7 @@ const STATUS_META = {
 function ConfirmModal({ target, onConfirm, onCancel }) {
     if (!target) return null;
     const { row, preview } = target;
-    const journal = row.dbChar.data?.historique_xp || [];
+    const journal = row.xpTransactions || [];
     const gainsBefore  = journal.filter(t => t.type === 'GAIN').length;
     const depBefore    = journal.filter(t => t.type === 'DEPENSE').length;
     const gainsAfter   = preview.filter(t => t.type === 'GAIN').length;
@@ -225,12 +225,27 @@ export default function TabRepairJournaux() {
 
                 if (error) throw error;
 
+                // Charger toutes les transactions pour les personnages scellés
+                const charIds = (chars || []).map(c => c.id);
+                const { data: allTx } = charIds.length > 0
+                    ? await supabase.from('xp_transactions')
+                        .select('character_id, type, code, label, valeur, rang_final, date_mouvement')
+                        .in('character_id', charIds)
+                    : { data: [] };
+
+                const txByChar = {};
+                (allTx || []).forEach(tx => {
+                    if (!txByChar[tx.character_id]) txByChar[tx.character_id] = [];
+                    txByChar[tx.character_id].push(tx);
+                });
+
                 const rows = (chars || []).map(dbChar => {
                     const mapped = mapDbCharForReconstruction(dbChar);
+                    const xpTransactions = txByChar[dbChar.id] || [];
                     let status = STATUS.PENDING;
-                    if (!dbChar.data?.stats_scellees)     status = STATUS.SKIPPED;
-                    else if (!journalNeedsRepair(mapped)) status = STATUS.OK;
-                    return { dbChar, mapped, status, detail: '' };
+                    if (!dbChar.data?.stats_scellees)                    status = STATUS.SKIPPED;
+                    else if (!journalNeedsRepair(mapped, xpTransactions)) status = STATUS.OK;
+                    return { dbChar, mapped, status, detail: '', xpTransactions };
                 });
 
                 setCharacters(rows);
@@ -330,14 +345,17 @@ export default function TabRepairJournaux() {
                 data: newData,
             };
             const mapped = mapDbCharForReconstruction(updatedDbChar);
+            const txs = row.xpTransactions || [];
+            const needsRepair = journalNeedsRepair(mapped, txs);
             setCharacters(prev => prev.map((r, i) => i === idx ? {
                 ...r,
                 dbChar: updatedDbChar,
                 mapped,
-                status: journalNeedsRepair(mapped) ? STATUS.PENDING : STATUS.OK,
+                status: needsRepair ? STATUS.PENDING : STATUS.OK,
                 detail: '',
+                xpTransactions: txs,
             } : r));
-            addLog(`🏗️ ${row.dbChar.nom} — Plancher restauré, ${journalNeedsRepair(mapped) ? 'journal à réparer' : 'journal complet'}.`);
+            addLog(`🏗️ ${row.dbChar.nom} — Plancher restauré, ${needsRepair ? 'journal à réparer' : 'journal complet'}.`);
         } catch (e) {
             setCharacters(prev => prev.map((r, i) => i === idx ? { ...r, status: STATUS.SKIPPED, detail: e.message } : r));
             addLog(`❌ ${row.dbChar.nom} — erreur : ${e.message}`);
@@ -352,11 +370,33 @@ export default function TabRepairJournaux() {
         try {
             const newXpDepense = computeXpDepenseFromJournal(preview);
             const isDebt       = newXpDepense > (row.dbChar.xp_total || 0);
-            const updatedData  = { ...row.dbChar.data, historique_xp: preview };
 
+            // Remplacer DEPENSE/REMBOURSEMENT dans xp_transactions par la reconstruction
+            await supabase.from('xp_transactions')
+                .delete()
+                .eq('character_id', row.dbChar.id)
+                .in('type', ['DEPENSE', 'REMBOURSEMENT']);
+
+            const newTxRows = preview
+                .filter(tx => tx.type !== 'GAIN')
+                .map(tx => ({
+                    character_id:   row.dbChar.id,
+                    type:           tx.type,
+                    code:           tx.code || null,
+                    label:          tx.label,
+                    valeur:         tx.valeur,
+                    rang_final:     tx.rang_final || null,
+                    date_mouvement: tx.date_mouvement
+                }));
+            if (newTxRows.length > 0) {
+                const { error: insertError } = await supabase.from('xp_transactions').insert(newTxRows);
+                if (insertError) throw insertError;
+            }
+
+            // Mettre à jour xp_depense et xp_dette en base
             const { data: updateData, error } = await supabase
                 .from('characters')
-                .update({ data: updatedData, xp_depense: newXpDepense, xp_dette: isDebt })
+                .update({ xp_depense: newXpDepense, xp_dette: isDebt })
                 .eq('id', row.dbChar.id)
                 .select('id');
 
@@ -366,10 +406,11 @@ export default function TabRepairJournaux() {
             const gains = preview.filter(t => t.type === 'GAIN').length;
             const deps  = preview.filter(t => t.type === 'DEPENSE').length;
             const detail = `${preview.length} entrées (${gains} gains + ${deps} dépenses) — ${newXpDepense} XP dépensés${isDebt ? ' ⚠️ Dette XP' : ''}`;
-            setCharacters(prev => prev.map((r, i) => i === idx ? { ...r, status: STATUS.REPAIRED, detail } : r));
+            setCharacters(prev => prev.map((r, i) => i === idx ? {
+                ...r, status: STATUS.REPAIRED, detail, xpTransactions: preview
+            } : r));
             addLog(`✨ ${row.dbChar.nom} → ${detail}`);
 
-            // Résoudre automatiquement la demande joueur si elle existe
             const matchingRequest = playerRequests.find(r => r.character_id === row.dbChar.id);
             if (matchingRequest) await markResolved(matchingRequest.id);
         } catch (e) {
@@ -382,7 +423,7 @@ export default function TabRepairJournaux() {
     const requestRepairOne = useCallback((idx) => {
         const row = characters[idx];
         if (!gameData || row.status === STATUS.SKIPPED) return;
-        const preview = buildRepairedJournal(row.mapped, gameData);
+        const preview = buildRepairedJournal(row.mapped, gameData, row.xpTransactions || []);
         if (!preview) { addLog(`⚠️ ${row.dbChar.nom} : reconstruction impossible`); return; }
         setConfirmTarget({ row, idx, preview });
     }, [characters, gameData]);

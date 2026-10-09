@@ -1,15 +1,14 @@
 // src/utils/repairJournaux.js
-// Utilitaire de réparation du journal des flux d'XP (historique_xp).
+// Utilitaire de réparation du journal des flux d'XP (xp_transactions).
 //
-// Contexte : Le journaling des dépenses a été introduit progressivement.
-// Les anciens personnages scellés ont des GAIN dans leur journal (auto-attribués
-// par les joueurs) mais aucune DEPENSE enregistrée. Le reconstructeur peut
-// déduire les dépenses depuis stats_scellees vs état actuel.
+// Contexte : historique_xp (JSONB) a été supprimé. xp_transactions est la source
+// unique du détail. journalNeedsRepair compare les DEPENSE dans xp_transactions
+// au scalaire xp_depense. buildRepairedJournal reconstruit les entrées manquantes
+// pour les insérer dans xp_transactions.
 //
 // Stratégie de merge :
-//   - On CONSERVE les entrées GAIN (attributions XP joueur — irreconstruisibles)
+//   - On CONSERVE les entrées GAIN dans xp_transactions
 //   - On REMPLACE toutes les DEPENSE/REMBOURSEMENT par la reconstruction
-//     (élimine les entrées partielles et évite les doublons)
 
 import { reconstructHistory } from './historyReconstructor';
 import { isCharacterScelle } from './lockUtils';
@@ -47,23 +46,24 @@ export function mapDbCharForReconstruction(dbChar) {
 // ============================================================================
 
 /**
- * Retourne true si le journal du personnage est probablement incomplet :
+ * Retourne true si xp_transactions est incomplet pour ce personnage :
  * - Il est scellé ET a des stats_scellees (reconstruction possible)
- * - ET les DEPENSE nettes dans le journal sont < xp_depense (cache)
+ * - ET les DEPENSE nettes dans xp_transactions sont < xp_depense (scalaire)
+ *
+ * @param {object} character
+ * @param {Array} xpTransactions - Transactions depuis la table xp_transactions pour ce personnage
  */
-export function journalNeedsRepair(character) {
+export function journalNeedsRepair(character, xpTransactions = []) {
     if (!isCharacterScelle(character)) return false;
     if (!character.data?.stats_scellees) return false;
 
-    const journal = character.data?.historique_xp || [];
-    const netDepenseJournal = journal.reduce((acc, tx) => {
-        if (tx.type === 'DEPENSE')      return acc + (tx.valeur || 0);
+    const netDepense = xpTransactions.reduce((acc, tx) => {
+        if (tx.type === 'DEPENSE')       return acc + (tx.valeur || 0);
         if (tx.type === 'REMBOURSEMENT') return acc - (tx.valeur || 0);
         return acc;
     }, 0);
 
-    // Si les dépenses journalisées sont inférieures au cache xp_depense → incomplet
-    return (character.xp_depense || 0) > 0 && netDepenseJournal < (character.xp_depense || 0);
+    return (character.xp_depense || 0) > 0 && netDepense < (character.xp_depense || 0);
 }
 
 // ============================================================================
@@ -71,32 +71,25 @@ export function journalNeedsRepair(character) {
 // ============================================================================
 
 /**
- * Construit un nouveau journal complet en fusionnant :
- *   - Les entrées GAIN existantes (conservées telles quelles)
- *   - Les entrées DEPENSE reconstruites depuis stats_scellees
+ * Construit un journal complet depuis xp_transactions + reconstruction :
+ *   - Les GAIN existants dans xpTransactions (conservés tels quels)
+ *   - Les DEPENSE/REMBOURSEMENT reconstruits depuis stats_scellees
  *
- * @param {object} character - Personnage au format client (après mapDbCharForReconstruction)
- * @param {object} gameData  - { fairyData, atouts, socialItems }
+ * @param {object} character      - Personnage au format client
+ * @param {object} gameData       - { fairyData, atouts, socialItems }
+ * @param {Array}  xpTransactions - Transactions depuis la table xp_transactions
  * @returns {Array} Journal fusionné, trié chronologiquement, ou null si réparation impossible
  */
-export function buildRepairedJournal(character, gameData) {
+export function buildRepairedJournal(character, gameData, xpTransactions = []) {
     if (!isCharacterScelle(character)) return null;
     if (!character.data?.stats_scellees) return null;
 
-    const existingJournal = character.data?.historique_xp || [];
-
-    // On ne garde que les attributions XP manuelles (les joueurs se les attribuent eux-mêmes)
-    const gainEntries = existingJournal.filter(tx => tx.type === 'GAIN');
-
-    // La reconstruction déduit toutes les DEPENSE depuis stats_scellees vs état actuel
+    const gainEntries = xpTransactions.filter(tx => tx.type === 'GAIN');
     const reconEntries = reconstructHistory(character, gameData);
 
-    // Fusion et tri chronologique
-    const merged = [...gainEntries, ...reconEntries].sort(
+    return [...gainEntries, ...reconEntries].sort(
         (a, b) => new Date(a.date_mouvement) - new Date(b.date_mouvement)
     );
-
-    return merged;
 }
 
 // ============================================================================

@@ -7,49 +7,33 @@ import { db } from '../config/db';
 import { localDb } from '../config/localDb';
 
 // ============================================================================
-// 🏛️ CALCUL xp_depense DEPUIS LE JOURNAL (Source unique de vérité)
+// 📊 INSERTION DES NOUVELLES TRANSACTIONS (xp_transactions est source unique)
 // ============================================================================
-// xp_depense en base est un cache dérivé. On le recalcule toujours depuis
-// historique_xp avant chaque sauvegarde pour garantir la cohérence.
-const computeXpDepenseFromHistory = (historique) => {
-    if (!historique || historique.length === 0) return null; // null = pas de journal, garder la valeur existante
-    return Math.max(0, historique.reduce((acc, tx) => {
-        if (tx.type === 'DEPENSE')       return acc + tx.valeur;
-        if (tx.type === 'REMBOURSEMENT') return acc - tx.valeur;
-        return acc; // GAIN → ne touche pas aux dépenses
-    }, 0));
-};
-
-// ============================================================================
-// 📊 SYNCHRONISATION VERS LA TABLE xp_transactions (Write-to-both)
-// ============================================================================
-// La table xp_transactions est un miroir queryable du JSONB historique_xp.
-// Elle permet le filtrage SQL, l'analytics, et les index — sans remplacer
-// le JSONB qui reste la source primaire pour la lecture client.
-const syncXpTransactionsTable = async (characterId, historique) => {
-    if (!characterId || !historique || historique.length === 0) return;
+// historique_xp en RAM accumule les nouvelles transactions de la session.
+// À la sauvegarde, on les insère dans xp_transactions (upsert ignoreDuplicates
+// pour les saves successives sans rechargement).
+const insertNewXpTransactions = async (characterId, nouvellesTx) => {
+    if (!characterId || !nouvellesTx || nouvellesTx.length === 0) return;
 
     try {
-        // Stratégie : delete-and-reinsert (pas de race condition critique car JSONB est primaire)
-        await supabase.from('xp_transactions').delete().eq('character_id', characterId);
-
-        const rows = historique.map(tx => ({
-            character_id: characterId,
-            type:          tx.type,
-            code:          tx.code || null,
-            label:         tx.label,
-            valeur:        tx.valeur,
-            rang_final:    tx.rang_final || null,
+        const rows = nouvellesTx.map(tx => ({
+            character_id:   characterId,
+            type:           tx.type,
+            code:           tx.code || null,
+            label:          tx.label,
+            valeur:         tx.valeur,
+            rang_final:     tx.rang_final || null,
             date_mouvement: tx.date_mouvement || new Date().toISOString()
         }));
 
-        if (rows.length > 0) {
-            const { error } = await supabase.from('xp_transactions').insert(rows);
-            if (error) console.warn('⚠️ Sync xp_transactions partielle :', error.message);
-        }
+        // ignoreDuplicates = true grâce à la contrainte UNIQUE (character_id, date_mouvement)
+        const { error } = await supabase.from('xp_transactions').upsert(rows, {
+            onConflict: 'character_id,date_mouvement',
+            ignoreDuplicates: true
+        });
+        if (error) console.warn('⚠️ Insert xp_transactions partiel :', error.message);
     } catch (e) {
-        // Non bloquant : le JSONB reste la source primaire
-        console.warn('⚠️ Sync xp_transactions échouée (non bloquant) :', e.message);
+        console.warn('⚠️ Insert xp_transactions échoué (non bloquant) :', e.message);
     }
 };
 
@@ -207,8 +191,10 @@ export const saveCharacterToSupabase = async (character) => {
         const absoluteComputedStats = cleaned.computedStats || {};
 
         // 🧠 LE COMPACTEUR JSONB : On fige la vérité mathématique dans Supabase
+        // historique_xp est exclu intentionnellement — les transactions vivent dans xp_transactions.
+        const { historique_xp: _hist, ...cleanedData } = cleaned.data || {};
         const newDataJson = {
-            ...(cleaned.data || {}),
+            ...cleanedData,
             avantages: cleaned.avantages || [],
             desavantages: cleaned.desavantages || [],
             transfer_code: cleaned.transfer_code || null,
@@ -302,8 +288,8 @@ export const saveCharacterToSupabase = async (character) => {
         const finalCache = getOfflineMirror().filter(c => c.id !== idTemp && c.id !== savedData.id);
         updateOfflineMirror([mapDatabaseToCharacter(savedData), ...finalCache]);
 
-        // 📊 Sync miroir SQL (non bloquant — le JSONB reste la source primaire)
-        syncXpTransactionsTable(savedData.id, cleaned.data?.historique_xp).catch(() => {});
+        // 📊 Insert nouvelles transactions dans xp_transactions (non bloquant)
+        insertNewXpTransactions(savedData.id, cleaned.data?.historique_xp).catch(() => {});
 
         return mapDatabaseToCharacter(savedData);
     } catch (error) {

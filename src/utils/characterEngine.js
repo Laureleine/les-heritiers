@@ -1,9 +1,7 @@
 // src/utils/characterEngine.js
-import { reconstructHistory } from './historyReconstructor';
 import { calculateCharacterStats } from './bonusCalculator';
 import { isCharacterScelle } from './lockUtils';
 import { parseIfString } from './json';
-import { XP_CODES } from './xpActions';
 import { normalizeSpec } from './utils';
 
 // 🔥 1. LE NOUVEAU MOTEUR D'ÉTAT CENTRALISÉ (REDUCER)
@@ -11,50 +9,12 @@ export function characterReducer(state, action) {
     let newState = { ...state };
 
     switch (action.type) {
-        // ✨ LA MIGRATION DOUCE ET INTELLIGENTE (Archéologie de l'Âme)
         case 'LOAD_CHARACTER': {
             let loadedState = { ...action.payload };
-            const isScelle = isCharacterScelle(loadedState);
-            
-            // Si c'est un vieux personnage déjà en jeu...
-            if (isScelle) {
-                if (!loadedState.data) loadedState.data = {};
-                // ...et qu'il n'a pas encore de registre d'XP...
-                if (!loadedState.data.historique_xp || loadedState.data.historique_xp.length === 0) {
-                    const pastTotal = loadedState.xp_total || 0;
-                    const pastDepense = loadedState.xp_depense || 0;
-                    
-                    if (pastTotal > 0 || pastDepense > 0) {
-                        loadedState.data.historique_xp = [];
-                        // Ancre temporelle : date de création du personnage, jamais Date.now()
-                        const anchor = loadedState.created_at
-                            ? new Date(loadedState.created_at).getTime()
-                            : new Date('2026-01-01T00:00:00.000Z').getTime();
-
-                        // 1. Le Gain Originel (antérieur à toutes les dépenses)
-                        if (pastTotal > 0) {
-                            loadedState.data.historique_xp.push({
-                                type: 'GAIN',
-                                code: XP_CODES.XP_HISTORIQUE,
-                                label: 'Expérience acquise avant l\'ouverture du Registre',
-                                valeur: pastTotal,
-                                date_mouvement: new Date(anchor - 200000).toISOString()
-                            });
-                        }
-
-                        // 2. La Fouille Archéologique — on injecte la reconstruction telle quelle,
-                        // sans reconciliation. La dette éventuelle est gérée par xp_dette en base.
-                        if (pastDepense > 0) {
-                            const reconstructedTxs = reconstructHistory(loadedState, action.gameData);
-
-                            // On injecte les lignes du passé en antéchronologique (les plus récentes d'abord)
-                            reconstructedTxs.reverse().forEach(tx => {
-                                loadedState.data.historique_xp.unshift(tx);
-                            });
-                        }
-                    }
-                }
-            }
+            // historique_xp en RAM = buffer vide pour les nouvelles transactions de la session.
+            // Le détail historique vit dans xp_transactions (lu par JournalAmeModal via Supabase).
+            if (!loadedState.data) loadedState.data = {};
+            loadedState.data.historique_xp = [];
             newState = loadedState;
             break;
         }
