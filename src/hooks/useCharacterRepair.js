@@ -36,6 +36,7 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
         ? await supabase.from('xp_transactions')
             .select('character_id, type, code, label, valeur, rang_final, date_mouvement')
             .in('character_id', charIds)
+            .limit(10000)
         : { data: [] };
 
       const txByChar = {};
