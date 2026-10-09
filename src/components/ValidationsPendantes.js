@@ -93,10 +93,10 @@ export default function ValidationsPendantes({ onBack }) {
     if (isMounted.current) setLoading(true);
     try {
       const [pending, approved, history, escalated] = await Promise.all([
-        supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'pending').order('created_at', { ascending: false }),
-        supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'approved').order('created_at', { ascending: false }),
+        supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'pending').order('created_at', { ascending: false }).limit(1000),
+        supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'approved').order('created_at', { ascending: false }).limit(1000),
         supabase.from(TABLE_NAME).select('*, profiles(username, badges)').in('status', ['archived', 'rejected']).order('created_at', { ascending: false }).limit(50),
-        supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'escalated').order('created_at', { ascending: false })
+        supabase.from(TABLE_NAME).select('*, profiles(username, badges)').eq('status', 'escalated').order('created_at', { ascending: false }).limit(1000)
       ]);
 
       const allActive = [...(pending.data || []), ...(approved.data || []), ...(escalated.data || [])];

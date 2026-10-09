@@ -41,7 +41,7 @@ function TabUsers() {
                 usersPromise = supabase.rpc('get_admin_users'); // Le Passe-Partout
             } else {
                 // Requête inoffensive sur les données publiques pour les joueurs
-                usersPromise = supabase.from('profiles').select('id, username, role, is_initiated, badges, last_seen, created_at');
+                usersPromise = supabase.from('profiles').select('id, username, role, is_initiated, badges, last_seen, created_at').limit(5000);
             }
 
             const [
