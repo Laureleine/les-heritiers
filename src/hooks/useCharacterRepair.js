@@ -34,12 +34,22 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
 <<<<<<< HEAD
 =======
       const charIds = (chars || []).map(c => c.id);
-      const { data: allTx } = charIds.length > 0
-        ? await supabase.from('xp_transactions')
+      let allTx = [];
+      if (charIds.length > 0) {
+        const PAGE = 1000;
+        let from = 0;
+        while (true) {
+          const { data: page } = await supabase
+            .from('xp_transactions')
             .select('character_id, type, code, label, valeur, rang_final, date_mouvement')
             .in('character_id', charIds)
-            .limit(10000)
-        : { data: [] };
+            .range(from, from + PAGE - 1);
+          if (!page || page.length === 0) break;
+          allTx = [...allTx, ...page];
+          if (page.length < PAGE) break;
+          from += PAGE;
+        }
+      }
 
       const txByChar = {};
       (allTx || []).forEach(tx => {

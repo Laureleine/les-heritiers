@@ -32,7 +32,8 @@ export async function migrateXpHistories(gameData, opts = {}) {
     const { data: allChars, error: fetchError } = await supabase
         .from('characters')
         .select('id, nom, statut, xp_total, xp_depense, data, caracteristiques, atouts, profils, competences_libres, competences_futiles, vie_sociale, fortune, type_fee, anciennete')
-        .order('updated_at', { ascending: false });
+        .order('updated_at', { ascending: false })
+        .limit(5000);
 
     if (fetchError) {
         report.errors.push(`Erreur de chargement : ${fetchError.message}`);

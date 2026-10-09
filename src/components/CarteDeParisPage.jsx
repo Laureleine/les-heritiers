@@ -420,7 +420,7 @@ export default function CarteDeParisPage({ onBack }) {
 
   useEffect(() => {
     Promise.all([
-      supabase.from('characters').select('id, nom').order('nom'),
+      supabase.from('characters').select('id, nom').order('nom').limit(5000),
       supabase.from('cercles').select('id, nom, docte_id').order('nom'),
     ]).then(([chars, cercs]) => {
       setLinkedEntities({
