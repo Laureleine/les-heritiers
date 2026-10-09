@@ -349,7 +349,7 @@ export default function CharacterCreator() {
         </button>
       </div>
 
-      <JournalAmeModal isOpen={showJournalAme} onClose={() => setShowJournalAme(false)} historiqueXp={character?.data?.historique_xp || []} />
+      <JournalAmeModal isOpen={showJournalAme} onClose={() => setShowJournalAme(false)} historiqueXp={character?.data?.historique_xp || []} characterId={character?.id} />
 
       {showChroniques && isDocteConsulting && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-start justify-center pt-6 overflow-y-auto">

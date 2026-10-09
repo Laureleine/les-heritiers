@@ -1,13 +1,37 @@
 // src/components/JournalAmeModal.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { X, BookOpen, TrendingUp, TrendingDown, RotateCcw, Clock } from '../config/icons';
+import { supabase } from '../config/supabase';
 
-export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) {
+export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], characterId }) {
   const [aggregateGains, setAggregateGains] = useState(false);
+  const [gainTransactions, setGainTransactions] = useState(null); // null = pas encore chargé
+
+  // Charger les transactions GAIN depuis xp_transactions (détail SQL) quand le modal s'ouvre
+  useEffect(() => {
+    if (!isOpen || !characterId) return;
+    setGainTransactions(null);
+    supabase
+      .from('xp_transactions')
+      .select('type, code, label, valeur, date_mouvement, rang_final')
+      .eq('character_id', characterId)
+      .eq('type', 'GAIN')
+      .order('date_mouvement', { ascending: true })
+      .then(({ data }) => setGainTransactions(data || []));
+  }, [isOpen, characterId]);
+
+  // Fusionner : GAIN depuis xp_transactions (si dispo), DEPENSE/REMBOURSEMENT depuis le JSONB
+  const allTransactions = useMemo(() => {
+    const nonGains = historiqueXp.filter(e => e.type !== 'GAIN');
+    const gains = gainTransactions !== null
+      ? gainTransactions
+      : historiqueXp.filter(e => e.type === 'GAIN');
+    return [...gains, ...nonGains];
+  }, [historiqueXp, gainTransactions]);
 
   const sortedHistorique = useMemo(
-    () => [...historiqueXp].sort((a, b) => new Date(b.date_mouvement) - new Date(a.date_mouvement)),
-    [historiqueXp]
+    () => [...allTransactions].sort((a, b) => new Date(b.date_mouvement) - new Date(a.date_mouvement)),
+    [allTransactions]
   );
 
   // ✨ On fusionne les entrées consécutives de même nature (ex: plusieurs "Ajustement Manuel" d'affilée)
@@ -92,7 +116,12 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) 
 
         {/* Le Registre */}
         <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
-          {displayHistorique.length === 0 ? (
+          {gainTransactions === null && characterId ? (
+            <div className="text-center py-12 text-stone-400 font-serif italic flex flex-col items-center gap-3">
+              <Clock size={32} className="opacity-20 animate-spin" />
+              Consultation des archives…
+            </div>
+          ) : displayHistorique.length === 0 ? (
             <div className="text-center py-12 text-stone-400 font-serif italic flex flex-col items-center gap-3">
               <Clock size={32} className="opacity-20" />
               Les pages de ce journal sont encore vierges.
