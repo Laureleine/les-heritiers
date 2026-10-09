@@ -1,24 +1,55 @@
 // src/components/JournalAmeModal.jsx
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { X, BookOpen, TrendingUp, TrendingDown, RotateCcw, Clock } from '../config/icons';
 
 export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) {
-  if (!isOpen) return null;
+  const [aggregateGains, setAggregateGains] = useState(false);
 
-  // On s'assure d'avoir un tableau, et on le trie du plus récent au plus ancien
-  const sortedHistorique = [...historiqueXp].sort((a, b) => new Date(b.date_mouvement) - new Date(a.date_mouvement));
+  const sortedHistorique = useMemo(
+    () => [...historiqueXp].sort((a, b) => new Date(b.date_mouvement) - new Date(a.date_mouvement)),
+    [historiqueXp]
+  );
 
   // ✨ On fusionne les entrées consécutives de même nature (ex: plusieurs "Ajustement Manuel" d'affilée)
-  const groupedHistorique = sortedHistorique.reduce((acc, entry) => {
-    const last = acc[acc.length - 1];
-    if (last && last.label === entry.label && last.type === entry.type) {
-      last.valeur += entry.valeur;
-      last._count = (last._count || 1) + 1;
-    } else {
-      acc.push({ ...entry, _count: 1 });
-    }
-    return acc;
-  }, []);
+  const groupedHistorique = useMemo(
+    () => sortedHistorique.reduce((acc, entry) => {
+      const last = acc[acc.length - 1];
+      if (last && last.label === entry.label && last.type === entry.type) {
+        last.valeur += entry.valeur;
+        last._count = (last._count || 1) + 1;
+      } else {
+        acc.push({ ...entry, _count: 1 });
+      }
+      return acc;
+    }, []),
+    [sortedHistorique]
+  );
+
+  // Option : agréger tous les GAIN en une seule ligne résumée
+  const displayHistorique = useMemo(() => {
+    if (!aggregateGains) return groupedHistorique;
+
+    const gainEntries = groupedHistorique.filter(e => e.type === 'GAIN');
+    const nonGainEntries = groupedHistorique.filter(e => e.type !== 'GAIN');
+
+    if (gainEntries.length === 0) return nonGainEntries;
+
+    const totalGains = gainEntries.reduce((s, e) => s + e.valeur, 0);
+    const oldestGainDate = gainEntries[gainEntries.length - 1]?.date_mouvement;
+
+    const aggregatedGain = {
+      type: 'GAIN',
+      label: `Total des gains (${gainEntries.length} entrées)`,
+      valeur: totalGains,
+      date_mouvement: oldestGainDate,
+      _count: gainEntries.length,
+      _aggregated: true,
+    };
+
+    return [...nonGainEntries, aggregatedGain];
+  }, [groupedHistorique, aggregateGains]);
+
+  if (!isOpen) return null;
 
   const getIconAndColor = (type) => {
     switch (type) {
@@ -32,28 +63,43 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="bg-[#fdfbf7] max-w-2xl w-full max-h-[85vh] rounded-2xl shadow-2xl border-4 border-amber-900/20 flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
-        
+
         {/* En-tête du Livre de Comptes */}
-        <div className="bg-stone-950 p-4 border-b border-amber-900/50 flex justify-between items-center shrink-0">
-          <h3 className="font-serif font-bold text-xl text-amber-400 flex items-center gap-3">
+        <div className="bg-stone-950 p-4 border-b border-amber-900/50 flex justify-between items-center shrink-0 gap-4">
+          <h3 className="font-serif font-bold text-xl text-amber-400 flex items-center gap-3 shrink-0">
             <BookOpen className="text-amber-600" />
             Journal des Flux de l'Âme
           </h3>
-          <button onClick={onClose} className="text-stone-400 hover:text-red-500 bg-stone-800 hover:bg-stone-700 p-2 rounded-full shadow-sm transition-colors">
-            <X size={20} />
-          </button>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 cursor-pointer text-xs text-stone-400 hover:text-stone-200 transition-colors select-none">
+              <div
+                role="checkbox"
+                aria-checked={aggregateGains}
+                tabIndex={0}
+                onClick={() => setAggregateGains(v => !v)}
+                onKeyDown={e => (e.key === ' ' || e.key === 'Enter') && setAggregateGains(v => !v)}
+                className={`relative w-8 h-4 rounded-full transition-colors ${aggregateGains ? 'bg-emerald-600' : 'bg-stone-700'}`}
+              >
+                <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform ${aggregateGains ? 'translate-x-4' : 'translate-x-0.5'}`} />
+              </div>
+              Agréger les gains
+            </label>
+            <button onClick={onClose} className="text-stone-400 hover:text-red-500 bg-stone-800 hover:bg-stone-700 p-2 rounded-full shadow-sm transition-colors">
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Le Registre */}
         <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
-          {groupedHistorique.length === 0 ? (
+          {displayHistorique.length === 0 ? (
             <div className="text-center py-12 text-stone-400 font-serif italic flex flex-col items-center gap-3">
               <Clock size={32} className="opacity-20" />
               Les pages de ce journal sont encore vierges.
             </div>
           ) : (
             <div className="space-y-3">
-              {groupedHistorique.map((entree, idx) => {
+              {displayHistorique.map((entree, idx) => {
                 const { icon, color } = getIconAndColor(entree.type);
 
                 return (
@@ -80,7 +126,7 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [] }) 
                         <span className="font-bold font-serif leading-tight">
                           {entree.label}
                         </span>
-                        {entree._count > 1 && (
+                        {entree._count > 1 && !entree._aggregated && (
                           <span className="text-[10px] font-bold px-1.5 py-0.5 bg-white/60 rounded-full opacity-70 border border-current/20 shrink-0">
                             ×{entree._count}
                           </span>
