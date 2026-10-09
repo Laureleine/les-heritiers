@@ -5,29 +5,27 @@ import { supabase } from '../config/supabase';
 
 export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], characterId }) {
   const [aggregateGains, setAggregateGains] = useState(false);
-  const [gainTransactions, setGainTransactions] = useState(null); // null = pas encore chargé
+  const [dbTransactions, setDbTransactions] = useState(null); // null = pas encore chargé
 
-  // Charger les transactions GAIN depuis xp_transactions (détail SQL) quand le modal s'ouvre
+  // Charger toutes les transactions depuis xp_transactions quand le modal s'ouvre
   useEffect(() => {
     if (!isOpen || !characterId) return;
-    setGainTransactions(null);
+    setDbTransactions(null);
     supabase
       .from('xp_transactions')
       .select('type, code, label, valeur, date_mouvement, rang_final')
       .eq('character_id', characterId)
-      .eq('type', 'GAIN')
       .order('date_mouvement', { ascending: true })
-      .then(({ data }) => setGainTransactions(data || []));
+      .then(({ data }) => setDbTransactions(data || []));
   }, [isOpen, characterId]);
 
-  // Fusionner : GAIN depuis xp_transactions (si dispo), DEPENSE/REMBOURSEMENT depuis le JSONB
+  // Fusionner : DB (source principale) + buffer RAM pour les tx non encore sauvegardées
   const allTransactions = useMemo(() => {
-    const nonGains = historiqueXp.filter(e => e.type !== 'GAIN');
-    const gains = gainTransactions !== null
-      ? gainTransactions
-      : historiqueXp.filter(e => e.type === 'GAIN');
-    return [...gains, ...nonGains];
-  }, [historiqueXp, gainTransactions]);
+    if (dbTransactions === null) return [];
+    const dbDates = new Set(dbTransactions.map(t => t.date_mouvement));
+    const unsaved = historiqueXp.filter(t => !dbDates.has(t.date_mouvement));
+    return [...dbTransactions, ...unsaved];
+  }, [dbTransactions, historiqueXp]);
 
   const sortedHistorique = useMemo(
     () => [...allTransactions].sort((a, b) => new Date(b.date_mouvement) - new Date(a.date_mouvement)),
@@ -116,7 +114,7 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], ch
 
         {/* Le Registre */}
         <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
-          {gainTransactions === null && characterId ? (
+          {dbTransactions === null && characterId ? (
             <div className="text-center py-12 text-stone-400 font-serif italic flex flex-col items-center gap-3">
               <Clock size={32} className="opacity-20 animate-spin" />
               Consultation des archives…
