@@ -143,13 +143,14 @@ export function characterReducer(state, action) {
             // On l'ajoute au début du tableau pour avoir le plus récent en premier
             newState.data.historique_xp = [newTx, ...newState.data.historique_xp];
 
-            // 3. LA VÉRITÉ UNIQUE : Le journal fait foi — on ne mute plus xp_depense ici.
-            // getXpState() recalcule xp_depense depuis historique_xp à chaque lecture.
-            // xp_depense en base est mis à jour uniquement à la sauvegarde (supabaseStorage.js).
+            // 3. Mise à jour immédiate des scalaires (source de vérité pour getXpState)
             if (transaction.type === 'GAIN') {
                 newState.xp_total = (newState.xp_total || 0) + transaction.valeur;
+            } else if (transaction.type === 'DEPENSE') {
+                newState.xp_depense = (newState.xp_depense || 0) + transaction.valeur;
+            } else if (transaction.type === 'REMBOURSEMENT') {
+                newState.xp_depense = Math.max(0, (newState.xp_depense || 0) - transaction.valeur);
             }
-            // DEPENSE et REMBOURSEMENT → le journal seul suffit, pas de mutation de xp_depense
             break;
         }
 

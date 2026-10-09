@@ -1,91 +1,28 @@
 import { getXpState, spendXp, refundXp, XP_CODES } from '../xpActions';
 
 describe('getXpState', () => {
-  it('calcule xpDepense depuis historique_xp (DEPENSE)', () => {
-    const state = getXpState({
-      xp_total: 100,
-      data: {
-        historique_xp: [
-          { type: 'GAIN', valeur: 100 },
-          { type: 'DEPENSE', valeur: 30 },
-          { type: 'DEPENSE', valeur: 12 },
-        ],
-      },
-    });
+  it('lit xp_depense directement depuis le personnage', () => {
+    const state = getXpState({ xp_total: 100, xp_depense: 42 });
     expect(state.xpTotal).toBe(100);
     expect(state.xpDepense).toBe(42);
     expect(state.xpDispo).toBe(58);
   });
 
-  it('soustrait les REMBOURSEMENT du total des dépenses', () => {
-    const state = getXpState({
-      xp_total: 100,
-      data: {
-        historique_xp: [
-          { type: 'DEPENSE', valeur: 30 },
-          { type: 'REMBOURSEMENT', valeur: 5 },
-          { type: 'DEPENSE', valeur: 12 },
-        ],
-      },
-    });
-    expect(state.xpDepense).toBe(37);
-    expect(state.xpDispo).toBe(63);
-  });
-
-  it('ignore les GAIN dans le calcul des dépenses', () => {
-    const state = getXpState({
-      xp_total: 100,
-      data: {
-        historique_xp: [
-          { type: 'GAIN', valeur: 1000 },
-          { type: 'DEPENSE', valeur: 20 },
-        ],
-      },
-    });
-    expect(state.xpDepense).toBe(20);
-  });
-
-  it('retourne 0 si historique_xp est vide', () => {
-    const state = getXpState({
-      xp_total: 100,
-      data: { historique_xp: [] },
-    });
+  it('retourne 0 si xp_depense absent', () => {
+    const state = getXpState({ xp_total: 100 });
     expect(state.xpDepense).toBe(0);
     expect(state.xpDispo).toBe(100);
   });
 
-  it('fallback sur xp_depense si pas d\'historique', () => {
-    const state = getXpState({
-      xp_total: 100,
-      xp_depense: 30,
-      data: {},
-    });
-    expect(state.xpDepense).toBe(30);
-    expect(state.xpDispo).toBe(70);
-  });
-
-  it('fallback sur 0 si pas d\'historique ni xp_depense', () => {
-    const state = getXpState({ xp_total: 50 });
-    expect(state.xpDepense).toBe(0);
-    expect(state.xpDispo).toBe(50);
-  });
-
-  it('ne descend pas sous 0 pour xpDepense', () => {
-    const state = getXpState({
-      xp_total: 100,
-      data: {
-        historique_xp: [
-          { type: 'REMBOURSEMENT', valeur: 999 },
-        ],
-      },
-    });
-    expect(state.xpDepense).toBe(0);
-  });
-
   it('gère xp_total à 0', () => {
-    const state = getXpState({ xp_total: 0, data: { historique_xp: [] } });
+    const state = getXpState({ xp_total: 0, xp_depense: 0 });
     expect(state.xpTotal).toBe(0);
     expect(state.xpDispo).toBe(0);
+  });
+
+  it('calcule xpDispo correctement', () => {
+    const state = getXpState({ xp_total: 80, xp_depense: 37 });
+    expect(state.xpDispo).toBe(43);
   });
 });
 

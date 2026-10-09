@@ -153,7 +153,7 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], ch
                     <div className="flex-1 flex flex-col border-l border-current/20 pl-4 py-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold font-serif leading-tight">
-                          {entree.label}
+                          {entree.label}{entree.rang_final != null ? ` (Rang ${entree.rang_final})` : ''}
                         </span>
                         {entree._count > 1 && !entree._aggregated && (
                           <span className="text-[10px] font-bold px-1.5 py-0.5 bg-white/60 rounded-full opacity-70 border border-current/20 shrink-0">
@@ -161,11 +161,6 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], ch
                           </span>
                         )}
                       </div>
-                      {entree.rang_final != null && (
-                        <span className="text-[10px] uppercase font-bold tracking-wider opacity-70 mt-0.5">
-                          Rang atteint : {entree.rang_final}
-                        </span>
-                      )}
                     </div>
 
                     {/* Valeur Mathématique */}
