@@ -225,6 +225,24 @@ export default function TabRepairJournaux() {
 
                 if (error) throw error;
 
+<<<<<<< HEAD
+=======
+                // Charger toutes les transactions pour les personnages scellés
+                const charIds = (chars || []).map(c => c.id);
+                const { data: allTx } = charIds.length > 0
+                    ? await supabase.from('xp_transactions')
+                        .select('character_id, type, code, label, valeur, rang_final, date_mouvement')
+                        .in('character_id', charIds)
+                        .limit(10000)
+                    : { data: [] };
+
+                const txByChar = {};
+                (allTx || []).forEach(tx => {
+                    if (!txByChar[tx.character_id]) txByChar[tx.character_id] = [];
+                    txByChar[tx.character_id].push(tx);
+                });
+
+>>>>>>> 58acc708 (fix(repair-journaux): corriger affichage journal et limite Supabase 1000 lignes)
                 const rows = (chars || []).map(dbChar => {
                     const mapped = mapDbCharForReconstruction(dbChar);
                     let status = STATUS.PENDING;
@@ -538,7 +556,7 @@ export default function TabRepairJournaux() {
                 ) : (
                     <div className="space-y-2">
                         {filtered.map(({ row, idx }) => {
-                            const journal     = row.dbChar.data?.historique_xp || [];
+                            const journal     = row.xpTransactions || [];
                             const gains       = journal.filter(t => t.type === 'GAIN').length;
                             const deps        = journal.filter(t => t.type === 'DEPENSE').length;
                             const meta        = STATUS_META[row.status];

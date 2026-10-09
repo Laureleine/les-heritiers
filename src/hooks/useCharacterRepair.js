@@ -31,6 +31,23 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
         .order('nom');
       if (error) throw error;
 
+<<<<<<< HEAD
+=======
+      const charIds = (chars || []).map(c => c.id);
+      const { data: allTx } = charIds.length > 0
+        ? await supabase.from('xp_transactions')
+            .select('character_id, type, code, label, valeur, rang_final, date_mouvement')
+            .in('character_id', charIds)
+            .limit(10000)
+        : { data: [] };
+
+      const txByChar = {};
+      (allTx || []).forEach(tx => {
+        if (!txByChar[tx.character_id]) txByChar[tx.character_id] = [];
+        txByChar[tx.character_id].push(tx);
+      });
+
+>>>>>>> 58acc708 (fix(repair-journaux): corriger affichage journal et limite Supabase 1000 lignes)
       const rows = {};
       for (const dbChar of (chars || [])) {
         const mapped = mapDbCharForReconstruction(dbChar);
