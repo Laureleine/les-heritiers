@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { X, BookOpen, TrendingUp, TrendingDown, RotateCcw, Clock } from '../config/icons';
 import { supabase } from '../config/supabase';
 
-export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], characterId }) {
+export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], characterId, xpTotal = 0 }) {
   const [aggregateGains, setAggregateGains] = useState(false);
   const [dbTransactions, setDbTransactions] = useState(null); // null = pas encore chargé
 
@@ -57,12 +57,13 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], ch
     if (gainEntries.length === 0) return nonGainEntries;
 
     const totalGains = gainEntries.reduce((s, e) => s + e.valeur, 0);
+    const totalAffiche = xpTotal > 0 ? xpTotal : totalGains;
     const oldestGainDate = gainEntries[gainEntries.length - 1]?.date_mouvement;
 
     const aggregatedGain = {
       type: 'GAIN',
       label: `Total des gains (${gainEntries.length} entrées)`,
-      valeur: totalGains,
+      valeur: totalAffiche,
       date_mouvement: oldestGainDate,
       _count: gainEntries.length,
       _aggregated: true,
