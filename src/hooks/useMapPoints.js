@@ -12,7 +12,8 @@ export function useMapPoints() {
     try {
       const { data, error } = await db.from('map_points')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(5000);
       if (error) throw error;
       if (data && navigator.onLine) {
         // Mettre en cache
