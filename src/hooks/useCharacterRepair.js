@@ -31,8 +31,6 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
         .order('nom');
       if (error) throw error;
 
-<<<<<<< HEAD
-=======
       const charIds = (chars || []).map(c => c.id);
       let allTx = [];
       if (charIds.length > 0) {
@@ -57,14 +55,14 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
         txByChar[tx.character_id].push(tx);
       });
 
->>>>>>> 58acc708 (fix(repair-journaux): corriger affichage journal et limite Supabase 1000 lignes)
       const rows = {};
       for (const dbChar of (chars || [])) {
         const mapped = mapDbCharForReconstruction(dbChar);
+        const xpTransactions = txByChar[dbChar.id] || [];
         let status = REPAIR_STATUS.PENDING;
-        if (!dbChar.data?.stats_scellees)    status = REPAIR_STATUS.SKIPPED;
-        else if (!journalNeedsRepair(mapped)) status = REPAIR_STATUS.OK;
-        rows[dbChar.id] = { dbChar, mapped, status, detail: '' };
+        if (!dbChar.data?.stats_scellees)                     status = REPAIR_STATUS.SKIPPED;
+        else if (!journalNeedsRepair(mapped, xpTransactions)) status = REPAIR_STATUS.OK;
+        rows[dbChar.id] = { dbChar, mapped, status, detail: '', xpTransactions };
       }
       setRepairRows(rows);
     } catch (e) {
