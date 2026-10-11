@@ -46,7 +46,7 @@ const STATUS_META = {
 function ConfirmModal({ target, onConfirm, onCancel }) {
     if (!target) return null;
     const { row, preview } = target;
-    const journal = row.dbChar.data?.historique_xp || [];
+    const journal = row.xpTransactions || [];
     const gainsBefore  = journal.filter(t => t.type === 'GAIN').length;
     const depBefore    = journal.filter(t => t.type === 'DEPENSE').length;
     const gainsAfter   = preview.filter(t => t.type === 'GAIN').length;
@@ -225,8 +225,6 @@ export default function TabRepairJournaux() {
 
                 if (error) throw error;
 
-<<<<<<< HEAD
-=======
                 // Charger toutes les transactions pour les personnages scellés
                 const charIds = (chars || []).map(c => c.id);
                 let allTx = [];
@@ -252,13 +250,13 @@ export default function TabRepairJournaux() {
                     txByChar[tx.character_id].push(tx);
                 });
 
->>>>>>> 58acc708 (fix(repair-journaux): corriger affichage journal et limite Supabase 1000 lignes)
                 const rows = (chars || []).map(dbChar => {
                     const mapped = mapDbCharForReconstruction(dbChar);
+                    const xpTransactions = txByChar[dbChar.id] || [];
                     let status = STATUS.PENDING;
-                    if (!dbChar.data?.stats_scellees)     status = STATUS.SKIPPED;
-                    else if (!journalNeedsRepair(mapped)) status = STATUS.OK;
-                    return { dbChar, mapped, status, detail: '' };
+                    if (!dbChar.data?.stats_scellees)                     status = STATUS.SKIPPED;
+                    else if (!journalNeedsRepair(mapped, xpTransactions)) status = STATUS.OK;
+                    return { dbChar, mapped, status, detail: '', xpTransactions };
                 });
 
                 setCharacters(rows);
