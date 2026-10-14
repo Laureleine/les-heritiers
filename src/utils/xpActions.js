@@ -65,21 +65,8 @@ export const XP_CODES = {
  */
 export const getXpState = (character) => {
     const xpTotal = character.xp_total || 0;
-    const historique = character.data?.historique_xp;
-
-    let xpDepense;
-    if (historique && historique.length > 0) {
-        // Le journal fait foi : somme algébrique de toutes les lignes
-        xpDepense = Math.max(0, historique.reduce((acc, tx) => {
-            if (tx.type === 'DEPENSE')      return acc + tx.valeur;
-            if (tx.type === 'REMBOURSEMENT') return acc - tx.valeur;
-            return acc; // GAIN → ne touche pas aux dépenses
-        }, 0));
-    } else {
-        // Fallback légacy : personnage sans journal (avant reconstruction)
-        xpDepense = character.xp_depense || 0;
-    }
-
+    // xp_depense est mis à jour immédiatement en mémoire par LOG_XP_TRANSACTION
+    const xpDepense = character.xp_depense || 0;
     return { xpTotal, xpDepense, xpDispo: xpTotal - xpDepense };
 };
 
