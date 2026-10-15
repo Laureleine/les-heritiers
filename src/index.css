@@ -95,6 +95,23 @@ body {
     color: var(--lh-or-sombre);
     letter-spacing: 0.04em;
   }
+  /* Tous les éléments texte héritent d'AG Garamond Pro */
+  p, li, td, th, label, span, input, select, textarea, button, a {
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+  }
+  /* Liens */
+  a {
+    color: var(--lh-or-sombre);
+  }
+  a:hover {
+    color: var(--lh-or);
+  }
+  /* Inputs et selects avec teinte parchemin */
+  input, select, textarea {
+    background-color: var(--lh-parchemin);
+    color: var(--lh-encre);
+    border-color: var(--lh-gris-parchemin);
+  }
 }
 
 /* === Filtre sépia Belle Époque sur le panneau IGN historique === */

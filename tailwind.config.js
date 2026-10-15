@@ -17,6 +17,24 @@ module.exports = {
           foret:             '#2c4312',
           'gris-parchemin':  '#c8bc9c',
         },
+        // Remappage Belle Époque — gray neutre → gamme chaude parchemin/encre
+        // Permet aux 248 composants existants (bg-white, text-gray-*, border-gray-*)
+        // d'hériter automatiquement de la charte sans modification individuelle.
+        gray: {
+          50:  '#faf6ed',
+          100: '#f0e8d0',
+          200: '#ddd3b4',
+          300: '#c8bc9c',
+          400: '#a8956e',
+          500: '#806840',
+          600: '#5c4d30',
+          700: '#3e3018',
+          800: '#2e2100',
+          900: '#1e1500',
+          950: '#0f0b00',
+        },
+        white: '#faf6ed',
+        black: '#2e2100',
       },
       fontFamily: {
         /* font-serif Tailwind → AG Garamond Pro (corps de texte principal) */
