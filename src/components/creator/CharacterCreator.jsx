@@ -14,6 +14,7 @@ import { getXpState } from '../../utils/xpActions';
 import { STEP_CONFIG } from '../../data/DictionnaireJeu';
 import JournalAmeModal from '../JournalAmeModal';
 import PixieAssistant from '../PixieAssistant';
+import CadreParchemin from '../CadreParchemin';
 
 // Code Splitting
 const Step1 = lazy(() => import('../Step1'));
@@ -323,7 +324,7 @@ export default function CharacterCreator() {
       )}
 
       {/* CORPS DE L'ÉTAPE */}
-      <section aria-label="Corps de l'étape" className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm min-h-[500px]">
+      <CadreParchemin aria-label="Corps de l'étape">
         <Suspense fallback={
           <div className="flex flex-col items-center justify-center h-64 animate-pulse">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mb-4"></div>
@@ -334,7 +335,7 @@ export default function CharacterCreator() {
             ? <StepMagiePratique nomMagie="Druidisme" />
             : stepComponents[step]}
         </Suspense>
-      </section>
+      </CadreParchemin>
 
       {/* NAVIGATION */}
       <div className="flex justify-between items-center mt-6">

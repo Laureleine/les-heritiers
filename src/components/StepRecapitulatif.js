@@ -6,6 +6,7 @@ import { useGameDataContext } from '../context/GameDataContext';
 import { exportToPDF } from '../utils/pdfGenerator';
 import ConfirmModal from './ConfirmModal';
 import FicheParchemin from './recap/FicheParchemin';
+import CadreParchemin from './CadreParchemin';
 import SongeRevelation from './SongeRevelation';
 import { useProphetie } from '../hooks/useProphetie';
 
@@ -72,7 +73,9 @@ export default function StepRecapitulatif() {
             </div>
 
             {/* L'AFFICHEUR UNIVERSEL */}
-            <FicheParchemin character={character} gameData={gameData} detailed={detailed} />
+            <CadreParchemin>
+                <FicheParchemin character={character} gameData={gameData} detailed={detailed} />
+            </CadreParchemin>
 
             {/* ALBUM PHOTO — ARCHIVES TEMPORELLES */}
             <div className="no-print mt-10">
