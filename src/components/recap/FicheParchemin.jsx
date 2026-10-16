@@ -351,16 +351,16 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
             <style dangerouslySetInnerHTML={{__html: `
                 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
                 .recap-page {
-                    max-width: 210mm; width: 100%; padding: 12mm; margin: 0 auto 20px;
+                    max-width: 210mm; width: 100%; padding: 12mm 15mm; margin: 0 auto 20px;
                     box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; position: relative;
                 }
                 .recap-page-magie {
-                    max-width: 210mm; width: 100%; padding: 12mm; margin: 0 auto 20px;
+                    max-width: 210mm; width: 100%; padding: 12mm 15mm; margin: 0 auto 20px;
                     box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; display: flex; flex-direction: column;
                 }
                 @media print {
                     .recap-page-magie {
-                        box-shadow: none !important; margin: 0 !important; padding: 5mm !important;
+                        box-shadow: none !important; margin: 0 !important; padding: 8mm 14mm !important;
                         border: none !important; page-break-after: always; height: 297mm !important;
                         -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
                     }
@@ -392,7 +392,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                     .recap-page {
                         box-shadow: none !important;
                         margin: 0 !important;
-                        padding: 5mm !important;
+                        padding: 8mm 14mm !important;
                         border: none !important;
                         page-break-after: always;
                         -webkit-print-color-adjust: exact !important;
@@ -415,7 +415,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
 
             {/* ======================= PAGE 1 : LE MASQUE (FORME HUMAINE) ======================= */}
             <div className="recap-page" style={pageStyle}>
-                <div className="recap-header" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px'}}>
+                <div className="recap-header" style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '16px'}}>
                     {character.portrait_masked_url && (
                         <img
                             src={character.portrait_masked_url}
