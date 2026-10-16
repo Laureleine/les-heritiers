@@ -351,11 +351,11 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
             <style dangerouslySetInnerHTML={{__html: `
                 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
                 .recap-page {
-                    max-width: 210mm; width: 100%; padding: 12mm 13mm; margin: 0 auto 20px;
+                    max-width: 210mm; width: 100%; padding: 12mm 11mm; margin: 0 auto 20px;
                     box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; position: relative;
                 }
                 .recap-page-magie {
-                    max-width: 210mm; width: 100%; padding: 12mm 13mm; margin: 0 auto 20px;
+                    max-width: 210mm; width: 100%; padding: 12mm 11mm; margin: 0 auto 20px;
                     box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; display: flex; flex-direction: column;
                 }
                 @media print {
@@ -392,9 +392,11 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                     .recap-page {
                         box-shadow: none !important;
                         margin: 0 !important;
-                        padding: 8mm 12mm !important;
+                        padding: 6mm 10mm !important;
                         border: none !important;
                         page-break-after: always;
+                        height: 297mm !important;
+                        overflow: hidden !important;
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }
