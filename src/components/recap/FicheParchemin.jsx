@@ -342,14 +342,12 @@ export default function FicheParchemin({ character, gameData, detailed = false }
             <style dangerouslySetInnerHTML={{__html: `
                 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
                 .recap-page {
-                    width: 210mm; min-height: 297mm; background: #fdfbf7; padding: 12mm; margin: 0 auto 20px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #d4c5b0; box-sizing: border-box;
-                    font-family: 'Georgia', serif; color: #2c241b; position: relative;
+                    max-width: 210mm; width: 100%; padding: 12mm; margin: 0 auto 20px;
+                    box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; position: relative;
                 }
                 .recap-page-magie {
-                    width: 210mm; height: 297mm; background: #fdfbf7; padding: 12mm; margin: 0 auto 20px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #d4c5b0; box-sizing: border-box;
-                    font-family: 'Georgia', serif; color: #2c241b; display: flex; flex-direction: column;
+                    max-width: 210mm; width: 100%; padding: 12mm; margin: 0 auto 20px;
+                    box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; display: flex; flex-direction: column;
                 }
                 @media print {
                     .recap-page-magie {
@@ -361,7 +359,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                 .recap-char-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: #92400e; text-transform: uppercase; }
                 .carac-main-title { background: #92400e; color: white; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
                 .carac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
-                .carac-box { background: #fff; border: 1px solid #b5a287; border-radius: 4px; text-align: center; padding: 3px 6px; box-shadow: 2px 2px 0 rgba(139, 115, 85, 0.1); }
+                .carac-box { background: rgba(255,255,255,0.35); border: 1px solid #b5a287; border-radius: 4px; text-align: center; padding: 3px 6px; box-shadow: 2px 2px 0 rgba(139, 115, 85, 0.1); }
                 .carac-label { font-size: 9px; font-weight: 600; text-transform: uppercase; color: #8b7355; border-bottom: 1px solid #eee; padding-bottom: 1px; margin-bottom: 1px; letter-spacing: 0.5px; }
                 .carac-score { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: #4a3b2c; line-height: 1; margin-top: 1px; }
                 .recap-box { border: 1px solid #b5a287; padding: 7px 9px; border-radius: 4px; background: rgba(255,255,255,0.5); margin-bottom: 8px; }
@@ -369,7 +367,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                 .field-value { font-size: 12px; font-weight: bold; color: #2c241b; border-bottom: 1px dotted #b5a287; padding-bottom: 1px; min-height: 15px; }
                 .comp-line { display: flex; align-items: baseline; font-size: 12px; margin-bottom: 1px; }
                 .comp-dots { flex: 1; border-bottom: 1px dotted #b5a287; margin: 0 6px; position: relative; top: -3px; }
-                .combat-circle { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #4a3b2c; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 900; background: #fff; margin: 0 auto; }
+                .combat-circle { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #4a3b2c; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 900; background: rgba(255,255,255,0.35); margin: 0 auto; }
                 .combat-label { text-align: center; font-size: 8px; font-weight: bold; text-transform: uppercase; margin-top: 3px; color: #4a3b2c; }
                 .detail-row { font-size: 7px; color: #8b7355; margin-top: 2px; border-top: 1px dotted #d4c5b0; padding-top: 2px; line-height: 1.3; }
                 .detail-row span { margin-right: 3px; white-space: nowrap; }
