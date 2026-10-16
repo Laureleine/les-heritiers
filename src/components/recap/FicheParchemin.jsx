@@ -392,7 +392,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                     .recap-page {
                         box-shadow: none !important;
                         margin: 0 !important;
-                        padding: 6mm 10mm !important;
+                        padding: 18mm 10mm 6mm !important;
                         border: none !important;
                         page-break-after: always;
                         height: 297mm !important;
@@ -417,7 +417,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
 
             {/* ======================= PAGE 1 : LE MASQUE (FORME HUMAINE) ======================= */}
             <div className="recap-page" style={pageStyle}>
-                <div className="recap-header" style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '16px'}}>
+                <div className="recap-header" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px'}}>
                     {character.portrait_masked_url && (
                         <img
                             src={character.portrait_masked_url}
@@ -425,7 +425,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                             style={{width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #b5a287', flexShrink: 0}}
                         />
                     )}
-                    <div className="recap-char-name" style={{width: '45%', textAlign: 'center'}}>{character.nom || 'Inconnu'}</div>
+                    <div className="recap-char-name">{character.nom || 'Inconnu'}</div>
                     {character.portrait_masked_url && <div style={{width: '64px', flexShrink: 0}} />}
                 </div>
                 <div className="recap-box">
