@@ -351,16 +351,16 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
             <style dangerouslySetInnerHTML={{__html: `
                 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
                 .recap-page {
-                    max-width: 210mm; width: 100%; padding: 12mm 15mm; margin: 0 auto 20px;
+                    max-width: 210mm; width: 100%; padding: 12mm 13mm; margin: 0 auto 20px;
                     box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; position: relative;
                 }
                 .recap-page-magie {
-                    max-width: 210mm; width: 100%; padding: 12mm 15mm; margin: 0 auto 20px;
+                    max-width: 210mm; width: 100%; padding: 12mm 13mm; margin: 0 auto 20px;
                     box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; display: flex; flex-direction: column;
                 }
                 @media print {
                     .recap-page-magie {
-                        box-shadow: none !important; margin: 0 !important; padding: 8mm 14mm !important;
+                        box-shadow: none !important; margin: 0 !important; padding: 8mm 12mm !important;
                         border: none !important; page-break-after: always; height: 297mm !important;
                         -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
                     }
@@ -392,7 +392,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                     .recap-page {
                         box-shadow: none !important;
                         margin: 0 !important;
-                        padding: 8mm 14mm !important;
+                        padding: 8mm 12mm !important;
                         border: none !important;
                         page-break-after: always;
                         -webkit-print-color-adjust: exact !important;
@@ -423,7 +423,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                             style={{width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #b5a287', flexShrink: 0}}
                         />
                     )}
-                    <div className="recap-char-name">{character.nom || 'Inconnu'}</div>
+                    <div className="recap-char-name" style={{width: '45%', textAlign: 'center'}}>{character.nom || 'Inconnu'}</div>
                     {character.portrait_masked_url && <div style={{width: '64px', flexShrink: 0}} />}
                 </div>
                 <div className="recap-box">
