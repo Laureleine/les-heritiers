@@ -2,7 +2,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import FicheParchemin from '../components/recap/FicheParchemin';
-import CadreParchemin from '../components/CadreParchemin';
 import { characterReducer } from './characterEngine';
 
 export const exportToPDF = (character, gameData = {}, detailed = false, printWindow = null) => {
@@ -15,9 +14,7 @@ export const exportToPDF = (character, gameData = {}, detailed = false, printWin
 
     // 2. On transforme notre composant pur en chaîne HTML
     const htmlContent = renderToString(
-        <CadreParchemin baseUrl={baseUrl}>
-            <FicheParchemin character={hydratedCharacter} gameData={gameData} detailed={detailed} />
-        </CadreParchemin>
+        <FicheParchemin character={hydratedCharacter} gameData={gameData} detailed={detailed} baseUrl={baseUrl} />
     );
 
     // 2. On prépare la fenêtre d'impression (réutilise celle passée en paramètre si disponible)

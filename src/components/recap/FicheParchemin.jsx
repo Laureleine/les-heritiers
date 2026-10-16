@@ -6,7 +6,7 @@ import { calculateCharacterStats } from '../../utils/bonusCalculator';
 import { calculateFullCombatStats, calculatePvSeuils } from '../../utils/rulesEngine';
 import { isCharacterScelle } from '../../utils/lockUtils';
 
-export default function FicheParchemin({ character, gameData, detailed = false }) {
+export default function FicheParchemin({ character, gameData, detailed = false, baseUrl = '' }) {
     
     // ✨ LE FIX EST ICI : On stabilise la référence en mémoire !
     const feeData = useMemo(() => {
@@ -337,6 +337,15 @@ export default function FicheParchemin({ character, gameData, detailed = false }
     const sangFroidTotal = getCarac('sangFroid').total;
     const pointsAmeMax = espritTotal + sangFroidTotal + niveauMagie;
 
+    const pageStyle = baseUrl ? {
+        backgroundImage: `url(${baseUrl}/assets/cadre-feuille.png)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        WebkitPrintColorAdjust: 'exact',
+        printColorAdjust: 'exact',
+    } : {};
+
     return (
         <div className="recap-wrapper font-serif">
             <style dangerouslySetInnerHTML={{__html: `
@@ -353,6 +362,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                     .recap-page-magie {
                         box-shadow: none !important; margin: 0 !important; padding: 5mm !important;
                         border: none !important; page-break-after: always; height: 297mm !important;
+                        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
                     }
                 }
                 .recap-header { text-align: center; border-bottom: 3px double #b5a287; padding-bottom: 6px; margin-bottom: 10px; }
@@ -385,6 +395,8 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                         padding: 5mm !important;
                         border: none !important;
                         page-break-after: always;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                     .no-print { display: none !important; }
                     .recap-header { padding-bottom: 4px !important; margin-bottom: 6px !important; }
@@ -402,7 +414,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
             `}} />
 
             {/* ======================= PAGE 1 : LE MASQUE (FORME HUMAINE) ======================= */}
-            <div className="recap-page">
+            <div className="recap-page" style={pageStyle}>
                 <div className="recap-header" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px'}}>
                     {character.portrait_masked_url && (
                         <img
@@ -610,7 +622,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
             </div>
 
 			{/* ======================= PAGE 2 : LA FÉE (FORME DÉMASQUÉE) ======================= */}
-			<div className="recap-page">
+			<div className="recap-page" style={pageStyle}>
 				<div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px'}}>
 					<div className="carac-main-title" style={{background: '#1e3a8a', margin: 0}}>{character.typeFee || 'Magie & Héritage'}</div>
 					{character.portrait_unmasked_url && (
@@ -855,7 +867,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
 
             {/* ======================= PAGE 3 : FEUILLE DE MAGIE ======================= */}
             {magiesActives.length > 0 && (
-                <div className="recap-page-magie">
+                <div className="recap-page-magie" style={pageStyle}>
                     {/* En-tête */}
                     <div className="recap-header" style={{flexShrink: 0}}>
                         <div style={{fontFamily: "'Playfair Display', serif", fontSize: '22px', fontWeight: '900', color: '#5b21b6', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
