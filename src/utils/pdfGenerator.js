@@ -30,9 +30,9 @@ export const exportToPDF = (character, gameData = {}, detailed = false, printWin
             <title>Fiche_${character.nom || 'Heritier'}</title>
             <script src="https://cdn.tailwindcss.com"></script>
             <style>
-                body { background: #5c4d3c; padding: 20px; }
+                body { background: #faf6ed; padding: 20px; }
                 @media print {
-                    body { background: white; padding: 0; margin: 0; }
+                    body { background: #faf6ed; padding: 0; margin: 0; }
                     .no-print { display: none !important; }
                 }
             </style>

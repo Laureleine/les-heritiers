@@ -377,7 +377,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                 .detail-tag.cre { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
                 .detail-comp-row { font-size: 8px; color: #8b7355; margin-top: 1px; padding-left: 8px; }
                 @media print {
-                    body { background: white !important; }
+                    body { background: #faf6ed !important; }
                     @page { margin: 3mm; }
                     .recap-page {
                         box-shadow: none !important;
