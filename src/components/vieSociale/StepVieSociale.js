@@ -165,7 +165,7 @@ export default function StepVieSociale() {
     return (
       <div>
         <div className="mb-4 flex flex-wrap justify-between items-center bg-stone-100 p-3 rounded-xl border border-stone-200 gap-2">
-          <h3 className="font-serif font-bold text-stone-800 flex items-center gap-2">
+          <h3 className="font-gismonda font-bold text-stone-800 flex items-center gap-2">
             {getProfilDisplayName(profilNom)}
             {character.profils?.majeur?.nom === profilNom && <span className="text-[10px] bg-amber-700 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Majeur</span>}
             {character.profils?.mineur?.nom === profilNom && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Mineur</span>}
@@ -236,7 +236,7 @@ export default function StepVieSociale() {
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-          <h2 className="text-xl font-serif font-bold text-amber-900 flex items-center gap-2">
+          <h2 className="text-xl font-gismonda font-bold text-amber-900 flex items-center gap-2">
             <ShoppingBag size={24} /> Équipement & Vie Sociale
           </h2>
           <p className="text-sm text-amber-700 mt-1">Vos budgets sont liés à vos Profils Majeur, Mineur et à la moyenne de vos compétences.</p>
@@ -250,7 +250,7 @@ export default function StepVieSociale() {
             <Coins size={24} />
           </div>
           <div>
-            <div className="font-bold text-emerald-900 font-serif text-lg">Niveau de Fortune</div>
+            <div className="font-bold text-emerald-900 font-amarante text-lg">Niveau de Fortune</div>
             {isScelle ? (
               <div className="text-xs text-emerald-700">Votre richesse augmente avec l'expérience.</div>
             ) : (
@@ -312,7 +312,7 @@ export default function StepVieSociale() {
                   'bg-gray-50 border-dashed border-gray-200 text-gray-500 opacity-60 hover:opacity-100'
                 }`}
               >
-                <span className="font-serif font-bold truncate">{getProfilDisplayName(pName)}</span>
+                <span className="font-gismonda font-bold truncate">{getProfilDisplayName(pName)}</span>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {budgetTotal > 0 && reste !== 0 && (
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${
@@ -382,7 +382,7 @@ export default function StepVieSociale() {
         {/* COLONNE DROITE : L'INVENTAIRE */}
         <div className="lg:col-span-3">
           <div className="bg-stone-50 rounded-xl p-4 border border-stone-200 sticky top-4 space-y-4">
-            <h3 className="font-serif font-bold text-stone-800 border-b border-stone-200 pb-2">Votre Inventaire</h3>
+            <h3 className="font-gismonda font-bold text-stone-800 border-b border-stone-200 pb-2">Votre Inventaire</h3>
             
             {/* ✨ LE FIX : On filtre intelligemment pour ignorer la clé allocationsContacts et vérifier les tableaux ! */}
             {Object.keys(achats).filter(k => k !== 'allocationsContacts').length === 0 || 

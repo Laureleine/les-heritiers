@@ -45,7 +45,7 @@ export default function StepCapacites() {
         <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
           <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
           <div>
-            <h2 className="font-serif font-bold text-amber-900">Capacités Naturelles</h2>
+            <h2 className="font-gismonda font-bold text-amber-900">Capacités Naturelles</h2>
             <p className="text-sm text-amber-800">
               Le Faux-Semblant enfoui n'a pas de capacités naturelles pour le moment. Elles se révèleront lorsque la Féérie atteindra 3.
             </p>
@@ -104,7 +104,7 @@ export default function StepCapacites() {
       <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
         <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
         <div>
-          <h2 className="font-serif font-bold text-amber-900">Capacités Naturelles</h2>
+          <h2 className="font-gismonda font-bold text-amber-900">Capacités Naturelles</h2>
           <p className="text-sm text-amber-800">
             Voici les capacités inhérentes à votre nature. Vous devez choisir une 3ème capacité spécifique.
             {isScelle && " (Choix scellé)"}
@@ -125,7 +125,7 @@ export default function StepCapacites() {
           return (
             <div key={`fixe-${slot}`} className="p-4 rounded-xl border-2 border-amber-200 bg-amber-100/50">
               <div className="flex items-center justify-between mb-2">
-                <div className="font-bold font-serif text-amber-900 flex items-center gap-2">
+                <div className="font-bold font-amarante text-amber-900 flex items-center gap-2">
                   <Check size={16} className="text-amber-600" />
                   {displayCap.nom}
                 </div>
@@ -171,7 +171,7 @@ export default function StepCapacites() {
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <div className={`font-bold font-serif flex items-center gap-2 ${isSelected ? 'text-amber-900' : 'text-gray-800'}`}>
+                  <div className={`font-bold font-amarante flex items-center gap-2 ${isSelected ? 'text-amber-900' : 'text-gray-800'}`}>
                     {isSelected && <Check size={16} className="text-amber-600" />}
                     {displayCap.nom}
                   </div>
@@ -197,7 +197,7 @@ export default function StepCapacites() {
       {isHybride && (
         <div className="mt-8 border-t-2 border-dashed border-fuchsia-200 pt-6">
           <div className="bg-gradient-to-r from-fuchsia-50 to-purple-50 border border-fuchsia-200 p-5 rounded-xl shadow-sm">
-            <h3 className="font-serif font-bold text-fuchsia-900 flex items-center gap-2 text-lg">
+            <h3 className="font-gismonda font-bold text-fuchsia-900 flex items-center gap-2 text-lg">
               <Sparkles size={20} className="text-fuchsia-600" />
               Échange Hybride — Capacité naturelle
             </h3>

@@ -156,4 +156,20 @@ body {
     @apply text-lh-or font-bold text-lg mb-2;
     font-family: 'Gismonda', Georgia, serif;
   }
+
+  /* === Charte typographique Les Héritiers === */
+  /* Grandes rubriques : CARACTÉRISTIQUES, COMPÉTENCES UTILES… */
+  .lh-rubrique {
+    font-family: 'Gismonda', Georgia, serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  /* Sous-rubriques : Aventurière, Savante, Érudite… */
+  .lh-sous-rubrique {
+    font-family: 'Gismonda', Georgia, serif;
+  }
+  /* Labels de noms : Agilité, Conduite, Constitution… */
+  .lh-label {
+    font-family: 'Amarante', Georgia, serif;
+  }
 }

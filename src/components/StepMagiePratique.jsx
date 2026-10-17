@@ -87,7 +87,7 @@ export default function StepMagiePratique({ nomMagie }) {
         <Wand2 size={20} className="text-violet-700 shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-serif font-bold text-violet-900 text-base">{nomMagie}</h2>
+            <h2 className="font-gismonda font-bold text-violet-900 text-base">{nomMagie}</h2>
             {palierActuel && (
               <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${palierActuel.color}`}>
                 {titreActuel ? `${titreActuel} — ${palierActuel.label}` : palierActuel.label}
@@ -166,7 +166,7 @@ function SortsList({ nomMagie, branche, niveaux, sortsCatalog, sortsConnus, sort
             const apprenableIci = accessible && (prereq.ok || connu);
             return (
               <div key={sort.id} className={`flex items-center gap-2 py-1 px-2 rounded-lg ${connu ? 'bg-emerald-50 border border-emerald-200' : 'bg-stone-50 border border-stone-100'}`}>
-                <span className={`text-sm font-serif flex-1 ${connu ? 'text-emerald-800 font-bold' : 'text-stone-700'}`}>
+                <span className={`text-sm font-amarante flex-1 ${connu ? 'text-emerald-800 font-bold' : 'text-stone-700'}`}>
                   {connu && <span className="text-emerald-500 mr-1">✓</span>}
                   {sort.nom}
                 </span>

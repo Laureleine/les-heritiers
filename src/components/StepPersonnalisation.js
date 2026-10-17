@@ -52,7 +52,7 @@ export default function StepPersonnalisation() {
   return (
     <div className="space-y-8 max-w-4xl mx-auto pb-12">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-serif text-amber-900 flex items-center justify-center gap-3">
+        <h2 className="text-3xl font-gismonda text-amber-900 flex items-center justify-center gap-3">
           <Feather className="text-amber-600" /> Personnalisation du Masque
         </h2>
         <p className="text-gray-600 mt-2">Définissez l'identité sociale et l'apparence de votre personnage.</p>
@@ -62,7 +62,7 @@ export default function StepPersonnalisation() {
       <div className="bg-white rounded-xl shadow-md border-2 border-emerald-300 overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50">
         <div className="flex items-center gap-2 mb-4 p-4 border-b border-emerald-200">
           <Briefcase className="text-emerald-600" size={24} />
-          <h3 className="text-xl font-serif text-emerald-900 font-bold">
+          <h3 className="text-xl font-gismonda text-emerald-900 font-bold">
             Activité Principale & Spécialité offerte
           </h3>
         </div>
@@ -148,7 +148,7 @@ export default function StepPersonnalisation() {
 			<div className="bg-white rounded-xl shadow-md border-2 border-purple-300 overflow-hidden bg-gradient-to-br from-purple-50 to-fuchsia-50 mb-8">
 				<div className="flex items-center gap-2 mb-4 p-4 border-b border-purple-200">
 					<Gift className="text-purple-600" size={24} />
-					<h3 className="text-xl font-serif text-purple-900 font-bold">
+					<h3 className="text-xl font-gismonda text-purple-900 font-bold">
 						Héritage de votre rang social
 					</h3>
 				</div>
@@ -191,7 +191,7 @@ export default function StepPersonnalisation() {
       {/* L'ENCART IDENTITÉ & APPARENCE */}
       <div className="bg-white rounded-xl shadow-md border border-amber-100 overflow-hidden">
         <div className="bg-amber-50 p-4 border-b border-amber-100">
-          <h3 className="font-serif font-bold text-lg text-amber-900 flex items-center gap-2">
+          <h3 className="font-gismonda font-bold text-lg text-amber-900 flex items-center gap-2">
             <User size={20} /> Identité & Apparence
           </h3>
         </div>

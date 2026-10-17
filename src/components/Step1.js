@@ -149,7 +149,7 @@ export default function Step1() {
                         <Lock size={24} />
                     </div>
                     <div>
-                        <h2 className="font-serif font-bold text-amber-900 text-lg">Identité Scellée</h2>
+                        <h2 className="font-gismonda font-bold text-amber-900 text-lg">Identité Scellée</h2>
                         <p className="text-sm text-amber-800 leading-relaxed mt-1">
                             Cet Héritier est désormais actif dans l'univers. Ses attributs fondamentaux (Nom, Sexe, Espèce) constituent son Sceau Originel et sont définitivement gravés dans le marbre.
                         </p>
@@ -337,7 +337,7 @@ export default function Step1() {
                                     <User size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="font-serif font-bold text-stone-900 text-xl">Humain pur</h2>
+                                    <h2 className="font-gismonda font-bold text-stone-900 text-xl">Humain pur</h2>
                                     <p className="text-sm text-stone-500">Ni fée, ni demi-sang — un mortel dans un monde de merveilles</p>
                                 </div>
                             </div>
@@ -364,7 +364,7 @@ export default function Step1() {
                             </div>
                             {character.rangHumain ? (
                                 <div className="bg-stone-50 border border-stone-200 rounded-xl p-5">
-                                    <h3 className="font-serif font-bold text-stone-800 text-lg mb-4">
+                                    <h3 className="font-gismonda font-bold text-stone-800 text-lg mb-4">
                                         Rang : {HUMAIN_RANGS[character.rangHumain].label}
                                     </h3>
                                     <div className="grid grid-cols-3 gap-4">

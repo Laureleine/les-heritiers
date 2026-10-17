@@ -366,11 +366,11 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                     }
                 }
                 .recap-header { text-align: center; border-bottom: 3px double #b5a287; padding-bottom: 6px; margin-bottom: 10px; }
-                .recap-char-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: #92400e; text-transform: uppercase; }
-                .carac-main-title { background: #92400e; color: white; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
+                .recap-char-name { font-family: 'Gismonda', Georgia, serif; font-size: 26px; font-weight: 900; color: #92400e; text-transform: uppercase; }
+                .carac-main-title { background: #92400e; color: white; font-family: 'Gismonda', Georgia, serif; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
                 .carac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
                 .carac-box { background: rgba(255,255,255,0.35); border: 1px solid #b5a287; border-radius: 4px; text-align: center; padding: 3px 6px; box-shadow: 2px 2px 0 rgba(139, 115, 85, 0.1); }
-                .carac-label { font-size: 9px; font-weight: 600; text-transform: uppercase; color: #8b7355; border-bottom: 1px solid #eee; padding-bottom: 1px; margin-bottom: 1px; letter-spacing: 0.5px; }
+                .carac-label { font-family: 'Amarante', Georgia, serif; font-size: 9px; font-weight: 600; text-transform: uppercase; color: #8b7355; border-bottom: 1px solid #eee; padding-bottom: 1px; margin-bottom: 1px; letter-spacing: 0.5px; }
                 .carac-score { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: #4a3b2c; line-height: 1; margin-top: 1px; }
                 .recap-box { border: 1px solid #b5a287; padding: 7px 9px; border-radius: 4px; background: rgba(255,255,255,0.5); margin-bottom: 8px; }
                 .field-label { font-size: 9px; font-weight: bold; text-transform: uppercase; color: #8b7355; display: block; margin-bottom: 1px; }
@@ -492,7 +492,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                 <div className="recap-box grid grid-cols-2 gap-x-10">
                     {Object.entries(profilsMap).map(([profil, comps]) => (
                         <div key={profil} style={{marginBottom: '6px'}}>
-                            <div style={{fontFamily: 'Playfair Display, serif', fontSize: '12px', fontWeight: 'bold', color: '#92400e', borderBottom: '1px solid #d4c5b0', marginBottom: '3px', paddingBottom: '1px'}}>{profil}</div>
+                            <div style={{fontFamily: 'Gismonda, Georgia, serif', fontSize: '12px', fontWeight: 'bold', color: '#92400e', borderBottom: '1px solid #d4c5b0', marginBottom: '3px', paddingBottom: '1px'}}>{profil}</div>
                             {comps.map(comp => {
                                 const stat  = getCompScore(comp);
                                 const bd    = detailed ? getCompBreakdown(comp) : null;
@@ -505,7 +505,7 @@ export default function FicheParchemin({ character, gameData, detailed = false, 
                                 return (
                                     <div key={comp} className="mb-0.5">
                                         <div className="comp-line">
-                                            <span style={{color: '#4a3b2c'}}>
+                                            <span style={{color: '#4a3b2c', fontFamily: 'Amarante, Georgia, serif'}}>
                                                 {comp} {isPred && <span style={{fontSize: '10px', color: '#d97706', marginLeft: '4px'}}>★</span>}
                                                 {specsTexte && <span style={{fontSize: '11px', color: '#8b7355', marginLeft: '6px', fontStyle: 'italic'}}>{specsTexte}</span>}
                                             </span>

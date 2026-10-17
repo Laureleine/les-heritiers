@@ -277,7 +277,7 @@ export default function StepCompetencesFutiles() {
       {/* En-tête Sticky */}
       <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 flex flex-col md:flex-row justify-between items-center sticky top-20 z-20 shadow-sm">
         <div>
-          <h2 className="text-xl font-bold text-amber-900 font-serif flex items-center gap-2">
+          <h2 className="text-xl font-bold text-amber-900 font-gismonda flex items-center gap-2">
             <Sparkles className="text-amber-600"/> Compétences Futiles
           </h2>
           {isScelle ? (
@@ -307,7 +307,7 @@ export default function StepCompetencesFutiles() {
       {/* ✨ FIX : On masque totalement la boîte de choix une fois le personnage scellé ! */}
       {!isScelle && parsedPredilection.some(item => item.isChoix) && (
         <div className="bg-purple-50 p-6 rounded-xl border border-purple-200 mb-6">
-          <h3 className="font-serif text-lg text-purple-900 mb-4 flex items-center gap-2">
+          <h3 className="font-gismonda text-lg text-purple-900 mb-4 flex items-center gap-2">
             <AlertCircle size={20}/> Héritage Féérique : Choix requis
           </h3>
           <div className="space-y-4">
@@ -340,7 +340,7 @@ export default function StepCompetencesFutiles() {
       {allChoicesMade && competencesPredilection.length > 0 && (
         <div>
           {/* ✨ FIX : On adapte le titre selon le statut du personnage */}
-          <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2">
+          <h3 className="font-gismonda text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2">
             {isScelle ? "Vos Compétences de Prédilection" : "Vos Compétences de Prédilection (Base 2 gratuite)"}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -356,7 +356,7 @@ export default function StepCompetencesFutiles() {
       {allChoicesMade ? (
         <>
           <div className="mt-8">
-            <h3 className="font-serif text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2 flex justify-between items-end">
+            <h3 className="font-gismonda text-lg text-amber-800 mb-4 border-b border-amber-200 pb-2 flex justify-between items-end">
               <span>Compétences Disponibles</span>
               <span className="text-xs font-sans text-gray-500 font-normal">Classées par ordre alphabétique</span>
             </h3>
@@ -384,7 +384,7 @@ export default function StepCompetencesFutiles() {
 
           {/* 4. Création Custom */}
           <div className="mt-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
-            <h3 className="font-serif text-lg text-gray-700 mb-4 flex items-center gap-2">
+            <h3 className="font-gismonda text-lg text-gray-700 mb-4 flex items-center gap-2">
               <PlusCircle size={20}/> Créer une compétence sur mesure
             </h3>
             <div className="flex flex-col md:flex-row gap-3">
