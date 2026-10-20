@@ -63,7 +63,7 @@ PERIOD_DESCS = {
         "soiree":     "les dernières lueurs du soleil doraient les toits",
     },
     "degagement": {
-        "matin":      "le ciel se dégageait progressivement au fil des heures",
+        "matin":      "quelques nuages s'effaçaient encore au-dessus des toits",
         "apres_midi": "les nuages cédaient la place à de belles éclaircies",
         "soiree":     "le ciel finissait par s'ouvrir vers l'horizon",
     },
@@ -88,7 +88,7 @@ PERIOD_DESCS = {
         "soiree":     "la bruine continuait de mouiller silencieusement les rues",
     },
     "pluie": {
-        "matin":      "la pluie tombait sur la ville dès les premières heures",
+        "matin":      "la pluie tombait déjà sur la ville",
         "apres_midi": "la pluie s'abattait sans relâche sur les boulevards",
         "soiree":     "la pluie persistait sous les réverbères allumés",
     },
@@ -98,7 +98,7 @@ PERIOD_DESCS = {
         "soiree":     "les fortes pluies n'épargnaient pas la capitale",
     },
     "averses": {
-        "matin":      "des averses traversaient les rues au petit jour",
+        "matin":      "des averses balayaient déjà les rues",
         "apres_midi": "des averses venaient troubler les promeneurs par moments",
         "soiree":     "quelques averses encore balayaient les boulevards",
     },
@@ -108,7 +108,7 @@ PERIOD_DESCS = {
         "soiree":     "les flocons tombaient encore sous les réverbères",
     },
     "orage": {
-        "matin":      "le tonnerre grondait sur la ville au lever du jour",
+        "matin":      "le tonnerre grondait déjà sur la ville",
         "apres_midi": "l'orage éclatait sur Paris avec toute sa violence",
         "soiree":     "le tonnerre s'éloignait peu à peu dans la nuit",
     },
