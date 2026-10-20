@@ -15,6 +15,7 @@ import { STEP_CONFIG } from '../../data/DictionnaireJeu';
 import JournalAmeModal from '../JournalAmeModal';
 import PixieAssistant from '../PixieAssistant';
 import CadreParchemin from '../CadreParchemin';
+import GrimoireDrawer from '../GrimoireDrawer';
 
 // Code Splitting
 const Step1 = lazy(() => import('../Step1'));
@@ -54,6 +55,7 @@ export default function CharacterCreator() {
 
   const [showJournalAme, setShowJournalAme] = useState(false);
   const [showChroniques, setShowChroniques] = useState(false);
+  const [showGrimoire, setShowGrimoire] = useState(false);
 
   const cercleId = location.state?.cercleId;
   const isDocteConsulting = isReadOnly && character?.userId !== session?.user?.id;
@@ -215,16 +217,26 @@ export default function CharacterCreator() {
             <span className="hidden sm:inline">Imprimer</span>
           </button>
 
-          {/* BOUTON CHRONIQUES (Docte en consultation) */}
+          {/* BOUTONS DOCTE EN CONSULTATION */}
           {isDocteConsulting && (
-            <button
-              onClick={() => setShowChroniques(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-stone-700 hover:bg-stone-600 text-amber-100 rounded-lg transition-colors text-sm font-bold shadow-sm border border-stone-600"
-              title="Chroniques d'Héritage"
-            >
-              <BookMarked size={18} />
-              <span className="hidden sm:inline">Chroniques</span>
-            </button>
+            <>
+              <button
+                onClick={() => setShowChroniques(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-stone-700 hover:bg-stone-600 text-amber-100 rounded-lg transition-colors text-sm font-bold shadow-sm border border-stone-600"
+                title="Chroniques d'Héritage"
+              >
+                <BookMarked size={18} />
+                <span className="hidden sm:inline">Chroniques</span>
+              </button>
+              <button
+                onClick={() => setShowGrimoire(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-amber-800 hover:bg-amber-700 text-amber-100 rounded-lg transition-colors text-sm font-bold shadow-sm border border-amber-700"
+                title="Grimoire Personnel"
+              >
+                <BookOpen size={18} />
+                <span className="hidden sm:inline">Grimoire</span>
+              </button>
+            </>
           )}
 
           {/* BOUTON SAUVEGARDER */}
@@ -373,6 +385,15 @@ export default function CharacterCreator() {
         </div>
       )}
       
+      {showGrimoire && isDocteConsulting && (
+        <GrimoireDrawer
+          charId={character?.id}
+          isAdmin={true}
+          ownerPlayerId={character?.userId}
+          onClose={() => setShowGrimoire(false)}
+        />
+      )}
+
       {userProfile?.profile?.show_pixie !== false && (
         <PixieAssistant
           character={character || {}}

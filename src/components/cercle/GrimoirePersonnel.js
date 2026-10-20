@@ -2,14 +2,24 @@
 // 15.17.8
 
 import React, { useState, useMemo, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
-import { BookOpen, BookMarked, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Eye, EyeOff, Search } from '../../config/icons';
+import { BookOpen, BookMarked, Users, Package, Plus, Share2, Lock, Tag, MapPin, Shield, Save, X, Edit, Trash2, AlertTriangle, VenetianMask, Eye, EyeOff, Search, Sparkles } from '../../config/icons';
 import { EmptyState } from '../ui/EmptyState';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { useGrimoire } from '../../hooks/useGrimoire';
+import { usePersonalCards } from '../../hooks/usePersonalCards';
+import { supabase } from '../../config/supabase';
 import TabChroniques from './TabChroniques';
 import { migrateContactContent, getCategoryStyle, getVisibleRelations, hasActiveFauxSemblant, getFauxSemblantTypeFee, CATEGORIES_SUGGESTIONS } from '../../utils/relationsHelper';
 import { useUserContext } from '../../context/UserContext';
+
+const CARD_TYPE_LABELS = {
+  fairy_assets: 'Atout',
+  fairy_powers: 'Pouvoir',
+  fairy_capacites: 'Capacité',
+  social_items: 'Item Social',
+};
 
 const FAIRY_TYPES = [
   'Ange', 'Bastet', 'Elfe', 'Farfadet', 'Gnome', 'Gobelin', 'Korrigan',
@@ -46,7 +56,9 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
   const [contactFilter, setContactFilter] = useState('');
   const [showReality, setShowReality] = useState(false);
 
-  const GRIMOIRE_TABS = ['notes', 'contacts', 'possessions', 'chroniques'];
+  const GRIMOIRE_TABS = isAdmin
+    ? ['notes', 'contacts', 'possessions', 'chroniques', 'cartes']
+    : ['notes', 'contacts', 'possessions', 'chroniques'];
   const handleTabKeyDown = (e) => {
     const idx = GRIMOIRE_TABS.indexOf(activeTab);
     let next = null;
@@ -57,9 +69,66 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
     if (next) { setActiveTab(next); setTimeout(() => document.getElementById(`tab-grimoire-${next}`)?.focus(), 0); }
   };
 
+  const queryClient = useQueryClient();
+  const [revokeConfirm, setRevokeConfirm] = useState(null);
+  const [removeVSConfirm, setRemoveVSConfirm] = useState(null);
+
   const isDocte = userProfile?.profile?.is_docte === true || isAdmin;
 
   const { notes, contacts, possessions, loading, toggleShare, addNote, updateNote, deleteNote } = useGrimoire(characterId, cercleId, playerId, isAdmin);
+  const { data: personalCards } = usePersonalCards(isAdmin ? playerId : null, isAdmin ? characterId : null);
+
+  const handleRevoke = async () => {
+    if (!revokeConfirm) return;
+    const { error } = await supabase.from('personal_card_grants').delete().eq('id', revokeConfirm.grantId);
+    if (error) {
+      showInAppNotification(`Erreur lors de la révocation : ${error.message}`, 'error');
+    } else {
+      showInAppNotification(`La carte « ${revokeConfirm.cardName} » a été récupérée.`, 'success');
+      queryClient.invalidateQueries({ queryKey: ['personalCards'] });
+    }
+    setRevokeConfirm(null);
+  };
+
+  const handleInitRemoveVS = async (note) => {
+    const itemId = note.content?.source_social_item_id;
+    if (!itemId) return;
+    const { data: item } = await supabase.from('social_items').select('nom, cout, cout_moderne').eq('id', itemId).single();
+    setRemoveVSConfirm({
+      noteId: note.id,
+      itemId,
+      itemNom: item?.nom || note.content?.nom || 'Item',
+      coutBase: item?.cout || 0,
+      coutModerne: item?.cout_moderne ?? null,
+      rembourser: true,
+    });
+  };
+
+  const handleConfirmRemoveVS = async () => {
+    if (!removeVSConfirm) return;
+    setIsSubmitting(true);
+    const { data: charRow } = await supabase.from('characters').select('data, anciennete').eq('id', characterId).single();
+    if (charRow) {
+      const vieSociale = { ...charRow.data?.vieSociale || {} };
+      Object.keys(vieSociale).forEach(profil => {
+        if (Array.isArray(vieSociale[profil])) {
+          vieSociale[profil] = vieSociale[profil].filter(id => id !== removeVSConfirm.itemId);
+        }
+      });
+      let newData = { ...charRow.data, vieSociale };
+      if (removeVSConfirm.rembourser) {
+        const cout = (charRow.anciennete === 'moderne' && removeVSConfirm.coutModerne != null)
+          ? removeVSConfirm.coutModerne
+          : removeVSConfirm.coutBase;
+        if (cout > 0) newData.fortune = (newData.fortune || 0) + cout;
+      }
+      await supabase.from('characters').update({ data: newData }).eq('id', characterId);
+    }
+    await deleteNote(removeVSConfirm.noteId);
+    showInAppNotification(`L'item « ${removeVSConfirm.itemNom} » a été retiré.`, 'success');
+    setIsSubmitting(false);
+    setRemoveVSConfirm(null);
+  };
 
   const migratedContacts = useMemo(() =>
     contacts.map(c => ({ ...c, content: migrateContactContent(c.content) })),
@@ -180,7 +249,7 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
           <BookOpen className="text-amber-300" />
           Mon Grimoire Personnel
         </h2>
-        {activeTab !== 'chroniques' && (
+        {activeTab !== 'chroniques' && activeTab !== 'cartes' && (
           <button
             onClick={() => handleOpenModal()}
             className="bg-amber-700 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-transform active:scale-95 shadow-sm"
@@ -235,6 +304,19 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
         >
           <BookMarked size={18} /> Chroniques
         </button>
+        {isAdmin && (
+          <button
+            role="tab"
+            id="tab-grimoire-cartes"
+            aria-selected={activeTab === 'cartes'}
+            aria-controls="panel-grimoire"
+            tabIndex={activeTab === 'cartes' ? 0 : -1}
+            onClick={() => setActiveTab('cartes')}
+            className={`flex-1 py-3 font-serif font-bold flex items-center justify-center gap-2 transition-colors ${activeTab === 'cartes' ? 'bg-white text-violet-900 border-t-2 border-t-violet-600' : 'text-amber-700 hover:bg-amber-100'}`}
+          >
+            <Sparkles size={18} /> Cartes
+          </button>
+        )}
       </div>
 
 		{/* 2. LA ZONE DE CONTENU */}
@@ -442,6 +524,64 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 							)}
 						</>
 					)}
+						{/* ONGLET 5 : CARTES DISTRIBUÉES (Docte uniquement) */}
+						{activeTab === 'cartes' && isAdmin && (() => {
+							const allCards = [
+								...(personalCards?.assets || []).map(c => ({ ...c, _typeLabel: 'Atout', _cardType: 'fairy_assets' })),
+								...(personalCards?.powers || []).map(c => ({ ...c, _typeLabel: 'Pouvoir', _cardType: 'fairy_powers' })),
+								...(personalCards?.capacites || []).map(c => ({ ...c, _typeLabel: 'Capacité', _cardType: 'fairy_capacites' })),
+								...(personalCards?.socialItems || []).map(c => ({ ...c, _typeLabel: 'Item Social', _cardType: 'social_items' })),
+							];
+							if (allCards.length === 0) return <EmptyState icon={Sparkles} message="Aucune carte distribuée à ce personnage." />;
+							return (
+								<div className="space-y-3">
+									{allCards.map(card => (
+										<div key={`${card._cardType}-${card.id}`} className="bg-white border border-violet-100 rounded-xl p-4 flex items-start justify-between gap-3 shadow-sm">
+											<div className="flex-1 min-w-0">
+												<div className="flex items-center gap-2 mb-1">
+													<span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 border border-violet-200 font-bold uppercase tracking-wide">
+														✦ {card._typeLabel}
+													</span>
+												</div>
+												<h4 className="font-serif font-bold text-stone-800 text-sm">{card.nom || card.name || 'Carte sans nom'}</h4>
+												{card.description && (
+													<p className="text-xs text-stone-500 mt-0.5 line-clamp-2">{card.description}</p>
+												)}
+											</div>
+											<div className="shrink-0">
+												{revokeConfirm?.grantId === card._grant?.id ? (
+													<div className="flex flex-col gap-1 items-end">
+														<span className="text-xs text-red-700 font-bold">Confirmer la révocation ?</span>
+														<div className="flex gap-1">
+															<button
+																onClick={() => setRevokeConfirm(null)}
+																className="text-xs px-2 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded font-bold transition-colors"
+															>
+																Annuler
+															</button>
+															<button
+																onClick={handleRevoke}
+																className="text-xs px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded font-bold transition-colors"
+															>
+																Révoquer
+															</button>
+														</div>
+													</div>
+												) : (
+													<button
+														onClick={() => setRevokeConfirm({ grantId: card._grant?.id, cardName: card.nom || card.name })}
+														className="text-xs px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg font-bold transition-colors"
+													>
+														Retirer
+													</button>
+												)}
+											</div>
+										</div>
+									))}
+								</div>
+							);
+						})()}
+
 						{/* ONGLET 4 : CHRONIQUES D'HÉRITAGE */}
 						{activeTab === 'chroniques' && (
 							<TabChroniques
@@ -462,9 +602,17 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 									{possessions.map((possession) => {
 										const isMine = possession.player_id === playerId;
 										const data = possession.content || {};
+										const isVS = !!data.source_social_item_id;
 										return (
 											<div key={possession.id} className="p-4 border border-stone-200 rounded-xl bg-white shadow-sm flex flex-col gap-3 relative overflow-hidden hover:shadow-md transition-shadow">
-												<h4 className="font-serif font-bold text-lg text-amber-900">{data.nom || 'Objet sans nom'}</h4>
+												<div className="flex items-start justify-between gap-2">
+													<h4 className="font-serif font-bold text-lg text-amber-900">{data.nom || 'Objet sans nom'}</h4>
+													{isVS && (
+														<span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 font-bold uppercase tracking-wide">
+															Vie Sociale
+														</span>
+													)}
+												</div>
 												{data.description && (
 													<p className="text-sm text-stone-600 italic flex-1 bg-stone-50 p-2 rounded border border-stone-100">
 														{data.description}
@@ -472,19 +620,31 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 												)}
 												{isMine && (
 													<div className="mt-2 pt-3 border-t border-stone-100 flex gap-2">
-														<button
-															onClick={() => handleOpenModal(possession)}
-															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
-															aria-label="Modifier cette possession"
-														>
-															<Edit size={12} />
-														</button>
+														{!isVS && (
+															<button
+																onClick={() => handleOpenModal(possession)}
+																className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+																aria-label="Modifier cette possession"
+															>
+																<Edit size={12} />
+															</button>
+														)}
 														<button
 															onClick={() => handleDeleteClick(possession, data.nom)}
 															className="text-xs font-bold px-2 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
 															aria-label="Supprimer cette possession"
 														>
 															<Trash2 size={12} />
+														</button>
+													</div>
+												)}
+												{isAdmin && isVS && (
+													<div className="mt-2 pt-3 border-t border-stone-100">
+														<button
+															onClick={() => handleInitRemoveVS(possession)}
+															className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm border bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100"
+														>
+															<Trash2 size={12} /> Retirer l'item VS
 														</button>
 													</div>
 												)}
@@ -734,6 +894,59 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
                 </button>
                 <button onClick={handleConfirmDelete} disabled={isSubmitting} className="flex-1 py-3 bg-red-700 hover:bg-red-800 text-white rounded-xl font-bold transition-colors shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
                   <Trash2 size={18} /> {isSubmitting ? 'Suppression...' : 'Supprimer'}
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* MODALE : RETRAIT ITEM VIE SOCIALE */}
+      {removeVSConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4">
+          <div role="dialog" aria-modal="true" className="bg-[#fdfbf7] max-w-md w-full rounded-2xl shadow-2xl border-4 border-orange-200 overflow-hidden transform">
+
+            <div className="bg-orange-700 text-orange-50 p-4 border-b-4 border-orange-800 flex justify-between items-center">
+              <h3 className="font-serif font-bold text-lg flex items-center gap-2">
+                <Trash2 size={20} /> Retirer l'item de Vie Sociale
+              </h3>
+              <button onClick={() => setRemoveVSConfirm(null)} className="hover:text-orange-200 transition-colors" aria-label="Annuler"><X size={20}/></button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <p className="text-stone-700 font-serif text-center">
+                Retirer cet item du personnage ?
+              </p>
+              <p className="text-center font-bold text-orange-800 bg-orange-50 p-3 rounded-lg border border-orange-200">
+                "{removeVSConfirm.itemNom}"
+              </p>
+
+              {(() => {
+                const cout = removeVSConfirm.coutModerne != null
+                  ? removeVSConfirm.coutModerne
+                  : removeVSConfirm.coutBase;
+                return cout > 0 ? (
+                  <label className="flex items-center gap-3 cursor-pointer p-3 bg-green-50 border border-green-200 rounded-xl">
+                    <input
+                      type="checkbox"
+                      checked={removeVSConfirm.rembourser}
+                      onChange={e => setRemoveVSConfirm(prev => ({ ...prev, rembourser: e.target.checked }))}
+                      className="w-5 h-5 rounded border-green-400 text-green-600 focus:ring-green-500"
+                    />
+                    <span className="text-sm font-bold text-green-800">
+                      Rembourser {cout} PP au joueur
+                    </span>
+                  </label>
+                ) : null;
+              })()}
+
+              <div className="mt-6 flex gap-3 pt-4 border-t border-stone-200">
+                <button onClick={() => setRemoveVSConfirm(null)} className="flex-1 py-3 text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-xl font-bold transition-colors">
+                  Annuler
+                </button>
+                <button onClick={handleConfirmRemoveVS} disabled={isSubmitting} className="flex-1 py-3 bg-orange-700 hover:bg-orange-800 text-white rounded-xl font-bold transition-colors shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
+                  <Trash2 size={18} /> {isSubmitting ? 'Retrait...' : 'Retirer'}
                 </button>
               </div>
             </div>

@@ -3,7 +3,7 @@ import { X } from '../config/icons';
 import { useUserContext } from '../context/UserContext';
 import GrimoirePersonnel from './cercle/GrimoirePersonnel';
 
-export default function GrimoireDrawer({ charId, isAdmin, onClose }) {
+export default function GrimoireDrawer({ charId, isAdmin, ownerPlayerId, onClose }) {
   const { session } = useUserContext();
   if (!charId) return null;
 
@@ -21,7 +21,7 @@ export default function GrimoireDrawer({ charId, isAdmin, onClose }) {
         <GrimoirePersonnel
           characterId={charId}
           cercleId={null}
-          playerId={session?.user?.id}
+          playerId={ownerPlayerId || session?.user?.id}
           isAdmin={isAdmin}
         />
       </div>

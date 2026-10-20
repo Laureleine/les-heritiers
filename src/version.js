@@ -2,6 +2,19 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.0 - \"Le Grimoire du Docte 📚\"",
+    date: "21 Octobre 2026",
+    description: "Le Docte peut désormais ouvrir le Grimoire Personnel de ses joueurs depuis la fiche de consultation — et depuis cet espace intime, retirer les cartes distribuées ou les items de Vie Sociale acquis en erreur, avec proposition de remboursement en Points de Prestige.",
+    changes: [
+      "📚 **Accès au Grimoire depuis la fiche Docte :** Un bouton « Grimoire » apparaît désormais aux côtés de « Chroniques » quand le Docte consulte le personnage d'un de ses joueurs.",
+      "✦ **Retrait de cartes distribuées :** Dans l'onglet « Cartes » du Grimoire (visible uniquement du Docte), il est possible de révoquer une carte personnelle accordée à tort — la carte revient dans le portefeuille du Docte pour redistribution.",
+      "🏷️ **Retrait d'items de Vie Sociale :** Les possessions issues d'un achat Vie Sociale sont désormais identifiées par un badge dédié. Le Docte peut les retirer avec une proposition de remboursement des PP (activé par défaut).",
+      "🔧 **Fix Edge Function cartes personnelles :** Les cartes de type « Item Social » pouvaient être envoyées au Conseil au lieu d'être appliquées directement — corrigé en production.",
+      "🧹 **Nettoyage du bureau des réparations :** 22 demandes de reconstruction orphelines ont été archivées ; le badge « 22 » sur l'onglet Communauté a disparu.",
+      "🧪 **567 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "18.0.1 - \"La Plume du Scribe 🖊️\"",
     date: "20 Octobre 2026",
     description: "Les messages d'erreur du Bureau des Anomalies affichent désormais le vrai contenu des erreurs au lieu de l'énigmatique « [object Object] ». Les Gardiens verront enfin ce qui se passe vraiment.",

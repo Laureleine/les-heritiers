@@ -4,6 +4,29 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## Version 18.1.0 — « Le Grimoire du Docte 📚 » — 21 Octobre 2026
+
+Chers Héritiers,
+
+Un nouveau pouvoir s'éveille entre les mains de vos Doctes.
+
+Jusqu'ici, le Grimoire Personnel — ce carnet d'âme où vos personnages consignent leurs secrets, leurs contacts et leurs trésors — n'était accessible qu'à vous seuls. Désormais, votre Docte peut l'ouvrir depuis votre fiche de consultation et y intervenir avec les attributions qui lui reviennent.
+
+**Ce que cela change concrètement :**
+
+✦ *Retrait de cartes personnelles.* Si une carte féérique vous a été attribuée par erreur ou si les vents du destin ont changé, votre Docte peut la reprendre depuis votre Grimoire — elle retrouve sa place dans son portefeuille, prête à être redistribuée.
+
+🏷️ *Retrait d'items de Vie Sociale.* Les acquisitions de votre Vie Sociale apparaissent désormais dans vos possessions avec un badge distinctif. Le Docte peut effacer une acquisition erronée et vous restituer vos Points de Prestige, si cela lui semble juste.
+
+🔧 *Un fantôme exorcisé.* Certains items de type « Social » pouvaient, par un caprice des mécanismes éthérés, être envoyés au Conseil au lieu d'être appliqués directement à votre fiche. Cette anomalie appartient au passé.
+
+Le Bureau des Anomalies a également été purgé de vingt-deux vieilles requêtes sans réponse — les archives respirent mieux.
+
+Bonne aventure à toutes et à tous,
+*L'Atelier des Héritiers*
+
+---
+
 ## v18.0.1 — La Plume du Scribe 🖊️ (20 octobre 2026)
 
 Chers Héritiers,
