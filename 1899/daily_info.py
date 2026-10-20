@@ -58,66 +58,66 @@ WEATHER_ICONS = {
 #   soiree     → "Le soir venu, {desc}"
 PERIOD_DESCS = {
     "ensoleille": {
-        "matin":      "le soleil se levait dans un ciel d'azur limpide",
-        "apres_midi": "le soleil brillait généreusement sur la capitale",
-        "soiree":     "les dernières lueurs du soleil doraient les toits",
+        "matin":      "le soleil s'est levé dans un ciel d'azur limpide",
+        "apres_midi": "le soleil a brillé généreusement sur la capitale",
+        "soiree":     "les dernières lueurs du soleil ont doré les toits",
     },
     "degagement": {
-        "matin":      "quelques nuages s'effaçaient encore au-dessus des toits",
-        "apres_midi": "les nuages cédaient la place à de belles éclaircies",
-        "soiree":     "le ciel finissait par s'ouvrir vers l'horizon",
+        "matin":      "les nuages se sont peu à peu dissipés",
+        "apres_midi": "les nuages ont cédé la place à de belles éclaircies",
+        "soiree":     "le ciel s'est finalement ouvert vers l'horizon",
     },
     "peu nuageux": {
-        "matin":      "quelques nuages passagers voilaient encore l'horizon",
-        "apres_midi": "quelques nuages passagers n'altéraient guère la clarté",
-        "soiree":     "quelques nuages légers accompagnaient le crépuscule",
+        "matin":      "quelques nuages passagers ont voilé l'horizon",
+        "apres_midi": "quelques nuages passagers n'ont guère altéré la clarté",
+        "soiree":     "quelques nuages légers ont accompagné le crépuscule",
     },
     "couvert": {
-        "matin":      "la ville s'éveillait sous un ciel gris et uniforme",
-        "apres_midi": "le ciel demeurait bas et couvert sur toute la ville",
-        "soiree":     "les nuages gris s'attardaient au-dessus de la ville",
+        "matin":      "la ville s'est éveillée sous un ciel gris et uniforme",
+        "apres_midi": "le ciel est demeuré bas et couvert sur toute la ville",
+        "soiree":     "les nuages gris ont pesé sur la ville jusqu'au soir",
     },
     "brouillard": {
-        "matin":      "Paris s'éveillait noyé dans un épais brouillard",
-        "apres_midi": "le brouillard persistait, estompant les façades",
-        "soiree":     "le brouillard s'épaississait avec la nuit tombante",
+        "matin":      "Paris s'est éveillé dans un épais brouillard",
+        "apres_midi": "le brouillard a persisté, estompant les façades",
+        "soiree":     "le brouillard s'est épaissi avec la nuit tombante",
     },
     "bruine": {
-        "matin":      "une fine bruine mouillait déjà les pavés",
-        "apres_midi": "la bruine persistait, ternissant les reflets des vitrines",
-        "soiree":     "la bruine continuait de mouiller silencieusement les rues",
+        "matin":      "une fine bruine a mouillé les pavés dès l'aube",
+        "apres_midi": "la bruine a persisté, ternissant les reflets des vitrines",
+        "soiree":     "la bruine a continué de mouiller silencieusement les rues",
     },
     "pluie": {
-        "matin":      "la pluie tombait déjà sur la ville",
-        "apres_midi": "la pluie s'abattait sans relâche sur les boulevards",
-        "soiree":     "la pluie persistait sous les réverbères allumés",
+        "matin":      "la pluie est tombée sur la ville dès l'aube",
+        "apres_midi": "la pluie s'est abattue sans relâche sur les boulevards",
+        "soiree":     "la pluie a persisté sous les réverbères allumés",
     },
     "fortes pluies": {
-        "matin":      "de fortes pluies s'abattaient sur la capitale",
-        "apres_midi": "de fortes pluies se déversaient sans répit sur la cité",
-        "soiree":     "les fortes pluies n'épargnaient pas la capitale",
+        "matin":      "de fortes pluies se sont abattues sur la capitale",
+        "apres_midi": "de fortes pluies se sont déversées sans répit sur la cité",
+        "soiree":     "les fortes pluies n'ont pas épargné la capitale",
     },
     "averses": {
-        "matin":      "des averses balayaient déjà les rues",
-        "apres_midi": "des averses venaient troubler les promeneurs par moments",
-        "soiree":     "quelques averses encore balayaient les boulevards",
+        "matin":      "des averses ont balayé les rues dès l'aube",
+        "apres_midi": "des averses ont troublé par moments les promeneurs",
+        "soiree":     "quelques averses ont encore balayé les boulevards",
     },
     "neige": {
-        "matin":      "les toits se blanchissaient déjà sous les flocons",
-        "apres_midi": "les flocons continuaient de blanchir les toits en silence",
-        "soiree":     "les flocons tombaient encore sous les réverbères",
+        "matin":      "les toits se sont blanchis sous les premiers flocons",
+        "apres_midi": "les flocons ont continué de blanchir les toits en silence",
+        "soiree":     "les flocons sont tombés encore sous les réverbères",
     },
     "orage": {
-        "matin":      "le tonnerre grondait déjà sur la ville",
-        "apres_midi": "l'orage éclatait sur Paris avec toute sa violence",
-        "soiree":     "le tonnerre s'éloignait peu à peu dans la nuit",
+        "matin":      "le tonnerre a grondé dès les premières heures",
+        "apres_midi": "l'orage a éclaté sur Paris avec toute sa violence",
+        "soiree":     "le tonnerre s'est éloigné peu à peu dans la nuit",
     },
 }
 
 DEFAULT_PERIOD_DESCS = {
-    "matin":      "la matinée s'ouvrait sous un ciel indécis",
-    "apres_midi": "l'après-midi se déroulait sous un temps variable",
-    "soiree":     "les nuages incertains accompagnaient la fin du jour",
+    "matin":      "la matinée s'est ouverte sous un ciel indécis",
+    "apres_midi": "l'après-midi s'est déroulé sous un temps variable",
+    "soiree":     "les nuages incertains ont accompagné la fin du jour",
 }
 
 WIND_THRESHOLDS = [
@@ -260,11 +260,7 @@ def generate_weather_text_belle_epoque(month, day, year, om_data):
 
     # Matin
     matin = periods["matin"]
-    desc_m = period_desc("matin", matin["condition"])
-    line_m = f"Au point du jour, {desc_m}"
-    t_m = temp_context(matin["temp_avg"])
-    if t_m and matin["temp_avg"] is not None:
-        line_m += f", par {t_m} ({matin['temp_avg']:.0f} °C)"
+    line_m = f"Au point du jour, {period_desc('matin', matin['condition'])}"
     w_m = wind_context(matin["wind_avg"])
     if w_m:
         line_m += f", avec {w_m}"
@@ -272,10 +268,7 @@ def generate_weather_text_belle_epoque(month, day, year, om_data):
 
     # Après-midi
     am = periods["apres_midi"]
-    desc_am = period_desc("apres_midi", am["condition"])
-    line_am = f"Dans l'après-midi, {desc_am}"
-    if tmax is not None:
-        line_am += f" — {tmax:.0f} °C au plus haut du thermomètre"
+    line_am = f"Dans l'après-midi, {period_desc('apres_midi', am['condition'])}"
     if am["precip"] >= 0.5:
         line_am += f" ({am['precip']:.1f} mm)"
     lines.append(line_am + ".")
