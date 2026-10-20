@@ -6,8 +6,10 @@ Mapping d'années automatique : game_year + 110  (1899→2009, 1900→2010, …)
 """
 
 import json
+import os
 import sys
 from datetime import date
+from pathlib import Path
 
 import requests
 
@@ -312,6 +314,121 @@ def get_weather_icon(condition):
     return WEATHER_ICONS.get(condition, "🌤️")
 
 
+# ─── GÉNÉRATION IA (Gemini Flash Lite) ───────────────────────────────────
+def _get_env_key(name):
+    """Lit une clé depuis l'environnement ou le .env du projet."""
+    key = os.environ.get(name)
+    if key:
+        return key
+    env_path = Path(__file__).parent.parent / ".env"
+    try:
+        with open(env_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith(f"{name}=") and not line.startswith("#"):
+                    return line.split("=", 1)[1].strip().strip('"').strip("'")
+    except Exception:
+        pass
+    return None
+
+
+def _build_prompt(month, day, year, om_data):
+    daily  = om_data.get("daily", {})
+    hourly = om_data.get("hourly", {})
+
+    tmax         = (daily.get("temperature_2m_max") or [None])[0]
+    tmin         = (daily.get("temperature_2m_min") or [None])[0]
+    precip_total = (daily.get("precipitation_sum")  or [0])[0] or 0
+    wind_max     = (daily.get("wind_speed_10m_max") or [None])[0]
+
+    periods = {
+        "matin":      get_period_stats(hourly, 6,  12),
+        "apres_midi": get_period_stats(hourly, 12, 18),
+        "soiree":     get_period_stats(hourly, 18, 24),
+    }
+
+    def fmt_p(p):
+        parts = [f"condition : {p['condition']}"]
+        if p["temp_avg"] is not None:
+            parts.append(f"temp moy : {p['temp_avg']:.0f}°C")
+        if p["precip"] >= 0.2:
+            parts.append(f"précip : {p['precip']:.1f}mm")
+        if p["wind_avg"] is not None and p["wind_avg"] >= 10:
+            parts.append(f"vent : {p['wind_avg']:.0f}km/h")
+        return ", ".join(parts)
+
+    month_name = MONTHS_FR[month]
+    day_str    = f"{day}er" if day == 1 else str(day)
+    temp_range = (
+        f"min {tmin:.0f}°C, max {tmax:.0f}°C"
+        if tmin is not None and tmax is not None else ""
+    )
+    vent_line = f", vent max {wind_max:.0f}km/h" if wind_max else ""
+
+    return f"""Tu rédiges le bulletin météo quotidien de la Gazette des Héritiers, journal fictif de Paris en 1899.
+
+Date : {day_str} {month_name} {year}
+Données météo (référence climatique Paris) :
+- Matin (6h–12h) : {fmt_p(periods['matin'])}
+- Après-midi (12h–18h) : {fmt_p(periods['apres_midi'])}
+- Soirée (18h–24h) : {fmt_p(periods['soiree'])}
+- Journée : {temp_range}, précip totales {precip_total:.1f}mm{vent_line}
+
+Rédige exactement 4 éléments :
+1. Une phrase commençant par "Au point du jour, " (matin)
+2. Une phrase commençant par "Dans l'après-midi, " (après-midi)
+3. Une phrase commençant par "Le soir venu, " (soirée)
+4. Une ligne vide, puis une ligne de résumé factuel (températures, précipitations si > 0,5mm, vent si notable)
+
+Règles :
+- Passé composé uniquement
+- Style Belle Époque : élégant, évocateur, vocabulaire soutenu mais naturel
+- Chaque jour doit avoir des tournures uniques — pas de formules répétées d'un jour à l'autre
+- Refléter fidèlement les données (froid/chaud, pluie/soleil, vent fort…)
+- Ne JAMAIS mentionner de valeurs numériques (°C, mm, km/h) dans les 3 phrases narratives — uniquement dans le résumé
+- Réponse directe : aucun guillemet, aucune numérotation, aucune introduction"""
+
+
+def _extract_bulletin(text):
+    """Extrait le bulletin de la réponse IA (ignore toute intro éventuelle)."""
+    for line in text.splitlines():
+        if line.startswith("Au point du jour"):
+            return text[text.index(line):].strip()
+    return None
+
+
+def generate_weather_text_ia(month, day, year, om_data):
+    """
+    Génère le bulletin via Gemini Flash Lite pour des tournures variées et naturelles.
+    Fallback automatique sur les templates si pas de clé ou erreur.
+    """
+    api_key = _get_env_key("GEMINI_API_KEY")
+    if not api_key:
+        return generate_weather_text_belle_epoque(month, day, year, om_data)
+
+    prompt = _build_prompt(month, day, year, om_data)
+
+    try:
+        url  = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+        resp = requests.post(
+            url,
+            params={"key": api_key},
+            json={"contents": [{"parts": [{"text": prompt}]}]},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        raw  = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+        text = _extract_bulletin(raw)
+        if text:
+            return text
+        print("  ⚠️ Réponse Gemini inattendue, fallback templates", file=sys.stderr)
+
+    except Exception as e:
+        print(f"  ⚠️ Appel Gemini échoué ({e}), fallback templates", file=sys.stderr)
+
+    return generate_weather_text_belle_epoque(month, day, year, om_data)
+
+
 # ─── SUN ─────────────────────────────────────────────────────────────────
 def calc_sun(dt):
     s = sun(PARIS.observer, date=dt)
@@ -386,7 +503,7 @@ def generate_for_date(date_str, year_weather=None):
         result["weather_precip_mm"]  = (daily.get("precipitation_sum") or [0])[0] or 0
         result["weather_wind_kmh"]   = (daily.get("wind_speed_10m_max") or [None])[0]
         result["weather_icon"]       = get_weather_icon(condition)
-        result["weather_desc"]       = generate_weather_text_belle_epoque(
+        result["weather_desc"]       = generate_weather_text_ia(
             dt.month, dt.day, dt.year, om_data
         )
         result["weather_year_ref"]   = year_ref
