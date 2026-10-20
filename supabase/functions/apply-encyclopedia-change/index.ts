@@ -30,15 +30,26 @@ Deno.serve(async (req) => {
       })
     }
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-    if (!['gardien', 'super_admin'].includes(profile?.role ?? '')) {
-      return new Response(JSON.stringify({ error: 'Droits insuffisants' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
 
     const body = await req.json()
     const requestId = body.requestId
     const sealRequested = body.sealRequested
+
+    // Droits : gardien/super_admin, OU propriétaire d'une carte personnelle (creator_id === user.id)
+    const isElevatedRole = ['gardien', 'super_admin'].includes(profile?.role ?? '');
+    if (!isElevatedRole) {
+      const { data: reqCheck } = await supabase
+        .from('data_change_requests')
+        .select('user_id, new_data')
+        .eq('id', requestId)
+        .single();
+      const isOwnPersonalCard = reqCheck?.user_id === user.id && !!reqCheck?.new_data?.creator_id;
+      if (!isOwnPersonalCard) {
+        return new Response(JSON.stringify({ error: 'Droits insuffisants' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+    }
 
     // 1. Récupération du ticket
     const { data: request, error: reqError } = await supabase
