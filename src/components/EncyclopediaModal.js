@@ -44,6 +44,7 @@ export default function EncyclopediaModal({
             ...base,
             is_official: isNew ? false : (base.is_official ?? true),
             ...(isNew && activeTab === 'fairy_types' ? { era: 'traditionnelle', taille: 'moyenne' } : {}),
+            ...(isNew && activeTab === 'social_items' ? { categorie: 'objet' } : {}),
         };
     });
     const isPersonal = !!proposal.creator_id;
