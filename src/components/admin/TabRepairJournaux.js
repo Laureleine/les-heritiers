@@ -480,6 +480,11 @@ export default function TabRepairJournaux() {
     const stats = characters.reduce((acc, r) => { acc[r.status] = (acc[r.status] || 0) + 1; return acc; }, {});
     const needsRepairCount = stats[STATUS.PENDING] || 0;
 
+    const visibleRequests = playerRequests.filter(req => {
+        const charRow = characters.find(r => r.dbChar.id === req.character_id);
+        return !charRow || (charRow.status !== STATUS.OK && charRow.status !== STATUS.REPAIRED);
+    });
+
     if (loading) return (
         <div className="flex items-center justify-center py-20 text-amber-800">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mr-3" />
@@ -502,15 +507,15 @@ export default function TabRepairJournaux() {
 
             <div className="space-y-5">
 
-                {/* Demandes joueurs en attente */}
-                {playerRequests.length > 0 && (
+                {/* Demandes joueurs en attente — uniquement si le personnage n'est pas déjà OK */}
+                {visibleRequests.length > 0 && (
                     <div className="bg-orange-50 border-2 border-orange-300 rounded-xl p-4 space-y-3">
                         <h3 className="font-serif font-bold text-orange-800 flex items-center gap-2 text-sm">
                             <Bell size={15} className="animate-pulse" />
-                            {playerRequests.length} demande{playerRequests.length > 1 ? 's' : ''} joueur{playerRequests.length > 1 ? 's' : ''} en attente
+                            {visibleRequests.length} demande{visibleRequests.length > 1 ? 's' : ''} joueur{visibleRequests.length > 1 ? 's' : ''} en attente
                         </h3>
                         <div className="space-y-2">
-                            {playerRequests.map(req => {
+                            {visibleRequests.map(req => {
                                 const charIdx = characters.findIndex(r => r.dbChar.id === req.character_id);
                                 const charRow = charIdx >= 0 ? characters[charIdx] : null;
                                 const canRepair = charRow && charRow.status !== STATUS.SKIPPED && charRow.status !== STATUS.OK;
