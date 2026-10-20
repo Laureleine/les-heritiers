@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.0.0 - \"L'Atelier en Grande Tenue 🎨\"",
+    date: "20 Octobre 2026",
+    description: "L'Atelier revêt enfin la livrée officielle du Livre — ses polices, ses couleurs, son parchemin. De la page d'accueil à la fiche personnage, chaque recoin de l'application adopte la charte graphique Les Héritiers : encre et parchemin, garamonde et gismonde, ors et bordeaux de la Belle Époque.",
+    changes: [
+      "🎨 **Charte typographique officielle :** AG Garamond Pro pour les corps de texte, Gismonda pour les grands titres, Amarante pour les accents — les polices du Livre sur l'écran.",
+      "🖼️ **Cadre parchemin (CadreParchemin) :** Chaque étape de création et la fiche personnage sont enchâssées dans un cadre aux textures parchemin, avec culs-de-lampe ornementaux en séparateurs de section.",
+      "🎨 **Palette Belle Époque :** Refonte complète — or brûlé, encre de Chine, parchemin crème, bordeaux profond, vert forêt. Les 248 composants adoptent cette nouvelle gamme via le remappage Tailwind.",
+      "🗂️ **TabBar et navigation aux couleurs LH :** Onglets, barres et boutons reprennent la teinte encre-or caractéristique.",
+      "🧪 **567 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "17.25.0 - \"Le Songe du Docte 🔮\"",
     date: "28 Septembre 2026",
     description: "Trois corrections discrètes mais importantes : le Docte peut enfin consulter la Prophétie de ses joueurs sans en déclencher une nouvelle ; la page des Cercles ne plantait plus au chargement ; et les items de vie sociale s'enregistrent désormais correctement.",

@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.0.0 — L'Atelier en Grande Tenue 🎨 (20 octobre 2026)
+
+Chers Héritiers,
+
+L'Atelier a revêtu ce soir ses plus beaux habits.
+
+Depuis l'ouverture de la Maison, les murs et les meubles n'avaient pour ainsi dire jamais reçu de vêtement propre : les couleurs étaient approximatives, les polices de fortune, le parchemin des fiches à peine esquissé. Aujourd'hui, la charte officielle du Livre prend enfin corps sur vos écrans.
+
+Les grandes polices de Gismonde trônent sur les titres comme des enseignes de comptoir Belle Époque. La Garamond AG habille chaque ligne de texte avec le soin d'un imprimeur du boulevard. Les ors brûlés, les encres profondes, le parchemin crème et le bordeaux discret de la palette viennent des mêmes pages que vos personnages.
+
+Le cadre de parchemin — avec ses ornements et ses culs-de-lampe — enveloppe désormais chaque étape de la création et la fiche de vos Héritiers. Ce n'est plus une interface ; c'est un document vivant.
+
+Deux cent quarante-huit composants ont été repensés dans cette même veine. L'Atelier est le même, mais il s'est habillé pour vous recevoir.
+
+Bonne exploration des nouvelles tentures,
+*L'Atelier des Héritiers*
+
+---
+
 ## v17.25.0 — Le Songe du Docte 🔮 (28 septembre 2026)
 
 Chers Héritiers,
