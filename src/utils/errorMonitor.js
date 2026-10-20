@@ -6,11 +6,17 @@ export function initErrorMonitor() {
     if (initialized) return;
     initialized = true;
 
+    const serializeArg = (a) => {
+        if (a instanceof Error) return a.message;
+        if (a !== null && typeof a === 'object') return a.message ? String(a.message) : JSON.stringify(a);
+        return String(a);
+    };
+
     // Override console.error
     const originalError = console.error.bind(console);
     console.error = (...args) => {
         originalError(...args);
-        const message = args.map(a => (a instanceof Error ? a.message : String(a))).join(' ');
+        const message = args.map(serializeArg).join(' ');
         const stack = args.find(a => a instanceof Error)?.stack;
         logError({ type: 'error', message, stack });
     };
@@ -19,7 +25,7 @@ export function initErrorMonitor() {
     const originalWarn = console.warn.bind(console);
     console.warn = (...args) => {
         originalWarn(...args);
-        const message = args.map(a => (a instanceof Error ? a.message : String(a))).join(' ');
+        const message = args.map(serializeArg).join(' ');
         logError({ type: 'warn', message });
     };
 
