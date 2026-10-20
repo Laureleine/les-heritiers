@@ -1,14 +1,13 @@
 // src/components/AdminDashboard.js
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Bell, Coins, Scroll, Bug } from '../config/icons';
+import { Shield, ArrowLeft, Crown, BarChart2, Award, Wrench, Coins, Scroll, Bug } from '../config/icons';
 import { isSuperAdmin as checkSuperAdmin } from '../utils/authRoles';
 import { useUserContext } from '../context/UserContext';
 import TabUsers from './admin/TabUsers';
 import TabStats from './admin/TabStats';
 import TabForgeTitres from './admin/TabForgeTitres';
 import TabRepairJournaux from './admin/TabRepairJournaux';
-import TabNotifications from './admin/TabNotifications';
 import TabUsageIA from './admin/TabUsageIA';
 import TabIndicesVeritesAdmin from './admin/TabIndicesVeritesAdmin';
 import TabErrorLogs from './admin/TabErrorLogs';
@@ -69,11 +68,6 @@ export default function AdminDashboard({ onBack }) {
                     </button>
                 )}
                 {isSuperAdmin && (
-                    <button id="admin-tab-notifications" role="tab" aria-selected={activeTab === 'notifications'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'notifications' ? 0 : -1} onClick={() => switchTab('notifications')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notifications' ? 'text-green-900 border-green-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
-                        <Bell size={18} /> Notifications
-                    </button>
-                )}
-                {isSuperAdmin && (
                     <button id="admin-tab-usage_ia" role="tab" aria-selected={activeTab === 'usage_ia'} aria-controls="admin-tabpanel" tabIndex={activeTab === 'usage_ia' ? 0 : -1} onClick={() => switchTab('usage_ia')} className={`pb-3 font-bold text-sm uppercase tracking-wider flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'usage_ia' ? 'text-amber-900 border-amber-600' : 'text-gray-500 border-transparent hover:text-gray-700'}`}>
                         <Coins size={18} /> Usage IA
                     </button>
@@ -96,7 +90,6 @@ export default function AdminDashboard({ onBack }) {
               {mountedTabs.has('stats') && <div hidden={activeTab !== 'stats'}><TabStats /></div>}
               {mountedTabs.has('titres') && <div hidden={activeTab !== 'titres'}><TabForgeTitres /></div>}
               {isSuperAdmin && mountedTabs.has('repair') && <div hidden={activeTab !== 'repair'}><TabRepairJournaux /></div>}
-              {isSuperAdmin && mountedTabs.has('notifications') && <div hidden={activeTab !== 'notifications'}><TabNotifications /></div>}
               {isSuperAdmin && mountedTabs.has('usage_ia') && <div hidden={activeTab !== 'usage_ia'}><TabUsageIA /></div>}
               {isSuperAdmin && mountedTabs.has('secrets') && <div hidden={activeTab !== 'secrets'}><TabIndicesVeritesAdmin /></div>}
               {isSuperAdmin && mountedTabs.has('error_logs') && <div hidden={activeTab !== 'error_logs'}><TabErrorLogs /></div>}
