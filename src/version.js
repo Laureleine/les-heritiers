@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.0.1 - \"La Plume du Scribe 🖊️\"",
+    date: "20 Octobre 2026",
+    description: "Les messages d'erreur du Bureau des Anomalies affichent désormais le vrai contenu des erreurs au lieu de l'énigmatique « [object Object] ». Les Gardiens verront enfin ce qui se passe vraiment.",
+    changes: [
+      "🖊️ **Erreurs lisibles dans les logs :** Les objets d'erreur Supabase (et tout objet non-Error) sont désormais correctement sérialisés dans le Bureau des Anomalies — fini le mystérieux « [object Object] ».",
+      "🧪 **567 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "18.0.0 - \"L'Atelier en Grande Tenue 🎨\"",
     date: "20 Octobre 2026",
     description: "L'Atelier revêt enfin la livrée officielle du Livre — ses polices, ses couleurs, son parchemin. De la page d'accueil à la fiche personnage, chaque recoin de l'application adopte la charte graphique Les Héritiers : encre et parchemin, garamonde et gismonde, ors et bordeaux de la Belle Époque.",

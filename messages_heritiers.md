@@ -4,6 +4,20 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.0.1 — La Plume du Scribe 🖊️ (20 octobre 2026)
+
+Chers Héritiers,
+
+Une toute petite retouche, mais utile à ceux qui surveillent les rouages de la Maison.
+
+Quand une erreur survenait dans l'Atelier et que les Gardiens allaient consulter le registre pour comprendre ce qui s'était passé, ils ne trouvaient souvent qu'une mention absconse : « [object Object] ». Ces trois mots ne voulaient rien dire — c'était le reflet d'une plume qui copiait la forme d'un document au lieu de son contenu.
+
+Désormais, le registre retranscrit fidèlement le message réel de l'erreur. Les Gardiens sauront ce qui s'est passé, et pourront agir en conséquence.
+
+*L'Atelier des Héritiers*
+
+---
+
 ## v18.0.0 — L'Atelier en Grande Tenue 🎨 (20 octobre 2026)
 
 Chers Héritiers,
