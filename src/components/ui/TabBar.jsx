@@ -1,7 +1,7 @@
 import React from 'react';
 
-const ACTIVE_DEFAULT = 'text-amber-900 border-amber-600';
-const INACTIVE = 'text-stone-400 border-transparent hover:text-stone-700 hover:border-stone-300';
+const ACTIVE_DEFAULT = 'text-lh-or border-lh-or';
+const INACTIVE = 'text-lh-gris-parchemin border-transparent hover:text-lh-encre hover:border-lh-gris-parchemin';
 
 /**
  * tabs: [{ id, label, count?, activeClass? }]
@@ -29,7 +29,7 @@ export function TabBar({ tabs, activeTab, onTabChange, className = '', label, pa
       role="tablist"
       aria-label={label}
       onKeyDown={handleKeyDown}
-      className={`flex gap-6 border-b border-stone-200 overflow-x-auto${className ? ' ' + className : ''}`}
+      className={`flex gap-6 border-b border-lh-gris-parchemin overflow-x-auto${className ? ' ' + className : ''}`}
     >
       {tabs.map(t => (
         <button

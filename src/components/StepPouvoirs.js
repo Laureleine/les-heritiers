@@ -157,7 +157,7 @@ export default function StepPouvoirs() {
                 <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
                     <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
                     <div>
-                        <h3 className="font-serif font-bold text-amber-900">Pouvoirs Féériques</h3>
+                        <h3 className="font-gismonda font-bold text-amber-900">Pouvoirs Féériques</h3>
                         <p className="text-sm text-amber-800">
                             Le Faux-Semblant enfoui n'a pas de pouvoirs pour le moment. Ils se révèleront lorsque la Féérie atteindra 3.
                         </p>
@@ -178,7 +178,7 @@ export default function StepPouvoirs() {
                     
                     {/* 1. LA FÉÉRIE */}
                     <div className="flex flex-col">
-                        <h2 className="text-xl font-bold text-indigo-900 font-serif flex items-center gap-2">
+                        <h2 className="text-xl font-bold text-indigo-900 font-gismonda flex items-center gap-2">
                             <Sparkles className="text-indigo-600"/> Féérie
                         </h2>
                         <span className="text-xs text-indigo-500 font-medium">— Gouverne vos Pouvoirs</span>
@@ -199,7 +199,7 @@ export default function StepPouvoirs() {
 
                     {/* 2. LE MASQUE */}
                     <div className="flex flex-col border-t md:border-t-0 md:border-l border-indigo-200 pt-4 md:pt-0 md:pl-4">
-                        <h2 className="text-xl font-bold text-indigo-900 font-serif flex items-center gap-2">
+                        <h2 className="text-xl font-bold text-indigo-900 font-gismonda flex items-center gap-2">
                             🎭 Masque
                         </h2>
                         <span className="text-xs text-indigo-500 font-medium">— Gouverne votre Dissimulation</span>
@@ -229,7 +229,7 @@ export default function StepPouvoirs() {
 				<div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
                 <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
                 <div>
-                    <h3 className="font-serif font-bold text-amber-900">Héritage Féérique</h3>
+                    <h3 className="font-gismonda font-bold text-amber-900">Héritage Féérique</h3>
                     <p className="text-sm text-amber-800">
                         Votre niveau de Féérie (<strong>{maxPouvoirs}</strong>) détermine le nombre de pouvoirs que vous pouvez maîtriser. Vous pouvez choisir parmi les Pouvoirs Masqués et Démasqués.
                     </p>
@@ -260,7 +260,7 @@ export default function StepPouvoirs() {
                             } ${isAnomalie && !isSelected ? 'opacity-80 cursor-not-allowed hover:border-gray-200' : ''}`}
                         >
                             <div className="flex justify-between items-start mb-2">
-                                <div className="font-bold font-serif text-gray-800 flex items-center gap-2">
+                                <div className="font-bold font-amarante text-gray-800 flex items-center gap-2">
                                     {isSelected && <Check size={16} className="text-indigo-600" />}
                                     {pouvoir.nom}
                                 </div>
@@ -316,7 +316,7 @@ export default function StepPouvoirs() {
                                     }`}
                                 >
                                     <div className="flex items-center justify-between mb-2">
-                                        <div className="font-bold font-serif flex items-center gap-2 text-violet-900">
+                                        <div className="font-bold font-amarante flex items-center gap-2 text-violet-900">
                                             {isSelected && <Check size={16} className="text-violet-600" />}
                                             {pouvoir.nom}
                                         </div>

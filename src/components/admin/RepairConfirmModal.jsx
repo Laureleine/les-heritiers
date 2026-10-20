@@ -5,7 +5,7 @@ import { computeXpDepenseFromJournal } from '../../utils/repairJournaux';
 export default function RepairConfirmModal({ target, onConfirm, onCancel }) {
   if (!target) return null;
   const { row, preview } = target;
-  const oldJournal   = row.dbChar.data?.historique_xp || [];
+  const oldJournal   = row.xpTransactions || [];
   const gainsBefore  = oldJournal.filter(t => t.type === 'GAIN').length;
   const depBefore    = oldJournal.filter(t => t.type === 'DEPENSE').length;
   const gainsAfter   = preview.filter(t => t.type === 'GAIN').length;

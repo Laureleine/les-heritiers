@@ -35,6 +35,7 @@ function mockChain(response) {
     is: jest.fn(() => chain),
     range: jest.fn(() => response),
     update: jest.fn(() => chain),
+    range: jest.fn(() => chain),
     then: (resolve) => resolve(response),
   };
   return chain;

@@ -125,7 +125,7 @@ export default function StepProfils() {
                 <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
                         <span className="text-2xl">{profilData.icon}</span>
-                        <h3 className="font-serif text-lg text-amber-900 font-semibold">
+                        <h3 className="font-gismonda text-lg text-amber-900 font-semibold">
                             {getProfilDisplayName(profilName)}
                         </h3>
                     </div>
@@ -161,7 +161,7 @@ export default function StepProfils() {
                         <Lock size={24} />
                     </div>
                     <div>
-                        <h3 className="font-serif font-bold text-amber-900 text-lg">Profils Scellés</h3>
+                        <h3 className="font-gismonda font-bold text-amber-900 text-lg">Profils Scellés</h3>
                         <p className="text-sm text-amber-800 leading-relaxed mt-1">
                             Vos vocations fondamentales (Profils Majeur et Mineur) ainsi que vos traits de personnalité sont définitivement gravés dans le marbre. L'évolution de votre Héritier se fera désormais en investissant de l'Expérience dans vos Compétences Utiles.
                         </p>
@@ -172,7 +172,7 @@ export default function StepProfils() {
             {/* ✨ FIX : On cache le tutoriel de création si l'Héritier est déjà scellé */}
             {!isScelle && (
                 <div className="bg-amber-50 p-6 rounded-lg border-2 border-amber-200 mb-6">
-                    <h2 className="text-2xl font-serif text-amber-900 mb-3">
+                    <h2 className="text-2xl font-gismonda text-amber-900 mb-3">
                         Profils et Compétences
                     </h2>
                     <div className="space-y-2 text-amber-800">
@@ -192,7 +192,7 @@ export default function StepProfils() {
             <div className="border-2 border-amber-300 rounded-lg p-6 bg-gradient-to-br from-amber-50 to-orange-50">
                 <div className="flex items-center gap-2 mb-4">
                     <Star className="text-amber-600" size={28} fill="currentColor" />
-                    <h3 className="text-2xl font-serif text-amber-900 font-bold">
+                    <h3 className="text-2xl font-gismonda text-amber-900 font-bold">
                         Profil Majeur
                     </h3>
                     <span className="ml-auto text-sm bg-amber-700 text-white px-3 py-1 rounded-full font-semibold">
@@ -240,7 +240,7 @@ export default function StepProfils() {
             <div className="border-2 border-blue-300 rounded-lg p-6 bg-gradient-to-br from-blue-50 to-sky-50">
                 <div className="flex items-center gap-2 mb-4">
                     <Award className="text-blue-600" size={28} />
-                    <h3 className="text-2xl font-serif text-blue-900 font-bold">
+                    <h3 className="text-2xl font-gismonda text-blue-900 font-bold">
                         Profil Mineur
                     </h3>
                     <span className="ml-auto text-sm bg-blue-600 text-white px-3 py-1 rounded-full font-semibold">

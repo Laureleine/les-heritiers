@@ -40,7 +40,7 @@ export default function StepMagies() {
         <div className="bg-violet-50 border border-violet-200 rounded-xl p-4 flex items-start gap-3">
           <Sparkles size={20} className="text-violet-700 shrink-0 mt-0.5" />
           <div>
-            <h2 className="font-serif font-bold text-violet-900 text-base">Pratiques Magiques</h2>
+            <h2 className="font-gismonda font-bold text-violet-900 text-base">Pratiques Magiques</h2>
             <p className="text-sm text-violet-800 mt-1 leading-relaxed">
               Les Pratiques Magiques s'ouvrent après le scellage. Le Druidisme seul peut être acquis à la création.
             </p>
@@ -113,7 +113,7 @@ export default function StepMagies() {
       <div className="bg-violet-50 border border-violet-200 rounded-xl p-4 flex items-start gap-3">
         <Sparkles size={20} className="text-violet-700 shrink-0 mt-0.5" />
         <div>
-          <h2 className="font-serif font-bold text-violet-900 text-base">Pratiques Magiques</h2>
+          <h2 className="font-gismonda font-bold text-violet-900 text-base">Pratiques Magiques</h2>
           <p className="text-sm text-violet-800 mt-1 leading-relaxed">
             Débloquez une pratique magique pour 5 XP. Chaque pratique débloquée ouvre un step dédié pour y investir des rangs.
           </p>

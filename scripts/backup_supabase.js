@@ -52,13 +52,22 @@ async function backup() {
 
   for (const table of TABLES) {
     try {
-      const { data, error } = await supabase.from(table).select('*');
-      if (error) {
-        dump.tables[table] = { error: error.message };
+      const PAGE = 1000;
+      let all = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase.from(table).select('*').range(from, from + PAGE - 1);
+        if (error) { all = { error: error.message }; break; }
+        all = all.concat(data || []);
+        if ((data || []).length < PAGE) break;
+        from += PAGE;
+      }
+      if (all.error) {
+        dump.tables[table] = all;
         process.stdout.write(` [${table}: ERR]`);
       } else {
-        dump.tables[table] = data || [];
-        process.stdout.write(` [${table}: ${(data || []).length}]`);
+        dump.tables[table] = all;
+        process.stdout.write(` [${table}: ${all.length}]`);
       }
     } catch (e) {
       dump.tables[table] = { error: e.message };

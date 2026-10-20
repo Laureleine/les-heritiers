@@ -182,7 +182,7 @@ export default function StepCaracteristiques() {
             {/* Header avec Compteurs (Adaptatif Création / XP) */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-amber-50 p-4 rounded-lg border border-amber-200 gap-4">
                 <div>
-                    <h2 className="text-2xl font-serif text-amber-900">Caractéristiques</h2>
+                    <h2 className="text-2xl font-gismonda text-amber-900">Caractéristiques</h2>
                     {isScelle ? (
                         <p className="text-sm text-amber-700 font-bold">
                             Améliorez vos caractéristiques physiologiques en dépensant de l'expérience (XP).
@@ -249,7 +249,7 @@ export default function StepCaracteristiques() {
                                 <span className="text-2xl">{carac.icon}</span>
                                 <div>
                                     {/* ✨ FIX : On met le label ET le cadenas dans un même conteneur flex ! */}
-                                    <div className="font-bold text-gray-800 flex items-center gap-2">
+                                    <div className="font-amarante font-bold text-gray-800 flex items-center gap-2">
                                         {carac.label}
                                     </div>
                                     <div className="text-xs font-bold text-gray-500">

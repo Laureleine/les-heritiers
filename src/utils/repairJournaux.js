@@ -46,9 +46,12 @@ export function mapDbCharForReconstruction(dbChar) {
 // ============================================================================
 
 /**
- * Retourne true si le journal du personnage est probablement incomplet :
+ * Retourne true si xp_transactions est incomplet pour ce personnage :
  * - Il est scellé ET a des stats_scellees (reconstruction possible)
- * - ET les DEPENSE nettes dans le journal sont < xp_depense (cache)
+ * - ET les DEPENSE nettes dans xp_transactions sont < xp_depense (scalaire)
+ *
+ * @param {object} character
+ * @param {Array} xpTransactions - Transactions depuis la table xp_transactions pour ce personnage
  */
 export function journalNeedsRepair(character, xpTransactions = []) {
     if (!isCharacterScelle(character)) return false;
@@ -68,12 +71,13 @@ export function journalNeedsRepair(character, xpTransactions = []) {
 // ============================================================================
 
 /**
- * Construit un nouveau journal complet en fusionnant :
- *   - Les entrées GAIN existantes (conservées telles quelles)
- *   - Les entrées DEPENSE reconstruites depuis stats_scellees
+ * Construit un journal complet depuis xp_transactions + reconstruction :
+ *   - Les GAIN existants dans xpTransactions (conservés tels quels)
+ *   - Les DEPENSE/REMBOURSEMENT reconstruits depuis stats_scellees
  *
- * @param {object} character - Personnage au format client (après mapDbCharForReconstruction)
- * @param {object} gameData  - { fairyData, atouts, socialItems }
+ * @param {object} character      - Personnage au format client
+ * @param {object} gameData       - { fairyData, atouts, socialItems }
+ * @param {Array}  xpTransactions - Transactions depuis la table xp_transactions
  * @returns {Array} Journal fusionné, trié chronologiquement, ou null si réparation impossible
  */
 export function buildRepairedJournal(character, gameData, xpTransactions = []) {

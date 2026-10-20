@@ -234,6 +234,7 @@ export const saveCharacterToSupabase = async (character) => {
             is_public: cleaned.isPublic || false,
             statut: cleaned.statut || 'brouillon',
             xp_total: character.xp_total || 0,
+            // 🏛️ xp_depense recalculé depuis le journal — jamais copié depuis l'état (qui peut être stale)
             xp_depense: character.xp_depense || 0,
             // xp_dette auto-clear : la dette se résorbe quand xp_total rattrape xp_depense
             xp_dette: character.xp_dette === true

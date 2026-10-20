@@ -1,33 +1,175 @@
+/* === Polices officielles Les Héritiers === */
+@font-face {
+  font-family: 'AG Garamond Pro';
+  src: url('/fonts/aggaramond-regular.otf') format('opentype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'AG Garamond Pro';
+  src: url('/fonts/aggaramond-bold.otf') format('opentype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'AG Garamond Pro';
+  src: url('/fonts/aggaramond-italic.otf') format('opentype');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'AG Garamond Pro';
+  src: url('/fonts/aggaramond-bolditalic.otf') format('opentype');
+  font-weight: 700; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Arnold Boecklin';
+  src: url('/fonts/arnold-boecklin.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gismonda';
+  src: url('/fonts/gismonda.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Amarante';
+  src: url('/fonts/amarante-regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Jugendstil Ornamente';
+  src: url('/fonts/jugendstil-ornamente.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Magnificent Personal Use';
+  src: url('/fonts/magnificent-personal-use.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* Google Fonts fallback pour Playfair Display (UI utilitaire) */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* === Palette LH — variables CSS (miroir de tailwind.config.js) === */
+:root {
+  --lh-or:               #ac882e;
+  --lh-or-clair:         #d4aa4e;
+  --lh-or-sombre:        #7a6220;
+  --lh-nuit:             #0a1c36;
+  --lh-encre:            #2e2100;
+  --lh-parchemin:        #faf6ed;
+  --lh-parchemin-chaud:  #f0e8d0;
+  --lh-bordeaux:         #4b0221;
+  --lh-foret:            #2c4312;
+  --lh-gris-parchemin:   #c8bc9c;
+}
+
+/* === Base === */
 body {
   margin: 0;
-  font-family: 'Playfair Display', serif;
+  font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+  background-color: var(--lh-parchemin);
+  color: var(--lh-encre);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Filtre sépia Belle Époque sur le panneau IGN historique */
+@layer base {
+  h1 {
+    font-family: 'Gismonda', Georgia, serif;
+    color: var(--lh-foret);
+  }
+  h2 {
+    font-family: 'Gismonda', Georgia, serif;
+    color: var(--lh-bordeaux);
+  }
+  h3 {
+    font-family: 'Amarante', Georgia, serif;
+    color: var(--lh-foret);
+  }
+  h4 {
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+    font-variant-caps: small-caps;
+    color: var(--lh-or-sombre);
+    letter-spacing: 0.04em;
+  }
+  /* Tous les éléments texte héritent d'AG Garamond Pro */
+  p, li, td, th, label, span, input, select, textarea, button, a {
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+  }
+  /* Liens */
+  a {
+    color: var(--lh-or-sombre);
+  }
+  a:hover {
+    color: var(--lh-or);
+  }
+  /* Inputs et selects avec teinte parchemin */
+  input, select, textarea {
+    background-color: var(--lh-parchemin);
+    color: var(--lh-encre);
+    border-color: var(--lh-gris-parchemin);
+  }
+}
+
+/* === Filtre sépia Belle Époque sur le panneau IGN historique === */
 .leaflet-historical-pane {
   filter: sepia(0.18) brightness(0.9) contrast(1.08);
 }
 
-/* Impression du menu généré : isole #menu-imprimable, masque le reste de la page */
+/* === Impression du menu === */
 @media print {
-  body * {
-    visibility: hidden;
+  body * { visibility: hidden; }
+  #menu-imprimable, #menu-imprimable * { visibility: visible; }
+  #menu-imprimable { position: absolute; top: 0; left: 0; width: 100%; }
+}
+
+@layer components {
+  /* Boutons */
+  .btn-lh-primary {
+    @apply bg-lh-or text-lh-nuit font-bold px-5 py-2 rounded
+           hover:bg-lh-or-clair active:bg-lh-or-sombre
+           transition-colors duration-150 cursor-pointer;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
   }
-  #menu-imprimable, #menu-imprimable * {
-    visibility: visible;
+  .btn-lh-secondary {
+    @apply border-2 border-lh-or text-lh-or bg-transparent font-bold px-5 py-2 rounded
+           hover:bg-lh-or/10 active:bg-lh-or/20
+           transition-colors duration-150 cursor-pointer;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
   }
-  #menu-imprimable {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+  .btn-lh-danger {
+    @apply bg-lh-bordeaux text-lh-parchemin font-bold px-5 py-2 rounded
+           hover:opacity-90 active:opacity-80
+           transition-opacity duration-150 cursor-pointer;
+    font-family: 'AG Garamond Pro', Garamond, Georgia, serif;
+  }
+
+  /* Cartes */
+  .card-lh {
+    @apply bg-lh-parchemin-chaud border border-lh-gris-parchemin rounded-sm
+           shadow-sm p-4;
+  }
+  .card-lh-title {
+    @apply text-lh-or font-bold text-lg mb-2;
+    font-family: 'Gismonda', Georgia, serif;
+  }
+
+  /* === Charte typographique Les Héritiers === */
+  /* Grandes rubriques : CARACTÉRISTIQUES, COMPÉTENCES UTILES… */
+  .lh-rubrique {
+    font-family: 'Gismonda', Georgia, serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  /* Sous-rubriques : Aventurière, Savante, Érudite… */
+  .lh-sous-rubrique {
+    font-family: 'Gismonda', Georgia, serif;
+  }
+  /* Labels de noms : Agilité, Conduite, Constitution… */
+  .lh-label {
+    font-family: 'Amarante', Georgia, serif;
   }
 }

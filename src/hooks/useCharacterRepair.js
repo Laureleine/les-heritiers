@@ -60,7 +60,7 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
         const mapped = mapDbCharForReconstruction(dbChar);
         const xpTransactions = txByChar[dbChar.id] || [];
         let status = REPAIR_STATUS.PENDING;
-        if (!dbChar.data?.stats_scellees)                     status = REPAIR_STATUS.SKIPPED;
+        if (!dbChar.data?.stats_scellees)                    status = REPAIR_STATUS.SKIPPED;
         else if (!journalNeedsRepair(mapped, xpTransactions)) status = REPAIR_STATUS.OK;
         rows[dbChar.id] = { dbChar, mapped, status, detail: '', xpTransactions };
       }
@@ -89,9 +89,18 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
           .select('id, xp_depense, statut, data')
           .in('id', sealedIds);
         if (!data) return;
+        const sIds = data.map(c => c.id);
+        const { data: txData } = sIds.length > 0
+          ? await supabase.from('xp_transactions').select('character_id, type, valeur').in('character_id', sIds)
+          : { data: [] };
+        const txMap = {};
+        (txData || []).forEach(tx => {
+          if (!txMap[tx.character_id]) txMap[tx.character_id] = [];
+          txMap[tx.character_id].push(tx);
+        });
         const needs = {};
         for (const dbChar of data) {
-          needs[dbChar.id] = journalNeedsRepair(mapDbCharForReconstruction(dbChar));
+          needs[dbChar.id] = journalNeedsRepair(mapDbCharForReconstruction(dbChar), txMap[dbChar.id] || []);
         }
         setPlayerRepairNeeds(needs);
       } catch { /* silencieux */ }
@@ -147,7 +156,7 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
         setRepairGameData(gd);
       }
 
-      const preview = buildRepairedJournal(row.mapped, gd);
+      const preview = buildRepairedJournal(row.mapped, gd, row.xpTransactions || []);
       if (!preview) {
         showInAppNotification("Reconstruction impossible (plancher de verre absent).", "warning");
         return;
@@ -165,13 +174,27 @@ export function useCharacterRepair({ isAdmin, myCharacters }) {
 
     try {
       const newXpDepense = computeXpDepenseFromJournal(preview);
-      // Garantit xp_depense ≤ xp_total (contrainte check_xp_coherence)
       const newXpTotal   = Math.max(row.dbChar.xp_total || 0, newXpDepense);
-      const updatedData  = { ...row.dbChar.data, historique_xp: preview };
+
+      // Remplacer DEPENSE/REMBOURSEMENT dans xp_transactions
+      await supabase.from('xp_transactions')
+        .delete().eq('character_id', charId).in('type', ['DEPENSE', 'REMBOURSEMENT']);
+
+      const newTxRows = preview
+        .filter(tx => tx.type !== 'GAIN')
+        .map(tx => ({
+          character_id: charId, type: tx.type, code: tx.code || null,
+          label: tx.label, valeur: tx.valeur,
+          rang_final: tx.rang_final || null, date_mouvement: tx.date_mouvement
+        }));
+      if (newTxRows.length > 0) {
+        const { error: insertErr } = await supabase.from('xp_transactions').insert(newTxRows);
+        if (insertErr) throw insertErr;
+      }
 
       const { error } = await supabase
         .from('characters')
-        .update({ data: updatedData, xp_depense: newXpDepense, xp_total: newXpTotal })
+        .update({ xp_depense: newXpDepense, xp_total: newXpTotal })
         .eq('id', charId);
       if (error) throw error;
 

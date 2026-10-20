@@ -15,9 +15,14 @@ describe('getXpState', () => {
   });
 
   it('gère xp_total à 0', () => {
-    const state = getXpState({ xp_total: 0 });
+    const state = getXpState({ xp_total: 0, xp_depense: 0 });
     expect(state.xpTotal).toBe(0);
     expect(state.xpDispo).toBe(0);
+  });
+
+  it('calcule xpDispo correctement', () => {
+    const state = getXpState({ xp_total: 80, xp_depense: 37 });
+    expect(state.xpDispo).toBe(43);
   });
 });
 

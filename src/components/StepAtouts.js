@@ -104,7 +104,7 @@ export default function StepAtouts() {
         <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
           <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
           <div>
-            <h2 className="font-serif font-bold text-amber-900">Atouts Féériques</h2>
+            <h2 className="font-gismonda font-bold text-amber-900">Atouts Féériques</h2>
             <p className="text-sm text-amber-800">
               Le Faux-Semblant enfoui n'a pas d'atouts pour le moment. Ils se révèleront lorsque la Féérie atteindra 3.
             </p>
@@ -121,7 +121,7 @@ export default function StepAtouts() {
       <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-start gap-3">
         <Sparkles className="text-amber-600 shrink-0 mt-1" size={20} />
         <div>
-          <h2 className="font-serif font-bold text-amber-900">Atouts Féériques</h2>
+          <h2 className="font-gismonda font-bold text-amber-900">Atouts Féériques</h2>
           {isScelle ? (
             <p className="text-sm text-amber-800">
               Dépensez votre Expérience ({FIXED_XP_COSTS.nouvel_atout} XP) pour acquérir de nouveaux Atouts. Vous pouvez librement cliquer sur un Atout acquis pour le désapprendre et récupérer vos points.
@@ -196,7 +196,7 @@ export default function StepAtouts() {
                     </div>
                   )}
                   <div className="flex items-center justify-between mb-2">
-                    <div className="font-bold font-serif flex items-center gap-2 text-violet-900">
+                    <div className="font-bold font-amarante flex items-center gap-2 text-violet-900">
                       {isSelected && <Check size={16} className="text-violet-600" />}
                       {atout.nom}
                     </div>
@@ -249,7 +249,7 @@ export default function StepAtouts() {
               )}
 
               <div className="flex items-center justify-between mb-2">
-                <div className={`font-bold font-serif flex items-center gap-2 ${isAnomalie ? 'text-fuchsia-900' : 'text-gray-800'}`}>
+                <div className={`font-bold font-amarante flex items-center gap-2 ${isAnomalie ? 'text-fuchsia-900' : 'text-gray-800'}`}>
                   {isSelected && <Check size={16} className={isAnomalie ? "text-fuchsia-600" : "text-indigo-600"} />}
                   {atout.nom}
                 </div>

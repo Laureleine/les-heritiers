@@ -64,7 +64,7 @@ const CompetenceRow = ({ data, handlers, isScelle, creatingSpecFor, setCreatingS
         {/* ✨ FIX : mb-2 devient mb-0.5 pour coller le titre aux spécialités */}
         <div className="flex justify-between items-center mb-0.5">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-stone-800 text-sm">{nomComp}</span>
+            <span className="font-amarante font-bold text-stone-800 text-sm">{nomComp}</span>
             {isPred && <Star size={12} className="text-amber-500 fill-amber-500" />}
             {isEspritEligible && !isScelle && <Brain size={12} className="text-purple-400" />}
           </div>          
@@ -172,12 +172,12 @@ export default function StepCompetencesLibres() {
           
           {isScelle ? (
             <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
-              <h2 className="font-serif font-bold text-amber-900 text-base flex items-center gap-1.5 leading-none"><Lock size={14} className="text-amber-600"/> L'Académie</h2>
+              <h2 className="font-gismonda font-bold text-amber-900 text-base flex items-center gap-1.5 leading-none"><Lock size={14} className="text-amber-600"/> L'Académie</h2>
               <p className="text-[10px] text-amber-700 leading-none mt-0.5 sm:mt-0">Améliorez un rang pour <strong>(Rang x 3) XP</strong>. Spécialité : <strong>8 XP</strong>.</p>
             </div>
           ) : (
             <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
-              <h2 className="font-serif font-bold text-amber-900 text-base leading-none">Compétences Utiles</h2>
+              <h2 className="font-gismonda font-bold text-amber-900 text-base leading-none">Compétences Utiles</h2>
               <p className="text-[10px] text-gray-500 leading-none mt-0.5 sm:mt-0">15 pts à répartir. (Max 4, ou 5 en Prédilection).</p>
             </div>
           )}
@@ -235,7 +235,7 @@ export default function StepCompetencesLibres() {
                   
                   {/* ✨ FIX : Le nom et les badges sont alignés sur le même axe, enveloppés de manière fluide ! */}
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-serif font-bold text-amber-900 leading-tight">{nomAffiche}</h3>
+                    <h3 className="font-gismonda font-bold text-amber-900 leading-tight">{nomAffiche}</h3>
                     {character.profils?.majeur?.nom === profil.nom && <span className="text-[10px] bg-amber-700 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shrink-0 shadow-sm">Majeur</span>}
                     {character.profils?.mineur?.nom === profil.nom && <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shrink-0 shadow-sm">Mineur</span>}
                   </div>

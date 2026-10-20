@@ -1,0 +1,534 @@
+#!/usr/bin/env python3
+"""
+Génère les données quotidiennes (météo, soleil, lune) pour une date donnée.
+Utilise l'API Open-Meteo Archive pour la météo (gratuit, sans anti-bot).
+Mapping d'années automatique : game_year + 110  (1899→2009, 1900→2010, …)
+"""
+
+import json
+import os
+import sys
+from datetime import date
+from pathlib import Path
+
+import requests
+
+from astral import LocationInfo
+from astral.sun import sun
+from astral.moon import phase as moon_phase_num
+
+# ─── PARIS ───────────────────────────────────────────────────────────────
+PARIS = LocationInfo("Paris", "France", "Europe/Paris", 48.8566, 2.3522)
+
+MONTHS_FR = [
+    None, "janvier", "février", "mars", "avril", "mai", "juin",
+    "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+]
+
+SEASONS = {
+    1: "hiver", 2: "hiver", 3: "printemps", 4: "printemps",
+    5: "printemps", 6: "ete", 7: "ete", 8: "ete",
+    9: "automne", 10: "automne", 11: "automne", 12: "hiver"
+}
+
+# ─── WMO codes → condition normalisée ────────────────────────────────────
+WMO_TO_CONDITION = {
+    0:  "ensoleille",
+    1:  "degagement",
+    2:  "peu nuageux",
+    3:  "couvert",
+    45: "brouillard", 48: "brouillard",
+    51: "bruine",    53: "bruine",    55: "bruine",
+    61: "pluie",     63: "pluie",     65: "fortes pluies",
+    71: "neige",     73: "neige",     75: "neige",    77: "neige",
+    80: "averses",   81: "averses",   82: "averses",
+    85: "neige",     86: "neige",
+    95: "orage",     96: "orage",     99: "orage",
+}
+
+WEATHER_ICONS = {
+    "ensoleille":   "☀️",  "degagement":   "⛅",  "peu nuageux":  "⛅",
+    "couvert":      "☁️",  "brouillard":   "🌫️",  "bruine":       "🌦️",
+    "averses":      "🌦️",  "pluie":        "🌧️",  "fortes pluies": "🌧️",
+    "orage":        "⛈️",  "neige":        "❄️",
+}
+
+# ─── Descriptions Belle Époque par condition et par période ──────────────
+# Chaque description suit le préfixe de la période :
+#   matin      → "Au point du jour, {desc}"
+#   apres_midi → "Dans l'après-midi, {desc}"
+#   soiree     → "Le soir venu, {desc}"
+PERIOD_DESCS = {
+    "ensoleille": {
+        "matin":      "le soleil s'est levé dans un ciel d'azur limpide",
+        "apres_midi": "le soleil a brillé généreusement sur la capitale",
+        "soiree":     "les dernières lueurs du soleil ont doré les toits",
+    },
+    "degagement": {
+        "matin":      "les nuages se sont peu à peu dissipés",
+        "apres_midi": "les nuages ont cédé la place à de belles éclaircies",
+        "soiree":     "le ciel s'est finalement ouvert vers l'horizon",
+    },
+    "peu nuageux": {
+        "matin":      "quelques nuages passagers ont voilé l'horizon",
+        "apres_midi": "quelques nuages passagers n'ont guère altéré la clarté",
+        "soiree":     "quelques nuages légers ont accompagné le crépuscule",
+    },
+    "couvert": {
+        "matin":      "la ville s'est éveillée sous un ciel gris et uniforme",
+        "apres_midi": "le ciel est demeuré bas et couvert sur toute la ville",
+        "soiree":     "les nuages gris ont pesé sur la ville jusqu'au soir",
+    },
+    "brouillard": {
+        "matin":      "Paris s'est éveillé dans un épais brouillard",
+        "apres_midi": "le brouillard a persisté, estompant les façades",
+        "soiree":     "le brouillard s'est épaissi avec la nuit tombante",
+    },
+    "bruine": {
+        "matin":      "une fine bruine a mouillé les pavés dès l'aube",
+        "apres_midi": "la bruine a persisté, ternissant les reflets des vitrines",
+        "soiree":     "la bruine a continué de mouiller silencieusement les rues",
+    },
+    "pluie": {
+        "matin":      "la pluie est tombée sur la ville dès l'aube",
+        "apres_midi": "la pluie s'est abattue sans relâche sur les boulevards",
+        "soiree":     "la pluie a persisté sous les réverbères allumés",
+    },
+    "fortes pluies": {
+        "matin":      "de fortes pluies se sont abattues sur la capitale",
+        "apres_midi": "de fortes pluies se sont déversées sans répit sur la cité",
+        "soiree":     "les fortes pluies n'ont pas épargné la capitale",
+    },
+    "averses": {
+        "matin":      "des averses ont balayé les rues dès l'aube",
+        "apres_midi": "des averses ont troublé par moments les promeneurs",
+        "soiree":     "quelques averses ont encore balayé les boulevards",
+    },
+    "neige": {
+        "matin":      "les toits se sont blanchis sous les premiers flocons",
+        "apres_midi": "les flocons ont continué de blanchir les toits en silence",
+        "soiree":     "les flocons sont tombés encore sous les réverbères",
+    },
+    "orage": {
+        "matin":      "le tonnerre a grondé dès les premières heures",
+        "apres_midi": "l'orage a éclaté sur Paris avec toute sa violence",
+        "soiree":     "le tonnerre s'est éloigné peu à peu dans la nuit",
+    },
+}
+
+DEFAULT_PERIOD_DESCS = {
+    "matin":      "la matinée s'est ouverte sous un ciel indécis",
+    "apres_midi": "l'après-midi s'est déroulé sous un temps variable",
+    "soiree":     "les nuages incertains ont accompagné la fin du jour",
+}
+
+WIND_THRESHOLDS = [
+    (80, "violent"), (60, "très fort"), (40, "fort"),
+    (25, "modéré"), (10, "léger"), (0, "à peine sensible"),
+]
+
+PRECIP_THRESHOLDS = [
+    (20, "très abondantes"), (10, "abondantes"),
+    (5, "modérées"), (1, "fine"), (0, None)
+]
+
+
+# ─── Open-Meteo Archive API ───────────────────────────────────────────────
+def fetch_open_meteo(year, month, day):
+    """Données météo journalières + horaires via Open-Meteo Archive (ERA5)."""
+    d_str = f"{year}-{month:02d}-{day:02d}"
+    resp = requests.get(
+        "https://archive-api.open-meteo.com/v1/archive",
+        params={
+            "latitude": 48.8566,
+            "longitude": 2.3522,
+            "start_date": d_str,
+            "end_date": d_str,
+            "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum,"
+                     "wind_speed_10m_max,weather_code",
+            "hourly": "temperature_2m,precipitation,wind_speed_10m,"
+                      "weather_code,cloud_cover",
+            "timezone": "Europe/Paris",
+        },
+        timeout=30,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+def wmo_to_condition(code):
+    return WMO_TO_CONDITION.get(code, "couvert")
+
+
+def dominant_condition(codes):
+    """Condition la plus sévère parmi une liste de codes WMO."""
+    priority = [
+        "orage", "fortes pluies", "neige", "averses", "pluie",
+        "brouillard", "bruine", "couvert", "peu nuageux", "degagement", "ensoleille",
+    ]
+    conditions = [wmo_to_condition(c) for c in codes if c is not None]
+    if not conditions:
+        return "couvert"
+    for p in priority:
+        if p in conditions:
+            return p
+    return conditions[0]
+
+
+def get_period_stats(hourly, start_h, end_h):
+    """Statistiques (temp, condition, précip, vent) pour une tranche horaire."""
+    n = len(hourly.get("temperature_2m", []))
+    start_h = min(start_h, n)
+    end_h = min(end_h, n)
+    temps = [hourly["temperature_2m"][i] for i in range(start_h, end_h)
+             if hourly["temperature_2m"][i] is not None]
+    codes = [hourly["weather_code"][i] for i in range(start_h, end_h)]
+    precip = sum(hourly["precipitation"][i] or 0 for i in range(start_h, end_h))
+    winds = [hourly["wind_speed_10m"][i] for i in range(start_h, end_h)
+             if hourly["wind_speed_10m"][i] is not None]
+    return {
+        "temp_avg":  sum(temps) / len(temps) if temps else None,
+        "condition": dominant_condition(codes),
+        "precip":    precip,
+        "wind_avg":  sum(winds) / len(winds) if winds else None,
+    }
+
+
+def period_desc(period_key, condition):
+    descs = PERIOD_DESCS.get(condition, DEFAULT_PERIOD_DESCS)
+    return descs.get(period_key, DEFAULT_PERIOD_DESCS[period_key])
+
+
+def temp_context(t):
+    """Qualificatif Belle Époque pour une température."""
+    if t is None:
+        return None
+    if t < -5: return "un froid glacial"
+    if t < 0:  return "un froid vif"
+    if t < 5:  return "un froid piquant"
+    if t < 10: return "de la fraîcheur"
+    if t < 15: return "une température tempérée"
+    if t < 20: return "une douce tiédeur"
+    if t < 25: return "la chaleur"
+    if t < 30: return "une forte chaleur"
+    return "une chaleur accablante"
+
+
+def wind_context(w):
+    """Qualificatif Belle Époque pour le vent (None si insignifiant)."""
+    if w is None or w < 12: return None
+    if w < 25: return "une brise légère"
+    if w < 40: return "un vent modéré"
+    if w < 60: return "un vent fort"
+    if w < 80: return "un vent très fort"
+    return "des rafales violentes"
+
+
+def classify_wind(speed):
+    if speed is None:
+        return "modéré"
+    for threshold, label in WIND_THRESHOLDS:  # du plus grand au plus petit
+        if speed >= threshold:
+            return label
+    return "calme"
+
+
+def classify_precip(mm):
+    if mm is None or mm == 0:
+        return None
+    for threshold, label in PRECIP_THRESHOLDS:  # du plus grand au plus petit
+        if mm >= threshold:
+            return label
+    return None
+
+
+def generate_weather_text_belle_epoque(month, day, year, om_data):
+    """Bulletin météo narratif Belle Époque avec évolution au cours de la journée."""
+    daily = om_data.get("daily", {})
+    hourly = om_data.get("hourly", {})
+
+    tmax = (daily.get("temperature_2m_max") or [None])[0]
+    tmin = (daily.get("temperature_2m_min") or [None])[0]
+    precip_total = (daily.get("precipitation_sum") or [0])[0] or 0
+    wind_max = (daily.get("wind_speed_10m_max") or [None])[0]
+
+    periods = {
+        "matin":      get_period_stats(hourly, 6, 12),
+        "apres_midi": get_period_stats(hourly, 12, 18),
+        "soiree":     get_period_stats(hourly, 18, 24),
+    }
+
+    lines = []
+
+    # Matin
+    matin = periods["matin"]
+    line_m = f"Au point du jour, {period_desc('matin', matin['condition'])}"
+    w_m = wind_context(matin["wind_avg"])
+    if w_m:
+        line_m += f", avec {w_m}"
+    lines.append(line_m + ".")
+
+    # Après-midi
+    am = periods["apres_midi"]
+    line_am = f"Dans l'après-midi, {period_desc('apres_midi', am['condition'])}"
+    if am["precip"] >= 0.5:
+        line_am += f" ({am['precip']:.1f} mm)"
+    lines.append(line_am + ".")
+
+    # Soirée
+    soir = periods["soiree"]
+    desc_s = period_desc("soiree", soir["condition"])
+    line_s = f"Le soir venu, {desc_s}"
+    w_s = wind_context(soir["wind_avg"])
+    if w_s:
+        line_s += f", avec {w_s}"
+    if soir["precip"] >= 0.5:
+        line_s += f" ({soir['precip']:.1f} mm)"
+    lines.append(line_s + ".")
+
+    # Résumé
+    lines.append("")
+    summary = []
+    if tmin is not None and tmax is not None:
+        summary.append(f"Les températures ont oscillé entre {tmin:.0f} °C et {tmax:.0f} °C")
+    if precip_total >= 0.5:
+        p_label = classify_precip(precip_total)
+        if p_label:
+            summary.append(
+                f"les précipitations ({p_label}) ont cumulé {precip_total:.1f} mm"
+            )
+        else:
+            summary.append("quelques gouttes ont mouillé les trottoirs")
+    else:
+        summary.append("aucune précipitation n'est venue troubler la journée")
+    if wind_max is not None and wind_max >= 20:
+        w_label = classify_wind(wind_max)
+        summary.append(f"le vent ({w_label}) a soufflé jusqu'à {wind_max:.0f} km/h")
+
+    lines.append(". ".join(s[0].upper() + s[1:] for s in summary) + ".")
+
+    return "\n".join(lines)
+
+
+def get_weather_icon(condition):
+    return WEATHER_ICONS.get(condition, "🌤️")
+
+
+# ─── GÉNÉRATION IA (Gemini Flash Lite) ───────────────────────────────────
+def _get_env_key(name):
+    """Lit une clé depuis l'environnement ou le .env du projet."""
+    key = os.environ.get(name)
+    if key:
+        return key
+    env_path = Path(__file__).parent.parent / ".env"
+    try:
+        with open(env_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith(f"{name}=") and not line.startswith("#"):
+                    return line.split("=", 1)[1].strip().strip('"').strip("'")
+    except Exception:
+        pass
+    return None
+
+
+def _build_prompt(month, day, year, om_data):
+    daily  = om_data.get("daily", {})
+    hourly = om_data.get("hourly", {})
+
+    tmax         = (daily.get("temperature_2m_max") or [None])[0]
+    tmin         = (daily.get("temperature_2m_min") or [None])[0]
+    precip_total = (daily.get("precipitation_sum")  or [0])[0] or 0
+    wind_max     = (daily.get("wind_speed_10m_max") or [None])[0]
+
+    periods = {
+        "matin":      get_period_stats(hourly, 6,  12),
+        "apres_midi": get_period_stats(hourly, 12, 18),
+        "soiree":     get_period_stats(hourly, 18, 24),
+    }
+
+    def fmt_p(p):
+        parts = [f"condition : {p['condition']}"]
+        if p["temp_avg"] is not None:
+            parts.append(f"temp moy : {p['temp_avg']:.0f}°C")
+        if p["precip"] >= 0.2:
+            parts.append(f"précip : {p['precip']:.1f}mm")
+        if p["wind_avg"] is not None and p["wind_avg"] >= 10:
+            parts.append(f"vent : {p['wind_avg']:.0f}km/h")
+        return ", ".join(parts)
+
+    month_name = MONTHS_FR[month]
+    day_str    = f"{day}er" if day == 1 else str(day)
+    temp_range = (
+        f"min {tmin:.0f}°C, max {tmax:.0f}°C"
+        if tmin is not None and tmax is not None else ""
+    )
+    vent_line = f", vent max {wind_max:.0f}km/h" if wind_max else ""
+
+    return f"""Tu rédiges le bulletin météo quotidien de la Gazette des Héritiers, journal fictif de Paris en 1899.
+
+Date : {day_str} {month_name} {year}
+Données météo (référence climatique Paris) :
+- Matin (6h–12h) : {fmt_p(periods['matin'])}
+- Après-midi (12h–18h) : {fmt_p(periods['apres_midi'])}
+- Soirée (18h–24h) : {fmt_p(periods['soiree'])}
+- Journée : {temp_range}, précip totales {precip_total:.1f}mm{vent_line}
+
+Rédige exactement 4 éléments :
+1. Une phrase commençant par "Au point du jour, " (matin)
+2. Une phrase commençant par "Dans l'après-midi, " (après-midi)
+3. Une phrase commençant par "Le soir venu, " (soirée)
+4. Une ligne vide, puis une ligne de résumé factuel (températures, précipitations si > 0,5mm, vent si notable)
+
+Règles :
+- Passé composé uniquement
+- Style Belle Époque : élégant, évocateur, vocabulaire soutenu mais naturel
+- Chaque jour doit avoir des tournures uniques — pas de formules répétées d'un jour à l'autre
+- Refléter fidèlement les données (froid/chaud, pluie/soleil, vent fort…)
+- Ne JAMAIS mentionner de valeurs numériques (°C, mm, km/h) dans les 3 phrases narratives — uniquement dans le résumé
+- Réponse directe : aucun guillemet, aucune numérotation, aucune introduction"""
+
+
+def _extract_bulletin(text):
+    """Extrait le bulletin de la réponse IA (ignore toute intro éventuelle)."""
+    for line in text.splitlines():
+        if line.startswith("Au point du jour"):
+            return text[text.index(line):].strip()
+    return None
+
+
+def generate_weather_text_ia(month, day, year, om_data):
+    """
+    Génère le bulletin via Gemini Flash Lite pour des tournures variées et naturelles.
+    Fallback automatique sur les templates si pas de clé ou erreur.
+    """
+    api_key = _get_env_key("GEMINI_API_KEY")
+    if not api_key:
+        return generate_weather_text_belle_epoque(month, day, year, om_data)
+
+    prompt = _build_prompt(month, day, year, om_data)
+
+    try:
+        url  = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+        resp = requests.post(
+            url,
+            params={"key": api_key},
+            json={"contents": [{"parts": [{"text": prompt}]}]},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        raw  = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+        text = _extract_bulletin(raw)
+        if text:
+            return text
+        print("  ⚠️ Réponse Gemini inattendue, fallback templates", file=sys.stderr)
+
+    except Exception as e:
+        print(f"  ⚠️ Appel Gemini échoué ({e}), fallback templates", file=sys.stderr)
+
+    return generate_weather_text_belle_epoque(month, day, year, om_data)
+
+
+# ─── SUN ─────────────────────────────────────────────────────────────────
+def calc_sun(dt):
+    s = sun(PARIS.observer, date=dt)
+    return s["sunrise"].strftime("%H:%M"), s["sunset"].strftime("%H:%M")
+
+
+MOON_PHASE_NAMES = [
+    "Nouvelle Lune", "Premier Croissant", "Premier Quartier",
+    "Gibbeuse croissante", "Pleine Lune", "Gibbeuse decroissante",
+    "Dernier Quartier", "Dernier Croissant"
+]
+
+MOON_META = {
+    "Nouvelle Lune":        {"visible": "0%",   "aspect": "Nuit noire et profonde",   "desc": "La lune, invisible, laisse place a un ciel d'encre etoile.",             "icon": "🌑"},
+    "Premier Croissant":    {"visible": "15%",  "aspect": "Jeune croissant crepusculaire", "desc": "Un mince filet de lune est apparu au coucher du soleil.",            "icon": "🌙"},
+    "Premier Quartier":     {"visible": "50%",  "aspect": "Demi-lune brillante",       "desc": "Une demi-lune claire a eclaire la premiere partie de la nuit.",          "icon": "🌓"},
+    "Gibbeuse croissante":  {"visible": "75%",  "aspect": "Lune presque pleine",       "desc": "La lune s'approchait de sa pleine luminosite.",                         "icon": "🌔"},
+    "Pleine Lune":          {"visible": "100%", "aspect": "Disque lunaire entier",     "desc": "La pleine lune baignait Paris de sa lumiere blanche et froide.",         "icon": "🌕"},
+    "Gibbeuse decroissante":{"visible": "75%",  "aspect": "Lune decroissante",         "desc": "La lune entamait sa decroissance apres son plein eclat.",                "icon": "🌖"},
+    "Dernier Quartier":     {"visible": "50%",  "aspect": "Demi-lune declinante",      "desc": "La moitie de la lune eclairee disparaissait progressivement.",           "icon": "🌗"},
+    "Dernier Croissant":    {"visible": "22%",  "aspect": "Fine corne argentee",       "desc": "La fine faux lunaire se levait tard dans la nuit.",                      "icon": "🌘"},
+}
+
+
+def calc_moon(dt):
+    age_days = moon_phase_num(dt) % 29.5
+    phase_idx = int(age_days / 29.5 * 8) % 8
+    phase_name = MOON_PHASE_NAMES[phase_idx]
+    meta = MOON_META[phase_name]
+    return {
+        "phase":   phase_name,
+        "visible": meta["visible"],
+        "aspect":  meta["aspect"],
+        "desc":    meta["desc"],
+        "icon":    meta["icon"],
+    }
+
+
+# ─── MAIN ────────────────────────────────────────────────────────────────
+def generate_for_date(date_str, year_weather=None):
+    """
+    Point d'entrée principal.
+    year_weather calculé automatiquement : game_year + 110 (1899→2009, …).
+    Le paramètre year_weather est conservé pour la rétro-compatibilité mais
+    ignoré au profit du calcul automatique.
+    """
+    dt = date.fromisoformat(date_str)
+    year_ref = dt.year + 110  # mapping climatique
+
+    result = {"date": date_str}
+
+    sunrise, sunset = calc_sun(dt)
+    result["sunrise"] = sunrise
+    result["sunset"] = sunset
+
+    moon = calc_moon(dt)
+    result["moon_phase"]   = moon["phase"]
+    result["moon_visible"] = moon["visible"]
+    result["moon_aspect"]  = moon["aspect"]
+    result["moon_desc"]    = moon["desc"]
+    result["moon_icon"]    = moon["icon"]
+
+    try:
+        om_data = fetch_open_meteo(year_ref, dt.month, dt.day)
+        daily = om_data.get("daily", {})
+        wmo_code = (daily.get("weather_code") or [None])[0]
+        condition = wmo_to_condition(wmo_code) if wmo_code is not None else "couvert"
+
+        result["weather_condition"]  = condition
+        result["weather_tmin"]       = (daily.get("temperature_2m_min") or [None])[0]
+        result["weather_tmax"]       = (daily.get("temperature_2m_max") or [None])[0]
+        result["weather_precip_mm"]  = (daily.get("precipitation_sum") or [0])[0] or 0
+        result["weather_wind_kmh"]   = (daily.get("wind_speed_10m_max") or [None])[0]
+        result["weather_icon"]       = get_weather_icon(condition)
+        result["weather_desc"]       = generate_weather_text_ia(
+            dt.month, dt.day, dt.year, om_data
+        )
+        result["weather_year_ref"]   = year_ref
+
+    except Exception as e:
+        print(f"  ⚠️ Erreur météo pour {date_str}: {e}", file=sys.stderr)
+        result["weather_condition"]  = "inconnu"
+        result["weather_tmin"]       = None
+        result["weather_tmax"]       = None
+        result["weather_precip_mm"]  = 0
+        result["weather_wind_kmh"]   = None
+        result["weather_icon"]       = "🌤️"
+        result["weather_desc"]       = "Données météorologiques non disponibles."
+        result["weather_year_ref"]   = year_ref
+
+    return result
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(
+        description="Génère météo + soleil + lune pour une date (game_year + 110 pour le climat)"
+    )
+    parser.add_argument("date", help="Date (AAAA-MM-JJ, ex: 1899-12-08)")
+    args = parser.parse_args()
+
+    data = generate_for_date(args.date)
+    print(json.dumps(data, ensure_ascii=False, indent=2))

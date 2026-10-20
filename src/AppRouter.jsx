@@ -58,8 +58,8 @@ export default function AppRouter() {
     <RouteAnnouncer />
     <Suspense fallback={
       <div className="flex flex-col items-center justify-center py-32 animate-pulse">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-600 mb-4"></div>
-        <p className="text-amber-900 font-serif font-bold text-lg">Dépliage des parchemins...</p>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-lh-or mb-4"></div>
+        <p className="text-lh-encre font-serif font-bold text-lg">Dépliage des parchemins...</p>
       </div>
     }>
       <Routes>

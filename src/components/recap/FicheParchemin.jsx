@@ -6,7 +6,7 @@ import { calculateCharacterStats } from '../../utils/bonusCalculator';
 import { calculateFullCombatStats, calculatePvSeuils } from '../../utils/rulesEngine';
 import { isCharacterScelle } from '../../utils/lockUtils';
 
-export default function FicheParchemin({ character, gameData, detailed = false }) {
+export default function FicheParchemin({ character, gameData, detailed = false, baseUrl = '' }) {
     
     // ✨ LE FIX EST ICI : On stabilise la référence en mémoire !
     const feeData = useMemo(() => {
@@ -337,39 +337,47 @@ export default function FicheParchemin({ character, gameData, detailed = false }
     const sangFroidTotal = getCarac('sangFroid').total;
     const pointsAmeMax = espritTotal + sangFroidTotal + niveauMagie;
 
+    const pageStyle = baseUrl ? {
+        backgroundImage: `url(${baseUrl}/assets/cadre-feuille.png)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        WebkitPrintColorAdjust: 'exact',
+        printColorAdjust: 'exact',
+    } : {};
+
     return (
         <div className="recap-wrapper font-serif">
             <style dangerouslySetInnerHTML={{__html: `
                 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
                 .recap-page {
-                    width: 210mm; min-height: 297mm; background: #fdfbf7; padding: 12mm; margin: 0 auto 20px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #d4c5b0; box-sizing: border-box;
-                    font-family: 'Georgia', serif; color: #2c241b; position: relative;
+                    max-width: 210mm; width: 100%; padding: 12mm 11mm; margin: 0 auto 20px;
+                    box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; position: relative;
                 }
                 .recap-page-magie {
-                    width: 210mm; height: 297mm; background: #fdfbf7; padding: 12mm; margin: 0 auto 20px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #d4c5b0; box-sizing: border-box;
-                    font-family: 'Georgia', serif; color: #2c241b; display: flex; flex-direction: column;
+                    max-width: 210mm; width: 100%; padding: 12mm 11mm; margin: 0 auto 20px;
+                    box-sizing: border-box; font-family: 'Georgia', serif; color: #2c241b; display: flex; flex-direction: column;
                 }
                 @media print {
                     .recap-page-magie {
-                        box-shadow: none !important; margin: 0 !important; padding: 5mm !important;
+                        box-shadow: none !important; margin: 0 !important; padding: 8mm 12mm !important;
                         border: none !important; page-break-after: always; height: 297mm !important;
+                        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
                     }
                 }
                 .recap-header { text-align: center; border-bottom: 3px double #b5a287; padding-bottom: 6px; margin-bottom: 10px; }
-                .recap-char-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; color: #92400e; text-transform: uppercase; }
-                .carac-main-title { background: #92400e; color: white; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
+                .recap-char-name { font-family: 'Gismonda', Georgia, serif; font-size: 26px; font-weight: 900; color: #92400e; text-transform: uppercase; }
+                .carac-main-title { background: #92400e; color: white; font-family: 'Gismonda', Georgia, serif; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
                 .carac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
-                .carac-box { background: #fff; border: 1px solid #b5a287; border-radius: 4px; text-align: center; padding: 3px 6px; box-shadow: 2px 2px 0 rgba(139, 115, 85, 0.1); }
-                .carac-label { font-size: 9px; font-weight: 600; text-transform: uppercase; color: #8b7355; border-bottom: 1px solid #eee; padding-bottom: 1px; margin-bottom: 1px; letter-spacing: 0.5px; }
+                .carac-box { background: rgba(255,255,255,0.35); border: 1px solid #b5a287; border-radius: 4px; text-align: center; padding: 3px 6px; box-shadow: 2px 2px 0 rgba(139, 115, 85, 0.1); }
+                .carac-label { font-family: 'Amarante', Georgia, serif; font-size: 9px; font-weight: 600; text-transform: uppercase; color: #8b7355; border-bottom: 1px solid #eee; padding-bottom: 1px; margin-bottom: 1px; letter-spacing: 0.5px; }
                 .carac-score { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: #4a3b2c; line-height: 1; margin-top: 1px; }
                 .recap-box { border: 1px solid #b5a287; padding: 7px 9px; border-radius: 4px; background: rgba(255,255,255,0.5); margin-bottom: 8px; }
                 .field-label { font-size: 9px; font-weight: bold; text-transform: uppercase; color: #8b7355; display: block; margin-bottom: 1px; }
                 .field-value { font-size: 12px; font-weight: bold; color: #2c241b; border-bottom: 1px dotted #b5a287; padding-bottom: 1px; min-height: 15px; }
                 .comp-line { display: flex; align-items: baseline; font-size: 12px; margin-bottom: 1px; }
                 .comp-dots { flex: 1; border-bottom: 1px dotted #b5a287; margin: 0 6px; position: relative; top: -3px; }
-                .combat-circle { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #4a3b2c; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 900; background: #fff; margin: 0 auto; }
+                .combat-circle { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #4a3b2c; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 900; background: rgba(255,255,255,0.35); margin: 0 auto; }
                 .combat-label { text-align: center; font-size: 8px; font-weight: bold; text-transform: uppercase; margin-top: 3px; color: #4a3b2c; }
                 .detail-row { font-size: 7px; color: #8b7355; margin-top: 2px; border-top: 1px dotted #d4c5b0; padding-top: 2px; line-height: 1.3; }
                 .detail-row span { margin-right: 3px; white-space: nowrap; }
@@ -379,14 +387,18 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                 .detail-tag.cre { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
                 .detail-comp-row { font-size: 8px; color: #8b7355; margin-top: 1px; padding-left: 8px; }
                 @media print {
-                    body { background: white !important; }
+                    body { background: #faf6ed !important; }
                     @page { margin: 3mm; }
                     .recap-page {
                         box-shadow: none !important;
                         margin: 0 !important;
-                        padding: 5mm !important;
+                        padding: 18mm 10mm 6mm !important;
                         border: none !important;
                         page-break-after: always;
+                        height: 297mm !important;
+                        overflow: hidden !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                     .no-print { display: none !important; }
                     .recap-header { padding-bottom: 4px !important; margin-bottom: 6px !important; }
@@ -404,7 +416,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
             `}} />
 
             {/* ======================= PAGE 1 : LE MASQUE (FORME HUMAINE) ======================= */}
-            <div className="recap-page">
+            <div className="recap-page" style={pageStyle}>
                 <div className="recap-header" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px'}}>
                     {character.portrait_masked_url && (
                         <img
@@ -480,7 +492,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                 <div className="recap-box grid grid-cols-2 gap-x-10">
                     {Object.entries(profilsMap).map(([profil, comps]) => (
                         <div key={profil} style={{marginBottom: '6px'}}>
-                            <div style={{fontFamily: 'Playfair Display, serif', fontSize: '12px', fontWeight: 'bold', color: '#92400e', borderBottom: '1px solid #d4c5b0', marginBottom: '3px', paddingBottom: '1px'}}>{profil}</div>
+                            <div style={{fontFamily: 'Gismonda, Georgia, serif', fontSize: '12px', fontWeight: 'bold', color: '#92400e', borderBottom: '1px solid #d4c5b0', marginBottom: '3px', paddingBottom: '1px'}}>{profil}</div>
                             {comps.map(comp => {
                                 const stat  = getCompScore(comp);
                                 const bd    = detailed ? getCompBreakdown(comp) : null;
@@ -493,7 +505,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
                                 return (
                                     <div key={comp} className="mb-0.5">
                                         <div className="comp-line">
-                                            <span style={{color: '#4a3b2c'}}>
+                                            <span style={{color: '#4a3b2c', fontFamily: 'Amarante, Georgia, serif'}}>
                                                 {comp} {isPred && <span style={{fontSize: '10px', color: '#d97706', marginLeft: '4px'}}>★</span>}
                                                 {specsTexte && <span style={{fontSize: '11px', color: '#8b7355', marginLeft: '6px', fontStyle: 'italic'}}>{specsTexte}</span>}
                                             </span>
@@ -612,7 +624,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
             </div>
 
 			{/* ======================= PAGE 2 : LA FÉE (FORME DÉMASQUÉE) ======================= */}
-			<div className="recap-page">
+			<div className="recap-page" style={pageStyle}>
 				<div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px'}}>
 					<div className="carac-main-title" style={{background: '#1e3a8a', margin: 0}}>{character.typeFee || 'Magie & Héritage'}</div>
 					{character.portrait_unmasked_url && (
@@ -857,7 +869,7 @@ export default function FicheParchemin({ character, gameData, detailed = false }
 
             {/* ======================= PAGE 3 : FEUILLE DE MAGIE ======================= */}
             {magiesActives.length > 0 && (
-                <div className="recap-page-magie">
+                <div className="recap-page-magie" style={pageStyle}>
                     {/* En-tête */}
                     <div className="recap-header" style={{flexShrink: 0}}>
                         <div style={{fontFamily: "'Playfair Display', serif", fontSize: '22px', fontWeight: '900', color: '#5b21b6', textTransform: 'uppercase', letterSpacing: '0.05em'}}>

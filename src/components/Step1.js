@@ -141,7 +141,7 @@ export default function Step1() {
     }, [previewData, character.sexe, isLocked, onSexeChange]);
 
     return (
-        <div className="flex flex-col gap-6 h-full min-h-[600px] pb-12">
+        <div className="flex flex-col gap-3">
 
             {isScelle && (
                 <div className="bg-amber-50 border border-amber-200 p-4 md:p-5 rounded-xl flex items-start gap-4 shadow-sm">
@@ -149,7 +149,7 @@ export default function Step1() {
                         <Lock size={24} />
                     </div>
                     <div>
-                        <h2 className="font-serif font-bold text-amber-900 text-lg">Identité Scellée</h2>
+                        <h2 className="font-gismonda font-bold text-amber-900 text-lg">Identité Scellée</h2>
                         <p className="text-sm text-amber-800 leading-relaxed mt-1">
                             Cet Héritier est désormais actif dans l'univers. Ses attributs fondamentaux (Nom, Sexe, Espèce) constituent son Sceau Originel et sont définitivement gravés dans le marbre.
                         </p>
@@ -178,10 +178,10 @@ export default function Step1() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 overflow-hidden">
-                
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+
                 {/* COLONNE DE GAUCHE : ENFOUI + HUMAIN PUR + SÉLECTEUR */}
-                <div className="lg:col-span-4 flex flex-col gap-6 h-full overflow-hidden">
+                <div className="lg:col-span-4 flex flex-col gap-3">
 
                     {/* ENTRÉE SPÉCIALE : HUMAIN PUR */}
                     <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 shrink-0">
@@ -230,11 +230,11 @@ export default function Step1() {
 
                     {/* SÉLECTEUR DE RANG (mode Humain pur) */}
                     {isHumain && (
-                        <div className="flex flex-col flex-1 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                        <div className="flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
                             <div className="p-4 bg-stone-100 border-b border-stone-200">
                                 <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Choisir un rang</span>
                             </div>
-                            <div className="flex-1 overflow-y-auto">
+                            <div className="max-h-72 overflow-y-auto">
                                 {Object.entries(HUMAIN_RANGS).map(([key, rang]) => (
                                     <button
                                         key={key}
@@ -260,7 +260,7 @@ export default function Step1() {
                     )}
 
                     {/* SÉLECTEUR DE TYPE DE FÉE (mode fée) */}
-                    {!isHumain && <div className="flex flex-col flex-1 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                    {!isHumain && <div className="flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
 
                     <div className="flex flex-col gap-2 p-2 bg-gray-100 rounded-xl border border-gray-200">
                             <span className="text-xs font-bold text-gray-500 uppercase tracking-wider px-1">Filtrer par origine</span>
@@ -285,7 +285,7 @@ export default function Step1() {
                             ))}
                     </div>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar">
+                    <div className="overflow-y-auto custom-scrollbar">
                         {!gameData.fairyTypes || gameData.fairyTypes.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full p-6 text-center animate-pulse">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mb-4"></div>
@@ -329,15 +329,15 @@ export default function Step1() {
                 </div>
 
                 {/* PANNEAU DE DROITE */}
-                <div className="lg:col-span-8 h-full">
+                <div className="lg:col-span-8">
                     {isHumain ? (
-                        <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 h-full flex flex-col gap-6">
+                        <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 flex flex-col gap-6">
                             <div className="flex items-center gap-3">
                                 <div className="bg-stone-100 p-3 rounded-full text-stone-700">
                                     <User size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="font-serif font-bold text-stone-900 text-xl">Humain pur</h2>
+                                    <h2 className="font-gismonda font-bold text-stone-900 text-xl">Humain pur</h2>
                                     <p className="text-sm text-stone-500">Ni fée, ni demi-sang — un mortel dans un monde de merveilles</p>
                                 </div>
                             </div>
@@ -364,7 +364,7 @@ export default function Step1() {
                             </div>
                             {character.rangHumain ? (
                                 <div className="bg-stone-50 border border-stone-200 rounded-xl p-5">
-                                    <h3 className="font-serif font-bold text-stone-800 text-lg mb-4">
+                                    <h3 className="font-gismonda font-bold text-stone-800 text-lg mb-4">
                                         Rang : {HUMAIN_RANGS[character.rangHumain].label}
                                     </h3>
                                     <div className="grid grid-cols-3 gap-4">
