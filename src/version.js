@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.1 - \"La Boussole Retrouvée 🧭\"",
+    date: "21 Octobre 2026",
+    description: "Le fond de carte « Actuelle » est de nouveau visible — CARTO a rendu ses tuiles payantes, remplacé par OpenStreetMap.",
+    changes: [
+      "🗺️ **Fond de carte corrigé :** CARTO Positron affichait « API KEY REQUIRED » sur la Carte de Paris. Remplacé par OpenStreetMap, gratuit et sans clé.",
+      "🧪 **567 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "18.1.0 - \"Le Grimoire du Docte 📚\"",
     date: "21 Octobre 2026",
     description: "Le Docte peut désormais ouvrir le Grimoire Personnel de ses joueurs depuis la fiche de consultation — et depuis cet espace intime, retirer les cartes distribuées ou les items de Vie Sociale acquis en erreur, avec proposition de remboursement en Points de Prestige.",

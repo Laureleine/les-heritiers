@@ -14,10 +14,9 @@ import { supabase } from '../config/supabase';
 
 // ─── Tuiles ──────────────────────────────────────────────────────────────────
 
-// CartoDB Positron (fiable, charge partout) — fond moderne
-const TILE_BASE   = 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
-const TILE_LABELS = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png';
-const ATTRIBUTION = '© <a href="https://carto.com/attributions">CARTO</a> © <a href="https://openstreetmap.org/copyright">OSM</a>';
+// OpenStreetMap standard — fond moderne gratuit sans clé
+const TILE_BASE   = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ATTRIBUTION = '© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 // IGN Géoportail — Carte de l'État-Major (~1820-1866), données ouvertes sans clé
 const TILE_IGN = 'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}';
@@ -958,10 +957,9 @@ export default function CarteDeParisPage({ onBack }) {
             <Pane name="historical" style={{ zIndex: 200 }}>
               <TileLayer url={TILE_IGN} attribution={TILE_IGN_ATTRIBUTION} maxZoom={15} />
             </Pane>
-            {/* Fond moderne — CartoDB Positron */}
+            {/* Fond moderne — OpenStreetMap */}
             <Pane name="modern" style={{ zIndex: 201 }}>
-              <TileLayer url={TILE_BASE} attribution={ATTRIBUTION} maxZoom={19} subdomains="abcd" />
-              <TileLayer url={TILE_LABELS} maxZoom={19} subdomains="abcd" />
+              <TileLayer url={TILE_BASE} attribution={ATTRIBUTION} maxZoom={19} />
             </Pane>
             <PanesController mode={mapMode} sliderPos={sliderPos} />
 

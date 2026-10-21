@@ -4,6 +4,16 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## Version 18.1.1 — « La Boussole Retrouvée 🧭 » — 21 Octobre 2026
+
+Chers Héritiers,
+
+Un tout petit correctif de navigation : la Carte de Paris affichait un message d'erreur indésirable sur le fond de carte « Actuelle » — le fournisseur cartographique que nous utilisions a récemment restreint l'accès à ses tuiles. Nous avons changé de cap vers OpenStreetMap, dont les routes et quartiers vous sont fidèlement restitués.
+
+*L'Atelier des Héritiers*
+
+---
+
 ## Version 18.1.0 — « Le Grimoire du Docte 📚 » — 21 Octobre 2026
 
 Chers Héritiers,
