@@ -1,6 +1,6 @@
 // src/components/Actualite.jsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ArrowLeft, Sun, Moon, Info, ChevronDown, ChevronUp, FileText, Bug, Copy } from '../config/icons';
+import { ArrowLeft, Sun, Moon, Info, ChevronDown, ChevronUp, FileText, Bug, Copy, ExternalLink } from '../config/icons';
 import eclipses from '../data/eclipses_data';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { supabase } from '../config/supabase';
@@ -146,6 +146,7 @@ export default function Actualite({ onBack }) {
   const [calMonth, setCalMonth] = useState(10); // 0-indexed, 10 = Novembre
   const [calYear, setCalYear] = useState(1899);
   const calendarRef = useRef(null);
+  const [gallicaArk, setGallicaArk] = useState(null);
 
   useEffect(() => {
     if (firstAvailableDate) {
@@ -194,16 +195,23 @@ export default function Actualite({ onBack }) {
   // --- Rafraîchir les dates disponibles depuis Supabase ---
   const fetchAvailableArticleDates = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .rpc('get_article_dates');
-      
-      if (error) throw error;
-      
-      if (data && data.length > 0) {
-        const datesSet = new Set(data.map(item => item.date_col));
+      const allDates = [];
+      let debut = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .rpc('get_article_dates')
+          .range(debut, debut + 999);
+        if (error) throw error;
+        allDates.push(...(data || []));
+        if (!data || data.length < 1000) break;
+        debut += 1000;
+      }
+
+      if (allDates.length > 0) {
+        const datesSet = new Set(allDates.map(item => item.date_col));
         setAvailableArticleDates(datesSet);
 
-        const sorted = data.map(item => item.date_col).sort();
+        const sorted = allDates.map(item => item.date_col).sort();
         const first = sorted[0];
         setFirstAvailableDate(first);
 
@@ -223,23 +231,22 @@ export default function Actualite({ onBack }) {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const { data, error } = await supabase
-          .from('historical_events')
-          .select('date, paris, france, monde');
-        
-        if (error) throw error;
-        
-        if (data) {
-          const eventsMap = {};
-          data.forEach(ev => {
-            eventsMap[ev.date] = {
-              paris: ev.paris,
-              france: ev.france,
-              monde: ev.monde
-            };
+        const eventsMap = {};
+        let debut = 0;
+        while (true) {
+          const { data, error } = await supabase
+            .from('historical_events')
+            .select('date, paris, france, monde')
+            .order('date')
+            .range(debut, debut + 999);
+          if (error) throw error;
+          (data || []).forEach(ev => {
+            eventsMap[ev.date] = { paris: ev.paris, france: ev.france, monde: ev.monde };
           });
-          setEventsData(eventsMap);
+          if (!data || data.length < 1000) break;
+          debut += 1000;
         }
+        setEventsData(eventsMap);
       } catch (err) {
         console.error("Erreur événements Supabase :", err);
       }
@@ -270,17 +277,45 @@ export default function Actualite({ onBack }) {
     fetchDailyInfo();
   }, [dateStr]);
 
+  // --- Chargement du lien Gallica pour la date active ---
+  useEffect(() => {
+    if (!dateStr) return;
+    const fetchGallicaArk = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('editions')
+          .select('gallica_ark')
+          .eq('source', 'petit_parisien')
+          .eq('date', dateStr)
+          .maybeSingle();
+        if (error) throw error;
+        setGallicaArk(data?.gallica_ark ?? null);
+      } catch {
+        setGallicaArk(null);
+      }
+    };
+    fetchGallicaArk();
+  }, [dateStr]);
+
   // --- Chargement des fêtes et traditions ---
   useEffect(() => {
     const fetchHolidays = async () => {
       try {
-        const { data, error } = await supabase
-          .from('journal_holidays')
-          .select('*')
-          .order('date', { ascending: true });
-
-        if (error) throw error;
-        setHolidaysData(data || []);
+        const all = [];
+        let debut = 0;
+        while (true) {
+          const { data, error } = await supabase
+            .from('journal_holidays')
+            .select('*')
+            .order('date', { ascending: true })
+            .order('id', { ascending: true })
+            .range(debut, debut + 999);
+          if (error) throw error;
+          all.push(...(data || []));
+          if (!data || data.length < 1000) break;
+          debut += 1000;
+        }
+        setHolidaysData(all);
       } catch (err) {
         console.error("Erreur chargement fêtes :", err);
         setHolidaysData([]);
@@ -507,9 +542,9 @@ export default function Actualite({ onBack }) {
   const dailyEvents = useMemo(() => {
     const ev = eventsData[dateStr];
     return {
-      paris: ev?.paris || "La vie parisienne suit son cours normal.",
-      france: ev?.france || "Les actualités nationales continuent d'agiter l'opinion publique.",
-      monde: ev?.monde || "L'actualité internationale est dominée par les événements coloniaux et diplomatiques."
+      paris: ev?.paris ?? null,
+      france: ev?.france ?? null,
+      monde: ev?.monde ?? null,
     };
   }, [eventsData, dateStr]);
 
@@ -1060,7 +1095,7 @@ export default function Actualite({ onBack }) {
                         </span>
                         <h3 className="text-base font-bold font-serif mb-2 text-stone-900 dark:text-stone-100">{ev.title}</h3>
                          <p className="text-sm md:text-base leading-relaxed text-stone-600 dark:text-stone-200 italic">
-                          {ev.desc}
+                          {ev.desc ?? <span className="opacity-50 not-italic text-xs">Pas d'événement noté ce jour</span>}
                         </p>
                       </div>
                     </div>
@@ -1245,9 +1280,21 @@ export default function Actualite({ onBack }) {
                   <div className="flex flex-col gap-6">
                     <h2 className="text-2xl font-bold font-serif border-b border-current pb-3 text-stone-900 dark:text-stone-100 flex justify-between items-center select-none">
                       <span>Le Petit Parisien — Page {activeMenu.replace('page', '')}</span>
-                      <span className="text-xs font-sans px-2 py-0.5 rounded bg-amber-600/10 text-amber-800 dark:text-amber-300 font-bold uppercase tracking-wider">
-                        {filteredArticles.length} {filteredArticles.length === 1 ? 'Article' : 'Articles'}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        {gallicaArk && (
+                          <a
+                            href={`https://gallica.bnf.fr/ark:/12148/${gallicaArk}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs font-sans font-bold text-amber-700 dark:text-amber-400 hover:underline shrink-0"
+                          >
+                            <ExternalLink size={12} /> Journal original
+                          </a>
+                        )}
+                        <span className="text-xs font-sans px-2 py-0.5 rounded bg-amber-600/10 text-amber-800 dark:text-amber-300 font-bold uppercase tracking-wider">
+                          {filteredArticles.length} {filteredArticles.length === 1 ? 'Article' : 'Articles'}
+                        </span>
+                      </div>
                     </h2>
                     
                     {filteredArticles.map(article => {
