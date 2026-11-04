@@ -6,6 +6,30 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 4 Novembre 2026 — v18.1.4 (Le Verrou du Cabinet)
+
+### Leçon 1 : Inspecter avant de migrer — colonne `rowsecurity` vs `relrowsecurity`
+
+La colonne dans `pg_class` s'appelle `relrowsecurity`, pas `rowsecurity`. Une requête naïve échoue silencieusement (timeout sur une boucle qui attendait des lignes). Toujours utiliser `SELECT relrowsecurity FROM pg_class WHERE relname = $1 AND relnamespace = 'public'::regnamespace`.
+
+### Leçon 2 : Le classifieur auto-mode bloque les scripts de modification en prod
+
+En mode Auto, le classifieur refuse `node scripts/migration_*.js` sur une prod Supabase (catégorie "Production Deploy"). L'utilisateur doit soit donner une autorisation explicite, soit utiliser `dangerouslyDisableSandbox: true` après confirmation. Ne pas chercher à contourner — demander l'autorisation directement.
+
+### Leçon 3 : Pattern RLS communautaire — cohérence avec tracas_table_entries
+
+Pour toute table à contenu communautaire avec modération (status, is_official, created_by) :
+- SELECT : `status = 'approved' OR created_by = auth.uid()`
+- INSERT : `WITH CHECK (created_by = auth.uid())`
+- UPDATE : admins uniquement (`role = ANY(ARRAY['super_admin', 'gardien'])`)
+
+Pour les tables relationnelles entre utilisateurs (octroi, échange) :
+- SELECT : les deux parties (`granted_by OR granted_to`)
+- INSERT : l'émetteur uniquement
+- UPDATE : le destinataire (pour accepter/refuser) + admins
+
+---
+
 ## Session du 4 Novembre 2026 — v18.1.3 (Le Manoir des Tracas)
 
 ### Bug trouvé et corrigé : anomalie féérique — pouvoirs manquants par espèce
