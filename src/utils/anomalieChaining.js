@@ -14,7 +14,11 @@ export function computeExteriorPowers(fairyData, typeFee) {
     if (!fData?.pouvoirs) return;
     fData.pouvoirs.forEach(p => {
       const isStandard = p.type_pouvoir === 'masque' || p.type_pouvoir === 'demasque';
-      if (isStandard && !myFairyPowers.includes(p.nom) && !others.some(ex => ex.nom === p.nom)) {
+      // Pas de déduplication cross-espèces : chaque espèce conserve ses propres
+      // pouvoirs même si un homonyme existe ailleurs. Déduplication intra-espèce
+      // seulement (ne pas ajouter deux fois le même nom pour la même espèce).
+      if (isStandard && !myFairyPowers.includes(p.nom) &&
+          !others.some(ex => ex.nom === p.nom && ex.origine === fName)) {
         others.push({ ...p, origine: fName });
       }
     });

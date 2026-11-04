@@ -53,6 +53,23 @@ describe('computeExteriorPowers', () => {
     expect(computeExteriorPowers(null, 'Phenix')).toEqual([]);
     expect(computeExteriorPowers(FAIRY_DATA, null)).toEqual([]);
   });
+
+  it("conserve un pouvoir dans son espèce même si un homonyme existe dans une autre espèce", () => {
+    // Bai-She a "Souffle enflammé" ET Phenix aussi → Phenix doit conserver son entrée
+    const data = {
+      Ondine: { pouvoirs: [{ nom: 'Liquéfaction', type_pouvoir: 'masque' }] },
+      BaiShe: { pouvoirs: [{ nom: 'Souffle enflammé', type_pouvoir: 'masque' }] },
+      Phenix: { pouvoirs: [
+        { nom: 'Souffle enflammé', type_pouvoir: 'masque' },
+        { nom: 'Halo de flammèches', type_pouvoir: 'demasque' },
+      ]},
+    };
+    const result = computeExteriorPowers(data, 'Ondine');
+    const phenixSouffle = result.filter(p => p.nom === 'Souffle enflammé' && p.origine === 'Phenix');
+    expect(phenixSouffle).toHaveLength(1);
+    const baiSheSouffle = result.filter(p => p.nom === 'Souffle enflammé' && p.origine === 'BaiShe');
+    expect(baiSheSouffle).toHaveLength(1);
+  });
 });
 
 describe('deriveEspeceSeconde', () => {
