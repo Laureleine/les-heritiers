@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.4 - \"Le Verrou du Cabinet 🔒\"",
+    date: "4 Novembre 2026",
+    description: "Les portes du cabinet du Docte sont désormais verrouillées : seuls les Héritiers concernés peuvent consulter les archives et les octrois de cartes.",
+    changes: [
+      "🔒 **Sécurité — Accès protégés (RLS) :** Quatre tables sensibles du cabinet (noms, profils de patient, pathologies, octrois de cartes personnelles) étaient accessibles sans restriction. Chaque Héritier ne voit plus que les entrées qui le concernent ou qu'il a lui-même soumises.",
+      "🧪 **568 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "18.1.3 - \"Le Manoir des Tracas 🌿\"",
     date: "4 Novembre 2026",
     description: "Les Héritiers du manoir ont leurs propres soucis de campagne, et l'anomalie féérique révèle enfin tous les pouvoirs des phénix.",

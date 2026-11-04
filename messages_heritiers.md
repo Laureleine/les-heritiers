@@ -4,6 +4,23 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.1.4 — Le Verrou du Cabinet 🔒
+
+Chers Héritiers,
+
+Nous avons ce soir posé les verrous qui manquaient aux portes du cabinet du Docte.
+
+Les archives des patients — noms, profils, pathologies — ainsi que les actes d'octroi des Cartes Personnelles dormaient jusqu'ici dans des tiroirs ouverts à tous les vents. Désormais, chaque Héritier ne peut consulter que les dossiers qui le regardent, ou ceux qu'il a lui-même déposés.
+
+Une discrétion de mise pour un cabinet qui se respecte.
+
+🔒 Accès sécurisés sur quatre tables sensibles du cabinet
+🧪 568 Sentinelles — aucune régression
+
+*Mise à jour du 4 Novembre 1899*
+
+---
+
 ## v18.1.3 — Le Manoir des Tracas 🌿
 
 *Chers Héritiers,*
