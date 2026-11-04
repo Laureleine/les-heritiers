@@ -1,7 +1,7 @@
 vi.mock('../../config/supabase', () => ({
   supabase: {
     from: vi.fn(),
-    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+    rpc: vi.fn(() => ({ range: vi.fn(() => Promise.resolve({ data: null, error: null })) })),
     channel: vi.fn(() => ({
       on: vi.fn().mockReturnThis(),
       subscribe: vi.fn().mockResolvedValue({}),
@@ -39,11 +39,13 @@ function makeChain(returnData = []) {
   chain.neq = vi.fn(() => chain);
   chain.in = vi.fn(() => chain);
   chain.single = vi.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } }));
+  chain.maybeSingle = vi.fn(() => Promise.resolve({ data: null, error: null }));
   chain.order = vi.fn(() => chain);
   chain.insert = vi.fn(() => chain);
   chain.delete = vi.fn(() => chain);
   chain.gte = vi.fn(() => chain);
   chain.limit = vi.fn(() => chain);
+  chain.range = vi.fn(() => Promise.resolve({ data: returnData, error: null }));
   chain.update = vi.fn(() => Promise.resolve({ data: null, error: null }));
   chain.then = vi.fn((res) => {
     res({ data: returnData, error: null });
@@ -153,19 +155,9 @@ describe('Actualite', () => {
       }
     ];
 
-    const chain = makeChain();
-    let holidayCall = false;
-    chain.then = vi.fn((res) => {
-      if (!holidayCall) {
-        holidayCall = true;
-        setTimeout(() => res({ data: null, error: { code: 'PGRST116' } }), 0);
-        return Promise.resolve();
-      }
-      res({ data: mockHolidays, error: null });
-      return Promise.resolve();
-    });
-    chain.single = vi.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } }));
-    supabase.from.mockReturnValue(chain);
+    supabase.from.mockImplementation((table) =>
+      table === 'journal_holidays' ? makeChain(mockHolidays) : makeChain()
+    );
 
     const { findByText } = renderActualite();
 

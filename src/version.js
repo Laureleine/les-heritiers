@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.2 - \"Le Don Accompli 🎁\"",
+    date: "4 Novembre 2026",
+    description: "Les objets et contacts offerts par un Docte via les Cartes Personnelles apparaissent désormais dans la fiche du personnage après acceptation.",
+    changes: [
+      "🎁 **Fix — Cartes Personnelles (objets & contacts) :** Accepter un item de Vie Sociale donné par un Docte l'inscrit maintenant réellement dans la fiche du personnage. Auparavant, le grant était marqué « accepté » et les PP débités, mais l'objet ou le contact n'apparaissait jamais.",
+      "🧪 **567 Sentinelles — aucune régression.** Mock Supabase mis à jour pour couvrir la pagination `.range()`.",
+    ],
+  },
+  {
     version: "18.1.1 - \"La Boussole Retrouvée 🧭\"",
     date: "21 Octobre 2026",
     description: "Le fond de carte « Actuelle » est de nouveau visible — CARTO a rendu ses tuiles payantes, remplacé par OpenStreetMap.",

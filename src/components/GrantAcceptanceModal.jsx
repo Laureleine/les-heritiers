@@ -37,7 +37,9 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone, onRespon
         if (!grant) return;
         setCardData(null);
         setLoadingCard(true);
-        const extraCols = grant.card_type === 'fairy_assets' ? ', effets' : '';
+        const extraCols = grant.card_type === 'fairy_assets' ? ', effets'
+            : grant.card_type === 'social_items' ? ', profils_autorises, categorie'
+            : '';
         supabase
             .from(grant.card_type)
             .select(`id, nom, description${extraCols}`)
@@ -103,11 +105,53 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone, onRespon
         await supabase.from('characters').update(updates).eq('id', char.id);
     };
 
+    const applyGrantItem = async (grant, itemData) => {
+        if (grant.card_type !== 'social_items') return;
+        if (!userProfile?.id || !grant.cercle_id) return;
+
+        // Profil cible : priorité cost_pp, fallback profils_autorises
+        const costPP = grant.cost_pp || {};
+        const profilsAvecCout = Object.entries(costPP).filter(([, v]) => v > 0).map(([k]) => k);
+        let targetProfil = profilsAvecCout[0];
+
+        if (!targetProfil && itemData?.profils_autorises) {
+            const pa = itemData.profils_autorises;
+            const arr = Array.isArray(pa) ? pa : (typeof pa === 'string' ? JSON.parse(pa) : []);
+            targetProfil = arr[0];
+        }
+        if (!targetProfil) return;
+
+        const { data: membre } = await supabase
+            .from('cercle_membres')
+            .select('character_id')
+            .eq('cercle_id', grant.cercle_id)
+            .eq('user_id', userProfile.id)
+            .maybeSingle();
+        if (!membre?.character_id) return;
+
+        const { data: char } = await supabase
+            .from('characters')
+            .select('id, vie_sociale')
+            .eq('id', membre.character_id)
+            .single();
+        if (!char) return;
+
+        const currentVieSociale = char.vie_sociale || {};
+        const currentList = currentVieSociale[targetProfil] || [];
+        const newVieSociale = {
+            ...currentVieSociale,
+            [targetProfil]: [...currentList, grant.card_id],
+        };
+
+        await supabase.from('characters').update({ vie_sociale: newVieSociale }).eq('id', char.id);
+    };
+
     const respond = async (status) => {
         setActing(true);
         try {
             if (status === 'accepted') {
                 await applyGrantCosts(grant);
+                await applyGrantItem(grant, cardData);
             }
 
             const grantUpdate = { status, responded_at: new Date().toISOString() };
