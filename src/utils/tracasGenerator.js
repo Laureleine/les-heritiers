@@ -3,7 +3,7 @@
 // Toutes les tables viennent de Supabase (tracas_table_entries).
 import { tiragePondere } from '../data/pnjTables';
 
-const CATEGORIES = ['sante', 'logistique', 'social', 'technologie'];
+const CATEGORIES = ['sante', 'logistique', 'social', 'technologie', 'campagne'];
 
 /**
  * @param {Object} config

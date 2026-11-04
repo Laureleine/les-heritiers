@@ -4,6 +4,32 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.1.3 — Le Manoir des Tracas 🌿
+
+*Chers Héritiers,*
+
+La vie au manoir n'est pas de tout repos. Depuis ce soir, l'outil Tracas connaît les mille petits supplices de la campagne : le train de banlieue qui part sous votre nez, le chemin qui s'embourbe sous la pluie de novembre, la cuisinière furieuse devant le poulailler dévasté… Six nouveaux tracas « Vie à la campagne » font leur entrée, tout droit venus de Ville-d'Avray 1899.
+
+Par ailleurs, un mystère perturbait les Faux-Semblants qui tentaient de saisir un pouvoir de Phénix via l'Anomalie féérique : « Souffle enflammé » et quelques autres se dérobaient inexplicablement. Le coupable ? Une petite jalousie entre espèces — le Bai-She réclamait le même pouvoir pour lui seul. L'ordre a été rétabli.
+
+*Bonne chasse aux ennuis.*
+
+---
+
+## v18.1.2 — « Le Don Accompli 🎁 » — 4 Novembre 2026
+
+Chers Héritiers,
+
+Une mésaventure s'était glissée dans les rouages du Courrier des Dons : lorsqu'un Docte gracieux offrait un objet ou un contact via sa Carte Personnelle, le destinataire voyait bien la notification, acquittait le prix convenu — et pourtant, ni la malette, ni la montre communicante, ni le précieux contact ne figuraient dans sa fiche.
+
+Le messager avait touché son dû mais égaré le colis en chemin.
+
+Désormais, à l'instant même où un Héritier accepte le don, l'objet ou le contact prend sa juste place dans sa Vie Sociale. Nul besoin de redemander, de rechargement, ni de démarche particulière.
+
+*L'Atelier des Héritiers*
+
+---
+
 ## Version 18.1.1 — « La Boussole Retrouvée 🧭 » — 21 Octobre 2026
 
 Chers Héritiers,

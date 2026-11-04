@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.3 - \"Le Manoir des Tracas 🌿\"",
+    date: "4 Novembre 2026",
+    description: "Les Héritiers du manoir ont leurs propres soucis de campagne, et l'anomalie féérique révèle enfin tous les pouvoirs des phénix.",
+    changes: [
+      "🌿 **Nouvelle catégorie de tracas — Vie à la campagne :** Train manqué, chemin défoncé, renard au poulailler, pompe gelée, commérages du bourg, livreur qui refuse de monter. Six petits drames ruraux bien Belle Époque pour pimenter la vie au manoir.",
+      "🔥 **Fix anomalie féérique — pouvoirs manquants :** Certains pouvoirs ne s'affichaient plus dans le catalogue de l'anomalie quand ils existaient dans plusieurs espèces (ex. « Souffle enflammé » chez le Phénix ET le Bai-She). La déduplication volait le pouvoir à l'espèce. Corrigé : chaque espèce conserve désormais ses propres pouvoirs dans le catalogue.",
+      "🧪 **568 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "18.1.2 - \"Le Don Accompli 🎁\"",
     date: "4 Novembre 2026",
     description: "Les objets et contacts offerts par un Docte via les Cartes Personnelles apparaissent désormais dans la fiche du personnage après acceptation.",

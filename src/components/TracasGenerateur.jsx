@@ -14,6 +14,7 @@ const CATEGORIES = [
   { id: 'logistique', label: 'Logistique & Budget' },
   { id: 'social', label: 'Social & Réputation' },
   { id: 'technologie', label: 'Modernité & Technique' },
+  { id: 'campagne', label: 'Vie à la campagne' },
 ];
 
 const NOMBRE_OPTIONS = [
@@ -29,6 +30,7 @@ const TABLE_LABELS = {
   logistique: 'Logistique & Budget',
   social: 'Social & Réputation',
   technologie: 'Modernité & Technique',
+  campagne: 'Vie à la campagne',
   ex_lettre_anonyme: 'Exemples · Lettre anonyme',
   ex_parent_eloigne: 'Exemples · Parent éloigné',
   ex_facheur: 'Exemples · Fâcheur',
@@ -43,6 +45,7 @@ const CAT_COLORS = {
   logistique: 'bg-stone-50 border-stone-200 text-stone-800',
   social: 'bg-amber-50 border-amber-200 text-amber-800',
   technologie: 'bg-sky-50 border-sky-200 text-sky-800',
+  campagne: 'bg-green-50 border-green-200 text-green-800',
 };
 
 const CAT_BADGE = {
@@ -50,6 +53,7 @@ const CAT_BADGE = {
   logistique: 'bg-stone-200 text-stone-600',
   social: 'bg-amber-100 text-amber-700',
   technologie: 'bg-sky-100 text-sky-700',
+  campagne: 'bg-green-100 text-green-700',
 };
 
 function Select({ label, value, onChange, options }) {
