@@ -6,6 +6,93 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 4 Novembre 2026 — v18.1.3 (Le Manoir des Tracas)
+
+### Bug trouvé et corrigé : anomalie féérique — pouvoirs manquants par espèce
+
+**Diagnostic.** `computeExteriorPowers()` dans `anomalieChaining.js` dédupliquait les pouvoirs **globalement** par nom (`!others.some(ex => ex.nom === p.nom)`). Si "Souffle enflammé" existait chez Bai-She (B, avant Phénix P dans l'ordre alphabétique), le Phénix n'avait plus ce pouvoir dans son catalogue. Idem pour "Éblouissement" (volé par Ange), "Feu sacré" (Ange/Fouinard), "Noblesse oblige" (Elfe).
+
+**Méthode.** Script de diagnostic `check_phenix_powers.js` : vérification des types en DB (tous corrects), puis recherche de doublons cross-espèces → 4 noms phénix dupliqués ailleurs.
+
+**Fix.** Déduplication changée de `!others.some(ex => ex.nom === p.nom)` à `!others.some(ex => ex.nom === p.nom && ex.origine === fName)` — déduplication intra-espèce uniquement.
+
+**Leçon.** Dès qu'un catalogue filtre par `p.origine === X`, une déduplication globale par nom est un piège silencieux : certains pouvoirs d'une espèce disparaissent sans erreur.
+
+### Nouvelle catégorie tracas : campagne
+
+**Migration requise avant l'insert.** La table `tracas_table_entries` a une contrainte `CHECK` sur `table_name`. Toute nouvelle catégorie doit d'abord `DROP CONSTRAINT` + `ADD CONSTRAINT` avec la nouvelle valeur. L'oublier donne `violates check constraint` à l'insert. Script en deux étapes : `migration_tracas_campagne.js`.
+
+---
+
+## Session du 4 Novembre 2026 — v18.1.2 (Le Don Accompli)
+
+### Bug trouvé et corrigé : cartes perso social_items non appliquées
+
+**Diagnostic.** `GrantAcceptanceModal.respond('accepted')` appelait `applyGrantCosts()` (gestion XP/Fortune/PP) mais **n'ajoutait jamais l'item dans `characters.vie_sociale`**. `usePersonalCards` retourne un champ `socialItems` qui n'est consommé nulle part dans le code — trace d'une intégration inachevée.
+
+**Fix.** Nouvelle fonction `applyGrantItem()` : déduit le profil cible depuis `cost_pp` (premier profil avec coût > 0), fallback sur `profils_autorises[0]` de l'item, puis push le `card_id` dans `vie_sociale[profil]` en base.
+
+**Mock Supabase sans `.range()`.** Notre refacto de pagination (session précédente) avait cassé 1 test Actualite : `makeChain()` ne supportait pas `.range()`. Pattern de correction : ajouter `chain.range = vi.fn(() => Promise.resolve({ data: returnData, error: null }))`. Le mock `rpc` doit retourner un objet chainable plutôt qu'une Promise directe.
+
+**`--dry-run` inexistant dans `notify_version.js`.** Passer `--dry-run` à un script Node sans que ce flag soit implémenté → les emails partent quand même. Ne plus tester les scripts de notification avec des flags non implémentés. Vérifier `process.argv` avant d'appeler le script.
+
+### À retenir pour les prochaines sessions
+- Avant tout bug "les données n'apparaissent pas" : vérifier si la donnée est lue depuis `vie_sociale` (colonne DB) ou depuis un autre mécanisme. Ces deux chemins coexistent dans le code.
+- `--dry-run` sur un script Node = rien, sauf si le script le teste explicitement.
+
+---
+
+## Session du 20-21 Octobre 2026 — v18.1.0 (Le Grimoire du Docte)
+
+### Ce qui a bien marché
+- **Compaction transparente + reprise propre :** la session s'est compactée à mi-chemin dans le workflow `/version`. Grâce au résumé automatique, la reprise a été immédiate sans re-poser les questions de contexte. Le pattern : toujours noter l'étape exacte en cours dans un message avant que la compaction se produise.
+- **Feature "Grimoire du Docte" sans nouvelle table :** la feature complète (accès au Grimoire, retrait de cartes, retrait d'items VS) a été implémentée sans aucune nouvelle table ni migration. Tout réutilise `personal_card_grants` et `characters.data.vieSociale` déjà en place. Minimal et chirurgical.
+- **prop `ownerPlayerId`** dans `GrimoireDrawer` : la distinction viewer (Docte) / owner (joueur) a été résolue avec une seule prop optionnelle. La valeur par défaut (`session?.user?.id`) préserve le comportement existant pour les joueurs qui consultent leur propre Grimoire.
+- **Items VS déjà dans le Grimoire :** les items Vie Sociale étaient déjà présents dans l'onglet Possessions via `heritier_notes` avec `source_social_item_id`. La bonne approche était d'ajouter badge + bouton sur les items existants, pas de créer une nouvelle section. Lire le composant avant de coder a évité une refacto inutile.
+
+### Ce qu'il faut retenir
+- **Avant d'implémenter une "nouvelle section" dans un composant existant**, lire entièrement le composant. Les données qu'on cherche sont souvent déjà chargées sous une autre forme.
+- **Pattern retrait avec remboursement :** modale confirmation + checkbox "Rembourser X PP" cochée par défaut (coût > 0). L'UPDATE de `characters.data` est atomique via Supabase `.update({ data: { ...data, fortune: X } })` — pas besoin de transaction.
+- **`usePersonalCards(null, null)`** quand `isAdmin` est false : passer `null` pour ne pas déclencher le fetch inutilement. Pattern défensif à généraliser.
+- **Git commit avec crochets dans le message** : toujours passer par heredoc PowerShell `@'...'@` pour éviter que git interprète `[...]` comme des pathspecs.
+
+---
+
+## Session du 20 Octobre 2026 — v18.0.1 (La Plume du Scribe) + v18.0.0
+
+### Ce qui a bien marché
+- **Lecture des logs avant de coder :** Analyser le Bureau des Anomalies avant de toucher au code a permis d'identifier la vraie cause (`String(objetSupabase)`) sans tâtonner. Pattern à garder : triage des logs → hypothèse → fix ciblé.
+- **Fix en 3 lignes :** `serializeArg` extrait `.message` si présent, sinon `JSON.stringify`, sinon `String`. Minimal, sans effets de bord.
+
+### Ce qu'il faut retenir
+- **`String(objet)` → `[object Object]`** pour tout objet non-primitif. Toujours préférer `objet.message || JSON.stringify(objet)` dans les handlers d'erreur.
+- **Crochets dans les messages git** (`[object Object]`) : git les interprète comme des pathspecs. Passer par `-F fichier` pour les messages contenant `[...]`. Le fichier temporaire `C:\Users\amara\AppData\Local\Temp\commit_msg.txt` fonctionne bien pour ça.
+- **`git commit -F - << 'EOF'`** ne fonctionne pas en PowerShell (heredoc stdin). Toujours utiliser `-F fichier`.
+
+---
+
+## Session du 20 Octobre 2026 — v18.0.0 (L'Atelier en Grande Tenue)
+
+### Ce qui a bien marché
+- **Diagnostic `new_data` vs `delta`** : le champ JSONB des propositions s'appelle `new_data` (pas `delta`). Trouvé en lisant `encyclopediaEngine.js:427` avant d'écrire le script de correction. Toujours lire le code client qui construit le payload plutôt que de supposer un nom de colonne.
+- **Script Node `fix_escalades_social_items.js`** : pattern robuste — lire d'abord, afficher le delta, ne corriger que les lignes sans `categorie`. Les 8 requêtes escaladées ont été remises en `pending` sans toucher aux lignes propres.
+- **Cherry-pick + merge redesign → main** : le cherry-pick du fix `EncyclopediaModal.js` sur `main` avant le merge complet a permis de déployer le correctif sans attendre la montée du redesign entier. Séquence utile : fix critique → cherry-pick → déploiement immédiat → merge complet plus tard.
+- **Résolution de 4 conflits de merge** : tous étaient des divergences mineures (espaces, commentaires, paramètre `xp_depense`). Résolu avec `--theirs` après lecture rapide des diffs. La règle : lire le conflit avant de choisir la stratégie, ne pas aveugler.
+- **Compaction de contexte transparente** : la session a été reprise après compaction sans perte grâce au résumé automatique. Le process `/version` a pu continuer depuis l'étape exacte où la session précédente s'était arrêtée.
+
+### Ce qu'il faut retenir
+- **`git commit -m` en PowerShell** : la syntaxe heredoc `$(cat <<'EOF'...)` est Bash. En PowerShell, utiliser `@'...'@` (here-string single-quote, `'@` en colonne 0). Erreur récurrente à ne plus répéter.
+- **`git stash` avant `git checkout`** quand un fichier non commité bloque le changement de branche. Toujours vérifier `git status` avant de changer de branche.
+- **`git cherry-pick --abort`** si un cherry-pick est en cours depuis une session précédente — le vérifier avec `git status` au début de session.
+- **`data_change_requests` : colonnes réelles** = `new_data` (JSONB), pas de colonne `delta` ni `error_message`. Schéma à mémoriser pour les prochains scripts d'administration.
+- **Montée de version majeure** : un merge complet d'une branche de redesign est l'occasion naturelle. Le commit de version va sur `redesign` puis est emporté par le merge sur `main` — propre, traçable.
+
+### Pièges évités
+- Ne pas commiter les scripts de diagnostic (`scripts/check_*.js`, `scripts/fix_*.js`) dans le commit de version — ce sont des scripts d'administration temporaires, pas du code produit.
+- Le `public/version.json` est le fichier qui déclenche les notifications côté client (`useAutoUpdate.js`). Toujours mettre à jour les deux : `src/version.js` ET `public/version.json`.
+
+---
+
 ## Session du 26 Août 2026 — v17.23.0 (Le Scribe des Anomalies)
 
 ### Ce qui a bien marché
