@@ -24,7 +24,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { supabase } from '../../config/supabase';
 import { loadFairyTypes, loadSocialItems } from '../../utils/supabaseGameData';
-import TabRepairJournaux from './TabRepairJournaux';
+import TabRepairJournaux, { getObsoleteRequestIds } from './TabRepairJournaux';
 
 function mockChain(response) {
   const chain = {
@@ -212,5 +212,28 @@ describe('TabRepairJournaux - RLS Update avec .select("id")', () => {
       // Pas de bouton message si user_id absent
       expect(container.querySelector('[title*="Envoyer un message"]')).toBeNull();
     });
+  });
+});
+
+describe('getObsoleteRequestIds — clôture auto des demandes joueurs', () => {
+  const chars = [
+    { dbChar: { id: 'ok' }, status: 'ok' },
+    { dbChar: { id: 'rep' }, status: 'repaired' },
+    { dbChar: { id: 'pend' }, status: 'pending' },
+    { dbChar: { id: 'skip' }, status: 'skipped' },
+  ];
+
+  it('retient les demandes dont le journal est complet ou réparé', () => {
+    const reqs = [
+      { id: 'r1', character_id: 'ok' },
+      { id: 'r2', character_id: 'rep' },
+      { id: 'r3', character_id: 'pend' },
+      { id: 'r4', character_id: 'skip' },
+    ];
+    expect(getObsoleteRequestIds(reqs, chars)).toEqual(['r1', 'r2']);
+  });
+
+  it('ne clôture jamais une demande dont le personnage est introuvable', () => {
+    expect(getObsoleteRequestIds([{ id: 'r5', character_id: 'absent' }], chars)).toEqual([]);
   });
 });

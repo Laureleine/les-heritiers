@@ -31,6 +31,15 @@ const STATUS = {
     ERROR:          'error',
 };
 
+// Demande joueur devenue sans objet : son personnage est listé et son journal est complet ou réparé.
+const isRequestObsolete = (req, characters) => {
+    const charRow = characters.find(r => r.dbChar.id === req.character_id);
+    return !!charRow && (charRow.status === STATUS.OK || charRow.status === STATUS.REPAIRED);
+};
+
+export const getObsoleteRequestIds = (requests, characters) =>
+    requests.filter(req => isRequestObsolete(req, characters)).map(req => req.id);
+
 const STATUS_META = {
     [STATUS.PENDING]:        { label: '⏳ À réparer',               badge: 'bg-orange-100 text-orange-700 border-orange-200' },
     [STATUS.OK]:             { label: '✅ Complet',                  badge: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
@@ -198,6 +207,13 @@ export default function TabRepairJournaux() {
             .eq('id', requestId);
         setPlayerRequests(prev => prev.filter(r => r.id !== requestId));
     }, []);
+
+    // Clôture auto des demandes dont le journal est déjà complet ou réparé :
+    // elles sont masquées de la liste et resteraient sinon comptées dans le badge Communauté.
+    useEffect(() => {
+        if (loading || characters.length === 0) return;
+        getObsoleteRequestIds(playerRequests, characters).forEach(id => markResolved(id));
+    }, [loading, characters, playerRequests, markResolved]);
 
     // --- Chargement initial ---
     useEffect(() => {
@@ -480,10 +496,7 @@ export default function TabRepairJournaux() {
     const stats = characters.reduce((acc, r) => { acc[r.status] = (acc[r.status] || 0) + 1; return acc; }, {});
     const needsRepairCount = stats[STATUS.PENDING] || 0;
 
-    const visibleRequests = playerRequests.filter(req => {
-        const charRow = characters.find(r => r.dbChar.id === req.character_id);
-        return !charRow || (charRow.status !== STATUS.OK && charRow.status !== STATUS.REPAIRED);
-    });
+    const visibleRequests = playerRequests.filter(req => !isRequestObsolete(req, characters));
 
     if (loading) return (
         <div className="flex items-center justify-center py-20 text-amber-800">

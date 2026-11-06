@@ -2,6 +2,15 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.6 - \"Le Courrier Classé 📬\"",
+    date: "6 Novembre 2026",
+    description: "Les demandes de réparation de journal déjà satisfaites se classent d'elles-mêmes : le compteur du bouton Communauté ne reste plus allumé sans raison.",
+    changes: [
+      "📬 **Fix — Badge Communauté fantôme :** Une demande de réparation dont le journal était déjà complet restait comptée dans le badge, mais était masquée dans l'onglet de réparation, donc impossible à clôturer. Ces demandes sont désormais clôturées automatiquement à l'ouverture de l'onglet Réparation des journaux.",
+      "🧪 **578 Sentinelles — aucune régression.** 2 nouvelles sentinelles veillent sur le classement du courrier.",
+    ],
+  },
+  {
     version: "18.1.5 - \"Les Présents Retrouvés ✦\"",
     date: "6 Novembre 2026",
     description: "Les objets et contacts offerts par un Docte via les Cartes Personnelles apparaissent enfin dans le Grimoire Personnel du personnage.",

@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.1.6 — Le Courrier Classé 📬
+
+Chers Héritiers,
+
+Au bureau des réparations, une petite lettre s'obstinait à briller sur le bureau du Gardien. Elle réclamait qu'on répare un journal… qui l'avait déjà été. Glissée derrière le tiroir, introuvable et pourtant comptée, elle faisait clignoter la petite lanterne orange du bouton Communauté sans que personne ne sache pourquoi.
+
+Le commis a reçu de nouvelles consignes : toute demande déjà satisfaite est désormais classée d'elle-même aux archives. Plus de lanterne allumée pour rien.
+
+📬 Les demandes de réparation déjà satisfaites se classent toutes seules
+🧪 578 Sentinelles — aucune régression
+
+*Mise à jour du 6 Novembre 1899*
+
+---
+
 ## v18.1.5 — Les Présents Retrouvés ✦
 
 Chers Héritiers,
