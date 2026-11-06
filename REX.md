@@ -6,6 +6,31 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 6 Novembre 2026 — v18.1.5 (Les Présents Retrouvés)
+
+### Leçon 1 : Un « fix » non vérifié sur les données réelles ne corrige rien
+
+Le correctif v18.1.2 (`applyGrantItem`) a été livré sans regarder les vrais grants en base. Or 100 % d'entre eux avaient `cost_pp: {}` et des items avec `profils_autorises: []` : la fonction sortait toujours au premier `return`. **Avant de coder un fix, requêter les lignes concernées par le bug signalé** (ici : les grants acceptés du cercle GnomesGE) et vérifier que chaque garde-fou du nouveau code laisse passer ces données-là.
+
+### Leçon 2 : Les modales globales (montées dans App.js) n'ont pas de personnage courant
+
+`GrantAcceptanceModal` lisait `useCharacter().character.id`, toujours vide au niveau App → 55 grants acceptés avec `character_id = NULL`, donc invisibles pour `usePersonalCards(userId, characterId)`. Pour toute action déclenchée hors fiche, **résoudre le personnage depuis le contexte métier** (ici `cercle_membres` du cercle du don), via `src/utils/grantCharacter.js`.
+
+### Leçon 3 : Le catalogue `gameData.socialItems` exclut les items créés par un Docte
+
+`loadSocialItems()` filtre `creator_id IS NULL`. Tout ID d'item personnel glissé dans `vie_sociale` est donc invisible pour le moteur et la fiche. Les dons du Docte s'affichent depuis `personal_card_grants` (Grimoire Personnel), pas depuis `vie_sociale`.
+
+### Leçon 4 : La sauvegarde ne couvrait que la moitié des tables
+
+38 tables manquaient à `backup_supabase.js`, dont `personal_card_grants` — découvert au moment de la modifier. Le script compare désormais `TABLES`/`EXCLUDED` à `information_schema` et avertit. Règle ajoutée dans AGENTS.md : toute nouvelle table va dans le script de sauvegarde dans la même session.
+
+### Point ouvert
+
+- **Pagination de la sauvegarde sans ordre total** : `.range()` sans `.order()` dans `backup_supabase.js` — pagination potentiellement instable sur les tables > 1000 lignes (`xp_transactions` : 4886). À corriger.
+- Montres communicantes d'Arsène : aucun grant en base, cause différente, en attente d'info d'Olthomas.
+
+---
+
 ## Session du 4 Novembre 2026 — v18.1.4 (Le Verrou du Cabinet)
 
 ### Leçon 1 : Inspecter avant de migrer — colonne `rowsecurity` vs `relrowsecurity`
