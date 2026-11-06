@@ -5,6 +5,8 @@ import { showInAppNotification } from '../utils/SystemeServices';
 import { useUserContext } from '../context/UserContext';
 import { useCharacter } from '../context/CharacterContext';
 import { X } from '../config/icons';
+import { useQueryClient } from '@tanstack/react-query';
+import { resolveGrantCharacterId } from '../utils/grantCharacter';
 
 const CARD_TABLES = {
     fairy_assets: { label: 'Atout', nomField: 'nom' },
@@ -30,6 +32,7 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone, onRespon
     const [confirmAction, setConfirmAction] = useState(null); // 'accepted' | 'rejected' | null
     const { userProfile } = useUserContext();
     const { character } = useCharacter();
+    const queryClient = useQueryClient();
 
     const grant = grants[0];
 
@@ -37,9 +40,7 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone, onRespon
         if (!grant) return;
         setCardData(null);
         setLoadingCard(true);
-        const extraCols = grant.card_type === 'fairy_assets' ? ', effets'
-            : grant.card_type === 'social_items' ? ', profils_autorises, categorie'
-            : '';
+        const extraCols = grant.card_type === 'fairy_assets' ? ', effets' : '';
         supabase
             .from(grant.card_type)
             .select(`id, nom, description${extraCols}`)
@@ -105,63 +106,22 @@ export default function GrantAcceptanceModal({ grants, onClose, onDone, onRespon
         await supabase.from('characters').update(updates).eq('id', char.id);
     };
 
-    const applyGrantItem = async (grant, itemData) => {
-        if (grant.card_type !== 'social_items') return;
-        if (!userProfile?.id || !grant.cercle_id) return;
-
-        // Profil cible : priorité cost_pp, fallback profils_autorises
-        const costPP = grant.cost_pp || {};
-        const profilsAvecCout = Object.entries(costPP).filter(([, v]) => v > 0).map(([k]) => k);
-        let targetProfil = profilsAvecCout[0];
-
-        if (!targetProfil && itemData?.profils_autorises) {
-            const pa = itemData.profils_autorises;
-            const arr = Array.isArray(pa) ? pa : (typeof pa === 'string' ? JSON.parse(pa) : []);
-            targetProfil = arr[0];
-        }
-        if (!targetProfil) return;
-
-        const { data: membre } = await supabase
-            .from('cercle_membres')
-            .select('character_id')
-            .eq('cercle_id', grant.cercle_id)
-            .eq('user_id', userProfile.id)
-            .maybeSingle();
-        if (!membre?.character_id) return;
-
-        const { data: char } = await supabase
-            .from('characters')
-            .select('id, vie_sociale')
-            .eq('id', membre.character_id)
-            .single();
-        if (!char) return;
-
-        const currentVieSociale = char.vie_sociale || {};
-        const currentList = currentVieSociale[targetProfil] || [];
-        const newVieSociale = {
-            ...currentVieSociale,
-            [targetProfil]: [...currentList, grant.card_id],
-        };
-
-        await supabase.from('characters').update({ vie_sociale: newVieSociale }).eq('id', char.id);
-    };
-
     const respond = async (status) => {
         setActing(true);
         try {
+            const grantUpdate = { status, responded_at: new Date().toISOString() };
             if (status === 'accepted') {
                 await applyGrantCosts(grant);
-                await applyGrantItem(grant, cardData);
+                const characterId = await resolveGrantCharacterId(grant, userProfile?.id, character?.id);
+                if (characterId) grantUpdate.character_id = characterId;
             }
-
-            const grantUpdate = { status, responded_at: new Date().toISOString() };
-            if (status === 'accepted' && character?.id) grantUpdate.character_id = character.id;
 
             const { error } = await supabase
                 .from('personal_card_grants')
                 .update(grantUpdate)
                 .eq('id', grant.id);
             if (error) throw error;
+            queryClient.invalidateQueries({ queryKey: ['personalCards'] });
 
             // Notifier le Docte via support_tickets
             await supabase.from('support_tickets').insert({

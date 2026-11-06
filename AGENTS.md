@@ -4,6 +4,7 @@
 - Sauvegarder la base de données (`node scripts/backup_supabase.js`) uniquement juste avant d'effectuer des modifications sur icelle (migration, script Node d'insertion/mise à jour). Pas au démarrage de session par défaut.
 - Lire `DRY_PLAN.md` entièrement (session memory + chantiers) pour le contexte de reprise.
 - Lire `REX_ESSENTIELS.md` (condensé des 15 règles les plus importantes tirées du REX complet).
+- **Toute nouvelle table** doit être ajoutée dans la même session à `TABLES` de `scripts/backup_supabase.js` (ou à `EXCLUDED` si volumineuse et régénérable, avec la raison en commentaire). Le script avertit à chaque exécution si une table n'est couverte par aucune des deux listes : ne jamais ignorer cet avertissement.
 - Toute modification du modèle de données (nouveau champ, nouvelle table, index, RLS) **doit** être accompagnée d'une migration SQL dans la même session. Ne jamais laisser du code qui dépend d'une colonne non encore créée en base.
 - **RÈGLE ABSOLUE — migrations SQL :** Ne jamais utiliser `mcp__claude_ai_Supabase__apply_migration` ni `mcp__claude_ai_Supabase__execute_sql` sur le projet de prod (`cijtzdfwrmbftmwookac`). Ces outils sont bloqués sur ce projet. Toujours passer par `pg` + `SUPABASE_DB_URL` (variable dans `.env`). Écrire un script Node si besoin.
 

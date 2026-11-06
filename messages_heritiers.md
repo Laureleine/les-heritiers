@@ -4,6 +4,25 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.1.5 — Les Présents Retrouvés ✦
+
+Chers Héritiers,
+
+Certains d'entre vous l'avaient remarqué : les présents offerts par votre Docte s'évanouissaient sitôt acceptés. Une mallette hérissée de piques, une matraque électrique, un carnet d'adresses entier de gens fort utiles… tout cela avait bien été remis, mais ne trouvait jamais le chemin de vos poches.
+
+Le facteur féerique, il faut l'avouer, livrait ses colis sans regarder à quel nom ils étaient adressés. Il a été prié de lire les étiquettes.
+
+Désormais, chaque présent accepté rejoint votre Grimoire Personnel : les visages nouveaux parmi vos *Visages Rencontrés*, les objets parmi vos *Trésors & Possessions*, marqués du sceau ✦ du Docte. Et les cadeaux égarés ces dernières semaines ont tous été retrouvés et rendus à leurs propriétaires. Nul besoin de les réclamer à nouveau.
+
+✦ Les dons du Docte apparaissent enfin dans votre Grimoire
+🎁 Tous les présents égarés ont été rendus
+🗄️ Les archives de la Maison sont désormais copiées en entier
+🧪 576 Sentinelles — aucune régression
+
+*Mise à jour du 6 Novembre 1899*
+
+---
+
 ## v18.1.4 — Le Verrou du Cabinet 🔒
 
 Chers Héritiers,

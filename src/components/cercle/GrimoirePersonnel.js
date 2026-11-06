@@ -30,6 +30,25 @@ const FAIRY_TYPES = [
   'Faux-Semblant Enfoui',
 ];
 
+// Objet ou contact reçu d'un Docte via une Carte Personnelle (lecture seule)
+function GiftCard({ item }) {
+  return (
+    <div className="p-4 border border-violet-200 rounded-xl bg-white shadow-sm flex flex-col gap-3">
+      <div className="flex items-start justify-between gap-2">
+        <h4 className="font-serif font-bold text-lg text-violet-900">{item.nom || 'Sans nom'}</h4>
+        <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 border border-violet-200 font-bold uppercase tracking-wide">
+          ✦ Don du Docte
+        </span>
+      </div>
+      {item.description && (
+        <p className="text-sm text-stone-600 italic flex-1 bg-stone-50 p-2 rounded border border-stone-100">
+          {item.description}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function parseLocalisation(loc) {
   if (!loc) return { texte: '', rue: '', quartier: '', ville: '', pays: '' };
   if (typeof loc === 'string') return { texte: loc, rue: '', quartier: '', ville: '', pays: '' };
@@ -76,7 +95,15 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
   const isDocte = userProfile?.profile?.is_docte === true || isAdmin;
 
   const { notes, contacts, possessions, loading, toggleShare, addNote, updateNote, deleteNote } = useGrimoire(characterId, cercleId, playerId, isAdmin);
-  const { data: personalCards } = usePersonalCards(isAdmin ? playerId : null, isAdmin ? characterId : null);
+  const { data: personalCards } = usePersonalCards(playerId, characterId);
+  const giftItems = personalCards?.socialItems || [];
+  const giftPossessions = giftItems.filter(i => i.categorie !== 'contact');
+  const giftContacts = useMemo(() => {
+    const all = giftItems.filter(i => i.categorie === 'contact');
+    if (!contactFilter) return all;
+    const f = contactFilter.toLowerCase();
+    return all.filter(i => `${i.nom || ''} ${i.description || ''}`.toLowerCase().includes(f));
+  }, [giftItems, contactFilter]);
 
   const handleRevoke = async () => {
     if (!revokeConfirm) return;
@@ -433,7 +460,13 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 								)}
 							</div>
 
-							{filteredContacts.length === 0 ? (
+							{giftContacts.length > 0 && (
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+										{giftContacts.map(item => <GiftCard key={`gift-${item._grant?.id || item.id}`} item={item} />)}
+									</div>
+								)}
+
+								{filteredContacts.length === 0 ? (giftContacts.length > 0 ? null :
 								<EmptyState
 								icon={Users}
 								message={contactFilter ? 'Aucun contact ne correspond à ce filtre.' : 'Aucune rencontre consignée dans ce Cercle.'}
@@ -595,11 +628,12 @@ export default function GrimoirePersonnel({ characterId, cercleId, playerId, isA
 
 						{/* ONGLET 3 : LES POSSESSIONS */}
 						{activeTab === 'possessions' && (
-							possessions.length === 0 ? (
+							possessions.length === 0 && giftPossessions.length === 0 ? (
 								<EmptyState icon={Package} message="Aucune possession consignée." />
 							) : (
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									{possessions.map((possession) => {
+									{giftPossessions.map(item => <GiftCard key={`gift-${item._grant?.id || item.id}`} item={item} />)}
+										{possessions.map((possession) => {
 										const isMine = possession.player_id === playerId;
 										const data = possession.content || {};
 										const isVS = !!data.source_social_item_id;

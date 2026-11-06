@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.5 - \"Les Présents Retrouvés ✦\"",
+    date: "6 Novembre 2026",
+    description: "Les objets et contacts offerts par un Docte via les Cartes Personnelles apparaissent enfin dans le Grimoire Personnel du personnage.",
+    changes: [
+      "✦ **Fix — Dons du Docte introuvables :** Les cartes acceptées depuis l'accueil n'étaient rattachées à aucun personnage, et restaient donc invisibles partout (objets, contacts, et aussi atouts). Elles sont désormais rattachées au personnage que le joueur a inscrit dans le Cercle du don.",
+      "📖 **Grimoire Personnel :** Les contacts offerts s'affichent dans *Visages Rencontrés*, les objets dans *Trésors & Possessions*, marqués « ✦ Don du Docte ».",
+      "🎁 **Rattrapage :** Les 55 dons déjà acceptés (Cercle GnomesGE) ont été rattachés à leurs personnages. Rien à refaire côté joueurs.",
+      "🗄️ **Sauvegardes complètes :** La sauvegarde de la base couvre désormais toutes les tables (38 manquaient, dont les Cartes Personnelles), et signale toute table oubliée.",
+      "🧪 **576 Sentinelles — aucune régression.** 8 nouvelles sentinelles veillent sur les dons du Docte.",
+    ],
+  },
+  {
     version: "18.1.4 - \"Le Verrou du Cabinet 🔒\"",
     date: "4 Novembre 2026",
     description: "Les portes du cabinet du Docte sont désormais verrouillées : seuls les Héritiers concernés peuvent consulter les archives et les octrois de cartes.",
