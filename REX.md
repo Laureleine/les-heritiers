@@ -6,6 +6,18 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 6 Novembre 2026 — v18.1.6 (Le Courrier Classé)
+
+### Leçon 1 : Un badge et la liste qu'il annonce doivent compter la même chose
+
+Le badge Communauté (`useCharacterRepair.js`) comptait toutes les `journal_repair_requests` non résolues ; l'onglet (`TabRepairJournaux`) masquait celles dont le journal était OK, et seul l'onglet portait le bouton de clôture → demande fantôme impossible à fermer. C'est la **deuxième fois** (22 orphelines en 18.1.1). Quand une liste filtre des éléments qu'un compteur inclut, soit on clôture les éléments filtrés, soit on aligne le compteur — jamais une liste qui cache ce qu'un badge annonce.
+
+### Leçon 2 : Ne pas `git stash` pour comparer avec la base de référence
+
+`git stash` embarque aussi les fichiers modifiés de l'utilisatrice (`.claude/settings.local.json`, `1899/…`). Restaurés sans dégât ici, mais risqué. Pour vérifier qu'un test échoue sans le correctif, utiliser `git stash push -- <fichiers précis>` ou raisonner sur le diff.
+
+---
+
 ## Session du 6 Novembre 2026 — v18.1.5 (Les Présents Retrouvés)
 
 ### Leçon 1 : Un « fix » non vérifié sur les données réelles ne corrige rien
