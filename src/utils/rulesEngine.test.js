@@ -159,6 +159,13 @@ describe('calculateFullCombatStats', () => {
     expect(stats.esquiveDemasquee).toBe(15);
   });
 
+  it("n'applique pas le modificateur de taille à la parade démasquée", () => {
+    const stats = calculateFullCombatStats(char, baseGameData);
+    // Petite → modT = +1, mais la taille ne modifie que l'Esquive
+    // ParadeDémasquée = sMelee(2) + agiD(3) + 5 = 10
+    expect(stats.paradeDemasquee).toBe(10);
+  });
+
   it('inclut le bonusMasque quand masque > 5', () => {
     const charHighMask = {
       ...char,

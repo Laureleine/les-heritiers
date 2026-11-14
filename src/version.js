@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.7 - \"La Garde des Géants 🛡️\"",
+    date: "14 Novembre 2026",
+    description: "Les grandes fées démasquées ne perdent plus de points en Parade : seule l'Esquive est affectée par la taille.",
+    changes: [
+      "🛡️ **Fix — Parade démasquée :** Le modificateur de taille féérique s'appliquait à tort à la Parade démasquée (ex. −2 pour un Ogre, +1 pour une petite fée). Conformément aux règles, il ne modifie plus que l'Esquive.",
+      "🗄️ **Sauvegarde :** La table d'avancement d'Anna Chronique est désormais incluse dans les sauvegardes.",
+      "🧪 **579 Sentinelles — aucune régression.** 1 nouvelle sentinelle veille sur la Parade démasquée.",
+    ],
+  },
+  {
     version: "18.1.6 - \"Le Courrier Classé 📬\"",
     date: "6 Novembre 2026",
     description: "Les demandes de réparation de journal déjà satisfaites se classent d'elles-mêmes : le compteur du bouton Communauté ne reste plus allumé sans raison.",

@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.1.7 — La Garde des Géants 🛡️
+
+Chers Héritiers,
+
+Les Ogres et autres colosses du Petit Peuple s'en plaignaient à juste titre : une fois le masque tombé, leur carrure les rendait certes moins prompts à esquiver… mais aussi, on ne sait pourquoi, plus maladroits pour parer. Or un géant qui lève le bras pour bloquer un coup n'a nul besoin d'être menu pour y parvenir.
+
+Le maître d'armes a revu ses tablettes : la taille féérique ne pèse désormais plus que sur l'Esquive. La Parade démasquée retrouve sa juste valeur, pour les grands comme pour les petits.
+
+🛡️ La Parade démasquée n'est plus affectée par la taille
+🗄️ Les archives d'Anna Chronique rejoignent les sauvegardes
+🧪 579 Sentinelles — aucune régression
+
+*Mise à jour du 14 Novembre 1899*
+
+---
+
 ## v18.1.6 — Le Courrier Classé 📬
 
 Chers Héritiers,

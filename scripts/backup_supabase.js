@@ -49,7 +49,7 @@ const TABLES = [
   // Gazette & Anna Chronique
   'journal_daily_info', 'journal_holidays', 'journal_repair_requests', 'journal_votes',
   'historical_events', 'courrier_lecteurs',
-  'anna_chronique_dialogues', '_archive_copies_dialogues', 'anna_membres', 'anna_votes',
+  'anna_chronique_dialogues', '_archive_copies_dialogues', 'anna_membres', 'anna_votes', 'anna_avancement',
   // Journaux techniques
   'error_logs', 'llm_usage_log'
 ];

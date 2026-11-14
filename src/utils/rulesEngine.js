@@ -123,7 +123,7 @@ export const calculateFullCombatStats = (character, gameData) => {
         esquiveMasquee: sMouv + agi + 5 + bonusEsquive,
         esquiveDemasquee: sMouv + agiD + 5 + modT + bonusEsquive,
         parade: sMelee + agi + 5,
-        paradeDemasquee: sMelee + agiD + 5 + modT,
+        paradeDemasquee: sMelee + agiD + 5,
         resPhys: sRes + con + 5 + bonusMasque,
         resPhysDemasquee: sRes + conD + 5,
         resPsych: sFort + esp + 5 + bonusMasque,
