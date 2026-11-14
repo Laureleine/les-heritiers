@@ -6,6 +6,18 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 14 Novembre 2026 — v18.1.7 (La Garde des Géants)
+
+### Leçon 1 : Le modificateur de taille ne touche que l'Esquive
+
+`calculateFullCombatStats` (`rulesEngine.js`) ajoutait `modT` à `paradeDemasquee` par copier-coller de la ligne Esquive. `characterEngine.js` l'appliquait déjà correctement (Esquive seule). Quand deux moteurs calculent la même stat, une divergence entre eux est un indice direct du bug : comparer les deux avant de corriger.
+
+### Leçon 2 : L'avertissement de sauvegarde a servi dès la release suivante
+
+`anna_avancement` (créée hors de cette session) a été signalée par `backup_supabase.js` → ajoutée à `TABLES` avant le commit. Toujours relancer la sauvegarde après l'ajout pour vérifier que l'avertissement a disparu.
+
+---
+
 ## Session du 6 Novembre 2026 — v18.1.6 (Le Courrier Classé)
 
 ### Leçon 1 : Un badge et la liste qu'il annonce doivent compter la même chose
