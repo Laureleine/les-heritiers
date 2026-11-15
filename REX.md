@@ -6,6 +6,30 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 15 Novembre 2026 — v18.2.0 (Les Revers de Fortune)
+
+### Leçon 1 : Deux tickets, une seule règle en cause
+
+« Perte de fortune » (Olthomas) et « Retirer des compétences scellées » (Ferval) butaient tous deux sur le Plancher de Verre (`stats_scellees`). Avant de concevoir une feature par ticket, chercher la règle commune. Les bornes à respecter sont celles des boutons de création (min d'espèce, score de base), pas le socle — exception Fortune (ruine jusqu'à 0, avertie).
+
+### Leçon 2 : Écrire sur la fiche d'un autre = fonction SQL SECURITY DEFINER
+
+La RLS `characters UPDATE` = propriétaire ou super_admin. Plutôt que d'ouvrir la RLS aux Doctes, `docte_ajuster_fiche` vérifie `cercles.docte_id = auth.uid()` puis fait tout (valeur, socle, XP, journal, notification) en une transaction. Tester une telle fonction sur les vraies données : `BEGIN` + `set_config('request.jwt.claims', …)` + `set_config('role','authenticated')` + `ROLLBACK` (script dans le scratchpad).
+
+### Leçon 3 : `xp_transactions` a une contrainte unique (character_id, date_mouvement)
+
+`now()` est figé pour toute la transaction : deux insertions dans la même transaction collisionnent. Utiliser `clock_timestamp()` dans les fonctions SQL qui écrivent le journal.
+
+### Leçon 4 : Confirmation depuis un hook → événement global
+
+`useVieSociale` / `useCompetencesLibres` sont des hooks sans JSX : `requestSousSocleConfirm()` diffuse un `CustomEvent`, `SousSocleConfirmHost` (monté dans CharacterCreator) affiche la `ConfirmModal`. Évite de faire remonter un état de modale dans 4 composants.
+
+### Point ouvert
+
+Ajustement Docte + fiche ouverte côté joueur avec un état périmé : une sauvegarde du joueur peut écraser l'ajustement. Atténué (rechargement après « J'ai compris » si l'éditeur est ouvert), pas éliminé.
+
+---
+
 ## Session du 15 Novembre 2026 — v18.1.8 (L'Ascendance Retrouvée)
 
 ### Leçon 1 : Ne jamais retrouver une info par recherche quand l'utilisateur vient de la donner
