@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.1.8 - \"L'Ascendance Retrouvée 🧬\"",
+    date: "15 Novembre 2026",
+    description: "L'espèce choisie pour l'Anomalie féérique est enfin bien enregistrée, et les Héritiers concernés sont invités à confirmer la leur.",
+    changes: [
+      "🧬 **Fix — Espèce de l'Anomalie féérique :** Quand le pouvoir choisi existe chez plusieurs espèces (ex. *Sens de la vérité* : Ange, Gnome, Golem), la fiche enregistrait la première espèce par ordre alphabétique au lieu de celle choisie. L'espèce est désormais enregistrée telle que vous l'avez sélectionnée.",
+      "✨ **Confirmation demandée :** Les 7 personnages dont l'espèce d'Anomalie est peut-être erronée verront, à leur prochaine connexion, une fenêtre leur demandant de confirmer l'espèce d'origine de leur pouvoir.",
+      "🦔 **Aristide Robelin :** espèce d'Anomalie corrigée en Gnome.",
+      "🧪 **585 Sentinelles — aucune régression.** 6 nouvelles sentinelles veillent sur l'ascendance des Anomalies.",
+    ],
+  },
+  {
     version: "18.1.7 - \"La Garde des Géants 🛡️\"",
     date: "14 Novembre 2026",
     description: "Les grandes fées démasquées ne perdent plus de points en Parade : seule l'Esquive est affectée par la taille.",

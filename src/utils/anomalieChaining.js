@@ -40,6 +40,20 @@ export function deriveEspeceSeconde(character, exteriorPowers) {
   return match ? match.origine : null;
 }
 
+// L'espèce enregistrée est celle choisie par le joueur, pas la première espèce
+// possédant le pouvoir (un même pouvoir peut exister chez plusieurs espèces).
+export function resolveEspeceAnomalie(pouvoirNom, draftEspece, exteriorPowers) {
+  if (draftEspece) return draftEspece;
+  return exteriorPowers.find(p => p.nom === pouvoirNom)?.origine || null;
+}
+
+// Enregistre l'espèce confirmée par le joueur et retire le drapeau de confirmation.
+export function applyEspeceConfirmation(data, espece) {
+  const next = { ...(data || {}), anomalie_espece_seconde: espece };
+  delete next.anomalie_espece_a_confirmer;
+  return next;
+}
+
 export function hasAnomalieActive(character) {
   return (character?.atouts || []).includes('Anomalie féérique');
 }

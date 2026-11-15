@@ -1,6 +1,8 @@
 import {
   computeExteriorPowers,
   deriveEspeceSeconde,
+  resolveEspeceAnomalie,
+  applyEspeceConfirmation,
   hasAnomalieActive,
   hasSangMeleActive,
   hasHybrideActive,
@@ -150,5 +152,39 @@ describe('isSecondSpeciesProfondPowerAvailable', () => {
     expect(isSecondSpeciesProfondPowerAvailable('profond_masque', 7)).toBe(false);
     expect(isSecondSpeciesProfondPowerAvailable('masque', 8)).toBe(false);
     expect(isSecondSpeciesProfondPowerAvailable('legendaire_masque', 8)).toBe(false);
+  });
+});
+
+describe('resolveEspeceAnomalie', () => {
+  const ext = [
+    { nom: 'Sens de la vérité', origine: 'Ange' },
+    { nom: 'Sens de la vérité', origine: 'Gnome' },
+    { nom: 'Bricolage', origine: 'Gnome' },
+  ];
+
+  it("garde l'espèce choisie même si le pouvoir existe chez une autre espèce", () => {
+    expect(resolveEspeceAnomalie('Sens de la vérité', 'Gnome', ext)).toBe('Gnome');
+  });
+
+  it("retombe sur l'origine du pouvoir si aucune espèce n'a été choisie", () => {
+    expect(resolveEspeceAnomalie('Bricolage', null, ext)).toBe('Gnome');
+  });
+
+  it('renvoie null pour un pouvoir inconnu sans espèce choisie', () => {
+    expect(resolveEspeceAnomalie('Inconnu', null, ext)).toBeNull();
+  });
+});
+
+describe('applyEspeceConfirmation', () => {
+  it("enregistre l'espèce confirmée, retire le drapeau et garde le reste", () => {
+    const data = {
+      anomalie_espece_seconde: 'Ange',
+      anomalie_espece_a_confirmer: { pouvoir: 'Berserker', options: ['Ange', 'Troll'] },
+      portrait_masked_url: 'x',
+    };
+    expect(applyEspeceConfirmation(data, 'Troll')).toEqual({
+      anomalie_espece_seconde: 'Troll',
+      portrait_masked_url: 'x',
+    });
   });
 });

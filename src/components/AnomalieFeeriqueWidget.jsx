@@ -11,6 +11,7 @@ import { getXpState, XP_CODES } from '../utils/xpActions';
 import {
   computeExteriorPowers,
   deriveEspeceSeconde,
+  resolveEspeceAnomalie,
   hasAnomalieActive,
   hasSangMeleActive,
   canPurchaseSangMele,
@@ -147,8 +148,8 @@ export default function AnomalieFeeriqueWidget() {
       }
       newPouvoirs.push(pouvoirNom);
       if (!newAtouts.includes(anomalieId)) newAtouts.push(anomalieId);
-      const chosenPower = exteriorPowers.find(p => p.nom === pouvoirNom);
-      if (chosenPower) newData.anomalie_espece_seconde = chosenPower.origine;
+      const espece = resolveEspeceAnomalie(pouvoirNom, draftEspece, exteriorPowers);
+      if (espece) newData.anomalie_espece_seconde = espece;
       setShowCatalog(null);
       setDraftEspece(null);
     }

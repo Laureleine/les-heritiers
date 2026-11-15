@@ -4,6 +4,24 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.1.8 — L'Ascendance Retrouvée 🧬
+
+Chers Héritiers,
+
+Certains d'entre vous portent en eux une Anomalie féérique, ce pouvoir venu d'une autre lignée que la leur. Or le greffier chargé d'en consigner l'origine avait une fâcheuse manie : lorsqu'un même pouvoir se retrouvait chez plusieurs espèces, il inscrivait simplement la première de son registre, par ordre alphabétique, sans se soucier de celle que vous aviez réellement choisie. Ainsi un Gnome se retrouvait-il noté Ange, pour la seule raison que l'A précède le G.
+
+Le greffier a été prié d'écrire sous la dictée. Votre choix est désormais consigné tel quel.
+
+**Si votre Héritier est concerné**, une petite fenêtre s'ouvrira à votre prochaine connexion pour vous demander de quelle espèce provient réellement votre Anomalie. Un simple clic, et l'affaire est réglée. Sont concernés les Héritiers dont le pouvoir d'Anomalie se retrouve chez plusieurs espèces (Berserker, Charme, Caméléon, Passe-partout, Souffle enflammé, Liquéfaction, Absorption sexuelle…).
+
+🧬 L'espèce de l'Anomalie féérique est enregistrée telle que vous la choisissez
+✨ Les Héritiers concernés confirment leur espèce à leur prochaine visite
+🧪 585 Sentinelles — aucune régression
+
+*Mise à jour du 15 Novembre 1899*
+
+---
+
 ## v18.1.7 — La Garde des Géants 🛡️
 
 Chers Héritiers,

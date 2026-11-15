@@ -26,6 +26,7 @@ import { usePendingValidationsAlert } from './hooks/usePendingValidationsAlert';
 import PendingGrantsAlert from './components/PendingGrantsAlert';
 import GrantAcceptanceModal from './components/GrantAcceptanceModal';
 import { usePendingGrants } from './hooks/usePendingGrants';
+import AnomalieEspeceConfirmModal from './components/AnomalieEspeceConfirmModal';
 
 export default function App() {
   const { session, userProfile, refreshUserProfile, globalLoading, loadingStep, isRecoveryMode } = useAppInit();
@@ -143,6 +144,9 @@ export default function App() {
           onResponded={handleGrantResponded}
         />
       )}
+
+      {/* Confirmation de l'espèce d'Anomalie féérique (fiches douteuses < v18.1.8) */}
+      <AnomalieEspeceConfirmModal userProfile={userProfile} />
 
       {/* Widget Docte : personnages autorisés à corriger (admin seulement) */}
       <AdminCorrectionWidget
