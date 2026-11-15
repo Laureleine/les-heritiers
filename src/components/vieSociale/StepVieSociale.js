@@ -263,7 +263,7 @@ export default function StepVieSociale() {
           {isScelle && (
             <button
               onClick={handleDowngradeFortune}
-              disabled={isReadOnly || currentFortune <= (character.data?.stats_scellees?.fortune || 0)}
+              disabled={isReadOnly || currentFortune <= 0}
               className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-emerald-200 text-emerald-600 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 transition-colors font-bold"
               title="Récupérer les XP investis"
             >

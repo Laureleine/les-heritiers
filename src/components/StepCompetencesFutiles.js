@@ -7,6 +7,7 @@ import { useCharacter } from '../context/CharacterContext';
 import { useGameDataContext } from '../context/GameDataContext';
 import { showInAppNotification } from '../utils/SystemeServices';
 import { getFutileCost } from '../utils/xpCalculator';
+import { applySousSocleCorrection, buildSousSocleMessage, requestSousSocleConfirm } from '../utils/sousSocle';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
 import { xpTransaction } from '../utils/xpTransaction';
@@ -124,16 +125,30 @@ export default function StepCompetencesFutiles() {
         }, gameData);
 
       } else if (delta < 0) {
-        if (current <= plancher) {
-          showInAppNotification("Savoir originel scellé ! Impossible d'oublier ce loisir.", "warning");
-          return;
-        }
+        if (current <= 0) return; // borne de création : base des prédilections
 
         const refundXP = getFutileCost(scoreTotal - 1);
         const newRangs = { ...rangsInvestis };
 
         if (current - 1 === 0) delete newRangs[nomComp];
         else newRangs[nomComp] = current - 1;
+
+        // Sous le socle de scellement : correction d'erreur, avec confirmation.
+        if (current <= plancher) {
+          requestSousSocleConfirm({
+            message: buildSousSocleMessage({ nom: nomComp, refund: refundXP }),
+            onConfirm: () => {
+              applySousSocleCorrection(dispatchCharacter, character, {
+                kind: 'futile', key: nomComp, newValue: current - 1,
+                updates: { competencesFutiles: { ...character.competencesFutiles, rangs: newRangs } },
+                label: `Correction du socle : ${nomComp}`,
+                refund: refundXP,
+              }, gameData);
+              showInAppNotification(`${nomComp} corrigé : +${refundXP} XP récupérés.`, 'success');
+            },
+          });
+          return;
+        }
 
         xpTransaction(dispatchCharacter, {
             updates: { competencesFutiles: { ...character.competencesFutiles, rangs: newRangs } },
@@ -206,10 +221,10 @@ export default function StepCompetencesFutiles() {
     // ✨ FIX : 2. On calcule les limites (Création vs Évolution/Scellé)
     const evolutionMax = isPredilection ? 7 : 6;
     const maxAllowed = isScelle ? evolutionMax : (isPredilection ? 5 : 4);
-    const plancher = character.data?.stats_scellees?.competencesFutiles?.rangs?.[comp.nom] || 0;
     
     // 3. On détermine si le bouton "Moins" doit être bloqué
-    const isMinusDisabled = isScelle ? (rangsInvestisComp <= plancher) : (rangsInvestisComp <= 0);
+    // Le socle de scellement peut être franchi (avec confirmation) : seule la borne de création bloque
+    const isMinusDisabled = rangsInvestisComp <= 0;
 
     return (
       <div key={comp.nom} className={`p-3 rounded-lg border flex justify-between items-center transition-all ${

@@ -44,6 +44,9 @@ export const XP_CODES = {
     XP_AJUSTEMENT:         'XP_AJUSTEMENT',         // Correction manuelle (retrait)
     XP_HISTORIQUE:         'XP_HISTORIQUE',         // Entrée reconstituée (passé)
     XP_SOLDE:              'XP_SOLDE',              // Solde de tout compte (arrondi archéologique)
+    // --- Ajustements sous le socle de scellement ---
+    SOCLE_CORRECTION:      'SOCLE_CORRECTION',      // Joueur : rang de création retiré, coût rendu en XP (GAIN)
+    DOCTE_AJUSTEMENT:      'DOCTE_AJUSTEMENT',      // Docte : ajustement d'une valeur avec motif
 };
 
 // ============================================================================

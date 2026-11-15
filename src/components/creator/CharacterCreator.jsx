@@ -6,13 +6,16 @@ import { exportToPDF } from '../../utils/pdfGenerator';
 import { useCharacter } from '../../context/CharacterContext';
 import { useUserContext } from '../../context/UserContext';
 import { useGameDataContext } from '../../context/GameDataContext';
-import { saveCharacterToSupabase } from '../../utils/supabaseStorage';
+import { saveCharacterToSupabase, getFullCharacter } from '../../utils/supabaseStorage';
+import { supabase } from '../../config/supabase';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { isCharacterScelle } from '../../utils/lockUtils';
 import { flushContactsToGrimoire, clearContactSyncQueue } from '../../utils/contactSyncQueue';
 import { getXpState } from '../../utils/xpActions';
 import { STEP_CONFIG } from '../../data/DictionnaireJeu';
 import JournalAmeModal from '../JournalAmeModal';
+import SousSocleConfirmHost from '../SousSocleConfirmHost';
+import AjustementDocteModal from '../AjustementDocteModal';
 import PixieAssistant from '../PixieAssistant';
 import CadreParchemin from '../CadreParchemin';
 import GrimoireDrawer from '../GrimoireDrawer';
@@ -59,6 +62,27 @@ export default function CharacterCreator() {
 
   const cercleId = location.state?.cercleId;
   const isDocteConsulting = isReadOnly && character?.userId !== session?.user?.id;
+  const [showAjustement, setShowAjustement] = useState(false);
+  const [isDocteDuCercle, setIsDocteDuCercle] = useState(false);
+
+  // Le bouton « Ajustement » n'apparaît que pour le Docte d'un cercle contenant ce personnage
+  // (la fonction SQL docte_ajuster_fiche refait ce contrôle côté base).
+  useEffect(() => {
+    if (!isDocteConsulting || !character?.id || !session?.user?.id) { setIsDocteDuCercle(false); return; }
+    supabase.from('cercle_membres').select('cercle_id, cercles!inner(docte_id)')
+      .eq('character_id', character.id).eq('cercles.docte_id', session.user.id).limit(1)
+      .then(({ data }) => setIsDocteDuCercle((data || []).length > 0));
+  }, [isDocteConsulting, character?.id, session?.user?.id]);
+
+  const reloadAfterAjustement = useCallback(async () => {
+    setShowAjustement(false);
+    try {
+      const fresh = await getFullCharacter(character.id);
+      dispatchCharacter({ type: 'LOAD_CHARACTER', payload: { ...fresh, data: { ...fresh.data, historique_xp: [] } }, gameData });
+    } catch {
+      showInAppNotification("Ajustement enregistré, mais la fiche n'a pas pu être rechargée : rouvrez-la.", 'warning');
+    }
+  }, [character?.id, dispatchCharacter, gameData]);
 
   const totalSteps = STEP_CONFIG.length;
   const isHumain = character?.typePersonnage === 'humain';
@@ -236,6 +260,16 @@ export default function CharacterCreator() {
                 <BookOpen size={18} />
                 <span className="hidden sm:inline">Grimoire</span>
               </button>
+              {isDocteDuCercle && isCharacterScelle(character) && (
+                <button
+                  onClick={() => setShowAjustement(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-emerald-800 hover:bg-emerald-700 text-emerald-50 rounded-lg transition-colors text-sm font-bold shadow-sm border border-emerald-700"
+                  title="Ajustement du Docte"
+                >
+                  <Sparkles size={18} />
+                  <span className="hidden sm:inline">Ajustement</span>
+                </button>
+              )}
             </>
           )}
 
@@ -362,6 +396,10 @@ export default function CharacterCreator() {
         </button>
       </div>
 
+      <SousSocleConfirmHost />
+      {showAjustement && (
+        <AjustementDocteModal character={character} gameData={gameData} onClose={() => setShowAjustement(false)} onDone={reloadAfterAjustement} />
+      )}
       <JournalAmeModal isOpen={showJournalAme} onClose={() => setShowJournalAme(false)} historiqueXp={character?.data?.historique_xp || []} characterId={character?.id} />
 
       {showChroniques && isDocteConsulting && (

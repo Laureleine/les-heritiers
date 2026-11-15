@@ -2,6 +2,18 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.2.0 - \"Les Revers de Fortune ⚖️\"",
+    date: "15 Novembre 2026",
+    description: "Une fiche scellée n'est plus figée : le joueur peut corriger une erreur de création, et le Docte peut ajuster Fortune, caractéristiques et compétences au gré du récit.",
+    changes: [
+      "⚖️ **Ajustement du Docte :** Sur la fiche scellée d'un membre de son cercle, le Docte dispose d'un bouton « Ajustement » : Fortune, caractéristique, compétence ou compétence futile, à la hausse comme à la baisse, avec un motif obligatoire. Retrait en perte sèche ou remboursé, ajout offert ou payé avec l'XP du joueur.",
+      "📜 **Le joueur est prévenu :** chaque ajustement apparaît dans le Journal des Âmes (« Ajustement du Docte : Fortune 6 → 4 — Krach de la Bourse ») et dans une fenêtre à sa prochaine connexion.",
+      "🔓 **Corriger une erreur de création :** Sur sa fiche scellée, le joueur peut désormais descendre une valeur sous son niveau de création, après un avertissement et une confirmation. Le coût du rang lui est rendu en XP à réinvestir ailleurs.",
+      "📏 **Les limites de création restent la règle :** jamais sous le minimum de l'espèce pour une caractéristique, jamais sous le score de base pour une compétence. Seule exception : la Fortune peut tomber sous le niveau assuré par le métier — une ruine véritable, signalée par un avertissement spécifique et non remboursée.",
+      "🧪 **603 Sentinelles — aucune régression.** 18 nouvelles sentinelles veillent sur les revers de fortune.",
+    ],
+  },
+  {
     version: "18.1.8 - \"L'Ascendance Retrouvée 🧬\"",
     date: "15 Novembre 2026",
     description: "L'espèce choisie pour l'Anomalie féérique est enfin bien enregistrée, et les Héritiers concernés sont invités à confirmer la leur.",

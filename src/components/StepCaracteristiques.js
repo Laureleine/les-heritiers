@@ -10,6 +10,7 @@ import { xpTransaction } from '../utils/xpTransaction';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
 import ConfirmModal from './ConfirmModal';
+import { applySousSocleCorrection, buildSousSocleMessage, requestSousSocleConfirm } from '../utils/sousSocle';
 
 const MAX_SCORE_INVESTISSEMENT = 5;
 
@@ -74,12 +75,25 @@ export default function StepCaracteristiques() {
 
         // 🔙 Rétrogradation (Remboursement)
         if (delta < 0) {
+            const costToRefund = getCaracCost(newValue);
+
+            // Sous le socle de scellement : correction d'erreur, avec confirmation.
+            // La borne de création (minimum d'espèce) est gardée par handleChange.
             if (newValue < plancherScelle) {
-                showInAppNotification("Vos capacités passées sont figées, vous ne pouvez pas les désapprendre !", "warning");
+                requestSousSocleConfirm({
+                    message: buildSousSocleMessage({ nom: caracName, refund: costToRefund }),
+                    onConfirm: () => {
+                        applySousSocleCorrection(dispatchCharacter, character, {
+                            kind: 'carac', key, newValue,
+                            updates: { caracteristiques: { ...currentCaracs, [key]: newValue } },
+                            label: `Correction du socle : ${caracName}`,
+                            refund: costToRefund,
+                        }, gameData);
+                        showInAppNotification(`${caracName} corrigée : +${costToRefund} XP récupérés.`, 'success');
+                    },
+                });
                 return;
             }
-
-            const costToRefund = getCaracCost(newValue);
 
             // 1. On met à jour le score de la caractéristique
             // 2. ✨ LE CERVEAU CENTRAL : On consigne le remboursement dans le journal
@@ -230,9 +244,8 @@ export default function StepCaracteristiques() {
                     const current = currentCaracs[carac.key] || minGenetique;
                     const investis = current - minGenetique;
 
-                    const plancher = isScelle
-                        ? (character.data?.stats_scellees?.caracteristiques?.[carac.key] || minGenetique)
-                        : minGenetique;
+                    // Borne de création : le socle de scellement peut être franchi (avec confirmation)
+                    const plancher = minGenetique;
 
                     const plafond = isScelle
                         ? maxGenetique

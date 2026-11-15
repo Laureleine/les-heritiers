@@ -4,6 +4,27 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.2.0 — Les Revers de Fortune ⚖️
+
+Chers Héritiers,
+
+Jusqu'ici, une fois votre Héritier scellé, son passé était gravé dans le marbre. Pas une piécette ne pouvait s'envoler, pas un savoir ne pouvait s'oublier. Or la Belle Époque est fertile en revers : un placement hasardeux à la Bourse, un coup sur la tête qui embrouille les souvenirs, une malédiction tenace…
+
+**Pour les Doctes.** Sur la fiche d'un membre de votre cercle, un nouveau bouton « Ajustement » vous permet de modifier sa Fortune, une caractéristique, une compétence ou une compétence futile, à la hausse comme à la baisse. Un motif est obligatoire. Vous choisissez si la perte est sèche ou remboursée en XP, et si un gain est offert ou payé par le joueur.
+
+**Pour les joueurs.** Votre Docte ne pourra rien vous faire en catimini : chaque ajustement est consigné dans votre Journal des Âmes, avec son motif, et une fenêtre vous en informe à votre prochaine connexion. Et si vous vous étiez trompés à la création, vous pouvez désormais retirer un rang de votre fiche scellée. Après confirmation, son coût vous est rendu en XP.
+
+Les limites de l'espèce restent sacrées : nul ne descend sous le minimum de sa nature féérique. Seule la Fortune peut sombrer plus bas que ce que vous assure votre métier. C'est alors la ruine véritable, et l'application vous en avertira solennellement.
+
+⚖️ Le Docte peut ajuster Fortune, caractéristiques et compétences
+📜 Chaque ajustement est consigné et annoncé au joueur
+🔓 Les erreurs de création se corrigent, XP rendus
+🧪 603 Sentinelles — aucune régression
+
+*Mise à jour du 15 Novembre 1899*
+
+---
+
 ## v18.1.8 — L'Ascendance Retrouvée 🧬
 
 Chers Héritiers,

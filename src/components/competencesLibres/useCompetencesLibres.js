@@ -12,6 +12,7 @@ import { getXpState, XP_CODES } from '../../utils/xpActions';
 import { xpTransaction } from '../../utils/xpTransaction';
 import { HUMAIN_RANGS } from '../../data/DictionnaireJeu';
 import { normalizeSpec } from '../../utils/utils';
+import { applySousSocleCorrection, buildSousSocleMessage, requestSousSocleConfirm } from '../../utils/sousSocle';
 
 export const POINTS_TOTAUX = 15;
 
@@ -210,7 +211,24 @@ export function useCompetencesLibres() {
 
             // Guards préliminaires
             if (delta > 0 && totalScore >= evolutionMax) { showInAppNotification(`Excellence maximale atteinte (${evolutionMax}).`, "warning"); return; }
-            if (delta < 0 && current <= plancher) { showInAppNotification("Savoir originel scellé !", "warning"); return; }
+            if (delta < 0 && current <= 0) return; // borne de création : score de base de l'espèce/profil
+            if (delta < 0 && current <= plancher) {
+                // Sous le socle de scellement : correction d'erreur, avec confirmation.
+                const refund = getUtileCost(totalScore - 1);
+                requestSousSocleConfirm({
+                    message: buildSousSocleMessage({ nom: nomComp, refund }),
+                    onConfirm: () => {
+                        applySousSocleCorrection(dispatchCharacter, character, {
+                            kind: 'comp', key: nomComp, newValue: current - 1,
+                            updates: { competencesLibres: { ...lib, rangs: { ...lib.rangs, [nomComp]: current - 1 } } },
+                            label: `Correction du socle : ${nomComp}`,
+                            refund,
+                        }, gameData);
+                        showInAppNotification(`${nomComp} corrigée : +${refund} XP récupérés.`, 'success');
+                    },
+                });
+                return;
+            }
 
             // ✨ BONUS ESPRIT : chaque rang d'Esprit au-dessus de 3 débloque 1 rang gratuit
             //    dans les compétences d'Érudit et Savant, même acquis avec des XP post-scellage.
@@ -265,7 +283,7 @@ export function useCompetencesLibres() {
         if (delta < 0 && current <= 0) return;
 
         onCompetencesLibresChange({ ...lib, rangs: { ...lib.rangs, [nomComp]: current + delta } });
-    }, [lib, getScoreBase, predFinales, budgetsInfo, onCompetencesLibresChange, isScelle, isReadOnly, xpDispo, character.data, character.caracteristiques?.esprit, dispatchCharacter, gameData]);
+    }, [lib, getScoreBase, predFinales, budgetsInfo, onCompetencesLibresChange, isScelle, isReadOnly, xpDispo, character.data, character.caracteristiques?.esprit, dispatchCharacter, gameData, character]);
 
     const handleAddSpecialiteUser = useCallback((nomComp, specName) => {
         if (!specName || isReadOnly) return;
@@ -409,7 +427,7 @@ export function useCompetencesLibres() {
             fairySpecActuelle, specsFromAtouts: specsForAtouts, userSpecs, hasJobSpecHere, jobSpec, nextSpecCost,
             utileCost, rangEspritGratuitDispo,
             availableSpecs: competences[nomComp]?.specialites || [],
-            isMinusDisabled: isScelle ? (current <= plancher) : (current <= 0),
+            isMinusDisabled: current <= 0, // le socle de scellement peut être franchi (avec confirmation)
             isPlusDisabled: isReadOnly || totalScore >= maxAllowed || (!isScelle && budgetsInfo.pointsRestantsVerts <= 0 && (!isEspritEligible || budgetsInfo.pointsRestantsViolets <= 0))
         };
     }, [lib, getScoreBase, predFinales, isScelle, character.data, character.caracteristiques?.esprit, feeData, atoutsBonuses, character.competencesLibres, competences, isReadOnly, budgetsInfo]);

@@ -6,6 +6,7 @@ import { useUserContext } from '../../context/UserContext';
 import { usePersonalCards } from '../../hooks/usePersonalCards';
 import { showInAppNotification } from '../../utils/SystemeServices';
 import { getFortuneCost, getFortuneSpecialites } from '../../utils/xpCalculator';
+import { applySousSocleCorrection, buildSousSocleMessage, requestSousSocleConfirm } from '../../utils/sousSocle';
 import { isCharacterScelle } from '../../utils/lockUtils';
 import { safeParse, safeParseArray } from '../../utils/json';
 import { getXpState, XP_CODES } from '../../utils/xpActions';
@@ -338,11 +339,13 @@ export function useVieSociale() {
 
         let fFinale = Math.min(15, fBase + fBonus);
         if (isScelle && character.fortune > fFinale) fFinale = character.fortune;
+        // Ruine (Fortune sous le plancher métier/espèce) : cocher un objet ne la répare pas.
+        if (isScelle && (character.fortune || 0) < plancherFortune) fFinale = character.fortune || 0;
         prevFortuneRef.current = fFinale;
 
         dispatchCharacter({ type: 'UPDATE_MULTIPLE', payload: { vieSociale: newAchats, fortune: fFinale }, gameData });
 
-    }, [isReadOnly, achats, budgetsInfo, getItemCost, dispatchCharacter, gameData, character.computedStats, character.fortune, socialItems, isScelle, getFortuneFromHeritage]);
+    }, [isReadOnly, achats, budgetsInfo, getItemCost, dispatchCharacter, gameData, character.computedStats, character.fortune, socialItems, isScelle, getFortuneFromHeritage, plancherFortune]);
 
     const handleUpgradeFortune = () => {
         if (isReadOnly || !isScelle) return;
@@ -367,7 +370,29 @@ export function useVieSociale() {
         const currentFortune = character.fortune || 0;
         const originFloor = character.data?.stats_scellees?.fortune || 0;
 
-        if (currentFortune <= originFloor) { showInAppNotification("Votre Fortune originelle est scellée !", "warning"); return; }
+        if (currentFortune <= 0) return;
+
+        // Sous le socle de scellement : correction (remboursée) ou, sous le plancher
+        // métier/espèce, ruine véritable (non remboursée, avertissement spécifique).
+        if (currentFortune <= originFloor) {
+            const newValue = currentFortune - 1;
+            const ruine = newValue < plancherFortune;
+            const refund = ruine ? 0 : getFortuneCost(newValue, character.computedStats, getFortuneSpecialites(character));
+            requestSousSocleConfirm({
+                title: ruine ? 'Ruine véritable' : undefined,
+                message: buildSousSocleMessage({ nom: 'Fortune', refund, ruine, plancherFortune }),
+                onConfirm: () => {
+                    applySousSocleCorrection(dispatchCharacter, character, {
+                        kind: 'fortune', key: null, newValue,
+                        updates: { fortune: newValue },
+                        label: ruine ? 'Ruine : Fortune' : 'Correction du socle : Fortune',
+                        refund,
+                    }, gameData);
+                    showInAppNotification(ruine ? `Fortune ramenée au rang ${newValue}.` : `Fortune corrigée : +${refund} XP récupérés.`, 'info');
+                },
+            });
+            return;
+        }
 
         const refund = getFortuneCost(currentFortune - 1, character.computedStats, getFortuneSpecialites(character));
         xpTransaction(dispatchCharacter, {
