@@ -6,6 +6,22 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 15 Novembre 2026 — v18.1.8 (L'Ascendance Retrouvée)
+
+### Leçon 1 : Ne jamais retrouver une info par recherche quand l'utilisateur vient de la donner
+
+`AnomalieFeeriqueWidget` connaissait l'espèce choisie (`draftEspece`) mais la re-déduisait du pouvoir via `exteriorPowers.find(...)` → première espèce alphabétique quand le pouvoir est partagé (Sens de la vérité : Ange/Gnome/Golem). Un `find` sur une liste non unique est un choix arbitraire déguisé : enregistrer la sélection elle-même.
+
+### Leçon 2 : Données douteuses non réparables par script → demander au joueur
+
+Impossible de savoir quelle espèce les 7 autres joueurs avaient choisie. Pattern utilisé : drapeau `data.anomalie_espece_a_confirmer = { pouvoir, options }` posé par script (`flag_anomalie_espece.js`, dry-run par défaut) + modale autonome montée dans `App.js` qui relit la fiche avant d'écrire. Réutilisable pour toute donnée à faire confirmer par le joueur.
+
+### Leçon 3 : Le Registre de la Forge n'a pas d'historique
+
+Impossible de savoir qui a archivé 6 signalements de Ferval (9→12 août) : `registre_forge` n'a ni `updated_by` ni trigger. Seule la comparaison des sauvegardes JSON a permis de dater l'archivage — les backups servent aussi d'historique.
+
+---
+
 ## Session du 14 Novembre 2026 — v18.1.7 (La Garde des Géants)
 
 ### Leçon 1 : Le modificateur de taille ne touche que l'Esquive
