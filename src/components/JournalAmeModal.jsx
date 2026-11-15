@@ -2,6 +2,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { X, BookOpen, TrendingUp, TrendingDown, RotateCcw, Clock } from '../config/icons';
 import { supabase } from '../config/supabase';
+import { isRetraitEntry } from '../utils/xpActions';
+
+/**
+ * Présentation d'une ligne du journal. Un retrait (rang perdu, Docte ou correction
+ * du socle) s'affiche comme une perte, même s'il est stocké en GAIN (XP rendus ou 0).
+ */
+export function getEntryPresentation(entry) {
+  if (isRetraitEntry(entry)) {
+    return { isRetrait: true, valueText: entry.valeur > 0 ? `Rang perdu · +${entry.valeur} XP rendus` : 'Rang perdu' };
+  }
+  return { isRetrait: false, valueText: null };
+}
 
 export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], characterId }) {
   const [aggregateGains, setAggregateGains] = useState(false);
@@ -51,8 +63,10 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], ch
   const displayHistorique = useMemo(() => {
     if (!aggregateGains) return groupedHistorique;
 
-    const gainEntries = groupedHistorique.filter(e => e.type === 'GAIN');
-    const nonGainEntries = groupedHistorique.filter(e => e.type !== 'GAIN');
+    // Les retraits (stockés en GAIN) ne sont jamais fondus dans le total des gains.
+    const isGain = (e) => e.type === 'GAIN' && !isRetraitEntry(e);
+    const gainEntries = groupedHistorique.filter(isGain);
+    const nonGainEntries = groupedHistorique.filter(e => !isGain(e));
 
     if (gainEntries.length === 0) return nonGainEntries;
 
@@ -127,7 +141,10 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], ch
           ) : (
             <div className="space-y-3">
               {displayHistorique.map((entree, idx) => {
-                const { icon, color } = getIconAndColor(entree.type);
+                const { isRetrait, valueText } = getEntryPresentation(entree);
+                const { icon, color } = isRetrait
+                  ? { icon: <TrendingDown size={16} />, color: 'bg-red-50 text-red-800 border-red-200' }
+                  : getIconAndColor(entree.type);
 
                 return (
                   <div key={idx} className={`p-3 rounded-xl border flex items-center justify-between gap-4 shadow-sm transition-all hover:scale-[1.01] ${color}`}>
@@ -163,7 +180,9 @@ export default function JournalAmeModal({ isOpen, onClose, historiqueXp = [], ch
 
                     {/* Valeur Mathématique */}
                     <div className="shrink-0 text-right pr-2">
-                      {entree.valeur === 0 ? (
+                      {isRetrait ? (
+                        <span className="text-sm font-black font-serif">↓ {valueText}</span>
+                      ) : entree.valeur === 0 ? (
                         <span className="text-sm font-black font-serif text-purple-400">🧠 Gratuit</span>
                       ) : (
                         <>

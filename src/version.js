@@ -2,6 +2,16 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.2.1 - \"Les Comptes Justes 📕\"",
+    date: "15 Novembre 2026",
+    description: "Dans le Journal des Âmes, un rang perdu s'affiche enfin comme une perte, et non comme un gain.",
+    changes: [
+      "📕 **Fix — Journal des Âmes :** Les retraits (ajustement du Docte à la baisse, correction du socle, ruine) apparaissaient en vert avec la mention « Gratuit », et disparaissaient dans « Total des gains ». Ils s'affichent désormais en rouge, « ↓ Rang perdu » (ou « Rang perdu · +N XP rendus »), et ne sont jamais fondus dans les gains.",
+      "🧾 **Journal :** les ajustements du Docte sont enregistrés comme retrait ou ajout, selon leur sens.",
+      "🧪 **605 Sentinelles — aucune régression.**",
+    ],
+  },
+  {
     version: "18.2.0 - \"Les Revers de Fortune ⚖️\"",
     date: "15 Novembre 2026",
     description: "Une fiche scellée n'est plus figée : le joueur peut corriger une erreur de création, et le Docte peut ajuster Fortune, caractéristiques et compétences au gré du récit.",

@@ -46,7 +46,8 @@ export const XP_CODES = {
     XP_SOLDE:              'XP_SOLDE',              // Solde de tout compte (arrondi archéologique)
     // --- Ajustements sous le socle de scellement ---
     SOCLE_CORRECTION:      'SOCLE_CORRECTION',      // Joueur : rang de création retiré, coût rendu en XP (GAIN)
-    DOCTE_AJUSTEMENT:      'DOCTE_AJUSTEMENT',      // Docte : ajustement d'une valeur avec motif
+    DOCTE_RETRAIT:         'DOCTE_RETRAIT',         // Docte : valeur baissée (perte sèche ou XP rendus)
+    DOCTE_AJOUT:           'DOCTE_AJOUT',           // Docte : valeur augmentée (offerte ou payée en XP)
 };
 
 // ============================================================================
@@ -66,6 +67,10 @@ export const XP_CODES = {
  * @param {object} character - L'état du personnage
  * @returns {{ xpTotal: number, xpDepense: number, xpDispo: number }}
  */
+/** Codes de journal correspondant à un rang retiré (affichés comme une perte). */
+export const RETRAIT_CODES = [XP_CODES.DOCTE_RETRAIT, XP_CODES.SOCLE_CORRECTION];
+export const isRetraitEntry = (entry) => RETRAIT_CODES.includes(entry?.code);
+
 export const getXpState = (character) => {
     const xpTotal = character.xp_total || 0;
     // xp_depense est mis à jour immédiatement en mémoire par LOG_XP_TRANSACTION

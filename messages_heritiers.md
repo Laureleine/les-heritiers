@@ -4,6 +4,21 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.2.1 — Les Comptes Justes 📕
+
+Chers Héritiers,
+
+À peine les revers de fortune étaient-ils permis que le teneur du Journal des Âmes s'emmêlait les plumes : il inscrivait vos pertes à l'encre verte, celle des bonnes nouvelles, et les qualifiait même de « gratuites ». Un krach boursier présenté comme une aubaine… voilà qui aurait fait sourire les actionnaires ruinés.
+
+Les pertes sont désormais tracées à l'encre rouge, marquées « ↓ Rang perdu », avec les XP éventuellement rendus. Elles ne se mêlent plus jamais au total de vos gains.
+
+📕 Les rangs perdus s'affichent en rouge dans le Journal des Âmes
+🧪 605 Sentinelles — aucune régression
+
+*Mise à jour du 15 Novembre 1899*
+
+---
+
 ## v18.2.0 — Les Revers de Fortune ⚖️
 
 Chers Héritiers,
