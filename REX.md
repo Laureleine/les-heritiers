@@ -6,6 +6,14 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 15 Novembre 2026 — v18.2.1 (Les Comptes Justes)
+
+### Leçon : vérifier l'affichage d'une nouvelle ligne de journal, pas seulement son stockage
+
+Les retraits étaient stockés en `GAIN` (seuls types permis : GAIN/DEPENSE/REMBOURSEMENT) avec valeur 0 → `JournalAmeModal` les affichait en vert « 🧠 Gratuit » et les fondait dans « Total des gains ». Le sens d'une ligne doit être porté par son `code` (`DOCTE_RETRAIT`, `SOCLE_CORRECTION` → `isRetraitEntry`) et l'écran doit le lire. Avant de livrer un nouveau code de transaction, rendre le Journal des Âmes avec une ligne de ce code.
+
+---
+
 ## Session du 15 Novembre 2026 — v18.2.0 (Les Revers de Fortune)
 
 ### Leçon 1 : Deux tickets, une seule règle en cause
