@@ -2,6 +2,17 @@
 
 export const VERSION_HISTORY = [
   {
+    version: "18.2.2 - \"Les Brevets d'Invention 📜\"",
+    date: "18 Novembre 2026",
+    description: "Un Atout qui rapporte de la Fortune (comme les Brevets du Fouinard) la rapporte enfin, même acheté après le scellement.",
+    changes: [
+      "📜 **Fix — Fortune des Atouts :** Un Héritier scellé qui achetait avec ses XP un Atout apportant de la Fortune (ex. *Brevets* : +2) ne recevait pas ce bonus. La Fortune monte désormais aussitôt, et redescend si l'Atout est désappris.",
+      "🛡️ **Socle protégé :** Ces rangs de Fortune offerts par l'Atout rejoignent le socle de la fiche : ils ne peuvent pas être revendus contre des XP. Même règle pour les Dons du Docte.",
+      "🦔 **Fiches réparées :** Petrus, Antoine Destrel et Milo Branquy retrouvent la Fortune de leurs Brevets ; une ligne de correction figure dans leur Journal des Âmes.",
+      "🧪 **612 Sentinelles — aucune régression.** 7 nouvelles sentinelles veillent sur les Brevets.",
+    ],
+  },
+  {
     version: "18.2.1 - \"Les Comptes Justes 📕\"",
     date: "15 Novembre 2026",
     description: "Dans le Journal des Âmes, un rang perdu s'affiche enfin comme une perte, et non comme un gain.",

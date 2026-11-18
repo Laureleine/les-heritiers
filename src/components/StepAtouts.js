@@ -9,6 +9,7 @@ import { FIXED_XP_COSTS } from '../utils/xpCalculator';
 import { isCharacterScelle } from '../utils/lockUtils';
 import { getXpState, XP_CODES } from '../utils/xpActions';
 import { xpTransaction } from '../utils/xpTransaction';
+import { atoutFortuneUpdates } from '../utils/atoutFortune';
 
 // 🛡️ Constante requise pour les Atouts
 const MAX_ATOUTS_GLOBAL = 2;
@@ -60,7 +61,7 @@ export default function StepAtouts() {
         // ✨ REVENTE DIRECTE ET INSTANTANÉE
         const newAtouts = character.atouts.filter(a => a !== valueToToggle);
         xpTransaction(dispatchCharacter, {
-            updates: { atouts: newAtouts },
+            updates: { atouts: newAtouts, ...atoutFortuneUpdates(character, atout, -1) },
             transaction: {
                 type: 'REMBOURSEMENT',
                 code: XP_CODES.ATOUT_ACQUISITION,
@@ -78,7 +79,7 @@ export default function StepAtouts() {
         }
         const newAtouts = [...(character.atouts || []), atout.nom];
         xpTransaction(dispatchCharacter, {
-            updates: { atouts: newAtouts },
+            updates: { atouts: newAtouts, ...atoutFortuneUpdates(character, atout, +1) },
             transaction: {
                 type: 'DEPENSE',
                 code: XP_CODES.ATOUT_ACQUISITION,
@@ -151,12 +152,9 @@ export default function StepAtouts() {
               const handlePersonalAtoutToggle = () => {
                 if (isReadOnly) return;
                 if (isScelle) {
-                  const _tech = atout.effets_techniques || {};
-                  const fortuneBonus = (_tech.fortune || 0) + (_tech.fortune_bonus || 0);
                   if (isSelected) {
                     const newAtoutsPerso = (character.atoutsPerso || []).filter(a => a !== atout.nom);
-                    const updates = { atoutsPerso: newAtoutsPerso };
-                    if (fortuneBonus) updates.fortune = Math.max(0, (character.fortune || 0) - fortuneBonus);
+                    const updates = { atoutsPerso: newAtoutsPerso, ...atoutFortuneUpdates(character, atout, -1) };
                     xpTransaction(dispatchCharacter, {
                       updates,
                       transaction: { type: 'REMBOURSEMENT', code: XP_CODES.ATOUT_ACQUISITION, label: `Acquisition : Don du Docte ${atout.nom}`, valeur: FIXED_XP_COSTS.nouvel_atout },
@@ -168,8 +166,7 @@ export default function StepAtouts() {
                       return;
                     }
                     const newAtoutsPerso = [...(character.atoutsPerso || []), atout.nom];
-                    const updates = { atoutsPerso: newAtoutsPerso };
-                    if (fortuneBonus) updates.fortune = Math.min(15, (character.fortune || 0) + fortuneBonus);
+                    const updates = { atoutsPerso: newAtoutsPerso, ...atoutFortuneUpdates(character, atout, +1) };
                     xpTransaction(dispatchCharacter, {
                       updates,
                       transaction: { type: 'DEPENSE', code: XP_CODES.ATOUT_ACQUISITION, label: `Acquisition : Don du Docte ${atout.nom}`, valeur: FIXED_XP_COSTS.nouvel_atout },

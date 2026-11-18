@@ -4,6 +4,22 @@ Historique des messages rédigés pour Discord à chaque version, du plus récen
 
 ---
 
+## v18.2.2 — Les Brevets d'Invention 📜
+
+Chers Héritiers,
+
+Messieurs les Fouinards, inventeurs de génie, avaient fait breveter leurs trouvailles… mais l'Office de la Propriété Industrielle oubliait de leur verser les redevances ! Un Atout comme *Brevets*, acquis avec l'expérience après le scellement, ne rapportait pas un sou de Fortune.
+
+L'erreur est réparée : la Fortune de l'Atout arrive aussitôt dans votre bourse, et elle s'en va si vous désapprenez l'Atout. Ces rangs offerts sont gravés dans le socle de votre fiche : nul ne peut les revendre contre de l'expérience. Les Héritiers lésés ont touché leur arriéré, consigné dans leur Journal des Âmes.
+
+📜 La Fortune des Atouts acquis après le scellement est enfin versée
+🦔 Petrus, Antoine Destrel et Milo Branquy retrouvent leurs redevances
+🧪 612 Sentinelles — aucune régression
+
+*Mise à jour du 18 Novembre 1899*
+
+---
+
 ## v18.2.1 — Les Comptes Justes 📕
 
 Chers Héritiers,
