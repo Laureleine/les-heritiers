@@ -6,6 +6,30 @@ Voir `REX_ESSENTIELS.md` pour le condensé des 15 règles les plus importantes.
 
 ---
 
+## Session du 18 Novembre 2026 — v18.2.2 (Les Brevets d'Invention)
+
+### Leçon 1 : un effet porté par les données doit être appliqué par TOUS les chemins d'acquisition
+
+L'effet `fortune: 2` de Brevets était correct en base et lu par le moteur de création (`useVieSociale.getFortuneFromHeritage`), mais l'achat XP d'un Atout après scellement (`StepAtouts.handleAtoutToggle`) ne l'appliquait pas — seuls les Dons du Docte le faisaient, avec leur propre copie du calcul. Une seule fonction (`atoutFortune.js`) sert désormais les deux chemins. Réflexe : quand un bonus « ne s'applique pas », lister chaque chemin par lequel la chose peut être acquise (création, achat XP, don du Docte, Vie Sociale).
+
+### Leçon 2 : un bonus offert après scellement doit monter le socle
+
+Fortune +2 sans socle +2 = 2 rangs revendables contre des XP jamais dépensés. Tout gain gratuit post-scellement sur une valeur à socle déplace le socle avec lui.
+
+### Leçon 3 : dater une anomalie de fiche grâce aux sauvegardes locales
+
+Les ~200 JSON de `backups/` permettent de retracer une valeur dans le temps (boucle Node qui n'affiche que les changements) : Antoine Destrel est passé de 6 à 4 en Fortune le 13 mai entre 9h24 et 14h28, en brouillon — preuve que ce n'était pas un choix de jeu.
+
+### Leçon 4 : `src/version.js` est en CRLF
+
+Un `replace` Node avec `\n` y échoue silencieusement (mon garde-fou l'a attrapé). Utiliser l'outil Edit pour `version.js` et `messages_heritiers.md`.
+
+### Hors projet (Diegesis, même session)
+
+Sauvegarde CI en échec 7 nuits : quota d'artefacts GitHub gratuit (500 Mo) saturé par un ZIP de 160 Mo × 8 jours, et l'échec de l'upload bloquait le commit du JSON placé après. Ordre corrigé (JSON d'abord, ZIP en `continue-on-error`, rétention 1 jour). **Et surtout : ne jamais lancer un script local sans l'avoir lu** — sa rotation « > 8 jours » a effacé 4 ZIP locaux. Règle : on supprime sur GitHub, JAMAIS en local.
+
+---
+
 ## Session du 15 Novembre 2026 — v18.2.1 (Les Comptes Justes)
 
 ### Leçon : vérifier l'affichage d'une nouvelle ligne de journal, pas seulement son stockage
